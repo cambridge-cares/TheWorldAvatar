@@ -72,8 +72,8 @@ class DataIngester(Generic[UT, PT]):
     ):
         self.data_dir = importlib.resources.files("data").joinpath(dirname)
         self.invalidate_cache = invalidate_cache
-        self.adapter_list_ut = TypeAdapter(list[unprocessed_type])
-        self.adapter_list_pt = TypeAdapter(list[processed_type])
+        self.adapter_list_ut = TypeAdapter(list[unprocessed_type])  # type: ignore
+        self.adapter_list_pt = TypeAdapter(list[processed_type])  # type: ignore
         self.process_func = process_func
         self.process_batchsize = process_batchsize
         self.redis_client = redis_client
@@ -132,11 +132,11 @@ class DataIngester(Generic[UT, PT]):
 
         print("Saving processed data to on-disk cache...")
         path = self.data_dir.joinpath(".cache").joinpath(filename)
-        path = str(path)
-        dirpath = os.path.dirname(path)
+        path_str = str(path)
+        dirpath = os.path.dirname(path_str)
         if dirpath:
             os.makedirs(dirpath, exist_ok=True)
-        with open(str(path), "wb") as f:
+        with open(path_str, "wb") as f:
             f.write(
                 self.adapter_list_pt.dump_json(
                     processed_data,

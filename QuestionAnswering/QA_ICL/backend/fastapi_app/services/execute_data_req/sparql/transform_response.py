@@ -3,7 +3,6 @@ from functools import cache
 from typing import Annotated, Sequence
 
 from fastapi import Depends
-from pydantic import BaseModel
 
 from services.rdf_stores import get_rdfStores
 from services.rdf_stores.base import Cls2GetterRDFStore
