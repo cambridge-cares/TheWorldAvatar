@@ -35,10 +35,12 @@ public class PIPSRequestAgent extends JPSAgent {
     private static final String JSON_RESULT_KEY = "Result";
     private static final String TOKEN_KEY = "access_token";
     private static final String REFRESH_TOKEN_KEY = "refresh_token";
+    private static final String MESSAGE_KEY = "message";
     private boolean valid = false;
-    private String requestingPartyToken;
+    private String accessToken;
     private String refreshToken;
 
+    // KeycloakConnector instance
     KeycloakConnector keycloakConnector;
 
     
@@ -56,15 +58,18 @@ public class PIPSRequestAgent extends JPSAgent {
         LOGGER.error("This is an error message.");
         LOGGER.fatal("This is a fatal message.");
         valid = true;
-        requestingPartyToken = null;
+        accessToken = null;
         refreshToken = null;
         keycloakConnector  = new KeycloakConnector();
     }
 
+    /**
+     * Process request parameters and determine which route to execute
+     */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         JSONObject jsonMessage = new JSONObject();
-        LOGGER.info("Passing request to PIPS User Agent..");
+        LOGGER.info("Passing request to Agent..");
         String route = requestParams.get("requestUrl").toString();
         route = route.substring(route.lastIndexOf("/") + 1);
         switch (route) {
@@ -116,20 +121,50 @@ public class PIPSRequestAgent extends JPSAgent {
     private JSONObject retrieveRoute(String username, String password) throws JSONException, IOException {
         JSONObject message = new JSONObject();
         //request for Token if token is null
-        if (requestingPartyToken == null & refreshToken == null) {
+        if (accessToken == null & refreshToken == null) {
             try {
                 JSONObject response = keycloakConnector.getTokens("password");
-                requestingPartyToken = response.getString(TOKEN_KEY);
+                accessToken = response.getString(TOKEN_KEY);
                 refreshToken = response.getString(REFRESH_TOKEN_KEY);
             } catch (Exception e) {
-                message.put("message", "invalid credentials");
+                message.put(MESSAGE_KEY, UNAUTHORIZED_ERROR_MSG);
                 return message;
             }
         }
 
-        // send access token to pips-agent
+        // send access token to pips-timeseries-agent
         PIPSTSAgentAPIConnector pipsTsAgentAPIConnector = new PIPSTSAgentAPIConnector();
-        JSONObject response = pipsTsAgentAPIConnector.getTimeSeries(requestingPartyToken);
+        JSONObject response = pipsTsAgentAPIConnector.getTimeSeries(accessToken);
+
+        // invalid token
+        if (response.getString(MESSAGE_KEY).contains("invalid token")) {
+            LOGGER.info("The access token is invalid!");
+            //check refresh token is still valid
+            LOGGER.info("Check refresh token validity...");
+            if (keycloakConnector.checkTokenStatus(refreshToken)) {
+                LOGGER.info("Refresh token is valid...");
+                // if valid, use refresh token to renew access token
+                response = keycloakConnector.refreshToken(refreshToken);
+                accessToken = response.getString(TOKEN_KEY);
+                refreshToken = response.getString(REFRESH_TOKEN_KEY);
+                LOGGER.info("Renewed tokens...");
+            } else {
+                LOGGER.info("Refresh token is invalid...");
+                // get new tokens via credentials
+                try {
+                    response = keycloakConnector.getTokens("password");
+                    accessToken = response.getString(TOKEN_KEY);
+                    refreshToken = response.getString(REFRESH_TOKEN_KEY);
+                    LOGGER.info("Received new tokens...");
+                } catch (Exception e) {
+                    message.put(MESSAGE_KEY, UNAUTHORIZED_ERROR_MSG);
+                    return message;
+                }
+            }
+            // try again with new access token
+            response = pipsTsAgentAPIConnector.getTimeSeries(accessToken);
+        }
+
         message = response;
         
         return message;
