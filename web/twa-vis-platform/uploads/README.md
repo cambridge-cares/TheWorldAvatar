@@ -26,6 +26,11 @@ The `config/ui-settings.json` file provides general settings for the platform. T
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
   - `help`: REQUIRED. Displays help page if enabled
+- `external`: optional configuration for adding external redirect links to the landing page. It requires an `ARRAY` of the following JSON format:
+  - `url`: REQUIRED. url of the external link.
+  - `title`: Thumbnail title on landing page.
+  - `caption`: Thumbnail caption on landing page.
+  - `icon`: Thumbnail icon on landing page.
 - `resources`: optional configuration for additional resources. They follow the following format
   - `resourceName`: indicates the type of resource required - dashboard, scenario
     - `url`: REQUIRED. url of the resource

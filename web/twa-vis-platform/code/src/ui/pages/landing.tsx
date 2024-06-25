@@ -12,6 +12,7 @@ import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 import { Routes } from 'io/config/routes';
 import CredoImage from 'ui/graphic/image/CredoImage';
 import { DefaultPageThumbnail, MarkdownPageThumbnail } from './page-thumbnail';
+import { DefaultSettings } from 'types/settings';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({
@@ -22,9 +23,7 @@ const markdowner = markdownit({
 });
 
 interface LandingPageProps {
-    hasMap: boolean,
-    hasDashboard: boolean,
-    hasAcknowledgements?: boolean
+    settings: DefaultSettings,
 }
 
 /**
@@ -60,36 +59,45 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
             <div className={styles.thumbnailContainer}>
                 <CredoImage />
                 {thumbnails}
-                {props.hasMap && (
+                {props.settings.modules.map && (
                     <DefaultPageThumbnail
                         title="CReDo"
-                        description="Use CReDo to understand the climate resilience of your infrastructure network"
+                        caption="Use CReDo to understand the climate resilience of your infrastructure network"
                         icon="./images/defaults/icons/map.svg"
-                        redirectUrl={Routes.MAP}
+                        url={Routes.MAP}
                     />
                 )}
-                {props.hasDashboard && (
+                {props.settings.modules.dashboard && (
                     <DefaultPageThumbnail
                         title="Analyse"
-                        description="Discover trends and insights at a glance"
+                        caption="Discover trends and insights at a glance"
                         icon="./images/defaults/icons/dash.svg"
-                        redirectUrl={Routes.DASHBOARD}
+                        url={Routes.DASHBOARD}
                     />
                 )}
-                {props.hasAcknowledgements && (
+                {props.settings.modules.acknowledgements && (
                     <DefaultPageThumbnail
                         title="Acknowledgements"
-                        description="Discover the CReDo partners and contributors"
+                        caption="Discover the CReDo partners and contributors"
                         icon="./images/defaults/icons/glossary.svg"
-                        redirectUrl={Routes.ACKNOWLEDGEMENTS}
+                        url={Routes.ACKNOWLEDGEMENTS}
                     />
                 )}
                 <DefaultPageThumbnail
                     title="Help Centre"
-                    description="Get help with the CReDo app"
+                    caption="Get help with the CReDo app"
                     icon="./images/defaults/icons/twa.svg"
-                    redirectUrl={Routes.HELP}
+                    url={Routes.HELP}
                 />
+
+                {props.settings.external?.map((externalLink, index) =>
+                    <DefaultPageThumbnail
+                        key={externalLink.title + index}
+                        title={externalLink.title}
+                        caption={externalLink.caption}
+                        icon={externalLink.icon}
+                        url={externalLink.url}
+                    />)}
             </div>
         </div>
     )

@@ -14,11 +14,11 @@ interface MarkdownPageThumbnailProps {
   page: OptionalPage;
 }
 
-interface DefaultPageThumbnailProps {
+export interface DefaultPageThumbnailProps {
   title: string;
-  description: string;
+  caption: string;
   icon: string;
-  redirectUrl: string;
+  url: string;
 }
 
 interface PageThumbnailTemplateProps {
@@ -60,9 +60,9 @@ export function DefaultPageThumbnail(props: Readonly<DefaultPageThumbnailProps>)
   return (
     <PageThumbnailTemplate
       header={props.title}
-      description={props.description}
+      description={props.caption}
       icon={props.icon}
-      redirectUrl={props.redirectUrl}
+      redirectUrl={props.url}
     />
   );
 }
