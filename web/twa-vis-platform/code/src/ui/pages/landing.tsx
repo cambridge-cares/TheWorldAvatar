@@ -37,29 +37,23 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
   // CSS class names
   const introClasses = ["markdown-body", styles.introInner].join(" ");
 
-  // Get landing page introduction content
-  const introContent = getIntroductionContent();
-
-  // Get thumbnails for static content pages
-  const thumbnails = getThumbnails();
-
   return (
     <div className={styles.container}>
       <div className={styles.introOuter}>
         <div className={styles.introMiddle}>
           <div
             className={introClasses}
-            dangerouslySetInnerHTML={{ __html: introContent }}
+            dangerouslySetInnerHTML={{ __html: getIntroductionContent() }}
           />
         </div>
       </div>
 
-      <div className={styles.thumbnailContainer}>
+      <div className={`${styles.thumbnailContainer} hidden-scrollbar`}>
         <CredoImage />
-        {thumbnails}
+        {getThumbnails()}
         {props.settings.modules.map && (
           <DefaultPageThumbnail
-            title="CReDo"
+            title="Open Scenario View"
             caption="Use CReDo to understand the climate resilience of your infrastructure network"
             icon="./images/defaults/icons/map.svg"
             url={Routes.MAP}

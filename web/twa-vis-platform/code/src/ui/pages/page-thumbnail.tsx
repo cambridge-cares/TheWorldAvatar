@@ -95,13 +95,13 @@ const ForwardedPageThumbnailTemplate = React.forwardRef<HTMLDivElement, Readonly
       <Link href={redirectUrl} className={styles.container}>
         <AppImage url={icon} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
         <div ref={ref} {...rest} className={styles.content}>
-          <div className={styles.title}>
-            <h1>{header}</h1>
-          </div>
-          <div className={styles.description}>
+          <h3 className={styles.title}>
+            {header}
+          </h3>
+          <div className={styles.description} >
             {description}
           </div>
         </div>
-      </Link>
+      </Link >
     );
   });
