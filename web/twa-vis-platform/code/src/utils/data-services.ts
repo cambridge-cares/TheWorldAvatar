@@ -96,7 +96,7 @@ export const useFeatureInfoAgentService = (endpoint: string, selectedIri: string
       let latestAttributes: AttributeGroup;
       if (hasExistingData) {
         latestAttributes = recurseUpdateAttributeGroup(attributes, selectedIri, queriedData);
-        dispatch(setHasExistingData(true));
+        dispatch(setHasExistingData(false));
       } else {
         latestAttributes = recurseParseAttributeGroup(queriedData, rootKey);
       }
