@@ -16,6 +16,7 @@ The SeaLevelImpactAgent is an agent that
 - Museums
 - Tourist Attractions
 ```
+3) Create geoserver layer for each sealevelprojections
 
 ## 2. Prerequisites
 This agent is developed as part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Deploy/stacks/Singapore-sea-level-rise). 
