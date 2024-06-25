@@ -15,10 +15,10 @@ public class SLRGeoserver {
         
         UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-        virtualTable.setSql("SELECT ssp_scenario, confidence, quantile, projectionyear, projectionreferenceyear, sealevelriseinmeters, CONCAT('https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/',uuid) as iri, geom FROM sealevelprojections WHERE ssp_scenario = '"+ssp_scenario+"' AND confidence= '"+confidence+"' AND quantile= '"+quantile+"' AND projectionyear= '"+projectionyear+"'");
+        virtualTable.setSql("SELECT ssp_scenario, confidence, quantile, projectionyear, projectionreferenceyear, sealevelriseinmeters, CONCAT('https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/',uuid) as iri, geom FROM sealevelprojections WHERE ssp_scenario = '"+ssp_scenario+"' AND LOWER(confidence) = LOWER('"+confidence+"') AND quantile= '"+quantile+"' AND projectionyear= '"+projectionyear+"'");
         virtualTable.setEscapeSql(true);
         virtualTable.setName("sealevelprojection"+geoservernamestring);
-        virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
+        virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
         geoServerVectorSettings.setVirtualTable(virtualTable);
         geoServerClient.createPostGISDataStore(workspaceName,"sealevelprojection"+geoservernamestring , SeaLevelImpactAgent.dbName, schema);
         geoServerClient.createPostGISLayer(workspaceName, SeaLevelImpactAgent.dbName,"sealevelprojection"+geoservernamestring ,geoServerVectorSettings);
