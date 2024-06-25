@@ -1,6 +1,15 @@
 {
-  "name": "sea-level",
-  "externalDatasets": [
-    "osm"
-  ]
+    "name": "sea-level",
+    "externalDatasets": [
+        "buildings",
+        "sealevelprojections",
+        "dem",
+        "culture",
+        "landplot",
+        "osm",
+        "population",
+        "routing",
+        "tbox",
+        "tree"
+    ]
 }
