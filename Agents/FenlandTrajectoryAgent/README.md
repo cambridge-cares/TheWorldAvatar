@@ -1,6 +1,6 @@
 # 1. Description
 
-The `Fenland Trajectory Agent` is a specialized tool for batch instantiation of structured time-series GPS trajectory data. This agent is capable of receiving HTTP POST requests or CURL commands to load GPS trajectory files, which it subsequently instantiates into triples before uploading them into the knowledge graphss.
+The `Fenland Trajectory Agent` is a specialized tool for batch instantiation of structured time-series GPS trajectory data. This agent is capable of receiving HTTP POST requests or CURL commands to load GPS trajectory files, which it subsequently instantiates into triples before uploading them into the knowledge graphs.
 
 Presently, the agent focuses on data from the Fenland Study to analyze the interaction between GPS trajectories and environmental features within the context of a digital twin. Example data can be found at Dropbox/CoMo_shared/_Projects/c4e-AI-for-public-health/sample_gps_data.csv. By default, the data instantiated from the Fenland Study using this agent encompasses Speed, Height, Distance, Heading, Latitude, and Longitude. This method is also applicable to other categories of time-series structured data in Fenland Study by replacing or adding the relevant column names. The information instantiated into the knowledge graph adheres to the Ontology of Devices [OntoDevice] in [TheWorldAvatar] project. The instantiation process is executed based on the [TimeSeriesClient]. This agent is implemented as a Docker container, designed for deployment within a stack managed by the [Stack Manager]
 
@@ -95,8 +95,7 @@ The files for example http request are displayed at [SendHTTP] folder.
 - Post request to instantiate all GPS trajectory data to KG
 > ./gpstasks/fenlandtrajectoryagent/process_and_instantiate
 
-Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. In this example, the stack is assumed at port 3840.
-
+Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
 &nbsp;
 # Authors
