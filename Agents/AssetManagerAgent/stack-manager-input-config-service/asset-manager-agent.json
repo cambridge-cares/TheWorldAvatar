@@ -14,17 +14,11 @@
         "Configs": [
           {
             "ConfigName": "blazegraph"
-          },
-          {
-              "ConfigName": "postgis"
           }
       ],
       "Secrets": [
           {
               "SecretName": "blazegraph_password"
-          },
-          {
-              "SecretName": "postgis_password"
           }
       ]
       }
