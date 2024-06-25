@@ -67,14 +67,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
             url={Routes.DASHBOARD}
           />
         )}
-        {props.settings.modules.acknowledgements && (
-          <DefaultPageThumbnail
-            title="Acknowledgements"
-            caption="Discover the CReDo partners and contributors"
-            icon="./images/defaults/icons/glossary.svg"
-            url={Routes.ACKNOWLEDGEMENTS}
-          />
-        )}
+
         <DefaultPageThumbnail
           title="Help Centre"
           caption="Get help with the CReDo app"

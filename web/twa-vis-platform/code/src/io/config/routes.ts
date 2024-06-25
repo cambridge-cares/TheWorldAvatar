@@ -5,7 +5,6 @@ export const PathNames: {
   MAP: "explore",
   DASHBOARD: "analytics",
   HELP: "help",
-  ACKNOWLEDGEMENTS: "acknowledgements",
 };
 
 // Default routes
@@ -16,5 +15,4 @@ export const Routes: {
   MAP: PathNames.MAP,
   DASHBOARD: PathNames.DASHBOARD,
   HELP: PathNames.HELP,
-  ACKNOWLEDGEMENTS: PathNames.ACKNOWLEDGEMENTS,
 };
