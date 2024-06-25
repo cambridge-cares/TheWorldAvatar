@@ -11,7 +11,7 @@ import React from 'react';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 import { Routes } from 'io/config/routes';
 import CredoImage from 'ui/graphic/image/CredoImage';
-import { DefaultPageThumbnail, MarkdownPageThumbnail } from './page-thumbnail';
+import { DefaultPageThumbnail, DefaultPageThumbnailProps, MarkdownPageThumbnail } from './page-thumbnail';
 import { DefaultSettings } from 'types/settings';
 
 // Utilities to render markdown into HTML
@@ -36,6 +36,9 @@ interface LandingPageProps {
 export default function LandingPage(props: Readonly<LandingPageProps>) {
   // CSS class names
   const introClasses = ["markdown-body", styles.introInner].join(" ");
+  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links.find(link => link.url === "dashboard");
+  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links.find(link => link.url === "help");
+  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links.find(link => link.url === "map");
 
   return (
     <div className={styles.container}>
@@ -53,36 +56,40 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
         {getThumbnails()}
         {props.settings.modules.map && (
           <DefaultPageThumbnail
-            title="Open Scenario View"
-            caption="Use CReDo to understand the climate resilience of your infrastructure network"
-            icon="./images/defaults/icons/map.svg"
+            title={mapLinkProps?.title ?? "Explore"}
+            caption={mapLinkProps?.caption ?? "Discover geospatial relationships in our environment"}
+            icon={mapLinkProps?.icon ?? "./images/defaults/icons/map.svg"}
             url={Routes.MAP}
           />
         )}
         {props.settings.modules.dashboard && (
           <DefaultPageThumbnail
-            title="Analyse"
-            caption="Discover trends and insights at a glance"
-            icon="./images/defaults/icons/dash.svg"
+            title={dashboardLinkProps?.title ?? "Analyse"}
+            caption={dashboardLinkProps?.caption ?? "Discover trends and insights at a glance"}
+            icon={dashboardLinkProps?.icon ?? "./images/defaults/icons/dash.svg"}
             url={Routes.DASHBOARD}
           />
         )}
 
         <DefaultPageThumbnail
-          title="Help Centre"
-          caption="Get help with the CReDo app"
-          icon="./images/defaults/icons/twa.svg"
+          title={helpLinkProps?.title ?? "Help Centre"}
+          caption={helpLinkProps?.caption ?? "Get help for this web platform"}
+          icon={helpLinkProps?.icon ?? "./images/defaults/icons/twa.svg"}
           url={Routes.HELP}
         />
 
-        {props.settings.external?.map((externalLink, index) =>
-          <DefaultPageThumbnail
-            key={externalLink.title + index}
-            title={externalLink.title}
-            caption={externalLink.caption}
-            icon={externalLink.icon}
-            url={externalLink.url}
-          />)}
+        {props.settings.links?.map((externalLink, index) => {
+          if (!["map", "dashboard", "help"].includes(externalLink.url)) {
+            return <DefaultPageThumbnail
+              key={externalLink.title + index}
+              title={externalLink.title}
+              caption={externalLink.caption}
+              icon={externalLink.icon}
+              url={externalLink.url}
+            />
+          }
+        })
+        }
       </div>
     </div>
   )

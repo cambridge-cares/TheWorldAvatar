@@ -15,9 +15,9 @@ interface MarkdownPageThumbnailProps {
 }
 
 export interface DefaultPageThumbnailProps {
-  title: string;
-  caption: string;
-  icon: string;
+  title?: string;
+  caption?: string;
+  icon?: string;
   url: string;
 }
 

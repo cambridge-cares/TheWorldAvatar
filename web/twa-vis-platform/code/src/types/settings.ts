@@ -10,7 +10,7 @@ export type DefaultSettings = {
   modules: {
     [key: string]: boolean;
   },
-  external?: DefaultPageThumbnailProps[],
+  links?: DefaultPageThumbnailProps[],
   resources?: {
     [key: string]: {
       url: string;
