@@ -12,7 +12,7 @@
             "type": "tabular",
             "subdirectory": "sql",
 			"schema": "osm",
-            "sql": "@/inputs/data/osm/sub/240613_buildinginfo.sql"
+            "sql": "@/inputs/data/osm/sql/240613_buildinginfo.sql"
         }
     ],
     "mappings": ["buildinginfo.obda"]
