@@ -235,14 +235,14 @@
                     "id": "tree",
                     "type": "vector",
                     "tiles": [
-                        "http://174.138.23.221:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:tree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
                     "id": "heritagetree",
                     "type": "vector",
                     "tiles": [
-                        "http://174.138.23.221:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:heritagetree&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -262,10 +262,10 @@
                     }
                 },
                 {
-                    "id": "heritagetree",
+                    "id": "sgheritagetree",
                     "name": "Heritage Trees",
                     "source": "heritagetree",
-                    "source-layer": "heritage",
+                    "source-layer": "heritagetree",
                     "type": "circle",
                     "order": 6,
                     "paint": {
@@ -494,31 +494,31 @@
             "expanded": false,
             "sources": [
                 {
-                    "id": "historicsites",
+                    "id": "historicsite",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:historicsites&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:historicsite&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
-                    "id": "monuments",
+                    "id": "monument",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:monuments&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:monument&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
-                    "id": "museums",
+                    "id": "museum",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:museums&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:museum&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
-                    "id": "touristattractions",
+                    "id": "touristattraction",
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:touristattractions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:touristattraction&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -526,8 +526,8 @@
                 {
                     "id": "sghistoricsites",
                     "name": "Historic Sites",
-                    "source": "historicsites",
-                    "source-layer": "historicsites",
+                    "source": "historicsite",
+                    "source-layer": "historicsite",
                     "type": "circle",
                     "order": 6,
                     "paint": {
@@ -540,8 +540,8 @@
                 {
                     "id": "sgmonuments",
                     "name": "Monuments",
-                    "source": "monuments",
-                    "source-layer": "monuments",
+                    "source": "monument",
+                    "source-layer": "monument",
                     "type": "circle",
                     "order": 6,
                     "paint": {
@@ -554,8 +554,8 @@
                 {
                     "id": "sgmuseums",
                     "name": "Museums",
-                    "source": "museums",
-                    "source-layer": "museums",
+                    "source": "museum",
+                    "source-layer": "museum",
                     "type": "circle",
                     "order": 6,
                     "paint": {
@@ -568,8 +568,8 @@
                 ,{
                     "id": "sgtouristattractions",
                     "name": "Tourist Attractions",
-                    "source": "touristattractions",
-                    "source-layer": "touristattractions",
+                    "source": "touristattraction",
+                    "source-layer": "touristattraction",
                     "type": "circle",
                     "order": 6,
                     "paint": {
@@ -1094,29 +1094,22 @@
             "name": "Sea-level rise",
             "sources": [
                 {
-                    "id": "sealevel_rise_5m",
+                    "id": "sealevelprojectionssp5852150Low95",
                     "type": "vector",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Asealevel_rise_5m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                },        
-                {
-                    "id": "flooded_buildings",
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:flooded_buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:sealevelprojectionssp5852150Low95&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
             "layers": [
                 {
-                    "id": "sealevel-rise-5m",
-                    "name": "Sea-level rise by 5 meters",
-                    "source": "sealevel_rise_5m",
-                    "source-layer": "sealevel_rise_5m",
+                    "id": "sgsealevelprojections",
+                    "name": "Sea-level rise",
+                    "source": "sealevelprojectionssp5852150Low95",
+                    "source-layer": "sealevelprojectionssp5852150Low95",
                     "type": "fill",
                     "order": 1,
                     "layout": {
@@ -1125,40 +1118,6 @@
                     "paint": {
                         "fill-color": "#0000FF",
                         "fill-opacity": 0.4
-                    }
-                },
-                {
-                    "id": "flooded-buildings",
-                    "name": "Flooded Buildings",
-                    "source": "flooded_buildings",
-                    "source-layer": "flooded_buildings",
-                    "type": "fill-extrusion",
-                    "order": 7,
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "paint": {
-                        "fill-extrusion-color": "#FF0000",
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": [
-                            "case",
-                            [
-                                "has",
-                                "building_height"
-                            ],
-                            [
-                                "*",
-                                1.4,
-                                [
-                                    "to-number",
-                                    [
-                                        "get",
-                                        "building_height"
-                                    ]
-                                ]
-                            ],
-                            2
-                        ]
                     }
                 }
             ]
