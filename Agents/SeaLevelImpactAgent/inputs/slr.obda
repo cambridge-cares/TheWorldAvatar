@@ -42,7 +42,13 @@ source		SELECT "slr_uuid", "touristattraction_uuid" FROM "public"."slr_touristat
 mappingId	SLR - Landplot
 target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact landplot:{"landplot_uuid"} .
             landplot:{"landplot_uuid"} a ontosl:ImpactedSite.
-            landplot:{"landplot_uuid"} ontosl:hasAffectedArea {"affectedarea"}.
+            landplot:{"landplot_uuid"} ontosl:hasAffectedArea ontosl:affectedarea/{"slr_uuid"}_{"landplot_uuid"}.
+            ontosl:affectedarea/{"slr_uuid"}_{"landplot_uuid"} a ontosl:AffectedArea;
+                ontosl:associatedWith ontosl:SeaLevelChange/{"slr_uuid"};
+                om:hasValue :affectedareameasure/{"slr_uuid"}_{"landplot_uuid"} .
+            :affectedareameasure/{"slr_uuid"}_{"landplot_uuid"} a om:Measure;
+                om:hasUnit om:squareMetre ;
+                om:hasNumericalValue "{affectedarea}"^^xsd:double.
 source		SELECT "slr_uuid", "landplot_uuid", "affectedarea" FROM "public"."slr_landplot"
 
 mappingId	SLR - Population
@@ -57,10 +63,11 @@ source		SELECT "slr_uuid", "bldg_mat_view_uuid" FROM "public"."slr_bldg_mat_view
 mappingId	SLR - osm_road_mat_view
 target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact openstreetmap:way/{"osm_road_mat_view_uuid"} .
             openstreetmap:way/{"osm_road_mat_view_uuid"} a ontosl:ImpactedSite.
-            openstreetmap:way/{"osm_road_mat_view_uuid"} ontosl:hasAffectedLength ontosl:affectedlength_{"osm_road_mat_view_uuid"}.
-            ontosl:affectedlength_{"osm_road_mat_view_uuid"} a om:Length; 
-                om:hasValue twa:measure_affectedlength_{"osm_road_mat_view_uuid"}.
-            twa:measure_affectedlength_{"osm_road_mat_view_uuid"} a om:Measure; 
+            openstreetmap:way/{"osm_road_mat_view_uuid"} ontosl:hasAffectedLength ontosl:affectedlength_{"slr_uuid"}_{"osm_road_mat_view_uuid"}.
+            ontosl:affectedlength_{"slr_uuid"}_{"osm_road_mat_view_uuid"} a ontosl:AffectedLength; 
+                ontosl:associatedWith ontosl:SeaLevelChange/{"slr_uuid"};
+                om:hasValue twa:measure_affectedlength_{"slr_uuid"}_{"osm_road_mat_view_uuid"}.
+            twa:measure_affectedlength_{"slr_uuid"}_{"osm_road_mat_view_uuid"} a om:Measure; 
                 om:hasUnit om:metre;
                 om:hasNumericalValue {"affectedlength"}.
 source		SELECT "slr_uuid", "osm_road_mat_view_uuid", "affectedlength" FROM "public"."slr_osm_road_mat_view"
