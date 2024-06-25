@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="login">Login</string>
+    <string name="connection_error">Connection failed, please check your network connection</string>
+    <string name="login_failure_due_to_check_system_clock">We could not log you in because your clock settings appear to be incorrect. Please check your clock and try again.</string>
+    <string name="fail_to_login_title">Login Failed</string>
+    <string name="fail_to_login">Fail to login, please try again.</string>
+    <string name="login_canceled">Login canceled</string>
+</resources>

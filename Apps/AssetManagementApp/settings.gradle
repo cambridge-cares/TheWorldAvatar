@@ -1,0 +1,38 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+rootProject.name = "AssetManagementApp"
+include ':app'
+include ':core'
+include ':feature'
+include ':feature:login'
+include ':core:network'
+include ':feature:qrscan'
+include ':feature:assetinfo'
+include ':feature:setting'
+include ':feature:home'
+include ':core:ui'
+include ':core:data'
+include ':core:notification'
+include ':feature:mailbox'
+include ':feature:addasset'
+include ':core:utils'
+include ':core:datastore'
+include ':feature:qrprint'
+include ':core:model'
+include ':core:login'
+include ':feature:addmaintenance'
+include ':feature:takephoto'
+include ':core:camera'

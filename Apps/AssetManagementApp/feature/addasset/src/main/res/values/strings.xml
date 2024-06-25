@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_end_icon_description">Click to search for availabel options</string>
+    <string name="add_asset">Add Asset</string>
+    <string name="upload_document">Upload Document</string>
+    <string name="description">Description</string>
+    <string name="save">Save as draft</string>
+    <string name="field_is_required">This field is required.</string>
+    <string name="not_allow_new_instance">Please choose from the available options.</string>
+    <string name="network_error">Not able to create new asset, please check your network connection and try again.</string>
+    <string name="edit_asset">Edit Asset</string>
+    <string name="asset_is_added_the_new_qr_code_has_been_sent_to_your_email_for_printing">Asset is added. QR code is ready to be printed from the home page.</string>
+    <string name="file_name">File Name</string>
+    <string name="storage_permission_granted">Storage permission granted.</string>
+    <string name="failed_to_get_storage_permission">Failed to get storage permission.</string>
+</resources>
