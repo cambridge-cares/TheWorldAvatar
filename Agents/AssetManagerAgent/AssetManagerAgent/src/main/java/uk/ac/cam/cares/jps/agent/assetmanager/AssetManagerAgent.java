@@ -71,6 +71,7 @@ public class AssetManagerAgent extends JPSAgent{
     public String URL_MANUAL;
     public String KG_USERNAME, KG_PASSWORD;
     public String URL_DOCUPLOAD;
+    public String[] args; //TECH DEBT: Args is a mistake and the above params should be used directly, not from a string array
 
     /**
      * Logger for reporting info/errors.
@@ -105,7 +106,7 @@ public class AssetManagerAgent extends JPSAgent{
                 throw new JPSRuntimeException("Failed to read agent.properties file: ", e);
             }
 
-            String[] args = new String[] {
+            args = new String[] {
                 ENDPOINT_KG_ASSET, //0
                 ENDPOINT_KG_OFFICE, //1
                 ENDPOINT_KG_LAB, //2
@@ -128,12 +129,11 @@ public class AssetManagerAgent extends JPSAgent{
                 if (KG_USERNAME.isBlank() && KG_PASSWORD.isBlank()){
                     instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB);
                 }
-                else if(!(KG_USERNAME.isBlank() && KG_PASSWORD.isBlank())){
+                else if(!KG_USERNAME.isBlank() && !KG_PASSWORD.isBlank()){
                     instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_OFFICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_KG_LAB, KG_USERNAME, KG_PASSWORD);
                 }
                 else{
-                    throw new JPSRuntimeException("Either username or password for blazegraph authentication is empty."+
-                    " Please ensure eiher both field to be filled when auth is needed or both are empty when not.");
+                    throw new JPSRuntimeException("Please ensure eiher both username and password to be filled when auth is needed or both are empty when not.");
                 }
                 
             } catch(Exception e) {
@@ -165,29 +165,28 @@ public class AssetManagerAgent extends JPSAgent{
                 jsonMessage = getDataForUI();
             }
             else if (urlPath.contains("instantiate")){
-
-                try (InputStream input = new FileInputStream(ontoMapProperties)) {
-                    // Load properties file from specified path
-                    Properties prop = new Properties();
-                    prop.load(input);
-
-                    try {
-                        String AssetClass = assetData.getString("AssetClass");
-                        assetData.put("Prefix", prop.getProperty(AssetClass));
-
-                    }
-                    catch (Exception e) {
-                        throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
-                    }
-                }
-                catch (Exception e) {
-                    throw new JPSRuntimeException("Failed to read properties file: ", e);
-                }
-                
                 if (assetData.has("setData")){
                     jsonMessage = instantiateSet(args, assetData);
                 }
                 else{
+                    try (InputStream input = new FileInputStream(ontoMapProperties)) {
+                        // Load properties file from specified path
+                        Properties prop = new Properties();
+                        prop.load(input);
+
+                        try {
+                            String AssetClass = assetData.getString("AssetClass");
+                            assetData.put("Prefix", prop.getProperty(AssetClass));
+
+                        }
+                        catch (Exception e) {
+                            throw new IOException ("The asset class keys cannot be retrieved from the properties file: ", e);
+                        }
+                    }
+                    catch (Exception e) {
+                        throw new JPSRuntimeException("Failed to read properties file: ", e);
+                    }
+                
                     jsonMessage = instantiateAsset(args, assetData);
                 }
                 
@@ -335,7 +334,7 @@ public class AssetManagerAgent extends JPSAgent{
         else{
             message.accumulate("Result", "Instantiation failed: " + 
                 "Asset data is invalid. "+
-                "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class."
+                "Input requires minimum of ID (yyyy-mm-dd/id or blank if to be generated), Name, Location and asset class."
             );
         }
         return message;
@@ -352,13 +351,16 @@ public class AssetManagerAgent extends JPSAgent{
                 message.accumulate("Result", "Instantiation cancelled: " + 
                     "One of the asset data is invalid: "+
                     assetData +
-                    "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and class."
+                    "Input requires minimum of ID (yyyy-mm-dd/id or blank if to be generated), Name, Location and class."
                 );
-                stillValid = false;
+                stillValid = false; //Don't break here to ensure that the response contain all failed asset data
             }
         }
         if (stillValid){
             if (!(setData.has("deliveryDate"))){
+                setData.put("deliveryDate", "");
+            }
+            if (!(setData.has("desiredID"))){
                 setData.put("deliveryDate", "");
             }
 
@@ -380,7 +382,8 @@ public class AssetManagerAgent extends JPSAgent{
         else{
             message.accumulate("Result", "Instantiation failed: " + 
                 "Maintenance data is invalid. "+
-                "Input requires minimum of ID (yyyy-mm-dd/id), service provider, and last OR next service date"
+                "Input requires minimum of ID (yyyy-mm-dd/id), service provider, and last OR next service date." +
+                "Interval has to be > 0."
             );
         }
 
@@ -393,17 +396,7 @@ public class AssetManagerAgent extends JPSAgent{
             return false;
         }
         else{
-            String id = data.getString("ID");
-            if (!(id ==null || id.isBlank())){
-                String[] idSplits = id.split("/");
-                if (idSplits.length!=2){
-                    return false;
-                }
-                if (idSplits[0].length()!=8 && idSplits[0].split("-").length!=3){
-                    return false;
-                }
-            }
-            
+            if(!validateID(data.getString("ID"))){return false;}
         }
         if (!data.has("Name")){
             return false;
@@ -421,12 +414,19 @@ public class AssetManagerAgent extends JPSAgent{
     private Boolean validateMaintenanceData (JSONObject data) {
         if (!data.has("ID")){
             return false;
+        }else{
+            if (!validateID(data.getString("ID"))){return false;}
         }
         if (!data.has("LastService") || !data.has("NextService")){
             return false;
         }
         if(!data.has("ServiceProvider")){
             return false;
+        }
+        if (data.has("Interval")){
+            if (data.getInt("Interval") <= 0){
+                return false;
+            }
         }
         return true;
     }
@@ -468,7 +468,7 @@ public class AssetManagerAgent extends JPSAgent{
         if (idSplits.length!=2){
             return false;
         }
-        if (idSplits[0].length()!=8 && idSplits[0].split("-").length!=3){
+        if (idSplits[0].length()!=10 || idSplits[0].split("-").length!=3){
             return false;
         }
         return true;
@@ -784,7 +784,7 @@ public class AssetManagerAgent extends JPSAgent{
             return message;
         }
         //instantiate if success
-        /*TODO Check todo in AssetKGInterface.addPurchaseDocFile #969 */
+        /*TODO Check todo in AssetKGInterface.addPurchaseDocFile */
         /*
         try {
             instanceHandler.addPurchaseDocFile(documentIRI, fileName, documentIRI, agentURL);

@@ -29,10 +29,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.rmi.Remote;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.lang.Math;
 
 import com.bigdata.bop.Var;
 
@@ -116,25 +119,11 @@ public class AssetKGInterface {
         JSONArray resArr = new JSONArray();
         String desiredID = setDataRaw.getString("desiredID");
         String deliveryDate = setDataRaw.getString("deliveryDate");
-        if (desiredID.isBlank() || desiredID == null){
-            
-            String date;
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            if (deliveryDate.isBlank() || deliveryDate == null){
-                LocalDateTime now = LocalDateTime.now();
-                date = dtf.format(now);
-            }
-            else{
-                try {
-                    deliveryDate = dtf.format(LocalDate.parse(deliveryDate, dtf));
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    throw new JPSRuntimeException("Failed to parse deliveryDate", e);
-                }
-                date = deliveryDate;
-            }
-            String idNum = String.valueOf(getLatestIDNum() +  1);
-            desiredID = date +"/"+ idNum;
+        if (desiredID.isBlank()){
+            desiredID = generateID(deliveryDate);
+        }
+        else{
+            desiredID = generateID(deliveryDate, desiredID);
         }
         JSONArray assetSet = setDataRaw.getJSONArray("setData");
         for (int i=0;i<assetSet.length();i++){
@@ -184,25 +173,7 @@ public class AssetKGInterface {
         String id = AssetDataRaw.getString("ID");
         String deliveryDate = AssetDataRaw.getString("deliveryDate");
         if (id.isBlank()){
-            String date;
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            if (deliveryDate.isBlank() || deliveryDate == null){
-                LocalDateTime now = LocalDateTime.now();
-                date = dtf.format(now);
-            }
-            else{
-                try {
-                    deliveryDate = dtf.format(LocalDate.parse(deliveryDate, dtf));
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    throw new JPSRuntimeException("Failed to parse deliveryDate", e);
-                }
-                date = deliveryDate;
-            }
-            
-
-            String idNum = String.valueOf(getLatestIDNum() +  1);
-            id = date +"/"+ idNum;
+            id = generateID(deliveryDate);
         }
         AssetData.put("Prefix", devicePrefix);
         AssetData.put("ID", id);
@@ -260,7 +231,7 @@ public class AssetKGInterface {
         if (SpecSheetFile != null && !SpecSheetFile.isBlank()) {
             SpecSheetIRI = genIRIString("SpecSheet", P_ASSET);
         }
-        if (SpecSheetPage == null || SpecSheetPage.isBlank()) {
+        if (SpecSheetPage == null) {
             SpecSheetPage = "";
         }
         AssetData.put("SpecSheetIRI", SpecSheetIRI);
@@ -270,13 +241,13 @@ public class AssetKGInterface {
         String ManualFile = AssetDataRaw.getString("Manual");
         String ManualURL = AssetDataRaw.getString("ManualURL");
         String ManualIRI = "";
-        if(ManualFile == null || ManualFile.isBlank()){
+        if(ManualFile == null){
             ManualFile = "";
         }
         else{
             ManualIRI = genIRIString("Manual", P_ASSET);
         }
-        if (ManualURL == null || ManualURL.isBlank()) {ManualURL = "";}
+        if (ManualURL == null) {ManualURL = "";}
         AssetData.put("Manual", ManualFile);
         AssetData.put("ManualIRI", ManualIRI);
         AssetData.put("manualURL", ManualURL);
@@ -289,7 +260,7 @@ public class AssetKGInterface {
         String ManufacturerNameIRI = "";
         String ManufacturerOrgIRI = "";
         LOGGER.info("Handling IRI for supplier and manuf: " + SupplierName +" & " + ManufacturerName +" .");
-        if (!(SupplierName.isBlank() || SupplierName == null )){
+        if (!(SupplierName == null || SupplierName.isBlank())){
             JSONObject orgIRI = existenceChecker.getOrganizationTriples(SupplierName, true);
             SupplierNameIRI = orgIRI.getString("OrgNameIRI");
             SupplierOrgIRI = orgIRI.getString("OrgIRI");
@@ -369,7 +340,7 @@ public class AssetKGInterface {
         //storage
         String storageName = AssetDataRaw.getString("storage");
         AssetData.put("storageID", storageName);
-        if (storageName.isBlank() || storageName == null) {
+        if (storageName == null || storageName.isBlank()) {
             AssetData.put("cabinetIRI", "");
             AssetData.put("storageIRI", "");
             AssetData.put("cabinetTypeIRI", "");
@@ -503,6 +474,46 @@ public class AssetKGInterface {
         idPair.put("ID", AssetData.getString("ID"));
         idPair.put("deviceIRI", AssetData.getString("deviceIRI"));
         return idPair;
+    }
+    
+    /*
+     * Generate ID if not provided
+     */
+    private String generateID(String deliveryDate){
+        String date;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (deliveryDate.isBlank() || deliveryDate == null){
+            LocalDateTime now = LocalDateTime.now();
+            date = dtf.format(now);
+        }
+        else{
+            try {
+                deliveryDate = dtf.format(LocalDate.parse(deliveryDate, dtf));
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Failed to parse deliveryDate", e);
+            }
+            date = deliveryDate;
+        }
+        String idNum = String.valueOf(getLatestIDNum() +  1);
+        return date +"/"+ idNum;
+    }
+
+    private String generateID(String deliveryDate, String targetID){
+        String date;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (deliveryDate.isBlank() || deliveryDate == null){
+            LocalDateTime now = LocalDateTime.now();
+            date = dtf.format(now);
+        }
+        else{
+            try {
+                deliveryDate = dtf.format(LocalDate.parse(deliveryDate, dtf));
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Failed to parse deliveryDate", e);
+            }
+            date = deliveryDate;
+        }
+        return date +"/"+ targetID;
     }
 
     /*
@@ -1059,7 +1070,12 @@ public class AssetKGInterface {
                     if (maintenanceData.has("intervalIRI")){
                         Long totalIntervalMonth = Long.valueOf(maintenanceData.getString("durationYear")) * 12 + 
                                                     Long.valueOf(maintenanceData.getString("durationMonth"));
-                        maintenanceData.put("nextServiceTime", dtf.format(nextService.plusMonths(totalIntervalMonth)));
+                        maintenanceData.put("nextServiceTime",
+                            //in case the registered next service date is off by more than 1 service,
+                            //The following equation calculates the supposed number of services between
+                            //past service time to now + 1.
+                            dtf.format(nextService.plusMonths(totalIntervalMonth * (1 + (int)(Math.floor(Math.abs(Period.between(LocalDate.now(), nextService).getMonths()) / totalIntervalMonth))) ))
+                        );
                     }
                 }
             }
