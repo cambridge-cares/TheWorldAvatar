@@ -6,8 +6,8 @@ Currently the agent is capable of :
 - Instantiating asset data
 - Print asset QR code
 - Retrieving asset data
-- Deleting asset data (Endpoint not integrated to app yet)
-
+- Deleting asset data
+- Handling asset maintenance
 
 ## Structure
 The agent is composed of 2 parts, the agent and the printing server. 
@@ -27,9 +27,14 @@ The agent handles all interaction between the client and both the knowledge grap
 
 *NOTE: The QR printing system is chosen as it is not possible to install the printer inside the Docker container. The agent may also not be able to access the printer from the container. Even if it could, the printer may not be available for the host machine's OS or it may not be connected to the printer.*
 
-Currently the agent is designed specifically to handle assets of CARES. The agent is designed to handle assets on 2 different locations, CARES office and the Research Wing.
-Hence the agent relies on inputting the assets into 2 namespaces: the `lab` and `office` namespace in the knowlege graph. Assets on other locations are put into the `office` namespace as default, where their location will only be recorded as a literal.
+The agent instantiates the asset information into several namespace depending on the information contained. Asset management information is mainly stored in the `asset` namepsace. This includes the ID/serial/model numbers of the asset, the assignee, and supplier and manufacturer.
 
+The agent also handles the instantiation of purchase documents such as purchase orders and delivery orders. These instances are then instantiated in a separate namespace from the other 2, the `purchasedocs` namespace. THis namespace also contains the funding information used to acquire the asset.
+
+Currently the agent is designed specifically to handle assets of CARES. The agent is designed to handle assets on 2 different locations, CARES office and the Research Wing.
+Hence the agent relies on inputting the information regarding locations a  into 2 namespaces: the `lab` and `office` namespace in the knowlege graph. Assets on other locations are put into the `office` namespace as default, where their location will only be recorded as a literal. 
+
+As this agent is designed to work together with the asset management app, the app requires a check whether the asset has some sort of timeseires attached to its concept when retrieved (for example, a fumehood's air consumption). This timeseries is commonly contained in the `bms` namespace and will be used as default for this search, since currently the agent is designed specifically to handle assets of CARES.
 
 
 
@@ -53,7 +58,7 @@ The printing server will look for an environment variable called `PRINTERSERVER_
 ### Agent
 Update the following files in the `./config` folder:
 - `/agent.properties`:
-    - `endpoint.kg.[NAMESPACE]`: The SPARQL endpoint of each respective NAMEPSACE.
+    - `endpoint.kg.[NAMESPACE]`: The SPARQL endpoint of each respective NAMEPSACE. The namespaces are divided based on the explanation in [Structure](#structure).
     - `auth.kg.user` and `auth.kg.pass`: Blazegraph authentication. Can be left blank if no authentication is needed.
     - `endpoint.printer`: Printer server endpoint.
     - `target_qr_size`: QR code size target in cm.
@@ -196,7 +201,7 @@ Content-Type: application/json
 {   "desiredID" : "838",
     "deliveryDate": "2019-07-29",
     "setData": [
-        {'Prefix': '', 'AssetClass': 'Workstation', 'Name': 'Customized Cpu E5 2693v3 For Dft Use.', 'serialNum': '', 'modelNumber': 'E52693v3', 'SupplierName': 'Tiantian Resouces Pte Ltd', 'ManufacturerName': '', 'SpecSheet': '', 'SpecSheetPage': '', 'Manual': '', 'ManualURL': '', 'BuildingLocation': 'CREATE Research Wing', 'FacilityLocation': 'CARES Lab 2', 'RoomLocation': 'Electrochemical Analysis Area', 'WorkspaceName': 'TB1-23', 'storage': '', 'AssignedTo': 'Sun Libo', 'ItemComment': '', 'invoiceNum': 'ICRES9861', 'DeliveryOrderNum': 'ICRES9861', 'PurchaseOrderNum': 'POC4T2_00392', 'BudgetCat': '', 'ServiceCode': 'P2_IRP2 - MID RANGE LAB EQUIP (NON FA) - CARES', 'price': '3899', 'existingIRIs': {'deviceIRI': 'https://www.theworldavatar.com/kg/ontodevice/Workstation_80014994-a9f2-4654-bad9-cb9c88645a8f', 'itemIRI': 'https://www.theworldavatar.com/kg/ontoassetmanagement/Item_25b6d14c-701c-4be3-9e9d-c46d3077d1a0', 'workspaceIRI': 'https://www.theworldavatar.com/kg/ontoassetmanagement/Workspace_d9844075-0789-403f-ba33-36c50c80be3e'}},
+        {'Prefix': '', 'AssetClass': 'Workstation','ID':'', 'Name': 'Customized Cpu E5 2693v3 For Dft Use.', 'serialNum': '', 'modelNumber': 'E52693v3', 'SupplierName': 'Tiantian Resouces Pte Ltd', 'ManufacturerName': '', 'SpecSheet': '', 'SpecSheetPage': '', 'Manual': '', 'ManualURL': '', 'BuildingLocation': 'CREATE Research Wing', 'FacilityLocation': 'CARES Lab 2', 'RoomLocation': 'Electrochemical Analysis Area', 'WorkspaceName': 'TB1-23', 'storage': '', 'AssignedTo': 'Sun Libo', 'ItemComment': '', 'invoiceNum': 'ICRES9861', 'DeliveryOrderNum': 'ICRES9861', 'PurchaseOrderNum': 'POC4T2_00392', 'BudgetCat': '', 'ServiceCode': 'P2_IRP2 - MID RANGE LAB EQUIP (NON FA) - CARES', 'price': '3899', 'existingIRIs': {'deviceIRI': 'https://www.theworldavatar.com/kg/ontodevice/Workstation_80014994-a9f2-4654-bad9-cb9c88645a8f', 'itemIRI': 'https://www.theworldavatar.com/kg/ontoassetmanagement/Item_25b6d14c-701c-4be3-9e9d-c46d3077d1a0', 'workspaceIRI': 'https://www.theworldavatar.com/kg/ontoassetmanagement/Workspace_d9844075-0789-403f-ba33-36c50c80be3e'}},
         {'Prefix': '', 'AssetClass': 'Workstation', 'ID': '2019-08-29/838.2', 'Name': 'Customized Cpu(seagate) E5 2693v3 For Dft Use.', 'serialNum': '', 'modelNumber': '', 'SupplierName': 'Tiantian Resouces Pte Ltd', 'ManufacturerName': '', 'SpecSheet': '', 'SpecSheetPage': '', 'Manual': '', 'ManualURL': '', 'BuildingLocation': 'CREATE Research Wing', 'FacilityLocation': 'CARES Lab 2', 'RoomLocation': 'Electrochemical Analysis Area', 'WorkspaceName': 'TB1-23', 'storage': '', 'AssignedTo': 'Sun Libo', 'ItemComment': '', 'invoiceNum': 'ICRES9861', 'DeliveryOrderNum': 'ICRES9861', 'PurchaseOrderNum': 'POC4T2_00392', 'BudgetCat': '', 'ServiceCode': 'P2_IRP2 - MID RANGE LAB EQUIP (NON FA) - CARES', 'price': '3899', 'existingIRIs': {'deviceIRI': 'https://www.theworldavatar.com/kg/ontodevice/Workstation_24f1a5a5-78c4-450a-ac5e-10848422e493', 'itemIRI': 'https://www.theworldavatar.com/kg/ontoassetmanagement/Item_227d1643-f16f-40cf-a477-8d30aa7eeb1c', 'workspaceIRI': 'https://www.theworldavatar.com/kg/ontoassetmanagement/Workspace_d9844075-0789-403f-ba33-36c50c80be3e'}}
         ]
 }
@@ -370,6 +375,13 @@ Content-Type: application/json
 false,
 "Command Success"]}
 ```
+###### ***About timeseries search***
+Since there were no fixed way to check whether a certain asset has a timeseries (the classes of the assets were extremeley varied before certain mdofications to the instantiation method were done), a specific SPARQL query could not be constructed back then. To counter this issue, a BFS-like search to a certain depth for predicates that usually indicates a timeseries triple is instead done on the knolwedge graph. The parameters of this search can be provided via request body, but by default, the parameters are specified in the `./config/tsSearch.properties` file. To modify this search parameter, the following modification can be added to the request body:
+- dbName: The namespace where the timeseries search is to be conducted. By default, it will be the `bms` namespace specified in the `./config/agent.properties` file. 
+- checkedPredicates: JSONArray of IRI strings. The predicate of the triples checked that usually indicates a timeseries. Provided in `./config/tsSearch.properties` under `predicate`.
+- searchDepth: An integer that shows how many layer of BFS search should be done. Keep in mind increasing the layer too much can greatly decrease performance.
+
+*Developer note*: Should this method stick around? Probably no, since the asset types are all now standardised under a single type IRI, a more standardised method could be used and prevent too many call to the graph (probably FIA?). However in case a more universal search is needed this method seems to be working properly up to a certain depth.
 
 ##### - `/retrievebydocs`
 Retrieve all asset IRI associated with the given set of financial documents.
