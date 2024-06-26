@@ -5,7 +5,7 @@ import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
  */
 export type DefaultSettings = {
   branding: {
-    [key: string]: string | number | boolean;
+    [key: string]: string;
   },
   modules: {
     [key: string]: boolean;

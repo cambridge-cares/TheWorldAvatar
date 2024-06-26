@@ -10,7 +10,7 @@ import React from 'react';
 
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 import { Routes } from 'io/config/routes';
-import CredoImage from 'ui/graphic/image/CredoImage';
+import LandingImage from 'ui/graphic/image/landing';
 import { DefaultPageThumbnail, DefaultPageThumbnailProps, MarkdownPageThumbnail } from './page-thumbnail';
 import { DefaultSettings } from 'types/settings';
 
@@ -52,7 +52,10 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
       </div>
 
       <div className={`${styles.thumbnailContainer} hidden-scrollbar`}>
-        <CredoImage />
+        {props.settings.branding.landing && (<LandingImage
+          lightUrl={props.settings.branding.landing}
+          darkUrl={props.settings.branding.landingDark}
+        />)}
         {getThumbnails()}
         {props.settings.modules.map && (
           <DefaultPageThumbnail

@@ -52,7 +52,9 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 {
   "branding": {
     "logo": "./images/whatever.svg", // Custom branding logo
-    "navbarLogo": "./images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "navbarLogo": "./images/defaults/navbar-logo.svg", // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "landing": "./images/path/to/svg/light.svg", // Landing page brand/company image for light mode
+    "landingDark": "./images/path/to/svg/dark.svg" // Optional landing page brand/company image for dark mode
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
