@@ -11,7 +11,7 @@
         {
             "type": "tabular",
             "subdirectory": "sql",
-            "sql": "@/inputs/data/osm/sql/240613_buildinginfo.sql"
+            "sql": "@/inputs/data/osm/sql/240626_buildinginfo.sql"
         }
     ],
     "mappings": ["buildinginfo.obda"]
