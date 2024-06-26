@@ -86,10 +86,10 @@ source		SELECT "uuid", "address_uuid", "addressunitnumber", "addressblockhousenu
 
 mappingId	Cultural - Tourist Attraction
 target		:TouristAttraction/{"uuid"} a sea:TouristAttraction ;
-                sch:name {"pagetitle"}^^xsd:string ;
+                sch:name {"name"}^^xsd:string ;
                 rdfs:label {"overview"}^^xsd:string ;
-                rdfs:label {"meta_description"}^^xsd:string .
-source		SELECT "uuid", "pagetitle", "overview", "meta_description"
+                rdfs:label {"description"}^^xsd:string .
+source		SELECT "uuid", "name", "overview", "description"
             FROM "public"."touristattraction"
 
 mappingId	Cultural - Tourist Attraction Address
