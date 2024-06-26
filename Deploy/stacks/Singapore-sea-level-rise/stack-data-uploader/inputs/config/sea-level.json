@@ -2,8 +2,6 @@
     "name": "sea-level",
     "externalDatasets": [
         "buildings",
-        "sealevelprojections",
-        "dem",
         "culture",
         "landplot",
         "population",
