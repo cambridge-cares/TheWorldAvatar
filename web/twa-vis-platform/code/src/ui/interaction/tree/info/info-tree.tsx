@@ -100,8 +100,8 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
                 index: props.activeTab.index,
                 setActiveTab: props.activeTab.setActiveTab,
               }} />) : <div> </div>}
-        {props.features.length === 0 && props.featureName &&
-          (<div className={styles["feature-name-header"]}>{props.featureName}</div>)
+        {props.features.length === 0 &&
+          (<div className={styles["feature-name-header"]}>{props.featureName ?? ""}</div>)
         }
       </div>
       <div ref={scrollRef} className={styles.infoSection}>
