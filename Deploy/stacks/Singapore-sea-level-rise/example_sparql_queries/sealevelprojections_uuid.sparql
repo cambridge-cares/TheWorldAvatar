@@ -11,9 +11,8 @@ SELECT ?rcp ?ssp ?year ?value  WHERE {
   ?sub ontosl:hasRCP ?rcp. ?rcp a ontosl:RepresentativeConcentrationPathway85.
   ?sub ontosl:hasSSP ?ssp. ?ssp a ontosl:SharedSocioeconomicPathway5.
   ?sub ontosl:hasProjectionYear ?year.
-  ?sub ontosl:hasPercentageQuantile 95.
-  ?sub ontosl:hasConfidenceLevel ?confidence. ?confidence a ontosl:LowConfidence.
-  ?sub ontosl:hasChange ?change. 
+  ?sub ontosl:hasConfidenceLevel ?confidence. ?confidence a ontosl:MediumConfidence.
+  ?sub ontosl:hasHeight ?change. 
   ?change om:hasValue ?measure.
   ?measure om:hasNumericalValue ?value.
 } 

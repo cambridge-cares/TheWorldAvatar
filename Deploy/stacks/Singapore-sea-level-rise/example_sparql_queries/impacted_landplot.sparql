@@ -1,5 +1,4 @@
 # Query for affected landplot area given a sea level change UUID
-
 PREFIX ont: <http://purl.org/net/ns/ontology-annot#>
 PREFIX plo: <http://purl.org/net/po#>
 PREFIX ontop: <https://w3id.org/ontop/>
@@ -13,12 +12,12 @@ PREFIX ontoplot: <https://www.theworldavatar.com/kg/landplot/>
 PREFIX plot: <https://www.theworldavatar.com/kg/ontoplot/>
 
 
-SELECT  WHERE {
-  <https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/d4d9c255-99da-4004-bff2-807f536ae5bf> ontosl:hasPotentialImpact ?landplot.
+SELECT * WHERE {
+  <https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/d4ae1d4c-c92f-4fcb-b70e-d49cac113f68> ontosl:hasPotentialImpact ?landplot.
   ?landplot a ontosl:ImpactedSite. 
   ?landplot a plot:Plot.
   ?landplot plot:hasPlotArea ?area.
-  ?landplot ontosl:hasAffectedArea ?affectedArea. ?affectedArea om:hasValue ?measureafarea; ontosl:associatedWith <https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/d4d9c255-99da-4004-bff2-807f536ae5bf>. ?measureafarea om:hasNumericalValue ?afareavalue. 
+  ?landplot ontosl:hasAffectedArea ?affectedArea. ?affectedArea om:hasValue ?measureafarea; ontosl:associatedWith <https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange/d4ae1d4c-c92f-4fcb-b70e-d49cac113f68>. ?measureafarea om:hasNumericalValue ?afareavalue. 
   ?area om:hasValue ?areameasure.
   ?areameasure om:hasNumericalValue ?areaValue.
 
