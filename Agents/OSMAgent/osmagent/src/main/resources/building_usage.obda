@@ -16,7 +16,7 @@ source      SELECT DISTINCT u.name,
             u.ontobuilt,
             u.propertyusage_iri,
             u.usageshare
-            FROM buildinginfo.buildinginfo_osm AS u WHERE building_iri IS NOT NULL
+            FROM buildinginfo.usage_area AS u WHERE building_iri IS NOT NULL
 
 mappingId	Address
 target		twa:Building/{building_iri} :hasAddress twa:{address_iri} .
@@ -33,5 +33,5 @@ source      SELECT DISTINCT u.building_iri,
             u.house_number,
             u.postcode,
             u.street
-            FROM buildinginfo.buildinginfo_osm AS u WHERE address_iri IS NOT NULL
+            FROM buildinginfo.address AS u WHERE address_iri IS NOT NULL
 ]]
