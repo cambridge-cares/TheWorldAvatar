@@ -54,6 +54,10 @@ The code requires the following libraries installed:
 - esp_wpa2.h : wifi module of ESP32. Included in the board: esp32 by Espressif System (v2.0.9)
 - Thingsboard.h (v0.9.7): Library for interacting with Thingsboard. Check [here](https://github.com/thingsboard/thingsboard-client-sdk) for installation and usage.
 
+##### Library dependencies
+The module has been tested on Thingsboard v0.9.7 and this library requires specific version of dependency libraries. These should be installed automatically when installing Thingsboard library, but it has been noted that inaligned version of libraries causes an error and may require extra care when compiling the code. These noted dependencies and the recommended versions are:
+- ArduinoJson: v6.20.1 (v7.0 and above has been noted to cause an error).
+- TBPubSubClient: v2.9.1
 
 
 #### Code setup
