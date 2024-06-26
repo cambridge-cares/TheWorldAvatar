@@ -47,9 +47,12 @@ WHERE {
         ?s2 ?p2 ?o2 .
     }
     {
-        ?o1 ?p1 ?s2 .
-        ?o2 ?p2 ?s1 .
+        SELECT ?s1 WHERE {
+            ?o1 ?p1 ?s2 .
+            ?o2 ?p2 ?s1 .
+        }
     }
+    ?o1 ?p1 ?s1, ?o2 .
 }"""
         entity_bindings = {"s1": ["a", "b", "c"], "p2": ["d", "e"]}
         expected = """SELECT ?s1 ?s2 ?p1 ?p2 ?o1 ?o2
@@ -59,9 +62,12 @@ WHERE {
         VALUES ?p2 { <d> <e> } ?s2 ?p2 ?o2 .
     }
     {
-        ?o1 ?p1 ?s2 .
-        VALUES ?s1 { <a> <b> <c> } VALUES ?p2 { <d> <e> } ?o2 ?p2 ?s1 .
+        SELECT ?s1 WHERE {
+            ?o1 ?p1 ?s2 .
+            VALUES ?s1 { <a> <b> <c> } VALUES ?p2 { <d> <e> } ?o2 ?p2 ?s1 .
+        }
     }
+    VALUES ?s1 { <a> <b> <c> } ?o1 ?p1 ?s1, ?o2 .
 }"""
 
         # Act
