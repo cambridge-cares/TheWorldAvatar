@@ -1,6 +1,14 @@
 {
-  "name": "sea-level",
-  "externalDatasets": [
-    "osm"
-  ]
+    "name": "sea-level",
+    "externalDatasets": [
+        "buildings",
+        "culture",
+        "landplot",
+        "population",
+        "routing",
+        "tbox",
+        "tree",
+        "osm",
+        "gfa-floors"
+    ]
 }

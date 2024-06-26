@@ -1094,13 +1094,13 @@
             "name": "Sea-level rise",
             "sources": [
                 {
-                    "id": "sealevelprojectionssp5852150Low95",
+                    "id": "sealevelprojectionssp5852150medium83",
                     "type": "vector",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:sealevelprojectionssp5852150Low95&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:sealevelprojectionssp5852150medium83&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ],
@@ -1108,8 +1108,8 @@
                 {
                     "id": "sgsealevelprojections",
                     "name": "Sea-level rise",
-                    "source": "sealevelprojectionssp5852150Low95",
-                    "source-layer": "sealevelprojectionssp5852150Low95",
+                    "source": "sealevelprojectionssp5852150medium83",
+                    "source-layer": "sealevelprojectionssp5852150medium83",
                     "type": "fill",
                     "order": 1,
                     "layout": {
