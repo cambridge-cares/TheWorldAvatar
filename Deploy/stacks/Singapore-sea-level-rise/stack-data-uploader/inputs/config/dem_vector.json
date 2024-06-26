@@ -1,0 +1,30 @@
+{
+  "name": "dem_vector",
+  "database": "postgres",
+  "workspace": "twa",
+  "skip": false,
+  "datasetDirectory": "dem",
+  "dataSubsets": [
+    {
+      "name": "dem_vector",
+      "type": "vector",
+      "subdirectory": "vector",
+      "skip": false,
+	  "ogr2ogrOptions": {
+          "otherOptions": {"-nlt": ["MultiPolygon"]}		  
+	  },
+	  "geoServerSettings": {
+        "virtualTable": {
+          "name": "dem_vector",
+		  "sql": "select * from dem_vector",
+          "geometry": {
+            "name": "wkb_geometry",
+            "type": "MultiPolygon",
+            "srid": 4326
+          }
+        },
+        "defaultStyle": "polygon"
+		}
+	}
+  ]
+}
