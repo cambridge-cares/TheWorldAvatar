@@ -19,24 +19,24 @@ v2.0: detects the distance and send it to Thingsboard. Sends at an interval, and
 #define ECHOPIN 27
 #define TRIGGERPIN 25
 
-#define TOKEN "Test_Dist_Only"
+#define TOKEN "EXAMPLE_TOKEN_HERE"
 #define THINGSBOARD_PORT 1883
 
 //connect to lab wifi
-const char* ssid = "ASUS_10";
-const char* pass = "14808500";
+const char* ssid = "EXAMPLE_SSID_HERE";
+const char* pass = "EXAMPLE_PASSWORD_HERE";
 
 const float MAX_DIST = 350; //cm
 const float MIN_DIST = 2; //cm
 
 float dist = MAX_DIST;
 const int numRead = 10; //number of reading done in 1 second
-const char* fieldName = "avgDist_FH-04";
+const char* fieldName = "EXAMPLE_FIELDNAME_HERE";
 WiFiClient client;
 
 unsigned long lastSend;
 
-char thingsboardServer[] = "192.168.51.103";
+char thingsboardServer[] = "THINGSBOARD_IP_HERE";
 ThingsBoard tb(client);
 
 void setup() {
