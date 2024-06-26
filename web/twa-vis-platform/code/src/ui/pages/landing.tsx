@@ -77,7 +77,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
         <DefaultPageThumbnail
           title={helpLinkProps?.title ?? "Help Centre"}
           caption={helpLinkProps?.caption ?? "Get help for this web platform"}
-          icon={helpLinkProps?.icon ?? "./images/defaults/icons/twa.svg"}
+          icon={helpLinkProps?.icon ?? "./images/defaults/icons/help.svg"}
           url={Routes.HELP}
         />
 
