@@ -31,7 +31,7 @@ The details of the hardware used:
 | Proximity Sensor | [HC-SR04 Proximity sensor](https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf)  |
 
 
-The system is powered from an AC outlet (standard Singapore 220V AC) through a power adapter(12V DC, 5 A adapter). The sensor recieves power from the micorcontroller to ensure a controlled voltage. The microcontroller already includes a wifi adapter and hence, for this setup no external wifi module is used.
+The system is powered from an AC outlet (standard Singapore 220V AC) through a power adapter(12V DC, 5 A adapter). The sensor receives power from the micorcontroller to ensure a controlled voltage. The microcontroller already includes a wifi adapter and hence, for this setup no external wifi module is used.
 
 The circuit is connected using a breadboard and attached to the fumehood using the adhesive on the back of the breadboard.
 
@@ -55,7 +55,7 @@ The code requires the following libraries installed:
 - Thingsboard.h (v0.9.7): Library for interacting with Thingsboard. Check [here](https://github.com/thingsboard/thingsboard-client-sdk) for installation and usage.
 
 ##### Library dependencies
-The module has been tested on Thingsboard v0.9.7 and this library requires specific version of dependency libraries. These should be installed automatically when installing Thingsboard library, but it has been noted that inaligned version of libraries causes an error and may require extra care when compiling the code. These noted dependencies and the recommended versions are:
+The module has been tested on Thingsboard v0.9.7 and this library requires specific version of dependency libraries. These should be installed automatically when installing Thingsboard library, but it has been noted that incompatible version of libraries causes an error and may require extra care when compiling the code. These noted dependencies and the recommended versions are:
 - ArduinoJson: v6.20.1 (v7.0 and above has been noted to cause an error).
 - TBPubSubClient: v2.9.1
 
