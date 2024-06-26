@@ -41,19 +41,20 @@ As the sensor has a limited measuring angle (15 degrees), the sensor is placed 2
 #### Known issues
 As the sensor uses an ultrasonic sensor, any apparatus emitting sound at ultrasonic frequencies has been known to interfere with the signal. This causes the fumehood to always be detected as occupied when its not, whenever such apparatus such as an ultrasonic cleaner is used. Since this is directly tied to how the sensor works, there is no workaround other than changing the sensor type.
 
-The adhesive behind the breadboard is known to stick less and less on every removal from gathering dust, causing the whole module to fall off the fumehood. It is recommended to not remove the breadboard once its sticked to the fumehood. A different solution by using a magnet as the fumehood cover is magnetic is porposed, although it is not yet tested.
+The adhesive behind the breadboard is known to stick less and less on every removal from gathering dust, causing the whole module to fall off the fumehood. It is recommended to not remove the breadboard once its sticked to the fumehood. A different solution by using a magnet as the fumehood cover is magnetic is proposed, although it is not yet tested.
 
 ### Software setup
 #### Board and Library setup
 An Arduino code for the sensor is provided in this folder in `.\FHProximitySensor.ino`.
 Its recommended to use Arduino IDE to develop the sensor and flash the microcontroller.
 The code requires the following board to be installed:
-- esp32 by Espressif System (v2.0.9)
+- esp32 by Espressif System (v2.0.9). Installation can be [done via Arduino IDE](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#installing-using-arduino-ide)
 
 The code requires the following libraries installed:
 - esp_wpa2.h : wifi module of ESP32. Included in the board: esp32 by Espressif System (v2.0.9)
+- Thingsboard.h (v0.9.7): Library for interacting with Thingsboard. Check [here](https://github.com/thingsboard/thingsboard-client-sdk) for installation and usage.
 
-Installing these board config and libraries can be [done via Arduino IDE](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#installing-using-arduino-ide)
+
 
 #### Code setup
 Before flashing the microcontroller, the following variables of the code should be updated:
