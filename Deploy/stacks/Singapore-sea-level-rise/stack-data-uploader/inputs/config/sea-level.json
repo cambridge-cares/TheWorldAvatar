@@ -9,6 +9,8 @@
         "population",
         "routing",
         "tbox",
-        "tree"
+        "tree",
+        "osm",
+        "gfa-floors"
     ]
 }
