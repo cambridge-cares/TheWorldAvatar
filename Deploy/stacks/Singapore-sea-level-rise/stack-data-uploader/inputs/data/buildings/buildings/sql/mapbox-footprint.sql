@@ -21,13 +21,11 @@ SELECT
     COALESCE("measured_height", 100.0) AS "building_height",
     "geometry",
     "uuid",
-    "iri",
-    c.cost as cost
+    "iri"
 FROM
     "citydb"."building"
     JOIN "citydb"."surface_geometry" ON "citydb"."surface_geometry"."root_id" = "citydb"."building"."lod0_footprint_id"
     JOIN "uuid_table" ON "citydb"."building"."id" = "uuid_table"."cityobject_id"
     JOIN "iri_table" ON "citydb"."building"."id" = "iri_table"."cityobject_id"
-    JOIN gfa_floors.cost c ON c.building_uuid = uuid_table.uuid
 WHERE
     "citydb"."surface_geometry"."geometry" IS NOT NULL
