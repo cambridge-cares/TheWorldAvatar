@@ -17,7 +17,7 @@
                     "geometry": {
                         "name": "geom",
                         "type": "Polygon",
-                        "srid": 24500
+                        "srid": 4326
                     }
                 },
                 "defaultStyle": "polygon"
