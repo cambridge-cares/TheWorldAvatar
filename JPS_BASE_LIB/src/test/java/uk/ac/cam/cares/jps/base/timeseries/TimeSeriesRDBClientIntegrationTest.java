@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.OptionalDouble;
 
 import org.jooq.*;
+import org.jooq.Record;
 import org.junit.*;
 import org.jooq.impl.DSL;
 import static org.jooq.impl.DSL.selectFrom;
