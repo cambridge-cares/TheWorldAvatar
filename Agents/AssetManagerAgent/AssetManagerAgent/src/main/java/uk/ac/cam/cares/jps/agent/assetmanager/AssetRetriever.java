@@ -2,10 +2,7 @@ package uk.ac.cam.cares.jps.agent.assetmanager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.rdf4j.model.Triple;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.query.algebra.Service;
 import org.eclipse.rdf4j.sparqlbuilder.core.GroupBy;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -13,10 +10,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfSubject;
 import org.json.JSONArray;
@@ -233,8 +227,6 @@ public class AssetRetriever {
         Variable storageIDLiteral = SparqlBuilder.var("storageID");
         
         //Query
-        //get device type
-        //query.where(deviceIRI.isA(deviceTypeIRI));
 
         //get location
         query.where(
@@ -256,8 +248,6 @@ public class AssetRetriever {
                 locationIRI.has(hasIfcRepresentation, locationIFCReprIRI),
                 locationIFCReprIRI.has(RDFS.LABEL, buildingName)
                 )
-                //Add union for assets outside of CARES?
-                //deviceIRI.has(hasCurrentLocation, LocationString)
         );
         query.where(
                 GraphPatterns.optional(
@@ -651,7 +641,6 @@ public class AssetRetriever {
         }
 
         String queryWithService = query.getQueryString();
-        //queryWithService = queryWithService.substring(0, queryWithService.length()-1);
         String queryWithServiceStart = queryWithService.substring(0,queryWithService.lastIndexOf("}"));
         String queryWithServiceEnd = queryWithService.substring(queryWithService.lastIndexOf("}"), queryWithService.length());
         queryWithService = queryWithServiceStart + 
@@ -896,7 +885,6 @@ public class AssetRetriever {
 
         JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
         LOGGER.debug("Maintenance existence check result:: " + reqResult);
-        //Hence this dumb switch statement below
         switch (reqResult.length()) {
             case 0:
                 return null;
