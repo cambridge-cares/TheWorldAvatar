@@ -1520,19 +1520,19 @@
                     },
                     "paint": {
                         "line-color": [
-                            "match",
+                           "match",
                             [
                                 "get",
                                 "road_type"
                             ],
-                            "motorway", "#0000ff",
-                            "motorway_link", "#0000ff",
-                            "primary", "#ff0000",
-                            "primary_link", "#ff0000",
-                            "secondary", "#651ac7",
-                            "secondary_link", "#651ac7",
-                            "tertiary", "#087500",
-                            "tertiary_link", "#087500",
+                            "motorway", "#630101",
+                            "motorway_link", "#630101",
+                            "primary", "#087500",
+                            "primary_link", "#087500",
+                            "secondary", "#666600",
+                            "secondary_link", "#666600",
+                            "tertiary", "#ffa099",
+                            "tertiary_link", "#ffa099",
                             "trunk", "#ff00ff",
                             "trunk_link", "#ff00ff",
                             "unclassified", "#ffa099",
