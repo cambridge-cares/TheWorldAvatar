@@ -43,7 +43,7 @@
     },
     "endpoints": {
         "osmagent": {
-            "url": "http://localhost:8080/buildingflooragent/",
+            "url": "http://localhost:8080/BuildingFloorAgent/",
             "externalPath": "/buildingflooragent/"
         }
     }
