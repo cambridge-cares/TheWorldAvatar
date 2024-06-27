@@ -192,6 +192,10 @@ public class IntegrateFloors {
                 iriToBuildingMap.computeIfAbsent(buildingIri, OSMBuilding::new);
                 OSMBuilding building = iriToBuildingMap.get(buildingIri);
 
+                if (building.getFloorCategory() != null && building.getFloorCategory() == OSMBuilding.FloorCategory.A) {
+                    continue;
+                }
+
                 if (floors == 0) {
                     // osm option if previously not matched
                     floors = queryOSMFloor(buildingUuid, conn);
@@ -226,13 +230,28 @@ public class IntegrateFloors {
         try (Statement stmt = conn.createStatement()) {
             ResultSet floorsResults = stmt.executeQuery(osmFloorQuery);
             while (floorsResults.next()) {
-                floors = floorsResults.getInt("building_levels");
+                String floorString = floorsResults.getString("building_levels");
+                if (isInteger(floorString)) {
+                    floors = Integer.parseInt(floorString);
+                }
             }
 
         } catch (SQLException e) {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
         return floors;
+    }
+
+    private boolean isInteger(String str) {
+        if (str == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
     /********************************************************* */
