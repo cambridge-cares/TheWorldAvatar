@@ -3,13 +3,6 @@
     "stack": "http://localhost:3838",
     "sources": [
         {
-            "id": "buildings",
-            "type": "vector",
-            "tiles": [
-                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:mainland&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-            ]
-        },
-        {
             "id": "plot",
             "type": "vector",
             "tiles": [
@@ -25,40 +18,6 @@
         }
     ],
     "layers": [
-        {
-            "id": "buildings",
-            "name": "Buildings",
-            "source": "buildings",
-            "source-layer": "mainland",
-            "type": "fill-extrusion",
-            "order": 7,
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "fill-extrusion-color": "#8D99AE",
-                "fill-extrusion-base": 0,
-                "fill-extrusion-height": [
-                    "case",
-                    [
-                        "has",
-                        "building_height"
-                    ],
-                    [
-                        "*",
-                        1.4,
-                        [
-                            "to-number",
-                            [
-                                "get",
-                                "building_height"
-                            ]
-                        ]
-                    ],
-                    2
-                ]
-            }
-        },
         {
             "id": "sglandplot",
             "name": "Land Plots",
@@ -515,7 +474,7 @@
             ]
         },
         {
-            "name": "Usages",
+            "name": "Buildings",
             "expanded": false,
             "sources": [
                 {
@@ -538,7 +497,7 @@
                             "get",
                             "ontobuilt"
                         ],
-						"MultiResidential"
+                        "MultiResidential"
                     ],
                     "type": "fill-extrusion",
                     "minzoom": 8,
@@ -1521,41 +1480,64 @@
                     "paint": {
                         "line-color": [
                             "match",
-                              [
-                                  "get",
-                                  "road_type"
-                              ],
-                              "motorway", "#de0000",
-                              "motorway_link", "#de0000",
-                              "primary", "#087500",
-                              "primary_link", "#087500",
-                              "secondary", "#666600",
-                              "secondary_link", "#666600",
-                              "tertiary", "#ffa099",
-                              "tertiary_link", "#ffa099",
-                              "trunk", "#ff00ff",
-                              "trunk_link", "#ff00ff",
-                              "unclassified", "#ffa099",
-                              "residential", "#ffa099",
-                              "service", "#ffa099",
-                              "#808080"
-                          ],                        
+                            [
+                                "get",
+                                "road_type"
+                            ],
+                            "motorway",
+                            "#de0000",
+                            "motorway_link",
+                            "#de0000",
+                            "primary",
+                            "#087500",
+                            "primary_link",
+                            "#087500",
+                            "secondary",
+                            "#666600",
+                            "secondary_link",
+                            "#666600",
+                            "tertiary",
+                            "#ffa099",
+                            "tertiary_link",
+                            "#ffa099",
+                            "trunk",
+                            "#ff00ff",
+                            "trunk_link",
+                            "#ff00ff",
+                            "unclassified",
+                            "#ffa099",
+                            "residential",
+                            "#ffa099",
+                            "service",
+                            "#ffa099",
+                            "#808080"
+                        ],
                         "line-width": [
                             "match",
                             [
                                 "get",
                                 "road_type"
                             ],
-                            "motorway", 5,
-                            "motorway_link", 5,
-                            "primary", 4,
-                            "primary_link", 4,
-                            "secondary", 3,
-                            "secondary_link", 3,
-                            "tertiary", 2,
-                            "tertiary_link", 2,
-                            "trunk", 3,
-                            "trunk_link", 3,
+                            "motorway",
+                            5,
+                            "motorway_link",
+                            5,
+                            "primary",
+                            4,
+                            "primary_link",
+                            4,
+                            "secondary",
+                            3,
+                            "secondary_link",
+                            3,
+                            "tertiary",
+                            2,
+                            "tertiary_link",
+                            2,
+                            "trunk",
+                            3,
+                            "trunk_link",
+                            3,
                             1
                         ],
                         "line-opacity": 0.5
@@ -1565,7 +1547,7 @@
         },
         {
             "name": "Sea Level Rise",
-			"expanded": false,
+            "expanded": false,
             "sources": [
                 {
                     "id": "sealevelprojectionssp5852150medium83",
@@ -1598,7 +1580,7 @@
         },
         {
             "name": "Digital Elevation Model",
-			"expanded": false,
+            "expanded": false,
             "sources": [
                 {
                     "id": "dem",
