@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +24,7 @@ class DatasetReaderTest {
                 "trivialExternal");
         List<String> actualDatasetNames = allDatasets.stream().map(Dataset::getName).collect(Collectors.toList());
 
-        Assertions.assertIterableEquals(expectedDatasetNames, actualDatasetNames);
+        Assertions.assertTrue(CollectionUtils.isEqualCollection(expectedDatasetNames, actualDatasetNames));
     }
 
     private static Stream<Arguments> getArgsForGetStackSpecificDatasetsTests() {

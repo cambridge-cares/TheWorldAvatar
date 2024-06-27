@@ -13,18 +13,25 @@ public class DatasetRemover {
 
     private static final ServiceManager serviceManager = new ServiceManager(false);
 
-    private DatasetRemover() {
+    private final String catalogNamespace;
+
+    public DatasetRemover(String catalogNamespace) {
+        this.catalogNamespace = catalogNamespace;
     }
 
-    public static void removeDatasets(Collection<Dataset> selectedDatasets) {
-        selectedDatasets.forEach(DatasetRemover::removeDataset);
+    public DatasetRemover() {
+        this("kb");
     }
 
-    public static void removeDatasets(Stream<Dataset> selectedDatasets) {
-        selectedDatasets.forEach(DatasetRemover::removeDataset);
+    public void removeDatasets(Collection<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(this::removeDataset);
     }
 
-    public static void removeDataset(Dataset dataset) {
+    public void removeDatasets(Stream<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(this::removeDataset);
+    }
+
+    public void removeDataset(Dataset dataset) {
 
         if (!dataset.isSkip()) {
             // Ensure PostGIS database is removed, if specified
@@ -55,7 +62,7 @@ public class DatasetRemover {
             serviceManager.removeService(StackClient.getStackName(), ontopServiceName);
 
             // record added datasets in the default kb namespace
-            BlazegraphClient.getInstance().getRemoteStoreClient("kb")
+            BlazegraphClient.getInstance().getRemoteStoreClient(catalogNamespace)
                     .executeUpdate(new DCATUpdateQuery().getDeleteQuery(dataset));
         }
     }

@@ -19,7 +19,7 @@ public class TempTestCalls {
 
     static void doStuff() {
 
-        DatasetLoader.loadInputDatasets(StackClient.STACK_CONFIG_DIR, StackClient.getStackName());
+        new DatasetLoader().loadInputDatasets(StackClient.STACK_CONFIG_DIR, StackClient.getStackName());
 
         GDALClient gdalClient = GDALClient.getInstance();
         PostGISClient postGISClient = PostGISClient.getInstance();

@@ -22,10 +22,17 @@ public class DatasetLoader {
 
     private static final ServiceManager serviceManager = new ServiceManager(false);
 
-    private DatasetLoader() {
+    private final String catalogNamespace;
+
+    public DatasetLoader(String catalogNamespace) {
+        this.catalogNamespace = catalogNamespace;
     }
 
-    public static void loadInputDatasets(Path configPath, String selectedDatasetName) {
+    public DatasetLoader() {
+        this("kb");
+    }
+
+    public void loadInputDatasets(Path configPath, String selectedDatasetName) {
 
         List<Dataset> allDatasets = DatasetReader.getAllDatasets(configPath);
 
@@ -35,15 +42,15 @@ public class DatasetLoader {
 
     }
 
-    public static void loadDatasets(Collection<Dataset> selectedDatasets) {
-        selectedDatasets.forEach(DatasetLoader::loadDataset);
+    public void loadDatasets(Collection<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(this::loadDataset);
     }
 
-    public static void loadDatasets(Stream<Dataset> selectedDatasets) {
-        selectedDatasets.forEach(DatasetLoader::loadDataset);
+    public void loadDatasets(Stream<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(this::loadDataset);
     }
 
-    public static void loadDataset(Dataset dataset) {
+    public void loadDataset(Dataset dataset) {
         Path directory = dataset.getDirectory();
 
         if (!dataset.isSkip()) {
@@ -105,7 +112,7 @@ public class DatasetLoader {
             }
 
             // record added datasets in the default kb namespace
-            BlazegraphClient.getInstance().getRemoteStoreClient("kb")
+            BlazegraphClient.getInstance().getRemoteStoreClient(catalogNamespace)
                     .executeUpdate(new DCATUpdateQuery().getUpdateQuery(dataset));
         }
     }

@@ -10,7 +10,7 @@ import com.cmclinnovations.stack.clients.core.datasets.DatasetLoader;
 public class DataUploader {
     public static void main(String[] args) {
 
-        DatasetLoader.loadInputDatasets(StackClient.STACK_CONFIG_DIR, StackClient.getStackName());
+       new DatasetLoader().loadInputDatasets(StackClient.STACK_CONFIG_DIR, StackClient.getStackName());
 
     }
 }
