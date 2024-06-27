@@ -30,9 +30,10 @@ def setup_clients():
         double_class = StackClient.stackClients_view.java.lang.Double.TYPE
         kg_client = KGClient(utils.SPARQL_QUERY_ENDPOINT, utils.SPARQL_UPDATE_ENDPOINT)
         ts_client = TSClient(kg_client, timeclass=instant_class, rdb_url=DB_URL, rdb_user=DB_USER, rdb_password=DB_PASSWORD)
-        point_class = StackClient.stackClients_view.Point
+        point_class = StackClient.stackClients_view.Point().getClass()
+        # point_class = StackClient.stackClients_view.Point
         try:
-            testpoint=point_class(0.0, 0.0)
+            testpoint = StackClient.stackClients_view.Point(0.0, 0.0)
             logger.info(f"Point class imported and instance creadted successfully")
         except Exception as e:
             logger.error(f"Failed to create Point instance: {e}")
@@ -63,8 +64,14 @@ def process_gps_csv_file(csv_file):
         if not all(column in df.columns for column in required_columns) or df[required_columns].isnull().any().any():
             logger.warning(f"Skipping {csv_file} due to missing or incomplete required columns.")
             return None
-        point_class = StackClient.stackClients_view.Point
-        points = [point_class(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
+        try:
+            point_class = StackClient.stackClients_view.Point().getClass()
+            logger.info(f"Point class imported successfully")
+        except Exception as e:
+            logger.error(f"Failed to create Point instance: {e}")
+            raise e
+        # point_class = StackClient.stackClients_view.Point
+        points = [StackClient.stackClients_view.Point(row['LONGITUDE'], row['LATITUDE']) for _, row in df.iterrows()]
         return {
             'object': os.path.basename(csv_file).replace('.csv', ''),
             'times': [transform_datetime(row['UTC DATE'], row['UTC TIME']) for _, row in df.iterrows()],

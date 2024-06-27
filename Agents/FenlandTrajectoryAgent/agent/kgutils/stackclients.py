@@ -45,6 +45,7 @@ class StackClient:
     stackClientsGw.importPackages(stackClients_view, "uk.ac.cam.cares.jps.base.query.*")
     stackClientsGw.importPackages(stackClients_view, "uk.ac.cam.cares.jps.base.timeseries.*")
     stackClientsGw.importPackages(stackClients_view, "org.postgis.Point")
+    point_class = stackClients_view.Point().getClass()
 
 
 # class OntopClient(StackClient):
