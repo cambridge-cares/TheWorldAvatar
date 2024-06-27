@@ -103,9 +103,6 @@
                 </div>
             </div>
 
-            <!-- dropdown selections -->
-            <div id="selectionsContainer"></div>
-
             <!-- Scenario change control -->
             <div id="scenarioChangeContainer" class="controlBlock expanded" onclick="manager.showScenarioSelector()">
                 <div class="tooltip">
@@ -197,9 +194,6 @@
             relativePath = ".";
         }
 
-        var dispersionHandler = new DispersionHandler(relativePath, manager);
-        var dispersionPromise = dispersionHandler.setDispersions(dispersionHandler);
-
         // Read credentials
         var credentialPromise = manager.readCredentials();
 
@@ -207,7 +201,7 @@
         var dataPromise = manager.loadDefinitions();
 
         // Start when credentials and definitions have been loaded
-        Promise.all([credentialPromise, dataPromise, dispersionPromise]).then(() => start());
+        Promise.all([credentialPromise, dataPromise]).then(() => start());
 
         /**
          * Starts the visualisation setup process.
@@ -266,9 +260,7 @@
                         // Plot the default visible data
                         manager.plotData();
                     }
-                }).then(() => {
-                    return dispersionHandler.buildDropdown(dispersionHandler);
-                }).then(() => dispersionHandler.plotData());
+                });
 
                 // Set customised legend in panel
                 manager.getPanelHandler().setLegend(`
@@ -291,13 +283,6 @@
                 // Render the custom component before the sibling container
                 custom_component.render(beforeSiblingContainer);
             });
-
-            MapHandler.MAP.doubleClickZoom.disable();
-            MapHandler.MAP.on("dblclick", (e) => {
-                dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng).done().then(() => dispersionHandler.plotData());
-            });
-
-            dispersionHandler.updateVirtualSensors();
         }
     </script>
 </body>
