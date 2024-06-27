@@ -2,12 +2,17 @@
     "name": "buildings-layer",
     "database": "postgres",
     "datasetDirectory": "buildings",
-	"workspace": "twa",
+    "workspace": "twa",
+    "externalDatasets": [
+        "gfa-floors",
+        "osm",
+        "buildings"
+    ],
     "dataSubsets": [
         {
-			"name": "building_usage",
+            "name": "building_usage",
             "type": "vector",
-			"subdirectory": "consolidated_layer",
+            "subdirectory": "consolidated_layer",
             "sql": "@/inputs/data/buildings/consolidated_layer/geoserver_layer.sql",
             "geoServerSettings": {
                 "virtualTable": {
