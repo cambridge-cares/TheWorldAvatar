@@ -1520,26 +1520,26 @@
                     },
                     "paint": {
                         "line-color": [
-                           "match",
-                            [
-                                "get",
-                                "road_type"
-                            ],
-                            "motorway", "#630101",
-                            "motorway_link", "#630101",
-                            "primary", "#087500",
-                            "primary_link", "#087500",
-                            "secondary", "#666600",
-                            "secondary_link", "#666600",
-                            "tertiary", "#ffa099",
-                            "tertiary_link", "#ffa099",
-                            "trunk", "#ff00ff",
-                            "trunk_link", "#ff00ff",
-                            "unclassified", "#ffa099",
-                            "residential", "#ffa099",
-                            "service", "#ffa099",
-                            "#808080"
-                        ],                        
+                            "match",
+                              [
+                                  "get",
+                                  "road_type"
+                              ],
+                              "motorway", "#de0000",
+                              "motorway_link", "#de0000",
+                              "primary", "#087500",
+                              "primary_link", "#087500",
+                              "secondary", "#666600",
+                              "secondary_link", "#666600",
+                              "tertiary", "#ffa099",
+                              "tertiary_link", "#ffa099",
+                              "trunk", "#ff00ff",
+                              "trunk_link", "#ff00ff",
+                              "unclassified", "#ffa099",
+                              "residential", "#ffa099",
+                              "service", "#ffa099",
+                              "#808080"
+                          ],                        
                         "line-width": [
                             "match",
                             [
