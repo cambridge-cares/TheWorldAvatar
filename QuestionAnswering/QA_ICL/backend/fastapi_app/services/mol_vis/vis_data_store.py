@@ -7,6 +7,7 @@ from fastapi import Depends
 from model.qa import ChemicalStructureData
 from services.mol_vis.cif import CIFManager, get_cif_manager
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
+from services.rdf_stores.ontomops import OntomopsRDFStore, get_ontomops_rdfStore
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
@@ -24,11 +25,13 @@ class VisualisationDataStore:
         cif_manager: CIFManager,
         ontospecies_store: OntospeciesRDFStore,
         ontozeolite_store: OntozeoliteRDFStore,
+        ontomops_store: OntomopsRDFStore,
     ):
         self.xyz_manager = xyz_manager
         self.cif_manager = cif_manager
         self.ontospecies_store = ontospecies_store
         self.ontozeolite_store = ontozeolite_store
+        self.ontomops_store = ontomops_store
 
     def get(self, cls: str | None | list[str | None], iris: list[str]):
         if isinstance(cls, str):
@@ -48,7 +51,7 @@ class VisualisationDataStore:
     def _get(self, cls: str, iris: list[str]):
         if cls == "os:Species":
             type = "xyz"
-            vis_data = self.xyz_manager.get(iris)
+            vis_data = self.xyz_manager.get_from_pubchem(iris)
             models = self.ontospecies_store.get_species(iris)
             labels = [
                 (
@@ -58,6 +61,14 @@ class VisualisationDataStore:
                 )
                 for model in models
             ]
+        elif cls in ["mops:MetalOrganicPolyhedron", "mops:ChemicalBuildingUnit"]:
+            type = "xyz"
+            vis_data = self.xyz_manager.get_from_ontomops(iris)
+            if cls == "mops:MetalOrganicPolyhedron":
+                models = self.ontomops_store.get_MOPs(iris)
+            else:
+                models = self.ontomops_store.get_CBUs(iris)
+            labels = [model.formula for model in models if model]
         elif cls in ["zeo:ZeoliteFramework", "zeo:ZeoliticMaterial"]:
             type = "cif"
             vis_data = self.cif_manager.get(iris)
@@ -92,10 +103,12 @@ def get_visData_store(
     ontozeolite_store: Annotated[
         OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
     ],
+    ontomops_store: Annotated[OntomopsRDFStore, Depends(get_ontomops_rdfStore)],
 ):
     return VisualisationDataStore(
         xyz_manager=xyz_manager,
         cif_manager=cif_manager,
         ontospecies_store=ontospecies_store,
         ontozeolite_store=ontozeolite_store,
+        ontomops_store=ontomops_store,
     )

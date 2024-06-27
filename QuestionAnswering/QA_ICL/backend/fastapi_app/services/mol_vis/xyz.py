@@ -6,12 +6,18 @@ from typing import Annotated
 
 from fastapi import Depends
 from requests import HTTPError
+import requests
 
+from config import AppSettings, OntomopsFileserverSettings, get_app_settings
 from constants.periodictable import ATOMIC_NUMBER_TO_SYMBOL
 from model.pubchem import PubChemPUGResponse
 from services.requests import request_get_obj
 from model.mol_vis import XYZ
-from services.sparql import SparqlClient, get_ontospecies_endpoint
+from services.sparql import (
+    SparqlClient,
+    get_ontomops_endpoint,
+    get_ontospecies_endpoint,
+)
 from utils.itertools_recipes import batched
 
 
@@ -21,8 +27,18 @@ logger = logging.getLogger(__name__)
 class XYZManager:
     PUBCHEM_PUG_BATCHSIZE = 128
 
-    def __init__(self, ontospecies_endpoint: str):
-        self.sparql_client = SparqlClient(ontospecies_endpoint)
+    def __init__(
+        self,
+        ontospecies_endpoint: str,
+        ontomops_endpoint: str,
+        ontomops_fileserver_username: str,
+        ontomops_fileserver_password: str,
+    ):
+        self.ontospecies_client = SparqlClient(ontospecies_endpoint)
+        self.ontomops_client = SparqlClient(ontomops_endpoint)
+        self.ontomops_fileserver_username = ontomops_fileserver_username
+        self.ontomops_fileserver_password = ontomops_fileserver_password
+
         self.cid_xyz_cache_path = files("data").joinpath(".xyz_cache/cid")
         os.makedirs(self.cid_xyz_cache_path, exist_ok=True)
         self.cids_with_xyz = set(
@@ -57,7 +73,7 @@ WHERE {{
 }}""".format(
             iris=" ".join(f"<{iri}>" for iri in set(iris))
         )
-        _, bindings = self.sparql_client.querySelectThenFlatten(query)
+        _, bindings = self.ontospecies_client.querySelectThenFlatten(query)
 
         iri2cid = {binding["Species"]: int(binding["CID"]) for binding in bindings}
         if not iri2cid:
@@ -167,7 +183,7 @@ WHERE {{
 }}""".format(
             iris=" ".join(f"<{iri}>" for iri in set(iris))
         )
-        _, bindings = self.sparql_client.querySelectThenFlatten(query)
+        _, bindings = self.ontospecies_client.querySelectThenFlatten(query)
 
         iri2binding = {binding["Species"]: binding for binding in bindings}
         iri2geom = {
@@ -178,9 +194,48 @@ WHERE {{
         }
         return [iri2geom.get(iri) for iri in iris]
 
+    def _get_from_url(self, url: str):
+        response = requests.get(
+            url,
+            auth=(self.ontomops_fileserver_username, self.ontomops_fileserver_password),
+        )
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            return None
+        return response.text
+
+    def get_from_ontomops(self, iris: list[str]):
+        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+
+SELECT DISTINCT * WHERE {{
+    VALUES ?IRI {{ {values} }}
+    ?IRI os:hasGeometry/mops:hasGeometryFile ?URL .
+}}""".format(
+            values=" ".join(f"<{iri}>" for iri in iris)
+        )
+        _, bindings = self.ontomops_client.querySelectThenFlatten(query)
+        iri2url = {binding["IRI"]: binding["URL"] for binding in bindings}
+        iri2xyz = {iri: self._get_from_url(url) for iri, url in iri2url.items()}
+        return [iri2xyz.get(iri) for iri in iris]
+
+
+def get_ontomops_fileserverSettings(settings: Annotated[AppSettings, get_app_settings]):
+    return settings.ontomops_fileserver
+
 
 @cache
 def get_xyz_manager(
-    endpoint: Annotated[SparqlClient, Depends(get_ontospecies_endpoint)]
+    ontospecies_endpoint: Annotated[str, Depends(get_ontospecies_endpoint)],
+    ontomops_endpoint: Annotated[str, Depends(get_ontomops_endpoint)],
+    ontomops_fileserver_settings: Annotated[
+        OntomopsFileserverSettings, Depends(get_ontomops_fileserverSettings)
+    ],
 ):
-    return XYZManager(ontospecies_endpoint=endpoint)
+    return XYZManager(
+        ontospecies_endpoint=ontospecies_endpoint,
+        ontomops_endpoint=ontomops_endpoint,
+        ontomops_fileserver_username=ontomops_fileserver_settings.username,
+        ontomops_fileserver_password=ontomops_fileserver_settings.password,
+    )
