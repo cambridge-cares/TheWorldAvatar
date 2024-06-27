@@ -23,7 +23,7 @@ class OntomopsLinkerManager(LinkerManager):
     @property
     def cls2linker(self):
         return {
-            "mops:MetalOrganicPolyhedra": self.linkMOP,
+            "mops:MetalOrganicPolyhedron": self.linkMOP,
             "mops:ChemicalBuildingUnit": self.linkCBU,
             "mops:GenericBuildingUnit": self.linkGBU,
             "mops:AssemblyModel": self.linkAM,
@@ -115,8 +115,8 @@ WHERE {{
             for i, gbu_args in enumerate(args.GBU)
             for triple in [
                 f"?AM mops:hasGenericBuildingUnit ?GBU{i} ; mops:hasGenericBuildingUnitNumber ?GBUNum{i} .",
-                f'?GBU{i} mops:hasModularity "{gbu_args.modularity}" ; mops:hasPlanarity "{gbu_args.planarity}" .',
-                f'?GBUNum{i} mops:hasUnitNumberValue "{gbu_args.num}" .',
+                f'?GBU{i} mops:hasModularity {gbu_args.modularity} ; mops:hasPlanarity "{gbu_args.planarity}" .',
+                f'?GBUNum{i} mops:hasUnitNumberValue {gbu_args.num} .',
                 f"?GBUNum{i} mops:isNumberOf ?GBU{i} .",
             ]
         ]
