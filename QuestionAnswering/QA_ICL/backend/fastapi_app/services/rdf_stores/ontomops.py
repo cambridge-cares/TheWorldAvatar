@@ -15,7 +15,7 @@ class OntomopsRDFStore(Cls2GetterRDFStore):
     @property
     def cls2getter(self):
         return {
-            "mops:MetalOrganicPolyhedra": self.get_MOPs,
+            "mops:MetalOrganicPolyhedron": self.get_MOPs,
             "mops:ChemicalBuildingUnit": self.get_CBUs,
             "mops:AssemblyModel": self.get_AMs,
             "mops:GenericBuildingUnit": self.get_GBUs,

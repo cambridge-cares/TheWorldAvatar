@@ -221,7 +221,9 @@ SELECT DISTINCT * WHERE {{
         return [iri2xyz.get(iri) for iri in iris]
 
 
-def get_ontomops_fileserverSettings(settings: Annotated[AppSettings, get_app_settings]):
+def get_ontomops_fileserverSettings(
+    settings: Annotated[AppSettings, Depends(get_app_settings)]
+):
     return settings.ontomops_fileserver
 
 
