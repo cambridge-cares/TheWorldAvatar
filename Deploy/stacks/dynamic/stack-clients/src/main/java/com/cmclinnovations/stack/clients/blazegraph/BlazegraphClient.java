@@ -16,6 +16,7 @@ import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bigdata.rdf.sail.webapp.client.AutoCloseHttpClient;
 import com.bigdata.rdf.sail.webapp.client.HttpClientConfigurator;
 import com.bigdata.rdf.sail.webapp.client.HttpException;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
@@ -61,57 +62,49 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
         BlazegraphEndpointConfig endpointConfig = getEndpointConfig();
         String serviceUrl = endpointConfig.getServiceUrl();
 
-        RuntimeException firstException = null;
-        HttpClient httpClient = null;
-        if (!endpointConfig.getPassword().isEmpty()) {
-            // If authentication is enabled then create an HttpClient explicitly and add the
-            // authentication details to its AuthenticationStore.
-            try {
-                httpClient = HttpClientConfigurator.getInstance().newInstance();
-                httpClient.getAuthenticationStore()
-                        .addAuthentication(new BasicAuthentication(new URI(serviceUrl), "Blazegraph",
-                                endpointConfig.getUsername(), endpointConfig.getPassword()));
-            } catch (URISyntaxException ex) {
-                firstException = new RuntimeException(
-                        "The Blazegraph service URL '" + serviceUrl + "' is not a valid URI.", ex);
-            } catch (RuntimeException ex) {
-                firstException = ex;
-            }
-
-            if (null != firstException) {
-                closeHttpClient(httpClient, firstException,
-                        generateMessage(namespace, command, serviceUrl,
-                                "stop httpClient after failing to set authentication when trying to "));
-            }
-        }
-
-        try (RemoteRepositoryManager manager = new RemoteRepositoryManager(serviceUrl, httpClient, null)) {
-            try {
-                command.execute(manager);
-            } catch (HttpException ex) {
-                switch (ex.getStatusCode()) {
-                    case 409: // Namespace already exists error
-                        logger.warn("Namespace '{}' already exists.", namespace);
-                        break;
-                    case 404: // Namespace does not exist error
-                        logger.warn("Namespace '{}' does not exist.", namespace);
-                        break;
-                    default:
-                        throw ex;
-                }
-            }
+        try (AutoCloseHttpClient httpClient = (AutoCloseHttpClient) HttpClientConfigurator.getInstance()
+                .newInstance()) {
+            configureAuthentication(endpointConfig, serviceUrl, httpClient);
+            callRemoteRepositoryManager(namespace, command, serviceUrl, httpClient);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("The Blazegraph service URL '" + serviceUrl + "' is not a valid URI.", ex);
         } catch (Exception ex) {
-            firstException = new RuntimeException(
-                    generateMessage(namespace, command, serviceUrl, ""),
-                    ex);
-        } finally {
-            closeHttpClient(httpClient, firstException,
-                    generateMessage(namespace, command, serviceUrl, "stop httpClient after trying to "));
+            throw new RuntimeException(generateMessage(namespace, command, serviceUrl), ex);
         }
     }
 
-    private String generateMessage(String namespace, BaseCmd command, String serviceUrl, String subissue) {
-        return "Failed to " + subissue + command.getText() + " namespace '" + namespace + "' at endpoint '" + serviceUrl
+    private void configureAuthentication(BlazegraphEndpointConfig endpointConfig, String serviceUrl,
+            AutoCloseHttpClient httpClient) throws URISyntaxException {
+        if (!endpointConfig.getPassword().isEmpty()) {
+            // If authentication is enabled then create an HttpClient explicitly and add the
+            // authentication details to its AuthenticationStore.
+
+            httpClient.getAuthenticationStore()
+                    .addAuthentication(new BasicAuthentication(new URI(serviceUrl), "Blazegraph",
+                            endpointConfig.getUsername(), endpointConfig.getPassword()));
+        }
+    }
+
+    private void callRemoteRepositoryManager(String namespace, BaseCmd command, String serviceUrl,
+            AutoCloseHttpClient httpClient) throws Exception {
+        try (RemoteRepositoryManager manager = new RemoteRepositoryManager(serviceUrl, httpClient, null)) {
+            command.execute(manager);
+        } catch (HttpException ex) {
+            switch (ex.getStatusCode()) {
+                case 409: // Namespace already exists error
+                    logger.warn("Namespace '{}' already exists.", namespace);
+                    break;
+                case 404: // Namespace does not exist error
+                    logger.warn("Namespace '{}' does not exist.", namespace);
+                    break;
+                default:
+                    throw ex;
+            }
+        }
+    }
+
+    private String generateMessage(String namespace, BaseCmd command, String serviceUrl) {
+        return "Failed to " + command.getText() + " namespace '" + namespace + "' at endpoint '" + serviceUrl
                 + "'.";
     }
 
