@@ -3,7 +3,7 @@
         "Name": "gfaagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/gfaagent:2.0.0",
+                "Image": "ghcr.io/cambridge-cares/gfaagent:2.0.1",
                 "Env": [
                     "STACK_NAME=${STACK_NAME}",
                     "DATABASE=postgres"

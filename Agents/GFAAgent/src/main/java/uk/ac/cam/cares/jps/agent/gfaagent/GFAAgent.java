@@ -75,6 +75,7 @@ public class GFAAgent extends HttpServlet {
             LOGGER.info("Calculating costs");
             costCalculation.calculateCost();
 
+            LOGGER.info("Uploading data");
             try (Connection conn = remoteRDBStoreClient.getConnection()) {
                 costCalculation.uploadData(conn);
             } catch (SQLException e) {
