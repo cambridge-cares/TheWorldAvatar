@@ -13,8 +13,6 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.google.gson.JsonObject;
-
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -22,8 +20,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
-
-import java.rmi.Remote;
 
 public class AssetExistenceChecker {
     private RemoteStoreClient storeClientAsset, storeClientOffice, storeClientPurchDoc, storeClientLab;
@@ -643,10 +639,28 @@ public class AssetExistenceChecker {
 
         JSONArray reqResult = storeClientAsset.executeQuery(query.getQueryString());
         LOGGER.debug("Maintenance existence check result:: " + reqResult);
-        //TODO Figure out what to do with multiple maintenance schedule. Currently multiple is allowed
-        //Hence this dumb switch statement below
-        //switch (reqResult.length()) {
-        switch (0) {
+
+        //Currently multiple maintenance is allowed so this method will always generate new ones on call
+        if (generate){
+            result.put("maintenanceScheduleIRI", genIRIString("MaintenanceSchedule", P_ASSET));
+            result.put("maintenanceTaskIRI", genIRIString("MaintenanceTask", P_ASSET));
+            result.put("lastServiceIRI", genIRIString("ServiceTime", P_TIME));
+            result.put("nextServiceIRI", genIRIString("ServiceTime", P_TIME));
+            result.put("intervalIRI", genIRIString("Interval", P_TIME));
+            result.put("durationIRI", genIRIString("DurationDescription", P_TIME));
+            //Performer IRI is not generated as it is supposed to be updated as requested
+            //Hence it does not matter if its retrieved or not
+            result.put("performerIRI", "");
+            result.put("performerName", "");
+            return result;
+        }
+        return null;
+
+        //In case that decision is reverted, the following commented block will handle non-multiple maintenance
+
+        /*
+        //In case only 1 mainteance is allowed
+        switch (reqResult.length()) {
             case 0:
                 if (generate){
                     result.put("maintenanceScheduleIRI", genIRIString("MaintenanceSchedule", P_ASSET));
@@ -703,7 +717,7 @@ public class AssetExistenceChecker {
                 return result;
             default:
                 throw new JPSRuntimeException("Multiple maintenance data found. Currently multiple maintenance data is not supported.");
-        }
+        }*/
     }
 
     public RemoteStoreClient getNameSpaceByID (String ID){

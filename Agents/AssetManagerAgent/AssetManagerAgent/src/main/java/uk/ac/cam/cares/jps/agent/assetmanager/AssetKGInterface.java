@@ -7,37 +7,25 @@ import static uk.ac.cam.cares.jps.agent.assetmanager.ClassAndProperties.*;
 import static uk.ac.cam.cares.jps.agent.assetmanager.QueryUtil.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.eclipse.rdf4j.sparqlbuilder.util.SparqlBuilderUtils;
-import org.jooq.InsertQuery;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
+
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.rmi.Remote;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.lang.Math;
-
-import com.bigdata.bop.Var;
 
 import java.util.*;
 
@@ -149,9 +137,9 @@ public class AssetKGInterface {
         JSONObject AssetData = new JSONObject();
         //Create IRIs
         //Create Device IRI
-        //String devicePrefix = getPrefixStringFromName(AssetDataRaw.getString("Prefix"));
+
         String devicePrefix = AssetDataRaw.getString("Prefix");
-        //deviceIRIString = genIRIString(AssetDataRaw.getString("AssetClass"), devicePrefix);
+
         if (existingIRIs.has("deviceIRI")){
             deviceIRIString = existingIRIs.getString("deviceIRI");
         }else{
@@ -197,7 +185,7 @@ public class AssetKGInterface {
         String personNameIRI = "";
         String workspaceIRI = "";
 
-        if(!(assigneeName.isBlank() || assigneeName==null)){
+        if(!(assigneeName==null || assigneeName.isBlank())){
             LOGGER.info("Handling Person IRI:" + assigneeName);
             JSONObject PersonIRIs = existenceChecker.getPersonTriples(assigneeName, true);
             personIRI = PersonIRIs.getString("PersonIRI");
@@ -278,7 +266,7 @@ public class AssetKGInterface {
             ManufacturerOrgIRI = SupplierOrgIRI;
         }
         else{
-            if(!(ManufacturerName.isBlank() || ManufacturerName == null )) {
+            if(!(ManufacturerName == null || ManufacturerName.isBlank() )) {
                 JSONObject orgIRI = existenceChecker.getOrganizationTriples(ManufacturerName, true);
                 ManufacturerNameIRI = orgIRI.getString("OrgNameIRI");
                 ManufacturerOrgIRI = orgIRI.getString("OrgIRI");
@@ -300,13 +288,14 @@ public class AssetKGInterface {
 
         //serial and model number
         String SerialNum = AssetDataRaw.getString("serialNum");
-        String ModelNum = AssetDataRaw.getString("modelNumber").replace("\\", "\\\\");
+        String ModelNum = AssetDataRaw.getString("modelNumber");
         if(SerialNum == null){
             SerialNum = "";
         }
         if(ModelNum == null){
             ModelNum = "";
         }
+        ModelNum = ModelNum.replace("\\", "\\\\");
         AssetData.put("serialNum", SerialNum);
         AssetData.put("modelNumber", ModelNum);
 
@@ -410,8 +399,6 @@ public class AssetKGInterface {
         AssetData.put("DeliveryOrderLineIRI",genIRIString("DeliveryOrderLineIRI", P_ASSET));
 
         //handle pricing
-        JSONObject reqResPricing = null;
-        
         String amtMoneyIRI = "";
         String PriceDetailsIRI = "";
         String priceIRI = "";
@@ -425,8 +412,7 @@ public class AssetKGInterface {
             priceIRI = genIRIString("Price", P_ASSET);
             //Handle device namepsace pricing
             amtMoneyIRI = genIRIString("AmountOfMoney", P_DEV);
-            //Handle currency here later
-            //currencyIRI = SingaporeDollarString;
+            //Handle currency
             if (AssetDataRaw.has("currency")){
                 String currency = AssetDataRaw.getString("currency").toUpperCase();
                 LOGGER.debug("Currency received:: " + currency);
@@ -482,7 +468,7 @@ public class AssetKGInterface {
     private String generateID(String deliveryDate){
         String date;
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        if (deliveryDate.isBlank() || deliveryDate == null){
+        if (deliveryDate == null || deliveryDate.isBlank()){
             LocalDateTime now = LocalDateTime.now();
             date = dtf.format(now);
         }
@@ -501,7 +487,7 @@ public class AssetKGInterface {
     private String generateID(String deliveryDate, String targetID){
         String date;
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        if (deliveryDate.isBlank() || deliveryDate == null){
+        if (deliveryDate == null || deliveryDate.isBlank()){
             LocalDateTime now = LocalDateTime.now();
             date = dtf.format(now);
         }
@@ -533,6 +519,22 @@ public class AssetKGInterface {
         "WHERE {\n"+
         "?id <"+P_ASSET+"hasItemInventoryIdentifier"+"> ?idValue .}\n"+
         "ORDER BY DESC(xsd:integer(?idNum))";
+
+        /*
+        //The following is my attempt at converting this to rdf4j and its quite troublesome to fix
+        Prefix xsd = SparqlBuilder.prefix("xsd", iri("http://www.w3.org/2001/XMLSchema#"));
+        Variable id = SparqlBuilder.var("id");
+        Variable idNum = SparqlBuilder.var("idNum");
+        Variable idValue = SparqlBuilder.var("idValue");
+
+        SelectQuery query = Queries.SELECT(idNum)
+        .prefix(xsd, Pref_ASSET)
+        .where(id.has(hasItemInventoryIdentifier, idValue))
+        .bind(strafter(str(idValue), "/").as(idNum))
+        .orderBy(desc(xsd.iri("integer").apply(idNum)));
+        */
+
+
         JSONArray reqRes = storeClientAsset.executeQuery(query);
         if (reqRes.length() == 0) {
             return -1; //Added 1 above so the first ID will be 0
@@ -727,17 +729,9 @@ public class AssetKGInterface {
         }
         //get location
         if (LocationString.contains( "Research Wing") || LocationString.contains("CREATE Tower")){
-            if(roomIRI != null){
-                //TODO This is dead logic as the prefix is now different
-                //Now all items are devices and systems are not used, so the logic is still valid in the sense taht it defaults to the `else` clause anyways
-                //Currently debating if it should still be kept for backward comaptibility or should it be deleted as the prev version is not valid now anyways
-                if (devicePrefix.equals(P_SYS)){
-                    query.insert(roomIRI.has(containsSystem, deviceIRI));
-                }
-                else{
-                    query.insert(roomIRI.has(containsElement, deviceIRI));
-                }
-                
+            if(!roomIRI.getQueryString().isBlank()){
+
+                query.insert(roomIRI.has(containsElement, deviceIRI));
 
                 //Workspace
                 if(!WorkspaceIDLiteral.isBlank()){
@@ -930,9 +924,9 @@ public class AssetKGInterface {
         String maintenanceTaskIRI = maintenanceIRI.getString("maintenanceTaskIRI");
         
         //preprocessing
-        //TODO Figure out what to do with multiple maintenance schedule. Currently multiple is allowed
+        //Currently multiple is allowed
         //TODO When figured out, also change in ExistenceChecker
-        if(!(lastService.isBlank() || lastService==null)){
+        if(!(lastService==null || lastService.isBlank())){
             lastServiceIRI = maintenanceIRI.getString("lastServiceIRI");
             try {
                 lastServiceDate = LocalDate.parse(lastService, dtf);
@@ -951,7 +945,6 @@ public class AssetKGInterface {
             existingServiceIRIs = existenceChecker.getOrganizationTriples(serviceProvider);
             if (existingServiceIRIs == null){
                 existingServiceIRIs = existenceChecker.getIndependentPartyTriples(serviceProvider, true);
-                //serviceProviderIRI = genIRIString("ServiceProvider", P_ASSET);
                 serviceProviderIRI = existingServiceIRIs.getString("ServiceProviderIRI");
                 serviceProviderTypeIRI = IndependentParty;
             }
@@ -966,16 +959,16 @@ public class AssetKGInterface {
         }
 
         // Transport data in months?
-        if(!(interval.isBlank() || interval==null)){
+        if(!(interval==null || interval.isBlank())){
             intervalIRI = maintenanceIRI.getString("intervalIRI");
             durationIRI = maintenanceIRI.getString("durationIRI");
-            if((nextService.isBlank() || nextService==null) && lastServiceDate!=null){
+            if((nextService==null || nextService.isBlank()) && lastServiceDate!=null){
                 nextServiceDate = lastServiceDate.plusMonths(Long.valueOf(interval));
                 nextService = dtf.format(nextServiceDate);
             }
         }
 
-        if(!(nextService.isBlank() || nextService==null)){
+        if(!(nextService==null || nextService.isBlank() )){
             nextServiceIRI = maintenanceIRI.getString("nextServiceIRI");
             try {
                 nextServiceDate = LocalDate.parse(nextService, dtf);
@@ -1036,7 +1029,7 @@ public class AssetKGInterface {
         }
         
 
-        if(!(interval.isBlank() || interval==null)){
+        if(!(interval==null || interval.isBlank())){
             year = Integer.valueOf(interval)/12;
             month = Integer.valueOf(interval)%12;
             query.insert(iri(maintenanceTaskIRI).has(hasInterval, iri(intervalIRI)));
@@ -1082,7 +1075,6 @@ public class AssetKGInterface {
 
             LOGGER.info("New maintenance time for maintenance schedule::" + maintenanceData);
             result.put(maintenanceData);
-            //updateGeneralMaintenanceData(maintenanceData, maintenanceList.getJSONObject(i));
             addMaintenanceData(maintenanceData, fitMaintenanceIRItoMaintenanceData(maintenanceData));
         }
         return result;
@@ -1115,6 +1107,9 @@ public class AssetKGInterface {
 
     public void addDataSheet(String docFilename, String docType, String docComment, String deviceID) {
         String deviceIRI = existenceChecker.getIRIStringbyID(deviceID);
+        if (deviceIRI == null){
+            throw new JPSRuntimeException("Asset does not exist. Ensure asset exist beforehand.");
+        }
         String documentIRI = "";
 
         documentIRI = existenceChecker.getDataSheetIRI(docFilename, docType, true).getString("DocIRI");
