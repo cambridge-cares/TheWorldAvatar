@@ -1,4 +1,3 @@
-from enum import Enum
 from functools import cache
 import logging
 import os
@@ -95,8 +94,15 @@ class ContextAugmentationSettings(BaseModel):
 
 class SemanticParsingSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
-    
+
     context_augmentation: ContextAugmentationSettings
+
+
+class OntomopsFileserverSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    username: str
+    password: str
 
 
 class AppSettings(BaseModel):
@@ -112,6 +118,7 @@ class AppSettings(BaseModel):
     singapore_endpoints: SingaporeEndpointsSettings
     entity_linking: tuple[EntityLinkingConfig, ...]
     semantic_parsing: SemanticParsingSettings
+    ontomops_fileserver: OntomopsFileserverSettings
 
 
 def _load_yaml(filepath: str):

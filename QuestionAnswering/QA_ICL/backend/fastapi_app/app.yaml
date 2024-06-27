@@ -56,3 +56,6 @@ semantic_parsing:
   context_augmentation:
     example_num: 10
     relation_num: 10
+ontomops_fileserver:
+  username: ""
+  password: ""
