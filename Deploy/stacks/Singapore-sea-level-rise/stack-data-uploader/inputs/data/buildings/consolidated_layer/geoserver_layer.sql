@@ -24,7 +24,8 @@ SELECT DISTINCT
     COALESCE(measured_height, 100.0) AS building_height,
     ST_Transform(geometry, 4326) AS geom,
     iri_table.iri,
-    u.ontobuilt
+    u.ontobuilt,
+    'http://sea-level-blazegraph:8080/blazegraph/namespace/kb/sparql' as endpoint
 FROM citydb.building b
 JOIN citydb.surface_geometry sg ON sg.root_id = b.lod0_footprint_id
 JOIN uuid_table ON b.id = uuid_table.cityobject_id
