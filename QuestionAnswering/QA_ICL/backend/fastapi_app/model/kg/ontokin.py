@@ -6,13 +6,13 @@ from constants.namespace import ONTOKIN, ONTOPROVENANCE
 from model.rdf_orm import RDFEntity, RDFField
 
 
-class OntokinMechanism(RDFEntity):
+class OntokinMechanismBase(RDFEntity):
     provenance: str = Field(
         path=ONTOKIN.hasProvenance / (ONTOPROVENANCE.hasDOI | ONTOPROVENANCE.hasURL)
     )
 
 
-class OntokinReaction(RDFEntity):
+class OntokinReactionBase(RDFEntity):
     equation: str = Field(path=ONTOKIN.hasEquation)
 
 
@@ -112,7 +112,7 @@ class OntokinTroeModel(OntokinLindemannModel):
     T3: float = RDFField(path=ONTOKIN.hasT3 / ONTOKIN.value)
 
 
-OntokinKineticModel = Annotated[
+OntokinKineticModelBase = Annotated[
     OntokinArrheniusModel
     | OntokinPDepArrheniusModel
     | OntokinMultiArrheniusModel
@@ -121,3 +121,7 @@ OntokinKineticModel = Annotated[
     | OntokinTroeModel,
     Field(discriminator="type"),
 ]
+
+
+class OntokinMechanism(OntokinMechanismBase):
+    reaction: list[OntokinReactionBase] = Field(path=ONTOKIN.hasReaction)

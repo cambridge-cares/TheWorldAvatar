@@ -10,8 +10,8 @@ from model.kg.ontozeolite import (
     OntocrystalQuantity,
     OntocrystalTiledStructure,
     OntocrystalUnitCell,
-    OntozeoliteZeoliteFramework,
-    OntozeoliteZeoliticMaterial,
+    OntozeoliteZeoliteFrameworkBase,
+    OntozeoliteZeoliticMaterialBase,
 )
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2GetterRDFStore
@@ -37,10 +37,10 @@ class OntozeoliteRDFStore(Cls2GetterRDFStore):
         }
 
     def get_zeolite_frameworks(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntozeoliteZeoliteFramework, iris)
+        return self.rdf_store.getMany(OntozeoliteZeoliteFrameworkBase, iris)
 
     def get_zeolitic_materials(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntozeoliteZeoliticMaterial, iris)
+        return self.rdf_store.getMany(OntozeoliteZeoliticMaterialBase, iris)
 
     def get_quantities(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntocrystalQuantity, iris)
