@@ -113,7 +113,3 @@ export interface QAResponse {
   data: DataItem[]
   visualisation: { [key: string]: ChemStructData[] }
 }
-
-export interface ChatRequest {
-  qa_request_id: string
-}

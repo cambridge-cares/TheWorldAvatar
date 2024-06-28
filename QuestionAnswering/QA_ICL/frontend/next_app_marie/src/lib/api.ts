@@ -1,4 +1,19 @@
-import { ChatRequest, QARequest, QAResponse } from './model'
+import { ChatRequest } from './model/chat'
+import { ChemicalClass, Use } from './model/ontospecies'
+import { QARequest, QAResponse } from './model/qa'
+
+function throwFetchResponseIfNotOk(res: Response) {
+  if (!res.ok) {
+    throw new Error(res.statusText)
+  }
+  return res
+}
+
+function getJson<ResT>(url: string | URL) {
+  return fetch(url, {
+    method: 'GET'
+  }).then(throwFetchResponseIfNotOk).then(res => res.json() as ResT)
+}
 
 function postJson<ReqT>(
   url: string | URL,
@@ -13,24 +28,21 @@ function postJson<ReqT>(
     },
     body: JSON.stringify(json_body),
     ...init,
-  }).then(res => {
-    if (!res.ok) {
-      throw new Error(res.statusText)
-    }
-    return res
-  })
+  }).then(throwFetchResponseIfNotOk)
 }
 
 const BACKEND_ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT || ''
-const QA_ENDPOINT = new URL('./qa', BACKEND_ENDPOINT)
-const CHAT_ENDPOINT = new URL('./chat', BACKEND_ENDPOINT)
 
+
+const QA_ENDPOINT = new URL('./qa', BACKEND_ENDPOINT)
 export function queryQa(question: string) {
   return postJson<QARequest>(QA_ENDPOINT, { question }).then(
     res => res.json() as Promise<QAResponse>
   )
 }
 
+
+const CHAT_ENDPOINT = new URL('./chat', BACKEND_ENDPOINT)
 export function queryChat(
   qa_request_id: string
 ): [AbortController, Promise<ReadableStreamDefaultReader<string>>] {
@@ -48,4 +60,14 @@ export function queryChat(
       return res.body.pipeThrough(new TextDecoderStream()).getReader()
     }),
   ]
+}
+
+const GET_CHEMICAL_CLASSES_ENDPOINT = new URL("./ontospecies/chemical-classes", BACKEND_ENDPOINT)
+export function getChemicalClasses() {
+  return getJson<ChemicalClass[]>(GET_CHEMICAL_CLASSES_ENDPOINT)
+}
+
+const GET_USES_ENDPOINT = new URL("./ontospecies/uses", BACKEND_ENDPOINT)
+export function getUses() {
+  return getJson<Use[]>(GET_USES_ENDPOINT)
 }

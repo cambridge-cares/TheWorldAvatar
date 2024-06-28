@@ -9,7 +9,7 @@ import {
   DataItem,
   QAResponse,
   QAResponseMetadata,
-} from '@/lib/model'
+} from '@/lib/model/qa'
 import { cn, isObjectEmtpy, makePrefixedIRI } from '@/lib/utils'
 import {
   Accordion,
