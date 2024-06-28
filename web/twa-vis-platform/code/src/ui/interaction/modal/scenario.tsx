@@ -28,17 +28,13 @@ interface ScenarioModalProperties {
  * @returns JSX for landing page.
  */
 export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) {
-  const [view, setView] = React.useState(null);
   const scenarioDefinitions = useSelector(getScenarioDefinitions);
-
-
   const scenarioUrl = JSON.parse(props.scenarioURL).resources.scenario.url;
   const dispatch = useDispatch();
 
-  const handleChange = (event: React.MouseEvent<HTMLElement>, nextView: string) => {
-    dispatch(setScenario(nextView));
+  const handleChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+    dispatch(setScenario(event.currentTarget.value));
     props.setShowState(false);
-    setView(nextView);
   };
 
   const onClick = async () => {
@@ -57,32 +53,17 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
       <div className={styles.header}><h1>Select a scenario:</h1>
         <Button style={{ marginLeft: 'auto', textTransform: 'none' }} className={styles.refreshButton} onClick={onClick}>Refresh</Button>
       </div>
-      <ToggleButtonGroup
-        value={view}
-        exclusive
-        orientation="vertical"
-        onChange={handleChange}
-      >
-        {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
-          <ToggleButton
-            value={scenario.id}
-            aria-label={scenario.name}
-            color="standard"
-            sx={{ textAlign: "left", textTransform: "none" }}
-            key={scenario.name}
-          >
-            <div className={styles["option-container"]}>
-              <div className={styles["icon-container"]}>
-                <IconComponent icon="images/defaults/icons/about.svg" classes={styles.icon} />
-              </div>
-              <div className={styles.content}>
-                <span className={styles.title}><b>({index + 1}) {scenario.name}</b></span>
-                <span className={styles.description}>{scenario.description}</span>
-              </div>
-            </div>
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
+      {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
+        <button key={scenario.name + index} value={scenario.id} className={styles["option-container"]} onClick={handleChange}>
+          <div className={styles["icon-container"]}>
+            <IconComponent icon="images/defaults/icons/about.svg" classes={styles.icon} />
+          </div>
+          <div className={styles.content}>
+            <span className={styles.title}><b>({index + 1}) {scenario.name}</b></span>
+            <span className={styles.description}>{scenario.description}</span>
+          </div>
+        </button>
+      ))}
     </Dialog>
   )
 }
