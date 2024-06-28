@@ -94,6 +94,9 @@ WHERE {{
 
     def get_uses_many(self, iris: list[str] | tuple[str]):
         return self.getMany(OntospeciesUse, iris)
+    
+    def get_uses_all(self):
+        return self.getAll(OntospeciesUse, ONTOSPECIES.Use)
 
 
 @cache
