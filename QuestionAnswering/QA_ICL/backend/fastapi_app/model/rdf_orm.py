@@ -16,6 +16,16 @@ setattr(
 )
 
 
+adapter = TypeAdapter(RDFFieldMetadata)
+
+
+def _get_rdf_field_metadata(info: FieldInfo):
+    try:
+        return adapter.validate_python(info.metadata[0])
+    except:
+        return None
+
+
 class RDFEntity(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -24,21 +34,21 @@ class RDFEntity(BaseModel):
     @classmethod
     @cache
     def get_rdf_fields(cls):
-        adapter = TypeAdapter(RDFFieldMetadata)
-        fields: dict[str, tuple[FieldInfo, RDFFieldMetadata]] = dict()
-        for field, info in cls.model_fields.items():
-            if field == "IRI":
-                continue
-            try:
-                rdf_metadata = adapter.validate_python(info.json_schema_extra)
-            except:
-                continue
-            fields[field] = (info, rdf_metadata)
-        return fields
+        return {
+            field: (info, rdf_meta)
+            for field, (info, rdf_meta) in {
+                field: (info, _get_rdf_field_metadata(info))
+                for field, info in cls.model_fields.items()
+                if field != "IRI"
+            }.items()
+            if rdf_meta
+        }
 
 
 def RDFField(
     path: URIRef | Path,
     **kwargs,
 ):
-    return Field(**kwargs, json_schema_extra=RDFFieldMetadata(path=path))
+    field_info = Field(**kwargs)
+    field_info.metadata.append(RDFFieldMetadata(path=path))
+    return field_info
