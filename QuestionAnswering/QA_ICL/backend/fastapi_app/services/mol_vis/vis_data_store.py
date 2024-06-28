@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from model.qa import ChemicalStructureData
+from model.structured_answer import ChemicalStructureData
 from services.mol_vis.cif import CIFManager, get_cif_manager
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
 from services.rdf_stores.ontomops import OntomopsRDFStore, get_ontomops_rdfStore

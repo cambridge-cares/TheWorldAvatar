@@ -7,16 +7,15 @@ import requests
 
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
-from services.stores.entity_store import EntityStore, get_entity_store
 from services.feature_info_client import FeatureInfoClient
 
-from services.funcs.base import Name2Func
-from model.qa import (
+from model.structured_answer import (
     ScatterPlotData,
     ScatterPlotTrace,
     TableData,
     TypedSeries,
 )
+from services.funcs.base import Name2Func
 from .pollutant_conc import (
     PollutantConcClient,
     get_pollutantConc_client,
@@ -31,12 +30,10 @@ class SGDispersionFuncExecutor(Name2Func):
     def __init__(
         self,
         geocoder: IGeocoder,
-        entity_store: EntityStore,
         pollutant_conc_client: PollutantConcClient,
         ship_feature_info_client: FeatureInfoClient[ShipMeta],
     ):
         self.geocoder = geocoder
-        self.entity_store = entity_store
         self.pollutant_conc_client = pollutant_conc_client
         self.ship_feature_info_client = ship_feature_info_client
 
@@ -98,20 +95,16 @@ class SGDispersionFuncExecutor(Name2Func):
 
         return iris
 
-    def lookup_ship_attributes(
-        self, text: str | None = None, mmsi: str | None = None, **kwargs
-    ):
+    def lookup_ship_attributes(self, ship: list[str], **kwargs):
         """
         Given ship name or MMSI, returns MMSI, maximum static draught, dimension, IMO number, ship type, call sign
         """
-        iris = self._link_ship(text=text, mmsi=mmsi)
-
         vars = ["Ship", "ShipName"]
         vars_set = set(vars)
         bindings = []
 
-        for iri in iris:
-            binding = {"Ship": iri, "ShipName": self.entity_store.lookup_label(iri)}
+        for iri in ship:
+            binding = {"Ship": iri, "ShipName": ""}  # TODO: retrieve ship name
 
             ship_feature_info = self.ship_feature_info_client.query(iri=iri)
             ship_meta = ship_feature_info.meta.model_dump()
@@ -129,16 +122,12 @@ class SGDispersionFuncExecutor(Name2Func):
 
         return [data]
 
-    def lookup_ship_timeseries(
-        self, text: str | None = None, mmsi: str | None = None, **kwargs
-    ):
+    def lookup_ship_timeseries(self, ship: list[str], **kwargs):
         """
         Given ship name or MMSI, returns speed over ground, course over ground, longitude, latitude
         """
-        iris = self._link_ship(text=text, mmsi=mmsi)
-
         key2plot: dict[str, ScatterPlotData] = dict()
-        for iri in iris:
+        for iri in ship:
             ship_feature_info = self.ship_feature_info_client.query(iri=iri)
 
             if not ship_feature_info.time:
@@ -156,7 +145,7 @@ class SGDispersionFuncExecutor(Name2Func):
                     )
                     key2plot[key] = plot
 
-                label = self.entity_store.lookup_label(iri)
+                label = ""  # TODO: look up ship label
                 mmsi = "(MMSI: {mmsi})".format(mmsi=ship_feature_info.meta.mmsi)
 
                 plot.traces.append(
@@ -173,7 +162,6 @@ class SGDispersionFuncExecutor(Name2Func):
 @cache
 def get_sgDispersion_funcExec(
     geocoder: Annotated[IGeocoder, Depends(get_serial_geocoder)],
-    entity_store: Annotated[EntityStore, Depends(get_entity_store)],
     pollutant_conc_client: Annotated[
         PollutantConcClient, Depends(get_pollutantConc_client)
     ],
@@ -183,7 +171,6 @@ def get_sgDispersion_funcExec(
 ):
     return SGDispersionFuncExecutor(
         geocoder=geocoder,
-        entity_store=entity_store,
         pollutant_conc_client=pollutant_conc_client,
         ship_feature_info_client=ship_feature_info_client,
     )

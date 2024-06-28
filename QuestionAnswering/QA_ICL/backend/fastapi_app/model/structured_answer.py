@@ -104,24 +104,6 @@ class QARequestArtifact(BaseModel):
     data: object
 
 
-class QARequest(BaseModel):
-    question: str
-
-
 class TranslationContext(BaseModel):
     examples: list[Nlq2DataReqExample]
     properties: list[RDFProperty]
-
-
-class QAResponseMetadata(BaseModel):
-    rewritten_question: str | None
-    translation_context: TranslationContext
-    data_request: DataRequest
-    linked_variables: dict[str, list[str]]
-
-
-class QAResponse(BaseModel):
-    request_id: str
-    metadata: QAResponseMetadata
-    data: list[DataItem]
-    visualisation: dict[str, list[ChemicalStructureData]]

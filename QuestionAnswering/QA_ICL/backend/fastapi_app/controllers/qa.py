@@ -5,18 +5,17 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from model.qa import (
+from model.structured_answer import (
     ChemicalStructureData,
     QARequestArtifact,
-    QAResponse,
-    QAResponseMetadata,
 )
+from model.web.qa import QAResponse, QAResponseMetadata
 from services.sem_parse.retrieve_context import (
     Nlq2DataReqContextRetriever,
     get_nlq2datareq_contextRetriever,
 )
 from services.sem_parse.rewrite_nlq import NlqRewriter, get_nlq_rewriter
-from services.stores.entity_store import EntityStore, get_entity_store
+from services.link_entity import CentralEntityLinker, get_entity_store
 from services.stores.qa_artifact_store import (
     QARequestArtifactStore,
     get_qaReq_artifactStore,
@@ -38,7 +37,7 @@ class DataSupporter:
         nlq_rewriter: NlqRewriter,
         context_retriever: Nlq2DataReqContextRetriever,
         llm_caller: Nlq2DataReqLLMCaller,
-        entity_store: EntityStore,
+        entity_store: CentralEntityLinker,
         executor: DataReqExecutor,
         artifact_store: QARequestArtifactStore,
         vis_data_store: VisualisationDataStore,
@@ -152,7 +151,7 @@ def get_data_supporter(
         Nlq2DataReqContextRetriever, Depends(get_nlq2datareq_contextRetriever)
     ],
     llm_caller: Annotated[Nlq2DataReqLLMCaller, Depends(get_nlq2datareq_llmCaller)],
-    entity_store: Annotated[EntityStore, Depends(get_entity_store)],
+    entity_store: Annotated[CentralEntityLinker, Depends(get_entity_store)],
     executor: Annotated[DataReqExecutor, Depends(get_dataReq_executor)],
     artifact_store: Annotated[QARequestArtifactStore, Depends(get_qaReq_artifactStore)],
     vis_data_store: Annotated[VisualisationDataStore, Depends(get_visData_store)],

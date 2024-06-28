@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from model.comp_op import ComparisonOperator
+from model.web.comp_op import ComparisonOperator
 from model.kg.ontospecies import SpeciesPropertyKey
 
 

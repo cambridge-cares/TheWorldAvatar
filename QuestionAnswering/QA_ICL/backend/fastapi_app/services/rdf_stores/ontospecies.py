@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from constants.namespace import ONTOSPECIES
-from model.comp_op import COMP_OP_2_SPARQL_SYMBOL
+from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
 from model.kg.ontospecies import (
     GcAtom,
     OntospeciesChemicalClass,
@@ -15,7 +15,7 @@ from model.kg.ontospecies import (
     OntospeciesUse,
     PeriodictableElement,
 )
-from model.ontospecies import SpeciesRequest
+from model.web.ontospecies import SpeciesRequest
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
 from services.sparql import get_ontospecies_endpoint

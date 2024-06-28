@@ -4,15 +4,19 @@ from typing import Annotated
 from fastapi import Depends
 
 from services.sparql import get_sgDispersion_endpoint
-from services.stores.entity_store.base import LinkerManager
 from services.sparql import SparqlClient
+from .base import LinkerManager
 
 
-class ShipLinker(LinkerManager):
-    def __init__(self, bg_client: SparqlClient):
-        self.bg_client = bg_client
+class ShipLinkerManager(LinkerManager):
+    def __init__(self, dispersion_endpoint: str):
+        self.sparql_client = SparqlClient(dispersion_endpoint)
 
-    def link(self, text: str | None, **kwargs):
+    @property
+    def cls2linker(self):
+        return {"disp:Ship": self.linkShip}
+
+    def linkShip(self, text: str | None, **kwargs):
         if "mmsi" not in kwargs:
             return []
 
@@ -25,11 +29,13 @@ SELECT ?IRI WHERE {{
 }}""".format(
             MMSI=kwargs["mmsi"]
         )
-        _, bindings  = self.bg_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
 
         return [binding["IRI"] for binding in bindings]
 
 
 @cache
-def get_ship_linker(bg_client: Annotated[SparqlClient, Depends(get_sgDispersion_endpoint)]):
-    return ShipLinker(bg_client=bg_client)
+def get_ship_linkerManager(
+    endpoint: Annotated[str, Depends(get_sgDispersion_endpoint)]
+):
+    return ShipLinkerManager(endpoint)

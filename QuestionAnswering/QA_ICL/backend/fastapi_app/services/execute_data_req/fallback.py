@@ -5,7 +5,7 @@ from typing import Annotated, Sequence
 from fastapi import Depends
 
 from constants.prefixes import TWA_ABOX_PREFIXES
-from model.qa import DataItem, DocumentCollection, TableData
+from model.structured_answer import DocumentCollection, TableData
 from services.rdf_stores import get_rdfStores
 from services.rdf_stores.base import Cls2NodeGetter
 from utils.collections import FrozenDict

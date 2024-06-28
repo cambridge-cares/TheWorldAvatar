@@ -5,10 +5,10 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from model.structured_answer import TableData
 from services.geocoding.base import IGeocoder
 from services.geocoding.serial import get_serial_geocoder
 from services.funcs.base import Name2Func
-from model.qa import TableData
 from .nearest import NearestCarparkLocator, get_nearestCarpark_locator
 from .feature_info import CarparkFeatureInfoClient, get_carpark_featureInfo_client
 

@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from controllers.qa import DataSupporter, get_data_supporter
-from model.qa import QARequest, QAResponse
+from model.web.qa import QARequest, QAResponse
 
 
 logger = logging.getLogger(__name__)

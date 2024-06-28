@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from config import AppSettings, ContextAugmentationSettings, get_app_settings
-from model.qa import TranslationContext
+from model.structured_answer import TranslationContext
 from services.stores.nlq2datareq_example_store import (
     Nlq2DataReqExampleStore,
     get_nlq2datareq_exampleStore,

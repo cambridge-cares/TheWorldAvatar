@@ -3,7 +3,7 @@ from typing import Annotated, get_args
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
-from model.ontozeolite import (
+from model.web.ontozeolite import (
     ScalarTopologicalPropertyKey,
     UnitCellKey,
     XRDPeakRequest,
