@@ -4,8 +4,8 @@ from typing import Annotated
 
 from fastapi import Depends
 from model.entity_linking.ontospecies import ElementLinkingArgs, SpeciesLinkingArgs
-from services.stores.entity_store.base import LinkerManager
 from services.sparql import SparqlClient, get_ontospecies_endpoint
+from .base import LinkerManager
 
 
 logger = logging.getLogger(__name__)

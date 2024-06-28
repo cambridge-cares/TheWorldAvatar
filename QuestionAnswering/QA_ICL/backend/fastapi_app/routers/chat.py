@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 
 from controllers.chat import ChatController, get_chatbot_client
-from model.chat import ChatRequest
+from model.web.chat import ChatRequest
 
 
 logger = logging.getLogger(__name__)

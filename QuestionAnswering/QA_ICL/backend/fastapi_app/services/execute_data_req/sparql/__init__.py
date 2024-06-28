@@ -7,7 +7,7 @@ from fastapi import Depends
 from constants.namespace import PREFIX2URI
 from constants.prefixes import TWA_ABOX_PREFIXES
 from model.nlq2datareq import SparqlDataReqForm
-from model.qa import DataItem, DocumentCollection, TableData
+from model.structured_answer import DataItem, DocumentCollection, TableData
 from services.sparql import SparqlClient
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_deep_remove_iris_from_list

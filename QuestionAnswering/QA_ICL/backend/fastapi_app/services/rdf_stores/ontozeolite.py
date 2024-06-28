@@ -2,7 +2,7 @@ from functools import cache
 from typing import Annotated
 
 from fastapi import Depends
-from model.comp_op import COMP_OP_2_SPARQL_SYMBOL
+from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
 from model.kg.ontozeolite import (
     OntocrystalAtomicStructure,
     OntocrystalCoordinateTransformation,
@@ -14,7 +14,7 @@ from model.kg.ontozeolite import (
     OntozeoliteZeoliteFrameworkBase,
     OntozeoliteZeoliticMaterialBase,
 )
-from model.ontozeolite import (
+from model.web.ontozeolite import (
     UnitCellAngleKey,
     UnitCellLengthKey,
     ZeoliteFrameworkRequest,

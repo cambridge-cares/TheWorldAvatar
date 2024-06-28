@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
 from model.kg.ontospecies import SpeciesPropertyKey
-from model.ontospecies import SpeciesRequest
+from model.web.ontospecies import SpeciesRequest
 from routers.utils import parse_rhs_colon
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
 from services.rdf_stores.ontospecies import (

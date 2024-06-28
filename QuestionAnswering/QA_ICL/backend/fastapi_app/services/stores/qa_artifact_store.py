@@ -3,7 +3,7 @@ from fastapi import Depends
 from pydantic import TypeAdapter
 from redis import Redis
 
-from model.qa import QARequestArtifact
+from model.structured_answer import QARequestArtifact
 from services.redis import get_redis_client
 
 

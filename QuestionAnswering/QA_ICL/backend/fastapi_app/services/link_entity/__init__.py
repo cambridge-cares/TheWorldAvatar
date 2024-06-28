@@ -10,25 +10,25 @@ import regex
 
 from config import AppSettings, EntityLinkingConfig, get_app_settings
 from model.lexicon import ENTITIES_INDEX_NAME
-from services.stores.entity_store.ontokin import (
-    OntokinLinkerManager,
-    get_ontokin_linkerManager,
-)
-from services.stores.entity_store.ontomops import (
-    OntomopsLinkerManager,
-    get_ontomops_linkerManager,
-)
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
 from .base import LinkerManager
-from .ship import ShipLinker, get_ship_linker
 from .ontospecies import OntospeciesLinkerManager, get_ontospecies_linkerManager
 from .ontozeolite import OntozeoliteLinkerManager, get_ontozeolite_linkerManager
+from .ontokin import (
+    OntokinLinkerManager,
+    get_ontokin_linkerManager,
+)
+from .ontomops import (
+    OntomopsLinkerManager,
+    get_ontomops_linkerManager,
+)
+from .ship import ShipLinkerManager, get_ship_linkerManager
 
 logger = logging.getLogger(__name__)
 
 
-class EntityStore:
+class CentralEntityLinker:
     def __init__(
         self,
         redis_client: Redis,
@@ -54,7 +54,7 @@ class EntityStore:
         """Performs exact matching over canonical labels.
         Note: This does not work if either the surface form or stored label contains forward slash.
         """
-        match_label = '@label:\"{label}\"'.format(
+        match_label = '@label:"{label}"'.format(
             label=regex.escape(surface_form, special_only=False, literal_spaces=True)
         )
         match_cls = self._match_cls_query(cls) if cls else None
@@ -222,7 +222,7 @@ def get_el_configs(app_settings: Annotated[AppSettings, Depends(get_app_settings
 
 @cache
 def get_linker_managers(
-    # ship_linker: Annotated[ShipLinker, Depends(get_ship_linker)],
+    ship_linker_manager: Annotated[ShipLinkerManager, Depends(get_ship_linkerManager)],
     ontospecies_linker_manager: Annotated[
         OntospeciesLinkerManager, Depends(get_ontospecies_linkerManager)
     ],
@@ -241,6 +241,7 @@ def get_linker_managers(
         ontokin_linker_manager,
         ontozeolite_linker_manager,
         ontomops_linker_manager,
+        ship_linker_manager,
     )
 
 
@@ -251,7 +252,7 @@ def get_entity_store(
     el_configs: Annotated[list[EntityLinkingConfig], Depends(get_el_configs)],
     linker_managers: Annotated[tuple[LinkerManager, ...], Depends(get_linker_managers)],
 ):
-    return EntityStore(
+    return CentralEntityLinker(
         redis_client=redis_client,
         embedder=embedder,
         el_configs=el_configs,
