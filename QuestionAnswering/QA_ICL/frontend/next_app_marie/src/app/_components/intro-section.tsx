@@ -6,13 +6,15 @@ import { cn } from '@/lib/utils'
 export interface IntroSectionProps extends React.HTMLAttributes<HTMLElement> {
   imgSrc: string
   imgAlt: string
-  introTextMd: string
+  heading: string
+  mdContent: string
 }
 
 export const IntroSection = async ({
   imgSrc,
   imgAlt,
-  introTextMd,
+  heading,
+  mdContent,
   className,
   ...props
 }: IntroSectionProps) => (
@@ -27,8 +29,9 @@ export const IntroSection = async ({
       <Image src={imgSrc} alt={imgAlt} width={175} height={250} priority />
     </div>
     <div className='w-full content-center space-y-2 md:col-span-2 lg:col-span-3'>
-      <Markdown className='prose max-w-none prose-sm prose-slate prose-h1:text-3xl prose-h1:font-semibold prose-h1:text-blue-500 prose-h1:m-0'>
-        {introTextMd}
+      <h1>{heading}</h1>
+      <Markdown className='prose max-w-none prose-sm prose-slate'>
+        {mdContent}
       </Markdown>
     </div>
   </section>

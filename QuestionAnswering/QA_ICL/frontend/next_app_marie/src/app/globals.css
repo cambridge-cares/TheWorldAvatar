@@ -70,7 +70,16 @@
     * {
       @apply border-border;
     }
+
     body {
       @apply bg-background text-foreground;
+    }
+
+    h1 {
+      @apply text-4xl font-semibold text-blue-500 m-0
+    }
+
+    h2 {
+      @apply text-3xl font-medium text-blue-500 m-0
     }
   }
