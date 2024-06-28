@@ -47,7 +47,11 @@ public final class StackClient {
     }
 
     public static String prependStackName(String name) {
-        return stackName + "_" + name;
+        return prependStackName(name, "_");
+    }
+
+    public static String prependStackName(String name, String separator) {
+        return stackName + separator + name;
     }
 
     public static String removeStackName(String name) {
