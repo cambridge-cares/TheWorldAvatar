@@ -1,0 +1,22 @@
+PREFIX ontoplot:<https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX ontozoning:<https://www.theworldavatar.com/kg/ontozoning/>
+PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?iri WHERE {
+  ?landusetype_instance rdfs:label ?landusetype.
+  SERVICE <ONTOP> {
+    ?iri rdf:type ontoplot:Plot;
+      ontozoning:hasLandUseType ?landusetype_instance;
+      ontoplot:hasPlotArea/om:hasValue/om:hasNumericalValue ?area.
+    FILTER( "''" = "[minarea]" || "''" = "[maxarea]" || (?area >= [minarea] && ?area <= [maxarea] ))
+  }
+  OPTIONAL {
+    SERVICE <ONTOP> {
+      ?iri ontoplot:hasMaximumPermittedGPR/om:hasValue/om:hasNumericalValue ?gfa.
+      FILTER( "''" = "[mingfa]" || "''" = "[maxgfa]" || (?gfa >= [mingfa] && ?gfa <= [maxgfa] ))
+    }
+  }
+  FILTER( "''" = "[landusetype]" || STR(?landusetype) in ([landusetype])) 
+}

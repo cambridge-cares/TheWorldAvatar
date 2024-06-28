@@ -9,7 +9,7 @@
      xmlns:ontosealevel="https://www.theworldavatar.com/kg/ontosealevel/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosealevel/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20 June 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 June 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Ontology for Sea Level is developed to represent information about sea level.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -45,6 +45,26 @@
      -->
 
 
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/associatedWith -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/associatedWith">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedArea"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedLength"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a Sea Level Change and its associated properties.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">associated with</rdfs:label>
+    </owl:ObjectProperty>
     
 
 
@@ -196,7 +216,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasPercentageQuantile">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and the percentage quantile of </rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its statistical percentage quantile. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has percentage quantile</rdfs:label>
     </owl:DatatypeProperty>
@@ -314,6 +334,30 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoplot/Plot"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/AffectedArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amount of area affected by sea level rise. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AffectedArea</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/AffectedLength -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosealevel/AffectedLength">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amount of length affected by sea level rise. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AffectedLength</rdfs:label>
+    </owl:Class>
     
 
 
