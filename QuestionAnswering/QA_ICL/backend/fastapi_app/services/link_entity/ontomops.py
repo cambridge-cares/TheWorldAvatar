@@ -10,7 +10,7 @@ from model.entity_linking.ontomops import (
     MOPLinkingArgs,
 )
 from services.sparql import SparqlClient, get_ontomops_endpoint
-from services.stores.entity_store.base import LinkerManager
+from .base import LinkerManager
 
 
 logger = logging.getLogger(__name__)

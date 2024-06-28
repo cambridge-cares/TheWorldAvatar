@@ -6,7 +6,7 @@ from fastapi import Depends
 
 from model.entity_linking.ontokin import MechanismLinkingArgs, ReactionLikingArgs
 from services.sparql import SparqlClient, get_ontokin_endpoint
-from services.stores.entity_store.base import LinkerManager
+from .base import LinkerManager
 
 
 logger = logging.getLogger(__name__)
