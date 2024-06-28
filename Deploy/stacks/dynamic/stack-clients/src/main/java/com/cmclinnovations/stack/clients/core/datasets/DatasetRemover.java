@@ -34,16 +34,21 @@ public class DatasetRemover {
     public void removeDataset(Dataset dataset) {
 
         if (!dataset.isSkip()) {
-            // Ensure PostGIS database is removed, if specified
-            PostGISClient.getInstance().removeDatabase(dataset.getDatabase());
 
-            // Ensure Blazegraph namespace is removed, if specified
-            BlazegraphClient.getInstance().removeNamespace(dataset.getNamespace());
+            String ontopServiceName = dataset.getOntopName();
+
+            serviceManager.removeService(StackClient.getStackName(), ontopServiceName);
 
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
             String workspaceName = dataset.getWorkspaceName();
             // Ensure GeoServer workspace is removed
             geoServerClient.removeWorkspace(workspaceName);
+
+            // Ensure Blazegraph namespace is removed, if specified
+            BlazegraphClient.getInstance().removeNamespace(dataset.getNamespace());
+
+            // Ensure PostGIS database is removed, if specified
+            PostGISClient.getInstance().removeDatabase(dataset.getDatabase());
 
             // Upload styles to GeoServer
             // dataset.getGeoserverStyles().forEach(style ->
@@ -56,10 +61,6 @@ public class DatasetRemover {
             // geoServerClient.loadOtherFiles(directory,
             // staticGeoServerData.getOtherFiles());
             // }
-
-            String ontopServiceName = dataset.getOntopName();
-
-            serviceManager.removeService(StackClient.getStackName(), ontopServiceName);
 
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient(catalogNamespace)
