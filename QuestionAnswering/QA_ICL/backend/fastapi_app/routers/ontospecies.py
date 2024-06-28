@@ -3,7 +3,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
-from model.kg.ontospecies import SpeciesPropertyKey
+from model.kg.ontospecies import (
+    OntospeciesChemicalClass,
+    OntospeciesSpeciesBase,
+    SpeciesPropertyKey,
+)
 from model.web.ontospecies import SpeciesRequest
 from routers.utils import parse_rhs_colon
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
@@ -19,7 +23,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/chemical-classes", summary="Get all chemical classes")
+@router.get(
+    "/chemical-classes",
+    summary="Get all chemical classes",
+    response_model=list[OntospeciesChemicalClass],
+)
 async def getChemicalClasses(
     ontospecies_store: Annotated[OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)]
 ):
@@ -62,6 +70,7 @@ async def parse_species_request(
             for name in SPECIES_PROPERTY_QUERY_KEYS.keys()
         ]
     },
+    response_model=list[OntospeciesSpeciesBase],
 )
 async def getSpecies(
     species_req: Annotated[SpeciesRequest, Depends(parse_species_request)],
@@ -72,7 +81,15 @@ async def getSpecies(
     return ontospecies_store.get_species(species_req)
 
 
-@router.get("/species/{iri:path}/xyz", summary="Get species' XYZ geometry file")
+class XYZResponse(Response):
+    media_type = "chemical/x-xyz"
+
+
+@router.get(
+    "/species/{iri:path}/xyz",
+    summary="Get species' XYZ geometry file",
+    response_class=XYZResponse,
+)
 async def getSpeciesXyz(
     iri: str, xyz_manager: Annotated[XYZManager, Depends(get_xyz_manager)]
 ):
@@ -81,4 +98,7 @@ async def getSpeciesXyz(
         raise HTTPException(
             status_code=404, detail=f"XYZ file not found for species `{iri}`"
         )
-    return Response(content=xyz, media_type="chemical/x-xyz")
+    return XYZResponse(
+        content=xyz,
+        headers={"Content-Disposition": 'attachment; filename="species.xyz"'},
+    )
