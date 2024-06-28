@@ -1,5 +1,4 @@
 import logging
-import re
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
@@ -12,6 +11,7 @@ from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
 )
+from utils.str import CAMEL_CASE_PATTERN
 
 
 logger = logging.getLogger(__name__)
@@ -26,12 +26,8 @@ async def getChemicalClasses(
     return ontospecies_store.get_chemical_classes_all()
 
 
-CHEMICAL_CLASS_QUERY_KEY = "chemical-class"
-USE_QUERY_KEY = "use"
-
-_CAMEL_CASE_PATTERN = re.compile(r"(?<!^)(?=[A-Z])")
 SPECIES_PROPERTY_QUERY_KEYS = {
-    _CAMEL_CASE_PATTERN.sub("-", key.value).lower(): key for key in SpeciesPropertyKey
+    CAMEL_CASE_PATTERN.sub("-", key.value).lower(): key for key in SpeciesPropertyKey
 }
 
 
@@ -60,12 +56,7 @@ async def parse_species_request(
             {
                 "in": "query",
                 "name": name,
-                "schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
+                "schema": {"type": "array", "items": {"type": "string"}},
                 "description": "RHS colon filters e.g. `eq:100`, `lte:200`",
             }
             for name in SPECIES_PROPERTY_QUERY_KEYS.keys()

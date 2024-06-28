@@ -17,15 +17,11 @@ from model.kg.ontospecies import (
 )
 from model.ontospecies import SpeciesRequest
 from services.rdf_orm import RDFStore
-from services.rdf_stores.base import Cls2GetterRDFStore
-from services.sparql import SparqlClient, get_ontospecies_endpoint
+from services.rdf_stores.base import Cls2NodeGetter
+from services.sparql import get_ontospecies_endpoint
 
 
-class OntospeciesRDFStore(Cls2GetterRDFStore):
-    def __init__(self, ontospecies_endpoint: str):
-        self.rdf_store = RDFStore(ontospecies_endpoint)
-        self.sparql_client = SparqlClient(ontospecies_endpoint)
-
+class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
     @property
     def cls2getter(self):
         return {
@@ -39,23 +35,26 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
         }
 
     def get_elements_many(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(PeriodictableElement, iris)
+        return self.getMany(PeriodictableElement, iris)
 
     def get_atoms_many(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(GcAtom, iris)
+        return self.getMany(GcAtom, iris)
 
     def get_species_many(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntospeciesSpeciesBase, iris)
+        return self.getMany(OntospeciesSpeciesBase, iris)
 
     def get_species(self, req: SpeciesRequest):
-        chemclass_triples = [
+        chemclass_patterns = [
             f"?Species os:hasChemicalClass/rdfs:subClassOf* <{iri}> ."
             for iri in req.chemical_class
         ]
-        use_triples = [f"?Species os:hasUse <{iri}> ." for iri in req.use]
+        use_patterns = [f"?Species os:hasUse <{iri}> ." for iri in req.use]
 
-        property_triple_pairs = [
-            [
+        property_patterns = [
+            pattern
+            for key, conds in req.property.items()
+            if conds
+            for pattern in (
                 f"?Species os:has{key}/os:value ?{key}Value .",
                 "FILTER ( {} )".format(
                     " && ".join(
@@ -63,11 +62,8 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
                         for op, rhs in conds
                     )
                 ),
-            ]
-            for key, conds in req.property.items()
-            if conds
+            )
         ]
-        property_triples = [triple for pair in property_triple_pairs for triple in pair]
 
         query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
@@ -77,7 +73,7 @@ WHERE {{
     {}
 }}""".format(
             "\n    ".join(
-                itertools.chain(chemclass_triples, use_triples, property_triples)
+                itertools.chain(chemclass_patterns, use_patterns, property_patterns)
             )
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
@@ -85,21 +81,19 @@ WHERE {{
         return [x for x in species if x]
 
     def get_properties_many(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntospeciesProperty, iris)
+        return self.getMany(OntospeciesProperty, iris)
 
     def get_identifiers_many(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntospeciesIdentifier, iris)
+        return self.getMany(OntospeciesIdentifier, iris)
 
     def get_chemical_classes_many(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntospeciesChemicalClass, iris)
+        return self.getMany(OntospeciesChemicalClass, iris)
 
     def get_chemical_classes_all(self):
-        return self.rdf_store.getAll(
-            OntospeciesChemicalClass, ONTOSPECIES.ChemicalClass
-        )
+        return self.getAll(OntospeciesChemicalClass, ONTOSPECIES.ChemicalClass)
 
     def get_uses_many(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntospeciesUse, iris)
+        return self.getMany(OntospeciesUse, iris)
 
 
 @cache

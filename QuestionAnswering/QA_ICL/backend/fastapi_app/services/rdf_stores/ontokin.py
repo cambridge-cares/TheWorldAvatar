@@ -19,11 +19,11 @@ from model.kg.ontokin import (
     OntokinTroeModel,
 )
 from services.rdf_orm import RDFStore
-from services.rdf_stores.base import Cls2GetterRDFStore
+from services.rdf_stores.base import Cls2NodeGetter
 from services.sparql import SparqlClient, get_ontokin_endpoint
 
 
-class OntokinRDFStore(Cls2GetterRDFStore):
+class OntokinRDFStore(Cls2NodeGetter, RDFStore):
     KINETIC_MODEL_URI2CLS: dict[URIRef, type[OntokinKineticModelBase]] = {
         ONTOKIN.ArrheniusModel: OntokinArrheniusModel,
         ONTOKIN.PDepArrheniusModel: OntokinPDepArrheniusModel,
@@ -32,10 +32,6 @@ class OntokinRDFStore(Cls2GetterRDFStore):
         ONTOKIN.LindemannModel: OntokinLindemannModel,
         ONTOKIN.TroeModel: OntokinTroeModel,
     }
-
-    def __init__(self, ontokin_endpoint: str):
-        self.rdf_store = RDFStore(ontokin_endpoint)
-        self.sparql_client = SparqlClient(ontokin_endpoint)
 
     @property
     def cls2getter(self):
@@ -48,10 +44,10 @@ class OntokinRDFStore(Cls2GetterRDFStore):
         }
 
     def get_mechanisms(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntokinMechanismBase, iris)
+        return self.getMany(OntokinMechanismBase, iris)
 
     def get_reactions(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntokinReactionBase, iris)
+        return self.getMany(OntokinReactionBase, iris)
 
     def get_kinetic_models(self, iris: list[str] | tuple[str]):
         if not iris:
@@ -76,7 +72,7 @@ WHERE {{
             model_cls = self.KINETIC_MODEL_URI2CLS.get(URIRef(type))
             if not model_cls:
                 continue
-            models = self.rdf_store.getMany(model_cls, iris=same_type_iris)
+            models = self.getMany(model_cls, iris=same_type_iris)
             iri2model.update(
                 {iri: model for iri, model in zip(same_type_iris, models) if model}
             )
@@ -84,10 +80,10 @@ WHERE {{
         return [iri2model.get(iri) for iri in iris]
 
     def get_thermo_models(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntokinThermoModel, iris)
+        return self.getMany(OntokinThermoModel, iris)
 
     def get_transport_models(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntokinTransportModel, iris)
+        return self.getMany(OntokinTransportModel, iris)
 
 
 @cache

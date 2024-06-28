@@ -7,7 +7,7 @@ from fastapi import Depends
 from constants.prefixes import TWA_ABOX_PREFIXES
 from model.qa import DataItem, DocumentCollection, TableData
 from services.rdf_stores import get_rdfStores
-from services.rdf_stores.base import Cls2GetterRDFStore
+from services.rdf_stores.base import Cls2NodeGetter
 from utils.collections import FrozenDict
 from utils.json import deep_pd_json_normalize_list
 from utils.rdf import filter_deep_remove_iris_from_list
@@ -16,7 +16,7 @@ from utils.rdf import filter_deep_remove_iris_from_list
 class FallbackDataReqExecutor:
     def __init__(
         self,
-        stores: Sequence[Cls2GetterRDFStore],
+        stores: Sequence[Cls2NodeGetter],
     ):
         self.cls2getter = {
             cls: getter for store in stores for cls, getter in store.cls2getter.items()
@@ -67,6 +67,6 @@ class FallbackDataReqExecutor:
 
 @cache
 def get_fallback_executor(
-    stores: Annotated[Sequence[Cls2GetterRDFStore], Depends(get_rdfStores)]
+    stores: Annotated[Sequence[Cls2NodeGetter], Depends(get_rdfStores)]
 ):
     return FallbackDataReqExecutor(stores)

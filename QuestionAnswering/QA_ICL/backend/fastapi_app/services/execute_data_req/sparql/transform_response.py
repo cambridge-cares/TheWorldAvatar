@@ -5,14 +5,14 @@ from typing import Annotated, Sequence
 from fastapi import Depends
 
 from services.rdf_stores import get_rdfStores
-from services.rdf_stores.base import Cls2GetterRDFStore
+from services.rdf_stores.base import Cls2NodeGetter
 from utils.collections import FrozenDict, listofdict2dictoflist
 
 
 class SparqlResponseTransformer:
     def __init__(
         self,
-        stores: Sequence[Cls2GetterRDFStore],
+        stores: Sequence[Cls2NodeGetter],
     ):
         self.cls2getter = {
             cls: getter for store in stores for cls, getter in store.cls2getter.items()
@@ -65,6 +65,6 @@ class SparqlResponseTransformer:
 
 @cache
 def get_sparqlRes_transformer(
-    stores: Annotated[tuple[Cls2GetterRDFStore, ...], Depends(get_rdfStores)]
+    stores: Annotated[tuple[Cls2NodeGetter, ...], Depends(get_rdfStores)]
 ):
     return SparqlResponseTransformer(stores=stores)

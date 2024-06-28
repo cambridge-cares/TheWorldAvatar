@@ -4,14 +4,11 @@ from typing import Annotated
 from fastapi import Depends
 from model.kg.ontomops import OntomopsAM, OntomopsCBU, OntomopsGBU, OntomopsMOP
 from services.rdf_orm import RDFStore
-from services.rdf_stores.base import Cls2GetterRDFStore
+from services.rdf_stores.base import Cls2NodeGetter
 from services.sparql import get_ontomops_endpoint
 
 
-class OntomopsRDFStore(Cls2GetterRDFStore):
-    def __init__(self, ontomops_endpoint: str):
-        self.rdf_store = RDFStore(ontomops_endpoint)
-
+class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
     @property
     def cls2getter(self):
         return {
@@ -22,16 +19,16 @@ class OntomopsRDFStore(Cls2GetterRDFStore):
         }
 
     def get_MOPs(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntomopsMOP, iris)
+        return self.getMany(OntomopsMOP, iris)
 
     def get_CBUs(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntomopsCBU, iris)
+        return self.getMany(OntomopsCBU, iris)
 
     def get_AMs(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntomopsAM, iris)
+        return self.getMany(OntomopsAM, iris)
 
     def get_GBUs(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntomopsGBU, iris)
+        return self.getMany(OntomopsGBU, iris)
 
 
 @cache
