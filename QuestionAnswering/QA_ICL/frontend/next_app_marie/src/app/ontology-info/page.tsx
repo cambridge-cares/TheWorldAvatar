@@ -50,7 +50,7 @@ export default async function OntologyInfo() {
         {data.map(({ id, heading, mdContent }, i) => (
           <section key={i} className="mb-12">
             <h2 id={id} className="mb-2"><a href={`#${id}`} className="hover:underline">{heading}</a></h2>
-            <Markdown className='prose prose-xl max-w-none'>{mdContent}</Markdown>
+            <Markdown className='prose prose-xl prose-h3:text-xl max-w-none'>{mdContent}</Markdown>
           </section>
         ))}
       </div>
