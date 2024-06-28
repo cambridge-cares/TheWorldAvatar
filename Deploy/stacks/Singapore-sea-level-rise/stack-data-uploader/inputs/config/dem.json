@@ -1,0 +1,30 @@
+{
+  "name": "dem",
+  "database": "postgres",
+  "workspace": "twa",
+  "skip": false,
+  "datasetDirectory": "dem",
+  "dataSubsets": [
+    {
+      "name": "dem",
+      "type": "raster",
+      "subdirectory": "srtm",
+      "skip": false,
+      "sql": "@/inputs/data/dem/srtm/slrpolygons.sql",
+      "gdalTranslateOptions": {
+        "sridIn": "EPSG:4326"
+      },
+      "geoServerSettings": {
+        "layerSettings": {  
+          "defaultStyle": "twa:uk-dem-style"
+        }
+      }
+    }
+  ],
+  "styles": [
+    {
+      "name": "uk-dem-style",
+      "file": "uk-dem-style.sld"
+    }
+  ]
+}

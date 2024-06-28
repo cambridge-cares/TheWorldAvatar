@@ -1,0 +1,62 @@
+{
+    "name": "culture",
+    "database": "postgres",
+    "workspace": "twa",
+    "skip": false,
+    "datasetDirectory": "culture",
+    "dataSubsets": [
+        {
+            "name": "historicsite",
+            "type": "vector",
+            "subdirectory": "historicsite",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        },
+        {
+            "name": "monument",
+            "type": "vector",
+            "subdirectory": "monument",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        },
+        {
+            "name": "museum",
+            "type": "vector",
+            "subdirectory": "museum",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        },
+        {
+            "name": "touristattraction",
+            "type": "vector",
+            "subdirectory": "touristattraction",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        },
+        {
+            "name": "heritagetree",
+            "type": "vector",
+            "subdirectory": "heritagetree",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        }
+    ],
+    "mappings": [
+      "culture.obda"
+    ]
+}
