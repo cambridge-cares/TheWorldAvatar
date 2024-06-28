@@ -32,17 +32,31 @@ The agent has been implemented to work in the stack. To do so, place gfaagent.js
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
-### 2.4 Running the Agent
-The agent is reachable at four endpoints:
-1) `/calculation`: calculate GFA
-2) `/calculationwithodba`: calculate GFA and upload gfa.odba
-3) `/cost`: calculate GFA cost
-4) `/costwithodba`: calculate GFA cost and upload cost.odba
+### 2.4 Data prerequisites
+GFA calculations:
+1) Make sure number of floors of each building can be queried via
+```
+PREFIX env: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+SELECT ?building ?floor
+WHERE {?building env:hasNumberOfFloors/env:hasValue ?floor .}
+```
+this is added by running the BuildingFloorAgent.
 
+2) Building geometries in citydb queried via [total_area_query.sql].
+
+Cost calculations:
+1) Requires OSM usage information added by OSMAgent, query via [building.sparql].
+
+
+### 2.5 Running the Agent
+The agent is reachable at two endpoints:
+1) `/gfa`: calculate GFA of buildings
+2) `/cost`: calculate cost of buildings
 
 To run the agent, run the following cURL command:
 ```
-curl -X POST localhost:3838/gfaagent/calculation
+curl -X POST localhost:3838/gfaagent/gfa
 curl -X POST localhost:3838/gfaagent/cost
 ```
-
+[total_area_query.sql]: ./src/main/resources/total_area_query.sql
+[building.sparql]: ./src/main/resources/building.sparql

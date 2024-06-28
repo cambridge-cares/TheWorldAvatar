@@ -1,85 +1,97 @@
 package uk.ac.cam.cares.jps.agent.gfaagent;
 
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.Properties;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.ClassPathResource;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-@WebServlet(urlPatterns = {"/calculation", "/calculationwithodba", "/cost", "/costwithodba"})
-public class GFAAgent extends JPSAgent{
-       
-    private EndpointConfig endpointConfig = new EndpointConfig();
-
-    
-    private String dbUrl;
-    private String dbUser;
-    private String dbPassword;
+@WebServlet(urlPatterns = { GFAAgent.COST_PATH, GFAAgent.GFA_PATH })
+public class GFAAgent extends HttpServlet {
+    private static final Logger LOGGER = LogManager.getLogger(GFAAgent.class);
+    private RemoteRDBStoreClient remoteRDBStoreClient;
     private String ontopUrl;
 
+    public static final String GFA_PATH = "/gfa";
+    public static final String COST_PATH = "/cost";
+
+    @Override
     public synchronized void init() {
-        String dbName;
-        dbName = endpointConfig.getDbName();
-        this.dbUrl = endpointConfig.getDbUrl(dbName);
-        this.dbUser = endpointConfig.getDbUser();
-        dbPassword = endpointConfig.getDbPassword();       
-        this.ontopUrl = endpointConfig.getOntopUrl();
+        EndpointConfig endpointConfig = new EndpointConfig();
+        ontopUrl = endpointConfig.getOntopUrl();
+        remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(), endpointConfig.getDbUser(),
+                endpointConfig.getDbPassword());
     }
 
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        return processRequestParameters(requestParams);
-    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        GFACalculation gfaCalculation = new GFACalculation(ontopUrl);
 
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
+        if (req.getServletPath().contentEquals(GFA_PATH)) {
+            // calculate GFA 1. query footpring 2. query height (if no height, estimate
+            // 3.2m/floor) 3. calculate 4. store
+            try (Connection conn = remoteRDBStoreClient.getConnection()) {
+                GFAPostGISClient.createSchema(conn);
+                GFAPostGISClient.createGFATable(conn);
 
-        try {
-            GFACalculation gfaCalculation = new GFACalculation(dbUrl, dbUser, dbPassword);
-            String paremString = requestParams.getString("requestUrl");
-            if(paremString.contains("/calculation")){            
-                //calculate GFA 1. query footpring 2. query height (if no height, estimate 3.2m/floor) 3. calculate 4. store
-                gfaCalculation.calculationGFA();
-                if (paremString.contains("withodba")){
-                    Path obdaFile = Path.of("/resources/gfa.obda");
-                    uploadODBA(obdaFile);
-                }
-            }else if (paremString.contains("/cost")){
-                CostCalculation costCalculation = new CostCalculation(dbUrl, dbUser, dbPassword, ontopUrl);
-                costCalculation.calculationCost();
-                if (paremString.contains("withodba")){
-                    Path obdaFile = Path.of("/resources/cost.obda");
-                    uploadODBA(obdaFile);
-                }
+                LOGGER.info("Starting to add GFA data");
+                gfaCalculation.calculationGFA(conn);
+                LOGGER.info("GFA calculation done");
+
+            } catch (SQLException e) {
+                throw new RuntimeException("Error during GFA calculation", e);
             }
 
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
-
-        return requestParams;
-    }
-
-    public void uploadODBA (Path obdaFile) {
-        try {
+            LOGGER.info("Uploading OBDA file for GFA data");
+            // Upload Ontop mapping
+            Path obdaPath;
+            try {
+                obdaPath = new ClassPathResource("gfa.obda").getFile().toPath();
+            } catch (IOException e) {
+                throw new RuntimeException("Error uploading gfa.obda", e);
+            }
             OntopClient ontopClient = OntopClient.getInstance();
-            ontopClient.updateOBDA(obdaFile);
-        } catch (Exception e) {
-            System.out.println("Could not retrieve isochrone .obda file.");
-        }
+            ontopClient.updateOBDA(obdaPath);
 
+        } else if (req.getServletPath().contentEquals(COST_PATH)) {
+            LOGGER.info("Received POST request to calculate building cost");
+            CostCalculation costCalculation = new CostCalculation(ontopUrl);
+
+            LOGGER.info("Querying buildings info");
+            costCalculation.setBuildings();
+
+            LOGGER.info("Calculating costs");
+            costCalculation.calculateCost();
+
+            LOGGER.info("Uploading data");
+            try (Connection conn = remoteRDBStoreClient.getConnection()) {
+                costCalculation.uploadData(conn);
+            } catch (SQLException e) {
+                throw new RuntimeException("Error uploading cost data", e);
+            }
+            LOGGER.info("Uploading OBDA file for cost data");
+            // Upload Ontop mapping
+            Path obdaPath;
+            try {
+                obdaPath = new ClassPathResource("cost.obda").getFile().toPath();
+            } catch (IOException e) {
+                throw new RuntimeException("Error uploading cost.obda", e);
+            }
+            OntopClient ontopClient = OntopClient.getInstance();
+            ontopClient.updateOBDA(obdaPath);
+            LOGGER.info("Uploaded obda file");
+        }
     }
 }
