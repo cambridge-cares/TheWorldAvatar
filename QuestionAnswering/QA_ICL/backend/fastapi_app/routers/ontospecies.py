@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from model.kg.ontospecies import (
     OntospeciesChemicalClass,
     OntospeciesSpeciesBase,
+    OntospeciesUse,
     SpeciesPropertyKey,
 )
 from model.web.ontospecies import SpeciesRequest
@@ -33,6 +34,15 @@ async def getChemicalClasses(
 ):
     return ontospecies_store.get_chemical_classes_all()
 
+@router.get(
+    "/uses",
+    summary="Get all uses",
+    response_model=list[OntospeciesUse],
+)
+async def getUses(
+    ontospecies_store: Annotated[OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)]
+):
+    return ontospecies_store.get_uses_all()
 
 SPECIES_PROPERTY_QUERY_KEYS = {
     CAMEL_CASE_PATTERN.sub("-", key.value).lower(): key for key in SpeciesPropertyKey
