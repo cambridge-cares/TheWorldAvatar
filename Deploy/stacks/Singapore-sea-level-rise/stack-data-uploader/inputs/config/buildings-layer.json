@@ -5,8 +5,7 @@
     "workspace": "twa",
     "externalDatasets": [
         "gfa-floors",
-        "osm",
-        "buildings"
+        "osm"
     ],
     "dataSubsets": [
         {
