@@ -1,4 +1,4 @@
-#### Publications
+## Publications
 
 [1] X. Zhou, D. Nurkowski, S. Mosbach, J. Akroyd, and M. Kraft, ["Question answering system for chemistry"](https://doi.org/10.1021/acs.jcim.1c00275), Journal of Chemical Information and Modeling, 61, 8, 3868-3880 (2021).
 
@@ -8,7 +8,7 @@
 
 [4] D. Tran, L. Pascazio, J. Akroyd, S. Mosbach, and M. Kraft, ["Leveraging text-to-text pre-trained language models for question answering in chemistry"](https://doi.org/10.1021/acsomega.3c08842), ACS Omega (2024).
 
-#### Preprints
+## Preprints
 
 [1] X. Zhou, D. Nurkowski, S. Mosbach, J. Akroyd, and M. Kraft, "A Question answering system for chemistry", Technical Report 266, c4e-Preprint Series, Cambridge, 2021 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-266.pdf)).
 
@@ -20,14 +20,14 @@
 
 [5] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, "Question-answering system for combustion kinetics", Technical Report 315, c4e-Preprint Series, Cambridge, 2023 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-315.pdf)).
 
-#### Previous versions
+## Previous versions
 
-- Marie version 1: Ref. [1]
+1. Marie version 1: Ref. [1]
 
-- Marie version 2: Ref. [2]
+1. Marie version 2: Ref. [2]
 
-- [Marie version 3](http://159.223.42.53:5003/): Ref. [3]
+1. [Marie version 3](http://159.223.42.53:5003/): Ref. [3]
 
-- [Marie version 4](http://159.223.42.53:3838/): Ref. [4]
+1. [Marie version 4](http://159.223.42.53:3838/): Ref. [4]
 
-- [Marie version 5](http://159.223.42.53:3839/): Preprint [5]
+1. [Marie version 5](http://159.223.42.53:3839/): Preprint [5]
