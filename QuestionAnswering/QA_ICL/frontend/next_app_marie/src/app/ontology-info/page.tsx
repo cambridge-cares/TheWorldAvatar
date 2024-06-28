@@ -5,6 +5,7 @@ import Markdown from "react-markdown";
 import matter from 'gray-matter'
 
 import { PATH_TO_RESOURCES } from "@/lib/fs";
+import { Main } from "@/components/ui/main";
 
 
 const PATH_TO_TBOX_INFO = path.join(PATH_TO_RESOURCES, 'tbox-info')
@@ -36,7 +37,7 @@ export default async function OntologyInfo() {
     )
 
   return (
-    <main className='flex flex-col items-center'>
+    <Main className='flex flex-col items-center'>
       <div className="w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12">
         <h1 className="mb-8">Information on Chemistry Ontologies</h1>
         <section className="mb-8">
@@ -54,6 +55,6 @@ export default async function OntologyInfo() {
           </section>
         ))}
       </div>
-    </main>
+    </Main>
   )
 }
