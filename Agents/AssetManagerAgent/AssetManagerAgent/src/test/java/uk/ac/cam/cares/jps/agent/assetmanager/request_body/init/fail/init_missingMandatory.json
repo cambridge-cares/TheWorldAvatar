@@ -1,6 +1,6 @@
 {"assetData": 
     {  
-        "Prefix": "", //Missing asset class field
+        "Prefix": "", 
         "ID": "2023-10-27/4", "Name": "Projector Screen", 
         "serialNum": "999999", "modelNumber": "999999", 
         "SupplierName": "MOCK_COMPANY", "ManufacturerName": "MOCK_COMPANY", 

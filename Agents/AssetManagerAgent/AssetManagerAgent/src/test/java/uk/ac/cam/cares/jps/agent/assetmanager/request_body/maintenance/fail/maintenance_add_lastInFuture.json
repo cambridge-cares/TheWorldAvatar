@@ -1,7 +1,6 @@
 {
     "assetData":{
         "ID": "2023-10-27/5",
-        //"LastService":"3025-12-25", //TODO if alive, update unit test on 3025-12-24
         "LastService":"TODAY+1",
         "NextService":"",
         "ServiceProvider":"MOCK_COMPANY",

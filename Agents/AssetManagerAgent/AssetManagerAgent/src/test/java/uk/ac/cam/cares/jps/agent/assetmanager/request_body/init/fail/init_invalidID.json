@@ -1,7 +1,7 @@
 {"assetData": 
     {  
         "Prefix": "", 
-        "AssetClass": "OtherIT", "ID": "23September2023-102", //ID invalid here
+        "AssetClass": "OtherIT", "ID": "23September2023-102",
         "Name": "Projector Screen", 
         "serialNum": "999999", "modelNumber": "999999", 
         "SupplierName": "MOCK_COMPANY", "ManufacturerName": "MOCK_COMPANY", 

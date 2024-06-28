@@ -1,7 +1,7 @@
 {"assetData": 
     {  
         "Prefix": "", 
-        "AssetClass": "Voltmeter", //Asset class not in properties file
+        "AssetClass": "Voltmeter", 
         "ID": "2023-10-27/4", "Name": "Projector Screen", 
         "serialNum": "999999", "modelNumber": "999999", 
         "SupplierName": "MOCK_COMPANY", "ManufacturerName": "MOCK_COMPANY", 
