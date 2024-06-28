@@ -47,7 +47,7 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
     def get_species_many(self, iris: list[str] | tuple[str]):
         return self.rdf_store.getMany(OntospeciesSpeciesBase, iris)
 
-    def find_species(self, req: SpeciesRequest):
+    def get_species(self, req: SpeciesRequest):
         chemclass_triples = [
             f"?Species os:hasChemicalClass/rdfs:subClassOf* <{iri}> ."
             for iri in req.chemical_class
@@ -73,6 +73,7 @@ class OntospeciesRDFStore(Cls2GetterRDFStore):
 
 SELECT ?Species
 WHERE {{
+    ?Species a os:Species .
     {}
 }}""".format(
             "\n    ".join(

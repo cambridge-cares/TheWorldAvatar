@@ -2,11 +2,12 @@ import logging
 import re
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 from model.comp_op import ComparisonOperator
 from model.kg.ontospecies import SpeciesPropertyKey
 from model.ontospecies import SpeciesRequest
+from services.mol_vis.xyz import XYZManager, get_xyz_manager
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
@@ -54,7 +55,7 @@ async def parse_species_request(req: Request):
 
 @router.get(
     "/species",
-    summary="Find species",
+    summary="Get species",
     openapi_extra={
         "parameters": [
             {
@@ -83,4 +84,16 @@ async def getSpecies(
         OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
 ):
-    return ontospecies_store.find_species(species_req)
+    return ontospecies_store.get_species(species_req)
+
+
+@router.get("/species/{iri:path}/xyz", summary="Get species' XYZ geometry file")
+async def getSpeciesXyz(
+    iri: str, xyz_manager: Annotated[XYZManager, Depends(get_xyz_manager)]
+):
+    xyz = xyz_manager.get_from_pubchem([iri])[0]
+    if not xyz:
+        raise HTTPException(
+            status_code=404, detail=f"XYZ file not found for species `{iri}`"
+        )
+    return Response(content=xyz, media_type="chemical/x-xyz")
