@@ -199,7 +199,7 @@ public final class ServiceManager {
 
     public void removeService(String stackName, String serviceName) {
         DockerService dockerService = getOrInitialiseService(stackName, StackClient.getContainerEngineName());
-        dockerService.removeService(getService(serviceName));
+        dockerService.removeService(serviceName);
     }
 
 }

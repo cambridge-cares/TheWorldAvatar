@@ -209,9 +209,9 @@ public class DockerService extends AbstractService
         potentialNetwork.ifPresent(nw -> this.network = nw);
     }
 
-    protected Optional<Service> getSwarmService(ContainerService service) {
+    private Optional<Service> getSwarmService(String containerName) {
         try (ListServicesCmd listServicesCmd = dockerClient.getInternalClient().listServicesCmd()) {
-            return listServicesCmd.withNameFilter(List.of(service.getContainerName()))
+            return listServicesCmd.withNameFilter(List.of(StackClient.prependStackName(containerName, "-")))
                     .exec().stream().findAny();
         }
     }
@@ -263,7 +263,7 @@ public class DockerService extends AbstractService
 
     protected Optional<Container> configureContainerWrapper(ContainerService service) {
         Optional<Container> container;
-        removeSwarmService(service);
+        removeService(service);
 
         container = startSwarmService(service);
         return container;
@@ -309,12 +309,12 @@ public class DockerService extends AbstractService
         }
     }
 
-    void removeService(ContainerService service) {
-        removeSwarmService(service);
+    final void removeService(ContainerService service) {
+        removeService(service.getContainerName());
     }
 
-    private void removeSwarmService(ContainerService service) {
-        Optional<Service> swarmService = getSwarmService(service);
+    void removeService(String serviceName) {
+        Optional<Service> swarmService = getSwarmService(serviceName);
 
         if (swarmService.isPresent()) {
             try (RemoveServiceCmd removeServiceCmd = dockerClient.getInternalClient()
