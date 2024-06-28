@@ -26,7 +26,7 @@ from model.kg.ontocompchem import (
 )
 from model.kg.ontospecies import GcAtom, OntospeciesHasValueHasUnit
 from services.rdf_orm import RDFStore
-from services.rdf_stores.base import Cls2GetterRDFStore
+from services.rdf_stores.base import Cls2NodeGetter
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
@@ -38,7 +38,7 @@ from services.sparql import (
 )
 
 
-class OntocompchemRDFStore(Cls2GetterRDFStore):
+class OntocompchemRDFStore(Cls2NodeGetter, RDFStore):
     URI2CLS: dict[URIRef, type[OntocompchemCalculationResult]] = {
         ONTOCOMPCHEM.OptimizedGeometry: OntocompchemOptimizedGeometry,
         ONTOCOMPCHEM.RotationalConstants: OntocompchemRotationalConstants,
@@ -63,8 +63,7 @@ class OntocompchemRDFStore(Cls2GetterRDFStore):
         ontospecies_endpoint: str,
         ontospecies_store: OntospeciesRDFStore,
     ):
-        self.rdf_store = RDFStore(ontocompchem_endpoint)
-        self.ontocompchem_client = SparqlClient(ontocompchem_endpoint)
+        super().__init__(ontocompchem_endpoint)
         self.ontospecies_client = SparqlClient(ontospecies_endpoint)
         self.ontospecies_store = ontospecies_store
 
@@ -90,7 +89,7 @@ VALUES ?OptimizedGeometry {{ {iris} }}
 }}""".format(
             iris=" ".join(f"<{iri}>" for iri in iris)
         )
-        _, bindings = self.ontocompchem_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iri2atoms: defaultdict[
             str,
             list[
@@ -175,7 +174,7 @@ WHERE {{
 }}""".format(
             iris=" ".join(f"<{iri}>" for iri in iris)
         )
-        _, bindings = self.ontocompchem_client.querySelectThenFlatten(query)
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
 
         type2iris: defaultdict[str, list[str]] = defaultdict(list)
         for binding in bindings:
@@ -190,7 +189,7 @@ WHERE {{
             if model_cls is OntocompchemOptimizedGeometry:
                 models = self.get_optimized_geometries(iris=same_type_iris)
             else:
-                models = self.rdf_store.getMany(model_cls, iris=same_type_iris)
+                models = self.getMany(model_cls, iris=same_type_iris)
             iri2model.update(
                 {iri: model for iri, model in zip(same_type_iris, models) if model}
             )
