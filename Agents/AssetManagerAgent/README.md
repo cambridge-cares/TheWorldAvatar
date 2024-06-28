@@ -2,7 +2,7 @@
 # Asset Manager Agent
 An agent designed to manage the asset instances in the knowledge graph. The agent is designed to work together with the [Asset Management App](LINK TO APP REPO HERE).
 
-Currently the agent is capable of :
+Currently the agent is capable of:
 - Instantiating asset data
 - Print asset QR code
 - Retrieving asset data
@@ -25,16 +25,16 @@ The agent handles all interaction between the client and both the knowledge grap
 
 ```
 
-*NOTE: The QR printing system is chosen as it is not possible to install the printer inside the Docker container. The agent may also not be able to access the printer from the container. Even if it could, the printer may not be available for the host machine"s OS or it may not be connected to the printer.*
+*NOTE: The QR printing system is chosen as it is not possible to install the printer inside the Docker container. The agent may also not be able to access the printer from the container. Even if it could, the printer may not be available for the host machine’s OS or it may not be connected to the printer.*
 
-The agent instantiates the asset information into several namespace depending on the information contained. Asset management information is mainly stored in the `asset` namepsace. This includes the ID/serial/model numbers of the asset, the assignee, and supplier and manufacturer.
+The agent instantiates the asset information into several namespace depending on the information contained. Asset management information is mainly stored in the `asset` namespace. This includes the ID/serial/model numbers of the asset, the assignee, and supplier and manufacturer.
 
-The agent also handles the instantiation of purchase documents such as purchase orders and delivery orders. These instances are then instantiated in a separate namespace from the other 2, the `purchasedocs` namespace. THis namespace also contains the funding information used to acquire the asset.
+The agent also handles the instantiation of purchase documents such as purchase orders and delivery orders. These instances are then instantiated in a separate namespace from the other 2, the `purchasedocs` namespace. This namespace also contains the funding information used to acquire the asset.
 
 Currently the agent is designed specifically to handle assets of CARES. The agent is designed to handle assets on 2 different locations, CARES office and the Research Wing.
-Hence the agent relies on inputting the information regarding locations a  into 2 namespaces: the `lab` and `office` namespace in the knowlege graph. Assets on other locations are put into the `office` namespace as default, where their location will only be recorded as a literal. 
+Hence the agent relies on inputting the information regarding locations into 2 namespaces: the `lab` and `office` namespace in the knowledge graph. Assets on other locations are put into the `office` namespace as default, where their location will only be recorded as a literal. 
 
-As this agent is designed to work together with the asset management app, the app requires a check whether the asset has some sort of timeseires attached to its concept when retrieved (for example, a fumehood"s air consumption). This timeseries is commonly contained in the `bms` namespace and will be used as default for this search, since currently the agent is designed specifically to handle assets of CARES. The detials of this timeseries search on retrieve can be read further at [/retrieve](#--retrieve).
+As this agent is designed to work together with the asset management app, the app requires a check whether the asset has some sort of timeseries attached to its concept when retrieved (for example, a fumehood’s air consumption). This timeseries is commonly contained in the `bms` namespace and will be used as default for this search, since currently the agent is designed specifically to handle assets of CARES. The details of this timeseries search on retrieve can be read further at [/retrieve](#--retrieve).
 
 
 
@@ -42,7 +42,7 @@ As this agent is designed to work together with the asset management app, the ap
 ### Printing Server
 The target printer need to be installed first in the host of the server. The installation of this printer may vary between printer types, but generally a printer driver is needed to connect to the printer. Please check with your respective printer manufacturer for the printer driver. Keep in mind some printer driver may only be available for certain OS. Once the printer is installed, the printer can be identified under specific names. Currently the printer server is designed to run on a Windows environment. If a Linux environment is used instead, a CUPS server is recommended instead.
 
-The printing server could be packaged as either a .exe file or run as is a Flask server. The .exe format is provided in case running the server as a Python application is unfavorable. **It is recommended to create a new virutal environement before installing/ running the server.**
+The printing server could be packaged as either a .exe file or run as is a Flask server. The .exe format is provided in case running the server as a Python application is unfavourable. **It is recommended to create a new virtual environment before installing/ running the server.**
 A requirement.txt file is included in the repository to use:
 ```bash
 pip install ./PrintingServer/requirements.txt
@@ -62,12 +62,12 @@ Update the following files in the `./config` folder:
     - `auth.kg.user` and `auth.kg.pass`: Blazegraph authentication. Can be left blank if no authentication is needed.
     - `endpoint.printer`: Printer server endpoint.
     - `target_qr_size`: QR code size target in cm.
-    - `url.manual`: URL for the accessing the asset"s manual. The URL produced will have the manual name appended to the end of the URL.
+    - `url.manual`: URL for the accessing the asset’s manual. The URL produced will have the manual name appended to the end of the URL.
     - `url.docupload`: URL to the document upload agent for uploading files
 
 - `/ontologyMap.properties`: A map of the asset type and their IRIs. Refer to the available values in [AssetClass](#instantiation)
 
-- `/tsSearch.properties`: Parameters of asset timeseries data search on retrieve. The detials of this timeseries search on retrieve can be read further at [/retrieve](#--retrieve).
+- `/tsSearch.properties`: Parameters of asset timeseries data search on retrieve. The details of this timeseries search on retrieve can be read further at [/retrieve](#--retrieve).
     - `depth`: Search depth for looking for asset timeseries existence
     - `predicate`: Triple's predicate used to detect if an asset have a timeseries or not. An array of IRI (please use the full IRI, don't use prefixes) separated by a comma (`,`).
 
@@ -167,11 +167,11 @@ The parameters:
 - Manual : File name for the manual.
 - ManualURL : The URL from where the manual can be accessible
 - BuildingLocation : Main location of the asset. Which building is it located in. Mainly accepts CARES Research Wing and CREATE Tower. If the input is any building other than these two, the building will be instantiated as literals
-- FacilityLocation : The facility on which the asset is located, for example: labs, office areas. As only the lab and office locations in CARES Research Wing and CREATE Tower are instantitated, only when the building location is between the two of those and valid facilities locations were used will the agent instantiate the asset 
+- FacilityLocation : The facility on which the asset is located, for example: labs, office areas. As only the lab and office locations in CARES Research Wing and CREATE Tower are instantiated, only when the building location is between the two of those and valid facilities locations were used will the agent instantiate the asset 
 - RoomLocation : The room in the facility in which the asset is located. Mandatory when instantiating assets in CARES Research Wing and Tower. The room instances must exist beforehand or an error will be thrown.
-- WorkspaceName : The workspcace in which the asset is located in.
+- WorkspaceName : The workspace in which the asset is located in.
 - storage : Assets or cabinets in which the assets are stored in. The ID is used when the asset is stored in another asset. Assumes the asset to exist beforehand 
-- AssignedTo : The name of the person whoim the asset is assigned to.
+- AssignedTo : The name of the person whom the asset is assigned to.
 - ItemComment : Any additional remark regarding the asset
 - InvoiceNum : ID# of the invoice from when the asset is purchased
 - DeliveryOrderNum : ID# of the delivery order from when the asset is purchased
@@ -180,7 +180,7 @@ The parameters:
 - ServiceCode : The service code of the budget category
 - price : asset price on purchase
 - currency : currency used on purchase. Currently accepts as String: SGD, GBP, EUR, JPY, CNY, USD. Defualts to SGD if not provided
-- existingIRIs : Uses provided existing IRIs instead of generating a new one. Can be left empty or not included if all IRIs are to be generated. As it is a hotfix, it is currently only implemented for the follwoing: device IRI, item IRI,  workspace IRI (please refer to the asset management ontology for futher detail).
+- existingIRIs : Uses provided existing IRIs instead of generating a new one. Can be left empty or not included if all IRIs are to be generated. As it is a hotfix, it is currently only implemented for the follwoing: device IRI, item IRI, workspace IRI (please refer to the asset management ontology for futher detail).
 
 The example request and successful result:
 - Request:
@@ -214,7 +214,7 @@ Content-Type: application/json
 }
 ```
 
-The resulting response will contain the ID and IRI of the successful instances and errors of thefailed ones. For the above request, if both assets are successfully instantiated, the response will be:
+The resulting response will contain the ID and IRI of the successful instances and errors of the failed ones. For the above request, if both assets are successfully instantiated, the response will be:
 ```json
 {"Result":[{"InstanceResults":[{"deviceIRI":"https://www.theworldavatar.com/kg/ontodevice/Workstation_80014994-a9f2-4654-bad9-cb9c88645a8f","ID":"2019-07-29/838.1"}, {"deviceIRI":"https://www.theworldavatar.com/kg/ontodevice/Workstation_24f1a5a5-78c4-450a-ac5e-10848422e493","ID":"2019-08-29/838.2"}]}, "Command Success"]}
 ``` 
@@ -286,7 +286,7 @@ Content-Type: application/json
 ```
 
 ##### - `/addpurchdocfile`
-For instantiating purchase documents and uploading the file. Also used the Document Upload agent for uploading the documents. Thsi endpoint however does not instantiate the triples that attach the document to the asset and instead is only designed to upload the files and instantiate the files triples. This is to prevent the possiblity that an asset has more than 1 of the same purchase document type. Hence, it is expected to have the assets instantiated before the documents are uploaded.
+For instantiating purchase documents and uploading the file. Also used the Document Upload agent for uploading the documents. This endpoint however does not instantiate the triples that attach the document to the asset and instead is only designed to upload the files and instantiate the files triples. This is to prevent the possibility that an asset has more than 1 of the same purchase document type. Hence, it is expected to have the assets instantiated before the documents are uploaded.
 The parameters (all mandatory, leave blank if no value is provided):
 - targetID : The ID of the asset that the manual is meant for
 - encoded : Base-64 encoding of the datasheet pdf
@@ -383,12 +383,12 @@ false,
 "Command Success"]}
 ```
 ###### ***About timeseries search***
-Since there were no fixed way to check whether a certain asset has a timeseries (the classes of the assets were extremeley varied before certain mdofications to the instantiation method were done), a specific SPARQL query could not be constructed back then. To counter this issue, a BFS-like search to a certain depth for predicates that usually indicates a timeseries triple is instead done on the knolwedge graph. The parameters of this search can be provided via request body, but by default, the parameters are specified in the `./config/tsSearch.properties` file. To modify this search parameter, the following modification can be added to the request body:
+Since there were no fixed way to check whether a certain asset has a timeseries (the classes of the assets were extremely varied before certain modifications to the instantiation method were done), a specific SPARQL query could not be constructed back then. To counter this issue, a BFS-like search to a certain depth for predicates that usually indicates a timeseries triple is instead done on the knowledge graph. The parameters of this search can be provided via request body, but by default, the parameters are specified in the `./config/tsSearch.properties` file. To modify this search parameter, the following modification can be added to the request body:
 - dbName: The namespace where the timeseries search is to be conducted. By default, it will be the `bms` namespace specified in the `./config/agent.properties` file. 
 - checkedPredicates: JSONArray of IRI strings. The predicate of the triples checked that usually indicates a timeseries. Provided in `./config/tsSearch.properties` under `predicate`.
 - searchDepth: An integer that shows how many layer of BFS search should be done. Keep in mind increasing the layer too much can greatly decrease performance.
 
-*Developer note*: Should this method stick around? Probably no, since the asset types are all now standardised under a single type IRI, a more standardised method could be used and prevent too many call to the graph (probably FIA?). However in case a more universal search is needed this method seems to be working properly up to a certain depth.
+*Developer note*: Should this method stick around? Probably no, since the asset types are all now standardised under a single type IRI, a more standardised method could be used and prevent too many call to the graph (probably FIA?). However in case a universal search is needed this method seems to be working properly up to a certain depth.
 
 ##### - `/retrievebydocs`
 Retrieve all asset IRI associated with the given set of financial documents.
@@ -398,7 +398,7 @@ The parameter of the request:
     - DO : Delivery Order number
     - invoice : invoice number
     - PO : Purchase Order number
-    These parameters are optional, allowing any to be left blank. The agent will search for any asset with any given document, with or without the blank parameter. For example, if the DO is left blank, it will return assets with given invoice and PO number whether they have a DO or not. The agent currently does not have a restrictive option on this endpoint as its deemed unneccesarry.
+    These parameters are optional, allowing any to be left blank. The agent will search for any asset with any given document, with or without the blank parameter. For example, if the DO is left blank, it will return assets with given invoice and PO number whether they have a DO or not. The agent currently does not have a restrictive option on this endpoint as its deemed unnecessary.
 
 An example of a request and successful response:
 - Request:
@@ -436,7 +436,7 @@ Retrieve information for the UI of the AssetManagementApp on load. The informati
 - Workspace : All pair of room and workspace
 - Element : All pair of asset and workspace
 - Supplier : Supplier organizations
-- Manufacturer : Manufacturerers organizations
+- Manufacturer : Manufacturers organizations
 - Invoice : All invoice
 - PurchaseOrder : All Purchase Order
 - DeliveryOrder : All Delivery Order
@@ -456,7 +456,7 @@ Content-Type: application/json
 ##### - `/delete`
 Deletes asset information from all namespace. As if the asset is never instantiated.
 
-The delete is done by using `/retrieve` to retrieve asset-related IRI of the asset. Some of these IRIs are then used to find triples with the asset IRI and/or item IRI as either subject or object in the provided namespace to be deleted. (*NOTE:This is why it takes ~ 10s per delete. A better delete query could be made, but it will be more specific and require development time. As this was a hotfix for a previous mistake, this is the easiest and fastly developed universal delete I can come up with at the moment*). Therefore this does not delete instances not directly affiliated with the asset, for example, the person instances of the user and the organizations. This is done in case the instance is affiliated with other triples shich is important for other assets / agents.
+The delete is done by using `/retrieve` to retrieve asset-related IRI of the asset. Some of these IRIs are then used to find triples with the asset IRI and/or item IRI as either subject or object in the provided namespace to be deleted. (*NOTE:This is why it takes ~ 10s per delete. A better delete query could be made, but it will be more specific and require development time. As this was a hotfix for a previous mistake, this is the easiest and fast developed universal delete I can come up with at the moment*). Therefore this does not delete instances not directly affiliated with the asset, for example, the person instances of the user and the organizations. This is done in case the instance is affiliated with other triples which is important for other assets / agents.
 
 The delete command records the deleted asset in a log file in `\app\deleteLog.log` in the container. Each triple deleted will be associated to a UUID in the following format:
 ```
@@ -509,7 +509,7 @@ Upon successful delete will return a `"Command Success"` confirmation.
 
 #### - `/updatetime`
 Update time of maintenance of all maintenance schedule. This endpoint is designed to update regular maintenance schedule and past maintenances; setting past maintenance as last service time and calculate the next maintenance schedule if a regular interval is set up. Ideally, this endpoint is triggered every day at a specific hour. Returns the updated time of the maintenance schedule.
-This endpoint deletes the maintenance schedule triples if its past, calculate the next maintenance schedule if any, and reinstantiate the triple with updated time. 
+This endpoint deletes the maintenance schedule triples if it’s past, calculate the next maintenance schedule if any, and re-instantiate the triple with updated time. 
 
 Sends an empty `assetData` JSONObject.
 Example:
@@ -524,3 +524,10 @@ Content-Type: application/json
 }
 ```
 
+### *Regarding Unit Tests*
+
+The unit tests were not tested to the fullest and currently is encountering the following issue:
+- Instantiate somehow failed. It returned: `{"Result":"Request parameters are not defined correctly."}`, yet it shouldn't as the /instantiate endpoint should not throw this error unless the environment variable for the agent.properties location does not exist. However printing this environment variable shows the agent do retrieve the env var correctly. As the instantiate is vital for the the rest of the tests, the rest of the tests were not tested yet.
+- More detailed tests are needed. It currently only calls the agent with the required parameters and check the returned message. However, its best to also check the triples when possible. This includes:
+    -  Checking triples created and literal values in add functions (/instantiate, /addmaintenance for example) and updates(/updatetime) 
+    -  Checking triples existence after delete functions
