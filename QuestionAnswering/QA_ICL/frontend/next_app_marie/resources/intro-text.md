@@ -1,4 +1,6 @@
-# Marie
+---
+title: Marie
+---
 
 This website presents a proof-of-concept search engine system for accessing chemical data from the World Avatar Knowledge Graph. The Knowledge Graphs offers inter-connected data from chemical kinetics to chemical and physical properties of species and many other domains.
 

@@ -1,5 +1,6 @@
 ---
-key: 1
+sortKey: 1
+id: ontokin
 title: OntoKin
 ---
 

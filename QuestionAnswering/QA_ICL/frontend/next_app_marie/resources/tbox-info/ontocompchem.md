@@ -1,5 +1,6 @@
 ---
-key: 2
+sortKey: 2
+id: ontocompchem
 title: OntoCompChem
 ---
 
