@@ -76,7 +76,7 @@ public class DocumentUploadAgent extends JPSAgent{
                 if (KG_USERNAME.isBlank() && KG_PASSWORD.isBlank()){
                     instanceHandler = new KGInterface(ENDPOINT_KG);
                 }
-                else if(!(KG_USERNAME.isBlank() && KG_PASSWORD.isBlank())){
+                else if(!KG_USERNAME.isBlank() && !KG_PASSWORD.isBlank()){
                     instanceHandler = new KGInterface(ENDPOINT_KG, KG_USERNAME, KG_PASSWORD);
                 }
                 else{
