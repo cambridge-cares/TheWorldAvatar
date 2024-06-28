@@ -9,6 +9,7 @@ from collections import defaultdict
 
 from pydantic import TypeAdapter
 from pydantic.fields import FieldInfo
+from rdflib import URIRef
 
 from model.rdf_orm import RDFEntity
 from services.sparql import SparqlClient
@@ -108,3 +109,12 @@ WHERE {{
 
     def getOne(self, T: type[T], iri: str):
         return self.getMany(T, [iri])[0]
+
+    def getAll(self, T: type[T], type_iri: URIRef):
+        query = f"""SELECT DISTINCT ?IRI
+WHERE {{
+    ?IRI rdf:type {type_iri.n3()} .
+}}"""
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
+        iris = [binding["IRI"] for binding in bindings]
+        return [model for model in self.getMany(T, iris) if model]

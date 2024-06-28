@@ -7,12 +7,12 @@ from rdflib import URIRef
 from constants.namespace import ONTOKIN
 from model.kg.ontokin import (
     OntokinArrheniusModel,
-    OntokinKineticModel,
+    OntokinKineticModelBase,
     OntokinLindemannModel,
-    OntokinMechanism,
+    OntokinMechanismBase,
     OntokinMultiArrheniusModel,
     OntokinPDepArrheniusModel,
-    OntokinReaction,
+    OntokinReactionBase,
     OntokinThermoModel,
     OntokinThreeBodyReactionModel,
     OntokinTransportModel,
@@ -24,7 +24,7 @@ from services.sparql import SparqlClient, get_ontokin_endpoint
 
 
 class OntokinRDFStore(Cls2GetterRDFStore):
-    KINETIC_MODEL_URI2CLS: dict[URIRef, type[OntokinKineticModel]] = {
+    KINETIC_MODEL_URI2CLS: dict[URIRef, type[OntokinKineticModelBase]] = {
         ONTOKIN.ArrheniusModel: OntokinArrheniusModel,
         ONTOKIN.PDepArrheniusModel: OntokinPDepArrheniusModel,
         ONTOKIN.MultiArrheniusModel: OntokinMultiArrheniusModel,
@@ -48,14 +48,14 @@ class OntokinRDFStore(Cls2GetterRDFStore):
         }
 
     def get_mechanisms(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntokinMechanism, iris)
+        return self.rdf_store.getMany(OntokinMechanismBase, iris)
 
     def get_reactions(self, iris: list[str] | tuple[str]):
-        return self.rdf_store.getMany(OntokinReaction, iris)
+        return self.rdf_store.getMany(OntokinReactionBase, iris)
 
     def get_kinetic_models(self, iris: list[str] | tuple[str]):
         if not iris:
-            lst: list[OntokinKineticModel | None] = []
+            lst: list[OntokinKineticModelBase | None] = []
             return lst
 
         query = """SELECT * 
@@ -71,7 +71,7 @@ WHERE {{
         for binding in bindings:
             type2iris[binding["Type"]].append(binding["KineticModel"])
 
-        iri2model: dict[str, OntokinKineticModel] = dict()
+        iri2model: dict[str, OntokinKineticModelBase] = dict()
         for type, same_type_iris in type2iris.items():
             model_cls = self.KINETIC_MODEL_URI2CLS.get(URIRef(type))
             if not model_cls:

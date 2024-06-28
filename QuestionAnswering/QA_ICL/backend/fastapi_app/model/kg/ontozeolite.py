@@ -37,11 +37,11 @@ class OntocrystalMeasureMatrix(RDFEntity):
     )
 
 
-class OntozeoliteZeoliteFramework(RDFEntity):
+class OntozeoliteZeoliteFrameworkBase(RDFEntity):
     code: str = RDFField(path=ONTOZEOLITE.hasFrameworkCode)
 
 
-class OntozeoliteZeoliticMaterial(RDFEntity):
+class OntozeoliteZeoliticMaterialBase(RDFEntity):
     chemical_formula: str = RDFField(path=ONTOZEOLITE.hasChemicalFormula)
 
 
@@ -123,3 +123,15 @@ class OntocrystalTileNumber(RDFEntity):
 class OntocrystalTiledStructure(RDFEntity):
     signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
     tile_num: list[OntocrystalTileNumber] = RDFField(path=ONTOCRYSTAL.hasTileNumber)
+
+
+class OntozeoliteZeoliteFramework(OntozeoliteZeoliteFrameworkBase):
+    zeolitic_material: list[OntozeoliteZeoliticMaterialBase] = RDFField(
+        path=ONTOZEOLITE.hasZeoliticMaterial
+    )
+
+
+class OntozeoliteZeoliticMaterial(OntozeoliteZeoliticMaterialBase):
+    framework: OntozeoliteZeoliteFrameworkBase = RDFField(
+        path=~ONTOZEOLITE.hasZeoliticMaterial
+    )

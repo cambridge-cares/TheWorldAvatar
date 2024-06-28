@@ -132,7 +132,7 @@ VALUES ?Atom {{ {iris} }}
         atom2element = {binding["Atom"]: binding["Element"] for binding in bindings}
 
         element_iris = list(atom2element.values())
-        element_models = self.ontospecies_store.get_elements(iris=element_iris)
+        element_models = self.ontospecies_store.get_elements_many(iris=element_iris)
         element_iri2model = {
             iri: model for iri, model in zip(element_iris, element_models) if model
         }
