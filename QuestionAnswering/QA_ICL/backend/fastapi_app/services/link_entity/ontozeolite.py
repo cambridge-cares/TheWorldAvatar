@@ -6,8 +6,8 @@ from model.entity_linking.ontozeolite import (
     ZeoliteFrameworkLinkingArgs,
     ZeoliticMaterialLinkingArgs,
 )
-from services.stores.entity_store.base import LinkerManager
 from services.sparql import SparqlClient, get_ontozeolite_endpoint
+from .base import LinkerManager
 
 
 logger = logging.getLogger(__name__)
