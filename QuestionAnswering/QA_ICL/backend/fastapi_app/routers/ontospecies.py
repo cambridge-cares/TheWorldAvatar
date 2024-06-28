@@ -2,11 +2,11 @@ import logging
 import re
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
-from model.comp_op import ComparisonOperator
 from model.kg.ontospecies import SpeciesPropertyKey
 from model.ontospecies import SpeciesRequest
+from routers.utils import parse_rhs_colon
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
@@ -26,11 +26,6 @@ async def getChemicalClasses(
     return ontospecies_store.get_chemical_classes_all()
 
 
-def parse_rhs_colon(val: str):
-    operator, operand = val.split(":", maxsplit=1)
-    return ComparisonOperator(operator), float(operand)
-
-
 CHEMICAL_CLASS_QUERY_KEY = "chemical-class"
 USE_QUERY_KEY = "use"
 
@@ -40,10 +35,14 @@ SPECIES_PROPERTY_QUERY_KEYS = {
 }
 
 
-async def parse_species_request(req: Request):
+async def parse_species_request(
+    req: Request,
+    chemical_class: Annotated[list[str], Query(..., alias="chemical-class")] = [],
+    use: Annotated[list[str], Query()] = [],
+):
     return SpeciesRequest(
-        chemical_class=req.query_params.getlist(CHEMICAL_CLASS_QUERY_KEY),
-        use=req.query_params.getlist(USE_QUERY_KEY),
+        chemical_class=chemical_class,
+        use=use,
         property={
             py_key: [
                 parse_rhs_colon(val) for val in req.query_params.getlist(query_key)
@@ -60,21 +59,16 @@ async def parse_species_request(req: Request):
         "parameters": [
             {
                 "in": "query",
-                "name": CHEMICAL_CLASS_QUERY_KEY,
-                "schema": {"type": "string"},
-            },
-            {"in": "query", "name": USE_QUERY_KEY, "schema": {"type": "string"}},
-            *(
-                {
-                    "in": "query",
-                    "name": name,
-                    "schema": {
-                        "type": "string",
-                    },
-                    "description": "RHS colon filter e.g. `eq:100`, `lte:200`",
-                }
-                for name in SPECIES_PROPERTY_QUERY_KEYS.keys()
-            ),
+                "name": name,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": "RHS colon filters e.g. `eq:100`, `lte:200`",
+            }
+            for name in SPECIES_PROPERTY_QUERY_KEYS.keys()
         ]
     },
 )
