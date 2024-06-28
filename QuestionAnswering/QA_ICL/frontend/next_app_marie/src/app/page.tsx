@@ -8,6 +8,7 @@ import { QAFragment } from './_components/qa'
 import { IntroSection } from './_components/intro-section'
 import { ExampleQuestionGroup } from './_components/example-question-tabs'
 import { PATH_TO_RESOURCES } from '@/lib/fs'
+import { Main } from '@/components/ui/main'
 
 const PATH_TO_EXAMPLE_QUESTIONS = path.join(
   PATH_TO_RESOURCES,
@@ -31,7 +32,7 @@ export default async function Home() {
   
 
   return (
-    <main className='p-4 min-h-screen flex flex-col justify-center items-center'>
+    <Main className='p-4 min-h-screen flex flex-col justify-center items-center'>
       <IntroSection
         imgSrc='/images/marie-thumbnail.jpg'
         imgAlt="Marie's thumbnail"
@@ -39,6 +40,6 @@ export default async function Home() {
         className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-8'
       />
       <QAFragment exampleQuestionGroups={exampleQuestionGroups} />
-    </main>
+    </Main>
   )
 }
