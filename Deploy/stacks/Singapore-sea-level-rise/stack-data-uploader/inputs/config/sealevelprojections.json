@@ -5,11 +5,32 @@
     "datasetDirectory": "sealevelprojections",
     "dataSubsets": [
         {
-            "type": "tabular",
-            "skip": false,
-            "table": "sealevelprojections",
-            "subdirectory": "eiv-igp-model",
-            "sql": "@/inputs/data/sealevelprojections/eiv-igp-model/slrprojections.sql"
+			"name": "sealevelprojections",
+            "type": "vector",
+			"subdirectory": "sealevelshape",
+            "sql": "@/inputs/data/sealevelprojections/sealevelshape/slrprojections.sql",
+            "ogr2ogrOptions": {
+
+                                "sridIn": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTIPOLYGON"
+                    ]
+                }
+            },
+        
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "sealevelprojections",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "multipolygon"
+            }
         }
     ],
     "mappings": [
