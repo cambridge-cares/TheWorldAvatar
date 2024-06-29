@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   resultedconsumptioncalculationagent:
-    image: ghcr.io/cambridge-cares/resultedconsumptioncalculationagent_test:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/resultedconsumptioncalculationagent_test:1.0.0
     build:
       context: .
       target: test
