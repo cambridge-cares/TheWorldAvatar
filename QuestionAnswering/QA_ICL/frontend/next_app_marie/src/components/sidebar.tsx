@@ -10,7 +10,7 @@ interface SidebarItemProps {
 const SidebarItem = ({ href, label }: SidebarItemProps) => (
   <li>
     <Link href={href} legacyBehavior passHref>
-      <Button variant="link" className="text-xl w-full justify-start">{label}</Button>
+      <Button variant="link" className="text-lg w-full justify-start">{label}</Button>
     </Link>
   </li>
 )
@@ -33,6 +33,10 @@ const UPPER_SIDEBAR_ITEMS = [
   {
     href: "/",
     label: "Natural language search"
+  },
+  {
+    href: "/species",
+    label: "Species search"
   }
 ]
 
