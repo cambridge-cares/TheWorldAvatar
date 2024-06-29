@@ -64,10 +64,10 @@ export function queryChat(
 
 const GET_CHEMICAL_CLASSES_ENDPOINT = new URL("./ontospecies/chemical-classes", BACKEND_ENDPOINT)
 export function getChemicalClasses() {
-  return getJson<ChemicalClass[]>(GET_CHEMICAL_CLASSES_ENDPOINT)
+  return getJson<ChemicalClass[]>(GET_CHEMICAL_CLASSES_ENDPOINT).then(arr => { arr.sort(); return arr })
 }
 
 const GET_USES_ENDPOINT = new URL("./ontospecies/uses", BACKEND_ENDPOINT)
 export function getUses() {
-  return getJson<Use[]>(GET_USES_ENDPOINT)
+  return getJson<Use[]>(GET_USES_ENDPOINT).then(arr => { arr.sort(); return arr })
 }
