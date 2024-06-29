@@ -5,10 +5,13 @@ ADD COLUMN ssp_scenario VARCHAR,
 ADD COLUMN quantile INTEGER,
 ADD COLUMN projectionreferenceyear INTEGER,
 ADD COLUMN projectionyear INTEGER ,
-ADD COLUMN sea_level_rise_in_meters DOUBLE PRECISION,
+ADD COLUMN sealevelriseinmeters DOUBLE PRECISION,
 ADD COLUMN ssp NUMERIC,
 ADD COLUMN rcp NUMERIC,
 ADD COLUMN uuid VARCHAR;
+
+ALTER TABLE sealevelprojections
+RENAME COLUMN wkb_geometry TO geom;
 
 -- Update Table
 UPDATE sealevelprojections
@@ -17,7 +20,7 @@ SET confidence= SPLIT_PART(key, '_', 1),
      quantile = CAST(SPLIT_PART(key, '_', 3) AS INTEGER),
     projectionreferenceyear = CAST(SPLIT_PART(key, '_', 4) AS INTEGER),
     projectionyear=  CAST(SPLIT_PART(key, '_', 5) AS INTEGER) ,
-    sea_level_rise_in_meters = CAST(SPLIT_PART(key, '_', 6) AS DOUBLE PRECISION);
+    sealevelriseinmeters = CAST(SPLIT_PART(key, '_', 6) AS DOUBLE PRECISION);
 
 
 -- Update Table

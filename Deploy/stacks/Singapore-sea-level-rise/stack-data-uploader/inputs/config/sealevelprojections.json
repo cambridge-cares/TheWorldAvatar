@@ -24,7 +24,7 @@
                     "name": "sealevelprojections",
                     "escapeSql": false,
                     "geometry": {
-                        "name": "wkb_geom",
+                        "name": "geom",
                         "type": "MultiPolygon",
                         "srid": 4326
                     }
