@@ -83,13 +83,9 @@ export const SPECIES_IDENTIFIER_KEY_LABELS = {
   [OSpeciesIdentifierKey.SMILES]: 'SMILES string',
 }
 
-export interface SpeciesRequest {
-  chemicalClass: string[]
-  use: string[]
-  property: {
-    [Property in keyof SpeciesPropertyKey]: [ComparisonOperator, number][]
-  }
-  identifier: {
-    [Property in keyof SpeciesIdentifierKey]: string
-  }
+export interface SpeciesBase {
+  IRI: string
+  label: string
+  IUPAC_name?: string
+  InChI: string
 }
