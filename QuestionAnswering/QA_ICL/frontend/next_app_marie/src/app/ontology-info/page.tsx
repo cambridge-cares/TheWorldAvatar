@@ -1,12 +1,11 @@
-import path from "path";
+import path from 'path'
 import { promises as fs } from 'fs'
 
-import Markdown from "react-markdown";
+import Markdown from 'react-markdown'
 import matter from 'gray-matter'
 
-import { PATH_TO_RESOURCES } from "@/lib/fs";
-import { Main } from "@/components/ui/main";
-
+import { PATH_TO_RESOURCES } from '@/lib/fs'
+import { Main } from '@/components/ui/main'
 
 const PATH_TO_TBOX_INFO = path.join(PATH_TO_RESOURCES, 'tbox-info')
 
@@ -33,25 +32,37 @@ export default async function OntologyInfo() {
       )
     )
     .then(data =>
-      data.sort(({ sortKey: keyLeft }, { sortKey: keyRight }) => keyLeft - keyRight)
+      data.sort(
+        ({ sortKey: keyLeft }, { sortKey: keyRight }) => keyLeft - keyRight
+      )
     )
 
   return (
     <Main className='flex flex-col items-center'>
-      <div className="w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12">
-        <h1 className="mb-8">Information on Chemistry Ontologies</h1>
-        <section className="mb-8">
-          <h2 className="mb-2">Table of Contents</h2>
-          <ol className="list-decimal list-inside">
+      <div className='w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12'>
+        <h1 className='mb-8'>Information on Chemistry Ontologies</h1>
+        <section className='mb-8'>
+          <h2 className='mb-2'>Table of Contents</h2>
+          <ol className='list-decimal list-inside'>
             {data.map(({ id, heading }, i) => (
-              <li key={i} className="text-xl"><a href={`#${id}`} className="hover:underline">{heading}</a></li>
+              <li key={i} className='text-xl'>
+                <a href={`#${id}`} className='hover:underline'>
+                  {heading}
+                </a>
+              </li>
             ))}
           </ol>
         </section>
         {data.map(({ id, heading, mdContent }, i) => (
-          <section key={i} className="mb-12">
-            <h2 id={id} className="mb-2"><a href={`#${id}`} className="hover:underline">{heading}</a></h2>
-            <Markdown className='prose prose-xl prose-h3:text-xl max-w-none'>{mdContent}</Markdown>
+          <section key={i} className='mb-12'>
+            <h2 id={id} className='mb-2'>
+              <a href={`#${id}`} className='hover:underline'>
+                {heading}
+              </a>
+            </h2>
+            <Markdown className='prose prose-xl prose-h3:text-xl max-w-none'>
+              {mdContent}
+            </Markdown>
           </section>
         ))}
       </div>
