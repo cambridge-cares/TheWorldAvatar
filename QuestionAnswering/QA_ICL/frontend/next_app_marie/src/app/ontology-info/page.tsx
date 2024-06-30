@@ -1,11 +1,11 @@
 import path from 'path'
 import { promises as fs } from 'fs'
 
-import Markdown from 'react-markdown'
 import matter from 'gray-matter'
 
 import { PATH_TO_RESOURCES } from '@/lib/fs'
 import { Main } from '@/components/ui/main'
+import { MarkdownStyled } from '@/components/ui/markdown'
 
 const PATH_TO_TBOX_INFO = path.join(PATH_TO_RESOURCES, 'tbox-info')
 
@@ -60,9 +60,9 @@ export default async function OntologyInfo() {
                 {heading}
               </a>
             </h2>
-            <Markdown className='prose prose-xl prose-h3:text-xl max-w-none'>
+            <MarkdownStyled>
               {mdContent}
-            </Markdown>
+            </MarkdownStyled>
           </section>
         ))}
       </div>
