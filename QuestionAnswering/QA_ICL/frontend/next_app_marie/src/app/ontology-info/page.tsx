@@ -39,7 +39,7 @@ export default async function OntologyInfo() {
 
   return (
     <Main className='flex flex-col items-center'>
-      <div className='w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12'>
+      <div className='w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12 px-4'>
         <h1 className='mb-8'>Information on Chemistry Ontologies</h1>
         <section className='mb-8'>
           <h2 className='mb-2'>Table of Contents</h2>

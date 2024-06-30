@@ -13,7 +13,7 @@
       --popover: 0 0% 100%;
       --popover-foreground: 222.2 84% 4.9%;
 
-      --primary: 222.2 47.4% 11.2%;
+      --primary: 210.8 81.3% 55.9%;  /* blue */
       --primary-foreground: 210 40% 98%;
 
       --secondary: 210 40% 96.1%;
@@ -76,10 +76,10 @@
     }
 
     h1 {
-      @apply text-4xl font-semibold text-blue-500 m-0
+      @apply text-4xl font-semibold text-primary m-0
     }
 
     h2 {
-      @apply text-3xl font-medium text-blue-500 m-0
+      @apply text-3xl font-medium text-primary m-0
     }
   }

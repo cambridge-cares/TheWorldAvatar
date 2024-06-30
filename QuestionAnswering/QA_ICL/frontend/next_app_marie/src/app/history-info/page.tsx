@@ -12,7 +12,7 @@ export default async function HistoryInfo() {
 
   return (
     <Main className='flex flex-col items-center'>
-      <div className='w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12'>
+      <div className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12 px-4'>
         <h1 className='pt-8 mb-8'>History of Marie</h1>
         <Markdown
           components={{
