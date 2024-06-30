@@ -16,20 +16,16 @@ const PATH_TO_EXAMPLE_QUESTIONS = path.join(
 )
 
 export default async function Home() {
-  const introText = await fs.readFile(
-    path.join(process.cwd(), 'resources/intro-text.md'),
-    'utf8'
-  ).then(content => matter(content)).then(
-    ({ data, content }) => ({
+  const introText = await fs
+    .readFile(path.join(process.cwd(), 'resources/intro-text.md'), 'utf8')
+    .then(content => matter(content))
+    .then(({ data, content }) => ({
       heading: data.title as string,
-      mdContent: content
-    })
-  )
+      mdContent: content,
+    }))
   const exampleQuestionGroups: ExampleQuestionGroup[] = await fs
     .readFile(PATH_TO_EXAMPLE_QUESTIONS, 'utf-8')
     .then(content => JSON.parse(content))
-
-  
 
   return (
     <Main className='p-4 min-h-screen flex flex-col justify-center items-center'>

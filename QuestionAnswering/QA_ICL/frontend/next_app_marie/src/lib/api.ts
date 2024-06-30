@@ -11,8 +11,11 @@ function throwFetchResponseIfNotOk(res: Response) {
 
 function getJson<ResT>(url: string | URL, init?: RequestInit | undefined) {
   return fetch(url, {
-    method: 'GET', ...init
-  }).then(throwFetchResponseIfNotOk).then(res => res.json() as ResT)
+    method: 'GET',
+    ...init,
+  })
+    .then(throwFetchResponseIfNotOk)
+    .then(res => res.json() as ResT)
 }
 
 function postJson<ReqT>(
@@ -33,14 +36,14 @@ function postJson<ReqT>(
 
 const BACKEND_ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT || ''
 
-
 const QA_ENDPOINT = new URL('./qa', BACKEND_ENDPOINT)
 export function queryQa(question: string) {
-  return postJson<QARequest>(QA_ENDPOINT, { question }, { cache: 'no-store' }).then(
-    res => res.json() as Promise<QAResponse>
-  )
+  return postJson<QARequest>(
+    QA_ENDPOINT,
+    { question },
+    { cache: 'no-store' }
+  ).then(res => res.json() as Promise<QAResponse>)
 }
-
 
 const CHAT_ENDPOINT = new URL('./chat', BACKEND_ENDPOINT)
 export function queryChat(
@@ -62,12 +65,17 @@ export function queryChat(
   ]
 }
 
-const GET_CHEMICAL_CLASSES_ENDPOINT = new URL("./ontospecies/chemical-classes", BACKEND_ENDPOINT)
+const GET_CHEMICAL_CLASSES_ENDPOINT = new URL(
+  './ontospecies/chemical-classes',
+  BACKEND_ENDPOINT
+)
 export function getChemicalClasses() {
-  return getJson<ChemicalClass[]>(GET_CHEMICAL_CLASSES_ENDPOINT, { cache: 'no-store' })
+  return getJson<ChemicalClass[]>(GET_CHEMICAL_CLASSES_ENDPOINT, {
+    cache: 'no-store',
+  })
 }
 
-const GET_USES_ENDPOINT = new URL("./ontospecies/uses", BACKEND_ENDPOINT)
+const GET_USES_ENDPOINT = new URL('./ontospecies/uses', BACKEND_ENDPOINT)
 export function getUses() {
   return getJson<Use[]>(GET_USES_ENDPOINT, { cache: 'no-store' })
 }
