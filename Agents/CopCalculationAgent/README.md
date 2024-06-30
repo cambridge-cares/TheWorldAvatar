@@ -1,6 +1,35 @@
 ## Description
 This `COP Calculation` agent is designed to calculate the Coefficient of Performance (COP) of the heat pump based on a given temperature with several assumptions, and instantiated in the [The World Avatar] KG according to the [OntoRegionalAnalysis] ontology. Calculation details can be found in the [home page] of this agent. The required data comprimise the temperature data of the Lower Super Output Area (LSOA) in the UK which can be calculated and instantiated by the [LSOAInputAgent]. This data is updated annually. 
 
+### Basic
+The underlying equation of the calculations in this agent is:
+
+$$
+COP = \frac{hp\_efficiency \times T_H}{T_H - T_C}
+$$
+**Arguments**:
+
+<u>T<sub>C</sub></u>: The temperature of the cold side of the heat pump
+
+<u>T<sub>H</sub></u>: hot side temperature (see equation above), if not provided, 318.15 will be used as default value.
+
+<u>hp<sub>efficiency</sub></u>: heat pump efficiency (see equation above), if not provided, 0.35 will be used as default value.
+
+**Example input:**
+```python
+query = {
+        'input':{'temperature': 5,
+                't_h': 318.15,
+                'hp_efficiency': 0.35}
+         }
+```
+
+**Example output:**
+```python
+return = {'COP': [2.5]
+          }
+```
+
 ### Use the agent
 The COP Calculation Agent is intended to use the `sychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `temperature`, `heat pump efficiency`, `hot side temperature`.) and automatically updates associated `COP`  instances in the KG. As the agent adopts the `pyderivationagent`, it serves HTTP requests to handle synchronous derivations.
 
@@ -32,9 +61,50 @@ HEATPUMP_EFFICIENCY            # Assume a efficiency of the heat pump
 HOTSIDE_TEMPERATURE            # Assume the temperature of the hot side of the heatpump. In the unit of Kelvin 
 ```
 
-### How to deploy this agent on stack
-Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
+### Accessing Github's Container registry
 
+While building the Docker image of the agent, it also gets pushed to the [Github container registry]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Github container registry] simply run the following command to establish the connection and provide the access token when prompted:
+```
+docker login ghcr.io -u <github_username>
+<github_personal_access_token>
+```
+
+### VS Code specifics
+
+In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
+
+## Spinning up the stack
+
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
+
+```bash
+# Start the stack (please note that this might take some time) - the port is optional and defaults to 3838
+bash ./stack.sh start <STACK_NAME> <PORT>
+
+# Stop the stack
+bash ./stack.sh stop <STACK_NAME>
+
+# Remove stack services (incl. volumes)
+bash ./stack.sh remove <STACK_NAME> -v
+```
+
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
+
+### Deploying the agent to the stack
+
+This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.26`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the commands provided below shall suffice to compile the latest `StackClients` resource locally and install it inside the Docker container using the provided [Dockerfile]. Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*
+
+Simply execute the following command in the same folder as this `README` to build the required [Stack-Clients] resource and spin up the *production version* of the agent (from a *bash* terminal). The stack `<STACK NAME>` is the name of an already running stack.
+```bash
+# Compiling latest StackClient py4jps resource
+bash ./build_py4jps_stackclient_resource.sh
+
+# Buildings the agent Docker image and pushing it
+bash ./stack.sh build
+
+# Deploying the agent (using pulled image)
+bash ./stack.sh start <STACK_NAME>
+```
 
 ## Upper level instances instatiation
 If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. 
@@ -53,6 +123,7 @@ py ./copcalculationagent/markup.py
 ```
 
 &nbsp;
+
 # Authors 
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->

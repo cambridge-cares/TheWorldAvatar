@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
-setup(name='myproject', version='0.0', 
+setup(name='lsoainput', version='0.0', 
+      description='The `lsoa input` agent feed the electricity and gas consumption, fuel poverty, geometry shapes and temperature data for each Lower Super Output Area in the UK and populates the data to knowledge graph as part of The World Avatar project.',
       packages=find_packages(exclude=("tests")),
       install_requires= [
         'tqdm==4.64.1',
