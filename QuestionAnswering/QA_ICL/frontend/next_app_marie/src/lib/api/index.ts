@@ -1,7 +1,3 @@
-import { ChatRequest } from '../model/chat'
-import { ChemicalClass, Use } from '../model/ontospecies'
-import { QARequest, QAResponse } from '../model/qa'
-
 function throwFetchResponseIfNotOk(res: Response) {
   if (!res.ok) {
     throw new Error(res.statusText)
@@ -9,7 +5,10 @@ function throwFetchResponseIfNotOk(res: Response) {
   return res
 }
 
-export function getJson<ResT>(url: string | URL, init?: RequestInit | undefined) {
+export function getJson<ResT>(
+  url: string | URL,
+  init?: RequestInit | undefined
+) {
   return fetch(url, {
     method: 'GET',
     ...init,
@@ -35,4 +34,3 @@ export function postJson<ReqT>(
 }
 
 export const BACKEND_ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT || ''
-

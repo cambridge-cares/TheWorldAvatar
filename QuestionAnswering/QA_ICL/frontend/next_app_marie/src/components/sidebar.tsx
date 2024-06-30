@@ -11,7 +11,6 @@ interface SidebarItemGroup {
   items: SidebarItem[]
 }
 
-
 interface SidebarBlockProps extends React.HTMLAttributes<HTMLDivElement> {
   items: (SidebarItem | SidebarItemGroup)[]
 }
@@ -19,30 +18,32 @@ interface SidebarBlockProps extends React.HTMLAttributes<HTMLDivElement> {
 const SidebarBlock = ({ items, ...props }: SidebarBlockProps) => (
   <div {...props}>
     <ol className='flex flex-col space-y-2'>
-      {items.map((item, i) => 'href' in item ? (
-        <li key={i}>
-          <Link href={item.href} legacyBehavior passHref>
-            <div className='text-lg w-full whitespace-nowrap justify-start hover:underline hover:cursor-pointer'>
-              {item.label}
-            </div>
-          </Link>
-        </li>
-      ) : (
-        <div key={i}>
-          <div className='text-lg'>{item.label}</div>
-          <ol className='ml-4'>
-            {item.items.map(({ href, label }, i) => (
-              <li key={i}>
-                <Link href={href} legacyBehavior passHref>
-                  <div className='w-full whitespace-nowrap justify-start hover:underline hover:cursor-pointer'>
-                    {label}
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </div>
-      ))}
+      {items.map((item, i) =>
+        'href' in item ? (
+          <li key={i}>
+            <Link href={item.href} legacyBehavior passHref>
+              <div className='text-lg w-full whitespace-nowrap justify-start hover:underline hover:cursor-pointer'>
+                {item.label}
+              </div>
+            </Link>
+          </li>
+        ) : (
+          <div key={i}>
+            <div className='text-lg'>{item.label}</div>
+            <ol className='ml-4'>
+              {item.items.map(({ href, label }, i) => (
+                <li key={i}>
+                  <Link href={href} legacyBehavior passHref>
+                    <div className='w-full whitespace-nowrap justify-start hover:underline hover:cursor-pointer'>
+                      {label}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )
+      )}
     </ol>
   </div>
 )
@@ -53,14 +54,14 @@ const UPPER_SIDEBAR_ITEMS = [
     label: 'Natural language search',
   },
   {
-    label: "Search",
+    label: 'Search',
     items: [
       {
         href: '/search/species',
         label: 'Species search',
       },
-    ]
-  }
+    ],
+  },
 ]
 
 const LOWER_SIDEBAR_ITEMS = [

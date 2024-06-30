@@ -22,7 +22,14 @@ export interface ComboboxProps extends React.HTMLAttributes<HTMLDivElement> {
   items: { value: string; label: string }[]
 }
 
-export function Combobox({ itemCls, value, setValue, items, className, ...props }: ComboboxProps) {
+export function Combobox({
+  itemCls,
+  value,
+  setValue,
+  items,
+  className,
+  ...props
+}: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const value2label = React.useMemo(
     () => Object.fromEntries(items.map(({ value, label }) => [value, label])),
@@ -71,12 +78,13 @@ export function Combobox({ itemCls, value, setValue, items, className, ...props 
                     value={itemValue}
                     onSelect={itemValue => {
                       if (itemValue === value) {
-                        setValue(undefined)
+                        setValue("")
                       } else {
                         setValue(itemValue)
                       }
                       setOpen(false)
                     }}
+                    className='hover:cursor-pointer'
                   >
                     {label}
                     <CheckIcon
