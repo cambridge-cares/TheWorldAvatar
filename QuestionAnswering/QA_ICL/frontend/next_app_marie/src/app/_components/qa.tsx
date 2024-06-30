@@ -3,7 +3,8 @@
 import * as React from 'react'
 
 import { QAResponse } from '@/lib/model/qa'
-import { queryChat, queryQa } from '@/lib/api'
+import { queryQa } from '@/lib/api/qa'
+import { queryChat } from '@/lib/api/chat'
 import { NLPSearchForm } from './nlp-search-form'
 import {
   ExampleQuestionTabs,
