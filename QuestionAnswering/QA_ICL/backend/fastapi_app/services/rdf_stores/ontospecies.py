@@ -50,6 +50,11 @@ class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
         ]
         use_patterns = [f"?Species os:hasUse <{iri}> ." for iri in req.use]
 
+        identifier_patterns = [
+            f'?Species os:has{key}/os:value "{value}" .'
+            for key, value in req.identifier.items()
+        ]
+
         property_patterns = [
             pattern
             for key, conds in req.property.items()
@@ -73,7 +78,12 @@ WHERE {{
     {}
 }}""".format(
             "\n    ".join(
-                itertools.chain(chemclass_patterns, use_patterns, property_patterns)
+                itertools.chain(
+                    chemclass_patterns,
+                    use_patterns,
+                    identifier_patterns,
+                    property_patterns,
+                )
             )
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
@@ -94,7 +104,7 @@ WHERE {{
 
     def get_uses_many(self, iris: list[str] | tuple[str]):
         return self.getMany(OntospeciesUse, iris)
-    
+
     def get_uses_all(self):
         return self.getAll(OntospeciesUse, ONTOSPECIES.Use)
 

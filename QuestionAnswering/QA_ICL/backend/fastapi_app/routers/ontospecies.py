@@ -7,6 +7,7 @@ from model.kg.ontospecies import (
     OntospeciesChemicalClass,
     OntospeciesSpeciesBase,
     OntospeciesUse,
+    SpeciesIdentifierKey,
     SpeciesPropertyKey,
 )
 from model.web.ontospecies import SpeciesRequest
@@ -34,6 +35,7 @@ async def getChemicalClasses(
 ):
     return ontospecies_store.get_chemical_classes_all()
 
+
 @router.get(
     "/uses",
     summary="Get all uses",
@@ -44,8 +46,25 @@ async def getUses(
 ):
     return ontospecies_store.get_uses_all()
 
+
 SPECIES_PROPERTY_QUERY_KEYS = {
-    CAMEL_CASE_PATTERN.sub("-", key.value).lower(): key for key in SpeciesPropertyKey
+    key: CAMEL_CASE_PATTERN.sub("-", key.value).lower() for key in SpeciesPropertyKey
+}
+SPECIES_IDENTIFIER_QUERY_KEYS = {
+    SpeciesIdentifierKey.CID: "cid",
+    SpeciesIdentifierKey.CHEBI_ID: "chebi-id",
+    SpeciesIdentifierKey.INCHI: "inchi",
+    SpeciesIdentifierKey.INCHI_KEY: "inchi-key",
+    SpeciesIdentifierKey.MOLECULAR_FORMULA: "molecular-formula",
+    SpeciesIdentifierKey.SMILES: "smiles",
+}
+SPECIES_IDENTIFIER_KEY_TO_LABEL = {
+    SpeciesIdentifierKey.CID: "CID",
+    SpeciesIdentifierKey.CHEBI_ID: "ChEBI ID",
+    SpeciesIdentifierKey.INCHI: "InChI",
+    SpeciesIdentifierKey.INCHI_KEY: "InChIKey",
+    SpeciesIdentifierKey.MOLECULAR_FORMULA: "molecular formula",
+    SpeciesIdentifierKey.SMILES: "SMILES string",
 }
 
 
@@ -57,11 +76,16 @@ async def parse_species_request(
     return SpeciesRequest(
         chemical_class=chemical_class,
         use=use,
+        identifier={
+            py_key: req.query_params[query_key]
+            for py_key, query_key in SPECIES_IDENTIFIER_QUERY_KEYS.items()
+            if query_key in req.query_params
+        },
         property={
             py_key: [
                 parse_rhs_colon(val) for val in req.query_params.getlist(query_key)
             ]
-            for query_key, py_key in SPECIES_PROPERTY_QUERY_KEYS.items()
+            for py_key, query_key in SPECIES_PROPERTY_QUERY_KEYS.items()
         },
     )
 
@@ -71,13 +95,24 @@ async def parse_species_request(
     summary="Get species",
     openapi_extra={
         "parameters": [
-            {
-                "in": "query",
-                "name": name,
-                "schema": {"type": "array", "items": {"type": "string"}},
-                "description": "RHS colon filters e.g. `eq:100`, `lte:200`",
-            }
-            for name in SPECIES_PROPERTY_QUERY_KEYS.keys()
+            *(
+                {
+                    "in": "query",
+                    "name": name,
+                    "schema": {"type": "array", "items": {"type": "string"}},
+                    "description": "RHS colon filters e.g. `eq:100`, `lte:200`",
+                }
+                for name in SPECIES_PROPERTY_QUERY_KEYS.values()
+            ),
+            *(
+                {
+                    "in": "query",
+                    "name": SPECIES_IDENTIFIER_QUERY_KEYS[key],
+                    "schema": {"type": "string"},
+                    "description": label,
+                }
+                for key, label in SPECIES_IDENTIFIER_KEY_TO_LABEL.items()
+            ),
         ]
     },
     response_model=list[OntospeciesSpeciesBase],
