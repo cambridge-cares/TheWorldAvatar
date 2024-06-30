@@ -1,5 +1,5 @@
-import { BACKEND_ENDPOINT, postJson } from "."
-import { ChatRequest } from "../model/chat"
+import { BACKEND_ENDPOINT, postJson } from '.'
+import { ChatRequest } from '../model/chat'
 
 const CHAT_ENDPOINT = new URL('./chat', BACKEND_ENDPOINT)
 

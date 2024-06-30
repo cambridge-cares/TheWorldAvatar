@@ -60,9 +60,7 @@ export default async function OntologyInfo() {
                 {heading}
               </a>
             </h2>
-            <MarkdownStyled>
-              {mdContent}
-            </MarkdownStyled>
+            <MarkdownStyled>{mdContent}</MarkdownStyled>
           </section>
         ))}
       </div>
