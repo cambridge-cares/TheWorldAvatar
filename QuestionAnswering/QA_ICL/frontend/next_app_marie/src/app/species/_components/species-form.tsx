@@ -20,14 +20,14 @@ export interface SpeciesFormProps {
 }
 
 const formSchema = z.object({
-  chemicalClasses: z.array(z.string())
+  chemicalClass: z.union([z.string(), z.undefined()])
 })
 
 export function SpeciesForm({ allChemicalClasses, allUses }: SpeciesFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      chemicalClasses: []
+      chemicalClass: undefined
     }
   })
 
@@ -36,14 +36,17 @@ export function SpeciesForm({ allChemicalClasses, allUses }: SpeciesFormProps) {
   }
 
   const [open, setOpen] = React.useState(false)
-  const chemicalClassIRI2labelLowercase = React.useMemo(() => Object.fromEntries(allChemicalClasses.map(({ IRI, label }) => [IRI, label.toLowerCase()])), [allChemicalClasses])
+  const chemicalClass_iri2label = React.useMemo(() => Object.fromEntries(allChemicalClasses.map(({IRI, label}) => [IRI, label])), [allChemicalClasses])
+  const chemicalClass_iri2labelLower = React.useMemo(() => Object.fromEntries(Object.entries(chemicalClass_iri2label).map(([IRI, label]) => [IRI, label.toLowerCase()])), [chemicalClass_iri2label])
+
+  console.log("Form")
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
-          name="chemicalClasses"
+          name="chemicalClass"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Chemical class</FormLabel>
@@ -56,14 +59,14 @@ export function SpeciesForm({ allChemicalClasses, allUses }: SpeciesFormProps) {
                       aria-expanded={open}
                       className="w-[200px] justify-between"
                     >
-                      Select chemical class...
+                      {field.value ? chemicalClass_iri2label[field.value] : "Select chemical class..."}
                       <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[200px] p-0">
                     <Command
                       filter={(value, search) => {
-                        return chemicalClassIRI2labelLowercase[value].includes(search.toLowerCase()) ? 1 : 0
+                        return chemicalClass_iri2labelLower[value].includes(search.toLowerCase()) ? 1 : 0
                       }}
                     >
                       <CommandInput placeholder="Search framework..." className="h-9" />
@@ -75,20 +78,19 @@ export function SpeciesForm({ allChemicalClasses, allUses }: SpeciesFormProps) {
                               key={i}
                               value={IRI}
                               onSelect={(val) => {
-                                if (field.value.includes(val)) {
-                                  field.onChange(
-                                    field.value.filter(iri => iri != val)
-                                  )
+                                if (field.value === val) {
+                                  field.onChange(undefined)
                                 } else {
-                                  field.onChange([...field.value, val])
+                                  field.onChange(val)
                                 }
+                                setOpen(false)
                               }}
                             >
                               {label}
                               <CheckIcon
                                 className={cn(
                                   "ml-auto h-4 w-4",
-                                  field.value.includes(IRI) ? "opacity-100" : "opacity-0"
+                                  field.value === IRI ? "opacity-100" : "opacity-0"
                                 )}
                               />
                             </CommandItem>
