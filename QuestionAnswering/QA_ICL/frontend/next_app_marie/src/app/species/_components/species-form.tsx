@@ -7,7 +7,9 @@ import { useForm } from 'react-hook-form'
 
 import {
   ChemicalClass,
+  OSpeciesIdentifierKey,
   OSpeciesPropertyKey,
+  SPECIES_IDENTIFIER_KEY_LABELS,
   Use,
 } from '@/lib/model/ontospecies'
 import {
@@ -42,6 +44,11 @@ const FORM_SCHEMA = z.object({
         key,
         z.object({ lower: z.string(), upper: z.string() }),
       ])
+    )
+  ),
+  identifier: z.object(
+    Object.fromEntries(
+      Object.values(OSpeciesIdentifierKey).map(key => [key, z.string()])
     )
   ),
 })
@@ -79,17 +86,15 @@ export function SpeciesForm({ allChemicalClasses, allUses }: SpeciesFormProps) {
               <FormItem>
                 <FormLabel>Chemical class</FormLabel>
                 <FormControl>
-                  <div className='w-full'>
-                    <Combobox
-                      itemCls='chemical class'
-                      value={field.value}
-                      setValue={field.onChange}
-                      items={allChemicalClasses.map(({ IRI, label }) => ({
-                        value: IRI,
-                        label,
-                      }))}
-                    />
-                  </div>
+                  <Combobox
+                    itemCls='chemical class'
+                    value={field.value}
+                    setValue={field.onChange}
+                    items={allChemicalClasses.map(({ IRI, label }) => ({
+                      value: IRI,
+                      label,
+                    }))}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -101,60 +106,85 @@ export function SpeciesForm({ allChemicalClasses, allUses }: SpeciesFormProps) {
               <FormItem>
                 <FormLabel>Use</FormLabel>
                 <FormControl>
-                  <div className='w-full'>
-                    <Combobox
-                      itemCls='use'
-                      value={field.value}
-                      setValue={field.onChange}
-                      items={allUses.map(({ IRI, label }) => ({
-                        value: IRI,
-                        label,
-                      }))}
-                    />
-                  </div>
+                  <Combobox
+                    itemCls='use'
+                    value={field.value}
+                    setValue={field.onChange}
+                    items={allUses.map(({ IRI, label }) => ({
+                      value: IRI,
+                      label,
+                    }))}
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
-          <Accordion type='multiple'>
+          <Accordion type='multiple' className='col-span-2'>
+            <AccordionItem value='identifier'>
+              <AccordionTrigger>Identifiers</AccordionTrigger>
+              <AccordionContent className='grid grid-cols-2 gap-x-8 gap-y-4 mx-2'>
+                {Object.values(OSpeciesIdentifierKey).map((key, i) => (
+                  <div key={i}>
+                    <FormField
+                      control={form.control}
+                      name={`identifier.${key}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {SPECIES_IDENTIFIER_KEY_LABELS[key]}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              value={field.value}
+                              onChange={e => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                ))}
+              </AccordionContent>
+            </AccordionItem>
             <AccordionItem value='property'>
               <AccordionTrigger>Properties</AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className='grid grid-cols-4 gap-x-8 gap-y-4 mx-2'>
                 {Object.values(OSpeciesPropertyKey).map((key, i) => (
-                  <div key={i}>
-                    <FormLabel>{key}</FormLabel>
-                    <div className='flex space-x-2 items-center'>
-                      <FormField
-                        control={form.control}
-                        name={`property.${key}.lower`}
-                        render={({ field }) => (
+                  <FormField
+                    key={i}
+                    control={form.control}
+                    name={`property.${key}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{key}</FormLabel>
+                        <FormControl>
                           <Input
                             type='number'
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.target.value)
-                            }}
+                            value={field.value.upper}
+                            onChange={e =>
+                              field.onChange({
+                                upper: e.target.value,
+                                lower: field.value.lower,
+                              })
+                            }
                             placeholder='min'
                           />
-                        )}
-                      />
-                      <MinusIcon className='h-4 w-4' />
-                      <FormField
-                        control={form.control}
-                        name={`property.${key}.upper`}
-                        render={({ field }) => (
-                          <Input
-                            type='number'
-                            value={field.value}
-                            onChange={e => {
-                              field.onChange(e.target.value)
-                            }}
-                            placeholder='max'
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
+                          <MinusIcon className='h-4 w-4' />
+                        </FormControl>
+                        <Input
+                          type='number'
+                          value={field.value.lower}
+                          onChange={e =>
+                            field.onChange({
+                              upper: field.value.upper,
+                              lower: e.target.value,
+                            })
+                          }
+                          placeholder='max'
+                        />
+                      </FormItem>
+                    )}
+                  />
                 ))}
               </AccordionContent>
             </AccordionItem>

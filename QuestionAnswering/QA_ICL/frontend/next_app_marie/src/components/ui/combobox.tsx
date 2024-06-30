@@ -15,14 +15,14 @@ import {
   CommandList,
 } from './command'
 
-export interface ComboboxProps {
+export interface ComboboxProps extends React.HTMLAttributes<HTMLDivElement> {
   itemCls: string
   value: string | undefined
   setValue: (value: string | undefined) => void
   items: { value: string; label: string }[]
 }
 
-export function Combobox({ itemCls, value, setValue, items }: ComboboxProps) {
+export function Combobox({ itemCls, value, setValue, items, className, ...props }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const value2label = React.useMemo(
     () => Object.fromEntries(items.map(({ value, label }) => [value, label])),
@@ -40,56 +40,58 @@ export function Combobox({ itemCls, value, setValue, items }: ComboboxProps) {
   )
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          role='combobox'
-          aria-expanded={open}
-          className='w-full justify-between truncate'
-        >
-          {value ? value2label[value] : `Select ${itemCls}...`}
-          <ChevronDownIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className='w-full p-0'>
-        <Command
-          filter={(itemValue, search) => {
-            return value2labelLower[itemValue].includes(search.toLowerCase())
-              ? 1
-              : 0
-          }}
-        >
-          <CommandInput placeholder={`Search ${itemCls}`} className='h-9' />
-          <CommandList>
-            <CommandEmpty>{`No ${itemCls} found`}</CommandEmpty>
-            <CommandGroup>
-              {items.map(({ value: itemValue, label }, i) => (
-                <CommandItem
-                  key={i}
-                  value={itemValue}
-                  onSelect={itemValue => {
-                    if (itemValue === value) {
-                      setValue(undefined)
-                    } else {
-                      setValue(itemValue)
-                    }
-                    setOpen(false)
-                  }}
-                >
-                  {label}
-                  <CheckIcon
-                    className={cn(
-                      'ml-auto h-4 w-4',
-                      value === itemValue ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <div className={cn('w-full', className)} {...props}>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant='outline'
+            role='combobox'
+            aria-expanded={open}
+            className='w-full justify-between truncate'
+          >
+            {value ? value2label[value] : `Select ${itemCls}...`}
+            <ChevronDownIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className='w-full p-0'>
+          <Command
+            filter={(itemValue, search) => {
+              return value2labelLower[itemValue].includes(search.toLowerCase())
+                ? 1
+                : 0
+            }}
+          >
+            <CommandInput placeholder={`Search ${itemCls}`} className='h-9' />
+            <CommandList>
+              <CommandEmpty>{`No ${itemCls} found`}</CommandEmpty>
+              <CommandGroup>
+                {items.map(({ value: itemValue, label }, i) => (
+                  <CommandItem
+                    key={i}
+                    value={itemValue}
+                    onSelect={itemValue => {
+                      if (itemValue === value) {
+                        setValue(undefined)
+                      } else {
+                        setValue(itemValue)
+                      }
+                      setOpen(false)
+                    }}
+                  >
+                    {label}
+                    <CheckIcon
+                      className={cn(
+                        'ml-auto h-4 w-4',
+                        value === itemValue ? 'opacity-100' : 'opacity-0'
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   )
 }

@@ -53,14 +53,16 @@ SPECIES_PROPERTY_QUERY_KEYS = {
 SPECIES_IDENTIFIER_QUERY_KEYS = {
     SpeciesIdentifierKey.CID: "cid",
     SpeciesIdentifierKey.CHEBI_ID: "chebi-id",
+    SpeciesIdentifierKey.IUPAC_NAME: "iupac-name",
     SpeciesIdentifierKey.INCHI: "inchi",
     SpeciesIdentifierKey.INCHI_KEY: "inchi-key",
     SpeciesIdentifierKey.MOLECULAR_FORMULA: "molecular-formula",
-    SpeciesIdentifierKey.SMILES: "smiles",
+    SpeciesIdentifierKey.SMILES: "smiles-string",
 }
 SPECIES_IDENTIFIER_KEY_TO_LABEL = {
     SpeciesIdentifierKey.CID: "CID",
     SpeciesIdentifierKey.CHEBI_ID: "ChEBI ID",
+    SpeciesIdentifierKey.IUPAC_NAME: "IUPAC name",
     SpeciesIdentifierKey.INCHI: "InChI",
     SpeciesIdentifierKey.INCHI_KEY: "InChIKey",
     SpeciesIdentifierKey.MOLECULAR_FORMULA: "molecular formula",

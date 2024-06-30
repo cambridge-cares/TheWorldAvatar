@@ -61,10 +61,35 @@ export const OSpeciesPropertyKey = {
 export type SpeciesPropertyKey =
   (typeof OSpeciesPropertyKey)[keyof typeof OSpeciesPropertyKey]
 
+export const OSpeciesIdentifierKey = {
+  CID: 'cid',
+  CHEBI_ID: 'chebi-id',
+  IUPAC_NAME: 'iupac-name',
+  INCHI: 'inchi',
+  INCHI_KEY: 'inchi-key',
+  MOLECULAR_FORMULA: 'molecular-formula',
+  SMILES: 'smiles',
+} as const
+export type SpeciesIdentifierKey =
+  (typeof OSpeciesIdentifierKey)[keyof typeof OSpeciesIdentifierKey]
+
+export const SPECIES_IDENTIFIER_KEY_LABELS = {
+  [OSpeciesIdentifierKey.CID]: 'CID',
+  [OSpeciesIdentifierKey.CHEBI_ID]: 'ChEBI ID',
+  [OSpeciesIdentifierKey.IUPAC_NAME]: 'IUPAC name',
+  [OSpeciesIdentifierKey.INCHI]: 'InChI',
+  [OSpeciesIdentifierKey.INCHI_KEY]: 'InChIKey',
+  [OSpeciesIdentifierKey.MOLECULAR_FORMULA]: 'molecular formula',
+  [OSpeciesIdentifierKey.SMILES]: 'SMILES string',
+}
+
 export interface SpeciesRequest {
   chemicalClass: string[]
   use: string[]
   property: {
     [Property in keyof SpeciesPropertyKey]: [ComparisonOperator, number][]
+  }
+  identifier: {
+    [Property in keyof SpeciesIdentifierKey]: string
   }
 }
