@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { QAResponse } from '@/lib/model'
+import { QAResponse } from '@/lib/model/qa'
 import { queryChat, queryQa } from '@/lib/api'
 import { NLPSearchForm } from './nlp-search-form'
 import {
