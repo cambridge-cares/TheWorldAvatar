@@ -2,32 +2,48 @@ import Link from 'next/link'
 import { Button } from './ui/button'
 import React from 'react'
 
-interface SidebarItemProps {
+interface SidebarItem {
   href: string
   label: string
 }
+interface SidebarItemGroup {
+  label: string
+  items: SidebarItem[]
+}
 
-const SidebarItem = ({ href, label }: SidebarItemProps) => (
-  <li>
-    <Link href={href} legacyBehavior passHref>
-      <Button variant='link' className='text-lg w-full justify-start'>
-        {label}
-      </Button>
-    </Link>
-  </li>
-)
 
 interface SidebarBlockProps extends React.HTMLAttributes<HTMLDivElement> {
-  items: SidebarItemProps[]
+  items: (SidebarItem | SidebarItemGroup)[]
 }
 
 const SidebarBlock = ({ items, ...props }: SidebarBlockProps) => (
   <div {...props}>
-    <ul className='flex flex-col space-y-2'>
-      {items.map(({ href, label }, i) => (
-        <SidebarItem key={i} href={href} label={label} />
+    <ol className='flex flex-col space-y-2'>
+      {items.map((item, i) => 'href' in item ? (
+        <li key={i}>
+          <Link href={item.href} legacyBehavior passHref>
+            <div className='text-lg w-full whitespace-nowrap justify-start hover:underline hover:cursor-pointer'>
+              {item.label}
+            </div>
+          </Link>
+        </li>
+      ) : (
+        <div key={i}>
+          <div className='text-lg'>{item.label}</div>
+          <ol className='ml-4'>
+            {item.items.map(({ href, label }, i) => (
+              <li key={i}>
+                <Link href={href} legacyBehavior passHref>
+                  <div className='w-full whitespace-nowrap justify-start hover:underline hover:cursor-pointer'>
+                    {label}
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </div>
       ))}
-    </ul>
+    </ol>
   </div>
 )
 
@@ -37,9 +53,14 @@ const UPPER_SIDEBAR_ITEMS = [
     label: 'Natural language search',
   },
   {
-    href: '/species',
-    label: 'Species search',
-  },
+    label: "Search",
+    items: [
+      {
+        href: '/search/species',
+        label: 'Species search',
+      },
+    ]
+  }
 ]
 
 const LOWER_SIDEBAR_ITEMS = [
@@ -55,7 +76,7 @@ const LOWER_SIDEBAR_ITEMS = [
 
 export default function Sidebar() {
   return (
-    <nav className='h-screen sticky top-0 py-2 pr-4 bg-secondary flex flex-col justify-between'>
+    <nav className='h-screen sticky top-0 py-4 pl-4 pr-8 bg-secondary flex flex-col justify-between'>
       <SidebarBlock items={UPPER_SIDEBAR_ITEMS} />
       <SidebarBlock items={LOWER_SIDEBAR_ITEMS} />
     </nav>

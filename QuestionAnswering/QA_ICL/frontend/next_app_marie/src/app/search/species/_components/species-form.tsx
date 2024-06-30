@@ -65,6 +65,9 @@ export function SpeciesForm({ allChemicalClasses, allUses }: SpeciesFormProps) {
           { lower: '', upper: '' },
         ])
       ),
+      identifier: Object.fromEntries(
+        Object.values(OSpeciesIdentifierKey).map(key => [key, ''])
+      )
     },
   })
 
