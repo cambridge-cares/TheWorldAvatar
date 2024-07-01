@@ -124,5 +124,5 @@ class OntospeciesSpecies(OntospeciesSpeciesBase):
     )
     uses: list[OntospeciesUse] = RDFField(path=ONTOSPECIES.hasUse)
 
-    identifiers: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]]
+    identifiers: dict[SpeciesIdentifierKey, list[str]]
     properties: dict[SpeciesPropertyKey, list[OntospeciesProperty]]
