@@ -20,7 +20,7 @@
     "layers": [
         {
             "id": "sglandplot",
-            "name": "Land Plots",
+            "name": "Land plots",
             "source": "plot",
             "source-layer": "landplot",
             "type": "fill",
@@ -171,7 +171,7 @@
             ]
         },
         {
-            "name": "Park Accessibility",
+            "name": "Park accessibility",
             "expanded": false,
             "sources": [
                 {
@@ -382,7 +382,7 @@
             ]
         },
         {
-            "name": "Cultural Sites",
+            "name": "Cultural sites",
             "expanded": false,
             "sources": [
                 {
@@ -1546,7 +1546,7 @@
             ]
         },
         {
-            "name": "Sea Level Rise",
+            "name": "Sea level rise",
             "expanded": false,
             "sources": [
                 {
@@ -1563,7 +1563,7 @@
             "layers": [
                 {
                     "id": "sgsealevelprojections",
-                    "name": "Sea-level rise",
+                    "name": "Sea level rise",
                     "source": "sealevelprojectionssp5852150medium83",
                     "source-layer": "sealevelprojectionssp5852150medium83",
                     "type": "fill",
@@ -1579,7 +1579,7 @@
             ]
         },
         {
-            "name": "Digital Elevation Model",
+            "name": "Digital elevation model",
             "expanded": false,
             "sources": [
                 {
@@ -1600,6 +1600,191 @@
                     "order": 4,
                     "layout": {
                         "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Estimated construction cost",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "usage",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "cost",
+                    "name": "Cost",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "has",
+                            "cost"
+                        ]
+                    ],
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                1000000000.0
+                            ],
+                            "#ffff66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                2000000000.0
+                            ],
+                            "#e8f366",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                3000000000.0
+                            ],
+                            "#d1e866",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                4000000000.0
+                            ],
+                            "#badc66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                5000000000.0
+                            ],
+                            "#a2d066",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                6000000000.0
+                            ],
+                            "#8bc566",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                7000000000.0
+                            ],
+                            "#74ba66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                8000000000.0
+                            ],
+                            "#5dae66",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                9000000000.0
+                            ],
+                            "#45a266",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                10000000000.0
+                            ],
+                            "#2e9666",
+                            [
+                                "<=",
+                                [
+                                    "get",
+                                    "cost"
+                                ],
+                                11000000000.0
+                            ],
+                            "#178b66",
+                            "#8D99AE"
+                        ],
+                        "fill-extrusion-opacity": 1.0,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "without-cost",
+                    "name": "Buildings without cost",
+                    "source": "usage",
+                    "source-layer": "building_usage",
+                    "type": "fill-extrusion",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "!has",
+                            "cost"
+                        ]
+                    ],
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
                     }
                 }
             ]
