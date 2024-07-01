@@ -36,9 +36,9 @@ interface LandingPageProps {
 export default function LandingPage(props: Readonly<LandingPageProps>) {
   // CSS class names
   const introClasses = ["markdown-body", styles.introInner].join(" ");
-  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links.find(link => link.url === "dashboard");
-  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links.find(link => link.url === "help");
-  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links.find(link => link.url === "map");
+  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "dashboard");
+  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "help");
+  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "map");
 
   return (
     <div className={styles.container}>
