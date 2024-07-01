@@ -7,12 +7,12 @@ import json
 
 def create_colors():
     start = 0
-    end = 1.1 * 10**10
-    num_points = 12
+    end = 2.5 * 10 ** 7
+    num_points = 11
 
-    array_for_mapbox_expression = np.linspace(start, end, num_points)
-    array_for_colorbar = np.linspace(
-        start, end / 10**6, num_points)  # convert to million
+    array_for_mapbox_expression = np.linspace(start, end, num_points).tolist()
+    array_for_mapbox_expression.append(1.1 * 10**10)
+    array_for_colorbar = [x / (10.0 ** 6) for x in array_for_mapbox_expression]
 
     fig, ax = plt.subplots(figsize=(6, 1))
     fig.subplots_adjust(bottom=0.5)
@@ -44,7 +44,7 @@ def generate_mapbox_expressions(input_dict):
             ["<=", ["get", "cost"], key],
             value
         ])
-    expression.append("#8D99AE")  # default colours
+    expression.append("#8D99AE")  # default colour
     f = open("mapbox_expression.txt", "w")
     f.write(json.dumps(expression))
     f.close()
