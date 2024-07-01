@@ -27,6 +27,7 @@ import { CaretSortIcon, MinusIcon } from '@radix-ui/react-icons'
 import { capitalizeFirstLetter, cn } from '@/lib/utils'
 import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CollapsibleContent } from '@radix-ui/react-collapsible'
+import { MinMaxInput } from '@/components/ui/min-max-input'
 
 export const SPECIES_FORM_SCHEMA = z.object({
   chemicalClass: z.string(),
@@ -79,7 +80,8 @@ export function SpeciesForm({
 
   const [isIdentifiersPanelOpen, setIsIdentifiersPanelOpen] =
     React.useState(false)
-  const [isPropertiesPanelOpen, setIsPropertyPanelOpen] = React.useState(false)
+  const [isPropertiesPanelOpen, setIsPropertiesPanelOpen] =
+    React.useState(false)
 
   const form = useForm<z.infer<typeof SPECIES_FORM_SCHEMA>>({
     resolver: zodResolver(SPECIES_FORM_SCHEMA),
@@ -137,12 +139,17 @@ export function SpeciesForm({
                 <FormControl>
                   <Combobox
                     itemCls='chemical class'
-                    value={field.value}
-                    setValue={field.onChange}
                     items={allChemicalClasses.map(({ IRI, label }) => ({
                       value: IRI,
                       label,
                     }))}
+                    value={field.value}
+                    onCmdItemSelect={value =>
+                      value === field.value
+                        ? field.onChange('')
+                        : field.onChange(value)
+                    }
+                    closePopoverOnCmdItemSelect
                   />
                 </FormControl>
               </FormItem>
@@ -157,12 +164,17 @@ export function SpeciesForm({
                 <FormControl>
                   <Combobox
                     itemCls='use'
-                    value={field.value}
-                    setValue={field.onChange}
                     items={allUses.map(({ IRI, label }) => ({
                       value: IRI,
                       label,
                     }))}
+                    value={field.value}
+                    onCmdItemSelect={value =>
+                      value === field.value
+                        ? field.onChange('')
+                        : field.onChange(value)
+                    }
+                    closePopoverOnCmdItemSelect
                   />
                 </FormControl>
               </FormItem>
@@ -206,7 +218,11 @@ export function SpeciesForm({
               ))}
             </CollapsibleContent>
           </Collapsible>
-          <Collapsible className='col-span-2'>
+          <Collapsible
+            open={isPropertiesPanelOpen}
+            onOpenChange={setIsPropertiesPanelOpen}
+            className='col-span-2'
+          >
             <CollapsibleTrigger asChild>
               <Button variant='ghost' size='sm'>
                 <CaretSortIcon className='h-4 w-4' />
@@ -224,31 +240,22 @@ export function SpeciesForm({
                     <FormItem>
                       <FormLabel>{key}</FormLabel>
                       <FormControl>
-                        <div className='flex items-center space-x-2'>
-                          <Input
-                            type='number'
-                            value={field.value.upper}
-                            onChange={e =>
-                              field.onChange({
-                                upper: e.target.value,
-                                lower: field.value.lower,
-                              })
-                            }
-                            placeholder='min'
-                          />
-                          <MinusIcon className='h-4 w-4' />
-                          <Input
-                            type='number'
-                            value={field.value.lower}
-                            onChange={e =>
-                              field.onChange({
-                                upper: field.value.upper,
-                                lower: e.target.value,
-                              })
-                            }
-                            placeholder='max'
-                          />
-                        </div>
+                        <MinMaxInput
+                          minValue={field.value.lower}
+                          onMinChange={e =>
+                            field.onChange({
+                              ...field.value,
+                              lower: e.target.value,
+                            })
+                          }
+                          maxValue={field.value.upper}
+                          onMaxChange={e =>
+                            field.onChange({
+                              ...field.value,
+                              upper: e.target.value,
+                            })
+                          }
+                        />
                       </FormControl>
                     </FormItem>
                   )}

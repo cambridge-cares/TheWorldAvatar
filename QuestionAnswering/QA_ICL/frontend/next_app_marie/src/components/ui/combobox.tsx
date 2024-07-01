@@ -17,19 +17,26 @@ import {
 
 export interface ComboboxProps extends React.HTMLAttributes<HTMLDivElement> {
   itemCls: string
-  value: string | undefined
-  setValue: (value: string | undefined) => void
   items: { value: string; label: string }[]
+  value: string | string[]
+  onCmdItemSelect: (value: string) => void
+  closePopoverOnCmdItemSelect?: boolean
 }
 
 export function Combobox({
   itemCls,
   value,
-  setValue,
+  onCmdItemSelect,
   items,
+  closePopoverOnCmdItemSelect,
   className,
   ...props
 }: ComboboxProps) {
+  const resolvedClosePopoverOnCmdItemSelect =
+    typeof closePopoverOnCmdItemSelect === 'undefined'
+      ? false
+      : closePopoverOnCmdItemSelect
+
   const [open, setOpen] = React.useState(false)
   const value2label = React.useMemo(
     () => Object.fromEntries(items.map(({ value, label }) => [value, label])),
@@ -56,7 +63,17 @@ export function Combobox({
             aria-expanded={open}
             className='w-full justify-between truncate'
           >
-            {value ? value2label[value] : `Select ${itemCls}...`}
+            {value.length === 0 ? (
+              `Select ${itemCls}...`
+            ) : typeof value === 'string' ? (
+              value2label[value]
+            ) : (
+              <div className='flex justify-start space-x-2'>
+                {value.map((x, i) => (
+                  <div key={i}>{value2label[x]}</div>
+                ))}
+              </div>
+            )}
             <ChevronDownIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </PopoverTrigger>
@@ -76,13 +93,9 @@ export function Combobox({
                   <CommandItem
                     key={i}
                     value={itemValue}
-                    onSelect={itemValue => {
-                      if (itemValue === value) {
-                        setValue("")
-                      } else {
-                        setValue(itemValue)
-                      }
-                      setOpen(false)
+                    onSelect={val => {
+                      onCmdItemSelect(val)
+                      if (resolvedClosePopoverOnCmdItemSelect) setOpen(false)
                     }}
                     className='hover:cursor-pointer'
                   >
@@ -90,7 +103,13 @@ export function Combobox({
                     <CheckIcon
                       className={cn(
                         'ml-auto h-4 w-4',
-                        value === itemValue ? 'opacity-100' : 'opacity-0'
+                        (
+                          typeof value === 'string'
+                            ? value === itemValue
+                            : value.includes(itemValue)
+                        )
+                          ? 'opacity-100'
+                          : 'opacity-0'
                       )}
                     />
                   </CommandItem>
