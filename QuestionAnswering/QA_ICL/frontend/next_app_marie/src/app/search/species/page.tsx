@@ -1,5 +1,5 @@
 import { getChemicalClasses, getSpecies, getUses } from '@/lib/api/ontospecies'
-import { SpeciesForm } from './_components/species-form'
+import { SpeciesForm } from './_components/form'
 import { Main } from '@/components/ui/main'
 import { DataTable } from '@/components/ui/data-table'
 import {

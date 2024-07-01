@@ -23,16 +23,12 @@ import {
 import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { MinusIcon } from '@radix-ui/react-icons'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import { AccordionItem } from '@radix-ui/react-accordion'
+import { CaretSortIcon, MinusIcon } from '@radix-ui/react-icons'
 import { capitalizeFirstLetter, cn } from '@/lib/utils'
+import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { CollapsibleContent } from '@radix-ui/react-collapsible'
 
-export const FORM_SCHEMA = z.object({
+export const SPECIES_FORM_SCHEMA = z.object({
   chemicalClass: z.string(),
   use: z.string(),
   property: z.object(
@@ -66,7 +62,7 @@ const FORM_INIT_VALUES = {
 
 export interface SpeciesFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
-  initValues: z.infer<typeof FORM_SCHEMA>
+  initValues: z.infer<typeof SPECIES_FORM_SCHEMA>
   allChemicalClasses: ChemicalClass[]
   allUses: Use[]
 }
@@ -81,8 +77,12 @@ export function SpeciesForm({
   const pathname = usePathname()
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof FORM_SCHEMA>>({
-    resolver: zodResolver(FORM_SCHEMA),
+  const [isIdentifiersPanelOpen, setIsIdentifiersPanelOpen] =
+    React.useState(false)
+  const [isPropertiesPanelOpen, setIsPropertyPanelOpen] = React.useState(false)
+
+  const form = useForm<z.infer<typeof SPECIES_FORM_SCHEMA>>({
+    resolver: zodResolver(SPECIES_FORM_SCHEMA),
     defaultValues: FORM_INIT_VALUES,
   })
 
@@ -93,7 +93,7 @@ export function SpeciesForm({
     form.setValue('identifier', initValues.identifier)
   }, [form, initValues])
 
-  function onSubmit(values: z.infer<typeof FORM_SCHEMA>) {
+  function onSubmit(values: z.infer<typeof SPECIES_FORM_SCHEMA>) {
     const chemicalClassParams = values.chemicalClass
       ? [['chemicalClass', encodeURI(values.chemicalClass)]]
       : []
@@ -168,80 +168,94 @@ export function SpeciesForm({
               </FormItem>
             )}
           />
-          <Accordion type='multiple' className='col-span-2'>
-            <AccordionItem value='identifier'>
-              <AccordionTrigger>Identifiers</AccordionTrigger>
-              <AccordionContent className='grid grid-cols-2 gap-x-8 gap-y-4 mx-2'>
-                {Object.values(OSpeciesIdentifierKey).map((key, i) => (
-                  <div key={i}>
-                    <FormField
-                      control={form.control}
-                      name={`identifier.${key}`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            {capitalizeFirstLetter(
-                              SPECIES_IDENTIFIER_KEY_LABELS[key]
-                            )}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              value={field.value}
-                              onChange={e => field.onChange(e.target.value)}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='property'>
-              <AccordionTrigger>Properties</AccordionTrigger>
-              <AccordionContent className='grid grid-cols-4 gap-x-8 gap-y-4 mx-2'>
-                {Object.values(OSpeciesPropertyKey).map((key, i) => (
+          <Collapsible
+            open={isIdentifiersPanelOpen}
+            onOpenChange={setIsIdentifiersPanelOpen}
+            className='col-span-2'
+          >
+            <CollapsibleTrigger asChild>
+              <Button variant='ghost' size='sm'>
+                <CaretSortIcon className='h-4 w-4' />
+                <span className='sr-only'>Toggle</span>
+              </Button>
+            </CollapsibleTrigger>
+            Identifiers
+            <CollapsibleContent className='grid grid-cols-2 gap-x-8 gap-y-4 mx-2'>
+              {Object.values(OSpeciesIdentifierKey).map((key, i) => (
+                <div key={i}>
                   <FormField
-                    key={i}
                     control={form.control}
-                    name={`property.${key}`}
+                    name={`identifier.${key}`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{key}</FormLabel>
+                        <FormLabel>
+                          {capitalizeFirstLetter(
+                            SPECIES_IDENTIFIER_KEY_LABELS[key]
+                          )}
+                        </FormLabel>
                         <FormControl>
-                          <div className='flex items-center space-x-2'>
-                            <Input
-                              type='number'
-                              value={field.value.upper}
-                              onChange={e =>
-                                field.onChange({
-                                  upper: e.target.value,
-                                  lower: field.value.lower,
-                                })
-                              }
-                              placeholder='min'
-                            />
-                            <MinusIcon className='h-4 w-4' />
-                            <Input
-                              type='number'
-                              value={field.value.lower}
-                              onChange={e =>
-                                field.onChange({
-                                  upper: field.value.upper,
-                                  lower: e.target.value,
-                                })
-                              }
-                              placeholder='max'
-                            />
-                          </div>
+                          <Input
+                            value={field.value}
+                            onChange={e => field.onChange(e.target.value)}
+                          />
                         </FormControl>
                       </FormItem>
                     )}
                   />
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                </div>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+          <Collapsible className='col-span-2'>
+            <CollapsibleTrigger asChild>
+              <Button variant='ghost' size='sm'>
+                <CaretSortIcon className='h-4 w-4' />
+                <span className='sr-only'>Toggle</span>
+              </Button>
+            </CollapsibleTrigger>
+            Properties
+            <CollapsibleContent className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-4 mx-2'>
+              {Object.values(OSpeciesPropertyKey).map((key, i) => (
+                <FormField
+                  key={i}
+                  control={form.control}
+                  name={`property.${key}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{key}</FormLabel>
+                      <FormControl>
+                        <div className='flex items-center space-x-2'>
+                          <Input
+                            type='number'
+                            value={field.value.upper}
+                            onChange={e =>
+                              field.onChange({
+                                upper: e.target.value,
+                                lower: field.value.lower,
+                              })
+                            }
+                            placeholder='min'
+                          />
+                          <MinusIcon className='h-4 w-4' />
+                          <Input
+                            type='number'
+                            value={field.value.lower}
+                            onChange={e =>
+                              field.onChange({
+                                upper: field.value.upper,
+                                lower: e.target.value,
+                              })
+                            }
+                            placeholder='max'
+                          />
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
         </div>
         <Button
           type='button'
