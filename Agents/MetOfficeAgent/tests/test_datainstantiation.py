@@ -106,7 +106,7 @@ def test_add_readings_for_station(mocker):
 
     # Mock call to uuid function
     mocker.patch('uuid.uuid4', return_value=str(1))
-        
+    
     station_iri = 'http://Station/1'
 
     # Perform test for observation without comment
