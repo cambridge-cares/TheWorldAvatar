@@ -9,7 +9,7 @@ import { Map } from 'mapbox-gl';
 import RibbonPanel from './ribbon-panel';
 import RibbonComponentClick from './components/ribbon-component-click';
 import RibbonComponentToggle from './components/ribbon-component-toggle';
-import RibbonComponentCombo from './components/ribbon-component-combo';
+import RibbonComponentOptions from './components/ribbon-component-options';
 import { addItem, selectItem } from 'state/context-menu-slice';
 import { ImageryOption, MapSettings } from 'types/settings';
 import { ContextItemDefinition } from 'ui/interaction/context-menu/context-item';

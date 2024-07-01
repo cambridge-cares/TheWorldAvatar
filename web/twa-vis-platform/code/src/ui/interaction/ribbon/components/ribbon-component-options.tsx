@@ -8,9 +8,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getOption, setOption } from 'state/ribbon-component-slice';
 import IconComponent from 'ui/graphic/icon/icon';
 
-interface RibbonComponentComboProps {
+interface RibbonComponentOptionsProps {
     icon: string,
-    text: string,
+    text?: string,
     tooltip: string,
     initialOption: string,
     options: string[],
@@ -18,7 +18,7 @@ interface RibbonComponentComboProps {
     iconClickable?: boolean
 }
 
-export default function RibbonComponentCombo(props: Readonly<RibbonComponentComboProps>) {
+export default function RibbonComponentOptions(props: Readonly<RibbonComponentOptionsProps>) {
     const [expanded, setExpanded] = useState(false);
     const option = useSelector(getOption(props.text));
     const dispatch = useDispatch();
@@ -29,7 +29,7 @@ export default function RibbonComponentCombo(props: Readonly<RibbonComponentComb
             name: props.text,
             selection: selectedOption
         }));
-        setExpanded(false);    
+        setExpanded(false);
         props.action();
     }
 
@@ -40,14 +40,14 @@ export default function RibbonComponentCombo(props: Readonly<RibbonComponentComb
 
     const closeAction = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
-        if(!target.classList.contains("material-icons")) {
+        if (!target.classList.contains("material-icons")) {
             setExpanded(false);
         }
     }
 
     // Create dropdown options
     const dropdown = createOptions(
-        props.options, 
+        props.options,
         (option == null) ? props.initialOption : option.selection,
         selectAction
     )
@@ -62,7 +62,7 @@ export default function RibbonComponentCombo(props: Readonly<RibbonComponentComb
     }, []);
 
     let innerClass = styles.ribbonComponentInner;
-    if(props.iconClickable != null && !props.iconClickable) {
+    if (props.iconClickable != null && !props.iconClickable) {
         innerClass = styles.ribbonComponentInnerDisabled;
     }
 
@@ -73,21 +73,22 @@ export default function RibbonComponentCombo(props: Readonly<RibbonComponentComb
                 enterDelay={1000}
                 leaveDelay={100}
                 placement="bottom-start">
-                
+
                 <>
                     <div className={innerClass} onClick={props.action}>
                         <div className={styles.ribbonComponentIcon}>
                             <IconComponent icon={props.icon} />
                         </div>
-                        <div className={styles.ribbonComponentText}>
-                            {props.text}
-                        </div>
+                        {props.text &&
+                            <div className={styles.ribbonComponentText}>
+                                {props.text}
+                            </div>}
                     </div>
-                    <Icon 
-                        className={`material-symbols-outlined ${styles.ribbonComponentArrow}`}
-                        onClick={toggleAction}>
-                        keyboard_arrow_down
-                    </Icon>
+                        <Icon
+                            className={`material-symbols-outlined ${styles.ribbonComponentArrow}`}
+                            onClick={toggleAction}>
+                            keyboard_arrow_down
+                        </Icon>
                     {expanded && dropdown}
                 </>
             </Tooltip>
@@ -111,9 +112,9 @@ function createOptions(
     return (
         <div id="ribbonDropdown" className={styles.ribbonDropdown}>
             {options.map((option) => {
-            
+
                 const classNames = [styles.ribbonOption];
-                if(selectedOption === option) classNames.push(styles.active);
+                if (selectedOption === option) classNames.push(styles.active);
                 return (
                     <div
                         className={classNames.join(" ")}
