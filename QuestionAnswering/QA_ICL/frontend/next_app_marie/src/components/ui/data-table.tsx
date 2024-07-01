@@ -48,9 +48,9 @@ export interface DataTableRow {
   [key: string]: DataTableCellValue
 }
 
-export interface DataTableDataProps {
+export interface DataTableDataProps<T = {}> {
   columns: { value: string; label: string }[]
-  data: DataTableRow[]
+  data: (DataTableRow | T)[]
 }
 
 export type DataTableProps = React.HTMLAttributes<HTMLDivElement> &

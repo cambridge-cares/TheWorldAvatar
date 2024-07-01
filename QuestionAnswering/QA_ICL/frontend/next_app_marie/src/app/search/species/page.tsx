@@ -94,12 +94,7 @@ export default async function SpeciesPage({
                 label: 'InChI',
               },
             ]}
-            data={speciesLst.map(({ IRI, label, IUPAC_name, InChI }) => ({
-              IRI,
-              label,
-              IUPAC_name,
-              InChI,
-            }))}
+            data={speciesLst}
             className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'
           />
         )}
