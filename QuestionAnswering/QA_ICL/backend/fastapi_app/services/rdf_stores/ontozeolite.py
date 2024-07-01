@@ -210,6 +210,16 @@ WHERE {{
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["o"] for binding in bindings]
 
+    def get_sbu_all(self):
+        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+
+SELECT DISTINCT ?o
+WHERE {{
+    ?s zeo:hasSecondaryBU ?o
+}}"""
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
+        return [binding["o"] for binding in bindings]
+
 
 @cache
 def get_ontozeolite_rdfStore(
