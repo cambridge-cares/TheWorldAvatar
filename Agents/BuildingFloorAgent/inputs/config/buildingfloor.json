@@ -3,7 +3,7 @@
         "Name": "buildingflooragent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/buildingflooragent:2.0.0",
+                "Image": "ghcr.io/cambridge-cares/buildingflooragent:2.1.0",
                 "Env": [
                     "STACK_NAME=${STACK_NAME}",
                     "DATABASE=postgres",
@@ -43,7 +43,7 @@
     },
     "endpoints": {
         "osmagent": {
-            "url": "http://localhost:8080/buildingflooragent/",
+            "url": "http://localhost:8080/BuildingFloorAgent/",
             "externalPath": "/buildingflooragent/"
         }
     }
