@@ -103,9 +103,8 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
 
           {activeIndex == 0 &&
             <RibbonPanel>
-              <RibbonComponentCombo
-                icon="./images/defaults/icons/imagery.svg"
-                text="Map Style"
+              <RibbonComponentOptions
+                icon="palette"
                 tooltip="Change map imagery"
                 options={imageryNames}
                 initialOption={currentImagery?.name}
@@ -114,9 +113,8 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                   setImagery(props.mapSettings.imagery, props.map);
                 }}
               />
-              <RibbonComponentCombo
-                icon="./images/defaults/icons/camera.svg"
-                text="Reset"
+              <RibbonComponentOptions
+                icon="reset_focus"
                 tooltip="Reset camera to default position."
                 options={cameraNames}
                 initialOption={cameraDefault}
@@ -126,7 +124,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               />
               <RibbonComponentToggle
                 icon="glyphs"
-                text="Hide Labels"
                 tooltip="Toggle display of place names."
                 initialState={false}
                 action={() => {
@@ -134,8 +131,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentToggle
-                icon="./images/defaults/icons/terrain.svg"
-                text="3D Terrain"
+                icon="landscape_2"
                 tooltip="Toggle 3D terrain."
                 initialState={false}
                 action={state => {
@@ -143,8 +139,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentToggle
-                icon="./images/defaults/icons/maximise.svg"
-                text="Full Screen"
+                icon="open_in_full"
                 tooltip="Toggle fullscreen mode."
                 initialState={false}
                 action={state => {
@@ -159,7 +154,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               {props.hasScenario &&
                 <RibbonComponentToggle
                   icon="huboutlined"
-                  text="Scenario"
                   tooltip="Select another scenario."
                   initialState={false}
                   action={props.toggleScenarioSelection}
