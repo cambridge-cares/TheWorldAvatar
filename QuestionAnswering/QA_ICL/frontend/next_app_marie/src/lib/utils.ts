@@ -30,3 +30,40 @@ export function makePrefixedIRI(iri: string): string {
 export function capitalizeFirstLetter(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
+
+export function getFirst(
+  params: { [key: string]: string | string[] | undefined },
+  key: string
+) {
+  let val = params[key]
+  if (typeof val === 'string') return val
+  if (typeof val === 'object' && val.length > 0) return val[0]
+  return undefined
+}
+
+export function getAll(
+  params: { [key: string]: string | string[] | undefined },
+  key: string
+) {
+  let val = params[key]
+  if (typeof val === 'string') return [val]
+  if (typeof val === 'object') return val
+  return []
+}
+
+export function extractLowerUpperParams(
+  params: { [key: string]: string | string[] | undefined },
+  keyEnum: { [key: string]: string },
+  keyPrefix: string = ''
+) {
+  return Object.fromEntries(
+    Object.values(keyEnum).map(key => {
+      const vals = getAll(params, `${keyPrefix}${key}`)
+      const lower =
+        vals.find(val => val.startsWith('gte:'))?.substring('gte:'.length) || ''
+      const upper =
+        vals.find(val => val.startsWith('lte:'))?.substring('lte:'.length) || ''
+      return [key, { lower, upper }]
+    })
+  )
+}

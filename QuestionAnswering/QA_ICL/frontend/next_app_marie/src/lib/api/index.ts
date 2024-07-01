@@ -17,6 +17,30 @@ export function getJson<ResT>(
     .then(res => res.json() as ResT)
 }
 
+export function getJsonLstFromKVs<T>(
+  url: string | URL,
+  searchParams: {
+    [key: string]: string | string[] | undefined
+  },
+  init?: RequestInit | undefined
+) {
+  const queryParams = Object.entries(searchParams)
+    .flatMap(([key, val]) =>
+      typeof val === 'string'
+        ? [[key, val]]
+        : typeof val === 'undefined'
+          ? []
+          : val.map(x => [key, x])
+    )
+    .map(([k, v]) => `${k}=${v}`)
+
+  if (queryParams.length === 0) {
+    return null
+  }
+
+  return getJson<T[]>(`${url}?${queryParams.join('&')}`, init)
+}
+
 export function postJson<ReqT>(
   url: string | URL,
   json_body: ReqT,

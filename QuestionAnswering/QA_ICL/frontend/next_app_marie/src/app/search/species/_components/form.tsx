@@ -63,7 +63,7 @@ const FORM_INIT_VALUES = {
 
 export interface SpeciesFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
-  initValues: z.infer<typeof SPECIES_FORM_SCHEMA>
+  initValues?: z.infer<typeof SPECIES_FORM_SCHEMA>
   allChemicalClasses: ChemicalClass[]
   allUses: Use[]
 }
@@ -89,6 +89,7 @@ export function SpeciesForm({
   })
 
   React.useEffect(() => {
+    if (typeof initValues === 'undefined') return
     form.setValue('chemicalClass', initValues.chemicalClass)
     form.setValue('use', initValues.use)
     form.setValue('property', initValues.property)
@@ -97,9 +98,11 @@ export function SpeciesForm({
 
   function onSubmit(values: z.infer<typeof SPECIES_FORM_SCHEMA>) {
     const chemicalClassParams = values.chemicalClass
-      ? [['chemicalClass', encodeURI(values.chemicalClass)]]
+      ? [['chemicalClass', encodeURI(values.chemicalClass)] as [string, string]]
       : []
-    const useParams = values.use ? [['use', encodeURI(values.use)]] : []
+    const useParams = values.use
+      ? [['use', encodeURI(values.use)] as [string, string]]
+      : []
     const propertyParams = Object.entries(values.property).flatMap(
       ([key, { lower, upper }]) =>
         [
@@ -107,8 +110,8 @@ export function SpeciesForm({
           ['lte', upper],
         ]
           .filter(([_, val]) => val.length > 0)
-          .map(([op, val]) => [key, `${op}:${val}`])
-    ) as [string, string][]
+          .map(([op, val]) => [key, `${op}:${val}`] as [string, string])
+    )
     const identifierParams = Object.entries(values.identifier).filter(
       ([_, value]) => value.length > 0
     )
