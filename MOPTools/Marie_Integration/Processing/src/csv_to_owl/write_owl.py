@@ -4,7 +4,7 @@ import uuid
 import os
 import re
 
-import UpdateKG as KG
+import Processing.src.kg_operations.update_kg as KG
 
 # Define the XML template
 xml_template = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -56,11 +56,11 @@ def main(filename, output_folder):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
     counter     = 0
-    SPARQL_QUERY_ENDPOINT       = 'http://localhost:7578/blazegraph/namespace/OntoMOPs'
-    SPARQL_UPDATE_ENDPOINT      = 'http://localhost:7578/blazegraph/namespace/OntoMOPs'
-    KG_USERNAME                 = 'bg_user'
-    KG_PASSWORD                 = 'admin'
-    updaterCBU                  = KG.UpdateKG(
+    SPARQL_QUERY_ENDPOINT               = 'http://localhost:7578/blazegraph/namespace/OntoMOPs'
+    SPARQL_UPDATE_ENDPOINT              = 'http://localhost:7578/blazegraph/namespace/OntoMOPs'
+    KG_USERNAME                         = 'bg_user'
+    KG_PASSWORD                         = 'admin'
+    updaterCBU                          = KG.UpdateKG(
                 query_endpoint          = SPARQL_QUERY_ENDPOINT,
                 update_endpoint         = SPARQL_UPDATE_ENDPOINT,
                 kg_user                 = KG_USERNAME,
@@ -81,12 +81,10 @@ def main(filename, output_folder):
             Provenance                                  = row['ReferenceDOI']
             # dictionairy for wrongly assigned am:
             assembly_model_map = {
-                "(3-planar)x4(3-pyramidal)x4": "(3-pyramidal)x4(3-planar)x4",
-                "(3-planar)x4(2-bent)x6": "(2-bent)x6(3-planar)x4",
-                "(3-planar)x8(2-bent)x12":"(2-bent)x12(3-planar)x8"
-            }
-            cbu_model_map = {
-                "(C5NH3)2(CO2)2": "(C5H3N)2(CO2)2"
+                "(4-pyramidal)x6(3-planar)x8"   : "(3-planar)x8(4-pyramidal)x6" ,
+                "(3-planar)x4(3-pyramidal)x4"   : "(3-pyramidal)x4(3-planar)x4" ,
+                "(3-planar)x4(2-bent)x6"        : "(2-bent)x6(3-planar)x4"      ,
+                "(3-planar)x8(2-bent)x12"       : "(2-bent)x12(3-planar)x8"
             }
 
             # Replace the value if it exists in the dictionary
@@ -100,8 +98,6 @@ def main(filename, output_folder):
             cbus                                        = re.findall(r'\[([^\[\]]+)\]', mop_formula_value)
             # kind of cache the used cbus and ams to reduce the required number of queries.
             for cbu in cbus:
-                if cbu in cbu_model_map:
-                    cbu                                 = cbu_model_map[cbu]
                 if cbu in cbu_mapping:
                     cbu_iri                             = cbu_mapping[cbu]
                 else:
@@ -126,16 +122,16 @@ def main(filename, output_folder):
                 am_iri              = updaterCBU.query_triple(where_am, var_am)[0]
                 print(f"am iri: {am_iri}, {assembly_model_value}")
             # Create the XML content
-            xml_content             = xml_template.format(
-                id_hash             = id_hash_value,
-                mop_formula         = mop_formula_value,
-                mop_charge          = mop_charge_value,
-                mop_mw              = mop_mw_value,
-                point_group         = point_group_value,
-                assembly_model      = assembly_model_value,
-                cbu_iri_1           = cbu_iris[0],
-                cbu_iri_2           = cbu_iris[1],
-                am_id               = am_iri["AMIRI"]
+            xml_content                                 = xml_template.format(
+                id_hash                                 = id_hash_value,
+                mop_formula                             = mop_formula_value,
+                mop_charge                              = mop_charge_value,
+                mop_mw                                  = mop_mw_value,
+                point_group                             = point_group_value,
+                assembly_model                          = assembly_model_value,
+                cbu_iri_1                               = cbu_iris[0],
+                cbu_iri_2                               = cbu_iris[1],
+                am_id                                   = am_iri["AMIRI"]
             )
             # Define the output file path, putting this distinction earlier would save time and 
             # queries but with this there is an additional testing benefit
