@@ -1616,6 +1616,7 @@
                     "source": "usage",
                     "source-layer": "building_usage",
                     "type": "fill-extrusion",
+                    "order": 5,
                     "layout": {
                         "visibility": "none"
                     },
