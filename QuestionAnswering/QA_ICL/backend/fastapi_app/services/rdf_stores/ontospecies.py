@@ -27,7 +27,7 @@ class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
         return {
             "pt:Element": self.get_elements_many,
             "gc:Atom": self.get_atoms_many,
-            "os:Species": self.get_species_many,
+            "os:Species": self.get_species_base_many,
             "os:Property": self.get_properties_many,
             "os:Identifier": self.get_identifiers_many,
             "os:ChemicalClass": self.get_chemical_classes_many,
@@ -40,10 +40,10 @@ class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
     def get_atoms_many(self, iris: list[str] | tuple[str]):
         return self.getMany(GcAtom, iris)
 
-    def get_species_many(self, iris: list[str] | tuple[str]):
+    def get_species_base_many(self, iris: list[str] | tuple[str]):
         return self.getMany(OntospeciesSpeciesBase, iris)
 
-    def get_species(self, req: SpeciesRequest):
+    def get_species_base(self, req: SpeciesRequest):
         chemclass_patterns = [
             f"?Species os:hasChemicalClass/rdfs:subClassOf* <{iri}> ."
             for iri in req.chemical_class
@@ -87,8 +87,14 @@ WHERE {{
             )
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        species = self.get_species_many([binding["Species"] for binding in bindings])
+        species = self.get_species_base_many(
+            [binding["Species"] for binding in bindings]
+        )
         return [x for x in species if x]
+
+    # TODO
+    # def get_species_one(self, iri: str): 
+    #     pass
 
     def get_properties_many(self, iris: list[str] | tuple[str]):
         return self.getMany(OntospeciesProperty, iris)
