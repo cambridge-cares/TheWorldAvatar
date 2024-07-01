@@ -157,8 +157,12 @@ class XYZFileProcessor:
         name, _         = os.path.splitext(base_name)            
         with open(file_path, "r", encoding="utf-8") as file:
                 content = file.read()
-        doi                         = name.replace("_", "/")
-        prompt                      = 4
+        if name.endswith('_si'):
+            doi         = name.rsplit('_si', 1)[0]
+        else:   
+            doi        = name[:] 
+        doi                         = doi.replace("_", "/")
+        prompt                      = 5
         match prompt:
             case 1:
                     extend        = ".txt"
@@ -249,6 +253,7 @@ Reagents and Materials: At the beginning of each procedure, list all the reagent
 Characterization: After the procedural steps, list the characterization techniques and results (e.g., NMR, IR spectra) separately. Include only the relevant data provided in the original text.
 
 Explicit Details: Ensure that all implicit information in the original text is made explicit. For example, specify temperature, time, and any other conditions that are critical for the synthesis but may not be directly stated.
+Include explicit comments from the text regarding MOP chemcial formula and CCDC number.
 
 Formatting: Use bullet points or numbered lists to clearly delineate steps and sections (Reagents and Materials, Procedure, Characterization).
 
@@ -276,21 +281,118 @@ Melting point: 120°C
 Yield: 0.15g (76%)
 ...
 Provided Text: """ 
+            case 5:
+                mop_formula   = DP.get_literature(doi)
+                extend        = ".txt"
+                prompt_syn    = f""" 
+Objective: 
+Extract and provide detailed, verbatim copies of all synthesis procedures, product characterizations,
+and experimental steps described in the provided text.
+When possible and clear, assign each synthesis procedure to the corresponding MOPFormula and CCDC number provided. 
+Ensure the output is clean, precise, and formatted for easy reading.
 
+Instructions:
+Focus on Synthesis-Related Information:
+Extract all paragraphs that describe synthesis procedures, product characterizations, or experimental steps.
+Exclude any background information, discussions, or non-experimental content.
+Start with any general synthesis information provided to give context to the detailed steps that follow.
+
+Assign MOPFormula and CCDC number When Clear:
+Where it is clear and certain, assign each synthesis procedure to the corresponding MOPFormula and CCDC number as additional comment. This could be inferred from the following list: {mop_formula} or explicitly mentioned in the text.
+If the assignment is not clear or certain, include the synthesis procedure without linking it to any specific MOPFormula or CCDC number.
+
+Exact Text Reproduction:
+Provide a verbatim copy of the relevant paragraphs. Do not modify the tex..
+Maintain all relevant details, including reagents, conditions, quantities, and characterization data.
+
+Context and Relevance:
+Ensure the extracted text captures all necessary details related to the synthesis process, including each step, reagents, conditions, and quantities.
+Include characterization methods and results if described in the same context as the synthesis.
+
+No Additional Information:
+Do not add any commentary, interpretation, or extra information. The response should contain only the exact text from the input, formatted as per these instructions.
+
+Formatting for Clarity:
+Present the extracted paragraphs clearly and neatly. Use appropriate headings or labels for each synthesis procedure.
+Separate each relevant paragraph with a line break for easy reading.
+Maintain a consistent structure to enhance readability, especially when multiple synthesis procedures are provided.
+
+Truthfulness and Completeness:
+Include all relevant synthesis information based on the provided context. If certain parts of the synthesis are not explicitly described in the input text, leave them as they are without making assumptions.
+Ensure that each procedure is self-contained and independent, with no reliance on shared understanding outside the provided text. Make sure to start with the general synthesis information if any are provided.
+
+Example Output Format:
+Paragraph 1: (Synthesis of 9-isopropyl-carbazole. Carbazole (5 g, 0.03 mol), potassium hydroxide (10.5 g, 187
+mmol) and N,N’-dimethylformamide (50 mL) were added to a 100 mL round bottom flask. The
+resulting solution was stirred at room temperature for 30 minutes. To this mixture isopropyl iodide
+(9 mL, 0.09 mol) was added. The resulting solution was then heated at 358 K overnight. The
+mixture was allowed to cool to room temperature and then poured into a round bottom flask
+containing DI water (250 mL). The precipitated solids were collected via vacuum filtration and
+washed with DI water. No further purification was done prior to the following synthesis.)
+
+Paragraph 2: (Synthesis of EG3-MOPs: Copper acetate (0.86 g, 4.73 mmol) and
+TEGME-IPA (1.45 g, 4.41 mmol) were dissolved in DMF (90 mL), and
+then, the solution was heated in a Teflon-lined bomb reactor at
+808C for 1 day. After cooling the solution, diethyl ether (400 mL)
+was added to precipitate the blue crystalline products. Single-crystals
+for X-ray crystallography were obtained by slow vapor diffusion
+of diethyl ether into a DMF solution of EG3-MOPs. Elemental
+analysis calc.(%) for C438H656N26O239Cu24 (EG3-MOP): C, 45.22; H, 5.68;
+N, 3.13 Found: C, 45.11; H, 5.32; N, 3.31.)
+...
+
+Provided Text: """
+            case 6:
+                mop_formula   = DP.get_literature(doi)
+                extend        = ".txt"
+                prompt_syn    = f""" 
+Task Specification:
+"Summarize the given synthesis text into a CSV table. Each row in the CSV should represent a unique synthesis process for a Molecular Organic Polyhedron (MOP)."
+
+Column Headers:
+"Use the following column headers exactly as provided: Nr, Product, Precursors, Solvents, Temperatures, Heating time, Stirring time, Time to Crystallize, Vessel Type, Yield (percentage), Characterisation Instrumentation, CCDC number, MOPFormula."
+
+Data Entry Guidelines:
+"For each MOP synthesis described in the text, fill in the relevant details under these columns. If any information is missing or uncertain, fill the cell with N/A."
+
+Data Extraction Instructions:
+
+Nr: Sequential numbering starting from 1 for each unique synthesis.
+Product: Name of the synthesis product.
+Precursors: List all reagents and their quantities involved in the synthesis.
+Solvents: List all solvents used and their quantities if specified.
+Temperatures: Specify the temperature(s) used during the synthesis.
+Heating time: Provide the heating duration in hours if applicable.
+Stirring time: Provide the stirring duration in hours if applicable.
+Time to Crystallize: Time taken for the crystals to form.
+Vessel Type: Type of vessel used for the reaction (e.g., vial, flask).
+Yield (percentage): Report both the weight and percentage of yield if available.
+Characterisation Instrumentation: Techniques used for characterization (e.g., PXRD, TGA, NMR).
+CCDC number: Provide the CCDC number if available.
+MOPFormula: Chemical formula of the MOP if specified.
+Formatting Instructions:
+"Surround each cell's content with double quotes (“”). Use a new row for each synthesis procedure and ensure each product and its synthesis details are captured completely."
+
+Example CSV Entry:
+"Nr","Product","Precursors","Solvents","Temperatures","Heating time","Stirring time","Time to Crystallize","Vessel Type","Yield (percentage)","Characterisation Instrumentation","CCDC number","MOPFormula"
+"1","Goldberg MOP-4","4,4’,4’’-s-Triazine-2,4,6-triyl-tribenzoic acid (H3TATB) (25 mg), VOSO4·5H2O (51 mg)","DMF (3 mL)","433 K","48 hours","N/A","N/A","Parr Teflon-lined stainless steel vessel","20 mg (40\%)","Elemental analysis","1552951","[WV5O11]12[(C3N3)(C6H4)3(CO2)3]20"
+
+Synthesis Text:"""
         chatgpt_api                 = DP.ChatGPTAPI()
         model_name                  = "gpt-4o-2024-05-13"
         response                    = chatgpt_api.send_request(content, prompt_syn, model_name)
-
-
         with open(self.output_dir+"/"+name+extend, "w", encoding="utf-8") as txt_file:
             txt_file.write(response) 
+        with open(self.output_dir+"/"+"_prompt.txt", "w", encoding="utf-8") as txt_file:
+            txt_file.write(prompt_syn) 
 
 
 def main():
     """Main function to run the script."""
     script_dir              = os.path.dirname(os.path.abspath(__file__))
-    out_directory           = os.path.join(script_dir, "../../Data/batch2_response2")
-    processor               = XYZFileProcessor(os.path.abspath(os.path.join(script_dir, "../../Data/batch2_response1")), out_directory)
+    in_directory            = os.path.join(script_dir, "../../Data/batch3_txt")
+    out_directory           = os.path.join(script_dir, "../../Data/batch3_response12")
+    processor               = XYZFileProcessor(in_directory, out_directory)
     #processor.process_files_in_directory(processor.transform_xyz_string)
     #processor.process_files_in_directory(processor.extract_text_from_pdf)
     processor.process_files_in_directory(processor.use_openai)
