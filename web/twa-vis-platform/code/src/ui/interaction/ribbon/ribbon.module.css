@@ -37,3 +37,11 @@
     background-color: var(--background-tertiary);
     color: inherit !important;
 }
+
+.ribbonPanel {
+    width: 100%;
+    height: fit-content;
+
+    display: flex !important;
+    flex-direction: row;
+}
