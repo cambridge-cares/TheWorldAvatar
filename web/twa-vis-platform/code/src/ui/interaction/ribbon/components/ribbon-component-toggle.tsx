@@ -10,7 +10,7 @@ import IconComponent from 'ui/graphic/icon/icon';
 
 interface RibbonComponentToggleProps {
     icon: string,
-    text: string,
+    text?: string,
     tooltip: string,
     initialState: boolean,
     action: (state: boolean) => void
@@ -49,9 +49,10 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
                         <div className={styles.ribbonComponentIcon}>
                             <IconComponent icon={props.icon} />
                         </div>
+                        {props.text &&
                         <div className={styles.ribbonComponentText}>
                             {props.text}
-                        </div>
+                            </div>}
                     </div>
                     <div style={{height: "10px"}}/>
                 </>
