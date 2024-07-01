@@ -1,6 +1,6 @@
 "use client";
 
-import styles from './navbar.module.css';
+import styles from './keycloak-session.module.css';
 
 import React, { useEffect, useState } from 'react';
 import keycloak from 'keycloak';
@@ -15,16 +15,16 @@ export interface KeycloakSessionProps {
 
 
 export default function KeycloakSession() {
-    // const [userProfile, setUserProfile] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
 
-    // useEffect(() => {
+    useEffect(() => {
         
-    // }, []);
+    }, []);
 
     return (
-        <div id="keycloakSession" className={`${styles.keycloak_session} ${styles.dropdown}`}>
-            <span id="userName" className="dropbtn">{`${keycloak.userInfo}`}</span>
-            <div className="dropdown-content">
+        <div id="keycloakSession" className={`${styles.keycloakSession} ${styles.dropdown}`}>
+            <span id="userName" className={styles.dropbtn}>{`${keycloak.userInfo}`}</span>
+            <div className={styles.dropdownContent}>
                 <a href="https://idm-credo.hartree.app/realms/master/protocol/openid-connect/logout">Log Out</a>
                 <a href="https://credo.stfc.ac.uk/">Home</a>
             </div>
