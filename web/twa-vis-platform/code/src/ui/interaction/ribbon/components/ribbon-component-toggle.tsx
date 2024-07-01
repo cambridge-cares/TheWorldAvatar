@@ -21,9 +21,9 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
     const dispatch = useDispatch();
 
     const classNames = [styles.ribbonComponentInner];
-    if(toggled?.selection != null && toggled.selection === true) {
+    if (toggled?.selection != null && toggled.selection === true) {
         classNames.push(styles.toggled);
-    } else if(toggled?.selection == null && props.initialState) {
+    } else if (toggled?.selection == null && props.initialState) {
         classNames.push(styles.toggled);
     }
 
@@ -50,11 +50,10 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
                             <IconComponent icon={props.icon} />
                         </div>
                         {props.text &&
-                        <div className={styles.ribbonComponentText}>
-                            {props.text}
+                            <div className={styles.ribbonComponentText}>
+                                {props.text}
                             </div>}
                     </div>
-                    <div style={{height: "10px"}}/>
                 </>
             </Tooltip>
         </div>
