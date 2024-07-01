@@ -436,12 +436,13 @@ The data loader does three things when uploading raster data:
    The `raster2pgsql` tool also automatically divides the data into tiles in the database to make geospatial searching more efficient.
 3. It uses the GeoServer REST API to create a new coverage layer in GeoServer that can be used to visualise the newly uploaded data.
 
-> :memo: **Note:** If issues are encountered, due to non-standard projections or strips of the raster being flipped vertically in the visualisation, then it is possible to use [`gdalwarp`][gdalwarp] tool by specifying `"gdalWarpOptions"` rather than `"gdalTranslateOptions"`.
-> Due to the potential loss of accuracy when re-projecting it is better to use `gdal_tanslate` whenever possible.
-
 #### GDAL Options
 
 In most situations the default `gdal_translate` settings will be sufficient to upload the data but sometimes some extra options need to be supplied. [:open_file_folder:](#value-by-file-name)
+
+> :memo: **Note:** If issues are encountered, due to non-standard projections or strips of the raster being flipped vertically in the visualisation, then it is possible to use [`gdalwarp`][gdalwarp] tool by specifying `"gdalWarpOptions"` instead of `"gdalTranslateOptions"`.
+> Due to the potential loss of accuracy when re-projecting it is better to use `gdal_tanslate` whenever possible.
+
 These can be specified within an `"gdalTranslateOptions"` object (previously just called `"options"`) under the following keys:
 
 ##### `"sridIn"`
