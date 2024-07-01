@@ -58,7 +58,11 @@ const UPPER_SIDEBAR_ITEMS = [
     items: [
       {
         href: '/search/species',
-        label: 'Species search',
+        label: 'Species',
+      },
+      {
+        href: '/search/zeolite-frameworks',
+        label: 'Zeolite framework',
       },
     ],
   },
