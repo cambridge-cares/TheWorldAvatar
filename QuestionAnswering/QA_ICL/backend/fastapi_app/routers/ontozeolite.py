@@ -22,6 +22,17 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+@router.get(
+    "/composite-building-units",
+    summary="Get all composite building units",
+    response_model=list[str],
+)
+async def get_cbu_all(
+    ontozeolite_store: Annotated[OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)]
+):
+    return ontozeolite_store.get_cbu_all()
+
+
 UNIT_CELL_QUERY_KEYS = {
     f"unit-cell-{key.value}": key for cls in get_args(UnitCellKey) for key in cls
 }

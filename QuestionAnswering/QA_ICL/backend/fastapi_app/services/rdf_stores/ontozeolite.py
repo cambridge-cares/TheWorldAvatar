@@ -200,6 +200,16 @@ WHERE {{
     def get_tiled_structures_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntocrystalTiledStructure, iris)
 
+    def get_cbu_all(self):
+        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+
+SELECT DISTINCT ?o
+WHERE {{
+    ?s zeo:hasCompositeBU/(zeo:hasCage|zeo:hasTCage|zeo:hasChain) ?o
+}}"""
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
+        return [binding["o"] for binding in bindings]
+
 
 @cache
 def get_ontozeolite_rdfStore(
