@@ -1,8 +1,9 @@
 import styles from './info-tree.module.css';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { getHasExistingData } from 'state/floating-panel-slice';
 import { TimeSeriesGroup } from 'types/timeseries';
 import { AttributeGroup } from 'types/attribute';
 import { MapFeaturePayload } from 'state/map-feature-slice';
@@ -39,6 +40,7 @@ interface InfoTreeProps {
  */
 export default function InfoTree(props: Readonly<InfoTreeProps>) {
   const dispatch = useDispatch();
+  const hasExistingData: boolean = useSelector(getHasExistingData);
 
   const scrollRef = useRef<HTMLDivElement>();
   const [scrollPosition, setScrollPosition] = useState<number>(0);
@@ -52,7 +54,7 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
   // A function that renders the required contents for this panel
   const renderPanelContents: () => React.ReactElement = () => {
     // Render only the loading spinner if it is initially fetching data
-    if (props.isFetching && !props.attributes) {
+    if (props.isFetching && !hasExistingData) {
       return <div className={styles.loading}>
         <LoadingSpinner isSmall={false} />
       </div>
@@ -83,12 +85,12 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
     return <div className={styles.initialContent}>Select a feature on the map to explore its information in detail.</div>;
   }
 
-  function renderInfoTreeHeader(props: Readonly<InfoTreeProps>) {
 
-    if (props.attributes) {
-      return <div className={styles.infoHeadSection}>
+  return (
+    <div className={styles.infoPanelContainer}>
+      <div className={styles.infoHeadSection}>
         {// Display the tabs only if there are both meta and time
-          props.attributes && props.timeSeries && (
+          (props.attributes && props.timeSeries && (!props.isFetching || hasExistingData)) ? (
             <InfoTabs
               tabs={{
                 hasAttributes: !!props.attributes,
@@ -97,17 +99,11 @@ export default function InfoTree(props: Readonly<InfoTreeProps>) {
               activeTab={{
                 index: props.activeTab.index,
                 setActiveTab: props.activeTab.setActiveTab,
-              }} />)}
-        {props.features.length === 0 && props.featureName &&
-          (<div className={styles["feature-name-header"]}>{props.featureName}</div>)
+              }} />) : <div> </div>}
+        {props.features.length === 0 &&
+          (<div className={styles["feature-name-header"]}>{props.featureName ?? ""}</div>)
         }
       </div>
-    }
-  }
-
-  return (
-    <div className={styles.infoPanelContainer}>
-      {renderInfoTreeHeader(props)}
       <div ref={scrollRef} className={styles.infoSection}>
         {renderPanelContents()}
       </div>

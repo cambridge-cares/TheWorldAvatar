@@ -26,6 +26,11 @@ The `config/ui-settings.json` file provides general settings for the platform. T
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
   - `help`: REQUIRED. Displays help page if enabled
+- `links`: optional configuration for adding or updating redirect links on the landing page. This configuration can overwrite the defaults for the map, dashboard, and help modules. It requires an `ARRAY` of the following JSON format:
+  - `url`: REQUIRED. The url is either targeted at either an external or internal link. For internal link usage, please input `map`, `dashboard`, and `help` accordingly.
+  - `title`: REQUIRED. Thumbnail title on landing page. Optional for only internal links, which defaults to the default if not set.
+  - `caption`: REQUIRED. Thumbnail caption on landing page. Optional for only internal links, which defaults to the default if not set.
+  - `icon`: REQUIRED. Thumbnail icon on landing page. Optional for only internal links, which defaults to the default if not set.
 - `resources`: optional configuration for additional resources. They follow the following format
   - `resourceName`: indicates the type of resource required - dashboard, scenario
     - `url`: REQUIRED. url of the resource
@@ -47,7 +52,9 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 {
   "branding": {
     "logo": "./images/whatever.svg", // Custom branding logo
-    "navbarLogo": "./images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "navbarLogo": "./images/defaults/navbar-logo.svg", // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "landing": "./images/path/to/svg/light.svg", // Landing page brand/company image for light mode
+    "landingDark": "./images/path/to/svg/dark.svg" // Optional landing page brand/company image for dark mode
   },
   "modules": {
     "landing": true, // Should the landing page be enabled

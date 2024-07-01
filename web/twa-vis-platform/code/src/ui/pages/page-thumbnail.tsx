@@ -14,11 +14,11 @@ interface MarkdownPageThumbnailProps {
   page: OptionalPage;
 }
 
-interface DefaultPageThumbnailProps {
-  title: string;
-  description: string;
-  icon: string;
-  redirectUrl: string;
+export interface DefaultPageThumbnailProps {
+  title?: string;
+  caption?: string;
+  icon?: string;
+  url: string;
 }
 
 interface PageThumbnailTemplateProps {
@@ -60,9 +60,9 @@ export function DefaultPageThumbnail(props: Readonly<DefaultPageThumbnailProps>)
   return (
     <PageThumbnailTemplate
       header={props.title}
-      description={props.description}
+      description={props.caption}
       icon={props.icon}
-      redirectUrl={props.redirectUrl}
+      redirectUrl={props.url}
     />
   );
 }
@@ -95,13 +95,13 @@ const ForwardedPageThumbnailTemplate = React.forwardRef<HTMLDivElement, Readonly
       <Link href={redirectUrl} className={styles.container}>
         <AppImage url={icon} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
         <div ref={ref} {...rest} className={styles.content}>
-          <div className={styles.title}>
-            <h1>{header}</h1>
-          </div>
-          <div className={styles.description}>
+          <h3 className={styles.title}>
+            {header}
+          </h3>
+          <div className={styles.description} >
             {description}
           </div>
         </div>
-      </Link>
+      </Link >
     );
   });

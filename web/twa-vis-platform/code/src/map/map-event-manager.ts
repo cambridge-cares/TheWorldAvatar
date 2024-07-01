@@ -2,6 +2,7 @@
 import mapboxgl from 'mapbox-gl';
 import { Dispatch } from 'redux';
 
+import { setIndex } from 'state/floating-panel-slice';
 import { addFeatures, clearFeatures, MapFeaturePayload } from 'state/map-feature-slice';
 import { DataStore } from 'io/data/data-store';
 import { Interactions } from 'io/config/interactions';
@@ -51,6 +52,12 @@ export default class MapEventManager {
         layer: dataStore?.getLayerWithID(feature.layer.id).name, // Store the layer's public-facing name
       }))
       dispatch(addFeatures(features));
+      // Switch to the info tab at index 2 only if the click event occurs with at least one feature
+      if (features.length > 0) {
+        dispatch(setIndex({
+          index: 2,
+        }));
+      }
     });
   }
 

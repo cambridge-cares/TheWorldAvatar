@@ -40,9 +40,7 @@ export default function App() {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
   if (uiSettings.modules.landing) {
     return (<LandingPage
-      hasMap={uiSettings.modules.map}
-      hasDashboard={uiSettings.modules.dashboard}
-      hasAcknowledgements={uiSettings.modules.acknowledgements}
+      settings={uiSettings}
     />);
   } else {
     redirect(PathNames.MAP);
