@@ -35,13 +35,13 @@ class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
         }
 
     def get_elements_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(PeriodictableElement, iris)
+        return self.get_many(PeriodictableElement, iris)
 
     def get_atoms_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(GcAtom, iris)
+        return self.get_many(GcAtom, iris)
 
     def get_species_base_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntospeciesSpeciesBase, iris)
+        return self.get_many(OntospeciesSpeciesBase, iris)
 
     def get_species_base(self, req: SpeciesRequest):
         chemclass_patterns = [
@@ -97,22 +97,22 @@ WHERE {{
     #     pass
 
     def get_properties_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntospeciesProperty, iris)
+        return self.get_many(OntospeciesProperty, iris)
 
     def get_identifiers_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntospeciesIdentifier, iris)
+        return self.get_many(OntospeciesIdentifier, iris)
 
     def get_chemical_classes_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntospeciesChemicalClass, iris)
+        return self.get_many(OntospeciesChemicalClass, iris)
 
     def get_chemical_classes_all(self):
-        return self.getAll(OntospeciesChemicalClass, ONTOSPECIES.ChemicalClass)
+        return self.get_all(OntospeciesChemicalClass, ONTOSPECIES.ChemicalClass)
 
     def get_uses_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntospeciesUse, iris)
+        return self.get_many(OntospeciesUse, iris)
 
     def get_uses_all(self):
-        return self.getAll(OntospeciesUse, ONTOSPECIES.Use)
+        return self.get_all(OntospeciesUse, ONTOSPECIES.Use)
 
 
 @cache

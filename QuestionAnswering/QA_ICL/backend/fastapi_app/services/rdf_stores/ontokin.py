@@ -44,10 +44,10 @@ class OntokinRDFStore(Cls2NodeGetter, RDFStore):
         }
 
     def get_mechanisms(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntokinMechanismBase, iris)
+        return self.get_many(OntokinMechanismBase, iris)
 
     def get_reactions(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntokinReactionBase, iris)
+        return self.get_many(OntokinReactionBase, iris)
 
     def get_kinetic_models(self, iris: list[str] | tuple[str]):
         if not iris:
@@ -72,7 +72,7 @@ WHERE {{
             model_cls = self.KINETIC_MODEL_URI2CLS.get(URIRef(type))
             if not model_cls:
                 continue
-            models = self.getMany(model_cls, iris=same_type_iris)
+            models = self.get_many(model_cls, iris=same_type_iris)
             iri2model.update(
                 {iri: model for iri, model in zip(same_type_iris, models) if model}
             )
@@ -80,10 +80,10 @@ WHERE {{
         return [iri2model.get(iri) for iri in iris]
 
     def get_thermo_models(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntokinThermoModel, iris)
+        return self.get_many(OntokinThermoModel, iris)
 
     def get_transport_models(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntokinTransportModel, iris)
+        return self.get_many(OntokinTransportModel, iris)
 
 
 @cache
