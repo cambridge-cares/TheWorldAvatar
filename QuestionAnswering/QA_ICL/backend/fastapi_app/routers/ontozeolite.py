@@ -3,6 +3,7 @@ from typing import Annotated, get_args
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
+from model.kg.ontozeolite import OntozeoliteZeoliteFrameworkBase
 from model.web.ontozeolite import (
     ScalarTopologicalPropertyKey,
     UnitCellKey,
@@ -112,6 +113,7 @@ async def parse_zeolite_frameworks_request(
             ),
         ]
     },
+    response_model=list[OntozeoliteZeoliteFrameworkBase]
 )
 async def getZeoliteFrameworks(
     framework_req: Annotated[

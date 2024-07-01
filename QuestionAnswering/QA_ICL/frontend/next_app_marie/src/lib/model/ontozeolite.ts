@@ -46,3 +46,8 @@ export const SCALAR_TOPO_PROP_UNITS = {
   [OScalarTopoPropKey.SPECIFIC_ACCESSIBLE_AREA]: 'm²/cm³',
   [OScalarTopoPropKey.SPECIFIC_OCCUPIABLE_AREA]: 'm²/cm³',
 }
+
+export interface ZeoliteFrameworkBase {
+  IRI: string
+  code: string
+}

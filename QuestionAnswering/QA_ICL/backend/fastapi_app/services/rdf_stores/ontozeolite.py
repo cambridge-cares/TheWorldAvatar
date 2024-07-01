@@ -171,7 +171,7 @@ WHERE {{
         models = self.get_zeolite_frameworks_many(
             [binding["Framework"] for binding in bindings]
         )
-        return [model for model in models]
+        return [model for model in models if model]
 
     def get_zeolite_frameworks_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntozeoliteZeoliteFrameworkBase, iris)

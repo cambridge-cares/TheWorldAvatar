@@ -6,26 +6,7 @@ import {
   OSpeciesIdentifierKey,
   OSpeciesPropertyKey,
 } from '@/lib/model/ontospecies'
-
-function getFirst(
-  params: { [key: string]: string | string[] | undefined },
-  key: string
-) {
-  let val = params[key]
-  if (typeof val === 'string') return val
-  if (typeof val === 'object' && val.length > 0) return val[0]
-  return undefined
-}
-
-function getAll(
-  params: { [key: string]: string | string[] | undefined },
-  key: string
-) {
-  let val = params[key]
-  if (typeof val === 'string') return [val]
-  if (typeof val === 'object') return val
-  return []
-}
+import { extractLowerUpperParams, getAll, getFirst } from '@/lib/utils'
 
 export default async function SpeciesPage({
   searchParams,
@@ -45,17 +26,8 @@ export default async function SpeciesPage({
       getFirst(searchParams, key) || '',
     ])
   )
-  const property = Object.fromEntries(
-    Object.values(OSpeciesPropertyKey).map(key => {
-      const vals = getAll(searchParams, key)
-      const lower =
-        vals.find(val => val.startsWith('gte:'))?.substring('gte:'.length) || ''
-      const upper =
-        vals.find(val => val.startsWith('lte:'))?.substring('lte:'.length) || ''
-      return [key, { lower, upper }]
-    })
-  )
-  const defaultValues = {
+  const property = extractLowerUpperParams(searchParams, OSpeciesPropertyKey)
+  const initValues = {
     chemicalClass,
     use,
     identifier,
@@ -69,7 +41,7 @@ export default async function SpeciesPage({
       <div className='w-full mt-8 px-4 md:max-w-screen-md lg:max-w-screen-lg'>
         <h1 className='mb-4'>Species search</h1>
         <SpeciesForm
-          initValues={defaultValues}
+          initValues={initValues}
           allChemicalClasses={chemicalClasses}
           allUses={uses}
           className='mb-12'

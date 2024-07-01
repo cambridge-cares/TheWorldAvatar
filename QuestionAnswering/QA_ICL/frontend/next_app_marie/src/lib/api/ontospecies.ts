@@ -1,4 +1,4 @@
-import { getJson, BACKEND_ENDPOINT } from '.'
+import { getJson, BACKEND_ENDPOINT, getJsonLstFromKVs } from '.'
 import { ChemicalClass, SpeciesBase, Use } from '../model/ontospecies'
 
 const GET_CHEMICAL_CLASSES_ENDPOINT = new URL(
@@ -22,21 +22,5 @@ const GET_SPECIES_ENDPOINT = new URL('./ontospecies/species', BACKEND_ENDPOINT)
 export function getSpecies(searchParams: {
   [key: string]: string | string[] | undefined
 }) {
-  const queryParams = Object.entries(searchParams)
-    .flatMap(([key, val]) =>
-      typeof val === 'string'
-        ? [[key, val]]
-        : typeof val === 'undefined'
-          ? []
-          : val.map(x => [key, x])
-    )
-    .map(([k, v]) => `${k}=${v}`)
-
-  if (queryParams.length === 0) {
-    return null
-  }
-
-  return getJson<SpeciesBase[]>(
-    `${GET_SPECIES_ENDPOINT}?${queryParams.join('&')}`
-  )
+  return getJsonLstFromKVs<SpeciesBase>(GET_SPECIES_ENDPOINT, searchParams)
 }

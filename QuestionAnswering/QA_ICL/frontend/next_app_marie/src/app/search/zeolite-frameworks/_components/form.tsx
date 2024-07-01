@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MinusCircledIcon, PlusCircledIcon } from '@radix-ui/react-icons'
-import { capitalizeFirstLetter, cn } from '@/lib/utils'
+import { capitalizeFirstLetter, cn, isObjectEmtpy } from '@/lib/utils'
 import {
   OScalarTopoPropKey,
   OUnitCellAngleKey,
@@ -122,7 +122,48 @@ export function ZeoliteFrameworkForm({
   }, [form, initValues])
 
   function onSubmit(values: z.infer<typeof ZEOLITE_FRAMEWORK_FORM_SCHEMA>) {
-    console.log(values)
+    const xrdPeakParams = values.xrdPeaks
+      .map(peak =>
+        Object.fromEntries(Object.entries(peak).filter(([_, v]) => v))
+      )
+      .filter(x => !isObjectEmtpy(x))
+      .map(x => encodeURI(JSON.stringify(x)))
+      .map(peak => ['xrdPeak', peak] as [string, string])
+    const unitCellParams = Object.values(values.unitCell).flatMap(params =>
+      Object.entries(params).flatMap(([key, { lower, upper }]) =>
+        [
+          ['gte', lower],
+          ['lte', upper],
+        ]
+          .filter(([_, val]) => val.length > 0)
+          .map(([op, val]) => [key, `${op}:${val}`] as [string, string])
+      )
+    )
+    const scalarTopoPropsParams = Object.entries(
+      values.scalarTopoProps
+    ).flatMap(([key, { lower, upper }]) =>
+      [
+        ['gte', lower],
+        ['lte', upper],
+      ]
+        .filter(([_, val]) => val.length > 0)
+        .map(([op, val]) => [key, `${op}:${val}`] as [string, string])
+    )
+    const CBUsParams = values.compositeBUs
+      .filter(x => x)
+      .map(x => ['composite-bu', x] as [string, string])
+    const SBUParams = values.secondaryBU
+      ? [['secondary-bu', values.secondaryBU] as [string, string]]
+      : []
+
+    const queryParams = new URLSearchParams([
+      ...xrdPeakParams,
+      ...unitCellParams,
+      ...scalarTopoPropsParams,
+      ...CBUsParams,
+      ...SBUParams,
+    ])
+    router.push(`${pathname}?${queryParams}`)
   }
 
   return (
@@ -176,7 +217,8 @@ export function ZeoliteFrameworkForm({
                                 ])
                               }
                             />
-                          </div><div>
+                          </div>
+                          <div>
                             <div>Peak width (±Δθ)</div>
                             <Input
                               type='number'
@@ -357,8 +399,8 @@ export function ZeoliteFrameworkForm({
                         onCmdItemSelect={value =>
                           field.value.includes(value)
                             ? field.onChange(
-                              field.value.filter(x => x !== value)
-                            )
+                                field.value.filter(x => x !== value)
+                              )
                             : field.onChange([...field.value, value])
                         }
                       />
