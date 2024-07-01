@@ -125,7 +125,17 @@ async def getSpecies(
         OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
 ):
-    return ontospecies_store.get_species(species_req)
+    return ontospecies_store.get_species_base(species_req)
+
+
+# TODO
+# @router.get(
+#     "/species/{iri:path}",
+#     summary="Get species",
+#     response_class=OntospeciesSpecies
+# )
+# async def getSpeciesOne(iri: str, ontospecies_store: Annotated[OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)]):
+#     pass
 
 
 class XYZResponse(Response):

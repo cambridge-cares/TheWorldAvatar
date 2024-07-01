@@ -52,7 +52,7 @@ class VisualisationDataStore:
         if cls == "os:Species":
             type = "xyz"
             vis_data = self.xyz_manager.get_from_pubchem(iris)
-            models = self.ontospecies_store.get_species_many(iris)
+            models = self.ontospecies_store.get_species_base_many(iris)
             labels = [
                 (
                     "{} ({})".format(model.label, model.IUPAC_name)
