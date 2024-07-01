@@ -18,9 +18,9 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@mui/icons-material": "^5.14.18",
-    "@mui/material": "^5.14.18",
-    "@reduxjs/toolkit": "^2.2.3",
+    "@mui/icons-material": "^5.14.21",
+    "@mui/material": "^5.14.21",
+    "@reduxjs/toolkit": "^2.2.6",
     "@types/express": "^4.17.21",
     "@types/mapbox-gl": "^2.7.19",
     "chart.js": "^4.4.2",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.7",
     "@types/markdown-it": "^13.0.7",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.9",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
