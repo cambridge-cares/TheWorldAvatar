@@ -7,7 +7,7 @@ import logging
 import pandas as pd
 import os
 from autografs.autografs import run
-from .cof_stacker import COFStacker
+from cof_logic.cof_stacker import COFStacker
 from ase.io import read, write
 from cof_logic.cof_dftb import cif_to_hd
 from cof_logic.cof_dftb import initiate_hsd_file
@@ -33,7 +33,7 @@ class COFProcessor:
         Reads in the filtered COFs and precursor data from CSV files and stores them for later use.
         """
         # Define paths to the CSV files containing COF and precursor data
-        filtered_cofs_path = os.path.join(self.script_location, 'Data', 'csv', 'Filtered_COFs.csv')
+        filtered_cofs_path = os.path.join(self.script_location, 'Data', 'csv', '31052024_subset.csv')
         precursors_inp_path = os.path.join(self.script_location, 'Data', 'csv', 'Precursors_inp.csv')
         linkage_inp_path = os.path.join(self.script_location, 'Data', 'csv', 'Linkages_inp.csv')
         dftb_cofs_path = os.path.join(self.script_location, 'Data', 'DFTB')
@@ -83,10 +83,12 @@ class COFProcessor:
         """
         # Define relative paths
         cif_path = os.path.join("Data", "Generated_CIFs", f"{prefix}.cif")
-        
+        #gin_path = os.path.join("Data", "Generated_GINs", f"{prefix}.gin")
+
         # Convert to .cif
         atoms = read(extxyz_file_path)  # Read the .extxyz file
         write(cif_path, atoms)  # Write to .cif
+        #write(gin_path, atoms)
 
         logging.info(f"Saved {prefix} as CIF.")
         return cif_path  # Add this line to return the path of the generated CIF file
@@ -279,6 +281,19 @@ class COFProcessor:
         
         return sbu_names, precursor_values, supercell_dimensions
 
+    def process_cof_X(self, cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values, supercell_dimensions):
+       
+        #print(precursor_values)
+        output_file_path = os.path.join(output_path, f'generated_cof_{cof_nr}')
+        logging.info(f'RUNNING AUTOGRAFS FOR COF number: {cof_nr}')
+        run(sbu_names, topology_name, output_file_path, output_ext, supercell_dimensions)
+        
+        logging.info(f'Geometry of COF {cof_nr} successfully Generated')
+
+        extxyz_file_path = f"{output_file_path}.inp"
+        inp_file_path = f"{output_file_path}.inp"
+
+
     def process_cof(self, cof_nr, sbu_names, topology_name, output_path, output_ext, precursor_values, supercell_dimensions):
         """
         Perform further logic on the COF.
@@ -305,24 +320,24 @@ class COFProcessor:
 
         extxyz_file_path = f"{output_file_path}.extxyz"
         inp_file_path = f"{output_file_path}.inp"
-        if self.is_2D_COF(extxyz_file_path):
-            logging.info(f'STACKING OF COF {cof_nr} in AA and AB')
+        #if self.is_2D_COF(extxyz_file_path):
+        #    logging.info(f'STACKING OF COF {cof_nr} in AA and AB')
             #cof_stacker = COFStacker(None) 
             #cof_stacker.stack_cof(cof_nr, input_filename=f"generated_cof_{cof_nr}")
-            cof_stacker = COFStacker(f"generated_cof_{cof_nr}")
-            cof_stacker.stack_cof(cof_nr)
+            #cof_stacker = COFStacker(f"generated_cof_{cof_nr}")
+            #cof_stacker.stack_cof(cof_nr)
             
-        else:
-            cif_file = self.write_and_convert_to_cif(f"COF_{cof_nr}", extxyz_file_path)
+        #else:
+        #    cif_file = self.write_and_convert_to_cif(f"COF_{cof_nr}", extxyz_file_path)
             
             # Create a new directory named after the COF in the DFTB directory
-            dftb_cof_path = os.path.join(self.script_location, 'Data', 'DFTB', f"COF_{cof_nr}")
-            os.makedirs(dftb_cof_path, exist_ok=True)
+        #    dftb_cof_path = os.path.join(self.script_location, 'Data', 'DFTB', f"{cof_nr}")
+        #    os.makedirs(dftb_cof_path, exist_ok=True)
 
             # Convert CIF to GEN format and save it in the new directory
-            gen_file = os.path.join(dftb_cof_path, 'geo_end.gen')
-            cif_to_hd(cif_file, gen_file)
+        #    gen_file = os.path.join(dftb_cof_path, 'geo_end.gen')
+         #   cif_to_hd(cif_file, gen_file)
 
             # Initiate the HSD file
-            hsd_file_path = os.path.join(dftb_cof_path, 'dftb_in.hsd')
-            initiate_hsd_file(gen_file, skf_files, output_filename=hsd_file_path)
+       #     hsd_file_path = os.path.join(dftb_cof_path, 'dftb_in.hsd')
+       #     initiate_hsd_file(gen_file, skf_files, output_filename=hsd_file_path)
