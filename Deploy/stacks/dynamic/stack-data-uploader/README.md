@@ -377,7 +377,7 @@ The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of th
 
 ##### `"configOptions"`
 
-Many options that can be set via enviornment variables can also be specified as "config" options.
+Many options that can be set via environment variables can also be specified as "config" options.
 The values are passed to the `ogr2ogr` tool as `NAME VALUE` pair arguments of the [`--config`][vector-common-config] option.
 A list of possible options can be found on the [config options][config-options] page.
 
