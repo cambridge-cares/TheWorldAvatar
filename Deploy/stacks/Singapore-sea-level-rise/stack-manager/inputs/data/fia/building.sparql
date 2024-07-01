@@ -1,44 +1,42 @@
-PREFIX bot: <https://w3id.org/bot#>
-PREFIX ontobuiltenv:<https://www.theworldavatar.com/kg/ontobuiltenv/>
-PREFIX ontobim:<https://www.theworldavatar.com/kg/ontobim/>
-PREFIX ontocompany:<http://www.theworldavatar.com/kg/ontocompany#>
-PREFIX ontochemplant:<http://www.theworldavatar.com/kg/ontochemplant#>
-PREFIX ontocarpark:<https://www.theworldavatar.com/kg/ontocarpark/>
-PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
-PREFIX ubem: <https://www.theworldavatar.com/kg/ontoubemmp/>
-PREFIX bs: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
-PREFIX obm: <https://www.theworldavatar.com/kg/ontobim/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
   # basic info
   {
-    BIND ("Building Height" AS ?Property )
-    BIND ("m" AS ?Unit)
     SERVICE [ONTOP] {
-      [IRI] bldg:measuredHeight ?Value.
-    }
-  } UNION 
-  # building usage
-  {
-    SERVICE [ONTOP] {
+      # height
+      {
+        [IRI] bldg:measuredHeight ?Value .
+        BIND ("Building height" AS ?Property)
+        BIND ("m" AS ?Unit)
+      }
+      UNION
+      # GFA
+      {
+        [IRI] ontobuiltenv:hasGFA ?Value .
+        BIND ("m²" AS ?Unit)
+        BIND ("GFA" AS ?Property)
+      }
+      UNION
+      # Cost
+      {
+        [IRI] ontobuiltenv:hasEstimatedConstructionCost/om:hasValue/om:hasNumericalValue ?Value .
+        BIND ("SGD" AS ?Unit)
+        BIND ("Estimated construction cost" AS ?Property)
+      }
+      UNION
+      # Usage
       {
         [IRI] ontobuiltenv:hasPropertyUsage ?usage .
         ?usage rdf:type ?Value_ini .
         OPTIONAL { ?usage ontobuiltenv:hasUsageShare ?Unit_ini . }
-        BIND (replace(str(?Value_ini), str(ontobuiltenv:), '') as ?usage_type)
-        BIND (concat(str(ROUND(?Unit_ini*10000)/100), ' %') as ?Value)
-        BIND (concat("Property Usage ",str(?usage_type)) AS ?Property )
-      } UNION { 
-          [IRI] ontobuiltenv:hasPropertyUsage ?usage .
-          ?usage rdf:type ?Value_ini .
-          OPTIONAL { ?usage ontobuiltenv:hasUsageLabel ?Name_ini . }
-          BIND (COALESCE(?Name_ini, " ") AS ?Value)
-          BIND ("Building Name" AS ?Property )
+        BIND (REPLACE(STR(?Value_ini), STR(ontobuiltenv:), '') AS ?usage_type)
+        BIND (CONCAT(STR(ROUND(?Unit_ini * 10000) / 100), ' %') AS ?Value)
+        BIND (CONCAT("Property Usage ", STR(?usage_type)) AS ?Property)
       }
     }
   }
