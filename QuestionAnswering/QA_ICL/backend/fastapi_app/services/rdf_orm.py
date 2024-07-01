@@ -13,6 +13,7 @@ from rdflib import URIRef
 
 from model.rdf_orm import RDFEntity
 from services.sparql import SparqlClient
+from utils.itertools_recipes import batched
 
 
 T = TypeVar("T", bound=RDFEntity)
@@ -27,10 +28,12 @@ def unpack_optional_type(annotation: type[Any]):
 
 
 class RDFStore:
+    BATCH_SIZE = 256
+
     def __init__(self, endpoint: str):
         self.sparql_client = SparqlClient(endpoint)
 
-    def getMany(self, T: type[T], iris: list[str] | tuple[str]):
+    def _get_many(self, T: type[T], iris: list[str] | tuple[str]):
         if not iris:
             empty_lst: list[T | None] = []
             return empty_lst
@@ -66,7 +69,7 @@ WHERE {{
                 iri2values = field2iri2values[field]
                 if issubclass(t, RDFEntity):
                     flattened = [v for values in iri2values.values() for v in values]
-                    models = [x for x in self.getMany(t, flattened) if x]
+                    models = [x for x in self.get_many(t, flattened) if x]
                     count = 0
                     out: dict[str, list[RDFEntity]] = dict()
                     for iri, iri2values in iri2values.items():
@@ -84,7 +87,7 @@ WHERE {{
             if annotation:
                 unpacked_type = unpack_optional_type(annotation)
                 if issubclass(unpacked_type, RDFEntity):
-                    models = self.getMany(unpacked_type, iri2value.values())
+                    models = self.get_many(unpacked_type, iri2value.values())
                     return {iri: model for iri, model in zip(iri2value.keys(), models)}
             return iri2value
 
@@ -107,14 +110,19 @@ WHERE {{
         iri2model = {model.IRI: model for model in models}
         return [iri2model.get(iri) for iri in iris]
 
-    def getOne(self, T: type[T], iri: str):
-        return self.getMany(T, [iri])[0]
+    def get_many(self, T: type[T], iris: list[str] | tuple[str]):
+        return [
+            x for batch in batched(iris, self.BATCH_SIZE) for x in self._get_many(T=T, iris=batch)
+        ]
 
-    def getAll(self, T: type[T], type_iri: URIRef):
+    def get_one(self, T: type[T], iri: str):
+        return self.get_many(T, [iri])[0]
+
+    def get_all(self, T: type[T], type_iri: URIRef):
         query = f"""SELECT DISTINCT ?IRI
 WHERE {{
     ?IRI rdf:type {type_iri.n3()} .
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["IRI"] for binding in bindings]
-        return [model for model in self.getMany(T, iris) if model]
+        return [model for model in self.get_many(T, iris) if model]

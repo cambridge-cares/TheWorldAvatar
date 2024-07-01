@@ -19,16 +19,16 @@ class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
         }
 
     def get_MOPs(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntomopsMOP, iris)
+        return self.get_many(OntomopsMOP, iris)
 
     def get_CBUs(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntomopsCBU, iris)
+        return self.get_many(OntomopsCBU, iris)
 
     def get_AMs(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntomopsAM, iris)
+        return self.get_many(OntomopsAM, iris)
 
     def get_GBUs(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntomopsGBU, iris)
+        return self.get_many(OntomopsGBU, iris)
 
 
 @cache

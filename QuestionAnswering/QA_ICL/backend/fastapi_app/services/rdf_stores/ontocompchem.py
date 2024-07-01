@@ -189,7 +189,7 @@ WHERE {{
             if model_cls is OntocompchemOptimizedGeometry:
                 models = self.get_optimized_geometries(iris=same_type_iris)
             else:
-                models = self.getMany(model_cls, iris=same_type_iris)
+                models = self.get_many(model_cls, iris=same_type_iris)
             iri2model.update(
                 {iri: model for iri, model in zip(same_type_iris, models) if model}
             )

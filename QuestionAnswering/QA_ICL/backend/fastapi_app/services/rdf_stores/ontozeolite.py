@@ -174,31 +174,31 @@ WHERE {{
         return [model for model in models]
 
     def get_zeolite_frameworks_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntozeoliteZeoliteFrameworkBase, iris)
+        return self.get_many(OntozeoliteZeoliteFrameworkBase, iris)
 
     def get_zeolitic_materials_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntozeoliteZeoliticMaterialBase, iris)
+        return self.get_many(OntozeoliteZeoliticMaterialBase, iris)
 
     def get_quantities_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntocrystalQuantity, iris)
+        return self.get_many(OntocrystalQuantity, iris)
 
     def get_vectors_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntocrystalMeasureVector, iris)
+        return self.get_many(OntocrystalMeasureVector, iris)
 
     def get_matrices_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntocrystalMeasureMatrix, iris)
+        return self.get_many(OntocrystalMeasureMatrix, iris)
 
     def get_atomic_structures_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntocrystalAtomicStructure, iris)
+        return self.get_many(OntocrystalAtomicStructure, iris)
 
     def get_coordinate_transforms_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntocrystalCoordinateTransformation, iris)
+        return self.get_many(OntocrystalCoordinateTransformation, iris)
 
     def get_unit_cells_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntocrystalUnitCell, iris)
+        return self.get_many(OntocrystalUnitCell, iris)
 
     def get_tiled_structures_many(self, iris: list[str] | tuple[str]):
-        return self.getMany(OntocrystalTiledStructure, iris)
+        return self.get_many(OntocrystalTiledStructure, iris)
 
 
 @cache
