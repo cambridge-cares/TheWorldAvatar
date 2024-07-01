@@ -31,7 +31,6 @@ export default function RibbonComponentClick(props: Readonly<RibbonComponentClic
               {props.text}
             </div>
           </div>
-          <div style={{ height: "10px" }} />
         </>
       </Tooltip>
     </div>
