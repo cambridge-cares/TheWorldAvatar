@@ -19,6 +19,11 @@ public final class StackClient {
     private static final String STACK_BASE_DIR_KEY = "STACK_BASE_DIR";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
+    @Deprecated
+    /**
+     * @deprecated This should be made `private` and accessed via a static method as
+     *             that makes it easier to mock the value for testing.
+     */
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
     public static final String MULTIDIM_GEOSPATIAL_DIR = "/multidim_geospatial";
@@ -33,6 +38,10 @@ public final class StackClient {
         stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
 
         stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName, PROJECT_NAME_LABEL, stackName);
+    }
+
+    public static String getScratchDir() {
+        return SCRATCH_DIR;
     }
 
     private StackClient() {
