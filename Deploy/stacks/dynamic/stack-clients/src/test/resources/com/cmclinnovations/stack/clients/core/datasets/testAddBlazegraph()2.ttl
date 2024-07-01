@@ -17,7 +17,7 @@
         <http://purl.org/dc/terms/title>
                 "namespace1";
         <http://www.w3.org/ns/dcat#endpointURL>
-                <http://blazegraph:8080/blazegraph/namespace/namespace1/sparql/>;
+                <http://blazegraph:8080/blazegraph/namespace/namespace1/sparql>;
         <http://www.w3.org/ns/dcat#servesDataset>
                 <https://theworldavatar.io/kg/6697ff0a-159e-489d-ba25-b3404ce5c670> .
 
@@ -41,4 +41,4 @@
         <http://purl.org/dc/terms/title>
                 "testDataset";
         <http://www.w3.org/ns/dcat#endpointURL>
-                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql/> .
+                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql> .

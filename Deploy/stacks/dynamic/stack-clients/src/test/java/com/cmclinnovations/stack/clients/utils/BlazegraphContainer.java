@@ -5,6 +5,9 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.DockerImageName;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
@@ -24,6 +27,7 @@ public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
         super(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"));
         withExposedPorts(8080);
         waitingFor(Wait.forHttp(BLAZEGRAPH_URL_PATH));
+        start();
     }
 
     public BlazegraphContainer withAuthentication() {
@@ -52,4 +56,13 @@ public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
         }
         return remoteStoreClient;
     }
+
+    public void writeBlazegraphConfig() {
+        BlazegraphClient.getInstance().writeEndpointConfig(
+                new BlazegraphEndpointConfig("blazegraph",
+                        getHost(), getFirstMappedPort().toString(),
+                        authenticated ? BlazegraphContainer.USERNAME : null,
+                        authenticated ? BlazegraphContainer.PASSWORD : null));
+    }
+
 }

@@ -17,7 +17,7 @@
         <http://purl.org/dc/terms/title>
                 "testDataset";
         <http://www.w3.org/ns/dcat#endpointURL>
-                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql/>;
+                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql>;
         <http://www.w3.org/ns/dcat#servesDataset>
                 <https://theworldavatar.io/kg/bb89c291-fac1-4382-b9ae-0d1e890e718c> .
 

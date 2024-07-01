@@ -9,18 +9,13 @@ import java.util.Map;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.utils.TempFile;
 
-public class OntopClient extends ContainerClient implements ClientWithEndpoint {
+public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
     public static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
 
     private static Map<String, OntopClient> instances = new HashMap<>();
-
-    private OntopEndpointConfig ontopEndpoint;
-
-    private final String containerName;
 
     public static OntopClient getInstance() {
         return getInstance(EndpointNames.ONTOP);
@@ -31,19 +26,11 @@ public class OntopClient extends ContainerClient implements ClientWithEndpoint {
     }
 
     private OntopClient(String containerName) {
-        this.containerName = containerName;
-    }
-
-    @Override
-    public OntopEndpointConfig getEndpoint() {
-        if (null == ontopEndpoint) {
-            ontopEndpoint = readEndpointConfig(containerName, OntopEndpointConfig.class);
-        }
-        return ontopEndpoint;
+        super(containerName, OntopEndpointConfig.class);
     }
 
     public void updateOBDA(Path newMappingFilePath) {
-        String containerId = getContainerId(containerName);
+        String containerId = getContainerId(getContainerName());
         Path ontopMappingFilePath = getEnvironmentVariable(containerId, ONTOP_MAPPING_FILE)
                 .map(Path::of)
                 .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_MAPPING_FILE

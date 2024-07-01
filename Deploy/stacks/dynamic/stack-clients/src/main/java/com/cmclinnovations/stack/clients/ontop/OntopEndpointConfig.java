@@ -44,7 +44,7 @@ public class OntopEndpointConfig extends AbstractEndpointConfig {
     @JsonIgnore
     public String getUrl() {
         if (null == url) {
-            return "http://" + hostName + ":" + port + "/sparql/";
+            return "http://" + hostName + ":" + port + "/sparql";
         } else {
             return url;
         }

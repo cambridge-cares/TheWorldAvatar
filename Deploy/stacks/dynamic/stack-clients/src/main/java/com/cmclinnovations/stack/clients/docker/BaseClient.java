@@ -29,18 +29,18 @@ abstract class BaseClient {
         }
     }
 
-    public final <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         String endpointName = endpointConfig.getName();
         Path configFilePath = configsDir.resolve(endpointName);
-        if (!Files.exists(configFilePath)) {
-            // Hack for when container is not in the swarm
-            try {
-                objectMapper.writeValue(configFilePath.toFile(), endpointConfig);
-            } catch (IOException ex) {
-                throw new RuntimeException("Failed to write to Docker config file with name '" + endpointName + "'.",
-                        ex);
-            }
+
+        // Ensure this container can access the endpoint file.
+        try {
+            objectMapper.writeValue(configFilePath.toFile(), endpointConfig);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to write to Docker config file with name '" + endpointName + "'.",
+                    ex);
         }
+
         if (!StackClient.isInTest()) {
             DockerClient dockerClient = DockerClient.getInstance();
             if (!dockerClient.configExists(endpointName)) {

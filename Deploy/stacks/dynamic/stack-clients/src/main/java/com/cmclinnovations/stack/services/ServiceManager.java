@@ -197,4 +197,9 @@ public final class ServiceManager {
         userServices.forEach(serviceName -> initialiseService(stackName, serviceName));
     }
 
+    public void removeService(String stackName, String serviceName) {
+        DockerService dockerService = getOrInitialiseService(stackName, StackClient.getContainerEngineName());
+        dockerService.removeService(serviceName);
+    }
+
 }
