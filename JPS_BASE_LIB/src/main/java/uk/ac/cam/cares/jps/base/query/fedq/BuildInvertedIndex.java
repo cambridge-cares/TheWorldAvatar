@@ -15,17 +15,36 @@ import org.apache.jena.query.ResultSet;
 import java.io.*;
 import java.util.*;
 
+/**
+ * The class wraps some functionality to-
+ * 1. create inverted index on a number of endpoints
+ * a) class to endpoint inverted index
+ * b) property to endpoint inverted index
+ * c) class-to property to endpoint inverted inedx
+ * 2. update inverted index on insertion of new set of triple into an endpoint
+ * 3. load inverted index from a file data into a memory map
+ * 4. save inverted index from memory map to storage file
+ */
+
 public class BuildInvertedIndex {
     private String classIndexFilePath = "";
     private String propertyIndexFilePath = "";
     private String cpIndexFilePath = "";
 
     private int tripleCount = 0;
+    private HashSet<String> stop_classes = new HashSet<>();
+    private HashSet<String> stop_properties = new HashSet<>();
     private Map<String, Set<String>> classIndex = new HashMap<>();
     private Map<String, Set<String>> propertyIndex = new HashMap<>();
     private Map<String, Map<String, Set<String>>> cpIndex = new HashMap<>();
     private Model model = ModelFactory.createDefaultModel();
 
+    /**
+     * indexDir specify the root directory of the indices
+     * 
+     * @param indexDir
+     * @return
+     */
     public void setIndexLocation(String indexDir) {
         if (!indexDir.endsWith("/")) {
             indexDir = indexDir.trim() + "/";
@@ -35,6 +54,14 @@ public class BuildInvertedIndex {
         this.cpIndexFilePath = indexDir + "cpinv.indx";
     }
 
+    /**
+     * startProcessing works on an endpoint to retrieve class and properties through
+     * sparqlQuey to create an index
+     * 
+     * @param endpointUrl,
+     * @param sparqlQuery
+     * @return
+     */
     public void startProcessing(String endpointUrl, String sparqlQuery) {
         int counter = 0;
         // Create a Query object
@@ -51,12 +78,18 @@ public class BuildInvertedIndex {
                 String classUri = soln.get("class").toString();
                 String propertyUri = soln.get("property").toString();
 
+                if (this.stop_classes.contains(classUri))
+                    continue;
                 if (!classUri.isEmpty()) {
                     classIndex.computeIfAbsent(classUri, k -> new HashSet<>()).add(endpointUrl);
                 }
+
+                if (this.stop_properties.contains(propertyUri))
+                    continue;
                 if (!propertyUri.isEmpty()) {
                     propertyIndex.computeIfAbsent(propertyUri, k -> new HashSet<>()).add(endpointUrl);
                 }
+
                 if (!classUri.isEmpty() && !propertyUri.isEmpty()) {
                     cpIndex.computeIfAbsent(classUri, k -> new HashMap<>())
                             .computeIfAbsent(propertyUri, k -> new HashSet<>())
@@ -83,23 +116,47 @@ public class BuildInvertedIndex {
         return cpIndex;
     }
 
+    /**
+     * it loads stop-CPs: list of common classes & properties
+     * 
+     * @return
+     */
+    public void loadStopCPs(String stop_cps_file) {
+        Map<String, HashSet<String>> stop_cps = new HashMap<>();
+        try (Reader reader = new FileReader(stop_cps_file)) {
+            stop_cps = new Gson().fromJson(reader, new TypeToken<Map<String, Set<String>>>() {
+            }.getType());
+            this.stop_classes = stop_cps.get("classes");
+            this.stop_properties = stop_cps.get("properties");
+            System.out.println("Stop-classes & Stop-properties loaded successfully.");
+        } catch (FileNotFoundException e) {
+            System.err.println("File '" + stop_cps_file + "' not found.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * it specifies update of indices on new set of triple to be inserted into an
+     * endpoint
+     * 
+     * @param newTriples
+     * @param endpoints
+     * @return
+     */
     public void addTriplesAndUpdateIndex(List<Triple> newTriples, String endpointUrl) {
         for (Triple triple : newTriples) {
             model.add(model.asStatement(triple));
 
             if (triple.getPredicate().equals(RDF.type.asNode())) {
                 String classUri = triple.getObject().getURI();
-                String lastToken = getSubstringFromLast(classUri);
-                if (lastToken.equals("Ontology") || lastToken.equals("Class") || lastToken.equals("NamedIndividual")) {
+                if (this.stop_classes.contains(classUri))
                     continue;
-                }
                 classIndex.computeIfAbsent(classUri, k -> new HashSet<>()).add(endpointUrl);
             } else {
                 String propertyUri = triple.getPredicate().getURI();
-                String lastToken = getSubstringFromLast(propertyUri);
-                if (lastToken.equals("label")) {
+                if (this.stop_properties.contains(propertyUri))
                     continue;
-                }
                 propertyIndex.computeIfAbsent(propertyUri, k -> new HashSet<>()).add(endpointUrl);
             }
         }
@@ -109,12 +166,17 @@ public class BuildInvertedIndex {
                 String propertyUri = triple.getPredicate().getURI();
                 if (classIndex.containsKey(triple.getSubject().getURI())) {
                     String classUri = triple.getSubject().getURI();
+                    if (this.stop_classes.contains(classUri))
+                        continue;
+
                     cpIndex.computeIfAbsent(classUri, k -> new HashMap<>())
                             .computeIfAbsent(propertyUri, k -> new HashSet<>())
                             .add(endpointUrl);
                 }
                 if (classIndex.containsKey(triple.getObject().getURI())) {
                     String classUri = triple.getObject().getURI();
+                    if (this.stop_classes.contains(classUri))
+                        continue;
                     cpIndex.computeIfAbsent(classUri, k -> new HashMap<>())
                             .computeIfAbsent(propertyUri, k -> new HashSet<>())
                             .add(endpointUrl);
@@ -126,12 +188,22 @@ public class BuildInvertedIndex {
         System.out.println("Added " + newTriples.size() + " triples and updated the index.");
     }
 
+    /**
+     * it loads indices from initialised directory
+     * 
+     * @return
+     */
     public void loadIndices() {
         loadClassIndex();
         loadPropertyIndex();
         loadCpIndex();
     }
 
+    /**
+     * it loads class-to-endpoint index from initialised file
+     * 
+     * @return
+     */
     private void loadClassIndex() {
         try (Reader reader = new FileReader(classIndexFilePath)) {
             classIndex = new Gson().fromJson(reader, new TypeToken<Map<String, List<String>>>() {
@@ -144,6 +216,11 @@ public class BuildInvertedIndex {
         }
     }
 
+    /**
+     * it loads property-to-endpoint index from initialised file
+     * 
+     * @return
+     */
     private void loadPropertyIndex() {
         try (Reader reader = new FileReader(propertyIndexFilePath)) {
             propertyIndex = new Gson().fromJson(reader, new TypeToken<Map<String, List<String>>>() {
@@ -156,6 +233,11 @@ public class BuildInvertedIndex {
         }
     }
 
+    /**
+     * it loads class-to-property-to-endpoint index from initialised file
+     * 
+     * @return
+     */
     private void loadCpIndex() {
         try (Reader reader = new FileReader(cpIndexFilePath)) {
             cpIndex = new Gson().fromJson(reader, new TypeToken<Map<String, Map<String, List<String>>>>() {
@@ -168,12 +250,22 @@ public class BuildInvertedIndex {
         }
     }
 
+    /**
+     * it saves indices into initialised directory
+     * 
+     * @return
+     */
     public void saveIndices() {
         saveClassIndex();
         savePropertyIndex();
         saveCpIndex();
     }
 
+    /**
+     * it saves class-to-endpoint index into initialised file
+     * 
+     * @return
+     */
     private void saveClassIndex() {
         try (Writer writer = new FileWriter(classIndexFilePath)) {
             new GsonBuilder().setPrettyPrinting().create().toJson(classIndex, writer);
@@ -182,6 +274,11 @@ public class BuildInvertedIndex {
         }
     }
 
+    /**
+     * it saves property-to-endpoint index into initialised file
+     * 
+     * @return
+     */
     private void savePropertyIndex() {
         try (Writer writer = new FileWriter(propertyIndexFilePath)) {
             new GsonBuilder().setPrettyPrinting().create().toJson(propertyIndex, writer);
@@ -190,6 +287,11 @@ public class BuildInvertedIndex {
         }
     }
 
+    /**
+     * it saves class-to-property-to-endpoint index into initialised file
+     * 
+     * @return
+     */
     private void saveCpIndex() {
         try (Writer writer = new FileWriter(cpIndexFilePath)) {
             new GsonBuilder().setPrettyPrinting().create().toJson(cpIndex, writer);
@@ -251,6 +353,7 @@ public class BuildInvertedIndex {
 
         BuildInvertedIndex kgs = new BuildInvertedIndex();
         kgs.setIndexLocation(indexLocation);
+        kgs.loadStopCPs("src/main/java/uk/ac/cam/cares/jps/base/query/fedq/stopcps.json");
 
         for (String namespace : namespaces) {
             String endpointUrl = blazegraphBaseUrl + "/namespace/" + namespace + "/sparql";
