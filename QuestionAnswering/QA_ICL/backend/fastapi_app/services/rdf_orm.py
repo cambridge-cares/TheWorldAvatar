@@ -60,6 +60,8 @@ WHERE {{
             lambda: defaultdict(list)
         )
         for binding in bindings:
+            if "field" not in binding or "value" not in binding:
+                continue
             field2iri2values[binding["field"]][binding["iri"]].append(binding["value"])
 
         def resolve_field_value(field: str, info: FieldInfo):

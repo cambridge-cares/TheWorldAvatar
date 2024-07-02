@@ -18,11 +18,10 @@ logger = logging.getLogger(__name__)
 
 
 class QtNormaliser:
-    QT_RECOG_SYSTEM_PROMPT = """You are a helpful assistant who detects magnitudes and units of physical quantities in natural language texts.
-- Please ignore physical quantities with no units.
-- Your response is exactly a single JSON object, or `null` if no physical quantities are present."""
+    QT_RECOG_PROMPT_TEMPLATE = """### Instruction:
+Your task is to detect physical quantities in natural language texts based on the examples given. Please ignore physical quantities with no units and respond with a single JSON object exactly, or `null` if no physical quantities are present.
 
-    QT_RECOG_USER_PROMPT_TEMPLATE = """### Input-output examples:
+### Input-output examples:
 {examples}
 
 ### Input:
@@ -67,7 +66,7 @@ class QtNormaliser:
         return f"{qt:~P}"
 
     def normalise(self, text: str):
-        prompt = self.QT_RECOG_USER_PROMPT_TEMPLATE.format(
+        prompt = self.QT_RECOG_PROMPT_TEMPLATE.format(
             examples="\n".join(
                 '"{input}" => {output}'.format(
                     input=example.text,
@@ -87,7 +86,6 @@ class QtNormaliser:
             model=self.openai_model,
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": self.QT_RECOG_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
             temperature=0,
