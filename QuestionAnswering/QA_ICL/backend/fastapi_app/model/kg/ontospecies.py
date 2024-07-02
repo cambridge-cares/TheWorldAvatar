@@ -50,7 +50,7 @@ class OntospeciesUse(RDFEntity):
 
 
 class OntospeciesSpeciesBase(RDFEntity):
-    label: str = RDFField(path=RDFS.label)
+    label: str | None = RDFField(default=None, path=RDFS.label)
     IUPAC_name: str | None = RDFField(
         default=None, path=ONTOSPECIES.hasIUPACName / ONTOSPECIES.value
     )
