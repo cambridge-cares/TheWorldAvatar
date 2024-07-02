@@ -85,7 +85,7 @@ export const SPECIES_IDENTIFIER_KEY_LABELS = {
 
 export interface SpeciesBase {
   IRI: string
-  label: string
+  label?: string
   IUPAC_name?: string
   InChI: string
 }
