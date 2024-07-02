@@ -1,0 +1,4 @@
+matplotlib
+mycolorpy
+numpy
+json

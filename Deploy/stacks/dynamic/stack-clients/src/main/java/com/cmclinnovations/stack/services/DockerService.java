@@ -377,7 +377,7 @@ public class DockerService extends AbstractService
         mounts.add(new Mount()
                 .withType(MountType.VOLUME)
                 .withSource("scratch")
-                .withTarget(StackClient.SCRATCH_DIR));
+                .withTarget(StackClient.getScratchDir()));
 
         // Add the Docker API socket as a bind mount
         // This is required for a container to make Docker API calls
