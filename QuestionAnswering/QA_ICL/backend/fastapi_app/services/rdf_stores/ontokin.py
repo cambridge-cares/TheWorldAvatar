@@ -20,7 +20,7 @@ from model.kg.ontokin import (
 )
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
-from services.sparql import SparqlClient, get_ontokin_endpoint
+from services.sparql import get_ontokin_endpoint
 
 
 class OntokinRDFStore(Cls2NodeGetter, RDFStore):
