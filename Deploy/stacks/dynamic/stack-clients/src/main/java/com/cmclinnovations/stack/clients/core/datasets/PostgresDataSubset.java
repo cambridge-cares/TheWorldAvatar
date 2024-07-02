@@ -64,7 +64,7 @@ public abstract class PostgresDataSubset extends DataSubset {
     public abstract void loadData(Path dataSubsetDir, String database, String baseIRI);
 
     public void runSQLPostProcess(String database) {
-        sql.map(this::handleFileValues)
+        sql.map(AbstractDataObject::handleFileValues)
                 .ifPresent(query -> PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(query));
     }
 
