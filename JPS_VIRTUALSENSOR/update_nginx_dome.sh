@@ -22,7 +22,11 @@ add_header \"Access-Control-Allow-Credentials\" \"true\";
 # find nginx, add additional websocket for dome interactor
 
 for container_name in $(docker ps --format "{{.Names}}" --filter name="ship-stack-nginx"); do
-	docker exec $container_name sh -c "echo '$TEXT_TO_ADD' >> /etc/nginx/conf.d/locations/ship-stack-dome-interactor.conf"
-	docker exec $container_name nginx -t
-	docker exec $container_name nginx -s reload
+	if ! docker exec $container_name grep -qF "location /dome-interactor/api/kernels/" "/etc/nginx/conf.d/locations/ship-stack-dome-interactor.conf";
+	then
+		docker exec $container_name sh -c "echo '$TEXT_TO_ADD' >> /etc/nginx/conf.d/locations/ship-stack-dome-interactor.conf"
+		docker exec $container_name nginx -t
+		docker exec $container_name nginx -s reload
+		echo "NGINX updated and reloaded."
+	fi
 done
