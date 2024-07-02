@@ -1,5 +1,6 @@
 export const Interactions: {
   [key: string]: string;
 } = {
-  HOVER: "hover"
+  HOVER: "hover",
+  CLICKABLE: "clickable"
 };

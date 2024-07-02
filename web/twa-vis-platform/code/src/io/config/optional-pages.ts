@@ -60,12 +60,14 @@ export default class OptionalPages {
                         title: matterResult.data.title,
                         slug: matterResult.data.slug,
                         description: matterResult.data.description,
-                        content: formatMarkdownImages(matterResult.content),
+                        content: matterResult.content,
                         filename: fileName,
                         thumbnail: matterResult.data.thumbnail
                     };
                     OptionalPages.LOADED_PAGES.push(page);
                 }
+
+                // if(fileName.endsWith(".svg")){ // Add SVG files as optional pages}
             });
 
             // Sort pages by filename
@@ -127,10 +129,3 @@ export default class OptionalPages {
  * @param markdownContent Entire content of markdown document.
  * @returns The input content with prefix added to image urls.
  */
-function formatMarkdownImages(markdownContent: string): string {
-    const prefix: string = process.env.BASE_PATH || "/";
-    // Append base path if available
-    // Formats either <img src="/images/... or <img src="images/...
-    // Exclude any initial img elements starting with http 
-    return markdownContent.replace(/(<img\s+src=")(?!https?:\/\/)(\/)?([^"]+")/g, `$1${prefix}$3`);
-}

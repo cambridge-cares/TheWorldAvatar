@@ -46,9 +46,9 @@
 }
 
 .simple-selector option:checked {
-  color: var(--background-inverse-primary);
+  color: var(--text-color-secondary);
 }
 
 .simple-selector option:not(:checked) {
-  color: var(--border-primary);
+  color: var(--background-inverse-primary);
 }

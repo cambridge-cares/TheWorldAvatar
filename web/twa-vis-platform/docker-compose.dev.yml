@@ -23,6 +23,7 @@ services:
         description: "Development environment for TWA Visualisation Platform image."
     volumes:
       - ./code:/twa/
+      - /twa/node_modules/
       - ./uploads:/twa/public
     ports:
       - "3000:3000" 

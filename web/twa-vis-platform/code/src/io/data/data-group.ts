@@ -1,5 +1,5 @@
 import { DataLayer } from './data-layer';
-import { DataSource } from './data-source';
+import { LayerSource as LayerSource } from './layer-source';
 
 /**
  * This class represents a single source of geographical data within the visualisation.
@@ -28,11 +28,12 @@ export class DataGroup {
 
     /**
      * Data sources.
+     * Layer sources.
      */
-    public readonly dataSources: DataSource[] = [];
+    public readonly layerSources: LayerSource[] = [];
 
     /**
-     * Data layers.
+     * Map layers.
      */
     public readonly dataLayers: DataLayer[] = [];
 
@@ -70,19 +71,19 @@ export class DataGroup {
     }
     
     /**
-     * Returns the first DataSource instance with the input ID if present.
+     * Returns the first LayerSource instance with the input ID if present.
      * 
      * @param targetID target ID data source.
      * 
-     * @return matching DataSource, null if not present.
+     * @return matching LayerSource, null if not present.
      */
-    public getFirstSourceWithID(targetID: string): DataSource {
-        const results: DataSource[] = [];
+    public getFirstSourceWithID(targetID: string): LayerSource {
+        const results: LayerSource[] = [];
 
         this.recurseFindSources(
             this,
             results,
-            (source: DataSource) => source.id === targetID
+            (source: LayerSource) => source.id === targetID
         );
         
         return (results.length === 1) ? results[0] : null;
@@ -155,16 +156,16 @@ export class DataGroup {
      * 
      * @param currentGroup data group being searched.
      * @param results running pool of matching sources.
-     * @param matchingFunction function that takes a single DataSource argument and returns a boolean,
+     * @param matchingFunction function that takes a single LayerSource argument and returns a boolean,
      * matches are added to the results array.
      */
     private recurseFindSources(
         currentGroup: DataGroup,
-        results: DataSource[],
-        matchingFunction: (source: DataSource) => boolean) {
+        results: LayerSource[],
+        matchingFunction: (source: LayerSource) => boolean) {
         
         // Get matching source in this group
-        const source: DataSource = currentGroup.dataSources.find(source => matchingFunction(source));
+        const source: LayerSource = currentGroup.layerSources.find(source => matchingFunction(source));
         if(source != null) results.push(source);
 
         // Recurse deeper

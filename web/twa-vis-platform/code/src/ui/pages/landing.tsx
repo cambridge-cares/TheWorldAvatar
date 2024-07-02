@@ -2,27 +2,28 @@
  * Optional landing page.
  */
 
-import styles from './landing.module.css';
 import 'github-markdown-css/github-markdown.css';
+import styles from './landing.module.css';
 
-import React from 'react';
 import markdownit from 'markdown-it';
+import React from 'react';
 
-import { Routes } from 'io/config/routes';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
-import { DefaultPageThumbnail, MarkdownPageThumbnail } from './page-thumbnail';
+import { Routes } from 'io/config/routes';
+import LandingImage from 'ui/graphic/image/landing';
+import { DefaultPageThumbnail, DefaultPageThumbnailProps, MarkdownPageThumbnail } from './page-thumbnail';
+import { DefaultSettings } from 'types/settings';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({
-    html: true,
-    typographer: true,
-    breaks: true,
-    linkify: true
+  html: true,
+  typographer: true,
+  breaks: true,
+  linkify: true
 });
 
 interface LandingPageProps {
-    hasMap: boolean,
-    hasDashboard: boolean,
+  settings: DefaultSettings,
 }
 
 /**
@@ -33,55 +34,68 @@ interface LandingPageProps {
  * @returns JSX for landing page.
  */
 export default function LandingPage(props: Readonly<LandingPageProps>) {
-    // CSS class names
-    const introClasses = ["markdown-body", styles.introInner].join(" ");
+  // CSS class names
+  const introClasses = ["markdown-body", styles.introInner].join(" ");
+  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "dashboard");
+  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "help");
+  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "map");
 
-    // Get landing page introduction content
-    const introContent = getIntroductionContent();
-
-    // Get thumbnails for static content pages
-    const thumbnails = getThumbnails();
-
-    return (
-        <div className={styles.container}>
-
-            <div className={styles.introOuter}>
-                <div className={styles.introMiddle}>
-                    <div
-                        className={introClasses}
-                        dangerouslySetInnerHTML={{ __html: introContent }}
-                    />
-
-                </div>
-            </div>
-
-            <div className={styles.thumbnailContainer}>
-                {thumbnails}
-                {props.hasMap && (
-                    <DefaultPageThumbnail
-                        title="Explore"
-                        description="Discover geospatial relationships in our environment"
-                        icon="/images/defaults/icons/map.svg"
-                        redirectUrl={Routes.MAP}
-                    />
-                )}
-                {props.hasDashboard && (
-                    <DefaultPageThumbnail
-                        title="Analyse"
-                        description="Discover trends and insights at a glance"
-                        icon="/images/defaults/icons/dash.svg"
-                        redirectUrl={Routes.DASHBOARD}
-                    />
-                )}
-                <DefaultPageThumbnail
-                    title="Help Center"
-                    description="Get help for this web platform"
-                    icon="/images/defaults/icons/twa.svg"
-                    redirectUrl={Routes.HELP}
-                />
-            </div>
+  return (
+    <div className={styles.container}>
+      <div className={styles.introOuter}>
+        <div className={styles.introMiddle}>
+          <div
+            className={introClasses}
+            dangerouslySetInnerHTML={{ __html: getIntroductionContent() }}
+          />
         </div>
-    )
+      </div>
+
+      <div className={`${styles.thumbnailContainer} hidden-scrollbar`}>
+        {props.settings.branding.landing && (<LandingImage
+          lightUrl={props.settings.branding.landing}
+          darkUrl={props.settings.branding.landingDark}
+        />)}
+        {getThumbnails()}
+        {props.settings.modules.map && (
+          <DefaultPageThumbnail
+            title={mapLinkProps?.title ?? "Explore"}
+            caption={mapLinkProps?.caption ?? "Discover geospatial relationships in our environment"}
+            icon={mapLinkProps?.icon ?? "./images/defaults/icons/map.svg"}
+            url={Routes.MAP}
+          />
+        )}
+        {props.settings.modules.dashboard && (
+          <DefaultPageThumbnail
+            title={dashboardLinkProps?.title ?? "Analyse"}
+            caption={dashboardLinkProps?.caption ?? "Discover trends and insights at a glance"}
+            icon={dashboardLinkProps?.icon ?? "./images/defaults/icons/dash.svg"}
+            url={Routes.DASHBOARD}
+          />
+        )}
+
+        <DefaultPageThumbnail
+          title={helpLinkProps?.title ?? "Help Centre"}
+          caption={helpLinkProps?.caption ?? "Get help for this web platform"}
+          icon={helpLinkProps?.icon ?? "./images/defaults/icons/help.svg"}
+          url={Routes.HELP}
+        />
+
+        {props.settings.links?.map((externalLink, index) => {
+          if (!["map", "dashboard", "help"].includes(externalLink.url)) {
+            return <DefaultPageThumbnail
+              key={externalLink.title + index}
+              title={externalLink.title}
+              caption={externalLink.caption}
+              icon={externalLink.icon}
+              url={externalLink.url}
+            />
+          }
+        })
+        }
+      </div>
+    </div>
+  )
 }
 
 /**
@@ -90,8 +104,8 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
  * @returns Introduction HTML content.
  */
 function getIntroductionContent(): string {
-    const page: OptionalPage = OptionalPages.getPage("landing");
-    return markdowner.render(page.content);
+  const page: OptionalPage = OptionalPages.getPage("landing");
+  return markdowner.render(page.content);
 }
 
 /**
@@ -101,22 +115,22 @@ function getIntroductionContent(): string {
  * @returns Array of thumbnail components.
  */
 function getThumbnails(): React.ReactElement[] {
-    // Get all pages
-    let pages = OptionalPages.getAllPages();
+  // Get all pages
+  let pages = OptionalPages.getAllPages();
 
-    // Filter out the object that defines the landing or help page content
-    pages = pages.filter(page => page.slug !== "landing" && page.slug !== "help");
+  // Filter out the object that defines the landing or help page content
+  pages = pages.filter(page => page.slug !== "landing" && page.slug !== "help");
 
-    // Create thumbnail components for each page
-    const components: React.ReactElement[] = [];
-    pages.forEach(page => {
-        const thumbnail = (
-            <MarkdownPageThumbnail
-                page={page}
-            />
-        );
-        components.push(thumbnail);
-    });
+  // Create thumbnail components for each page
+  const components: React.ReactElement[] = [];
+  pages.forEach(page => {
+    const thumbnail = (
+      <MarkdownPageThumbnail
+        page={page}
+      />
+    );
+    components.push(thumbnail);
+  });
 
-    return components;
+  return components;
 }

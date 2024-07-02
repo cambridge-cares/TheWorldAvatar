@@ -21,3 +21,9 @@ export interface MapboxHoverProperty extends InjectableProperty {
     number
   ]
 }
+
+export interface MapboxClickableProperty extends InjectableProperty {
+  style: [
+    boolean
+  ]
+}

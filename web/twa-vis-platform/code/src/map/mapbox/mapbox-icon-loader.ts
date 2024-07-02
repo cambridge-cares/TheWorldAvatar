@@ -1,6 +1,5 @@
 import { Map } from 'mapbox-gl';
 import { IconSettings } from 'types/settings';
-import { formatAppUrl } from 'utils/client-utils';
 
 /**
  * Adds icons to the map
@@ -34,19 +33,18 @@ export function addIcons(map: Map, iconSettings: IconSettings) {
  * @param callback callback function
  */
 function loadIcon(map: Map, imageName: string, imageURL: string, callback: () => void) {
-  const formattedImageUrl: string = formatAppUrl(imageURL);
   map?.loadImage(
-    formattedImageUrl,
+    imageURL,
     (error, image) => {
       if (error) {
-        console.log("ERROR: Could not load image at URL " + formattedImageUrl);
+        console.log("ERROR: Could not load image at URL " + imageURL);
       } else {
         if (!map?.hasImage(imageName)) {
           // If the imageURL contains ("-sdf"), load as an SDF image
           map?.addImage(
             imageName,
             image,
-            { "sdf": formattedImageUrl.includes("-sdf") }
+            { "sdf": imageURL.includes("-sdf") }
           );
         }
       }

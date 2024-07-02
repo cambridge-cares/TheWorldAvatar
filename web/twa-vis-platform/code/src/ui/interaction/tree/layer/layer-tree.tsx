@@ -25,10 +25,6 @@ interface LayerTreeProps {
  * with optional icons, in a LayerTree component.
  */
 export default function LayerTree(props: Readonly<LayerTreeProps>) {
-  // Only parse the groups for the first render
-  if (props.mapGroups.length === 0) {
-    parseIntoTreeStucture(props.dataStore, props.icons, props.setMapGroups);
-  }
   return <div className={styles.layerTreeContainer}>
     {props.mapGroups.map((mapLayerGroup) => {
       return (
@@ -53,7 +49,7 @@ export default function LayerTree(props: Readonly<LayerTreeProps>) {
  * @param dataStore DataStore containing groups.
  * @param icons The mappings for icon names to their corresponding url.
  */
-function parseIntoTreeStucture(
+export function parseIntoTreeStucture(
   dataStore: DataStore,
   icons: IconSettings,
   setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>

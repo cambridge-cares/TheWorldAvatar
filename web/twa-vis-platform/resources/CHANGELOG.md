@@ -3,6 +3,20 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.3.0
+
+### Features
+
+* Time slider placeholders in retrieved scenario's data.json are temporarily fixed to 1
+* Added order and clickable configuration and functionality from TWA-VF 4
+* Added ability to perform subqueries for feature information in parts
+
+### Bug Fixes
+
+* Map events and data are now registered and removed when changing scenarios
+* Added a placeholder for the feature selector's dropdown options so that the first option can now be selected as well
+* Redirects correctly to the map page when landing page is disabled
+
 ## 5.2.0
 
 ### Features

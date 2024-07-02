@@ -29,6 +29,7 @@ export default function FeatureSelector(props: Readonly<FeatureSelectorProps>) {
       <p>Multiple overlapping features detected within the clicked area. Please select a specific feature for more detailed information.</p>
       <div className={styles["select-container"]}>
         <GroupDropdownField
+          placeholderText="Select a feature..."
           options={extractNames(props.features)}
           groups={extractGroups(props.features)}
           handleChange={handleSelectorChange}

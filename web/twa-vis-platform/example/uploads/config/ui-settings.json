@@ -1,7 +1,7 @@
 {
     "branding": {
-        "logo": "/images/whatever.svg",
-        "navbarLogo": "/images/defaults/navbar-logo.svg"
+        "logo": "./images/whatever.svg",
+        "navbarLogo": "./images/defaults/navbar-logo.svg"
     },
     "modules": {
         "landing": true,

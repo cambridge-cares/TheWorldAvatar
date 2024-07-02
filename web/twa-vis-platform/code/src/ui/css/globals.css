@@ -67,6 +67,7 @@
     --large-icon-size: 2rem;
     --icon-size: 1.5rem;
     --small-icon-size: 1rem;
+    --smallest-icon-size: 0.6rem;
 }
 
 * {
@@ -159,7 +160,7 @@ img {
 }
 
 * {
-    scrollbar-width: auto;
+    scrollbar-width: thin;
     scrollbar-color: var(--background-tertiary) var(--background-secondary);
 }
 *::-webkit-scrollbar {
@@ -177,6 +178,17 @@ img {
     background-clip: padding-box;
 }
 
-.MuiTabs-indicator {
-    display: none !important;
+.hidden-scrollbar {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;/* Chrome, Safari and Opera */
+}
+
+.mapboxgl-ctrl-attrib-inner , .mapboxgl-ctrl-attrib-button {
+    color: rgba(0,0,0,0.75);
+    background-color: #efefef !important;
 }
