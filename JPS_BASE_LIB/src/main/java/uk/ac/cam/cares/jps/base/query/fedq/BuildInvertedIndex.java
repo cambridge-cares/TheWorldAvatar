@@ -31,7 +31,7 @@ public class BuildInvertedIndex {
     private String propertyIndexFilePath = "";
     private String cpIndexFilePath = "";
 
-    private int tripleCount = 0;
+    // private int tripleCount = 0;
     private HashSet<String> stop_classes = new HashSet<>();
     private HashSet<String> stop_properties = new HashSet<>();
     private Map<String, Set<String>> classIndex = new HashMap<>();
@@ -184,7 +184,7 @@ public class BuildInvertedIndex {
             }
         }
 
-        tripleCount += newTriples.size();
+        // tripleCount += newTriples.size();
         System.out.println("Added " + newTriples.size() + " triples and updated the index.");
     }
 
@@ -300,11 +300,11 @@ public class BuildInvertedIndex {
         }
     }
 
-    private String getSubstringFromLast(String string) {
-        int lastSlash = string.lastIndexOf('/');
-        int lastHash = string.lastIndexOf('#');
-        return string.substring(Math.max(lastSlash, lastHash) + 1);
-    }
+    // private String getSubstringFromLast(String string) {
+    // int lastSlash = string.lastIndexOf('/');
+    // int lastHash = string.lastIndexOf('#');
+    // return string.substring(Math.max(lastSlash, lastHash) + 1);
+    // }
 
     public static void main(String[] args) {
 
