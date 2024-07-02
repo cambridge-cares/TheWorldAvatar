@@ -74,109 +74,109 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
   if (isRibbonToggled) {
     return (
       <div className={styles.ribbonContainer}>
-            <Tabs
-              className={styles.ribbonTabs}
-              value={activeIndex}
-              onChange={handleChange}
-              TabIndicatorProps={{
-                style: {
-                  background: "transparent"
-                }
-              }}>
+        <Tabs
+          className={styles.ribbonTabs}
+          value={activeIndex}
+          onChange={handleChange}
+          TabIndicatorProps={{
+            style: {
+              background: "transparent"
+            }
+          }}>
 
-              <Tab
-                className={getRibbonTabClass(activeIndex === 0)}
-                label="View" />
-              {/*
+          <Tab
+            className={getRibbonTabClass(activeIndex === 0)}
+            label="View" />
+          {/*
               <Tab
                 className={getRibbonTabClass(activeIndex === 1)}
                 label="Filter" />
               */}
-              <Tab
-                className={getRibbonTabClass(activeIndex === 1)}
-                label="Search" />
+          <Tab
+            className={getRibbonTabClass(activeIndex === 1)}
+            label="Search" />
 
-            </Tabs>
+        </Tabs>
 
-          {activeIndex == 0 &&
-            <RibbonPanel>
-              <RibbonComponentOptions
+        {activeIndex == 0 &&
+          <RibbonPanel>
+            <RibbonComponentOptions
               key={`imagery`} id={`imagery`}
-                icon="palette"
-                tooltip="Change map imagery"
-                options={imageryNames}
-                initialOption={currentImagery?.name}
-                iconClickable={false}
-                action={() => {
-                  setImagery(props.mapSettings.imagery, props.map);
-                }}
-              />
-              <RibbonComponentOptions
+              icon="palette"
+              tooltip="Change map imagery"
+              options={imageryNames}
+              initialOption={currentImagery?.name}
+              iconClickable={false}
+              action={() => {
+                setImagery(props.mapSettings.imagery, props.map);
+              }}
+            />
+            <RibbonComponentOptions
               key={`reset`} id={`reset`}
-                icon="reset_focus"
-                tooltip="Reset camera to default position."
-                options={cameraNames}
-                initialOption={cameraDefault}
-                action={() => {
-                  resetCamera(props.mapSettings.camera, props.map);
-                }}
-              />
-              <RibbonComponentToggle
+              icon="reset_focus"
+              tooltip="Reset camera to default position."
+              options={cameraNames}
+              initialOption={cameraDefault}
+              action={() => {
+                resetCamera(props.mapSettings.camera, props.map);
+              }}
+            />
+            <RibbonComponentToggle
               key={`placenames`} id={`placenames`}
-                icon="glyphs"
-                tooltip="Toggle display of place names."
-                initialState={false}
-                action={() => {
-                  togglePlacenames(props.mapSettings.imagery, props.map);
-                }}
-              />
-              <RibbonComponentToggle
+              icon="glyphs"
+              tooltip="Toggle display of place names."
+              initialState={false}
+              action={() => {
+                togglePlacenames(props.mapSettings.imagery, props.map);
+              }}
+            />
+            <RibbonComponentToggle
               key={`terrain`} id={`terrain`}
-                icon="landscape_2"
-                tooltip="Toggle 3D terrain."
-                initialState={false}
-                action={state => {
-                  set3DTerrain(state, props.map);
-                }}
-              />
-              <RibbonComponentToggle
+              icon="landscape_2"
+              tooltip="Toggle 3D terrain."
+              initialState={false}
+              action={state => {
+                set3DTerrain(state, props.map);
+              }}
+            />
+            <RibbonComponentToggle
               key={`fullscreen`} id={`fullscreen`}
-                icon="open_in_full"
-                tooltip="Toggle fullscreen mode."
-                initialState={false}
-                action={state => {
-                  if (state) {
-                    openFullscreen();
-                  } else {
-                    closeFullscreen();
-                  }
-                }}
-              />
-              <Divider orientation="vertical" flexItem />
-              {props.hasScenario &&
-                <RibbonComponentToggle
+              icon="open_in_full"
+              tooltip="Toggle fullscreen mode."
+              initialState={false}
+              action={state => {
+                if (state) {
+                  openFullscreen();
+                } else {
+                  closeFullscreen();
+                }
+              }}
+            />
+            <Divider orientation="vertical" flexItem />
+            {props.hasScenario &&
+              <RibbonComponentToggle
                 key={`scenario`} id={`scenario`}
-                  icon="huboutlined"
-                  tooltip="Select another scenario."
-                  initialState={false}
-                  action={props.toggleScenarioSelection}
-                />
-              }
-            </RibbonPanel>
-          }
-
-          {activeIndex == 1 &&
-            <RibbonPanel>
-              <RibbonComponentClick
-                icon="my_location"
-                text="Your Location"
-                tooltip="Move the map to your location."
-                action={() => {
-                  locateUser(props.map);
-                }}
+                icon="huboutlined"
+                tooltip="Select another scenario."
+                initialState={false}
+                action={props.toggleScenarioSelection}
               />
-            </RibbonPanel>
-          }
+            }
+          </RibbonPanel>
+        }
+
+        {activeIndex == 1 &&
+          <RibbonPanel>
+            <RibbonComponentClick
+              icon="my_location"
+              text="Your Location"
+              tooltip="Move the map to your location."
+              action={() => {
+                locateUser(props.map);
+              }}
+            />
+          </RibbonPanel>
+        }
       </div>)
   }
 }
