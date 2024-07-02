@@ -153,6 +153,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               <Divider orientation="vertical" flexItem />
               {props.hasScenario &&
                 <RibbonComponentToggle
+                key={`scenario`} id={`scenario`}
                   icon="huboutlined"
                   tooltip="Select another scenario."
                   initialState={false}
@@ -174,7 +175,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               />
             </RibbonPanel>
           }
-        </Box>
       </div>)
   }
 }
