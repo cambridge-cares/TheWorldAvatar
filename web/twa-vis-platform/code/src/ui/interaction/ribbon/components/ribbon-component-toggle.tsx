@@ -9,6 +9,7 @@ import { getOption, setOption } from 'state/ribbon-component-slice';
 import IconComponent from 'ui/graphic/icon/icon';
 
 interface RibbonComponentToggleProps {
+    id: string,
     icon: string,
     text?: string,
     tooltip: string,
@@ -17,7 +18,7 @@ interface RibbonComponentToggleProps {
 }
 
 export default function RibbonComponentToggle(props: Readonly<RibbonComponentToggleProps>) {
-    const toggled = useSelector(getOption(props.text));
+    const toggled = useSelector(getOption(props.id));
     const dispatch = useDispatch();
 
     const classNames = [styles.ribbonComponentInner];
@@ -30,7 +31,7 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
     const clickAction = () => {
         const selected = (toggled?.selection == null) ? !props.initialState : !toggled.selection;
         dispatch(setOption({
-            name: props.text,
+            id: props.id,
             selection: selected
         }));
         props.action(selected);

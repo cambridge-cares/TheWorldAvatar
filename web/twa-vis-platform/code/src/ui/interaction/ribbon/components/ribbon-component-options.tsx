@@ -9,6 +9,7 @@ import { getOption, setOption } from 'state/ribbon-component-slice';
 import IconComponent from 'ui/graphic/icon/icon';
 
 interface RibbonComponentOptionsProps {
+    id: string,
     icon: string,
     text?: string,
     tooltip: string,
@@ -20,13 +21,13 @@ interface RibbonComponentOptionsProps {
 
 export default function RibbonComponentOptions(props: Readonly<RibbonComponentOptionsProps>) {
     const [expanded, setExpanded] = useState(false);
-    const option = useSelector(getOption(props.text));
+    const option = useSelector(getOption(props.id));
     const dispatch = useDispatch();
 
     // Triggered on dropdown option selection
     const selectAction = (selectedOption: string) => {
         dispatch(setOption({
-            name: props.text,
+            id: props.id,
             selection: selectedOption
         }));
         setExpanded(false);
