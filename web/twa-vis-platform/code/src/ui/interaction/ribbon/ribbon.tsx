@@ -101,7 +101,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
         {activeIndex == 0 &&
           <RibbonPanel>
             <RibbonComponentOptions
-              key={`imagery`} id={`imagery`}
+              key="imagery" id="imagery"
               icon="palette"
               tooltip="Change map imagery"
               options={imageryNames}
@@ -112,7 +112,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               }}
             />
             <RibbonComponentOptions
-              key={`reset`} id={`reset`}
+              key="reset" id="reset"
               icon="reset_focus"
               tooltip="Reset camera to default position."
               options={cameraNames}
@@ -122,7 +122,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               }}
             />
             <RibbonComponentToggle
-              key={`placenames`} id={`placenames`}
+              key="placenames" id="placenames"
               icon="glyphs"
               tooltip="Toggle display of place names."
               initialState={false}
@@ -131,7 +131,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               }}
             />
             <RibbonComponentToggle
-              key={`terrain`} id={`terrain`}
+              key="terrain" id="terrain"
               icon="landscape_2"
               tooltip="Toggle 3D terrain."
               initialState={false}
@@ -140,7 +140,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
               }}
             />
             <RibbonComponentToggle
-              key={`fullscreen`} id={`fullscreen`}
+              key="fullscreen" id="fullscreen"
               icon="open_in_full"
               tooltip="Toggle fullscreen mode."
               initialState={false}
@@ -155,7 +155,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
             <Divider orientation="vertical" flexItem />
             {props.hasScenario &&
               <RibbonComponentToggle
-                key={`scenario`} id={`scenario`}
+                key="scenario" id="scenario"
                 icon="huboutlined"
                 tooltip="Select another scenario."
                 initialState={false}
@@ -168,6 +168,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
         {activeIndex == 1 &&
           <RibbonPanel>
             <RibbonComponentClick
+              key = "location" id="location"
               icon="my_location"
               text="Your Location"
               tooltip="Move the map to your location."
