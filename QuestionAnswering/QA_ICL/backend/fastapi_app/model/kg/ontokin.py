@@ -7,13 +7,13 @@ from model.rdf_orm import RDFEntity, RDFField
 
 
 class OntokinMechanismBase(RDFEntity):
-    provenance: str = Field(
+    provenance: str = RDFField(
         path=ONTOKIN.hasProvenance / (ONTOPROVENANCE.hasDOI | ONTOPROVENANCE.hasURL)
     )
 
 
 class OntokinReactionBase(RDFEntity):
-    equation: str = Field(path=ONTOKIN.hasEquation)
+    equation: str = RDFField(path=ONTOKIN.hasEquation)
 
 
 class OntokinHasValueHasUnit(RDFEntity):
@@ -124,4 +124,4 @@ OntokinKineticModelBase = Annotated[
 
 
 class OntokinMechanism(OntokinMechanismBase):
-    reaction: list[OntokinReactionBase] = Field(path=ONTOKIN.hasReaction)
+    reaction: list[OntokinReactionBase] = RDFField(path=ONTOKIN.hasReaction)
