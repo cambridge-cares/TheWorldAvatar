@@ -104,6 +104,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
           {activeIndex == 0 &&
             <RibbonPanel>
               <RibbonComponentOptions
+              key={`imagery`} id={`imagery`}
                 icon="palette"
                 tooltip="Change map imagery"
                 options={imageryNames}
@@ -114,6 +115,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentOptions
+              key={`reset`} id={`reset`}
                 icon="reset_focus"
                 tooltip="Reset camera to default position."
                 options={cameraNames}
@@ -123,6 +125,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentToggle
+              key={`placenames`} id={`placenames`}
                 icon="glyphs"
                 tooltip="Toggle display of place names."
                 initialState={false}
@@ -131,6 +134,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentToggle
+              key={`terrain`} id={`terrain`}
                 icon="landscape_2"
                 tooltip="Toggle 3D terrain."
                 initialState={false}
@@ -139,6 +143,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 }}
               />
               <RibbonComponentToggle
+              key={`fullscreen`} id={`fullscreen`}
                 icon="open_in_full"
                 tooltip="Toggle fullscreen mode."
                 initialState={false}
