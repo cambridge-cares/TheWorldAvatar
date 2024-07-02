@@ -10,7 +10,7 @@ import IconComponent from 'ui/graphic/icon/icon';
 interface RibbonComponentClickProps {
   id: string
   icon: string,
-  text: string,
+  text?: string,
   tooltip: string,
   action: () => void
 }
