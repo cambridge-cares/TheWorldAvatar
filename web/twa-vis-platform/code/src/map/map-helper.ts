@@ -155,7 +155,7 @@ export function getCameraPositions(cameraSettings: CameraSettings): string[] {
  */
 export function getDefaultImageryOption(imagerySettings: ImagerySettings): ImageryOption {
   // If users do not specify imagery settings, use the defaults
-  if (imagerySettings == null) {
+  if (!imagerySettings) {
     imagerySettings = DEFAULT_IMAGERY_OPTIONS;
   }
 
@@ -209,7 +209,7 @@ export function getCurrentImageryOption(imagerySettings: ImagerySettings): Image
   if (items == null || items.length == 0) {
     return getDefaultImageryOption(imagerySettings);
   } else {
-    const match = items.find(option => option.name === "Map Style");
+    const match = items.find(option => option.id === "map-style");
     if (match == null) {
       return getDefaultImageryOption(imagerySettings);
     } else {
@@ -254,7 +254,7 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): vo
   const items = reduxState.ribbonComponents.items;
   let shouldHide = true;
   if (items != null && items.length > 0) {
-    shouldHide = items.find(option => option.name === "Hide Labels")?.selection;
+    shouldHide = items.find(option => option.id === "placenames")?.selection;
   }
   const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
@@ -321,7 +321,7 @@ export function resetCamera(cameraSettings: CameraSettings, map: Map): void {
   if (items.length == 0) {
     position = getDefaultCameraPosition(cameraSettings);
   } else {
-    const positionName = items.find(position => position.name === "Reset")?.selection;
+    const positionName = items.find(position => position.id === "reset")?.selection;
     position = getCameraPosition(positionName, cameraSettings);
   }
 
