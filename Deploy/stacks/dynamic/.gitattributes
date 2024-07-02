@@ -1,4 +1,5 @@
 # These files should be force to have Linux line endings
 *.sql text eol=lf
+*.sparql text eol=lf
 *.patch text eol=lf
 
