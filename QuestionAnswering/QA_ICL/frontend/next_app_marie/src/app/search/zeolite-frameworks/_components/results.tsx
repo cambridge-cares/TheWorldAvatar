@@ -1,22 +1,25 @@
 'use client'
 
-import { DataTable } from '@/components/ui/data-table'
-import { getSpecies } from '@/lib/api/ontospecies'
-import { SpeciesBase } from '@/lib/model/ontospecies'
-import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
-export function SpeciesSearchResults() {
+import { useSearchParams } from 'next/navigation'
+import { ZeoliteFrameworkBase } from '@/lib/model/ontozeolite'
+import { getZeoliteFrameworks } from '@/lib/api/ontozeolite'
+import { DataTable } from '@/components/ui/data-table'
+
+export function ZeoliteFrameworkResults() {
   const searchParams = useSearchParams()
 
   const [isLoading, setIsLoading] = React.useState(false)
-  const [data, setData] = React.useState<SpeciesBase[] | undefined>(undefined)
+  const [data, setData] = React.useState<ZeoliteFrameworkBase[] | undefined>(
+    undefined
+  )
 
   React.useEffect(() => {
-    async function retrieveData() {
+    async function retreiveData() {
       setIsLoading(true)
       try {
-        setData(await getSpecies(searchParams))
+        setData(await getZeoliteFrameworks(searchParams))
       } catch {
       } finally {
         setIsLoading(false)
@@ -25,7 +28,7 @@ export function SpeciesSearchResults() {
 
     setData(undefined)
     if (searchParams.size > 0) {
-      retrieveData()
+      retreiveData()
     }
   }, [searchParams])
 
@@ -37,16 +40,8 @@ export function SpeciesSearchResults() {
           label: 'IRI',
         },
         {
-          value: 'label',
-          label: 'label',
-        },
-        {
-          value: 'IUPAC_name',
-          label: 'IUPAC name',
-        },
-        {
-          value: 'InChI',
-          label: 'InChI',
+          value: 'code',
+          label: 'Code',
         },
       ]}
       data={data}

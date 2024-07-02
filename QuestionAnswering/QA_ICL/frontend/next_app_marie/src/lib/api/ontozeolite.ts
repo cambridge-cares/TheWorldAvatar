@@ -1,4 +1,5 @@
-import { BACKEND_ENDPOINT, getJson, getJsonLstFromKVs } from '.'
+import { ReadonlyURLSearchParams } from 'next/navigation'
+import { BACKEND_ENDPOINT, getJson } from '.'
 import { ZeoliteFrameworkBase } from '../model/ontozeolite'
 
 const GET_CBUS_ENDPOINT = new URL(
@@ -25,9 +26,8 @@ const GET_ZEOLITE_FRAMEWORKS_ENDPOINT = new URL(
   './ontozeolite/zeolite-frameworks',
   BACKEND_ENDPOINT
 )
-export function getZeoliteFrameworks(searchParams: [string, string][]) {
-  return getJsonLstFromKVs<ZeoliteFrameworkBase>(
-    GET_ZEOLITE_FRAMEWORKS_ENDPOINT,
-    searchParams
+export function getZeoliteFrameworks(searchParams: ReadonlyURLSearchParams) {
+  return getJson<ZeoliteFrameworkBase[]>(
+    `${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}?${searchParams}`
   )
 }

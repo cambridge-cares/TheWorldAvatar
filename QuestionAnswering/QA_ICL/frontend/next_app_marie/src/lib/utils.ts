@@ -32,26 +32,6 @@ export function capitalizeFirstLetter(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
-export function getFirst(
-  params: { [key: string]: string | string[] | undefined },
-  key: string
-) {
-  let val = params[key]
-  if (typeof val === 'string') return val
-  if (typeof val === 'object' && val.length > 0) return val[0]
-  return undefined
-}
-
-export function getAll(
-  params: { [key: string]: string | string[] | undefined },
-  key: string
-) {
-  let val = params[key]
-  if (typeof val === 'string') return [val]
-  if (typeof val === 'object') return val
-  return []
-}
-
 export function extractLowerUpperParams(
   searchParams: ReadonlyURLSearchParams,
   keyEnum: { [key: string]: string },
@@ -66,17 +46,5 @@ export function extractLowerUpperParams(
         vals.find(val => val.startsWith('lte:'))?.substring('lte:'.length) || ''
       return [key, { lower, upper }]
     })
-  )
-}
-
-export function searchParamsToTuples(searchParams: {
-  [key: string]: string | string[] | undefined
-}) {
-  return Object.entries(searchParams).flatMap(([key, val]) =>
-    typeof val === 'string'
-      ? [[key, val] as [string, string]]
-      : typeof val === 'undefined'
-        ? []
-        : val.map(x => [key, x] as [string, string])
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -16,7 +16,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MinusCircledIcon, PlusCircledIcon } from '@radix-ui/react-icons'
-import { capitalizeFirstLetter, cn, isObjectEmtpy } from '@/lib/utils'
+import {
+  capitalizeFirstLetter,
+  cn,
+  extractLowerUpperParams,
+  isObjectEmtpy,
+} from '@/lib/utils'
 import {
   OScalarTopoPropKey,
   OUnitCellAngleKey,
@@ -92,18 +97,17 @@ const FORM_INIT_VALUES = {
 
 export interface ZeoliteFrameworkFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
-  initValues?: z.infer<typeof ZEOLITE_FRAMEWORK_FORM_SCHEMA>
   allCBUs: string[]
   allSBUs: string[]
 }
 
 export function ZeoliteFrameworkForm({
-  initValues,
   allCBUs,
   allSBUs,
   className,
   ...props
 }: ZeoliteFrameworkFormProps) {
+  const searchParams = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()
 
@@ -113,13 +117,49 @@ export function ZeoliteFrameworkForm({
   })
 
   React.useEffect(() => {
-    if (typeof initValues === 'undefined') return
-    form.setValue('xrdPeaks', initValues.xrdPeaks)
-    form.setValue('unitCell', initValues.unitCell)
-    form.setValue('scalarTopoProps', initValues.scalarTopoProps)
-    form.setValue('compositeBUs', initValues.compositeBUs)
-    form.setValue('secondaryBU', initValues.secondaryBU)
-  }, [form, initValues])
+    const xrdPeaks = searchParams
+      .getAll('xrdPeak')
+      .map(serialized => JSON.parse(decodeURI(serialized)))
+      .map(peak => ({
+        position: peak.position || '',
+        width: peak.width || '',
+        threshold: peak.threshold || '',
+      }))
+    if (xrdPeaks.length > 0) {
+      form.setValue('xrdPeaks', xrdPeaks)
+    }
+
+    const unitCellLengths = extractLowerUpperParams(
+      searchParams,
+      OUnitCellLengthKey,
+      'unit-cell-'
+    )
+    const unitCellAngles = extractLowerUpperParams(
+      searchParams,
+      OUnitCellAngleKey,
+      'unit-cell-'
+    )
+    form.setValue('unitCell', {
+      lengths: unitCellLengths,
+      angles: unitCellAngles,
+    })
+
+    const scalarTopoProps = extractLowerUpperParams(
+      searchParams,
+      OScalarTopoPropKey
+    )
+    form.setValue('scalarTopoProps', scalarTopoProps)
+
+    const compositeBUs = searchParams.getAll('composite-bu')
+    if (compositeBUs.length > 0) {
+      form.setValue('compositeBUs', compositeBUs)
+    }
+
+    const secondaryBU = searchParams.get('secondary-bu')
+    if (secondaryBU) {
+      form.setValue('secondaryBU', secondaryBU)
+    }
+  }, [form, searchParams])
 
   function onSubmit(values: z.infer<typeof ZEOLITE_FRAMEWORK_FORM_SCHEMA>) {
     const xrdPeakParams = values.xrdPeaks

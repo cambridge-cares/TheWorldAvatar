@@ -1,5 +1,5 @@
 import { ReadonlyURLSearchParams } from 'next/navigation'
-import { getJson, BACKEND_ENDPOINT, getJsonLstFromKVs } from '.'
+import { getJson, BACKEND_ENDPOINT } from '.'
 import { ChemicalClass, SpeciesBase, Use } from '../model/ontospecies'
 
 const GET_CHEMICAL_CLASSES_ENDPOINT = new URL(
