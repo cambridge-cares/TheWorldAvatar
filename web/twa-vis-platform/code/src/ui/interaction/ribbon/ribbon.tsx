@@ -74,8 +74,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
   if (isRibbonToggled) {
     return (
       <div className={styles.ribbonContainer}>
-        <Box className={styles.ribbon}>
-          <Box>
             <Tabs
               className={styles.ribbonTabs}
               value={activeIndex}
@@ -99,7 +97,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
                 label="Search" />
 
             </Tabs>
-          </Box>
 
           {activeIndex == 0 &&
             <RibbonPanel>
