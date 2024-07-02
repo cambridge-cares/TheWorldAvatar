@@ -28,7 +28,7 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
         classNames.push(styles.toggled);
     }
 
-    const clickAction = () => {
+    const handleClick = () => {
         const selected = (toggled?.selection == null) ? !props.initialState : !toggled.selection;
         dispatch(setOption({
             id: props.id,
@@ -38,7 +38,7 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
     }
 
     return (
-        <div className={styles.ribbonComponent} onClick={clickAction}>
+        <div className={styles.ribbonComponent} onClick={handleClick}>
             <Tooltip
                 title={props.tooltip}
                 enterDelay={1000}
