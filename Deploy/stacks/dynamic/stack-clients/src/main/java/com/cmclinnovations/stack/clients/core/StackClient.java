@@ -56,7 +56,11 @@ public final class StackClient {
     }
 
     public static String prependStackName(String name) {
-        return stackName + "_" + name;
+        return prependStackName(name, "_");
+    }
+
+    public static String prependStackName(String name, String separator) {
+        return stackName + separator + name;
     }
 
     public static String removeStackName(String name) {
@@ -129,7 +133,7 @@ public final class StackClient {
 
         PostGISClient postgisClient = PostGISClient.getInstance();
         postgisClient.createDatabase(database);
-        PostGISEndpointConfig postgisConfig = postgisClient.getEndpoint();
+        PostGISEndpointConfig postgisConfig = postgisClient.getEndpointConfig();
 
         return new TimeSeriesClient<>(remoteStoreClient, timeClass,
                 postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());

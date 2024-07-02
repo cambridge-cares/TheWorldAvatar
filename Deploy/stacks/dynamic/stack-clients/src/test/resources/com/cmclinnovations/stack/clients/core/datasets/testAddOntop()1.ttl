@@ -19,7 +19,7 @@
         <http://purl.org/dc/terms/title>
                 "Test_Stack_ontop-testDataset";
         <http://www.w3.org/ns/dcat#endpointURL>
-                <http://Test-Stack-ontop-testDataset:5678/sparql/>;
+                <http://Test-Stack-ontop-testDataset:5678/sparql>;
         <http://www.w3.org/ns/dcat#servesDataset>
                 <https://theworldavatar.io/kg/8760b1e8-5041-40e1-adc2-f6fef11cfc63> .
 
