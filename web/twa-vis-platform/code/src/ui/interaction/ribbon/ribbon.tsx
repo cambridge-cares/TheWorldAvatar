@@ -1,29 +1,29 @@
 "use client"
 
-import styles from './ribbon.module.css';
+import { Divider, Tab, Tabs } from '@mui/material';
+import { Map } from 'mapbox-gl';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Tabs, Tab, Divider } from '@mui/material';
-import { Map } from 'mapbox-gl';
+import styles from './ribbon.module.css';
 
-import RibbonPanel from './ribbon-panel';
-import RibbonComponentClick from './components/ribbon-component-click';
-import RibbonComponentToggle from './components/ribbon-component-toggle';
-import RibbonComponentOptions from './components/ribbon-component-options';
+import {
+  getCameraPositions,
+  getDefaultImageryOption,
+  getImageryOptions,
+  locateUser,
+  resetCamera,
+  set3DTerrain,
+  setImagery,
+  togglePlacenames
+} from 'map/map-helper';
 import { addItem, selectItem } from 'state/context-menu-slice';
 import { ImageryOption, MapSettings } from 'types/settings';
 import { ContextItemDefinition } from 'ui/interaction/context-menu/context-item';
 import { closeFullscreen, openFullscreen } from 'utils/client-utils';
-import {
-  getCameraPositions,
-  getImageryOptions,
-  getDefaultImageryOption,
-  setImagery,
-  resetCamera,
-  togglePlacenames,
-  locateUser,
-  set3DTerrain
-} from 'map/map-helper';
+import RibbonComponentClick from './components/ribbon-component-click';
+import RibbonComponentOptions from './components/ribbon-component-options';
+import RibbonComponentToggle from './components/ribbon-component-toggle';
+import RibbonPanel from './ribbon-panel';
 
 // Type definition for Ribbon parameters
 export interface RibbonProps {
