@@ -1,0 +1,45 @@
+[PrefixDeclaration]
+ontodevice:   http://www.theworldavatar.com/kb/ontodevice/
+rdf:           http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:          http://www.w3.org/2000/01/rdf-schema#
+ontodevice:    https://www.theworldavatar.com/kg/ontodevice.owl#
+geolit:        http://www.bigdata.com/rdf/geospatial/literals/v1
+geo:           http://www.bigdata.com/rdf/geospatial#
+ts:            http://www.theworldavatar.com/kb/ontotimeseries/
+xsd:           http://www.w3.org/2001/XMLSchema#
+om:            http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+# Mapping for GPS data including units with the updated "ontodevice:" prefix
+mappingId       GPSDataWithUnits
+target      ontodevice:GPS_{filename} a ontodevice:GPSDevice ;
+                     rdfs:label "GPS data for {filename} at {timestamp}"^^xsd:string ;
+                     ontodevice:hasLatitude [ 
+                         a ontodevice:Latitude ;
+                         rdf:value "{LATITUDE}"^^xsd:float ;
+                         om:hasUnit om:degree
+                     ] ;
+                     ontodevice:hasLongitude [ 
+                         a ontodevice:Longitude ;
+                         rdf:value "{LONGITUDE}"^^xsd:float ;
+                         om:hasUnit om:degree
+                     ] ;
+                     ontodevice:hasSpeed [ 
+                         a ontodevice:Speed ;
+                         rdf:value "{SPEED}"^^xsd:float ;
+                         om:hasUnit om:kilometrePerHour" 
+                     ] ;
+                     ontodevice:hasDistance [ 
+                         a ontodevice:Distance ;
+                         rdf:value "{DISTANCE}"^^xsd:string ;  # Assuming DISTANCE might be a string that needs conversion
+                         om:hasUnit om:metre  
+                     ] ;
+                     ts:hasTimestamp "{timestamp}"^^xsd:dateTime .
+source      SELECT 'gps_testcase' AS filename, 
+                    "LATITUDE", 
+                    "LONGITUDE", 
+                    "SPEED", 
+                    "DISTANCE",
+                    ("UTC DATE" || 'T' || "UTC TIME" || 'Z') AS timestamp
+            FROM gps_testcase
+]]
