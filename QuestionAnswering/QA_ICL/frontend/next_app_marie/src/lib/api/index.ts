@@ -19,25 +19,10 @@ export function getJson<ResT>(
 
 export function getJsonLstFromKVs<T>(
   url: string | URL,
-  searchParams: {
-    [key: string]: string | string[] | undefined
-  },
+  searchParams: [string, string][],
   init?: RequestInit | undefined
 ) {
-  const queryParams = Object.entries(searchParams)
-    .flatMap(([key, val]) =>
-      typeof val === 'string'
-        ? [[key, val]]
-        : typeof val === 'undefined'
-          ? []
-          : val.map(x => [key, x])
-    )
-    .map(([k, v]) => `${k}=${v}`)
-
-  if (queryParams.length === 0) {
-    return null
-  }
-
+  const queryParams = searchParams.map(([k, v]) => `${k}=${v}`)
   return getJson<T[]>(`${url}?${queryParams.join('&')}`, init)
 }
 

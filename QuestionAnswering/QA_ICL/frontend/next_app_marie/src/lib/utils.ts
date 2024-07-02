@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx'
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -52,18 +53,30 @@ export function getAll(
 }
 
 export function extractLowerUpperParams(
-  params: { [key: string]: string | string[] | undefined },
+  searchParams: ReadonlyURLSearchParams,
   keyEnum: { [key: string]: string },
   keyPrefix: string = ''
 ) {
   return Object.fromEntries(
     Object.values(keyEnum).map(key => {
-      const vals = getAll(params, `${keyPrefix}${key}`)
+      const vals = searchParams.getAll(`${keyPrefix}${key}`)
       const lower =
         vals.find(val => val.startsWith('gte:'))?.substring('gte:'.length) || ''
       const upper =
         vals.find(val => val.startsWith('lte:'))?.substring('lte:'.length) || ''
       return [key, { lower, upper }]
     })
+  )
+}
+
+export function searchParamsToTuples(searchParams: {
+  [key: string]: string | string[] | undefined
+}) {
+  return Object.entries(searchParams).flatMap(([key, val]) =>
+    typeof val === 'string'
+      ? [[key, val] as [string, string]]
+      : typeof val === 'undefined'
+        ? []
+        : val.map(x => [key, x] as [string, string])
   )
 }

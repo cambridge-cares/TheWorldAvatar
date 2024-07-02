@@ -1,3 +1,4 @@
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { getJson, BACKEND_ENDPOINT, getJsonLstFromKVs } from '.'
 import { ChemicalClass, SpeciesBase, Use } from '../model/ontospecies'
 
@@ -19,8 +20,6 @@ export function getUses() {
 }
 
 const GET_SPECIES_ENDPOINT = new URL('./ontospecies/species', BACKEND_ENDPOINT)
-export function getSpecies(searchParams: {
-  [key: string]: string | string[] | undefined
-}) {
-  return getJsonLstFromKVs<SpeciesBase>(GET_SPECIES_ENDPOINT, searchParams)
+export function getSpecies(searchParams: ReadonlyURLSearchParams) {
+  return getJson<SpeciesBase[]>(`${GET_SPECIES_ENDPOINT}?${searchParams}`)
 }
