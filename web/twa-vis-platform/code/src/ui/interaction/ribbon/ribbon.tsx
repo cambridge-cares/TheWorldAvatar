@@ -4,7 +4,6 @@ import { Divider } from '@mui/material';
 import { Map } from 'mapbox-gl';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './ribbon.module.css';
 
 import {
   getCameraPositions,
@@ -65,8 +64,8 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
   // Return renderable element
   if (isRibbonToggled) {
     return (
-      <div className={styles.ribbonContainer}>
       <RibbonPanel>
+        {/* TODO remove this unnecessary wrapper */}
         <RibbonComponentClick
           key="location" id="location"
           icon="my_location"
@@ -137,7 +136,6 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
             action={props.toggleScenarioSelection}
           />
         }
-      </RibbonPanel>
-      </div>)
-}
+      </RibbonPanel>)
+  }
 }

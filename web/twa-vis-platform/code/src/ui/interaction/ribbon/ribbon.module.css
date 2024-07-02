@@ -1,6 +1,10 @@
-.ribbonContainer {
+.ribbonPanel {
     width: 100%;
 
+    display: flex !important;
+    flex-direction: row;
+
+    padding-left: 1rem;
     z-index: 1;
     pointer-events: all;
 
@@ -15,26 +19,22 @@
     border-color: var(--background-secondary);
     border-style: solid;
 }
+
 .ribbonTab {
     font-family: inherit !important;
     font-size: var(--font-size-secondary-text);
     font-weight: bold;
     color: var(--text-color-primary);
 }
+
 .ribbonTab:hover {
     background-color: var(--background-tertiary);
 }
+
 .ribbonTabActive {
     font-family: inherit !important;
     font-size: var(--font-size-secondary-text);
     font-weight: bold;
     background-color: var(--background-tertiary);
     color: inherit !important;
-}
-
-.ribbonPanel {
-    width: 100%;
-
-    display: flex !important;
-    flex-direction: row;
 }
