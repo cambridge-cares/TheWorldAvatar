@@ -28,9 +28,12 @@ export default function RibbonComponentClick(props: Readonly<RibbonComponentClic
             <div className={styles.ribbonComponentIcon}>
               <IconComponent icon={props.icon} />
             </div>
-            <div className={styles.ribbonComponentText}>
-              {props.text}
-            </div>
+            {props.text &&
+
+              <div className={styles.ribbonComponentText}>
+                {props.text}
+              </div>
+            }
           </div>
         </>
       </Tooltip>
