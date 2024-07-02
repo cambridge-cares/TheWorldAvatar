@@ -85,11 +85,13 @@ export default function RibbonComponentOptions(props: Readonly<RibbonComponentOp
                                 {props.text}
                             </div>}
                     </div>
+                    <div className={styles.dropdownArrowIconContainer}>
                         <Icon
                             className={`material-symbols-outlined ${styles.ribbonComponentArrow}`}
                             onClick={toggleAction}>
                             keyboard_arrow_down
                         </Icon>
+                    </div>
                     {expanded && dropdown}
                 </>
             </Tooltip>
