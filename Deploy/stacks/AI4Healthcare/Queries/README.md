@@ -20,6 +20,9 @@ The `line_buffer_query.sql` file also uses a 100-metre buffer but starts by form
 **Daily Path Area Query:**<br/>
 The `daily_path_area_query.sql` file retrieves and counts food retailers that intersect with the daily path area, which is formed by a 100-metre buffer around the line(s) created with the set of data points for a day.
 
+**Daily Greenspace Exposure Query:**<br/>
+The `daily_greenspace_exposure_query.sql` file retrieves greenspaces that intersect with the daily path area, which is formed by a 100-metre buffer around the line(s) created with the set of data points for a day.
+
 **Nearest Entity Query:**<br/>
 The `nearest_entity_query.sql` file constructs a 100-metre buffer around the daily trajectory to identify food retailers intersecting with the buffer. Each exposed entity is correlated with the nearest GPS point of the daily path. Finally, it enumerates the number of entities associated with each GPS point.
 
@@ -41,6 +44,8 @@ All three queries—Distance, Point Buffer, and Line Buffer—assess areas withi
 The Daily Path Area query outperforms the Distance, Point Buffer and Line Buffer queries, being approximately five times faster than the Distance query, taking only 0.37 seconds.
 
 The execution time of the Nearest Entity Query and Nearest Entity Details Query is comparable with that of the Daily Path Query.
+
+The execution time of the Daily Greenspace Exposure query is reasonable, taking less than 200 ms when performed against a synthetic trajectory dataset with 30,000 points and all greenspaces in the UK.
 
 ## Test Data Queries ##
 The TestDataQueries folder contains queries against test data to cover and explain different test cases, the processes being applied, and their outcomes.
