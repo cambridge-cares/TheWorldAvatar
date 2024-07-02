@@ -70,19 +70,6 @@
     align-items: center;
 }
 
-.ribbonComponentArrow {
-    width: 100%;
-    height: 10px;
-    flex-grow: 0;
-    cursor: pointer;
-
-    font-size: var(--font-size-h2) !important;
-    line-height: 10pt !important;
-}
-.ribbonComponentArrow:hover {
-    background-color: var(--background-secondary);
-}
-
 .ribbonDropdown {
     margin-top: 10px;
     flex-grow: 1;
@@ -112,4 +99,23 @@
 
 .ribbonOption.active {
     background-color: var(--background-primary);
+}
+
+.dropdownArrowIconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.1em;
+}
+
+.ribbonComponentArrow {
+    cursor: pointer;
+
+    height: unset !important;
+    font-size: var(--font-size-h2) !important;
+    line-height: 10pt !important;
+}
+
+.ribbonComponentArrow:hover {
+    background-color: var(--background-secondary);
 }
