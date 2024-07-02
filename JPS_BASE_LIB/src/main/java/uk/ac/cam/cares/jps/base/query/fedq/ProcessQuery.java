@@ -25,6 +25,14 @@ import org.apache.jena.graph.Triple;
 import java.io.*;
 import java.util.*;
 
+/**
+ * The class wraps some functionality to-
+ * 1. analyse query to extract relevant classes and properties
+ * 2. load inverted index from files data into memory maps
+ * 3. find out endpoints from the classes and properties
+ * 4. process SPARQL query against the endpoints using FedX API
+ */
+
 public class ProcessQuery {
 
     private Op queryObject;
@@ -42,6 +50,12 @@ public class ProcessQuery {
         this.queryObject = org.apache.jena.sparql.algebra.Algebra.compile(query);
     }
 
+    /**
+     * indexDir specify the root directory of the indices
+     * 
+     * @param indexDir
+     * @return
+     */
     public void setIndexLocation(String indexDir) {
         if (indexDir.trim().endsWith("/")) {
             this.classIndexFilePath = indexDir.trim() + "cinv.indx";
@@ -54,6 +68,11 @@ public class ProcessQuery {
         }
     }
 
+    /**
+     * It extracts classes and properties from the user query
+     * 
+     * @return
+     */
     public void extractClassesAndProperties() {
         OpWalker.walk(queryObject, new OpVisitorBase() {
             @Override
@@ -74,6 +93,11 @@ public class ProcessQuery {
         });
     }
 
+    /**
+     * it loads indices from initialised directory
+     * 
+     * @return
+     */
     public void loadIndices() throws IOException {
         this.classIndex = loadIndexFromFile(this.classIndexFilePath);
         this.propertyIndex = loadIndexFromFile(this.propertyIndexFilePath);
@@ -81,6 +105,11 @@ public class ProcessQuery {
         // System.out.printf("%d\n%d\n",this.classIndex.size(),this.propertyIndex.size());
     }
 
+    /**
+     * it loads key-to-endpoint index from initialised file
+     * 
+     * @return
+     */
     private Map<String, Set<String>> loadIndexFromFile(String filePath) throws IOException {
         Map<String, Set<String>> index = new HashMap<>();
         Gson gson = new Gson();
@@ -92,6 +121,11 @@ public class ProcessQuery {
         return index;
     }
 
+    /**
+     * it it finds endpoints from the extracted classes and properties
+     * 
+     * @return
+     */
     public Set<String> getEndpoints() {
         Set<String> endpoints = new HashSet<>();
         for (Node classUriRef : classes) {
@@ -118,6 +152,14 @@ public class ProcessQuery {
         return endpoints;
     }
 
+    /**
+     * it processes SPARQL against endpoint-set to retrieve the final result usinf
+     * FedX API
+     * 
+     * @param endpoint_set
+     * @param query
+     * @return
+     */
     public void processQuery(Set<String> endpoint_set, String query) {
         int counter = 0;
         List<Endpoint> endpoints = new ArrayList<>();
@@ -147,22 +189,24 @@ public class ProcessQuery {
     }
 
     public static void main(String[] args) throws IOException {
-        String sparqlQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-                "PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#>\n" +
-                "PREFIX OntoKin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n" +
-                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                "\n" +
-                "SELECT ?identifier ?atomicMass ?atomicMassUnits\n" +
-                "WHERE {\n" +
-                "    ?element1 rdf:type pt:Element .\n" +
-                "    BIND(STRAFTER(STR(?element1), \"#\") AS ?identifier)\n" +
-                "    ?element2 rdf:type OntoKin:Element .\n" +
-                "    ?element2 rdfs:label ?identifier1 .\n" +
-                "    ?element2 OntoKin:hasAtomicMass ?atomicMass .\n" +
-                "    ?element2 OntoKin:hasAtomicMassUnits ?atomicMassUnits .\n" +
-                "    FILTER(?identifier = ?identifier1)\n" +
-                "}";
+        String sparqlQuery = """
+                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+                    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#>
+                    PREFIX OntoKin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+                    SELECT DISTINCT ?identifier ?atomicMass ?atomicMassUnits
+                    WHERE {
+                        ?element1 rdf:type pt:Element .
+                        BIND(STRAFTER(STR(?element1), \"#\") AS ?identifier)
+                        ?element2 rdf:type OntoKin:Element .
+                        ?element2 rdfs:label ?identifier1 .
+                        ?element2 OntoKin:hasAtomicMass ?atomicMass .
+                        ?element2 OntoKin:hasAtomicMassUnits ?atomicMassUnits .
+                        FILTER(?identifier = ?identifier1)
+                    }
+                """;
 
         Set<String> eps = new HashSet<>();
 
