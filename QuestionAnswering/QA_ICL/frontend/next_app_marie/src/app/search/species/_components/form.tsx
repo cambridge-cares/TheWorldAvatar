@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -23,8 +23,8 @@ import {
 import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { CaretSortIcon, MinusIcon } from '@radix-ui/react-icons'
-import { capitalizeFirstLetter, cn } from '@/lib/utils'
+import { CaretSortIcon } from '@radix-ui/react-icons'
+import { capitalizeFirstLetter, cn, extractLowerUpperParams } from '@/lib/utils'
 import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CollapsibleContent } from '@radix-ui/react-collapsible'
 import { MinMaxInput } from '@/components/ui/min-max-input'
@@ -63,18 +63,17 @@ const FORM_INIT_VALUES = {
 
 export interface SpeciesFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
-  initValues?: z.infer<typeof SPECIES_FORM_SCHEMA>
   allChemicalClasses: ChemicalClass[]
   allUses: Use[]
 }
 
 export function SpeciesForm({
-  initValues,
   allChemicalClasses,
   allUses,
   className,
   ...props
 }: SpeciesFormProps) {
+  const searchParams = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()
 
@@ -89,16 +88,36 @@ export function SpeciesForm({
   })
 
   React.useEffect(() => {
-    if (typeof initValues === 'undefined') return
-    form.setValue('chemicalClass', initValues.chemicalClass)
-    form.setValue('use', initValues.use)
-    form.setValue('property', initValues.property)
-    form.setValue('identifier', initValues.identifier)
-  }, [form, initValues])
+    const chemicalClass = searchParams.get('chemical-class')
+    if (chemicalClass) {
+      form.setValue('chemicalClass', chemicalClass)
+    }
+
+    const use = searchParams.get('use')
+    if (use) {
+      form.setValue('use', use)
+    }
+
+    const identifier = Object.fromEntries(
+      Object.values(OSpeciesIdentifierKey).map(key => [
+        key,
+        searchParams.get(key) || '',
+      ])
+    )
+    form.setValue('identifier', identifier)
+
+    const property = extractLowerUpperParams(searchParams, OSpeciesPropertyKey)
+    form.setValue('property', property)
+  }, [form, searchParams])
 
   function onSubmit(values: z.infer<typeof SPECIES_FORM_SCHEMA>) {
     const chemicalClassParams = values.chemicalClass
-      ? [['chemicalClass', encodeURI(values.chemicalClass)] as [string, string]]
+      ? [
+          ['chemical-class', encodeURI(values.chemicalClass)] as [
+            string,
+            string,
+          ],
+        ]
       : []
     const useParams = values.use
       ? [['use', encodeURI(values.use)] as [string, string]]

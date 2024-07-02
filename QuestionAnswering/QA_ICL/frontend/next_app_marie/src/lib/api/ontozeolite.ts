@@ -25,9 +25,7 @@ const GET_ZEOLITE_FRAMEWORKS_ENDPOINT = new URL(
   './ontozeolite/zeolite-frameworks',
   BACKEND_ENDPOINT
 )
-export function getZeoliteFrameworks(searchParams: {
-  [key: string]: string | string[] | undefined
-}) {
+export function getZeoliteFrameworks(searchParams: [string, string][]) {
   return getJsonLstFromKVs<ZeoliteFrameworkBase>(
     GET_ZEOLITE_FRAMEWORKS_ENDPOINT,
     searchParams
