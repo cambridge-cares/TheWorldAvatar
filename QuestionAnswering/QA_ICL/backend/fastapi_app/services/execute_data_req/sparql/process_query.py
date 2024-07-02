@@ -56,7 +56,7 @@ class SparqlQueryProcessor:
         if idx < 0:
             return -1
 
-        while idx >= 0 and sparql[idx] not in "{}).":
+        while idx >= 0 and sparql[idx] not in "{}.":
             idx -= 1
 
         if idx < 0:

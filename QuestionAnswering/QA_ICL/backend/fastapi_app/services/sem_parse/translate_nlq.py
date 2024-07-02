@@ -16,16 +16,16 @@ logger = logging.getLogger(__name__)
 
 
 class Nlq2DataReqLLMCaller:
-    PROMPT_TEMPLATE = """### Data and object properties:
+    PROMPT_TEMPLATE = """### Instruction: 
+Your task is to translate the input question to an executable data request based on the provided properties and translation examples. Please respond with a single JSON object exactly.
+
+### Properties:
 {properties}
 
-### Examples of translating natural language questions to executable data requests:
+### Input-output examples:
 {examples}
 
-### Instruction: 
-Your task is to translate the following question to an executable data request. Please do not provide any explanation and respond with a single JSON object exactly.
-
-### Question:
+### Input:
 {question}"""
 
     def __init__(

@@ -14,7 +14,7 @@ from services.sem_parse.retrieve_context import (
     Nlq2DataReqContextRetriever,
     get_nlq2datareq_contextRetriever,
 )
-from services.sem_parse.rewrite_nlq import NlqRewriter, get_nlq_rewriter
+from services.rewrite_nlq import NlqRewriter, get_nlq_rewriter
 from services.link_entity import CentralEntityLinker, get_entity_store
 from services.stores.qa_artifact_store import (
     QARequestArtifactStore,
