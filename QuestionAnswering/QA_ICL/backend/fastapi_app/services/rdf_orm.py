@@ -38,7 +38,7 @@ class RDFStore:
             empty_lst: list[T | None] = []
             return empty_lst
 
-        query = """SELECT *
+        query = """SELECT ?iri ?field ?value
 WHERE {{
     VALUES ?iri {{ {iris} }}
     {triples}
