@@ -92,7 +92,7 @@ WHERE {{
         
 SELECT DISTINCT *
 WHERE {{
-    ?GBU mops:hasModularity "{args.modularity}" ; mops:hasPlanarity "{args.planarity}" .
+    ?GBU mops:hasModularity {args.modularity} ; mops:hasPlanarity "{args.planarity}" .
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["GBU"] for binding in bindings]
