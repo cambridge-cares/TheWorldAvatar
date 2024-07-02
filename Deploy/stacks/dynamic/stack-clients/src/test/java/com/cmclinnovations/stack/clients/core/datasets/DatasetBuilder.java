@@ -36,6 +36,8 @@ class DatasetBuilder {
 
     private String baseIRI;
 
+    private Metadata metadataRDF;
+
     private List<Service> services = List.of();
 
     DatasetBuilder(String name) {
@@ -107,13 +109,18 @@ class DatasetBuilder {
         return this;
     }
 
+    public DatasetBuilder withMetadataRDF(Metadata metadataRDF) {
+        this.metadataRDF = metadataRDF;
+        return this;
+    }
+
     Dataset build() {
         return new TestDataset(name, Optional.ofNullable(description), Optional.ofNullable(datasetDirectory),
                 Optional.ofNullable(database), Optional.ofNullable(namespace), Optional.ofNullable(workspaceName),
                 Optional.ofNullable(externalDatasetNames), Optional.ofNullable(dataSubsets),
                 Optional.ofNullable(geoserverStyles), Optional.ofNullable(staticGeoServerData),
                 Optional.ofNullable(ontopMappings), false, Optional.ofNullable(rdfType),
-                Optional.ofNullable(baseIRI), services);
+                Optional.ofNullable(baseIRI), Optional.ofNullable(metadataRDF), services);
     }
 
     static enum Service {
@@ -141,9 +148,11 @@ class DatasetBuilder {
                 Optional<List<String>> ontopMappings,
                 boolean skip,
                 Optional<String> rdfType,
-                Optional<String> baseIRI, List<Service> services) {
+                Optional<String> baseIRI,
+                Optional<Metadata> metadataRDF, List<Service> services) {
             super(name, description, datasetDirectory, database, namespace, workspaceName, externalDatasetNames,
-                    dataSubsets, geoserverStyles, staticGeoServerData, ontopMappings, skip, rdfType, baseIRI);
+                    dataSubsets, geoserverStyles, staticGeoServerData, ontopMappings, skip, rdfType, baseIRI,
+                    metadataRDF);
             this.services = services;
         }
 
