@@ -575,6 +575,27 @@ class BaseProperty(BaseModel, validate_assignment=True):
         """
         return NotImplementedError("This is an abstract method.")
 
+    def _graph(self, subject: str, g: Graph, is_object_property: bool = True):
+        if is_object_property:
+            for o in self.range:
+                g.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
+        else:
+            for o in self.range:
+                g.add((URIRef(subject), URIRef(self.predicate_iri), Literal(o)))
+        return g
+
+    def get_range_assume_one(self):
+        """
+        This function returns the range of the calling object/data property assuming there is only one item.
+
+        Returns:
+            Any: The returned range
+        """
+        if len(self.range) != 1:
+            raise Exception(f"""Assumed one for property {self.predicate_iri},
+                encounterred {len(self.range)}: {self.range}""")
+        return next(iter(self.range))
+
 
 class BaseClass(BaseModel, validate_assignment=True):
     """
@@ -1234,6 +1255,44 @@ class BaseClass(BaseModel, validate_assignment=True):
                     if self.rdfs_label is not None:
                         g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
         return g_to_remove, g_to_add
+
+    def graph(self, g: Graph = None) -> Graph:
+        """
+        This method adds all the outgoing triples of the calling object.
+
+        Args:
+            g (Graph, optional): The rdflib.Graph object to which the triples should be added
+
+        Returns:
+            Graph: The rdflib.Graph object containing the triples added
+        """
+        if g is None:
+            g = Graph()
+        for f, field_info in self.model_fields.items():
+            if ObjectProperty.is_inherited(field_info.annotation):
+                prop = getattr(self, f)
+                for o in prop.range:
+                    g.add((URIRef(self.instance_iri), URIRef(prop.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
+            elif DataProperty.is_inherited(field_info.annotation):
+                prop = getattr(self, f)
+                for o in prop.range:
+                    g.add((URIRef(self.instance_iri), URIRef(prop.predicate_iri), Literal(o)))
+            elif f == 'rdf_type':
+                g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
+            elif f == 'rdfs_comment' and self.rdfs_comment is not None:
+                    g.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
+            elif f == 'rdfs_label' and self.rdfs_label is not None:
+                    g.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
+        return g
+
+    def triples(self):
+        """
+        This method generates the turtle representation for all outgoing triples of the calling object.
+
+        Returns:
+            str: The outgoing triples in turtle format
+        """
+        return self.graph().serialize(format='ttl')
 
     def _exclude_keys_for_compare_(self, *keys_to_exclude):
         list_keys_to_exclude = list(keys_to_exclude) if not isinstance(
