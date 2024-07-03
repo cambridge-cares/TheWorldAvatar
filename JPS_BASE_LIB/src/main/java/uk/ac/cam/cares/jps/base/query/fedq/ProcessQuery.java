@@ -160,9 +160,10 @@ public class ProcessQuery {
      * @param query
      * @return
      */
-    public void processQuery(Set<String> endpoint_set, String query) {
+    public Set<BindingSet> processQuery(Set<String> endpoint_set, String query) {
         int counter = 0;
         List<Endpoint> endpoints = new ArrayList<>();
+        Set<BindingSet> result = new HashSet<>();
 
         for (String element : endpoint_set) {
             endpoints.add(EndpointFactory.loadSPARQLEndpoint("namesspace_" + counter++, element));
@@ -174,18 +175,15 @@ public class ProcessQuery {
             TupleQuery tq = conn.prepareTupleQuery(query);
             try (TupleQueryResult tqRes = tq.evaluate()) {
 
-                int count = 0;
                 while (tqRes.hasNext()) {
                     BindingSet b = tqRes.next();
-                    System.out.println(b);
-                    count++;
+                    result.add(b);
                 }
-
-                System.out.println("Results: " + count);
             }
         }
 
         repository.shutDown();
+        return result;
     }
 
     public static void main(String[] args) throws IOException {
@@ -214,8 +212,19 @@ public class ProcessQuery {
         String indexLocation = "C:/Users/printer_admin/Downloads/KGs/tests/";
         ana.setIndexLocation(indexLocation);
         ana.loadIndices();
+
+        long startTime = System.nanoTime();
+
         ana.extractClassesAndProperties();
         eps = ana.getEndpoints();
-        ana.processQuery(eps, sparqlQuery);
+        Set<BindingSet> result = ana.processQuery(eps, sparqlQuery);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000;
+        System.out
+                .println("Processing Time: " + duration + " millisecond\nQuery returns " + result.size() + " tuples:");
+        for (BindingSet element : result) {
+            System.out.println(element);
+        }
+
     }
 }
