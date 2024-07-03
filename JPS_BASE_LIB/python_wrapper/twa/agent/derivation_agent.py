@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Union, List
 from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
@@ -14,7 +14,8 @@ from twa import agentlogging
 
 from twa.kg_operations import jpsBaseLibGW
 from twa.kg_operations import PySparqlClient
-from twa.kg_operations import PyDerivationClient
+from twa.kg_operations.derivation_client import PyDerivationClient
+from twa.data_model.base_ontology import BaseClass
 from twa.data_model.derivation import DerivationInputs, DerivationOutputs
 from twa.exception import PythonException
 
@@ -228,26 +229,32 @@ class DerivationAgent(ABC):
     def register_agent_in_kg(self):
         """This method registers the agent to the knowledge graph by uploading its OntoAgent triples generated on-the-fly."""
         if self.register_agent:
-            input_concepts = self.agent_input_concepts()
-            output_concepts = self.agent_output_concepts()
+            input_concepts = self.agent_input_concepts
+            output_concepts = self.agent_output_concepts
             if not isinstance(input_concepts, list) or not isinstance(output_concepts, list):
                 raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: Input and output concepts must be lists. Received: {} (type: {}) and {} (type: {})".format(
                     self.agentIRI, self.kgUrl, input_concepts, type(input_concepts), output_concepts, type(output_concepts)))
             if len(input_concepts) == 0 or len(output_concepts) == 0:
                 raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.agentIRI, self.kgUrl))
-            self.derivation_client.createOntoAgentInstance(self.agentIRI, self.agentEndpoint, input_concepts, output_concepts)
+            input_concepts_iris = [o if isinstance(o, str) else o.get_rdf_type() for o in input_concepts]
+            output_concepts_iris = [o if isinstance(o, str) else o.get_rdf_type() for o in output_concepts]
+            self.derivation_client.createOntoAgentInstance(self.agentIRI, self.agentEndpoint, input_concepts_iris, output_concepts_iris)
             self.logger.info("Agent <%s> is registered to the KG <%s> with input signature %s and output signature %s." % (
                 self.agentIRI, self.kgUrl, input_concepts, output_concepts))
         else:
             self.logger.info("Flag register_agent is False. Agent <%s> is NOT registered to the KG <%s>." % (self.agentIRI, self.kgUrl))
 
+    @property
+    @classmethod
     @abstractmethod
-    def agent_input_concepts(self) -> list:
+    def agent_input_concepts(cls) -> List[Union[str, BaseClass]]:
         """This method returns a list of input concepts of the agent. This should be overridden by the derived class."""
         pass
 
+    @property
+    @classmethod
     @abstractmethod
-    def agent_output_concepts(self) -> list:
+    def agent_output_concepts(cls) -> List[Union[str, BaseClass]]:
         """This method returns a list of output concepts of the agent. This should be overridden by the derived class."""
         pass
 
