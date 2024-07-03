@@ -299,7 +299,7 @@ final class DCATUpdateQuery {
     }
 
     private void addMetadata(Dataset dataset) {
-        Metadata metadataRDF = dataset.getMetadataRDF();
+        Metadata metadataRDF = dataset.getAdditionalMetadata();
         metadataRDF.getTriplePatterns().ifPresent(tps -> {
             metadataRDF.getPrefixes().forEach(query::prefix);
             query.insert(tps);
