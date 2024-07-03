@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.32.0-dataset-metadata-SNAPSHOT</version>
+  <version>1.33.0-dataset-metadata-SNAPSHOT</version>
 
   <name>Stack Clients</name>
   <url>https://theworldavatar.io</url>
@@ -162,12 +162,12 @@
       <scope>test</scope>
     </dependency>
 
-  
     <dependency>
-      <groupId>edu.stanford.protege</groupId>
-      <artifactId>protege-editor-owl</artifactId>
-      <version>5.2.0</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.12.0</version>
     </dependency>
+
   </dependencies>
 
   <build>
@@ -181,7 +181,7 @@
           <archive>
             <manifest>
               <!-- These properties add the copied dependencies to the classpath so the .jar can
-              find them at runtime. -->
+        find them at runtime. -->
               <addClasspath>true</addClasspath>
               <classpathPrefix>./lib/</classpathPrefix>
               <classpathLayoutType>simple</classpathLayoutType>
@@ -194,7 +194,7 @@
       </plugin>
       <plugin>
         <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target
-        directory. -->
+    directory. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>

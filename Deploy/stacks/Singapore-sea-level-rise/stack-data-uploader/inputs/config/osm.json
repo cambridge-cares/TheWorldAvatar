@@ -2,6 +2,9 @@
     "name": "osm",
     "database": "postgres",
     "datasetDirectory": "osm",
+    "externalDatasets": [
+        "buildings"
+    ],
     "dataSubsets": [
         {
             "type": "tabular",
@@ -14,5 +17,7 @@
             "sql": "@/inputs/data/osm/sql/240626_buildinginfo.sql"
         }
     ],
-    "mappings": ["buildinginfo.obda"]
+    "mappings": [
+        "buildinginfo.obda"
+    ]
 }

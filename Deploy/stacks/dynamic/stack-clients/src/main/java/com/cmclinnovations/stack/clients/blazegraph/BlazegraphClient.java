@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,30 +153,6 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
         void execute(RemoteRepositoryManager manager) throws Exception {
             manager.deleteRepository(getNamespace());
 
-        }
-    }
-
-    /**
-     * If the HttpClient needs to be close then close it.
-     * 
-     * @param httpClient     HttpClient to close
-     * @param firstException any existing RuntimeException that has already been
-     *                       thrown
-     * @param failureMessage
-     */
-    private void closeHttpClient(HttpClient httpClient, RuntimeException firstException, String failureMessage) {
-        try {
-            if (null != httpClient && !httpClient.isStopping() && !httpClient.isStopped()) {
-                httpClient.stop();
-            }
-        } catch (Exception ex) {
-            if (null != firstException) {
-                ex.addSuppressed(firstException);
-            }
-            throw new RuntimeException(failureMessage, ex);
-        }
-        if (null != firstException) {
-            throw firstException;
         }
     }
 
