@@ -203,7 +203,7 @@ public class ImpactAssessor {
                         "    WHERE uuid='"+slr_uuid+"'\n" +
                         "),\n" +
                         "     "+ buildingTable +" AS (\n" +
-                        "         SELECT uuid, ST_TRANSFORM(geometry,4326) as geometry\n" +
+                        "         SELECT uuid, geometry\n" +
                         "         FROM "+ buildingTable +"\n" +
                         "     )\n" +
                         "SELECT slr.uuid as slr_uuid, "+ buildingTable +".uuid as "+ buildingTable +"_uuid\n" +
@@ -255,37 +255,27 @@ public class ImpactAssessor {
     private void createCityDBMaterializedView (RemoteRDBStoreClient remoteRDBStoreClient, String cityDBMaterializedViewName) throws SQLException{
 
         String createCityDBMaterializedView_sql = "CREATE MATERIALIZED VIEW public."+cityDBMaterializedViewName+" AS\n" +
-                                                    "WITH \"uuid_table\" AS (\n" +
-                                                    "    SELECT\n" +
-                                                    "        \"strval\" AS \"uuid\",\n" +
-                                                    "        \"cityobject_id\"\n" +
-                                                    "    FROM\n" +
-                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
-                                                    "    WHERE\n" +
-                                                    "        \"attrname\" = 'uuid'\n" +
-                                                    "),\n" +
-                                                    "\"iri_table\" AS (\n" +
-                                                    "    SELECT\n" +
-                                                    "        \"urival\" AS \"iri\",\n" +
-                                                    "        \"cityobject_id\"\n" +
-                                                    "    FROM\n" +
-                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
-                                                    "    WHERE\n" +
-                                                    "        \"attrname\" = 'iri'\n" +
-                                                    ")\n" +
-                                                    "SELECT DISTINCT\n" +
-                                                    "    \"building\".\"id\" AS \"building_id\",\n" +
-                                                    "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
-                                                    "    \"geometry\",\n" +
-                                                    "    \"uuid\",\n" +
-                                                    "    \"iri\"\n" +
-                                                    "FROM\n" +
-                                                    "    \"citydb\".\"building\"\n" +
-                                                    "    JOIN \"citydb\".\"surface_geometry\" ON \"citydb\".\"surface_geometry\".\"root_id\" = \"citydb\".\"building\".\"lod0_footprint_id\"\n" +
-                                                    "    JOIN \"uuid_table\" ON \"citydb\".\"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
-                                                    "    JOIN \"iri_table\" ON \"citydb\".\"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
-                                                    "WHERE\n" +
-                                                    "    \"citydb\".\"surface_geometry\".\"geometry\" IS NOT NULL;";
+                                                "WITH uuid_table AS (\n" +
+                                                "         SELECT cityobject_genericattrib.strval AS uuid,\n" +
+                                                "            cityobject_genericattrib.cityobject_id\n" +
+                                                "           FROM citydb.cityobject_genericattrib\n" +
+                                                "          WHERE ((cityobject_genericattrib.attrname)::text = 'uuid'::text)\n" +
+                                                "        ), iri_table AS (\n" +
+                                                "         SELECT cityobject_genericattrib.urival AS iri,\n" +
+                                                "            cityobject_genericattrib.cityobject_id\n" +
+                                                "           FROM citydb.cityobject_genericattrib\n" +
+                                                "          WHERE ((cityobject_genericattrib.attrname)::text = 'iri'::text)\n" +
+                                                "        )\n" +
+                                                " SELECT DISTINCT building.id AS building_id,\n" +
+                                                "    COALESCE(building.measured_height, (100.0)::double precision) AS building_height,\n" +
+                                                "    ST_TRANSFORM(surface_geometry.geometry,4326) as geometry,\n" +
+                                                "    uuid_table.uuid,\n" +
+                                                "    iri_table.iri\n" +
+                                                "   FROM (((citydb.building\n" +
+                                                "     JOIN citydb.surface_geometry ON ((surface_geometry.root_id = building.lod0_footprint_id)))\n" +
+                                                "     JOIN uuid_table ON ((building.id = uuid_table.cityobject_id)))\n" +
+                                                "     JOIN iri_table ON ((building.id = iri_table.cityobject_id)))\n" +
+                                                "  WHERE (surface_geometry.geometry IS NOT NULL);";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, createCityDBMaterializedView_sql);
