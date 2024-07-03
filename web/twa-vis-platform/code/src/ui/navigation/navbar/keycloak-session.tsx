@@ -22,6 +22,7 @@ export default function KeycloakSession() {
     }, []);
 
     return (
+        keycloak.userInfo &&
         <div id="keycloakSession" className={`${styles.keycloakSession} ${styles.dropdown}`}>
             <span id="userName" className={styles.dropbtn}>{`${keycloak.userInfo}`}</span>
             <div className={styles.dropdownContent}>
