@@ -83,6 +83,8 @@
     border: 1px solid var(--background-primary);
 
     background-color: var(--background-tertiary);
+
+    white-space: nowrap;
 }
 
 .ribbonOption {
