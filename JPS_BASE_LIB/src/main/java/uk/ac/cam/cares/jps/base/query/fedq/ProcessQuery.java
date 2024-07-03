@@ -216,6 +216,13 @@ public class ProcessQuery {
         long startTime = System.nanoTime();
 
         ana.extractClassesAndProperties();
+        // run against manual endpoints
+        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_all/sparql");
+        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_compchem/sparql");
+        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_kin/sparql");
+        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_uken/sparql");
+
+        // run against extracted endpoints
         eps = ana.getEndpoints();
         Set<BindingSet> result = ana.processQuery(eps, sparqlQuery);
         long endTime = System.nanoTime();
