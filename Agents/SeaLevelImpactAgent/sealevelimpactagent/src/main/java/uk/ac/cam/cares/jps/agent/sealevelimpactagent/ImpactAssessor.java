@@ -67,18 +67,24 @@ public class ImpactAssessor {
 
                 //Create table for population
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTableList.get(0).toString()+" (slr_uuid VARCHAR, PRIMARY KEY (slr_uuid));");
-                
+
+                //Add columns according to the population types
+                try {checkAndAddColumns(remoteRDBStoreClient, SeaLevelImpactAgent.populationTableList);} catch (Exception e) {e.printStackTrace();}
+
                 //Create table for buildings
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR);");
 
                 //Create table for road
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.osm_streetTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.osm_streetTable+"_uuid VARCHAR, affectedlength DOUBLE PRECISION, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.osm_streetTable+"_uuid));");
+
             }
     }
 
     public void mapPopulationAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, ArrayList<String> populationTables)throws SQLException{
 
         //check if slr_uuid ID exists in slr_population
+        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, populationTables.get(0).toString())) {
+
 
 
             try (Connection connection = remoteRDBStoreClient.getConnection()) {
@@ -104,6 +110,10 @@ public class ImpactAssessor {
                     }
                 }
             }
+        }
+        else {
+            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+populationTables.get(0).toString()+" at risk, data skipped.");
+        }
     }
 
      public void mapLandplotAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String landplotTable)throws SQLException{
@@ -321,7 +331,7 @@ public class ImpactAssessor {
                             " ADD COLUMN " + populationTable+ " bigint";
                     executeSql(connection, addColumnSql);
                 } else {
-                    System.out.println("Column "+ populationTable+ " already exists in table isochrone_aggregated.");
+                    System.out.println("Column "+ populationTable+ " already exists in table impact table.");
                 }
             }
         }

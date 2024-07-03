@@ -141,7 +141,7 @@ public class SeaLevelImpactAgent extends JPSAgent {
 
             //Map population at risk
             try {
-                impactAssessor.checkAndAddColumns(remoteRDBStoreClient, populationTableList);
+
                 impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient, seaLevelChangeUUID,populationTableList);
             }catch (Exception e) {
                 LOGGER.info("Population failed to map: ", e);
