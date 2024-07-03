@@ -2,7 +2,6 @@ package com.cmclinnovations.stack.services.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -17,7 +16,7 @@ public class ServiceConfigTest {
     private static ServiceConfig serviceConfig;
 
     @BeforeClass
-    public static void readFromFile() throws IOException, URISyntaxException {
+    public static void readFromFile() throws IOException {
         objectMapper = JsonHelper.getMapper();
 
         try (InputStream resourceAsStream = ServiceConfigTest.class.getResourceAsStream("testService.json")) {

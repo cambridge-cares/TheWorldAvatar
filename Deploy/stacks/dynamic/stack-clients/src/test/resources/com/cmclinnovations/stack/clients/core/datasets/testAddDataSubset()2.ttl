@@ -43,6 +43,6 @@
         <http://purl.org/dc/terms/title>
                 "testDataset";
         <http://www.w3.org/ns/dcat#endpointURL>
-                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql/>;
+                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql>;
         <http://www.w3.org/ns/dcat#servesDataset>
                 <https://theworldavatar.io/kg/a35adecc-170e-4f8e-b6f0-b112cefd28b2> .
