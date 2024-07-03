@@ -44,6 +44,12 @@ public class SeaLevelImpactAgent extends JPSAgent {
     public static String touristattractionsTable = null;
     public static String landplotTable= null;
     public static String populationTable= null;
+    public static String population_childrenU5Table= null;
+    public static String population_elderlyTable= null;
+    public static String population_menTable= null;
+    public static String population_womenTable= null;
+    public static String population_youthTable= null;
+    public static String population_women_reproductiveTable= null;
     public static String osm_streetTable= null;
 
     private String kgEndpoint;
@@ -76,6 +82,12 @@ public class SeaLevelImpactAgent extends JPSAgent {
             this.touristattractionsTable= prop.getProperty("touristattractionsTable.name");
             this.landplotTable= prop.getProperty("landplotTable.name");
             this.populationTable= prop.getProperty("populationTable.name");
+            this.population_childrenU5Table= prop.getProperty("population_childrenU5Table.name");
+            this.population_elderlyTable= prop.getProperty("population_elderlyTable.name");
+            this.population_menTable= prop.getProperty("population_menTable.name");
+            this.population_womenTable= prop.getProperty("population_womenTable.name");
+            this.population_youthTable= prop.getProperty("population_youthTable.name");
+            this.population_women_reproductiveTable= prop.getProperty("population_women_reproductiveTable.name");
             this.osm_streetTable= prop.getProperty("osm_streetTable.name");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -133,6 +145,12 @@ public class SeaLevelImpactAgent extends JPSAgent {
             //Map population at risk
             try {
                 impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, populationTable);
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, population_childrenU5Table);
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, population_elderlyTable);
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, population_menTable);
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, population_womenTable);
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, population_youthTable);
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, population_women_reproductiveTable);
             }catch (Exception e) {
                 LOGGER.info("Population failed to map: ", e);
             }

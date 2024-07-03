@@ -63,7 +63,7 @@ public class ImpactAssessor {
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.landplotTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.landplotTable+"_uuid VARCHAR, affectedarea DOUBLE PRECISION, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.landplotTable+"_uuid));");
 
                 //Create table for population
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTable+" (slr_uuid VARCHAR, populationatrisk INTEGER, PRIMARY KEY (slr_uuid));");
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTable+" (slr_uuid VARCHAR, "+SeaLevelImpactAgent.populationTable+" INTEGER, "+SeaLevelImpactAgent.population_childrenU5Table+" INTEGER, "+SeaLevelImpactAgent.population_elderlyTable+" INTEGER, "+SeaLevelImpactAgent.population_menTable+" INTEGER, "+SeaLevelImpactAgent.population_womenTable+" INTEGER, "+SeaLevelImpactAgent.population_women_reproductiveTable+" INTEGER, "+SeaLevelImpactAgent.population_youthTable+" INTEGER, PRIMARY KEY (slr_uuid));");
                 
                 //Create table for buildings
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR);");
@@ -79,11 +79,11 @@ public class ImpactAssessor {
         if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, populationTable)) {
 
             try (Connection connection = remoteRDBStoreClient.getConnection()) {
-                String populationInsertSQL = "INSERT INTO slr_population (slr_uuid, populationatrisk)\n" +
+                String populationInsertSQL = "INSERT INTO slr_population (slr_uuid, "+populationTable+")\n" +
                         "SELECT subquery.uuid, subquery.sum\n" +
                         "FROM (\n" +
-                        "SELECT sealevelprojections.uuid, SUM((ST_SummaryStats(ST_Clip(population.rast, sealevelprojections.geom, TRUE))).sum) AS sum\n" +
-                        "FROM sealevelprojections, population\n" +
+                        "SELECT sealevelprojections.uuid, SUM((ST_SummaryStats(ST_Clip("+populationTable+".rast, sealevelprojections.geom, TRUE))).sum) AS sum\n" +
+                        "FROM sealevelprojections, "+populationTable+"\n" +
                         "WHERE sealevelprojections.uuid = '" + slr_uuid + "'\n" +
                         "GROUP BY sealevelprojections.uuid\n" +
                         ") AS subquery;";
