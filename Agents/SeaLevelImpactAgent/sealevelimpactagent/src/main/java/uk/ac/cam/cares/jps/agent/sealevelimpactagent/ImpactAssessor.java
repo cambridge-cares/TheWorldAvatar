@@ -6,8 +6,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.HashMap;
 
 
 public class ImpactAssessor {
@@ -189,48 +187,30 @@ public class ImpactAssessor {
 
     public void mapBuildingAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String buildingTable)throws SQLException{
 
-
-
         //create materialized view if not exists
         if (!isCityDBMaterializedViewExists(remoteRDBStoreClient, buildingTable)){
             createCityDBMaterializedView(remoteRDBStoreClient,buildingTable);
         }
 
-
-        String getBuildingsUUIDandWKTSQL ="SELECT uuid, geometry as geom FROM bldg_mat_view";
-
         //check if slr_uuid ID exists in slr_population
         if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, buildingTable)) {
 
             try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                String buildingInsertSQL = "INSERT INTO slr_"+ buildingTable +" (slr_uuid, "+ buildingTable +"_uuid)\n" +
+                        "WITH slr AS (\n" +
+                        "    SELECT geom, uuid\n" +
+                        "    FROM \"sealevelprojections\"\n" +
+                        "    WHERE uuid='"+slr_uuid+"'\n" +
+                        "),\n" +
+                        "     "+ buildingTable +" AS (\n" +
+                        "         SELECT uuid, ST_TRANSFORM(geometry,4326) as geometry\n" +
+                        "         FROM "+ buildingTable +"\n" +
+                        "     )\n" +
+                        "SELECT slr.uuid as slr_uuid, "+ buildingTable +".uuid as "+ buildingTable +"_uuid\n" +
+                        "FROM slr,"+ buildingTable +"\n" +
+                        "WHERE ST_INTERSECTS(slr.geom, "+ buildingTable +".geometry)";
 
-                Map <String, String> buildingUUIDandWKTmap = getUUIDandWKT(connection, getBuildingsUUIDandWKTSQL);
-                final int[] remainingEntries = {buildingUUIDandWKTmap.size()};
-                final int totalEntries = buildingUUIDandWKTmap.size();
-
-                buildingUUIDandWKTmap.entrySet().forEach(entry -> {
-                    String buildingiri = entry.getKey();
-                    String buildingwkt = entry.getValue();
-
-                    String buildingInsertSQL ="WITH slr AS (\n" +
-                                            "    SELECT uuid, geom\n" +
-                                            "    FROM sealevelprojections\n" +
-                                            "    WHERE uuid = '"+slr_uuid+"'\n" +
-                                            ")\n" +
-                                            "INSERT INTO slr_bldg_mat_view (slr_uuid, bldg_mat_view_uuid)\n" +
-                                            "SELECT slr.uuid as slr_uuid, '"+buildingiri+"' as bldg_mat_view_uuid\n" +
-                                            "FROM slr\n" +
-                                            "WHERE ST_INTERSECTS(slr.geom, '"+buildingwkt+"')\n" +
-                                            "ON CONFLICT DO NOTHING;";
-                    try {
-                        executeSql(connection, buildingInsertSQL);
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                    remainingEntries[0]--;
-                    System.out.println("Matching remaining buildings " + remainingEntries[0] + "out of "+ totalEntries +"entries for "+ buildingTable+" of "+slr_uuid+"sea level change.");
-                });
-
+                executeSql(connection, buildingInsertSQL);
             }
             System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+ buildingTable +" at risk.");
         }
@@ -239,19 +219,7 @@ public class ImpactAssessor {
         }
     }
 
-    Map<String, String> getUUIDandWKT(Connection connection, String sql) throws SQLException {
-        Map<String, String> resultMap = new HashMap<>();
 
-        try (Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
-            while (resultSet.next()) {
-                String uuid = resultSet.getString("uuid");
-                String wkt = resultSet.getString("geom");
-                resultMap.put(uuid, wkt);
-            }
-        }
-        return resultMap;
-    }
 
 
     /**
@@ -287,27 +255,37 @@ public class ImpactAssessor {
     private void createCityDBMaterializedView (RemoteRDBStoreClient remoteRDBStoreClient, String cityDBMaterializedViewName) throws SQLException{
 
         String createCityDBMaterializedView_sql = "CREATE MATERIALIZED VIEW public."+cityDBMaterializedViewName+" AS\n" +
-                                                    "WITH uuid_table AS (\n" +
-                                                    "         SELECT cityobject_genericattrib.strval AS uuid,\n" +
-                                                    "            cityobject_genericattrib.cityobject_id\n" +
-                                                    "           FROM citydb.cityobject_genericattrib\n" +
-                                                    "          WHERE ((cityobject_genericattrib.attrname)::text = 'uuid'::text)\n" +
-                                                    "        ), iri_table AS (\n" +
-                                                    "         SELECT cityobject_genericattrib.urival AS iri,\n" +
-                                                    "            cityobject_genericattrib.cityobject_id\n" +
-                                                    "           FROM citydb.cityobject_genericattrib\n" +
-                                                    "          WHERE ((cityobject_genericattrib.attrname)::text = 'iri'::text)\n" +
-                                                    "        )\n" +
-                                                    " SELECT DISTINCT building.id AS building_id,\n" +
-                                                    "    COALESCE(building.measured_height, (100.0)::double precision) AS building_height,\n" +
-                                                    "    ST_TRANSFORM(surface_geometry.geometry,4326) as geometry,\n" +
-                                                    "    uuid_table.uuid,\n" +
-                                                    "    iri_table.iri\n" +
-                                                    "   FROM (((citydb.building\n" +
-                                                    "     JOIN citydb.surface_geometry ON ((surface_geometry.root_id = building.lod0_footprint_id)))\n" +
-                                                    "     JOIN uuid_table ON ((building.id = uuid_table.cityobject_id)))\n" +
-                                                    "     JOIN iri_table ON ((building.id = iri_table.cityobject_id)))\n" +
-                                                    "  WHERE (surface_geometry.geometry IS NOT NULL);";
+                                                    "WITH \"uuid_table\" AS (\n" +
+                                                    "    SELECT\n" +
+                                                    "        \"strval\" AS \"uuid\",\n" +
+                                                    "        \"cityobject_id\"\n" +
+                                                    "    FROM\n" +
+                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
+                                                    "    WHERE\n" +
+                                                    "        \"attrname\" = 'uuid'\n" +
+                                                    "),\n" +
+                                                    "\"iri_table\" AS (\n" +
+                                                    "    SELECT\n" +
+                                                    "        \"urival\" AS \"iri\",\n" +
+                                                    "        \"cityobject_id\"\n" +
+                                                    "    FROM\n" +
+                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
+                                                    "    WHERE\n" +
+                                                    "        \"attrname\" = 'iri'\n" +
+                                                    ")\n" +
+                                                    "SELECT DISTINCT\n" +
+                                                    "    \"building\".\"id\" AS \"building_id\",\n" +
+                                                    "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
+                                                    "    \"geometry\",\n" +
+                                                    "    \"uuid\",\n" +
+                                                    "    \"iri\"\n" +
+                                                    "FROM\n" +
+                                                    "    \"citydb\".\"building\"\n" +
+                                                    "    JOIN \"citydb\".\"surface_geometry\" ON \"citydb\".\"surface_geometry\".\"root_id\" = \"citydb\".\"building\".\"lod0_footprint_id\"\n" +
+                                                    "    JOIN \"uuid_table\" ON \"citydb\".\"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
+                                                    "    JOIN \"iri_table\" ON \"citydb\".\"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
+                                                    "WHERE\n" +
+                                                    "    \"citydb\".\"surface_geometry\".\"geometry\" IS NOT NULL;";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, createCityDBMaterializedView_sql);
