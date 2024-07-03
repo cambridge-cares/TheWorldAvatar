@@ -23,13 +23,14 @@
                 "virtualTable": {
                     "name": "sealevelprojections",
                     "escapeSql": false,
+                    "sql": "select * from sealevelprojections",
                     "geometry": {
                         "name": "geom",
-                        "type": "MultiPolygon",
+                        "type": "geometry",
                         "srid": 4326
                     }
                 },
-                "defaultStyle": "multipolygon"
+                "defaultStyle": "polygon"
             }
         }
     ],
