@@ -52,8 +52,8 @@ target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact landplot:{"
 source		SELECT "slr_uuid", "landplot_uuid", "affectedarea" FROM "public"."slr_landplot"
 
 mappingId	SLR - Population
-target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPopulationAtRisk {"populationatrisk"}.
-source		SELECT "slr_uuid", "populationatrisk" FROM "public"."slr_population"
+target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPopulationAtRisk {"population"}.
+source		SELECT "slr_uuid", "population" FROM "public"."slr_population"
 
 mappingId	SLR - Building
 target		ontosl:SeaLevelChange/{"slr_uuid"} ontosl:hasPotentialImpact twa:Building/{"bldg_mat_view_uuid"} .

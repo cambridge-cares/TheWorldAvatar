@@ -6,6 +6,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 public class ImpactAssessor {
@@ -63,7 +66,7 @@ public class ImpactAssessor {
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.landplotTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.landplotTable+"_uuid VARCHAR, affectedarea DOUBLE PRECISION, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.landplotTable+"_uuid));");
 
                 //Create table for population
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTable+" (slr_uuid VARCHAR, "+SeaLevelImpactAgent.populationTable+" INTEGER, "+SeaLevelImpactAgent.population_childrenU5Table+" INTEGER, "+SeaLevelImpactAgent.population_elderlyTable+" INTEGER, "+SeaLevelImpactAgent.population_menTable+" INTEGER, "+SeaLevelImpactAgent.population_womenTable+" INTEGER, "+SeaLevelImpactAgent.population_women_reproductiveTable+" INTEGER, "+SeaLevelImpactAgent.population_youthTable+" INTEGER, PRIMARY KEY (slr_uuid));");
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTableList.get(0).toString()+" (slr_uuid VARCHAR, PRIMARY KEY (slr_uuid));");
                 
                 //Create table for buildings
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR);");
@@ -73,28 +76,34 @@ public class ImpactAssessor {
             }
     }
 
-    public void mapPopulationAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String populationTable)throws SQLException{
+    public void mapPopulationAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, ArrayList<String> populationTables)throws SQLException{
 
         //check if slr_uuid ID exists in slr_population
-        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, populationTable)) {
+
 
             try (Connection connection = remoteRDBStoreClient.getConnection()) {
-                String populationInsertSQL = "INSERT INTO slr_population (slr_uuid, "+populationTable+")\n" +
-                        "SELECT subquery.uuid, subquery.sum\n" +
-                        "FROM (\n" +
-                        "SELECT sealevelprojections.uuid, SUM((ST_SummaryStats(ST_Clip("+populationTable+".rast, sealevelprojections.geom, TRUE))).sum) AS sum\n" +
-                        "FROM sealevelprojections, "+populationTable+"\n" +
-                        "WHERE sealevelprojections.uuid = '" + slr_uuid + "'\n" +
-                        "GROUP BY sealevelprojections.uuid\n" +
-                        ") AS subquery;";
 
-                executeSql(connection, populationInsertSQL);
+                String insertslr_uuidSQL= "INSERT INTO slr_population (slr_uuid) VALUES ('"+slr_uuid+"') ON CONFLICT DO NOTHING";
+                executeSql(connection,insertslr_uuidSQL);
+
+                for (String populationTable : populationTables) {
+                    try {
+                        String mapPopulation_sql = "UPDATE slr_population "+
+                                "SET "+populationTable+" = subquery.sum\n" +
+                                "FROM (\n" +
+                                "SELECT sealevelprojections.uuid, SUM((ST_SummaryStats(ST_Clip(" + populationTable + ".rast, sealevelprojections.geom, TRUE))).sum) AS sum\n" +
+                                "FROM sealevelprojections, " + populationTable + "\n" +
+                                "WHERE sealevelprojections.uuid = '" + slr_uuid + "'\n" +
+                                "GROUP BY sealevelprojections.uuid\n" +
+                                ") AS subquery WHERE subquery.uuid = slr_population.slr_uuid;";
+                        executeSql(connection, mapPopulation_sql);
+                        System.out.println(populationTable + "'s population sum successfully mapped with sealevelrise with uuid: "+slr_uuid);
+
+                    } catch (Exception e) {
+                        System.out.println(populationTable + " unable to be mapped.");
+                    }
+                }
             }
-            System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+populationTable+" at risk.");
-        }
-        else {
-            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+populationTable+" at risk, data skipped.");
-        }
     }
 
      public void mapLandplotAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String landplotTable)throws SQLException{
@@ -298,8 +307,42 @@ public class ImpactAssessor {
         }
     }
 
+    /**
+     * Check for each populationtables in config.properties and add them if it doesnt exist
+     * @param remoteRDBStoreClient
+     * @param populationTables list of population tables
+     */
+    public void checkAndAddColumns(RemoteRDBStoreClient remoteRDBStoreClient, ArrayList<String> populationTables) {
 
+        try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            for (String populationTable : populationTables) {
+                if (!isColumnExist(connection, populationTable)) {
+                    String addColumnSql = "ALTER TABLE slr_"+populationTables.get(0).toString()+
+                            " ADD COLUMN " + populationTable+ " bigint";
+                    executeSql(connection, addColumnSql);
+                } else {
+                    System.out.println("Column "+ populationTable+ " already exists in table isochrone_aggregated.");
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
 
+    /**
+     * Check if the column columnName exists
+     * @param connection PostgreSQL connection object
+     * @param columnName name of column to check (populationTable)
+     * @return true if column columnName exists, false otherwise
+     */
+    private boolean isColumnExist(Connection connection,  String columnName)throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getColumns(null, null, "isochrone_aggregated", columnName)) {
+            return resultSet.next();
+        }
+    }
 }
 
 

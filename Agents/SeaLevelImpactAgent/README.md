@@ -79,7 +79,7 @@ The agent is reachable at the `/slrimpact` endpoint.
 To run the agent, simply run the following cURL command in the format below:
 ```bash
 # Sample request with Shared Socioeconomic Pathway - ssp585, projection year - 2150, confidence - low
-curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&projectionyear=2150&confidence=low&quantile=95"
+curl -X POST "localhost:3838/sealevelimpactagent/slrimpact?ssp=ssp585&projectionyear=2150&confidence=medium&quantile=83"
 ```
 
 ### 6.3 Bulk inputs 
