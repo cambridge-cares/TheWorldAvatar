@@ -8,14 +8,8 @@
             "tiles": [
                 "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
             ]
-        },
-        {
-            "id": "population",
-            "type": "raster",
-            "tiles": [
-                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
-            ]
         }
+        
     ],
     "layers": [
         {
@@ -106,20 +100,159 @@
                 "fill-opacity": 0.5,
                 "fill-outline-color": "#000000"
             }
-        },
-        {
-            "id": "population",
-            "type": "raster",
-            "name": "Population",
-            "source": "population",
-            "minzoom": 8,
-            "order": 4,
-            "layout": {
-                "visibility": "none"
-            }
         }
+        
     ],
     "groups": [
+        {
+            "name": "Population",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "population",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_men",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_men&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_women",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_women&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_women_reproductive",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_women_reproductive&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_childrenu5",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_childrenu5&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_youth",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_youth&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                }, 
+                {
+                    "id": "population_elderly",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_elderly&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "groups": [
+                {
+                    "name": "General",
+                    "layers": [
+                        {
+                            "id": "population",
+                            "type": "raster",
+                            "name": "Population",
+                            "source": "population",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "By age",
+                    "layers": [
+                        {
+                            "id": "population_childrenu5",
+                            "type": "raster",
+                            "name": "Children",
+                            "source": "population_childrenu5",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_youth",
+                            "type": "raster",
+                            "name": "Youth",
+                            "source": "population_youth",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_elderly",
+                            "type": "raster",
+                            "name": "Elderly",
+                            "source": "population_elderly",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "By gender",
+                    "layers": [
+                        {
+                            "id": "population_men",
+                            "type": "raster",
+                            "name": "Men",
+                            "source": "population_men",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_women",
+                            "type": "raster",
+                            "name": "Women",
+                            "source": "population_women",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_women_reproductive",
+                            "type": "raster",
+                            "name": "Women of reproductive age",
+                            "source": "population_women_reproductive",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                }
+            ] 
+        },
         {
             "name": "Biodiversity",
             "expanded": false,
