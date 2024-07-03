@@ -1,7 +1,8 @@
 import ast
-from typing import List
+from typing import Type, List, Union
 from rdflib import Graph, RDF, Literal
 
+from twa.data_model.base_ontology import BaseClass
 
 class Derivation():
     """This is a wrapper class for uk.ac.cam.cares.jps.base.derivation.Derivation.java.
@@ -55,6 +56,42 @@ class DerivationInputs():
         iris = self.derivation_inputs.getIris(rdfType)
         return list(iris) if iris is not None else None
 
+    def get_inputs_ogm_by_rdf_type(
+        self,
+        rdf_type: str,
+        sparql_client,
+        recursive_depth: int = 0
+    ) -> List[BaseClass]:
+        return BaseClass.pull_from_kg(
+            iris=self.getIris(rdf_type),
+            sparql_client=sparql_client,
+            recursive_depth=recursive_depth
+        )
+
+    def get_inputs_ogm(
+        self,
+        clz: Type[BaseClass],
+        sparql_client,
+        recursive_depth: int = 0
+    ) -> List[BaseClass]:
+        return clz.pull_from_kg(
+            iris=self.getIris(clz.get_rdf_type()),
+            sparql_client=sparql_client,
+            recursive_depth=recursive_depth
+        )
+
+    def get_inputs_ogm_assume_one(
+        self,
+        clz: Type[BaseClass],
+        sparql_client,
+        recursive_depth: int = 0
+    ) -> BaseClass:
+        objects = self.get_inputs_ogm(clz=clz, sparql_client=sparql_client, recursive_depth=recursive_depth)
+        if len(objects) != 1:
+            raise Exception(f"""Input type {clz.get_rdf_type()} assumed one for derivation {self.getDerivationIRI()},
+                encounterred {len(objects)}: {' '.join([o.triples() for o in objects])}""")
+        return next(iter(objects))
+
 
 class DerivationOutputs():
     """This is a warpper class for uk.ac.cam.cares.jps.base.derivation.DerivationOutputs.java.
@@ -106,3 +143,9 @@ class DerivationOutputs():
                         self.addTriple(s.toPython(), p.toPython(), o.toPython())
             except Exception as exc:
                 raise Exception(f"Failed to add: {s.n3()} {p.n3()} {o.n3()}") from exc
+
+    def add_outputs_ogm(self, objects: Union[BaseClass, List[BaseClass]]):
+        if isinstance(objects, BaseClass):
+            objects = [objects]
+        for o in objects:
+            self.addGraph(o.graph())
