@@ -1,6 +1,10 @@
 # Cross-domain representation of Chilean energy-related information
 
-UPDATED ON 29 February 2024. Reproduced by Feroz on Tuesday 16 of January, 2024. (from Dropbox)
+Last update: 4th of July 2024. 
+
+        * Reproduced by Feroz on Tuesday 16 of January 2024 (from Dropbox). 
+        * Reproduced by Andrea on 03 July 2024 from dropbox and GitHub. 
+        * Reproduced again by Feroz on 05 July 2024 in a different machine.
 
 ## Prerequisites
 You need to have Windows, WSL and Ubuntu, Visual Studio Code, Docker, Java 11 all installed in the computer, 
