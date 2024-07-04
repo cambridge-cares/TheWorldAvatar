@@ -44,7 +44,7 @@ Go to the following folder:
 Transfer the following files to the secrets folder and replace the content accordingly:
 
 * geoserver_password   (any password for admin)
-* postgis_password     (any password for postgres, server chileVi-postgis:5432, system PostgreSQL)
+* postgis_password     (any password for postgres, server <STACK_NAME>-postgis:5432 for example chileViv4-postgis:5432, system PostgreSQL)
 * mapbox_api_key        (get a token at the mapbox website)
 * mapbox_username       (get a username at the mapbox website)
 
@@ -66,6 +66,12 @@ For example:
 The default name of the stack is chileViv4
 
 ### Step 4. Once all the containers are running (normally 7 or 8), then type:
+
+        cd ..
+        cd stack-data-uploader 
+        ./stack.sh start <STACK_NAME>
+        
+For example:
 
         cd ..
         cd stack-data-uploader 
@@ -95,9 +101,13 @@ And then run the stach again:
 * Go to the folder: TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/
 * Type in the terminal:
   
-        ./stack.sh start chileViv4 3851
+        ./stack.sh start <STACK_NAME> <PORT_NUMBER>
 
 If you need to delete the stack before that:
+
+        ./stack.sh rm <STACK_NAME> -v
+
+For example:
 
         ./stack.sh rm chileViv4 -v
 
