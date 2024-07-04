@@ -1,6 +1,8 @@
 {
     "name": "sea-level",
     "externalDatasets": [
+        "sealevelprojections-nasa-dem",
+        "dem",
         "buildings-layer",
         "culture",
         "landplot",
