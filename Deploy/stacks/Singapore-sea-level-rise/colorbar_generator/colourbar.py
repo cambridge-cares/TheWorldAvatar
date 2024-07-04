@@ -6,12 +6,13 @@ import json
 
 
 def create_colors():
-    start = 0
-    end = 3.0 * 10 ** 7
+    start = 1 * 10 ** 6
+    end = 6 * 10 ** 9
     num_points = 12
-    ticks = [0, 6/1.1, 12/1.1, 18/1.1, 24/1.1, 30/1.1, 30]
+    ticks = [1, 10, 100, 1000]
 
-    array_for_mapbox_expression = np.linspace(start, end, num_points).tolist()
+    array_for_mapbox_expression = np.logspace(
+        np.log10(start), np.log10(end), num_points).tolist()
     array_for_colorbar = [x / (10.0 ** 6) for x in array_for_mapbox_expression]
 
     fig, ax = plt.subplots(figsize=(6, 1))
@@ -25,13 +26,13 @@ def create_colors():
 
     cmap = mpl.colors.ListedColormap(color1)
 
-    norm = mpl.colors.BoundaryNorm(array_for_colorbar, cmap.N)
+    norm = mpl.colors.LogNorm(vmin=start / 10 ** 6, vmax=end / 10 ** 6)
 
     cb2 = mpl.colorbar.ColorbarBase(ax, cmap=cmap,
                                     norm=norm, ticks=ticks,
                                     orientation='horizontal')
     cb2.set_label('Estimated construction cost (million SGD)')
-    cb2.ax.set_xticklabels(['0', '5', '10', '15', '20', '25', '>25'])
+    cb2.set_ticklabels(['1', '10', '100', '1000'])
     plt.savefig("cost.png", bbox_inches='tight',
                 transparent=True, dpi=300)
 
@@ -40,12 +41,13 @@ def create_colors():
 
 def generate_mapbox_expressions(input_dict):
     expression = ["case"]
-    for key, value in sorted(input_dict.items()):
+    sorted_dict = sorted(input_dict.items())
+    for key, value in sorted_dict:
         expression.extend([
             ["<=", ["get", "cost"], key],
             value
         ])
-    expression.append("#8D99AE")  # default colour
+    expression.append(sorted_dict[len(sorted_dict)-1][1])  # default colour
     f = open("mapbox_expression_cost.txt", "w")
     f.write(json.dumps(expression))
     f.close()
