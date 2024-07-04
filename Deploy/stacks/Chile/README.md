@@ -10,12 +10,14 @@ Last update: 4th of July 2024.
 You need to have Windows, WSL and Ubuntu, Visual Studio Code, Docker, Java 11 all installed in the computer, 
 and perhaps Git, Tortoise, and TomCat. Good luck.
 
+In the case of Linux, you need Visual Studio Code, Docker, Java 11 all installed in the computer, and perhaps Git, and TomCat. Good luck.
+
 ## Instructions
 
 These instructions should allow to see a cross-domain representation of Chilean information.
 
 
-### Step 1. Create a clone of TWA.
+### Step 1. Clone TheWorldAvatar, which is a GitHub repository available at https://github.com/cambridge-cares/TheWorldAvatar.git.
 ### Step 2. Populate following folders (the best way to do it is using Visual Studio Code to transfer the files in the correct folder):
 
 * TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/config/
@@ -34,12 +36,12 @@ With the configuration files found in GitHub at:
 
 The folders to populate will be found in TheWorldAvatar/Deploy/stacks/dynamic/
 
-Details:
+Go to the following folder:
 
 * TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/secrets/
 
   
-File names:
+Transfer the following files to the secrets folder and replace the content accordingly:
 
 * geoserver_password   (any password for admin)
 * postgis_password     (any password for postgres, server chileVi-postgis:5432, system PostgreSQL)
@@ -47,14 +49,21 @@ File names:
 * mapbox_username       (get a username at the mapbox website)
 
 
-### Step 3. When the folders are populated, use Visual Studio Code to access the folder where TWA is cloned.
+### Step 3. When the folders are populated, use Visual Studio Code to access the folder where TheWorldAvatar is cloned.
 
 * Go to the folder:
   
         TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/
-* Type in the terminal:
 
-        ./stack.sh start chileViv4 3851
+* Run the following command with the actual stack name and port number to spin up a stack:
+
+         ./stack.sh start <STACK_NAME> <PORT_NUMBER>
+
+For example:
+
+        ./stack.sh start chileViv4 3838
+
+The default name of the stack is chileViv4
 
 ### Step 4. Once all the containers are running (normally 7 or 8), then type:
 
