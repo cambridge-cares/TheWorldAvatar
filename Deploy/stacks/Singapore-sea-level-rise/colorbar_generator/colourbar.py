@@ -32,7 +32,7 @@ def create_colors():
                                     norm=norm, ticks=ticks,
                                     orientation='horizontal')
     cb2.set_label('Estimated construction cost (million SGD)')
-    cb2.set_ticklabels(['1', '10', '100', '1000'])
+    cb2.set_ticklabels(['<1', '10', '100', '1000'])
     plt.savefig("cost.png", bbox_inches='tight',
                 transparent=True, dpi=300)
 
