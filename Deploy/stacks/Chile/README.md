@@ -49,14 +49,18 @@ File names:
 
 ### Step 3. When the folders are populated, use Visual Studio Code to access the folder where TWA is cloned.
 
-* Go to the folder: TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/
-* Type in the terminal: ./stack.sh start chileViv4 3851
+* Go to the folder:
+  
+        TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/
+* Type in the terminal:
+
+        ./stack.sh start chileViv4 3851
 
 ### Step 4. Once all the containers are running (normally 7 or 8), then type:
 
-* cd ..
-* cd stack-data-uploader 
-* ./stack.sh start chileViv4
+        cd ..
+        cd stack-data-uploader 
+        ./stack.sh start chileViv4
   
 (This should upload all the information. It might take 10-30 minutes. Be patient.)
 
@@ -80,22 +84,27 @@ TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/data/webspace/
 
 And then run the stach again:
 * Go to the folder: TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/
-* Type in the terminal: ./stack.sh start chileViv4 3851
+* Type in the terminal:
+  
+        ./stack.sh start chileViv4 3851
 
 If you need to delete the stack before that:
-* ./stack.sh rm chileViv4 -v
+
+        ./stack.sh rm chileViv4 -v
 
 ### Step 7. In the code folder you can find useful queries to be runned in the adminer. 
 
 ### Step 8. To activate all the options of Geoserver.
-* Update the following line:
-
-  "GEOSERVER_CSRF_WHITELIST=146.190.86.59"
 * In the following file:
 
   TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/geoserver
 
-### GOOD LUCK!
+* Update the following line:
+
+        "GEOSERVER_CSRF_WHITELIST=146.190.86.59"
+
+
+### Good luck!
 
 
 
