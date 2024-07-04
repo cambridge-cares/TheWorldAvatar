@@ -131,7 +131,7 @@ public class ImpactAssessor {
                                              "SELECT\n" +
                                              "    slr.uuid AS slr_uuid,\n" +
                                              "    lp.ogc_fid AS lp_uuid,\n" +
-                                             "ROUND(ST_AREA(ST_TRANSFORM(ST_INTERSECTION(slr.geom, ST_MAKEVALID(lp.\"lod1Geometry\")), 4326)::geography)::numeric, 2) AS affectedarea " +
+                                             "ST_AREA(ST_TRANSFORM(ST_INTERSECTION(slr.geom, ST_MAKEVALID(lp.\"lod1Geometry\")), 4326)::geography) AS affectedarea " +
                                              "FROM slr\n" +
                                              "JOIN landplot lp ON ST_INTERSECTS(slr.geom, lp.\"lod1Geometry\");";
 
@@ -162,7 +162,7 @@ public class ImpactAssessor {
                                                 "SELECT\n" +
                                                 "    slr.uuid AS slr_uuid,\n" +
                                                 "    lp.osm_id AS "+ roadTable +"_uuid,\n" +
-                                                "    ROUND(ST_LENGTH(ST_TRANSFORM(ST_INTERSECTION(slr.geom, lp.geom), 3857))::numeric, 2) AS affectedlength\n" +
+                                                "    ST_LENGTH(ST_TRANSFORM(ST_INTERSECTION(slr.geom, lp.geom), 3857)) AS affectedlength\n" +
                                                 "FROM slr\n" +
                                                 "JOIN "+ roadTable +" lp ON ST_INTERSECTS(slr.geom, lp.geom);";
                 executeSql(connection, culturalsitesInsertSQL);
@@ -349,7 +349,7 @@ public class ImpactAssessor {
      */
     private boolean isColumnExist(Connection connection,  String columnName)throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet resultSet = metaData.getColumns(null, null, "isochrone_aggregated", columnName)) {
+        try (ResultSet resultSet = metaData.getColumns(null, null, "slr_"+SeaLevelImpactAgent.populationTableList.get(0).toString(), columnName)) {
             return resultSet.next();
         }
     }
