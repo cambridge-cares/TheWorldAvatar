@@ -16,7 +16,7 @@ These instructions should allow to see a cross-domain representation of Chilean 
 
 
 ### Step 1. Create a clone of TWA.
-### Step 2. Populate following folders:
+### Step 2. Populate following folders (the best way to do it is using Visual Studio Code to transfer the files in the correct folder):
 
 * TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/config/
 * TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/data/
