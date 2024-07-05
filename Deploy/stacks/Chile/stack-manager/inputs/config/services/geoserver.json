@@ -6,7 +6,7 @@
             "ContainerSpec": {
                 "Image": "docker.osgeo.org/geoserver:2.23.1",
                 "Env": [
-                    "GEOSERVER_CSRF_WHITELIST=146.190.86.59",
+                    "GEOSERVER_CSRF_WHITELIST=<IP_ADDRESS>",
                     "INSTALL_EXTENSIONS=true",
                     "STABLE_EXTENSIONS=vectortiles",
                     "CORS_ENABLED=true",
