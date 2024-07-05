@@ -25,10 +25,10 @@ These instructions should allow to see a cross-domain representation of Chilean 
 * TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/
 * TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/  (this one allows to access the geoserver with all the permissions)
 * TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/data/webspace/
-* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/data/webspace/data/ (here must go all the icons)
-* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/secrets/   (this is were you upload your passwords for geoserver, postgis and mapbox)
+* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/data/webspace/data/ (here must go all the icons, if you copy all the webspace folder, it is already included)
 
-With the data files found in the dropbox archive folder, which can be requested to the group.
+With the data files and folders found in the dropbox archive folder, which can be requested to the group.
+
 With the configuration files found in GitHub at:
 
 * TheWorldAvatar/Deploy/stacks/Chile/ (in the repository at GitHub)
@@ -38,7 +38,7 @@ The folders to populate will be found in TheWorldAvatar/Deploy/stacks/dynamic/
 
 Go to the following folder:
 
-* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/secrets/
+* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/secrets/    (this is were you upload your passwords for geoserver, postgis and mapbox)
 
   
 Transfer the following files to the secrets folder and replace the content accordingly:
