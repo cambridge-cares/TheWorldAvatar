@@ -65,7 +65,7 @@ For example:
 
 
 
-### Step 3. When the folders are populated, use Visual Studio Code to access the folder where TheWorldAvatar is cloned.
+### Step 4. When the folders are populated, use Visual Studio Code to access the folder where TheWorldAvatar is cloned.
 
 
 * Go to the folder:
@@ -82,7 +82,7 @@ For example:
 
 The default name of the stack is chileViv4
 
-### Step 4. Once all the containers are running (normally 7 or 8), then type:
+### Step 5. Once all the containers are running (normally 7 or 8), then type:
 
         cd ..
         cd stack-data-uploader 
@@ -96,7 +96,7 @@ For example:
   
 (This should upload all the information. It might take 10-30 minutes. Be patient.)
 
-### Step 5. If everything goes well, you should be able to see the visualisation at:
+### Step 6. If everything goes well, you should be able to see the visualisation at:
 * http://YOUR-IP:3851/visualisation/welcome.html   (forwards to website)
 * http://YOUR-IP:3851/visualisation/index_stack.html  (stack)
   
@@ -108,7 +108,7 @@ The adminer at:
 * http://YOUR-IP:3851/adminer/ui/
 * Access with: Your postgis_password, username postgres, server <STACK_NAME>-postgis:5432 for example chileViv4-postgis:5432, system PostgreSQL
 
-### Step 6. If the visualisation is not working, try changing 
+### Step 7. If the visualisation is not working, try changing 
 146.190.86.59:3851 by your new IP like this: YOUR-IP:YOUR-PORT 
 in all the json and html files in the folder:
 
@@ -128,9 +128,9 @@ For example:
 
         ./stack.sh rm chileViv4 -v
 
-### Step 7. In the code folder you can find useful queries to be runned in the adminer. 
+### Step 8. In the code folder you can find useful queries to be runned in the adminer. 
 
-### Step 8. To activate all the options of Geoserver.
+### Step 9. To activate all the options of Geoserver.
 * In the following file:
 
   TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/geoserver
