@@ -464,7 +464,7 @@ class DerivationAgent(ABC):
             self.time_interval))
 
         url_pattern_name = f'{self.__class__.__name__}_handle_sync_derivations'
-        self.add_url_pattern('/derivation', url_pattern_name, self.handle_sync_derivations, methods=['POST'])
+        self.add_url_pattern(urlparse(self.agentEndpoint).path, url_pattern_name, self.handle_sync_derivations, methods=['POST'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def start_all_periodical_job(self):
