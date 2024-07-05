@@ -95,15 +95,15 @@ For example:
 (This should upload all the information. It might take 10-30 minutes. Be patient.)
 
 ### Step 6. If everything goes well, you should be able to see the visualisation at:
-* http://YOUR-IP:3851/visualisation/welcome.html   (forwards to website)
-* http://YOUR-IP:3851/visualisation/index_stack.html  (stack)
+* http://<IP_ADDRESS>:<PORT_NUMBER>/visualisation/welcome.html   (forwards to website)
+* http://<IP_ADDRESS>:<PORT_NUMBER>/visualisation/index_stack.html  (stack)
   
 The geoserver at: 
-* http://YOUR-IP:3851/geoserver/index.html
+* http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/index.html
 * Access with: Your geoserver_password, username admin 
 
 The adminer at:
-* http://YOUR-IP:3851/adminer/ui/
+* http://<IP_ADDRESS>:<PORT_NUMBER>/adminer/ui/
 * Access with: Your postgis_password, username postgres, server <STACK_NAME>-postgis:5432 for example chileViv4-postgis:5432, system PostgreSQL
 
 ### Step 7. If you need to delete the stack before that:
