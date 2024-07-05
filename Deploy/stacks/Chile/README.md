@@ -55,13 +55,13 @@ Transfer the following files to the secrets folder and replace the content accor
 
 And execute:
 
-     sed -i 's<IP_ADDRESS>:<PORT_NUMBER><IP_ADDRESS>:<PORT_NUMBER>\g' *.json
-     sed -i 's<IP_ADDRESS>:<PORT_NUMBER><IP_ADDRESS>:<PORT_NUMBER>\g' *.html
+     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\<IP_ADDRESS>:<PORT_NUMBER>\g' *.json
+     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\<IP_ADDRESS>:<PORT_NUMBER>\g' *.html
 
 For example:
 
-     sed -i 's<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.json
-     sed -i 's<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.html
+     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.json
+     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.html
 
 
 
