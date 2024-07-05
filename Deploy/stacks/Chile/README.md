@@ -80,6 +80,9 @@ For example:
 
 The default name of the stack is chileViv4
 
+If you want to change you need to change the name of the json file in the folder:
+* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/
+
 ### Step 5. Once all the containers are running (normally 7 or 8), then type:
 
         cd ..
