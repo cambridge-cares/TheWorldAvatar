@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Button } from './ui/button'
 import React from 'react'
 
 interface SidebarItem {
@@ -54,7 +53,7 @@ const UPPER_SIDEBAR_ITEMS = [
     label: 'Natural language search',
   },
   {
-    label: 'Search',
+    label: 'Advanced search',
     items: [
       {
         href: '/search/species',
