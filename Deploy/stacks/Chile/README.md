@@ -55,13 +55,11 @@ Transfer the following files to the secrets folder and replace the content accor
 
 And execute:
 
-     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\<IP_ADDRESS>:<PORT_NUMBER>\g' *.json
-     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\<IP_ADDRESS>:<PORT_NUMBER>\g' *.html
+     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\<IP_ADDRESS>:<PORT_NUMBER>\g' *.*
 
 For example:
 
-     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.json
-     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.html
+     sed -i 's\<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.*
 
 
 
@@ -108,19 +106,7 @@ The adminer at:
 * http://YOUR-IP:3851/adminer/ui/
 * Access with: Your postgis_password, username postgres, server <STACK_NAME>-postgis:5432 for example chileViv4-postgis:5432, system PostgreSQL
 
-### Step 7. If the visualisation is not working, try changing 
-146.190.86.59:3851 by your new IP like this: YOUR-IP:YOUR-PORT 
-in all the json and html files in the folder:
-
-TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/data/webspace/
-
-And then run the stach again:
-* Go to the folder: TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/
-* Type in the terminal:
-  
-        ./stack.sh start <STACK_NAME> <PORT_NUMBER>
-
-If you need to delete the stack before that:
+### Step 7. If you need to delete the stack before that:
 
         ./stack.sh rm <STACK_NAME> -v
 
