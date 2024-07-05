@@ -8,7 +8,7 @@
                     "id": "calc1atlas_capacity_iec1-1",
                     "type": "raster",
                     "tiles": [
-                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                     
                     ]
                 },
@@ -16,7 +16,7 @@
                     "id": "calc1atlas_elevationWithBathymetry-1",
                     "type": "raster",
                     "tiles": [
-                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_elevationWithBathymetry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlas_elevationWithBathymetry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                     
                     ]
                 },
@@ -24,7 +24,7 @@
                     "id": "calc1atlaswind50m-1",
                     "type": "raster",
                     "tiles": [
-                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlaswind50m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:calc1atlaswind50m&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                     
                     ]
                 },
@@ -32,7 +32,7 @@
                     "id": "gov_centraleolic-2",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -40,7 +40,7 @@
                     "id": "gov_centraleolic-2",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3852/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
