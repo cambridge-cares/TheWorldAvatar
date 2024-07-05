@@ -49,6 +49,8 @@ Transfer the following files to the secrets folder and replace the content accor
 * mapbox_username       (get a username at the mapbox website)
 
 
+
+
 ### Step 3. When the folders are populated, use Visual Studio Code to access the folder where TheWorldAvatar is cloned.
 
 * Go to the folder:
@@ -120,7 +122,11 @@ For example:
 
 * Update the following line:
 
-        "GEOSERVER_CSRF_WHITELIST=146.190.86.59"
+        "GEOSERVER_CSRF_WHITELIST=<IP_ADDRESS>"
+
+For example:
+
+        "GEOSERVER_CSRF_WHITELIST=127.0.0.1"
 
 
 ### Good luck!
