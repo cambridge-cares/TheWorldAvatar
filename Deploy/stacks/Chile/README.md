@@ -49,9 +49,24 @@ Transfer the following files to the secrets folder and replace the content accor
 * mapbox_username       (get a username at the mapbox website)
 
 
+### Step 3. Go to the folder:
+
+* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/data/webspace/
+
+And execute:
+
+     sed -i 's<IP_ADDRESS>:<PORT_NUMBER><IP_ADDRESS>:<PORT_NUMBER>\g' *.json
+     sed -i 's<IP_ADDRESS>:<PORT_NUMBER><IP_ADDRESS>:<PORT_NUMBER>\g' *.html
+
+For example:
+
+     sed -i 's<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.json
+     sed -i 's<IP_ADDRESS>:<PORT_NUMBER>\127.0.0.1:3838\g' *.html
+
 
 
 ### Step 3. When the folders are populated, use Visual Studio Code to access the folder where TheWorldAvatar is cloned.
+
 
 * Go to the folder:
   
