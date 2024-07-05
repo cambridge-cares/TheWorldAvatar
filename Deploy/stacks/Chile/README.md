@@ -89,7 +89,7 @@ The geoserver at:
 
 The adminer at:
 * http://YOUR-IP:3851/adminer/ui/
-* Access with: Your postgis_password, username postgres, server chileVi-postgis:5432, system PostgreSQL
+* Access with: Your postgis_password, username postgres, server <STACK_NAME>-postgis:5432 for example chileViv4-postgis:5432, system PostgreSQL
 
 ### Step 6. If the visualisation is not working, try changing 
 146.190.86.59:3851 by your new IP like this: YOUR-IP:YOUR-PORT 
