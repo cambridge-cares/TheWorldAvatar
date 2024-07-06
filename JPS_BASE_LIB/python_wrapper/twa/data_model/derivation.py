@@ -2,7 +2,7 @@ import ast
 from typing import Type, List, Union
 from rdflib import Graph, RDF, Literal
 
-from twa.data_model.base_ontology import BaseClass
+from twa.data_model.base_ontology import BaseClass, KnowledgeGraph
 
 class Derivation():
     """This is a wrapper class for uk.ac.cam.cares.jps.base.derivation.Derivation.java.
@@ -147,5 +147,5 @@ class DerivationOutputs():
     def add_outputs_ogm(self, objects: Union[BaseClass, List[BaseClass]]):
         if isinstance(objects, BaseClass):
             objects = [objects]
-        for o in objects:
-            self.addGraph(o.graph())
+        iris = [o.instance_iri for o in objects]
+        self.addGraph(KnowledgeGraph.all_triples_of_nodes(iris))

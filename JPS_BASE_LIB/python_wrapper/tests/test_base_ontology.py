@@ -714,9 +714,12 @@ def test_export_to_graph():
         else:
             assert False, "Unexpected cardinality or restriction"
 
+
 def test_graph_and_triples():
     a1, a2, a3, b, c, d = init()
-    g = a1.graph() + a2.graph() + a3.graph() + b.graph() + c.graph() + d.graph()
+    # KnowledgeGraph.graph() should be equivalent to:
+    # a1.graph() + a2.graph() + a3.graph() + b.graph() + c.graph() + d.graph()
+    g = KnowledgeGraph.graph()
 
     # 6 triples: instance rdf:type
     assert (URIRef(a1.instance_iri), RDF.type, URIRef(a1.rdf_type)) in g
@@ -746,3 +749,18 @@ def test_graph_and_triples():
 
     # in total 18 triples
     assert sum(1 for _ in g.triples((None, None, None))) == 18
+
+
+def test_all_triples_of_nodes():
+    a1, a2, a3, b, c, d = init()
+    g = KnowledgeGraph.all_triples_of_nodes(a1.instance_iri)
+    # 1 triple: instance rdf:type
+    assert (URIRef(a1.instance_iri), RDF.type, URIRef(a1.rdf_type)) in g
+    # 1 triple: a1 --> 'a1'
+    assert (URIRef(a1.instance_iri), URIRef(a1.data_property_a.predicate_iri), Literal("a1")) in g
+    # 1 triple: b --> a1
+    assert (URIRef(b.instance_iri), URIRef(b.object_property_b_a.predicate_iri), URIRef(a1.instance_iri)) in g
+    # 1 triple: d --> a1
+    assert (URIRef(d.instance_iri), URIRef(d.object_property_d_a.predicate_iri), URIRef(a1.instance_iri)) in g
+    # in total 4 triples
+    assert sum(1 for _ in g.triples((None, None, None))) == 4

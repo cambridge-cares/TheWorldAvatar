@@ -42,6 +42,33 @@ class KnowledgeGraph(BaseModel):
     iri_loading_in_progress: ClassVar[Set[str]] = None
 
     @classmethod
+    def graph(cls) -> Graph:
+        g = Graph()
+        for iri, o in cls.construct_object_lookup().items():
+            g += o.graph()
+        return g
+
+    @classmethod
+    def all_triples_of_nodes(cls, iris) -> Graph:
+        # ensure iris is a list
+        if isinstance(iris, str):
+            iris = [iris]
+
+        # convert strings to URIRef if necessary
+        iris = [URIRef(iri) if isinstance(iri, str) else iri for iri in iris]
+
+        source_g = cls.graph()
+        result_g = Graph()
+
+        # add triples to result_graph
+        for iri in iris:
+            for triple in source_g.triples((iri, None, None)):
+                result_g.add(triple)
+            for triple in source_g.triples((None, None, iri)):
+                result_g.add(triple)
+        return result_g
+
+    @classmethod
     def construct_object_lookup(cls) -> Dict[str, BaseClass]:
         """
         This method is used to retrieve all BaseClass (pydantic) objects created in Python memory.
