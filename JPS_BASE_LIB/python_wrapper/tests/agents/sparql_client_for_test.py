@@ -4,17 +4,21 @@ import twa.data_model.utils as utils
 import uuid
 import math
 
+from .data_model_for_test import (
+    RandomOntology, NumOfPoints, UpperLimit, LowerLimit, Point, MinValue, MaxValue, Difference, DifferenceReverse, HasValue
+)
+
 # Random number generation TBox
-RANDOM_EXAMPLE_TBOX = 'http://www.example.com/ontology/random.owl#'
-RANDOM_EXAMPLE_NUMOFPOINTS = RANDOM_EXAMPLE_TBOX + 'NumOfPoints'
-RANDOM_EXAMPLE_UPPERLIMIT = RANDOM_EXAMPLE_TBOX + 'UpperLimit'
-RANDOM_EXAMPLE_LOWERLIMIT = RANDOM_EXAMPLE_TBOX + 'LowerLimit'
-RANDOM_EXAMPLE_POINT = RANDOM_EXAMPLE_TBOX + 'Point'
-RANDOM_EXAMPLE_MINVALUE = RANDOM_EXAMPLE_TBOX + 'MinValue'
-RANDOM_EXAMPLE_MAXVALUE = RANDOM_EXAMPLE_TBOX + 'MaxValue'
-RANDOM_EXAMPLE_DIFFERENCE = RANDOM_EXAMPLE_TBOX + 'Difference'
-RANDOM_EXAMPLE_DIFFERENCEREVERSE = RANDOM_EXAMPLE_TBOX + 'DifferenceReverse'
-RANDOM_EXAMPLE_HASVALUE = RANDOM_EXAMPLE_TBOX + 'hasValue'
+RANDOM_EXAMPLE_TBOX = RandomOntology.base_url
+RANDOM_EXAMPLE_NUMOFPOINTS = NumOfPoints.get_rdf_type()
+RANDOM_EXAMPLE_UPPERLIMIT = UpperLimit.get_rdf_type()
+RANDOM_EXAMPLE_LOWERLIMIT = LowerLimit.get_rdf_type()
+RANDOM_EXAMPLE_POINT = Point.get_rdf_type()
+RANDOM_EXAMPLE_MINVALUE = MinValue.get_rdf_type()
+RANDOM_EXAMPLE_MAXVALUE = MaxValue.get_rdf_type()
+RANDOM_EXAMPLE_DIFFERENCE = Difference.get_rdf_type()
+RANDOM_EXAMPLE_DIFFERENCEREVERSE = DifferenceReverse.get_rdf_type()
+RANDOM_EXAMPLE_HASVALUE = HasValue.get_predicate_iri()
 RANDOM_EXAMPLE_BASE_URL = 'https://www.example.com/triplestore/random/random_data_1/'
 RANDOM_STRING_WITH_SPACES = 'Random string with spaces'
 RANDOM_EXAMPLE_SPECIALVALUE = RANDOM_EXAMPLE_TBOX + 'specialValue'

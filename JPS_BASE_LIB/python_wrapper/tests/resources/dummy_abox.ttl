@@ -9,17 +9,17 @@
 :numofpoints
     rdf:type example:NumOfPoints;
     # the default will be no output at new information generation mode
-    example:hasValue "0"^^xsd:integer;
+    example:hasValue 0;
 .
 
 :upperlimit
     rdf:type example:UpperLimit;
-    example:hasValue "10"^^xsd:integer;
+    example:hasValue 10;
 .
 
 :lowerlimit
     rdf:type example:LowerLimit;
-    example:hasValue "1"^^xsd:integer;
+    example:hasValue 1;
 .
 
 # timestamps for these pure inputs are not needed as they will be added by the

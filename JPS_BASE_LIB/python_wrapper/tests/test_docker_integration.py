@@ -41,11 +41,11 @@ pytest_plugins = ["docker_compose"]
     "rng, max, min, diff",
     [ # True - sync; False - async
         (True, True, True, True),
-        # (True, True, True, False),
-        # (True, True, False, False),
-        # (True, False, True, False),
-        # (True, False, False, False),
-        # (False, False, False, False),
+        (True, True, True, False),
+        (True, True, False, False),
+        (True, False, True, False),
+        (True, False, False, False),
+        (False, False, False, False),
     ],
 )
 def test_docker_integration(initialise_clients_and_agents, rng, max, min, diff):
@@ -517,7 +517,7 @@ def execute_update_derivation(all_instances, sparql_client, update_endpoint, exi
 
     # invoke UpdateDerivations via HTTP request
     # endpoint of update agent in docker, e.g., "http://localhost:7004/update"
-    response = requests.post(update_endpoint)
+    response = requests.post(update_endpoint, timeout=120)
     logger.info(f"Update request sent to endpoint <{update_endpoint}>, received response status: {response}, response body: {str(response.content)}")
 
     # once timestamp of difference derivation updated, the iri of difference should

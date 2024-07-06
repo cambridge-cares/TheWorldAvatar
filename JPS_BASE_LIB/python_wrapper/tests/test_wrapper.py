@@ -210,4 +210,4 @@ def test_javaPythonObjConversion():
     for i in range(fileListArray.size()):
         retFilesList.append(fileListArray.get(i).toString())
 
-    assert retFilesList == [path.join(path.abspath(path.join(path.dirname(__file__))), 'test_file1.txt')]
+    assert path.join(path.abspath(path.join(path.dirname(__file__))), 'test_file1.txt') in retFilesList

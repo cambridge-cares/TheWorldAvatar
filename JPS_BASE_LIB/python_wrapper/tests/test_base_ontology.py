@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import pytest
 import uuid
-import os
-
-from rdflib import Graph, URIRef, RDF, Literal, XSD
+from rdflib import Graph, URIRef, Literal, BNode
+from rdflib import OWL, RDF, RDFS, XSD
 from typing import ClassVar, ForwardRef
 
-from twa.data_model.base_ontology import BaseOntology, BaseClass, DataProperty, ObjectProperty, TransitiveProperty
+from twa.data_model.base_ontology import BaseOntology, BaseClass, DatatypeProperty, ObjectProperty, TransitiveProperty
 from twa.data_model.base_ontology import as_range
 from twa.data_model.base_ontology import KnowledgeGraph
+from twa.data_model.iris import OWL_BASE_URL
 
 
 EXAMPLE_BASE_URL = 'https://example.org/'
@@ -23,17 +23,17 @@ class ExampleOntology(BaseOntology):
     rdfs_comment: ClassVar[str] = 'An example ontology'
 
 
-class DataProperty_A(DataProperty):
+class DataProperty_A(DatatypeProperty):
     is_defined_by_ontology = ExampleOntology
     range: as_range(str, 0, 1)
 
 
-class DataProperty_B(DataProperty):
+class DataProperty_B(DatatypeProperty):
     is_defined_by_ontology = ExampleOntology
     range: as_range(int, 1, 1)
 
 
-class Data_Property_C(DataProperty):
+class Data_Property_C(DatatypeProperty):
     is_defined_by_ontology = ExampleOntology
     range: as_range(str, 0, 5)
 
@@ -85,7 +85,7 @@ class ObjectProperty_D_A(ObjectProperty):
     range: as_range(A)
 
 
-class Data_Property_D(DataProperty):
+class Data_Property_D(DatatypeProperty):
     is_defined_by_ontology = ExampleOntology
     range: as_range(str)
 
@@ -138,13 +138,6 @@ def test_retrieve_cardinality():
     assert ObjectProperty_B_A.retrieve_cardinality() == (0, None)
     assert ObjectProperty_C_A.retrieve_cardinality() == (0, 3)
     assert ObjectProperty_C_B.retrieve_cardinality() == (0, 1)
-
-
-def test_export_to_owl():
-    # TODO add more tests to the exported file
-    fpath = f'example_ontology_{uuid.uuid4()}.ttl'
-    ExampleOntology.export_to_owl(fpath)
-    os.remove(fpath)
 
 
 def test_register_and_clear():
@@ -511,7 +504,7 @@ class G(BaseClass):
     is_defined_by_ontology = ExampleOntology
 
 
-class FProp(DataProperty):
+class FProp(DatatypeProperty):
     is_defined_by_ontology = ExampleOntology
     range: as_range(str, 0, 1)
 
@@ -635,3 +628,121 @@ def test_push_circular_graph_pattern(initialise_sparql_client):
     assert sparql_client.check_if_triple_exist(circ1.instance_iri, C1C2.get_predicate_iri(), circ2.instance_iri)
     assert sparql_client.check_if_triple_exist(circ2.instance_iri, RDF.type.toPython(), Circ2.get_rdf_type())
     assert sparql_client.check_if_triple_exist(circ2.instance_iri, C2C1.get_predicate_iri(), circ1.instance_iri)
+
+
+# NOTE this test is put at the end of this test script
+# NOTE so that the ForwardRef are not evaluated
+# NOTE and therefore can be tested by the tests at the beginning of this file
+def test_export_to_graph():
+    g = ExampleOntology.export_to_graph()
+    print(g.serialize(format='ttl'))
+
+    # object property C1C2, testing for triples:
+    # <https://example.org/example/c1C2> a owl:ObjectProperty ;
+    #     rdfs:domain <https://example.org/example/Circ1> ;
+    #     rdfs:isDefinedBy <https://example.org/example> ;
+    #     rdfs:range <https://example.org/example/Circ2> .
+    assert (URIRef(C1C2.get_predicate_iri()), RDF.type, OWL.ObjectProperty) in g
+    assert (URIRef(C1C2.get_predicate_iri()), RDFS.domain, URIRef(Circ1.get_rdf_type())) in g
+    assert (URIRef(C1C2.get_predicate_iri()), RDFS.range, URIRef(Circ2.get_rdf_type())) in g
+    assert (URIRef(C1C2.get_predicate_iri()), RDFS.isDefinedBy, URIRef(ExampleOntology.get_namespace_iri())) in g
+
+    # data property Data_Property_D, testing for triples:
+    # <https://example.org/example/data_Property_D> a owl:DatatypeProperty ;
+    #     rdfs:domain [ a owl:Class ;
+    #             owl:unionOf ( <https://example.org/example/D> <https://example.org/example/E> ) ] ;
+    #     rdfs:isDefinedBy <https://example.org/example> ;
+    #     rdfs:range xsd:string .
+    assert (URIRef(Data_Property_D.get_predicate_iri()), RDF.type, OWL.DatatypeProperty) in g
+    assert (URIRef(Data_Property_D.get_predicate_iri()), RDFS.range, XSD.string) in g
+    assert (URIRef(Data_Property_D.get_predicate_iri()), RDFS.isDefinedBy, URIRef(ExampleOntology.get_namespace_iri())) in g
+    assert sum(1 for _ in g.triples((URIRef(Data_Property_D.get_predicate_iri()), RDFS.domain, None))) == 1
+    domain_bnode = g.value(URIRef(Data_Property_D.get_predicate_iri()), RDFS.domain)
+    assert isinstance(domain_bnode, BNode)
+    assert (domain_bnode, RDF.type, OWL.Class) in g
+    class_union_bnode = g.value(domain_bnode, OWL.unionOf)
+    assert isinstance(class_union_bnode, BNode)
+    clz_bnode = g.value(class_union_bnode, RDF.rest)
+    assert isinstance(clz_bnode, BNode)
+    assert RDF.nil == g.value(clz_bnode, RDF.rest)
+    assert set([
+        g.value(class_union_bnode, RDF.first).toPython(),
+        g.value(clz_bnode, RDF.first).toPython()
+    ]) == set([D.get_rdf_type(), E.get_rdf_type()])
+
+    # cardinality constraints, testing for triples:
+    # <https://example.org/example/C> a owl:Class ;
+    #     rdfs:isDefinedBy <https://example.org/example> ;
+    #     rdfs:subClassOf [ a owl:Restriction ;
+    #             owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    #             owl:onClass <https://example.org/example/B> ;
+    #             owl:onProperty <https://example.org/example/objectProperty_C_B> ],
+    #         [ a owl:Restriction ;
+    #             owl:maxQualifiedCardinality "3"^^xsd:nonNegativeInteger ;
+    #             owl:onClass <https://example.org/example/A> ;
+    #             owl:onProperty <https://example.org/example/objectProperty_C_A> ],
+    #         [ a owl:Restriction ;
+    #             owl:maxQualifiedCardinality "5"^^xsd:nonNegativeInteger ;
+    #             owl:onClass xsd:string ;
+    #             owl:onProperty <https://example.org/example/data_Property_C> ] .
+    # test for C being a class and its properties
+    assert (URIRef(C.get_rdf_type()), RDF.type, OWL.Class) in g
+    assert (URIRef(C.get_rdf_type()), RDFS.isDefinedBy, URIRef(ExampleOntology.get_namespace_iri())) in g
+    assert sum(1 for _ in g.triples((URIRef(C.get_rdf_type()), RDFS.subClassOf, None))) == 3
+    # check each subclass restriction
+    for restriction in g.objects(URIRef(C.get_rdf_type()), RDFS.subClassOf):
+        assert isinstance(restriction, BNode)
+        assert (restriction, RDF.type, OWL.Restriction) in g
+
+        max_cardinality = g.value(restriction, OWL.maxQualifiedCardinality)
+        on_class = g.value(restriction, OWL.onClass).toPython()
+        on_property = g.value(restriction, OWL.onProperty).toPython()
+
+        assert max_cardinality is not None
+        assert on_class is not None
+        assert on_property is not None
+
+        if max_cardinality == Literal("1", datatype=XSD.nonNegativeInteger):
+            assert on_class == B.get_rdf_type()
+            assert on_property == ObjectProperty_C_B.get_predicate_iri()
+        elif max_cardinality == Literal("3", datatype=XSD.nonNegativeInteger):
+            assert on_class == A.get_rdf_type()
+            assert on_property == ObjectProperty_C_A.get_predicate_iri()
+        elif max_cardinality == Literal("5", datatype=XSD.nonNegativeInteger):
+            assert on_class == XSD.string.toPython()
+            assert on_property == Data_Property_C.get_predicate_iri()
+        else:
+            assert False, "Unexpected cardinality or restriction"
+
+def test_graph_and_triples():
+    a1, a2, a3, b, c, d = init()
+    g = a1.graph() + a2.graph() + a3.graph() + b.graph() + c.graph() + d.graph()
+
+    # 6 triples: instance rdf:type
+    assert (URIRef(a1.instance_iri), RDF.type, URIRef(a1.rdf_type)) in g
+    assert (URIRef(a2.instance_iri), RDF.type, URIRef(a2.rdf_type)) in g
+    assert (URIRef(a3.instance_iri), RDF.type, URIRef(a3.rdf_type)) in g
+    assert (URIRef(b.instance_iri), RDF.type, URIRef(b.rdf_type)) in g
+    assert (URIRef(c.instance_iri), RDF.type, URIRef(c.rdf_type)) in g
+    assert (URIRef(d.instance_iri), RDF.type, URIRef(d.rdf_type)) in g
+    # 1 triple: a1 --> 'a1'
+    assert (URIRef(a1.instance_iri), URIRef(a1.data_property_a.predicate_iri), Literal("a1")) in g
+    # 1 triple: a2 --> 'a2'
+    assert (URIRef(a2.instance_iri), URIRef(a2.data_property_a.predicate_iri), Literal("a2")) in g
+    # 1 triple: a3 --> 'a3'
+    assert (URIRef(a3.instance_iri), URIRef(a3.data_property_a.predicate_iri), Literal("a3")) in g
+    # 3 triples: b --> a1, a2, 3
+    assert (URIRef(b.instance_iri), URIRef(b.object_property_b_a.predicate_iri), URIRef(a1.instance_iri)) in g
+    assert (URIRef(b.instance_iri), URIRef(b.object_property_b_a.predicate_iri), URIRef(a2.instance_iri)) in g
+    assert (URIRef(b.instance_iri), URIRef(b.data_property_b.predicate_iri), Literal(3)) in g
+    # 4 triples: c --> a2, a3, b, 'c'
+    assert (URIRef(c.instance_iri), URIRef(c.object_property_c_a.predicate_iri), URIRef(a2.instance_iri)) in g
+    assert (URIRef(c.instance_iri), URIRef(c.object_property_c_a.predicate_iri), URIRef(a3.instance_iri)) in g
+    assert (URIRef(c.instance_iri), URIRef(c.object_property_c_b.predicate_iri), URIRef(b.instance_iri)) in g
+    assert (URIRef(c.instance_iri), URIRef(c.data_property_c.predicate_iri), Literal("c")) in g
+    # 2 triples: d --> a1, c
+    assert (URIRef(d.instance_iri), URIRef(d.object_property_d_a.predicate_iri), URIRef(a1.instance_iri)) in g
+    assert (URIRef(d.instance_iri), URIRef(d.object_property_d_c.predicate_iri), URIRef(c.instance_iri)) in g
+
+    # in total 18 triples
+    assert sum(1 for _ in g.triples((None, None, None))) == 18

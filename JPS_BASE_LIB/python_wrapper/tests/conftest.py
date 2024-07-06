@@ -26,7 +26,7 @@ from twa.conf import Config
 from twa.data_model import iris
 
 from twa.kg_operations import PySparqlClient
-from twa.kg_operations import PyDerivationClient
+from twa.kg_operations.derivation_client import PyDerivationClient
 
 from .agents.sparql_client_for_test import PySparqlClientForTest
 from .agents.agents_for_test import RNGAgent
@@ -219,35 +219,6 @@ def get_service_auth():
 
 # NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
 @pytest.fixture(scope="module")
-def initialise_clients(get_service_url, get_service_auth):
-    # Retrieve endpoint and auth for triple store
-    sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
-    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
-
-    # Create SparqlClient for testing
-    sparql_client = PySparqlClientForTest(
-        sparql_endpoint, sparql_endpoint,
-        kg_user=sparql_user, kg_password=sparql_pwd
-    )
-
-    # Create DerivationClient for creating derivation instances
-    derivation_client = PyDerivationClient(
-        DERIVATION_INSTANCE_BASE_URL,
-        sparql_endpoint, sparql_endpoint,
-        sparql_user, sparql_pwd,
-    )
-
-    # Delete all triples before anything
-    sparql_client.perform_update("""DELETE WHERE {?s ?p ?o.}""")
-
-    yield sparql_client, derivation_client
-
-    # Clear logger at the end of the test
-    clear_loggers()
-
-
-# NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
-@pytest.fixture(scope="module")
 def initialise_clients_and_agents(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
@@ -310,6 +281,30 @@ def initialise_triple_store():
         clear_loggers()
 
 
+# NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
+@pytest.fixture(scope="module")
+def initialise_clients(initialise_triple_store):
+    # Retrieve endpoint and auth for triple store
+    sparql_endpoint = initialise_triple_store
+
+    # Create SparqlClient for testing
+    sparql_client = PySparqlClientForTest(sparql_endpoint, sparql_endpoint)
+
+    # Create DerivationClient for creating derivation instances
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint
+    )
+
+    # Delete all triples before anything
+    sparql_client.perform_update("""DELETE WHERE {?s ?p ?o.}""")
+
+    yield sparql_client, derivation_client
+
+    # Clear logger at the end of the test
+    clear_loggers()
+
+
 @pytest.fixture(scope="module")
 def initialise_test_triples(initialise_triple_store):
     # Retrieve SPARQL endpoint
@@ -339,6 +334,9 @@ def initialise_agent(initialise_triple_store):
 
     # Create SparqlClient for testing
     sparql_client = PySparqlClientForTest(endpoint, endpoint)
+    print("=======================================================================")
+    print(endpoint)
+    print("=======================================================================")
 
     # Create DerivationClient for creating derivation instances
     derivation_client = PyDerivationClient(
@@ -467,7 +465,7 @@ def create_rng_agent(
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(__name__)
+        app=Flask(RNGAgent.__name__)
     )
 
 
@@ -490,7 +488,7 @@ def create_max_agent(
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(__name__)
+        app=Flask(MaxValueAgent.__name__)
     )
 
 
@@ -513,7 +511,7 @@ def create_min_agent(
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(__name__)
+        app=Flask(MinValueAgent.__name__)
     )
 
 
@@ -536,7 +534,7 @@ def create_diff_agent(
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(__name__)
+        app=Flask(DifferenceAgent.__name__)
     )
 
 
@@ -560,7 +558,7 @@ def create_diff_reverse_agent(
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
-        app=Flask(__name__)
+        app=Flask(DiffReverseAgent.__name__)
     )
 
 
@@ -576,7 +574,7 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
         kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT,
         kg_user=None if sparql_endpoint is not None else endpoint_config.KG_USERNAME,
         kg_password=None if sparql_endpoint is not None else endpoint_config.KG_PASSWORD,
-        agent_endpoint=None, # not a real derivation agent should should not be provided agent_endpoint for sync derivations
+        # this is not a real derivation agent, therefore should not be provided with agent_endpoint which is for sync derivations
         register_agent=False # the default value is True, so here we set it to False as we don't want to register the endpoint
     )
 
@@ -601,7 +599,7 @@ def create_exception_throw_agent(
         kg_password=agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(__name__),
+        app=Flask(ExceptionThrowAgent.__name__),
         email_recipient=agent_config.EMAIL_RECIPIENT,
         email_subject_prefix=agent_config.EMAIL_SUBJECT_PREFIX,
         email_username=agent_config.EMAIL_USERNAME,
