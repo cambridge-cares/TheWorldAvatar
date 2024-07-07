@@ -304,7 +304,7 @@ def initialise_derivations(
 
     if rng:
         rng_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
-            rng_agent.agentIRI, host_docker_internal_to_localhost(rng_agent.agentEndpoint),
+            rng_agent.agentIRI, host_docker_internal_to_localhost(rng_agent.syncDerivationEndpoint),
             pure_inputs, ONTODERIVATION_DERIVATION
         )
 
@@ -331,7 +331,7 @@ def initialise_derivations(
         # create maxvalue, minvalue via derivations
         if max:
             max_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
-                max_agent.agentIRI, host_docker_internal_to_localhost(max_agent.agentEndpoint),
+                max_agent.agentIRI, host_docker_internal_to_localhost(max_agent.syncDerivationEndpoint),
                 max_deriv_inputs, ONTODERIVATION_DERIVATION
             )
             all_instances.DERIV_MAX = max_derivation.getIri()
@@ -358,7 +358,7 @@ def initialise_derivations(
 
         if min:
             min_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
-                min_agent.agentIRI, host_docker_internal_to_localhost(min_agent.agentEndpoint),
+                min_agent.agentIRI, host_docker_internal_to_localhost(min_agent.syncDerivationEndpoint),
                 min_deriv_inputs, ONTODERIVATION_DERIVATION
             )
             all_instances.DERIV_MIN = min_derivation.getIri()
@@ -386,7 +386,7 @@ def initialise_derivations(
         if diff:
             # create difference via difference derivation
             diff_derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
-                diff_agent.agentIRI, host_docker_internal_to_localhost(diff_agent.agentEndpoint),
+                diff_agent.agentIRI, host_docker_internal_to_localhost(diff_agent.syncDerivationEndpoint),
                 diff_deriv_inputs, ONTODERIVATION_DERIVATION
             )
             all_instances.DERIV_DIFF = diff_derivation.getIri()

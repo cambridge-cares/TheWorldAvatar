@@ -69,11 +69,11 @@ DIFFREVERSEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.reverse.env.test')
 UPDATEENDPOINT_ENV = os.path.join(ENV_FILES_DIR,'endpoint.update.env.test')
 EXCEPTIONTHROW_ENV = os.path.join(ENV_FILES_DIR,'agent.exception.throw.env.test')
 
-RNGAGENT_SERVICE = config_derivation_agent(RNGAGENT_ENV).ONTOAGENT_SERVICE_IRI
-MAXAGENT_SERVICE = config_derivation_agent(MAXAGENT_ENV).ONTOAGENT_SERVICE_IRI
-MINAGENT_SERVICE = config_derivation_agent(MINAGENT_ENV).ONTOAGENT_SERVICE_IRI
-DIFFAGENT_SERVICE = config_derivation_agent(DIFFAGENT_ENV).ONTOAGENT_SERVICE_IRI
-DIFFREVERSEAGENT_SERVICE = config_derivation_agent(DIFFREVERSEAGENT_ENV).ONTOAGENT_SERVICE_IRI
+RNGAGENT_SERVICE = RNGAgent.agentIRI
+MAXAGENT_SERVICE = MaxValueAgent.agentIRI
+MINAGENT_SERVICE = MinValueAgent.agentIRI
+DIFFAGENT_SERVICE = DifferenceAgent.agentIRI
+DIFFREVERSEAGENT_SERVICE = DiffReverseAgent.agentIRI
 
 # ----------------------------------------------------------------------------------
 # Helper classes
@@ -367,7 +367,12 @@ def initialise_agent(initialise_triple_store):
     clear_loggers()
 
 
-@pytest.fixture(scope="module")
+# ----------------------------------------------------------------------------------
+# Function-scoped test fixtures
+# ----------------------------------------------------------------------------------
+
+# NOTE this scope is set to `function` so that all triples are cleared between local and docker tests
+@pytest.fixture(scope="function")
 def initialise_clients_and_agents_for_exception_throw(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
@@ -394,10 +399,6 @@ def initialise_clients_and_agents_for_exception_throw(get_service_url, get_servi
     # Clear logger at the end of the test
     clear_loggers()
 
-
-# ----------------------------------------------------------------------------------
-# Function-scoped test fixtures
-# ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope="function")
 def initialise_sparql_client(initialise_triple_store):
@@ -457,15 +458,12 @@ def create_rng_agent(
     else:
         agent_config = config_derivation_agent(env_file)
     return RNGAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
         kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        agent_endpoint_base_url=agent_config.ONTOAGENT_OPERATION_HTTP_BASE_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(RNGAgent.__name__)
     )
 
 
@@ -480,15 +478,12 @@ def create_max_agent(
     else:
         agent_config = config_derivation_agent(env_file)
     return MaxValueAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
         kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        agent_endpoint_base_url=agent_config.ONTOAGENT_OPERATION_HTTP_BASE_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(MaxValueAgent.__name__)
     )
 
 
@@ -503,15 +498,12 @@ def create_min_agent(
     else:
         agent_config = config_derivation_agent(env_file)
     return MinValueAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
         kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        agent_endpoint_base_url=agent_config.ONTOAGENT_OPERATION_HTTP_BASE_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(MinValueAgent.__name__)
     )
 
 
@@ -526,15 +518,12 @@ def create_diff_agent(
     else:
         agent_config = config_derivation_agent(env_file)
     return DifferenceAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
         kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        agent_endpoint_base_url=agent_config.ONTOAGENT_OPERATION_HTTP_BASE_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(DifferenceAgent.__name__)
     )
 
 
@@ -549,16 +538,13 @@ def create_diff_reverse_agent(
     else:
         agent_config = config_derivation_agent(env_file)
     return DiffReverseAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI,
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
         kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
         kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        agent_endpoint_base_url=agent_config.ONTOAGENT_OPERATION_HTTP_BASE_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
-        app=Flask(DiffReverseAgent.__name__)
     )
 
 
@@ -568,9 +554,7 @@ def create_update_endpoint(env_file: str = None, sparql_endpoint: str = None):
     else:
         endpoint_config = config_derivation_agent(env_file)
     return UpdateEndpoint(
-        agent_iri=endpoint_config.ONTOAGENT_SERVICE_IRI, # just placeholder value, not used by anything
         time_interval=endpoint_config.DERIVATION_PERIODIC_TIMESCALE, # just placeholder value, not used by anything
-        derivation_instance_base_url=endpoint_config.DERIVATION_INSTANCE_BASE_URL, # just placeholder value, not used by anything
         kg_url=sparql_endpoint if sparql_endpoint is not None else endpoint_config.SPARQL_QUERY_ENDPOINT,
         kg_user=None if sparql_endpoint is not None else endpoint_config.KG_USERNAME,
         kg_password=None if sparql_endpoint is not None else endpoint_config.KG_PASSWORD,
@@ -584,22 +568,18 @@ def create_exception_throw_agent(
     sparql_endpoint: str = None,
     register_agent: bool = None,
     in_docker: bool = True,
-    random_agent_iri: bool = False,
 ):
     if env_file is None:
         agent_config = config_derivation_agent()
     else:
         agent_config = config_derivation_agent(env_file)
     return ExceptionThrowAgent(
-        agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else "http://"+str(uuid.uuid4()),
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-        derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
         kg_user=agent_config.KG_USERNAME,
         kg_password=agent_config.KG_PASSWORD,
-        agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+        agent_endpoint_base_url=agent_config.ONTOAGENT_OPERATION_HTTP_BASE_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
-        app=Flask(ExceptionThrowAgent.__name__),
         email_recipient=agent_config.EMAIL_RECIPIENT,
         email_subject_prefix=agent_config.EMAIL_SUBJECT_PREFIX,
         email_username=agent_config.EMAIL_USERNAME,

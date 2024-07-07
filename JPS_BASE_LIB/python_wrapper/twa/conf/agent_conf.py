@@ -3,6 +3,9 @@ from collections import ChainMap
 from dotenv import dotenv_values
 import os
 
+from twa.data_model.iris import TWA_BASE_URL
+
+
 # modified based on https://blog.doppler.com/environment-variables-in-python
 
 
@@ -11,7 +14,7 @@ class AppConfigError(Exception):
 
 
 def _parse_bool(val: Union[str, bool]) -> bool:  # pylint: disable=E1136
-    return val if type(val) == bool else val.lower() in ['true', 'yes', '1']
+    return val if isinstance(val, bool) else val.lower() in ['true', 'yes', '1']
 
 #################################
 ## Config that can be extended ##
@@ -79,7 +82,6 @@ class AgentConfig(Config):
     This is a config class for the DerivationAgent.
     It is a subclass of Config and can be extended to provide custom configurations for developed agents.
     It has the following fields:
-      - ONTOAGENT_SERVICE_IRI: The IRI of the OntoAgent:Service for the configured agent.
       - DERIVATION_PERIODIC_TIMESCALE: The time scale of the periodic job that monitors asynchronous derivations.
       - DERIVATION_INSTANCE_BASE_URL: The base URL of the derivation instances that to be created by this agent.
       - SPARQL_QUERY_ENDPOINT: The SPARQL endpoint to be used for querying the knowledge graph.
@@ -89,7 +91,7 @@ class AgentConfig(Config):
       - FILE_SERVER_ENDPOINT: The endpoint of the file server.
       - FILE_SERVER_USERNAME: The username to access the file server.
       - FILE_SERVER_PASSWORD: The password to access the file server.
-      - ONTOAGENT_OPERATION_HTTP_URL: The URL of the OntoAgent:Operation HTTP endpoint.
+      - ONTOAGENT_OPERATION_HTTP_BASE_URL: The URL of the OntoAgent:Operation HTTP endpoint.
       - REGISTER_AGENT: Whether to register the OntoAgent instance of the configured agent to knowledge graph.
       - MAX_THREAD_MONITOR_ASYNC_DERIVATIONS: The maximum number of thread can be invoked to monitor async derivations at the same time, the default value is 1.
       - EMAIL_RECIPIENT: The list of recipients of email notifications during agent operation, multiple email address should be seperated by semicolon, e.g. foo.1@bar.com;foo.2@bar.com.
@@ -98,18 +100,17 @@ class AgentConfig(Config):
       - EMAIL_AUTH_JSON_PATH: The json file path to the OAuth2 file of the gmail account defined by EMAIL_USERNAME.
       - EMAIL_START_END_ASYNC_DERIVATIONS: The boolean flag to choose whether to send email notification at the start and end of process an async derivation, the default value is False.
     """
-    ONTOAGENT_SERVICE_IRI: str
     DERIVATION_PERIODIC_TIMESCALE: int
-    DERIVATION_INSTANCE_BASE_URL: str
+    DERIVATION_INSTANCE_BASE_URL: str = TWA_BASE_URL
     SPARQL_QUERY_ENDPOINT: str
-    SPARQL_UPDATE_ENDPOINT: str
-    KG_USERNAME: str
-    KG_PASSWORD: str
-    FILE_SERVER_ENDPOINT: str
-    FILE_SERVER_USERNAME: str
-    FILE_SERVER_PASSWORD: str
-    ONTOAGENT_OPERATION_HTTP_URL: str
-    REGISTER_AGENT: bool
+    SPARQL_UPDATE_ENDPOINT: str = ''
+    KG_USERNAME: str = ''
+    KG_PASSWORD: str = ''
+    FILE_SERVER_ENDPOINT: str = ''
+    FILE_SERVER_USERNAME: str = ''
+    FILE_SERVER_PASSWORD: str = ''
+    ONTOAGENT_OPERATION_HTTP_BASE_URL: str = 'http://localhost:5000/'
+    REGISTER_AGENT: bool = True
     MAX_THREAD_MONITOR_ASYNC_DERIVATIONS: int = 1
     EMAIL_RECIPIENT: str = ''
     EMAIL_SUBJECT_PREFIX: str = ''

@@ -3,7 +3,7 @@ from typing import Type, TypeVar, Union, List
 from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from multiprocessing import Process
 import traceback
 import yagmail
@@ -17,6 +17,7 @@ from twa.kg_operations import PySparqlClient
 from twa.kg_operations.derivation_client import PyDerivationClient
 from twa.data_model.base_ontology import BaseClass
 from twa.data_model.derivation import DerivationInputs, DerivationOutputs
+from twa.data_model.iris import TWA_BASE_URL
 from twa.exception import PythonException
 
 # see https://mypy.readthedocs.io/en/latest/generics.html#type-variable-upper-bound
@@ -33,9 +34,7 @@ class FlaskConfig(object):
 class DerivationAgent(ABC):
     def __init__(
         self,
-        agent_iri: str,
         time_interval: int,
-        derivation_instance_base_url: str,
         kg_url: str,
         kg_update_url: str = None,
         kg_user: str = None,
@@ -43,9 +42,9 @@ class DerivationAgent(ABC):
         fs_url: str = None,
         fs_user: str = None,
         fs_password: str = None,
-        app: Flask = None,
+        derivation_instance_base_url: str = TWA_BASE_URL,
         flask_config: FlaskConfig = FlaskConfig(),
-        agent_endpoint: str = "http://localhost:5000/",
+        agent_endpoint_base_url: str = "http://localhost:5000/",
         register_agent: bool = True,
         max_thread_monitor_async_derivations: int = 1,
         email_recipient: str = '',
@@ -53,15 +52,13 @@ class DerivationAgent(ABC):
         email_username: str = '',
         email_auth_json_path: str = '',
         email_start_end_async_derivations: bool = False,
-        logger_name: str = "dev"
+        logger_for_dev: bool = True,
     ):
         """
             This method initialises the instance of DerivationAgent.
 
             Args:
-                agent_iri (str): OntoAgent:Service IRI of the derivation agent, an example: "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
                 time_interval (int): time interval between two runs of derivation monitoring job (in SECONDS)
-                derivation_instance_base_url (str): namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
                 kg_url (str): SPARQL query endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
                 kg_update_url (str): SPARQL update endpoint, will be set to the same value as kg_url if not provided, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
                 kg_user (str): username used to access the SPARQL query/update endpoint specified by kg_url/kg_update_url
@@ -69,9 +66,9 @@ class DerivationAgent(ABC):
                 fs_url (str): file server endpoint, an example: "http://localhost:8080/FileServer/"
                 fs_user (str): username used to access the file server endpoint specified by fs_url
                 fs_password (str): password that set for the fs_user used to access the file server endpoint specified by fs_url
-                app (Flask): flask app object, an example: app = Flask(__name__)
+                derivation_instance_base_url (str): namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
                 flask_config (FlaskConfig): configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
-                agent_endpoint (str): data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:5000/endpoint"
+                agent_endpoint_base_url (str): data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:5000/endpoint"
                 register_agent (bool): boolean value, whether to register the agent to the knowledge graph
                 max_thread_monitor_async_derivations (int): maximum number of threads that to be used for monitoring async derivations
                 email_recipient (str): recipients of email notification seperated by semicolon, e.g. "abc@email.com;def@email.com"
@@ -79,7 +76,7 @@ class DerivationAgent(ABC):
                 email_username (str): the username to be used as the sender of the email
                 email_auth_json_path (str): file path to the auth json for the `email_username`
                 email_start_end_async_derivations (bool): a boolean flag indicating whether to send email notification at the start and end of processing async derivations
-                logger_name (str): logger names for getting correct loggers from agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_wrapper/twa/agentlogging/logging.py
+                logger_for_dev (bool): logger for agents in development or production
         """
 
         # create a JVM module view and use it to import the required java classes
@@ -89,7 +86,7 @@ class DerivationAgent(ABC):
         jpsBaseLibGW.importPackages(self.jpsBaseLib_view, "uk.ac.cam.cares.jps.base.derivation.*")
 
         # initialise flask app with its configuration
-        self.app = app if bool(app) else Flask(self.__class__.__name__)
+        self.app = Flask(self.__class__.__name__)
         self.app.config.from_object(flask_config)
 
         # initialise flask scheduler and assign time interval for monitor_async_derivations job
@@ -98,8 +95,8 @@ class DerivationAgent(ABC):
         self.max_thread_monitor_async_derivations = max_thread_monitor_async_derivations
 
         # assign IRI and HTTP URL of the agent
-        self.agentIRI = agent_iri
-        self.agentEndpoint = agent_endpoint + 'derivation' if agent_endpoint.endswith('/') else agent_endpoint + '/derivation'
+        # self.agentIRI
+        self.syncDerivationEndpoint = agent_endpoint_base_url + 'derivation' if agent_endpoint_base_url.endswith('/') else agent_endpoint_base_url + '/derivation'
 
         # assign KG related information
         self.kgUrl = kg_url
@@ -129,7 +126,7 @@ class DerivationAgent(ABC):
         self.sparql_client = None
 
         # initialise the logger
-        self.logger = agentlogging.get_logger(logger_name)
+        self.logger = agentlogging.get_logger('dev' if logger_for_dev else 'prod')
 
         # initialise the email object and email_start_end_async_derivations flag
         if all([bool(param) for param in [email_recipient, email_username, email_auth_json_path]]):
@@ -146,14 +143,19 @@ class DerivationAgent(ABC):
             self.register_agent_in_kg()
         except Exception as e:
             self.logger.error(
-                "Failed to register the agent <{}> to the KG <{}>. Error: {}".format(self.agentIRI, self.kgUrl, e),
+                "Failed to register the agent <{}> to the KG <{}>. Error: {}".format(self.__class__.agentIRI, self.kgUrl, e),
                 stack_info=True, exc_info=True)
             raise e
 
         self.logger.info(
             "DerivationAgent <%s> is initialised to monitor derivations in triple store <%s> with a time interval of %d seconds." % (
-                self.agentIRI, self.kgUrl, self.time_interval)
+                self.__class__.agentIRI, self.kgUrl, self.time_interval)
         )
+
+    @classmethod
+    @property
+    def agentIRI(cls):
+        return urljoin(TWA_BASE_URL, cls.__name__)
 
     def periodical_job(func):
         """This method is used to start a periodic job. This should be used as a decorator (@Derivation.periodical_job) for the method that needs to be executed periodically."""
@@ -233,16 +235,16 @@ class DerivationAgent(ABC):
             output_concepts = self.agent_output_concepts
             if not isinstance(input_concepts, list) or not isinstance(output_concepts, list):
                 raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: Input and output concepts must be lists. Received: {} (type: {}) and {} (type: {})".format(
-                    self.agentIRI, self.kgUrl, input_concepts, type(input_concepts), output_concepts, type(output_concepts)))
+                    self.__class__.agentIRI, self.kgUrl, input_concepts, type(input_concepts), output_concepts, type(output_concepts)))
             if len(input_concepts) == 0 or len(output_concepts) == 0:
-                raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.agentIRI, self.kgUrl))
+                raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.__class__.agentIRI, self.kgUrl))
             input_concepts_iris = [o if isinstance(o, str) else o.get_rdf_type() for o in input_concepts]
             output_concepts_iris = [o if isinstance(o, str) else o.get_rdf_type() for o in output_concepts]
-            self.derivation_client.createOntoAgentInstance(self.agentIRI, self.agentEndpoint, input_concepts_iris, output_concepts_iris)
+            self.derivation_client.createOntoAgentInstance(self.__class__.agentIRI, self.syncDerivationEndpoint, input_concepts_iris, output_concepts_iris)
             self.logger.info("Agent <%s> is registered to the KG <%s> with input signature %s and output signature %s." % (
-                self.agentIRI, self.kgUrl, input_concepts, output_concepts))
+                self.__class__.agentIRI, self.kgUrl, input_concepts, output_concepts))
         else:
-            self.logger.info("Flag register_agent is False. Agent <%s> is NOT registered to the KG <%s>." % (self.agentIRI, self.kgUrl))
+            self.logger.info("Flag register_agent is False. Agent <%s> is NOT registered to the KG <%s>." % (self.__class__.agentIRI, self.kgUrl))
 
     @property
     @classmethod
@@ -464,8 +466,8 @@ class DerivationAgent(ABC):
             self.time_interval))
 
         url_pattern_name = f'{self.__class__.__name__}_handle_sync_derivations'
-        self.add_url_pattern(urlparse(self.agentEndpoint).path, url_pattern_name, self.handle_sync_derivations, methods=['POST'])
-        self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
+        self.add_url_pattern(urlparse(self.syncDerivationEndpoint).path, url_pattern_name, self.handle_sync_derivations, methods=['POST'])
+        self.logger.info("Synchronous derivations can be handled at endpoint: " + self.syncDerivationEndpoint)
 
     def start_all_periodical_job(self):
         """This method starts all scheduled periodical jobs."""

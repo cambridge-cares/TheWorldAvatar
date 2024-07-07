@@ -24,7 +24,6 @@ def test_exception_throw(initialise_clients_and_agents_for_exception_throw, loca
         sparql_client.query_endpoint,
         True,
         in_docker=False,
-        random_agent_iri=local_test,
     )
 
     # Create derivation instance given above information, the timestamp of this derivation is 0
