@@ -8,6 +8,7 @@
     align-items: center;
 }
 
-.dashContainer h1 {
-    font-size: var(--font-size-h1);
+.dashboard {
+    height: 95%;
+    width: 95%;
 }

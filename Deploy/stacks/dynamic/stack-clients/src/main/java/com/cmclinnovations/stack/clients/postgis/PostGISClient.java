@@ -12,19 +12,16 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
-public class PostGISClient extends ContainerClient implements ClientWithEndpoint {
+public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
 
     public static final String DEFAULT_DATABASE_NAME = "postgres";
 
     public static final String DEFAULT_SCHEMA_NAME = "public";
 
     private static final Logger logger = LoggerFactory.getLogger(PostGISClient.class);
-
-    protected final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static PostGISClient instance = null;
 
@@ -36,12 +33,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     }
 
     protected PostGISClient() {
-        postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
-    }
-
-    @Override
-    public PostGISEndpointConfig getEndpoint() {
-        return postgreSQLEndpoint;
+        super(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 
     private Connection getDefaultConnection() throws SQLException {
@@ -58,7 +50,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 // Database already exists error
             } else {
                 throw new RuntimeException("Failed to create database '" + databaseName
-                        + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL(DEFAULT_DATABASE_NAME)
+                        + "' on the server with JDBC URL '" + getEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
                         + "'.", ex);
             }
         }
@@ -74,7 +66,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to create extensions in database '" + databaseName
-                    + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
+                    + "' on the server with JDBC URL '" + getEndpointConfig().getJdbcURL("postgres") + "'.", ex);
         }
     }
 
@@ -88,7 +80,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 // Database doesn't exist error
             } else {
                 throw new RuntimeException("Failed to drop database '" + databaseName
-                        + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL(DEFAULT_DATABASE_NAME)
+                        + "' on the server with JDBC URL '" + getEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
                         + "'.", ex);
             }
         }
@@ -99,9 +91,10 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     }
 
     public RemoteRDBStoreClient getRemoteStoreClient(String database) {
-        return new RemoteRDBStoreClient(postgreSQLEndpoint.getJdbcURL(database),
-                postgreSQLEndpoint.getUsername(),
-                postgreSQLEndpoint.getPassword());
+        PostGISEndpointConfig endpoint = getEndpointConfig();
+        return new RemoteRDBStoreClient(endpoint.getJdbcURL(database),
+                endpoint.getUsername(),
+                endpoint.getPassword());
     }
 
     public void resetSchema(String database) {
@@ -119,7 +112,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         execId = createComplexCommand(postGISContainerId,
-                "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", databaseName, "-w")
+                "psql", "-U", getEndpointConfig().getUsername(), "-d", databaseName, "-w")
                 .withHereDocument(
                         "INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) VALUES ("
                                 + srid + ",'"

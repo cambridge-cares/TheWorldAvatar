@@ -1,0 +1,12 @@
+{
+    "name": "sea-level",
+    "externalDatasets": [
+        "buildings-layer",
+        "culture",
+        "landplot",
+        "population",
+        "routing",
+        "tbox",
+        "tree"
+    ]
+}

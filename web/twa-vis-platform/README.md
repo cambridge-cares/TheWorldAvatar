@@ -6,6 +6,15 @@ The contents of this repository have been structured into Development and Produc
 
 A tutorial including a sample directory setup has been included in the [example](./example/) directory. Please have a look if you are looking to setup on this new platform.
 
+## Table of Contents
+- [The World Avatar (TWA) Visualisation Platform](#the-world-avatar-twa-visualisation-platform)
+  - [Table of Contents](#table-of-contents)
+  - [1. Development](#1-development)
+  - [2. Production](#2-production)
+    - [2.1 Docker Deployment](#21-docker-deployment)
+    - [2.2 Stack Deployment](#22-stack-deployment)
+  - [3. Release](#3-release)
+
 ## 1. Development
 
 Information on the source code and its architecture can be found in the [code](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/code) directory. Briefly, the TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/) project written using [TypeScript](https://www.typescriptlang.org/), utilising both client and server-side codes.

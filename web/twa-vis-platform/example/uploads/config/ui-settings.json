@@ -6,7 +6,6 @@
     "modules": {
         "landing": true,
         "help": true,
-        "map": true,
-        "dashboard": false
+        "map": true
     }
 }

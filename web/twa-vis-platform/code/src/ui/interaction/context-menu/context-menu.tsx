@@ -2,7 +2,7 @@
 
 import styles from './context-menu.module.css';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { ReduxState } from 'app/store';
@@ -10,26 +10,19 @@ import { addItem, toggleItem } from 'state/context-menu-slice';
 import ContextItem, { ContextItemDefinition } from './context-item';
 
 // Incoming properties type
-type ContextMenuProps = {
-    x: number,
-    y: number,
-    showContextMenu: boolean,
-    items?: ContextItemDefinition[],
-    addItem?: (item: ContextItemDefinition) => void,
-    toggleItem?: (name: string) => void
-}
-
-// Internal state
-type ContextMenuState = {
-    xPos: string, 
-    yPos: string,
-    show: boolean
+interface ContextMenuProps {
+  x: number,
+  y: number,
+  showContextMenu: boolean,
+  items?: ContextItemDefinition[],
+  addItem?: (item: ContextItemDefinition) => void,
+  toggleItem?: (name: string) => void
 }
 
 export const navbarItem: ContextItemDefinition = {
-    name: "Show Navigation Bar",
-    description: "Toggle visibility of global navbar.",
-    toggled: true
+  name: "Show Navigation Bar",
+  description: "Toggle visibility of global navbar.",
+  toggled: true
 }
 
 // Time the RMB was pressed down
@@ -42,98 +35,88 @@ let rmbDownTime: number;
  * The definition (and current toggled state) of each ContextItem is stored within
  * the global Redux state so it that it persists across the application lifecycle.
  */
-class ContextMenu extends React.Component<ContextMenuProps, ContextMenuState> {
+function ContextMenu(props: Readonly<ContextMenuProps>) {
+  const [xPos, setXPos] = useState<string>(`${props.x}px`);
+  const [yPos, setYPos] = useState<string>(`${props.y}px`);
+  const [showMenu, setShowMenu] = useState<boolean>(props.showContextMenu);
 
-    // Default state
-    state = {
-        xPos: `${this.props.x}px`,
-        yPos: `${this.props.y}px`,
-        show: this.props.showContextMenu
+  // On left-click
+  const handleLeftClick = () => {
+    if (showMenu) setShowMenu(false);
+  }
+
+  // On right-click
+  const handleRightClick = (e: MouseEvent) => {
+    e.preventDefault();
+    setXPos(`${e.pageX}px`);
+    setYPos(`${e.pageY}px`);
+    setShowMenu(true);
+  }
+
+  const handleItemClick = (name: string) => {
+    props.toggleItem(name);
+  }
+
+  // Executes the following when the component is first mounted
+  useEffect(() => {
+    // Add the defaults at the start
+    props.addItem(navbarItem);
+    // Add event listeners and actions
+    document.addEventListener("click", handleLeftClick);
+
+    document.onmousedown = (event) => {
+      if (event.button === 2) rmbDownTime = Date.now();
     }
 
-    // On render
-    componentDidMount() {
-        document.addEventListener("click", this.handleLeftClick);
-        this.props.addItem(navbarItem);
-
-        document.onmousedown = (event) => {
-            if(event.button === 2) rmbDownTime = Date.now();
+    document.onmouseup = (event) => {
+      if (event.button === 2) {
+        const duration = Date.now() - rmbDownTime;
+        if (duration < 500) {
+          handleRightClick(event);
         }
-
-        document.onmouseup = (event) => {
-            if(event.button === 2) {
-                const duration = Date.now() - rmbDownTime;
-                if(duration < 500) {
-                    this.handleRightClick(event);
-                }
-            }
-        }
+      }
     }
+    // When component is unmounted, remove the following
+    return () => {
+      document.removeEventListener("click", handleLeftClick);
+    };
+  }, []);
 
-    // On dispose
-    componentWillUnmount() {
-        document.removeEventListener("click", this.handleLeftClick);
-    }
+  if (!showMenu || props.items == null || props.items.length === 0) {
+    return null;
+  }
 
-    // On left-click
-    handleLeftClick = () => {
-        if (this.state.show) this.setState({ show: false });
-    }
+  return (
+    <div
+      className={styles.menu}
+      style={{
+        position: "absolute",
+        top: yPos,
+        left: xPos
+      }}>
 
-    // On right-click
-    handleRightClick = (e: MouseEvent) => {
-        e.preventDefault();
-        this.setState({
-            xPos: `${e.pageX}px`,
-            yPos: `${e.pageY}px`,
-            show: true
-        });
-    }
-
-    handleItemClick = (name: string) => {
-        this.props.toggleItem(name);
-    }
-
-    // Return element(s) for display
-    render() {
-        const { show, xPos, yPos } = this.state;
-
-        if(!show || this.props.items == null || this.props.items.length === 0){
-            return null;
-        }
-
-        return (
-            <div
-                className={styles.menu}
-                style={{
-                    position: "absolute",
-                    top: yPos,
-                    left: xPos
-                }}>
-
-                {this.props.items.map((item) => (
-                    <ContextItem
-                        key={item.name}
-                        name={item.name}
-                        description={item.description ?? ""}
-                        toggled={item.toggled}
-                        callback={(name: string) => {
-                            this.handleItemClick(name);
-                        }}
-                    />
-                ))}
-            </div>
-        );
-    }
+      {props.items.map((item) => (
+        <ContextItem
+          key={item.name}
+          name={item.name}
+          description={item.description ?? ""}
+          toggled={item.toggled}
+          callback={(name: string) => {
+            handleItemClick(name);
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
 // Convert redux state to incoming props
 const mapStateToProps = (state: ReduxState) => ({
-    items: state.contextMenu.items
+  items: state.contextMenu.items
 });
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapDispatchToProps = (dispatch: any) => ({
-    addItem: (item: ContextItemDefinition) => dispatch(addItem(item)),
-    toggleItem: (name: string) => dispatch(toggleItem(name))
+  addItem: (item: ContextItemDefinition) => dispatch(addItem(item)),
+  toggleItem: (name: string) => dispatch(toggleItem(name))
 });
 export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu);

@@ -10,16 +10,16 @@ import { formatAppUrl } from 'utils/client-utils';
  */
 export function addIcons(map: Map, iconSettings: IconSettings) {
   const promises: Promise<void>[] = [];
-
-  for (const key of Object.keys(iconSettings)) {
-    const promise = new Promise<void>(function (resolve) {
-      loadIcon(map, key, iconSettings[key], function () {
-        resolve();
+  if (iconSettings) {
+    for (const key of Object.keys(iconSettings)) {
+      const promise = new Promise<void>(function (resolve) {
+        loadIcon(map, key, iconSettings[key], function () {
+          resolve();
+        });
       });
-    });
-    promises.push(promise);
+      promises.push(promise);
+    }
   }
-
   return Promise.all(promises).then(() => {
     console.info("All custom image icons have been loaded and registered.");
   });

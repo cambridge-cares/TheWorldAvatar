@@ -98,7 +98,31 @@ public class GDALClient extends ContainerClient {
             tmpDir.copyFrom(Path.of(dirPath));
             String gdalContainerId = getContainerId(GDAL);
             Multimap<String, String> foundGeoFiles = findGeoFiles(gdalContainerId, tmpDir.toString());
-            for (Collection<String> filesOfType : foundGeoFiles.asMap().values()) {
+            for (var entry : foundGeoFiles.asMap().entrySet()) {
+                Collection<String> filesOfType = entry.getValue();
+
+                switch (entry.getKey()) {
+                    case "XLSX":
+                    case "XLS":
+                        Collection<String> filesToRemove = new ArrayList<>();
+                        Collection<String> filesToAdd = new ArrayList<>();
+                        for (String filePath : filesOfType) {
+                            String newDirPath = excelToCSV(filePath);
+                            filesToRemove.add(filePath);
+                            try (Stream<Path> files = Files.list(Path.of(newDirPath))) {
+                                filesToAdd.addAll(files.map(Object::toString)
+                                        .collect(Collectors.toList()));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        filesOfType.removeAll(filesToRemove);
+                        filesOfType.addAll(filesToAdd);
+                        break;
+                    default:
+                        break;
+                }
+
                 for (String filePath : filesOfType) {
                     uploadVectorToPostGIS(database, layerName, filePath, options, append);
                     // If inserting multiple sources into a single layer then ensure subsequent
@@ -135,12 +159,9 @@ public class GDALClient extends ContainerClient {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
-        String execId = createComplexCommand(containerId, options.appendToArgs(layerName, "ogr2ogr",
-                "-f", "PostgreSQL",
-                computePGSQLSourceString(database),
-                filePath,
-                "--config", "OGR_TRUNCATE", append ? "NO" : "YES",
-                "--config", "PG_USE_COPY", "YES"))
+        String execId = createComplexCommand(containerId, options.generateCommand(
+                layerName, append,
+                filePath, computePGSQLSourceString(database)))
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .withEnvVars(options.getEnv())
@@ -149,8 +170,28 @@ public class GDALClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
+    private String excelToCSV(String filePath) {
+        String containerId = getContainerId(GDAL);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        String outputDirectory = FileUtils.removeExtension(filePath);
+        String execId = createComplexCommand(containerId, "ogr2ogr",
+                "-oo", "HEADERS=FORCE",
+                "-f", "CSV",
+                outputDirectory, // all sheets get put as individual csv into directory with same name as input
+                                 // file
+                filePath)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .withEvaluationTimeout(300)
+                .exec();
+        handleErrors(errorStream, execId, logger);
+        return outputDirectory;
+    }
+
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
-            String dirPath, GDALTranslateOptions gdalOptions, MultidimSettings mdimSettings, boolean append) {
+            String dirPath, GDALOptions<?> gdalOptions, MultidimSettings mdimSettings, boolean append) {
 
         String gdalContainerId = getContainerId(GDAL);
         String postGISContainerId = getContainerId(POSTGIS);
@@ -204,7 +245,7 @@ public class GDALClient extends ContainerClient {
                 GeoServerClient.getInstance().addProjectionsToGeoserver(geoserverContainerID, wktString, srid);
             } catch (NullPointerException ex) {
                 throw new RuntimeException(
-                        "Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to gdalTranslateOptions", ex);
+                        "Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to GDAL...Options node.", ex);
             }
         }
     }
@@ -389,7 +430,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private List<String> convertRastersToGeoTiffs(String gdalContainerId, String databaseName, String schemaName,
-            String layerName, TempDir tempDir, GDALTranslateOptions options, MultidimSettings mdimSettings) {
+            String layerName, TempDir tempDir, GDALOptions<?> options, MultidimSettings mdimSettings) {
 
         Multimap<String, String> foundRasterFiles = findGeoFiles(gdalContainerId, tempDir.toString());
         Set<Path> createdDirectories = new HashSet<>();
@@ -418,7 +459,7 @@ public class GDALClient extends ContainerClient {
 
     private Collection<String> processFile(String gdalContainerId, String inputFormat, String filePath,
             String databaseName, String schemaName, String layerName, TempDir tempDir,
-            GDALTranslateOptions options, MultidimSettings mdimSettings, Set<Path> createdDirectories) {
+            GDALOptions<?> options, MultidimSettings mdimSettings, Set<Path> createdDirectories) {
 
         String postgresOutputPath;
         String geotiffsOutputPath = generateOutFilePath(tempDir.toString(), databaseName, schemaName, layerName,
@@ -472,13 +513,11 @@ public class GDALClient extends ContainerClient {
     }
 
     private List<String> generateGeoTiffRaster(String gdalContainerId, String inputFormat, String filePath,
-            String postgresOutputPath, GDALTranslateOptions options) {
+            String postgresOutputPath, GDALOptions<?> options) {
 
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        String execId = createComplexCommand(gdalContainerId, options.appendToArgs("gdal_translate",
-                "-if", inputFormat,
-                // https://gdal.org/drivers/raster/cog.html#raster-cog
-                "-of", "COG",
+        String execId = createComplexCommand(gdalContainerId, options.generateCommand(
+                inputFormat,
                 filePath,
                 postgresOutputPath))
                 .withErrorStream(errorStream)
