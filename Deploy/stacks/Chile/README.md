@@ -109,7 +109,7 @@ The adminer at:
 * http://<IP_ADDRESS>:<PORT_NUMBER>/adminer/ui/
 * Access with: Your postgis_password, username postgres, server <STACK_NAME>-postgis:5432 for example chileViv4-postgis:5432, system PostgreSQL
 
-### Step 7. If you need to delete the stack before that:
+### Step 7. If you need to delete the stack:
 
         ./stack.sh rm <STACK_NAME> -v
 
