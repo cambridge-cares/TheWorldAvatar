@@ -41,7 +41,7 @@ The agent will be located at port 1080.
 ### Part of the stack
 Open up the command prompt in the same directory as this README, run the command below to build the docker image:
 ```
-docker compose build
+docker build -t pips-timeseries-agent:1.0.0 .
 ```
 Copy `stack-manager-input-config-service/pips-timeseries-agent.json` to the services folder under your stack-manager directory and start up the stack.
 
@@ -58,7 +58,12 @@ and it should return:
 {"Result":"Agent is ready to receive requests."}
 
 #### TimeSeries route
-This request checks whether the requestor is authorized before returning a JSONObject (e.g. timeseries data or invalid token message or unauthorized message). At the moment, the agent is only able to return a JSONObject containing a message indicating either "invalid token", "unauthorized" or "authorized". The request has the following format:
+This request checks whether the requestor is authorized before returning a JSONObject (e.g. timeseries data or invalid token message or unauthorized message). The request has the following format:
 ```
-curl -H "Authorization: Bearer YOUR_TOKEN_HERE" http://localhost:1080/pips-timeseries-agent/timeseries
+curl -H "Authorization: Bearer YOUR_TOKEN_HERE" http://localhost:1080/pips-timeseries-agent/timeseries?source=<schema>&num=<integer>
 ```
+
+The following parameters will need to be provided:
+- A valid token obtained from Keycloak, replace `YOUR_TOKEN_HERE` with the valid token
+- The source from which to retrieve the data from, the source refers to the schema in which the tables are located under. Replace `<schema>` with the appropriate value.
+- The number of latest readings to retrieve from the database. Replace `<integer>` with the desired number.
