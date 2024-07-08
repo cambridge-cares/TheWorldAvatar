@@ -1,12 +1,12 @@
-# Visualisation of the UK Base World
+# Visualisation of Augmented UK
 
-This directory contains the documentation, configuration files, and associated scripts for a visualisation of The World Avatar's base world (focussing on assets within the United Kingdom). Whilst other data and capabilities related to the base world may exist elsewhere in The World Avatar, this documentation only covers the steps needed to acquire, upload, and visualise data used in the live UK Base World visualisation currently available from [The World Avatar's website](https://theworldavatar.io).
+This directory contains the documentation, configuration files, and associated scripts for a visualisation of The World Avatar's digital twin (focussing on assets within the United Kingdom). Whilst other data and capabilities related to the project may exist elsewhere in The World Avatar, this documentation only covers the steps needed to acquire, upload, and visualise data used in the deployed visualisation currently available from [The World Avatar's website](https://theworldavatar.io).
 
 This documentation was written in August of 2023. The data available from the listed sources may have changed since this time, hopefully the processes are still applicable to any new data sets.
 
 ## Gathering data
 
-Data for this visualisation has been gathered from the sources listed on the [Data](./docs/data.md) page; the original raw files, as well as any processed files, have also been archived at CMCL on their Pavilion file server. Hopefully this process is repeatable with future versions of these data sets, if not then the archived data can be used as a fall-back. If the visualisation is updated with future versions of these data, the raw and processed versions of said files should also be archived.
+Data for this visualisation has been gathered from the sources listed on the [Data](./docs/data.md) page; the original raw files, as well as any processed files, have also been archived at CMCL on the Pavilion file server. Hopefully this process is repeatable with future versions of these data sets, if not then the archived data can be used as a fall-back. If the visualisation is updated with future versions of these data, the raw and processed versions of said files should also be archived.
 
 As a base world visualisation, more data sources will be added in future; as and when they are, they should be documented within the aforementioned page.
 
@@ -20,50 +20,45 @@ Once the data uploader has finished running, you should be able to log into the 
 
 ## Creating a visualisation
 
-A visualisation has also been created for the UK Base World, the `visualisation/webspace` directory contains the files required and are copied into a `twa-vf` container for hosting during the start-up process. As with all TWA-VF visualisations, the `data.json` file defines the data to be loaded on the visualisation, and in what grouping. Users running the visualisation in a new location may need to adjust the URLs listed in this file.
+The project has now been updated to use the new `twa-vf` version 5. The `uploads` directory contains the files required to start a web visualisation using the docker image. As with all TWA-VF visualisations, the `data.json` file defines the data to be loaded on the visualisation, and in what grouping. Users running the visualisation in a new location may need to adjust the URLs listed in this file.
 
-For more information on how visualisations are created and configured using the TWA-VF, please read its [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework).
+For more information on how visualisations are created and configured using the TWA-VF, please read its [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-platform).
 
-Note that this __may__ require building a local copy of the `twa-vf` Docker image. If so, please run the `build.sh` script from within the `/web/twa-vis-framework/library` directory.
+Note that this __may__ require building a local copy of the `twa-vf` Docker image. If so, please run the `docker compose build` command from within the `/web/twa-vis-platform/` directory.
 
 ### Feature info agent
 
-To support metadata for the visualisation, the stack for this visualisation has been configured to also launch an instance of the [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent). The appropriate configuration file and query files have been created and will be copied into the relevant directories when using the `./scripts/start.sh` script to launch the stack (see below).
+To support metadata for the visualisation, the stack for this visualisation has been configured to also launch an instance of the [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent). The appropriate configuration file and query files have been created and need to be copied into the relevant directories.
 
 ### Grafana dashboard
 
-In addition, this stack will also launch a Grafana container to host associated dashboards. Whilst empty at first, the `./scripts/start.sh` script will upload pre-configured data source and dashboard definitions to provide a number of default analytic dashboards.
+In addition, this stack will also contain a Grafana container to host associated dashboards. Whilst empty at first, the pre-configured data source and dashboard definitions to provide a number of default analytic dashboards. Instructions on the configuration of the dashboard are in the following section.
 
 ## Running the stack
 
-The UK Base World visualisation has been put together as a single stack with no requirements on any external services (outside of standard JavaScript libraries). Both the data required for the visualisation, and the visualisation itself are hosted within the stack instance. For more information on the stack, read the [documentation here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+The UK Base World visualisation has been put together as a single stack with no requirements on any external services. Both the data required for the visualisation, and the visualisation itself are hosted within the stack instance. For more information on the stack, read the [documentation here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
-For ease of use, a script has been provided to spin up the stack and upload the relevant data, this removes the need for users to manually populate files and directories within the `stack-manager` directory. Note that this script uses standard bash but does **require the installation of the `jq` package** on the host machine to parse JSON responses from the Grafana HTTP API.
+To start a local instance of the augmented UK visualisation, follow the below steps. To get copies of the required data files, please see the data sections above or contact CMCL for archived copies.
 
-Note that this script has been developed assuming a first-time spin up condition, it has not been tested in the case that some containers or volumes already exist; it would likely need temporary, local only changes in that situation.
+Grafana config instructions will be added soon, ignore for now
 
-To run the script and bring up a local instance of the UK Base World visualisation, follow the below steps. To get copies of the required data files, please see the data sections above or contact CMCL for archived copies.
+N.B `/stack-manager/.../` is `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager` and `/stack-data-uploader/.../` is `TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader`
 
-**Note:** running the script to deploy this stack will remove any existing stack manager configurations; please backup any existing ones beforehand.
-
-1. If required, run the `build.sh` script from within the `/web/digital-twin-vis-framework/library` directory.
+1. If required, run the `build.sh` script from within the `/web/digital-twin-vis-platform/` directory.
    - This will build a local copy of the visualisation hosting image, in case the current branch contains a new version that hasn't been pushed yet.
-2. Navigate to the `uk-base-world` directory.
-3. Add your Mapbox credentials:
-   - Add your username to a file at `./visualisation/mapbox_username`
-   - Add your API key to a file at `./visualisation/mapbox_api_key`
-4. Add the data files: 
-   - Add the correct files according to the [data documentation](./docs/data.md).
-5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and GeoServer.
-   - Example command: `./scripts/start.sh PASSWORD=pickapassword`
-   - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)
-6. Confirm that the required data files are present by pressing the `Y` key.
-7. Once prompted, wait for the stack to spin up, the data uploader should run automatically a few seconds after the manager has exited.
-   - That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
-   - If running for the first time, this may take a while as Docker images will need to be downloaded.
-8. Confirm the visualisation is working by visiting `localhost:38383/visualisation`
+2. As usual, ensure that `geoserver_password`, `postgis_password` secrets are in the `stack-manager/inputs/secrets` folder. As well as these, you will need to add a `mapbox_username` and `mapbox_api_key` secrets, which should be retrieved from your mapbox account. Thirdly, create a `grafana_password` in the secrets directory.
+3. Copy the main stack manager config to `./inputs/config/manager/augmented-uk.json` config file to `/stack-manager/inputs/config/`
+4. Copy the custom service configs: `./inputs/config/manager/visualisation.json`  and ./inputs/config/manager/grafana.json to `/stack-manager/inputs/config/services`
+5. Copy the `./inputs/config/manager/fia-queries` folder to `/stack-manager/inputs/data/`
+6. Run the stack manager in the usual way at port 38383 with `./stack.sh start augmented-uk 38383` run from the `/stack-manager/` folder. Ensure all the containers spin up properly
+7. Copy *all* the contents of the `./inputs/uploader/config` folder to `/stack-data-uploader/inputs/config/` (you can just delete the target config folder and replace it with the one here)
+8. Similarly, replace `/stack-data-uploader/inputs/data/` folder with `./inputs/uploader/data`.
+9. Add the data files as specified in according to the [data documentation](./docs/data.md). The links for each should also now be in the relevant subdirectory of `/stack-data-uploader/inputs/data/`.
+10. Run the stack data-uploader in the usual way with `./stack.sh start augmented-uk` run from the `/stack-data-uploader/` folder. Check the logs and ensure that data uploads properly. This will take a while
+11. Next copy the contents of `.uploads` to `../twa-vis-platform/uploads` and run `docker compose up` from `../twa-vis-platform` to start the standalone viz container
+12. When the uploader has finished, confirm the visualisation is working by visiting `localhost:38384/`
 
-Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `scripts` directory; the name of the created stack will be `UKBASEWORLD`.
+Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `scripts` directory; the name of the created stack will be `augmented-uk`.
 
 ## Support
 
@@ -71,9 +66,4 @@ For any support in reproducing this visualisation, please contact the CMCL suppo
 
 ## Screenshot
 
-<p align="center">
-    <img src="./inputs/images/uk-base-world.jpg" alt="UK Base World visualisation, circa August 2023." width="66%"/>
-</p>
-<p align="center">
-    <em>UK Base World visualisation, circa August 2023.</em>
-</p>
+![Augmented UK visualisation as of July 2024](screenshot.png)

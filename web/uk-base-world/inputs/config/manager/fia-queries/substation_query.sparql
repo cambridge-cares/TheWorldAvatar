@@ -1,0 +1,37 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX forestry: <http://www.theworldavatar.com/ontology/ontoforest/OntoForest.owl#>
+PREFIX geof: <http://www.opengis.net/def/function/geosparql/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix credo:  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#>
+prefix pow: <http://theworldavatar.com/ontology/ontopower/OntoPower.owl#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  {SERVICE [ONTOP] {
+    {
+    SELECT ("Site Number" AS ?Property) ?Value ("" AS ?Unit)
+    WHERE {
+      [IRI] pow:hasSiteNumber ?SiteNumber .
+      ?SiteNumber om:hasNumericValue ?Value
+    }
+  }
+  UNION
+  {
+    SELECT ("Name" AS ?Property) ?Value ("" AS ?Unit)
+    WHERE {
+      [IRI] rdfs:label ?Value .
+    }
+  }
+  UNION 
+  {
+    SELECT ("Max Operating Voltage" AS ?Property) ?Value ("kV" AS ?Unit)
+    WHERE {
+      [IRI] pow:hasMaxVoltage ?maxVoltage .
+      ?maxVoltage om:hasValue ?Measure .
+      ?Measure om:hasNumericValue ?Value .
+    }
+  }
+  }
+}
+}

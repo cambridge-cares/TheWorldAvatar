@@ -1,0 +1,17 @@
+{
+    "services": {
+        "includes": [
+            "feature-info-agent",
+            "grafana"
+        ],
+        "excludes": [
+            "citytiler",
+            "citydbimpexp"
+        ]
+    },
+    "volumes": {
+        "fia-queries": "fia-queries",
+        "grafana-data": "grafana-data",
+        "grafana-conf": "grafana-conf"
+    }
+}
