@@ -38,7 +38,7 @@ The folders to populate will be found in TheWorldAvatar/Deploy/stacks/dynamic/
 
 Go to the following folder:
 
-* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/secrets/    (this is were you upload your passwords for geoserver, postgis and mapbox)
+* TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/secrets/    (this is where you provide your passwords for GeoServer and PostGIS, and API Key for Mapbox)
 
   
 Transfer the following files to the secrets folder and replace the content accordingly:
@@ -98,8 +98,8 @@ For example:
 (This should upload all the information. It might take 10-30 minutes. Be patient.)
 
 ### Step 6. If everything goes well, you should be able to see the visualisation at:
-* http://<IP_ADDRESS>:<PORT_NUMBER>/visualisation/welcome.html   (forwards to website)
-* http://<IP_ADDRESS>:<PORT_NUMBER>/visualisation/index_stack.html  (stack)
+* http://<IP_ADDRESS>:<PORT_NUMBER>/visualisation/index_stack.html  (forwards to the existing stack)
+* http://<IP_ADDRESS>:<PORT_NUMBER>/visualisation/index.html   (forwards to the redirect website)
   
 The geoserver at: 
 * http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/index.html
@@ -117,9 +117,12 @@ For example:
 
         ./stack.sh rm chileViv4 -v
 
-### Step 8. In the code folder you can find useful queries to be runned in the adminer. 
+## Additional features
 
-### Step 9. To activate all the options of Geoserver.
+
+### 1. In the code folder you can find useful queries to be runned in the adminer. 
+
+### 2. To activate all the options of Geoserver.
 * In the following file:
 
   TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/geoserver
