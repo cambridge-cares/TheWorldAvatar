@@ -5,6 +5,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,13 +28,16 @@ public class PIPSTimeSeriesAgent extends JPSAgent {
      */
     private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String UNAUTHORIZED_ERROR_MSG = "Missing or invalid credentials!";
+    private static final String PARAMETERS_ERROR_MSG = "Missing or incorrect parameters!";
+    private static final String SQL_ERROR_MSG = "Unable to execute certain SQL actions or queries: ";
 
     /**
      * Keys
      */
     private static final String JSON_ERROR_KEY = "Error";
     private static final String JSON_RESULT_KEY = "Result";
-    private static final String CLIENT_ID = System.getenv("CLIENT_ID");
+    private static final String REQUEST_PARAM_SOURCE = "source";
+    private static final String REQUEST_PARAM_NUM = "num";
     private boolean valid = false;
     
     /**
@@ -63,18 +67,21 @@ public class PIPSTimeSeriesAgent extends JPSAgent {
             jsonMessage = statusRoute();
             break;
             case "timeseries":
-            // Get the Authorization header
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring("Bearer".length()).trim();
-                try {
-                    jsonMessage = timeseriesRoute(token);
-                } catch (IOException e) {
-                    throw new JPSRuntimeException(e);
+            if (requestParams.has(REQUEST_PARAM_SOURCE) && requestParams.has(REQUEST_PARAM_NUM)) {
+                // Get the Authorization header
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    String token = authHeader.substring("Bearer".length()).trim();
+                    try {
+                        jsonMessage = timeseriesRoute(token, requestParams.getString(REQUEST_PARAM_SOURCE), requestParams.getInt(REQUEST_PARAM_NUM));
+                    } catch (Exception e) {
+                        throw new JPSRuntimeException(e);
+                    }  
+                } else {
+                    jsonMessage.put(JSON_ERROR_KEY, UNAUTHORIZED_ERROR_MSG);
                 }
-                
             } else {
-                jsonMessage.put(JSON_ERROR_KEY, UNAUTHORIZED_ERROR_MSG);
+                jsonMessage.put(JSON_ERROR_KEY, PARAMETERS_ERROR_MSG);
             }
             break;
             default:
@@ -107,7 +114,7 @@ public class PIPSTimeSeriesAgent extends JPSAgent {
      * @return timeseries data
      * @throws IOException 
      */
-    private JSONObject timeseriesRoute(String token) throws IOException {
+    private JSONObject timeseriesRoute(String token, String schema, int number) throws IOException {
         LOGGER.info("Detected request to get timeseries ...");
         LOGGER.info("Checking validity of client...");
         JSONObject message = new JSONObject();
@@ -131,8 +138,12 @@ public class PIPSTimeSeriesAgent extends JPSAgent {
         
         if (message.has("access_token") && message.getString("access_token").length() > 1) {
             // query for timeseries data from postgreSQL
-            message = new JSONObject();
-            message.put("message", "authorized");
+            PostgreSQLConnector postgreSQLConnector = new PostgreSQLConnector();
+            try {
+                message = postgreSQLConnector.retrieveTimeSeries(schema, number);
+            } catch (SQLException e) {
+                throw new JPSRuntimeException(SQL_ERROR_MSG, e);
+            }
         }
         return message;
     }
