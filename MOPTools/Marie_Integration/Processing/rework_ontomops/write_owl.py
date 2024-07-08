@@ -4,7 +4,7 @@ import uuid
 import os
 import re
 
-import Processing.src.kg_operations.update_kg as KG
+import update_kg as KG
 
 # Define the XML template
 xml_template = '''<?xml version="1.0" encoding="UTF-8"?>

@@ -2,13 +2,9 @@ import os
 import sys
 import shutil
 from urllib.parse import urlparse
-from pyderivationagent.kg_operations import PySparqlClient
 import uuid
-PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-# Add the processing directory to the system path
-sys.path.append(PROCESSING_DIR)
-from src.kg_operations.update_kg import UpdateKG
-from src.config.a_box_updates_config import config_a_box_updates
+from update_kg import UpdateKG
+from update_kg import config_a_box_updates
 
 class MOPGeometryUpdater(UpdateKG):
 

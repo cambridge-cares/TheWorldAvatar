@@ -1,5 +1,28 @@
 import  pyderivationagent
-from    config.a_box_updates_config import config_a_box_updates
+from pyderivationagent.conf import Config
+from pyderivationagent.conf import config_generic
+
+
+class AboxUpdateConfig(Config):
+    """
+    This is a config class for the RxnOptGoalAgent.
+    It is a subclass of Config and can be extended to provide custom configurations for developed agents.
+    It has the following fields:
+      - SPARQL_QUERY_ENDPOINT: The SPARQL endpoint to be used for querying the knowledge graph.
+      - SPARQL_UPDATE_ENDPOINT: The SPARQL endpoint to be used for updating the knowledge graph.
+      - KG_USERNAME: The username to access the SPARQL endpoint.
+      - KG_PASSWORD: The password to access the SPARQL endpoint.
+    """
+    SPARQL_QUERY_ENDPOINT:  str
+    SPARQL_UPDATE_ENDPOINT: str
+    KG_USERNAME:            str
+    KG_PASSWORD:            str
+
+def config_a_box_updates(env_file: str = None) -> AboxUpdateConfig:
+    """Return configurations from either environment variables or env_file."""
+    print(env_file)
+    return config_generic(AboxUpdateConfig, env_file)
+
 
 class UpdateKG:
     """Parent class for the folder. Provides the following methods:
@@ -61,7 +84,7 @@ class UpdateKG:
         return query_incoming, query_outgoing
     
     def delete_connections(self, iri):
-        "Delete all connections to the input IRI."
+        "Delete all connections from and to the input IRI."
         delete_incoming_query       = f"""
         {self.prefix}
         DELETE WHERE {{
@@ -108,10 +131,6 @@ class UpdateKG:
         """
         self.sparql_client.performUpdate(update_query)
         
-    def delete_disconnected(self):
-        insert_string               = f"""  ?instance rdf:type <Class> .
-                                    MINUS {{ ?s ?p ?instance }}
-                                    MINUS {{ ?instance ?p ?o }}"""
     def delete_overhead(self, iris, dic_string):
         for j, iri in enumerate(iris):
             subjectx                = iri[f"{dic_string}"]
@@ -142,7 +161,7 @@ class UpdateKG:
         return self.sparql_client.performQuery(query)
         
 def main():
-    a_box_updates_config        = config_a_box_updates("../../processing.env")
+    a_box_updates_config        = config_a_box_updates("../OntoMOPConnection.env")
     updater = UpdateKG(
         query_endpoint          = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
         update_endpoint         = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,

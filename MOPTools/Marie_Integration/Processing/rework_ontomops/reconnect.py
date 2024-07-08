@@ -1,15 +1,8 @@
 import re
 import os
-import sys
 import uuid
-# Define the processing directory path two levels up from the current file
-PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-# Add the processing directory to the system path
-sys.path.append(PROCESSING_DIR)
-
-# from Processing.src.kg_operations.update_kg import UpdateKG
-from src.kg_operations.update_kg import UpdateKG
-from src.config.a_box_updates_config import config_a_box_updates
+from update_kg import UpdateKG
+from update_kg import config_a_box_updates
 
 class Reconnect(UpdateKG):
     # AM         -----------------------------------
@@ -422,7 +415,7 @@ def main():
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     #   make file path dependent on script location
-    a_box_updates_config_mop                = config_a_box_updates(os.path.join(script_dir, "../../OntoMOPConnection.env"))
+    a_box_updates_config_mop                = config_a_box_updates(os.path.join(script_dir, "../OntoMOPConnection.env"))
     #   instantiate class
     updater_mop = Reconnect(
         query_endpoint                      = a_box_updates_config_mop.SPARQL_QUERY_ENDPOINT,
@@ -430,7 +423,6 @@ def main():
         kg_user                             = a_box_updates_config_mop.KG_USERNAME,
         kg_password                         = a_box_updates_config_mop.KG_PASSWORD
     )
-    updater_mop.reconnect_cbu()
 
 
 if __name__ == "__main__":

@@ -1,17 +1,13 @@
 import os
 import sys
-import GetPaper.GetPapers
 import re
 import fitz  # PyMuPDF
 from openai import OpenAI
 import tiktoken
-from config.a_box_updates_config import config_a_box_updates
-#from XYZFileProcessor import XYZFileProcessor
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-# Add the parent directory to the system path
-sys.path.append(parent_dir)
-from kg_operations import update_kg as KG
-import GetPaper
+PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+# Add the processing directory to the system path
+sys.path.append(PROCESSING_DIR)
+from Processing.rework_ontomops import update_kg as KG
 
 class PdfConverter:
     """
@@ -233,7 +229,7 @@ def get_literature(doi:str) -> dict:
     # initialize KG class
     script_dir                          = os.path.dirname(os.path.abspath(__file__))
     # make file path dependent on script location
-    a_box_updates_config                = config_a_box_updates(os.path.join(script_dir,"../../OntoMOPConnection.env"))
+    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../../OntoMOPConnection.env"))
     # instantiate class
     updater = KG.UpdateKG(
         query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
