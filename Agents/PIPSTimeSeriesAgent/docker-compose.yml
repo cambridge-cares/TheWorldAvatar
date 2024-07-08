@@ -7,7 +7,10 @@ services:
     container_name: pips-timeseries-agent
     pull_policy: if_not_present
     environment:
-      - CLIENT_ID=
-      - KEYCLOAK_REALM_PATH=
+      - CLIENT_ID=<client ID>
+      - KEYCLOAK_REALM_PATH=<keycloak realm url>
+      - POSTGRESQL_PROP=/root/config/postgresql_connector.properties
+    volumes:
+      - <path on host>:/root/config
     ports:
       - "1080:8080"

@@ -6,18 +6,16 @@
         "Image": "pips-timeseries-agent:1.0.0",
         "Env": [
           "CLIENT_ID=<client ID>",
-          "KEYCLOAK_REALM_PATH=<keycloak endpoint>"
+          "KEYCLOAK_REALM_PATH=<keycloak realm url>",
+          "POSTGRESQL_PROP=/root/config/postgresql_connector.properties"
 				],
-        "Configs": [
+        "Mounts": [
           {
-              "ConfigName": "postgis"
+            "Type": "bind",
+            "Source": "<path on host>",
+            "Target": "/root/config"
           }
-      ],
-      "Secrets": [
-          {
-              "SecretName": "postgis_password"
-          }
-      ]
+        ]
       }
     }
   },
