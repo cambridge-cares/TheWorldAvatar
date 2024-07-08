@@ -6,6 +6,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 public class ImpactAssessor {
@@ -63,37 +66,53 @@ public class ImpactAssessor {
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.landplotTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.landplotTable+"_uuid VARCHAR, affectedarea DOUBLE PRECISION, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.landplotTable+"_uuid));");
 
                 //Create table for population
-                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTable+" (slr_uuid VARCHAR, populationatrisk INTEGER, PRIMARY KEY (slr_uuid));");
-                
+                executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.populationTableList.get(0).toString()+" (slr_uuid VARCHAR, PRIMARY KEY (slr_uuid));");
+
+                //Add columns according to the population types
+                try {checkAndAddColumns(remoteRDBStoreClient, SeaLevelImpactAgent.populationTableList);} catch (Exception e) {e.printStackTrace();}
+
                 //Create table for buildings
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.buildingsMatViewName +"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.buildingsMatViewName +"_uuid VARCHAR);");
 
                 //Create table for road
                 executeSql(connection,"CREATE TABLE IF NOT EXISTS slr_"+SeaLevelImpactAgent.osm_streetTable+"(slr_uuid VARCHAR,"+SeaLevelImpactAgent.osm_streetTable+"_uuid VARCHAR, affectedlength DOUBLE PRECISION, PRIMARY KEY (slr_uuid, "+SeaLevelImpactAgent.osm_streetTable+"_uuid));");
+
             }
     }
 
-    public void mapPopulationAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, String populationTable)throws SQLException{
+    public void mapPopulationAtRisk(RemoteRDBStoreClient remoteRDBStoreClient, String slr_uuid, ArrayList<String> populationTables)throws SQLException{
 
         //check if slr_uuid ID exists in slr_population
-        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, populationTable)) {
+        if (!isSLRDataExistsInSLRTable(remoteRDBStoreClient, slr_uuid, populationTables.get(0).toString())) {
+
+
 
             try (Connection connection = remoteRDBStoreClient.getConnection()) {
-                String populationInsertSQL = "INSERT INTO slr_population (slr_uuid, populationatrisk)\n" +
-                        "SELECT subquery.uuid, subquery.sum\n" +
-                        "FROM (\n" +
-                        "SELECT sealevelprojections.uuid, SUM((ST_SummaryStats(ST_Clip(population.rast, sealevelprojections.geom, TRUE))).sum) AS sum\n" +
-                        "FROM sealevelprojections, population\n" +
-                        "WHERE sealevelprojections.uuid = '" + slr_uuid + "'\n" +
-                        "GROUP BY sealevelprojections.uuid\n" +
-                        ") AS subquery;";
 
-                executeSql(connection, populationInsertSQL);
+                String insertslr_uuidSQL= "INSERT INTO slr_population (slr_uuid) VALUES ('"+slr_uuid+"') ON CONFLICT DO NOTHING";
+                executeSql(connection,insertslr_uuidSQL);
+
+                for (String populationTable : populationTables) {
+                    try {
+                        String mapPopulation_sql = "UPDATE slr_population "+
+                                "SET "+populationTable+" = subquery.sum\n" +
+                                "FROM (\n" +
+                                "SELECT sealevelprojections.uuid, SUM((ST_SummaryStats(ST_Clip(" + populationTable + ".rast, sealevelprojections.geom, TRUE))).sum) AS sum\n" +
+                                "FROM sealevelprojections, " + populationTable + "\n" +
+                                "WHERE sealevelprojections.uuid = '" + slr_uuid + "'\n" +
+                                "GROUP BY sealevelprojections.uuid\n" +
+                                ") AS subquery WHERE subquery.uuid = slr_population.slr_uuid;";
+                        executeSql(connection, mapPopulation_sql);
+                        System.out.println(populationTable + "'s population sum successfully mapped with sealevelrise with uuid: "+slr_uuid);
+
+                    } catch (Exception e) {
+                        System.out.println(populationTable + " unable to be mapped.");
+                    }
+                }
             }
-            System.out.println("SLR_UUID: "+slr_uuid+" is now mapped with "+populationTable+" at risk.");
         }
         else {
-            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+populationTable+" at risk, data skipped.");
+            System.out.println("SLR_UUID: "+slr_uuid+" has already been mapped with "+populationTables.get(0).toString()+" at risk, data skipped.");
         }
     }
 
@@ -112,7 +131,7 @@ public class ImpactAssessor {
                                              "SELECT\n" +
                                              "    slr.uuid AS slr_uuid,\n" +
                                              "    lp.ogc_fid AS lp_uuid,\n" +
-                                             "ROUND(ST_AREA(ST_TRANSFORM(ST_INTERSECTION(slr.geom, ST_MAKEVALID(lp.\"lod1Geometry\")), 4326)::geography)::numeric, 2) AS affectedarea " +
+                                             "ST_AREA(ST_TRANSFORM(ST_INTERSECTION(slr.geom, ST_MAKEVALID(lp.\"lod1Geometry\")), 4326)::geography) AS affectedarea " +
                                              "FROM slr\n" +
                                              "JOIN landplot lp ON ST_INTERSECTS(slr.geom, lp.\"lod1Geometry\");";
 
@@ -143,7 +162,7 @@ public class ImpactAssessor {
                                                 "SELECT\n" +
                                                 "    slr.uuid AS slr_uuid,\n" +
                                                 "    lp.osm_id AS "+ roadTable +"_uuid,\n" +
-                                                "    ROUND(ST_LENGTH(ST_TRANSFORM(ST_INTERSECTION(slr.geom, lp.geom), 3857))::numeric, 2) AS affectedlength\n" +
+                                                "    ST_LENGTH(ST_TRANSFORM(ST_INTERSECTION(slr.geom, lp.geom), 3857)) AS affectedlength\n" +
                                                 "FROM slr\n" +
                                                 "JOIN "+ roadTable +" lp ON ST_INTERSECTS(slr.geom, lp.geom);";
                 executeSql(connection, culturalsitesInsertSQL);
@@ -203,7 +222,7 @@ public class ImpactAssessor {
                         "    WHERE uuid='"+slr_uuid+"'\n" +
                         "),\n" +
                         "     "+ buildingTable +" AS (\n" +
-                        "         SELECT uuid, ST_TRANSFORM(geometry,4326) as geometry\n" +
+                        "         SELECT uuid, geometry\n" +
                         "         FROM "+ buildingTable +"\n" +
                         "     )\n" +
                         "SELECT slr.uuid as slr_uuid, "+ buildingTable +".uuid as "+ buildingTable +"_uuid\n" +
@@ -255,37 +274,27 @@ public class ImpactAssessor {
     private void createCityDBMaterializedView (RemoteRDBStoreClient remoteRDBStoreClient, String cityDBMaterializedViewName) throws SQLException{
 
         String createCityDBMaterializedView_sql = "CREATE MATERIALIZED VIEW public."+cityDBMaterializedViewName+" AS\n" +
-                                                    "WITH \"uuid_table\" AS (\n" +
-                                                    "    SELECT\n" +
-                                                    "        \"strval\" AS \"uuid\",\n" +
-                                                    "        \"cityobject_id\"\n" +
-                                                    "    FROM\n" +
-                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
-                                                    "    WHERE\n" +
-                                                    "        \"attrname\" = 'uuid'\n" +
-                                                    "),\n" +
-                                                    "\"iri_table\" AS (\n" +
-                                                    "    SELECT\n" +
-                                                    "        \"urival\" AS \"iri\",\n" +
-                                                    "        \"cityobject_id\"\n" +
-                                                    "    FROM\n" +
-                                                    "        \"citydb\".\"cityobject_genericattrib\"\n" +
-                                                    "    WHERE\n" +
-                                                    "        \"attrname\" = 'iri'\n" +
-                                                    ")\n" +
-                                                    "SELECT DISTINCT\n" +
-                                                    "    \"building\".\"id\" AS \"building_id\",\n" +
-                                                    "    COALESCE(\"measured_height\", 100.0) AS \"building_height\",\n" +
-                                                    "    \"geometry\",\n" +
-                                                    "    \"uuid\",\n" +
-                                                    "    \"iri\"\n" +
-                                                    "FROM\n" +
-                                                    "    \"citydb\".\"building\"\n" +
-                                                    "    JOIN \"citydb\".\"surface_geometry\" ON \"citydb\".\"surface_geometry\".\"root_id\" = \"citydb\".\"building\".\"lod0_footprint_id\"\n" +
-                                                    "    JOIN \"uuid_table\" ON \"citydb\".\"building\".\"id\" = \"uuid_table\".\"cityobject_id\"\n" +
-                                                    "    JOIN \"iri_table\" ON \"citydb\".\"building\".\"id\" = \"iri_table\".\"cityobject_id\"\n" +
-                                                    "WHERE\n" +
-                                                    "    \"citydb\".\"surface_geometry\".\"geometry\" IS NOT NULL;";
+                                                "WITH uuid_table AS (\n" +
+                                                "         SELECT cityobject_genericattrib.strval AS uuid,\n" +
+                                                "            cityobject_genericattrib.cityobject_id\n" +
+                                                "           FROM citydb.cityobject_genericattrib\n" +
+                                                "          WHERE ((cityobject_genericattrib.attrname)::text = 'uuid'::text)\n" +
+                                                "        ), iri_table AS (\n" +
+                                                "         SELECT cityobject_genericattrib.urival AS iri,\n" +
+                                                "            cityobject_genericattrib.cityobject_id\n" +
+                                                "           FROM citydb.cityobject_genericattrib\n" +
+                                                "          WHERE ((cityobject_genericattrib.attrname)::text = 'iri'::text)\n" +
+                                                "        )\n" +
+                                                " SELECT DISTINCT building.id AS building_id,\n" +
+                                                "    COALESCE(building.measured_height, (100.0)::double precision) AS building_height,\n" +
+                                                "    ST_TRANSFORM(surface_geometry.geometry,4326) as geometry,\n" +
+                                                "    uuid_table.uuid,\n" +
+                                                "    iri_table.iri\n" +
+                                                "   FROM (((citydb.building\n" +
+                                                "     JOIN citydb.surface_geometry ON ((surface_geometry.root_id = building.lod0_footprint_id)))\n" +
+                                                "     JOIN uuid_table ON ((building.id = uuid_table.cityobject_id)))\n" +
+                                                "     JOIN iri_table ON ((building.id = iri_table.cityobject_id)))\n" +
+                                                "  WHERE (surface_geometry.geometry IS NOT NULL);";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, createCityDBMaterializedView_sql);
@@ -308,8 +317,42 @@ public class ImpactAssessor {
         }
     }
 
+    /**
+     * Check for each populationtables in config.properties and add them if it doesnt exist
+     * @param remoteRDBStoreClient
+     * @param populationTables list of population tables
+     */
+    public void checkAndAddColumns(RemoteRDBStoreClient remoteRDBStoreClient, ArrayList<String> populationTables) {
 
+        try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            for (String populationTable : populationTables) {
+                if (!isColumnExist(connection, populationTable)) {
+                    String addColumnSql = "ALTER TABLE slr_"+populationTables.get(0).toString()+
+                            " ADD COLUMN " + populationTable+ " bigint";
+                    executeSql(connection, addColumnSql);
+                } else {
+                    System.out.println("Column "+ populationTable+ " already exists in table impact table.");
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
 
+    /**
+     * Check if the column columnName exists
+     * @param connection PostgreSQL connection object
+     * @param columnName name of column to check (populationTable)
+     * @return true if column columnName exists, false otherwise
+     */
+    private boolean isColumnExist(Connection connection,  String columnName)throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getColumns(null, null, "slr_"+SeaLevelImpactAgent.populationTableList.get(0).toString(), columnName)) {
+            return resultSet.next();
+        }
+    }
 }
 
 

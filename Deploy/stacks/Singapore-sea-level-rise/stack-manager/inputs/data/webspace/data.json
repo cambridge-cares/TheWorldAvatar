@@ -8,13 +8,6 @@
             "tiles": [
                 "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:landplot&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
             ]
-        },
-        {
-            "id": "population",
-            "type": "raster",
-            "tiles": [
-                "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
-            ]
         }
     ],
     "layers": [
@@ -106,20 +99,158 @@
                 "fill-opacity": 0.5,
                 "fill-outline-color": "#000000"
             }
-        },
-        {
-            "id": "population",
-            "type": "raster",
-            "name": "Population",
-            "source": "population",
-            "minzoom": 8,
-            "order": 4,
-            "layout": {
-                "visibility": "none"
-            }
         }
     ],
     "groups": [
+        {
+            "name": "Population",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "population",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_men",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_men&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_women",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_women&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_women_reproductive",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_women_reproductive&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_childrenu5",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_childrenu5&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_youth",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_youth&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "population_elderly",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population_elderly&bbox={bbox-epsg-3857}&width=768&height=355&srs=EPSG:3857&styles=&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "groups": [
+                {
+                    "name": "General",
+                    "layers": [
+                        {
+                            "id": "population",
+                            "type": "raster",
+                            "name": "Population",
+                            "source": "population",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "By age",
+                    "layers": [
+                        {
+                            "id": "population_childrenu5",
+                            "type": "raster",
+                            "name": "Children",
+                            "source": "population_childrenu5",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_youth",
+                            "type": "raster",
+                            "name": "Youth",
+                            "source": "population_youth",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_elderly",
+                            "type": "raster",
+                            "name": "Elderly",
+                            "source": "population_elderly",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "By gender",
+                    "layers": [
+                        {
+                            "id": "population_men",
+                            "type": "raster",
+                            "name": "Men",
+                            "source": "population_men",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_women",
+                            "type": "raster",
+                            "name": "Women",
+                            "source": "population_women",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        },
+                        {
+                            "id": "population_women_reproductive",
+                            "type": "raster",
+                            "name": "Women of reproductive age",
+                            "source": "population_women_reproductive",
+                            "minzoom": 8,
+                            "order": 4,
+                            "layout": {
+                                "visibility": "none"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "name": "Biodiversity",
             "expanded": false,
@@ -788,7 +919,7 @@
                     "name": "Domestic",
                     "source": "usage",
                     "filter": [
-                        "in",
+                        "==",
                         "Domestic",
                         [
                             "get",
@@ -1636,7 +1767,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                2500000.0
+                                2205303.1382411714
                             ],
                             "#ffff66",
                             [
@@ -1645,7 +1776,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                5000000.0
+                                4863361.931536359
                             ],
                             "#e8f366",
                             [
@@ -1654,7 +1785,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                7500000.0
+                                10725187.330019798
                             ],
                             "#d1e866",
                             [
@@ -1663,7 +1794,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                10000000.0
+                                23652289.27711711
                             ],
                             "#badc66",
                             [
@@ -1672,7 +1803,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                12500000.0
+                                52160467.76941437
                             ],
                             "#a2d066",
                             [
@@ -1681,7 +1812,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                15000000.0
+                                115029643.26401722
                             ],
                             "#8bc566",
                             [
@@ -1690,7 +1821,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                17500000.0
+                                253675233.2809001
                             ],
                             "#74ba66",
                             [
@@ -1699,7 +1830,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                20000000.0
+                                559430788.0484291
                             ],
                             "#5dae66",
                             [
@@ -1708,7 +1839,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                22500000.0
+                                1233714472.5119298
                             ],
                             "#45a266",
                             [
@@ -1717,7 +1848,7 @@
                                     "get",
                                     "cost"
                                 ],
-                                25000000.0
+                                2720714397.9241157
                             ],
                             "#2e9666",
                             [
@@ -1726,10 +1857,10 @@
                                     "get",
                                     "cost"
                                 ],
-                                11000000000.0
+                                6000000000.000003
                             ],
                             "#178b66",
-                            "#8D99AE"
+                            "#178b66"
                         ],
                         "fill-extrusion-opacity": 1.0,
                         "fill-extrusion-base": 0,
