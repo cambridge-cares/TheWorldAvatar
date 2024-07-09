@@ -36,6 +36,8 @@ In addition, this stack will also contain a Grafana container to host associated
 
 ## Running the stack
 
+### Method 1 - Data stack with standalone viz app
+
 The UK Base World visualisation has been put together as a single stack with no requirements on any external services. Both the data required for the visualisation, and the visualisation itself are hosted within the stack instance. For more information on the stack, read the [documentation here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
 To start a local instance of the augmented UK visualisation, follow the below steps. To get copies of the required data files, please see the data sections above or contact CMCL for archived copies.
@@ -59,6 +61,10 @@ N.B `/stack-manager/.../` is `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager
 12. When the uploader has finished, confirm the visualisation is working by visiting `localhost:38384/`
 
 Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `scripts` directory; the name of the created stack will be `augmented-uk`.
+
+### Method 2 - Stack with viz included service
+
+*To be added*
 
 ## Support
 
