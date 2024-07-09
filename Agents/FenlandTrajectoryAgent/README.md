@@ -87,8 +87,6 @@ The agent will automatically register a task upon startup to assimilate the data
 
 The files for example http request are displayed at [SendHTTP] folder.
 
-<center>-------- Data Instantiation ------------</center>
-
 - Post request to load and preprocess all GPS trajectory files 
 > ./gpstasks/fenlandtrajectoryagent/load_and_preprocess
 
