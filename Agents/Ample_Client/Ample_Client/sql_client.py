@@ -2,6 +2,7 @@ import os
 import psycopg2
 from psycopg2 import sql
 import utils
+import re
 
 # Check whether a database exist and create it if not
 def create_database_if_not_exist():
@@ -69,10 +70,8 @@ def create_if_not_exist_and_insert(connection, dict:dict):
             value_list = [str(timeseries_dict[list(timeseries_dict.keys())[0]]['timestamp'])]
             for key, timeseries in timeseries_dict.items():
                 key = key.replace(' ','_')
-                key = key.replace("[", '_')
-                key = key.replace("]", "")
-                key = key.replace("(",'_')
-                key = key.replace(")", '')
+                key = remove_text_between_characters(key, '(', ')')
+                key = remove_text_between_characters(key, '[', ']')
                 data_type = timeseries['data_type']
                 if data_type == "Float":
                     data_type = "DOUBLE PRECISION"
@@ -115,3 +114,12 @@ def insert_data(connection, schema_name:str, table_name:str, column_list:tuple, 
     print("Data inserted successfully.")
     connection.commit()
     cursor.close()
+    
+def remove_text_between_characters(text, start_char, end_char):
+    # Define the regular expression pattern to match text between the specified characters
+    pattern = re.escape(start_char) + r'.*?' + re.escape(end_char)
+    
+    # Use re.sub() to replace the matched pattern with an empty string
+    cleaned_text = re.sub(pattern, '', text)
+    
+    return cleaned_text
