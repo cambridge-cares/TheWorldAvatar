@@ -1,0 +1,9 @@
+﻿Tag Name,Data Type,Sub Identifier
+Flow Rate A,Float,ns=2;s=PLC-Network.PLC
+Flow Rate B,Float,ns=2;s=PLC-Network.PLC
+Flow Rate C,Float,ns=2;s=PLC-Network.PLC
+Flow Rate D,Float,ns=2;s=PLC-Network.PLC
+Pressure A,Float,ns=2;s=PLC-Network.PLC
+Pressure B,Float,ns=2;s=PLC-Network.PLC
+Pressure C,Float,ns=2;s=PLC-Network.PLC
+Pressure D,Float,ns=2;s=PLC-Network.PLC

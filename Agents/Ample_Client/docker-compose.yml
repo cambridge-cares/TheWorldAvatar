@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  ample_client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ample_client:1.0.0
+    volumes:
+      - <path on host>:/app/Ample_Client/config
+      - <path on host>:/app/Ample_Client/filtered_tags
+    container_name: ample_client
