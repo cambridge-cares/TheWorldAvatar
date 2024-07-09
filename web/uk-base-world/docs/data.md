@@ -22,12 +22,17 @@ This data provides polygonal regions for the boundaries of countries with the UK
 
 The shape files used for this data set are provided by [Ordnance Survey](https://www.ordnancesurvey.co.uk/products/boundary-line), [Ordnance Survey Northern Ireland](https://www.data.gov.uk/dataset/d3ca9d44-a7eb-4380-86cb-0cc28e1f1b27/osni-open-data-largescale-boundaries-ni-outline), and [Edinburgh Data Share](https://datashare.ed.ac.uk/handle/10283/2595?show=full). No pre-processing is needed on this data set, we're using it as is.
 
+[Ordnance Survey] provides information about the boundaries of England, Scotland and Wales, as well as the counties of the whole Great Britain. Set the data format to be ESRI Shapefile and download it. ALL FOUR files with the name 'county_region' should go to inputs/data/uk_base_world/boundaries/counties_gb folder. Similarly, ALL FOUR files with the name 'english_region_region' should go to inputs/data/uk_base_world/boundaries/countries_gb folder.
+
+[Ordnance Survey Northern Ireland] provides information about the largescale boundaries of the whole Northern Ireland. Download the CSV file below and put it into inputs/data/uk_base_world/boundaries/countries_ni folder.
+
+[Edinburgh Data Share] provides information about counties in Northern Ireland. Download the data and put ALL FOUR files into inputs/data/uk_base_world/boundaries/counties_ni folder.
 ### Digest of UK Energy Statistics (DUKES)
 
 ```
 Data directories:
-    inputs/data/uk_base_world/dukes_2023
-    inputs/data/uk_base_world/ontoeip
+    inputs/data/dukes_2023
+    inputs/data/ontoeip
 ```
 
 Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES);  note this was formally published by the Department for Business, Energy and Industrial Strategy (BEIS) before it was dissolved, subsequent publications should be from the new Department for Energy Security and Net Zero (DESNZ).
@@ -42,6 +47,7 @@ Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how t
 * [OntoEIP ontology](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoeip)
   * Note that when uploading the ontology files, you may need to rename any Turtle files with the `.ttl` extension. The stack data uploader assumes that `.owl` files are using the XML format, if an `.owl` file is using Turtle then this will cause errors during upload.
 
+Open the OntoEIP ontology link and find the resource_network folder. Put 'resource_network.ttl' into 'inputs/data/ontoeip' folder. Contact CMCL if you need the newest dukes data.
 ### United Kingdom: High Resolution Population Count
 
 ```
