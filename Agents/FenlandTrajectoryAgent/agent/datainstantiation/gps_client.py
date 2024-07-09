@@ -108,18 +108,18 @@ def instantiate_gps_data(gps_object, kg_client, ts_client, double_class, point_c
             dataIRI = utils.PREFIXES['ontodevice'] + ts + '/' + str(uuid.uuid4())
             dataIRIs.append(dataIRI)
             unit = gps_object['units'][ts] if gps_object['units'][ts] else ""
-            query = utils.create_sparql_prefix('ex') + \
+            query = utils.create_sparql_prefix('om') + \
                     utils.create_sparql_prefix('rdf') + \
                     utils.create_sparql_prefix('rdfs') + \
                     utils.create_sparql_prefix('ontodevice') + \
                     utils.create_sparql_prefix('geolit') + \
                     f'''INSERT DATA {{
-                    <{objectIRI}> rdf:type ontodevice:Object ;
+                    <{objectIRI}> rdf:type ontodevice:GPSDevice ;
                          rdfs:label "{gps_object['object']}" ;
                          ontodevice:has{ts} <{dataIRI}> .
                     <{dataIRI}> rdf:type ontodevice:{ts} ;
                          rdfs:label "{ts} data for {gps_object['object']}" ;
-                         ex:unit "{unit}" . }}'''
+                         om:unit "{unit}" . }}'''
             kg_client.performUpdate(query)
         
         # Ensure times are properly formatted

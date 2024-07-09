@@ -142,6 +142,4 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [stack manager configuration service directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
 [stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
 [CURL commands folder]: ./example-requests/curl
-[SendHTTP]: ./example-requests/SendHTTTP/
-
-
+[SendHTTP]: ./example-requests/SendHTTP
