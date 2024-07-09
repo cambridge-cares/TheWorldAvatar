@@ -46,17 +46,17 @@ Grafana config instructions will be added soon, ignore for now
 
 N.B `/stack-manager/.../` is `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager` and `/stack-data-uploader/.../` is `TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader`
 
-1. If required, run the `build.sh` script from within the `/web/digital-twin-vis-platform/` directory.
+1. If required, run the `build.sh` script from within the `/web/twa-vis-framework/library` directory.
    - This will build a local copy of the visualisation hosting image, in case the current branch contains a new version that hasn't been pushed yet.
-2. As usual, ensure that `geoserver_password`, `postgis_password` secrets are in the `stack-manager/inputs/secrets` folder. As well as these, you will need to add a `mapbox_username` and `mapbox_api_key` secrets, which should be retrieved from your mapbox account. Thirdly, create a `grafana_password` in the secrets directory.
-3. Copy the main stack manager config to `./inputs/config/manager/augmented-uk.json` config file to `/stack-manager/inputs/config/`
-4. Copy the custom service configs: `./inputs/config/manager/visualisation.json`  and ./inputs/config/manager/grafana.json to `/stack-manager/inputs/config/services`
-5. Copy the `./inputs/config/manager/fia-queries` folder to `/stack-manager/inputs/data/`
-6. Run the stack manager in the usual way at port 38383 with `./stack.sh start augmented-uk 38383` run from the `/stack-manager/` folder. Ensure all the containers spin up properly
-7. Copy *all* the contents of the `./inputs/uploader/config` folder to `/stack-data-uploader/inputs/config/` (you can just delete the target config folder and replace it with the one here)
-8. Similarly, replace `/stack-data-uploader/inputs/data/` folder with `./inputs/uploader/data`.
+2. As usual, ensure that `geoserver_password`, `postgis_password` secrets are in the `stack-manager/inputs/secrets` folder. As well as these, you will need to add a `mapbox_username` and `mapbox_api_key` secrets, which should be retrieved from your mapbox account. Copy the `mapbox_username` and `mapbox_api_key` secrets to `/web/twa-vis-platform`. Thirdly, create a `grafana_password` in the secrets directory.
+3. Copy the main stack manager config, `./inputs/config/manager/augmented-uk.json` to `/stack-manager/inputs/config/`.
+4. Copy the custom service configs, `./inputs/config/manager/visualisation.json`  and ./inputs/config/manager/grafana.json to `/stack-manager/inputs/config/services`.
+5. Copy the `./inputs/config/manager/fia-queries` folder to `/stack-manager/inputs/data/`.
+6. Run the stack manager in the usual way at port 38383 with `./stack.sh start augmented-uk 38383` run from the `/stack-manager/` folder. Ensure all the containers spin up properly.
+7. Copy *all* the contents of the `./inputs/config/uploader/config` folder to `/stack-data-uploader/inputs/config/` (you can just delete the target config folder and replace it with the one here).
+8. Similarly, replace `/stack-data-uploader/inputs/data/` folder with `./inputs/config/uploader/data`.
 9. Add the data files as specified in according to the [data documentation](./docs/data.md). The links for each should also now be in the relevant subdirectory of `/stack-data-uploader/inputs/data/`.
-10. Run the stack data-uploader in the usual way with `./stack.sh start augmented-uk` run from the `/stack-data-uploader/` folder. Check the logs and ensure that data uploads properly. This will take a while
+10. Run the stack data-uploader in the usual way with `./stack.sh start augmented-uk` run from the `/stack-data-uploader/` folder. Check the logs and ensure that data uploads properly. This will take a while.
 11. Next copy the contents of `.uploads` to `../twa-vis-platform/uploads` and run `docker compose up` from `../twa-vis-platform` to start the standalone viz container
 12. When the uploader has finished, confirm the visualisation is working by visiting `localhost:38384/`
 
