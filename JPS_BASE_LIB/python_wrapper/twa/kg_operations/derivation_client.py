@@ -5,9 +5,68 @@ from typing import List, Dict
 
 
 class PyDerivationClient:
-    """This is a wrapper class for the java class uk.ac.cam.cares.jps.base.derivation.DerivationClient.
+    """
+    This is a wrapper class for the java class `uk.ac.cam.cares.jps.base.derivation.DerivationClient`.
     Only the methods that commonly used are wrapped here. For other methods, one may access them via
-    self.derivation_client.javaMethod(args).
+    `self.derivation_client.nameOfJavaMethod(args)`.
+
+    Attributes:
+        derivation_client: The Java DerivationClient object
+        jpsBaseLib_view: The JVM module view for accessing Java classes
+
+    Methods:
+        createDerivation(entities, agentIRI, inputs) -> str:
+            Create a normal derivation markup.
+        createSyncDerivationForNewInfo(agentIRI, inputsIRI, derivationType) -> Derivation:
+            Create a synchronous derivation for new info to be computed by the agent.
+        createSyncDerivationForNewInfoWithHttpUrl(agentIRI, agentURL, inputsIRI, derivationType) -> Derivation:
+            Create a synchronous derivation for new info to be computed by the agent with the agent URL provided.
+        bulkCreateDerivations(entitiesList, agentIRIList, inputsList) -> List[str]:
+            Create multiple normal derivations in one go.
+        createDerivationWithTimeSeries(entities, agentIRI, inputs) -> str:
+            Create a time series derivation markup.
+        bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList, inputsList) -> List[str]:
+            Create multiple time series derivations in one go.
+        createAsyncDerivation(entities, agentIRI, inputs, forUpdate) -> str:
+            Create an asynchronous derivation markup.
+        createAsyncDerivationFromDerivation(entities, agentIRI, derivation, forUpdate) -> str:
+            Create an asynchronous derivation markup from an existing derivation.
+        bulkCreateAsyncDerivations(entitiesList, agentIRIList, inputsList, forUpdateFlagList) -> List[str:
+            Create multiple asynchronous derivations in one go.
+        createAsyncDerivationForNewInfo(agentIRI, inputsAndDerivations) -> str:
+            Create an asynchronous derivation markup for new information.
+        bulkCreateAsyncDerivationsForNewInfo(agentIRIList, inputsAndDerivationsList) -> List[str]:
+            Create multiple asynchronous derivations for new information in one go.
+        validateDerivations() -> bool:
+            Validate all derivations and their inputs are attached with timestamps, also no circular dependencies.
+        createOntoAgentInstance(ontoAgentServiceIRI, ontoAgentOperationHttpUrl, inputTypes, outputTypes) -> None:
+            Register an OntoAgent instance in the triple store.
+        addTimeInstance(entities) -> None:
+            Add a time instance to each entity in the list of entities.
+        addTimeInstanceCurrentTimestamp(entities) -> None:
+            Add time instance with current timestamp to the given entities.
+        updateTimestamp(entity) -> None:
+            Update the timestamp of the entity to the current time.
+        updateTimestamps(entities) -> None:
+            Update the timestamp of all entities in the list.
+        dropTimestampsOf(entities) -> None:
+            Drop the timestamp of the given entities.
+        getDerivations(agentIRI) -> List[str]:
+            Get the derivations of the given agent.
+        getDerivationsOf(entities) -> Dict[str, str]:
+            Get the derivations of the given entities.
+        unifiedUpdateDerivation(derivationIRI) -> None:
+            Unified update derivation method.
+        updatePureSyncDerivation(derivationIRI) -> None:
+            Update a single synchronous derivation.
+        updatePureSyncDerivations(derivationIRIs) -> None:
+            Update a list of synchronous derivations.
+        updatePureSyncDerivationsInParallel(derivationIRIs) -> None:
+            Update a list of synchronous derivations in parallel.
+        updateAllSyncDerivations() -> None:
+            Update all synchronous derivations within the knowledge graph.
+        updateMixedAsyncDerivation(derivationIRI) -> None:
+            Update a directed acyclic graph of a-/sync derivations.
     """
 
     def __init__(
@@ -18,7 +77,8 @@ class PyDerivationClient:
         kg_user:str=None,
         kg_password:str=None
     ) -> None:
-        """Initialize the derivation client
+        """
+        Initialise the derivation client
 
         Args:
             derivation_instance_base_url (str): base url of the derivation instance to be created by the client
@@ -53,7 +113,8 @@ class PyDerivationClient:
         agentIRI: str,
         inputs: List[str]
     ) -> str:
-        """Create a normal derivation markup.
+        """
+        Create a normal derivation markup.
 
         Args:
             entities (List[str]): List of entities that belongsTo the derivation
@@ -72,7 +133,8 @@ class PyDerivationClient:
         inputsIRI: List[str],
         derivationType: str
     ) -> Derivation:
-        """Create a sync derivation for new info to be computed by the agent.
+        """
+        Create a sync derivation for new info to be computed by the agent.
 
         Args:
             agentIRI (str): IRI of the agent that the derivation isDerivedUsing
@@ -93,7 +155,8 @@ class PyDerivationClient:
         inputsIRI: List[str],
         derivationType: str
     ) -> Derivation:
-        """Create a sync derivation for new info to be computed by the agent with the agent url provided.
+        """
+        Create a sync derivation for new info to be computed by the agent with the agent url provided.
 
         Args:
             agentIRI (str): IRI of the agent that the derivation isDerivedUsing
@@ -114,7 +177,8 @@ class PyDerivationClient:
         agentIRIList: List[str],
         inputsList: List[List[str]]
     ) -> List[str]:
-        """Create multiple normal derivations in one go.
+        """
+        Create multiple normal derivations in one go.
 
         Args:
             entitiesList (List[List[str]]): List of list of entities that belongsTo the derivations
@@ -133,7 +197,8 @@ class PyDerivationClient:
         agentIRI: str,
         inputs: List[str]
     ) -> str:
-        """Create a time series derivation markup.
+        """
+        Create a time series derivation markup.
 
         Args:
             entities (List[str]): List of entities that belongsTo the derivation
@@ -152,7 +217,8 @@ class PyDerivationClient:
         agentIRIList: List[str],
         inputsList: List[List[str]]
     ) -> List[str]:
-        """Create multiple time series derivations in one go.
+        """
+        Create multiple time series derivations in one go.
 
         Args:
             entitiesList (List[List[str]]): List of list of entities that belongsTo the derivations
@@ -172,7 +238,8 @@ class PyDerivationClient:
         inputs: List[str],
         forUpdate: bool
     ) -> str:
-        """Create an asynchronous derivation markup. If `forUpdate` is True, the derivation will be marked as "Requested"
+        """
+        Create an asynchronous derivation markup. If `forUpdate` is True, the derivation will be marked as "Requested"
         with a timestamp of 0. Otherwise, the derivation will be marked without status but with a current timestamp.
 
         Args:
@@ -194,7 +261,8 @@ class PyDerivationClient:
         derivation: str,
         forUpdate: bool
     ) -> str:
-        """Create an asynchronous derivation markup from an existing derivation. If `forUpdate` is True, the derivation
+        """
+        Create an asynchronous derivation markup from an existing derivation. If `forUpdate` is True, the derivation
         will be marked as "Requested" with a timestamp of 0. Otherwise, the derivation will be marked without status but
         with a current timestamp.
 
@@ -217,7 +285,8 @@ class PyDerivationClient:
         inputsList: List[List[str]],
         forUpdateFlagList: List[bool]
     ) -> List[str]:
-        """Create multiple asynchronous derivations in one go. If the flag in `forUpdateFlagList` is True, the corresponding
+        """
+        Create multiple asynchronous derivations in one go. If the flag in `forUpdateFlagList` is True, the corresponding
         derivation will be marked as "Requested" with a timestamp of 0. Otherwise, the derivation will be marked without
         status but with a current timestamp.
 
@@ -238,7 +307,8 @@ class PyDerivationClient:
         agentIRI: str,
         inputsAndDerivations: List[str]
     ) -> str:
-        """Create an asynchronous derivation markup for new information. The derivation will be marked as "Requested" with
+        """
+        Create an asynchronous derivation markup for new information. The derivation will be marked as "Requested" with
         a timestamp of 0. The outputs of the derivation will be computed by the agent in due course. Note that all IRIs in
         the `inputsAndDerivations` list will be directly connected to the derivation as its inputs. Therefore, existing IRIs
         of the derivation outputs should be provided if applicable, instead of the IRI of that derivation.
@@ -258,7 +328,8 @@ class PyDerivationClient:
         agentIRIList: List[str],
         inputsAndDerivationsList: List[List[str]]
     ) -> List[str]:
-        """Create multiple asynchronous derivations for new information in one go. The derivations will be marked as
+        """
+        Create multiple asynchronous derivations for new information in one go. The derivations will be marked as
         "Requested" with a timestamp of 0. The outputs of the derivations will be computed by the agents in due course.
         Note that all IRIs in the `inputsAndDerivationsList` list will be directly connected to the derivations as their
         inputs. Therefore, existing IRIs of the derivation outputs should be provided if applicable, instead of the IRI
@@ -274,6 +345,20 @@ class PyDerivationClient:
         return self.derivation_client.bulkCreateAsyncDerivationsForNewInfo(agentIRIList, inputsAndDerivationsList)
 
 
+    ##############################################
+    ## Methods for validating derivation markup ##
+    ##############################################
+    def validateDerivations(self) -> bool:
+        """
+        This checks for any circular dependency and ensures that all the linked inputs have a suitable timestamp attached.
+        NOTE however, this method does not check for everything, e.g. instances having appropriate rdf:types, and the agent design.
+
+        Returns:
+            bool: Whether the created derivations are valid, i.e. no circular dependency, timestamps correctly attached
+        """
+        return self.derivation_client.validateDerivations()
+
+
     #############################################
     ## Methods for creating OntoAgent instance ##
     #############################################
@@ -284,7 +369,8 @@ class PyDerivationClient:
         inputTypes: List[str],
         outputTypes: List[str]
     ):
-        """Register an OntoAgent instance in the triple store.
+        """
+        Register an OntoAgent instance in the triple store.
 
         Args:
             ontoAgentServiceIRI (str): IRI of the agent's OntoAgent:Service
@@ -300,7 +386,8 @@ class PyDerivationClient:
     ## Methods for handling timestamps ##
     #####################################
     def addTimeInstance(self, entities: List[str]):
-        """Add a time instance to each entity in the list of entities.
+        """
+        Add a time instance to each entity in the list of entities.
 
         Args:
             entities (List[str]): List of IRIs of entities to add time instance to
@@ -309,7 +396,8 @@ class PyDerivationClient:
 
 
     def addTimeInstanceCurrentTimestamp(self, entities: List[str]):
-        """Add time instance with current timestamp to the given entities
+        """
+        Add time instance with current timestamp to the given entities
 
         Args:
             entities (List[str]): List of IRIs of entities to add time instance to
@@ -318,7 +406,8 @@ class PyDerivationClient:
 
 
     def updateTimestamp(self, entity: str):
-        """Update the timestamp of the entity to the current time.
+        """
+        Update the timestamp of the entity to the current time.
 
         Args:
             entity (str): IRI of the entity to update the timestamp of
@@ -327,7 +416,8 @@ class PyDerivationClient:
 
 
     def updateTimestamps(self, entities: List[str]):
-        """Update the timestamp of all entities in the list.
+        """
+        Update the timestamp of all entities in the list.
 
         Args:
             entities (List[str]): List of IRIs of entities to update the timestamp for
@@ -336,7 +426,8 @@ class PyDerivationClient:
 
 
     def dropTimestampsOf(self, entities: List[str]):
-        """Drop the timestamp of the given entities.
+        """
+        Drop the timestamp of the given entities.
 
         Args:
             entities (List[str]): List of IRIs of entities to drop the timestamp of
@@ -347,8 +438,9 @@ class PyDerivationClient:
     ##############################################
     ## Methods for requesting update derivation ##
     ##############################################
-    def getDerivations(self, agentIRI: str) -> list:
-        """Get the derivations of the given agent.
+    def getDerivations(self, agentIRI: str) -> List[str]:
+        """
+        Get the derivations of the given agent.
 
         Args:
             agentIRI (str): IRI of the agent
@@ -360,7 +452,8 @@ class PyDerivationClient:
 
 
     def getDerivationsOf(self, entities: List[str]) -> Dict[str, str]:
-        """Get the derivations of the given entities.
+        """
+        Get the derivations of the given entities.
 
         Args:
             entities (List[str]): List of entities
@@ -372,9 +465,53 @@ class PyDerivationClient:
 
 
     def unifiedUpdateDerivation(self, derivationIRI: str):
-        """Unified update derivation method.
+        """
+        Unified update derivation method.
+        This methods updates the specified derivation and all its upstream derivations.
 
         Args:
             derivationIRI (str): IRI of the derivation to be updated
         """
         self.derivation_client.unifiedUpdateDerivation(derivationIRI)
+
+    def updatePureSyncDerivation(self, derivationIRI: str):
+        """
+        Update the specified *synchronous* derivation and all its upstream derivations.
+
+        Args:
+            derivationIRI (str): IRI of the derivation to be updated
+        """
+        self.derivation_client.updatePureSyncDerivation(derivationIRI)
+
+    def updatePureSyncDerivations(self, derivationIRIs: List[str]):
+        """
+        Update the specified list of *synchronous* derivations and all their upstream derivations.
+
+        Args:
+            derivationIRIs (List[str]): List of IRIs of the derivations to be updated
+        """
+        self.derivation_client.updatePureSyncDerivations(derivationIRIs)
+
+    def updatePureSyncDerivationsInParallel(self, derivationIRIs: List[str]):
+        """
+        Update the specified list of *synchronous* derivations and all their upstream derivations in parallel.
+
+        Args:
+            derivationIRIs (List[str]): List of IRIs of the derivations to be updated
+        """
+        self.derivation_client.updatePureSyncDerivationsInParallel(derivationIRIs)
+
+    def updateAllSyncDerivations(self):
+        """
+        Update all *synchronous* derivations in the knowledge graph.
+        """
+        self.derivation_client.updateAllSyncDerivations()
+
+    def updateMixedAsyncDerivation(self, derivationIRI: str):
+        """
+        Update a directed acyclic graph (DAG) of pure asynchronous derivations or asynchronous derivations depending on synchronous derivations.
+
+        Args:
+            derivationIRI (str): IRI of the derivation to be updated
+        """
+        self.derivation_client.updateMixedAsyncDerivation(derivationIRI)

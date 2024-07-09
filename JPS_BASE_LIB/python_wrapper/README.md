@@ -7,7 +7,7 @@
 
 The code is heavily based on the [py4j](https://www.py4j.org/index.html) package, which enables Python programs running in a Python interpreter to dynamically access Java objects in a Java Virtual Machine. It has a precedent python package, `py4jps`, which is now deprecated.
 
-To get started, see the [Quick start](#quick-start) below or follow our [tutorial](docs/tutorial/).
+To get started, see the [Quick start](#quick-start) below or follow our [tutorial](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper/docs/tutorial/).
 
 
 ## Installation
@@ -81,7 +81,7 @@ print(results)
 #########################
 # Create a new ontology #
 #########################
-from twa.data_model.base_ontology import BaseOntology, BaseClass, TransitiveProperty, ObjectProperty, DataProperty, as_range
+from twa.data_model.base_ontology import BaseOntology, BaseClass, TransitiveProperty, ObjectProperty, DatatypeProperty, as_range
 from twa.data_model.iris import TWA_BASE_URL
 from typing import ClassVar
 
@@ -103,7 +103,7 @@ class Goal(BaseClass):
     is_defined_by_ontology = MinimalAgentOntology
     priority: Priority
 
-class Name(DataProperty):
+class Name(DatatypeProperty):
     is_defined_by_ontology = MinimalAgentOntology
     range: as_range(str, 1, 1)
 
@@ -115,7 +115,7 @@ class HasGoal(ObjectProperty):
     is_defined_by_ontology = MinimalAgentOntology
     range: as_range(Goal)
 
-class Priority(DataProperty):
+class Priority(DatatypeProperty):
     is_defined_by_ontology = MinimalAgentOntology
     range: as_range(str, 1, 1)
 
@@ -170,7 +170,7 @@ for agent in agents:
 
 
 ## Documentation
-The documentation for `twa` can be found [here](docs/).
+The documentation for `twa` can be found [here](https://cambridge-cares.github.io/TheWorldAvatar/).
 
 
 ## Issues? Feature requests?

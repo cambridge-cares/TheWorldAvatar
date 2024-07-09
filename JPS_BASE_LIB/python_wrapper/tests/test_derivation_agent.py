@@ -61,6 +61,10 @@ def test_integration_test(initialise_agent):
             sparql_client.jpsBaseLib_view.DerivationSparql.ONTODERIVATION_DERIVATIONASYN
         )
 
+    # validate that all derivations are marked up correctly
+    # i.e. all timestamp correctly attached, also no circular dependency
+    assert derivation_client.validateDerivations()
+
     # Start the scheduler to monitor derivations
     rng_agent.start_all_periodical_job()
     min_agent.start_all_periodical_job()

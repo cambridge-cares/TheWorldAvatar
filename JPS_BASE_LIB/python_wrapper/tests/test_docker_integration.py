@@ -424,6 +424,10 @@ def initialise_derivations(
             all_instances.DIFFAGENT_SERVICE, [all_instances.DERIV_MAX, all_instances.DERIV_MIN]
         )
 
+    # validate that all derivations are marked up correctly
+    # i.e. all timestamp correctly attached, also no circular dependency
+    assert derivation_client.validateDerivations()
+
     return all_instances
 
 

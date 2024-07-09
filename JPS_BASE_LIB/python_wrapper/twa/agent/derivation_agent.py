@@ -3,6 +3,7 @@ from typing import Type, TypeVar, Union, List
 from flask_apscheduler import APScheduler
 from flask import Flask
 from flask import request
+from flask.typing import RouteCallable
 from urllib.parse import urlparse, urljoin
 from multiprocessing import Process
 import traceback
@@ -11,7 +12,6 @@ import json
 import time
 
 from twa import agentlogging
-
 from twa.kg_operations import jpsBaseLibGW
 from twa.kg_operations import PySparqlClient
 from twa.kg_operations.derivation_client import PyDerivationClient
@@ -26,12 +26,47 @@ PY_SPARQL_CLIENT = TypeVar('PY_SPARQL_CLIENT', bound=PySparqlClient)
 
 class FlaskConfig(object):
     """
-        This class provides the configuration for flask app object. Each config should be provided as constant. For more information, visit https://flask.palletsprojects.com/en/2.0.x/config/.
+    This class provides the configuration for flask app object.
+    Each config should be provided as constant.
+    For more information, visit https://flask.palletsprojects.com/en/3.0.x/config/.
+
+    Attributes:
+        SCHEDULER_API_ENABLED (bool): Enables the Flask Scheduler API (default is True)
     """
     SCHEDULER_API_ENABLED = True
 
 
 class DerivationAgent(ABC):
+    """
+    Abstract base class for a derivation agent.
+
+    This class provides the foundational methods and configurations required for a
+    derivation agent. It uses a Flask application and APScheduler to manage asynchronous
+    derivations and periodic jobs.
+
+    Attributes:
+        app (Flask): The Flask application instance.
+        scheduler (APScheduler): The APScheduler instance for managing periodic jobs.
+        time_interval (int): The time interval between two runs of the derivation monitoring job (in seconds).
+        max_thread_monitor_async_derivations (int): Maximum number of threads to be used for monitoring async derivations.
+        syncDerivationEndpoint (str): HTTP endpoint for handling synchronous derivations.
+        kgUrl (str): SPARQL query endpoint.
+        kgUpdateUrl (str): SPARQL update endpoint.
+        kgUser (str, optional): Username for the SPARQL endpoints.
+        kgPassword (str, optional): Password for the SPARQL endpoints.
+        fs_url (str, optional): File server endpoint.
+        fs_user (str, optional): Username for the file server.
+        fs_password (str, optional): Password for the file server.
+        derivation_client (PyDerivationClient): Client for managing derivations.
+        sparql_client (PySparqlClient, optional): SPARQL client instance.
+        logger (Logger): Logger for the agent.
+        yag (yagmail.SMTP, optional): Email client for sending notifications.
+        email_recipient (List[str], optional): List of email recipients.
+        email_subject_prefix (str, optional): Prefix for email subjects.
+        email_start_end_async_derivations (bool): Flag to send email notifications at the start and end of async derivations.
+        register_agent (bool): Flag to register the agent to the knowledge graph.
+    """
+
     def __init__(
         self,
         time_interval: int,
@@ -55,28 +90,28 @@ class DerivationAgent(ABC):
         logger_for_dev: bool = True,
     ):
         """
-            This method initialises the instance of DerivationAgent.
+        Initialises the instance of DerivationAgent.
 
-            Args:
-                time_interval (int): time interval between two runs of derivation monitoring job (in SECONDS)
-                kg_url (str): SPARQL query endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
-                kg_update_url (str): SPARQL update endpoint, will be set to the same value as kg_url if not provided, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
-                kg_user (str): username used to access the SPARQL query/update endpoint specified by kg_url/kg_update_url
-                kg_password (str): password that set for the kg_user used to access the SPARQL query/update endpoint specified by kg_url/kg_update_url
-                fs_url (str): file server endpoint, an example: "http://localhost:8080/FileServer/"
-                fs_user (str): username used to access the file server endpoint specified by fs_url
-                fs_password (str): password that set for the fs_user used to access the file server endpoint specified by fs_url
-                derivation_instance_base_url (str): namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
-                flask_config (FlaskConfig): configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
-                agent_endpoint_base_url (str): data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:5000/endpoint"
-                register_agent (bool): boolean value, whether to register the agent to the knowledge graph
-                max_thread_monitor_async_derivations (int): maximum number of threads that to be used for monitoring async derivations
-                email_recipient (str): recipients of email notification seperated by semicolon, e.g. "abc@email.com;def@email.com"
-                email_subject_prefix (str): subject prefix of the email title to put in a square bracket, e.g. the email subject will start with "[My Prefix]" when provided "My Prefix"
-                email_username (str): the username to be used as the sender of the email
-                email_auth_json_path (str): file path to the auth json for the `email_username`
-                email_start_end_async_derivations (bool): a boolean flag indicating whether to send email notification at the start and end of processing async derivations
-                logger_for_dev (bool): logger for agents in development or production
+        Args:
+            time_interval (int): time interval between two runs of derivation monitoring job (in SECONDS)
+            kg_url (str): SPARQL query endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
+            kg_update_url (str): SPARQL update endpoint, will be set to the same value as kg_url if not provided, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
+            kg_user (str): username used to access the SPARQL query/update endpoint specified by kg_url/kg_update_url
+            kg_password (str): password that set for the kg_user used to access the SPARQL query/update endpoint specified by kg_url/kg_update_url
+            fs_url (str): file server endpoint, an example: "http://localhost:8080/FileServer/"
+            fs_user (str): username used to access the file server endpoint specified by fs_url
+            fs_password (str): password that set for the fs_user used to access the file server endpoint specified by fs_url
+            derivation_instance_base_url (str): namespace to be used when creating derivation instance, an example: "http://example.com/kg/"
+            flask_config (FlaskConfig): configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
+            agent_endpoint_base_url (str): data property OntoAgent:hasHttpUrl of OntoAgent:Operation of the derivation agent, an example: "http://localhost:5000/endpoint"
+            register_agent (bool): boolean value, whether to register the agent to the knowledge graph
+            max_thread_monitor_async_derivations (int): maximum number of threads that to be used for monitoring async derivations
+            email_recipient (str): recipients of email notification seperated by semicolon, e.g. "abc@email.com;def@email.com"
+            email_subject_prefix (str): subject prefix of the email title to put in a square bracket, e.g. the email subject will start with "[My Prefix]" when provided "My Prefix"
+            email_username (str): the username to be used as the sender of the email
+            email_auth_json_path (str): file path to the auth json for the `email_username`
+            email_start_end_async_derivations (bool): a boolean flag indicating whether to send email notification at the start and end of processing async derivations
+            logger_for_dev (bool): logger for agents in development or production
         """
 
         # create a JVM module view and use it to import the required java classes
@@ -168,6 +203,7 @@ class DerivationAgent(ABC):
         return inner
 
     def send_email_when_exception(func_return_value=False):
+        """Decorator to send an email when an exception occurs in the decorated method."""
         def decorator(func):
             def inner(self, *args, **kwargs):
                 try:
@@ -193,7 +229,14 @@ class DerivationAgent(ABC):
             return inner
         return decorator
 
-    def send_email(self, subject, contents):
+    def send_email(self, subject: str, contents: list):
+        """
+        Sends an email notification with the given subject and contents.
+
+        Args:
+            subject (str): The subject of the email
+            contents (list): The contents of the email
+        """
         timeout = 2
         process_email = Process(target=self.yag.send, args=(self.email_recipient, subject, contents))
         process_email.start()
@@ -204,7 +247,13 @@ class DerivationAgent(ABC):
         if process_email.exitcode != 0:
             self.logger.error(f"Timed out sending email notification after {timeout} seconds.\n Recipient: {self.email_recipient}\n Subject: {subject}\n Contents: {contents}")
 
-    def send_email_when_async_derivation_up_to_date(self, derivation_iri):
+    def send_email_when_async_derivation_up_to_date(self, derivation_iri: str):
+        """
+        Sends an email notification when an asynchronous derivation is up-to-date.
+
+        Args:
+            derivation_iri (str): The IRI of the derivation that was processed
+        """
         if self.yag is not None and self.email_start_end_async_derivations:
             self.send_email(
                 f"[{self.email_subject_prefix}] async derivation up-to-date",
@@ -212,6 +261,12 @@ class DerivationAgent(ABC):
             )
 
     def send_email_when_async_derivation_started(self, derivation_iri):
+        """
+        Sends an email notification when an asynchronous derivation starts.
+
+        Args:
+            derivation_iri (str): The IRI of the derivation that was processed
+        """
         if self.yag is not None and self.email_start_end_async_derivations:
             self.send_email(
                 f"[{self.email_subject_prefix}] async derivation now-in-progress",
@@ -219,7 +274,15 @@ class DerivationAgent(ABC):
             )
 
     def get_sparql_client(self, sparql_client_cls: Type[PY_SPARQL_CLIENT]) -> PY_SPARQL_CLIENT:
-        """This method returns a SPARQL client object that instantiated from sparql_client_cls, which should extend PySparqlClient class."""
+        """
+        Returns a SPARQL client object that instantiated from sparql_client_cls, which should extend PySparqlClient class.
+
+        Args:
+            sparql_client_cls (Type[PY_SPARQL_CLIENT]): The SPARQL client class
+
+        Returns:
+            PY_SPARQL_CLIENT: An instance of the SPARQL client
+        """
         if self.sparql_client is None or not isinstance(self.sparql_client, sparql_client_cls):
             self.sparql_client = sparql_client_cls(
                 query_endpoint=self.kgUrl, update_endpoint=self.kgUpdateUrl,
@@ -260,39 +323,47 @@ class DerivationAgent(ABC):
         """This method returns a list of output concepts of the agent. This should be overridden by the derived class."""
         pass
 
-    def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
+    def add_url_pattern(
+        self,
+        url_pattern: str = None,
+        url_pattern_name: str = None,
+        function: RouteCallable = None,
+        methods: str = ['GET'],
+        *args,
+        **kwargs
+    ):
         """
-            This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to derivation agent.
-            For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.add_url_rule
-            WARNING: Use of this by developer is STRONGLY discouraged.
-            The design intention of an derivation agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
+        This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to derivation agent.
+        For more information, visit https://flask.palletsprojects.com/en/3.0.x/api/#flask.Flask.add_url_rule
+        WARNING: Use of this by developer is STRONGLY discouraged.
+        The design intention of an derivation agent is to communicate via the KNOWLEDGE GRAPH, and NOT via HTTP requests.
 
-            Arguments:
-                url_pattern - the endpoint url to associate with the rule and view function
-                url_pattern_name - the name of the endpoint
-                function - the view function to associate with the endpoint
-                methods - HTTP request methods, default to ['GET']
+        Args:
+            url_pattern (str): the endpoint url to associate with the rule and view function
+            url_pattern_name (str): the name of the endpoint
+            function (flask.typing.RouteCallable): the view function to associate with the endpoint
+            methods (str): HTTP request methods, default to ['GET']
         """
         self.app.add_url_rule(url_pattern, url_pattern_name,
                               function, methods=methods, *args, **kwargs)
-        self.logger.info("A URL Pattern <%s> is added." % (url_pattern))
+        self.logger.info(f"A URL Pattern <{url_pattern}> is added.")
 
     @send_email_when_exception(func_return_value=False)
     def monitor_async_derivations(self):
         """
-            This method monitors the status of the asynchronous derivation that "isDerivedUsing" DerivationAgent.
+        This method monitors the status of the asynchronous derivation that "isDerivedUsing" DerivationAgent.
 
-            When it detects the status is "Requested", the agent will mark the status as "InProgress" and start the job.
-            Once the job is finished, the agent marks the status as "Finished" and attaches the new derived IRI to it via "hasNewDerivedIRI".
-            All new generated triples are also written to the knowledge graph at this point.
+        When it detects the status is "Requested", the agent will mark the status as "InProgress" and start the job.
+        Once the job is finished, the agent marks the status as "Finished" and attaches the new derived IRI to it via "hasNewDerivedIRI".
+        All new generated triples are also written to the knowledge graph at this point.
 
-            When it detects the status is "InProgress", the currently implementation just passes.
+        When it detects the status is "InProgress", the currently implementation just passes.
 
-            When it detects the status is "Finished", the agent deletes the old entities,
-            reconnects the new instances (previously attached to the status via "hasNewDerivedIRI") with the original derivation,
-            cleans up all the status, and finally updates the timestamp of the derivation.
-            All these processing steps at the `Finished` status are taken care of by method
-            `uk.ac.cam.cares.jps.base.derivation.DerivationClient.cleanUpFinishedDerivationUpdate(String)`.
+        When it detects the status is "Finished", the agent deletes the old entities,
+        reconnects the new instances (previously attached to the status via "hasNewDerivedIRI") with the original derivation,
+        cleans up all the status, and finally updates the timestamp of the derivation.
+        All these processing steps at the `Finished` status are taken care of by method
+        `uk.ac.cam.cares.jps.base.derivation.DerivationClient.cleanUpFinishedDerivationUpdate(String)`.
         """
 
         # Below codes follow the logic as defined in DerivationAgent.java in JPS_BASE_LIB
@@ -440,25 +511,23 @@ class DerivationAgent(ABC):
         This method perform the agent logic of converting derivation inputs to derivation outputs.
         Developer shall override this when writing new derivation agent based on DerivationAgent class.
 
-        Arguments
-            - derivation_inputs: instance of derivation inputs in the format of:
-            {
-                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_1": ["https://www.example.com/triplestore/repository/Concept_1/Instance_1"],
-                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_2": ["https://www.example.com/triplestore/repository/Concept_2/Instance_2"],
-                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_3":
-                ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1",
-                    "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
-                "https://www.example.com/triplestore/repository/Ontology.owl#Concept_4": ["https://www.example.com/triplestore/repository/Concept_4/Instance_4"]
-            }
-            - derivation_outputs: instance of derivation outputs, developer should add new created entiteis and triples to this variable
+        Args:
+            derivation_inputs (DerivationInputs): instance of derivation inputs, essentially in the format of:
+                {
+                    "https://example.com/kg/Concept_1": ["https://example.com/kg/Concept_1/Instance_1"],
+                    "https://example.com/kg/Concept_2": ["https://example.com/kg/Concept_2/Instance_2"],
+                    "https://example.com/kg/Concept_3":
+                    ["https://example.com/kg/Concept_3/Instance_3_1",
+                        "https://example.com/kg/Concept_3/Instance_3_2"],
+                    "https://example.com/kg/Concept_4": ["https://example.com/kg/Concept_4/Instance_4"]
+                }
+            derivation_outputs (DerivationOutputs): instance of derivation outputs, developer should add new created entiteis and triples to this variable
         """
         pass
 
     @periodical_job
     def _start_monitoring_derivations(self):
-        """
-            This method starts the periodical job to monitor asynchronous derivation, also adds the HTTP endpoint to handle synchronous derivation.
-        """
+        """This method starts the periodical job to monitor asynchronous derivation, also adds the HTTP endpoint to handle synchronous derivation."""
         self.scheduler.add_job(id='monitor_derivations', func=self.monitor_async_derivations,
                                trigger='interval', seconds=self.time_interval,
                                max_instances=self.max_thread_monitor_async_derivations) # enable multiple threads if needed, default is 1
@@ -477,6 +546,10 @@ class DerivationAgent(ABC):
 
     @send_email_when_exception(func_return_value=True)
     def handle_sync_derivations(self):
+        """
+        This method handles synchronous derivation by using the Flask app object of the DerivationAgent to process the HTTP request,
+        and then pass it to `process_request_parameters` function provided by the developers.
+        """
         self.logger.info("Received synchronous derivation request: %s." % (request.url))
         requestParams = request.json
         res = {}
@@ -562,42 +635,62 @@ class DerivationAgent(ABC):
 
     @abstractmethod
     def validate_inputs(self, http_request) -> bool:
-        # developer can overwrite this function for customised validation
+        """
+        Validates the HTTP request sent to the agent for processing synchronous derivations.
+        Developer can overwrite this function for customised validation.
+
+        Args:
+            http_request: The HTTP request received
+
+        Raises:
+            Exception: HTTP request is empty
+            Exception: IRI for derivation is not provided in the HTTP request
+            Exception: IRI for agent is not provided in the HTTP request
+            Exception: IRI for old derivation outputs are not provided in the HTTP request
+            Exception: IRI for downstream derivations are not provided in the HTTP request
+
+        Returns:
+            bool: Whether the HTTP request is valid
+        """
         self.logger.info("Validating inputs: " + str(http_request))
         if not bool(http_request):
             self.logger.warn("RequestParams are empty, throwing BadRequestException...")
             raise Exception("RequestParams are empty")
 
         if self.jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY not in http_request:
-            self.logger.info("Agent <%s> received an empty request..." % self.agentIRI)
+            self.logger.info(f"Agent <{self.agentIRI}> received an empty request...")
             return False
         else:
             if self.jpsBaseLib_view.DerivationClient.DERIVATION_KEY not in http_request:
-                msg = "Agent <%s> received a request that doesn't have derivationIRI..." % self.agentIRI
+                msg = f"Agent <{self.agentIRI}> received a request that doesn't have derivationIRI..."
                 self.logger.error(msg)
                 raise Exception(msg)
             if http_request[self.jpsBaseLib_view.DerivationClient.SYNC_NEW_INFO_FLAG]:
                 if self.jpsBaseLib_view.DerivationClient.AGENT_IRI_KEY not in http_request:
-                    msg = "Agent <%s> received a request for sync new information that doesn't have information about agent IRI..." % self.agentIRI
+                    msg = f"Agent <{self.agentIRI}> received a request for sync new information that doesn't have information about agent IRI..."
                     self.logger.error(msg)
                     raise Exception(msg)
             else:
                 if self.jpsBaseLib_view.DerivationClient.BELONGSTO_KEY not in http_request:
-                    msg = "Agent <%s> received a request that doesn't have information about old outputs..." % self.agentIRI
+                    msg = f"Agent <{self.agentIRI}> received a request that doesn't have information about old outputs..."
                     self.logger.error(msg)
                     raise Exception(msg)
                 if self.jpsBaseLib_view.DerivationClient.DOWNSTREAMDERIVATION_KEY not in http_request:
-                    msg = "Agent <%s> received a request that doesn't have information about downstream derivation..." % self.agentIRI
+                    msg = f"Agent <{self.agentIRI}> received a request that doesn't have information about downstream derivation..."
                     self.logger.error(msg)
                     raise Exception(msg)
 
         return True
 
     def run_flask_app(self, **kwargs):
-        """
-            This method runs the flask app as an HTTP servlet.
-        """
+        """This method runs the flask app as an HTTP servlet."""
         self.app.run(**kwargs)
 
 def format_current_time() -> str:
+    """
+    Formats the current local time as a string.
+
+    Returns:
+        str: The current local time in the format "YYYY-MM-DD HH:MM:SS TIMEZONE".
+    """
     return str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + f" {str(time.localtime().tm_zone)}"
