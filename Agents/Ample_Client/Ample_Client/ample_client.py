@@ -57,7 +57,8 @@ async def read_tag_values(client:Client, tags:dict):
     for key, tag_and_data_type_dict in tags.items():
         values = {}
         # Read values from multiple nodes
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + timedelta(hours=8)
+        #timestamp_datetime = datetime.datetime.now() + timedelta(hours=8)
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data_values = await client.read_values(tag_and_data_type_dict["nodes"])
         for tag, value, data_type in zip(tag_and_data_type_dict["tags"], data_values, tag_and_data_type_dict["datatype"]):
             values.update({tag:{"timestamp":timestamp, "value":value, "data_type":data_type}})

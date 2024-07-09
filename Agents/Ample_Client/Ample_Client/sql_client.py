@@ -72,6 +72,8 @@ def create_if_not_exist_and_insert(connection, dict:dict):
                 key = key.replace(' ','_')
                 key = remove_text_between_characters(key, '(', ')')
                 key = remove_text_between_characters(key, '[', ']')
+                if key.endswith('_'):
+                    key = key[:-1]
                 data_type = timeseries['data_type']
                 if data_type == "Float":
                     data_type = "DOUBLE PRECISION"
