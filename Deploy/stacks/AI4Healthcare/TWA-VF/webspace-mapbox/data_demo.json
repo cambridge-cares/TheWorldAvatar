@@ -2,7 +2,8 @@
     "name": "All Layers",
     "groups": [
         {
-            "name": "Buildings",
+            
+            "name": "Cam-Ely-Wisbech Buildings",
             "stack": "http://174.138.27.240:3838",
             "sources": [
                 {
@@ -34,7 +35,7 @@
             "layers": [
                 {
                     "id": "cambridge-layer",
-                    "name": "Cambridge-Ely-Wisbech",
+                    "name": "Cambridge-Ely-Wisbech Building",
                     "treeable": false,
                     "source": "cambridge-source",
                     "source-layer": "cambridge_gsl",
@@ -122,7 +123,7 @@
             ]
         },
         {
-            "name": "Kings-Lynn",
+            "name": "Kings-Lynn Buildings",
             "stack": "http://165.232.172.16:3838",
             "sources": [
                 {
@@ -161,7 +162,7 @@
             "layers": [
                 {
                     "id": "buildings-layer-value",
-                    "name": "Property value estimates",
+                    "name": "Property Value Estimates",
                     "source": "building_values",
                     "source-layer": "marketvalues",
                     "type": "fill-extrusion",
@@ -191,7 +192,7 @@
                 },
                 {
                     "id": "buildings-layer-sales",
-                    "name": "Actual property sales",
+                    "name": "Actual Property Sales",
                     "source": "building_sales",
                     "source-layer": "transactions",
                     "type": "fill-extrusion",
@@ -396,7 +397,7 @@
         {
             "name": "Example GPS trajectories",
             "groups": [
-              {
+            {
                 "name": "Example trajectory (2015)",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
@@ -409,10 +410,11 @@
                   },
                   {
                     "id": "Movement Trajectory Sources",
-                    "type": "raster",
-                    "tiles": [
-                      "https://theworldavatar.io/demos/fenland/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
-                    ]
+                    "type": "geojson",
+					"cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Agps_line&&outputFormat=application%2Fjson"
                   }
                 ],
                 "layers": [
@@ -436,12 +438,16 @@
                     "id": "Movement Trajectory_layer",
                     "name": "Interpolated movement",
                     "source": "Movement Trajectory Sources",
-                    "type": "raster",
-                    "minzoom": 4,
-                    "order": 3,
+                    "type": "line",
+                    "minzoom": 12,
+                    "order": 100,
                     "layout": {
                       "visibility": "none"
-                    }
+                    },
+					"paint": {
+						"line-color": "#326578",
+						"line-width": 3
+					}
                   }
                 ]
               },
@@ -453,14 +459,14 @@
                     "id": "Recorded Points Sources",
                     "type": "vector",
                     "tiles": [
-                      "https://theworldavatar.io/demos/fenland/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                   },
                   {
                     "id": "Movement Trajectory Sources",
                     "type": "raster",
                     "tiles": [
-                      "https://theworldavatar.io/demos/fenland/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                      "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                     ]
                   }
                 ],
@@ -476,7 +482,7 @@
                     "layout": {
                       "visibility": "none",
                       "icon-image": "gpslocation2",
-                      "icon-size": 0.37,
+                      "icon-size": 0.27,
                       "icon-allow-overlap": true,
                       "icon-ignore-placement": true
                     }
@@ -510,7 +516,7 @@
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "tiles": [
-                      "https://theworldavatar.io/demos/fenland/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:fhr_cambridge&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:fhr_cambridge&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                   }
                 ],
@@ -688,6 +694,191 @@
         
                 ]
             },
+            {
+                "name": "Points of Interest",
+                "groups": [
+                    {
+                        "name": "Sport and entertainment",
+                        "stack": "http://174.138.27.240:5007",
+                        "sources": [
+                            {
+                                "id": "poi-sport-entertainment-source",
+                                "type": "geojson",
+                                "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                                "cluster": true,
+                                "clusterMaxZoom": 14,
+                                "clusterRadius": 50
+                            }
+                        ],
+                        "layers": [
+                            {
+                                "id": "poi-sport-entertainment",
+                                "name": "Sport and entertainment",
+                                "source": "poi-sport-entertainment-source",
+                                "type": "circle",
+                                "minzoom": 14,
+                                "paint": {
+                                    "circle-radius": 5,
+                                    "circle-color": "#FFA500",
+                                    "circle-opacity": 0.9
+                                }
+                            },
+                            {
+                                "id": "poi-sport-entertainment-cluster",
+                                "name": "Sport and entertainment",
+                                "source": "poi-sport-entertainment-source",
+                                "type": "circle",
+                                "filter": ["has", "point_count"],
+                                "minzoom": 1,
+                                "maxzoom": 14,
+                                "paint": {
+                                    "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 5, 14, 10],
+                                    "circle-color": "#FFA500",
+                                    "circle-opacity": 0.7,
+                                    "circle-stroke-width": 2,
+                                    "circle-stroke-color": "#FFFFFF"
+                                }
+                            },
+                            {
+                                "id": "poi-sport-entertainment-cluster-count",
+                                "name": "Sport and entertainment",
+                                "source": "poi-sport-entertainment-source",
+                                "type": "symbol",
+                                "filter": ["has", "point_count"],
+                                "minzoom": 1,
+                                "maxzoom": 14,
+                                "layout": {
+                                    "text-field": "{point_count_abbreviated}",
+                                    "text-font": ["Arial Unicode MS Regular"],
+                                    "text-size": 12,
+                                    "text-offset": [0, 0.5],
+                                    "text-anchor": "top"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Education and health",
+                        "stack": "http://174.138.27.240:5007",
+                        "sources": [
+                            {
+                                "id": "poi-education-health-source",
+                                "type": "geojson",
+                                "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                                "cluster": true,
+                                "clusterMaxZoom": 14,
+                                "clusterRadius": 50
+                            }
+                        ],
+                        "layers": [
+                            {
+                                "id": "poi-education-health",
+                                "name": "Education and health",
+                                "source": "poi-education-health-source",
+                                "type": "circle",
+                                "minzoom": 14,
+                                "paint": {
+                                    "circle-radius": 5,
+                                    "circle-color": "#00008B",
+                                    "circle-opacity": 0.9
+                                }
+                            },
+                            {
+                                "id": "poi-education-health-cluster",
+                                "name": "Education and health",
+                                "source": "poi-education-health-source",
+                                "type": "circle",
+                                "filter": ["has", "point_count"],
+                                "minzoom": 1,
+                                "maxzoom": 14,
+                                "paint": {
+                                    "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 5, 14, 10],
+                                    "circle-color": "#00008B",
+                                    "circle-opacity": 0.7,
+                                    "circle-stroke-width": 2,
+                                    "circle-stroke-color": "#FFFFFF"
+                                }
+                            },
+                            {
+                                "id": "poi-education-health-cluster-count",
+                                "name": "Education and health",
+                                "source": "poi-education-health-source",
+                                "type": "symbol",
+                                "filter": ["has", "point_count"],
+                                "minzoom": 1,
+                                "maxzoom": 14,
+                                "layout": {
+                                    "text-field": "{point_count_abbreviated}",
+                                    "text-font": ["Arial Unicode MS Regular"],
+                                    "text-size": 12,
+                                    "text-offset": [0, 0.5],
+                                    "text-anchor": "top"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Public infrastructure",
+                        "stack": "http://174.138.27.240:5007",
+                        "sources": [
+                            {
+                                "id": "poi-public-infrastructure-source",
+                                "type": "geojson",
+                                "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                                "cluster": true,
+                                "clusterMaxZoom": 14,
+                                "clusterRadius": 50
+                            }
+                        ],
+                        "layers": [
+                            {
+                                "id": "poi-public-infrastructure",
+                                "name": "Public infrastructure",
+                                "source": "poi-public-infrastructure-source",
+                                "type": "circle",
+                                "minzoom": 14,
+                                "paint": {
+                                    "circle-radius": 5,
+                                    "circle-color": "#808080",
+                                    "circle-opacity": 0.9
+                                }
+                            },
+                            {
+                                "id": "poi-public-infrastructure-cluster",
+                                "name": "Public infrastructure",
+                                "source": "poi-public-infrastructure-source",
+                                "type": "circle",
+                                "filter": ["has", "point_count"],
+                                "minzoom": 1,
+                                "maxzoom": 14,
+                                "paint": {
+                                    "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 5, 14, 10],
+                                    "circle-color": "#808080",
+                                    "circle-opacity": 0.7,
+                                    "circle-stroke-width": 2,
+                                    "circle-stroke-color": "#FFFFFF"
+                                }
+                            },
+                            {
+                                "id": "poi-public-infrastructure-cluster-count",
+                                "name": "Public infrastructure",
+                                "source": "poi-public-infrastructure-source",
+                                "type": "symbol",
+                                "filter": ["has", "point_count"],
+                                "minzoom": 1,
+                                "maxzoom": 14,
+                                "layout": {
+                                    "text-field": "{point_count_abbreviated}",
+                                    "text-font": ["Arial Unicode MS Regular"],
+                                    "text-size": 12,
+                                    "text-offset": [0, 0.5],
+                                    "text-anchor": "top"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },                                               
               {
                 "name": "Fenland Study (circa 2014)",
                 "stack": "http://174.138.27.240:5007",
@@ -696,14 +887,14 @@
                     "id": "Takeaways Sources",
                     "type": "vector",
                     "tiles": [
-                      "https://theworldavatar.io/demos/fenland/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:takeaways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:takeaways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                   },
                   {
                     "id": "Supermarket Sources",
                     "type": "vector",
                     "tiles": [
-                      "https://theworldavatar.io/demos/fenland/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:supermarket&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:supermarket&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                   }
                 ],
@@ -913,7 +1104,7 @@
                         "id": "green-space-source",
                         "type": "raster",
                         "tiles": [
-                            "https://theworldavatar.io/demos/fenland/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                            "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                         ]
                     }
                 ],
@@ -949,7 +1140,7 @@
                         "id": "cropmap-source",
                         "type": "raster",
                         "tiles": [
-                            "https://theworldavatar.io/demos/fenland/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                            "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                         ]
                     }
                 ],
