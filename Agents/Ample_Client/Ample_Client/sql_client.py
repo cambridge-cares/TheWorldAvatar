@@ -69,6 +69,10 @@ def create_if_not_exist_and_insert(connection, dict:dict):
             value_list = [str(timeseries_dict[list(timeseries_dict.keys())[0]]['timestamp'])]
             for key, timeseries in timeseries_dict.items():
                 key = key.replace(' ','_')
+                key = key.replace("[", '_')
+                key = key.replace("]", "")
+                key = key.replace("(",'_')
+                key = key.replace(")", '')
                 data_type = timeseries['data_type']
                 if data_type == "Float":
                     data_type = "DOUBLE PRECISION"
