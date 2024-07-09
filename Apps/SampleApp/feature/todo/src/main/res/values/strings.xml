@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="get_todo">Get Todo</string>
+    <string name="go_to_second_page">Go to Second Page</string>
+    <string name="this_is_the_second_page_of_todo_feature">This is the second page of Todo feature</string>
+    <string name="todo">Todo</string>
+</resources>

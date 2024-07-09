@@ -319,7 +319,7 @@ Relative file-system paths containing `..` are not supported.
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data), [`tboxcsv`](#tbox-csv-data), and [`osmrouting`](#osm-data).
+The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data), [`tboxcsv`](#tbox-csv-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), and [`osmrouting`](#osm-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -375,6 +375,12 @@ However, all of the essential information (database name, port number, username,
 The dataset open options provided by the PostGIS driver are described [here][vector-postgis-doo].
 The values are passed to the `ogr2ogr` tool as `NAME=VALUE` pair arguments of the [`-doo`][ogr2ogr-doo] option.
 
+##### `"configOptions"`
+
+Many options that can be set via environment variables can also be specified as "config" options.
+The values are passed to the `ogr2ogr` tool as `NAME VALUE` pair arguments of the [`--config`][vector-common-config] option.
+A list of possible options can be found on the [config options][config-options] page.
+
 ##### `"otherOptions"`
 
 Several non-driver specific options are also available.
@@ -417,6 +423,147 @@ Within that the following nodes can be added.
 - `"defaultStyle"` name of style within GeoServer that will be the style if of this layer if no other style is specified.
 
 These are the most commonly used options, for more see the examples [here][geoserver-rest] and [here][geoserver-rest-layers].
+
+### Raster Data
+
+The `"raster"` data type should be used to load raster/coverage geospatial data.
+The data loader does three things when uploading raster data:
+
+1. It uses the GDAL [`gdal_translate`][gdal-translate] tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)][raster-cog] files stored in the stack.
+  This is an extension of the GeoTIFF format and both are very efficient to read.
+  The full list of file formats that `gdal_translate` supports is given [here][raster-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
+2. It uses the PostGIS [`raster2pgsql`][postgis-raster-loader] tool to register the GeoTIFF files in the PostGIS database.
+   The `raster2pgsql` tool also automatically divides the data into tiles in the database to make geospatial searching more efficient.
+3. It uses the GeoServer REST API to create a new coverage layer in GeoServer that can be used to visualise the newly uploaded data.
+
+#### GDAL Options
+
+In most situations the default `gdal_translate` settings will be sufficient to upload the data but sometimes some extra options need to be supplied. [:open_file_folder:](#value-by-file-name)
+
+> :memo: **Note:** If issues are encountered, due to non-standard projections or strips of the raster being flipped vertically in the visualisation, then it is possible to use [`gdalwarp`][gdalwarp] tool by specifying `"gdalWarpOptions"` instead of `"gdalTranslateOptions"`.
+> Due to the potential loss of accuracy when re-projecting it is better to use `gdal_tanslate` whenever possible.
+
+These can be specified within an `"gdalTranslateOptions"` object (previously just called `"options"`) under the following keys:
+
+##### `"sridIn"`
+
+If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
+This sets the value of the [`-a_srs`][raster-common-a_srs] argument passed to `gdal_translate`.
+
+##### `"sridOut"`
+
+If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
+This sets the value of the [`TARGET_SRS`][raster-cog-t_srs] creation option passed to `gdal_translate`.
+This is an option specific to the [COG][raster-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
+
+If there is no `sridIn` set in config file and gdal does not recognise the EPSG SRID (i.e. `gdalsrsinfo` returns an EPSG:-1), then the projection is assumed to be a custom one and will be appended to the spatial ref system in postGIS and GeoServer.
+This must still include an authority (although not EPSG) and a new number.
+The uploader will throw an error if the number exists already in the table.
+
+e.g. if the `sridOut` is set to `TWA:101000` and the projection is not recognised, this will be used as the SRID and authority in the newly specified custom projection.
+
+##### `"inputDatasetOpenOptions"`
+
+Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
+These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
+These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
+All of the raster drivers are listed [here][raster-drivers] with links to their documentation.
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-oo`][gdal-translate-oo] option.
+
+##### `"creationOptions"`
+
+All raster datasets are loaded into the PostGIS database within the stack with each data subset being loaded as a separate layer/table.
+In general these options should not need to be set explicitly as the `gdal_translate` tool can usually work them out from the source dataset, or use default values.
+However, setting one or more of them may be required to fix specific problems with the input dataset.
+The creation options provided by the COG driver are described [here][raster-cog-co].
+The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-co`][gdal-translate-co] option.
+
+##### `"configOptions"`
+
+Many options that can be set via enviornment variables can also be specified as "config" options.
+The values are passed to the `gdal_translate` tool as `NAME VALUE` pair arguments of the [`--config`][raster-common-config] option.
+A list of possible options can be found on the [config options][config-options] page.
+
+##### `"otherOptions"`
+
+Several non-driver specific options are also available.
+These can be set as key-array-valued pairs within an `"otherOptions"` object.
+This allows for multiple values per option in an array (`"--option": ["value1", "value2"]`); single values either within an array  (`"--option": ["value"]`) or as a string (`"--option": "value"`); and valueless flags are paired with an empty string (`"--option": ""`), array (`"--option": []`), or object (`"--option": {}`).
+A list of possible options can be found on the [raster common options][raster-common] and [gdal_translate options][gdal-translate] pages.
+
+##### `"mdimSettings"`
+
+This is for specific info about multidimensional geospatial files. Consider running `gdalinfo` and `gdalmdiminfo` on your file to get these parameters if they are not known.
+
+- `"layerArrayName"` is the array of the multidimensional file with the required data to iterate over and generate rasters
+- `"timeOptions"` contains information for geoserver to parse the time dimension. `"arrayName"` should have the name of the array with times.
+  - The `"format"` needs to be set to the [standard format][time-formatting] understood by java and geoserver e.g. `"yyyyMMddHH`".
+  Be careful that `m` is minute and `M` is month etc.
+  See above link to correctly format your datetime string.
+  This can include a timezone offset but will be overridden by `timeZone` parameter.
+  - The regex should be used in conjuction with the format to parse the filename. e.g. `"regex": ".*([0-9]{10}).*" will parse 10 digits beside each other anywhere in the filename.`
+  - The `timeZone` is passed as a `ZoneId` in java and can be something like `"GMT"` or `"Europe/Paris"`, see more [here][zone-id].
+
+##### Common Drivers
+
+- [GeoTIFF][raster-geotiff]
+- [COG – Cloud Optimized GeoTIFF][raster-cog] (mainly as the output)
+
+##### netCDF Files
+
+netCDF files are commonly used in climate science projection data. The uploader can recognise these and will copy them into postgis and subsequently iterate over internal bands to create individual geotiffs for each value in the time series band. It is important to set [mdimSettings](#mdimsettings)
+
+#### GeoServer Options
+
+For raster data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
+Within that the following nodes can be added.
+
+- `"layerSettings"`
+  - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
+
+### Tabular Data
+
+The `"tabular"` data type should be used to load non-geospatial data.
+The data loader just does one thing when uploading tabular data:
+
+1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
+As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)][vector-csv], and Microsoft Excel's [XLS][vector-xls] and [XLSX][vector-xlsx] formatted files.
+The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
+
+#### GDAL Options
+
+These are the same as listed in the vector [GDAL Options](#gdal-options) although obviously the options specific to geospatial data will not be relevant.
+
+##### Common Drivers
+
+- [Comma Separated Value (.csv)][vector-csv]
+- [XLS - MS Excel format][vector-xls]
+- [XLSX - MS Office Open XML spreadsheet][vector-xlsx]
+- [PostGIS][vector-postgis] (mainly as the output)
+
+### RDF Data
+
+The `"rdf"` data type should be used to load RDF data (triples or quads) from common file formats.
+The full list of file formats that are supported is given [here][RSC-uploader].
+The data loader does the following when uploading RDF data:
+
+1. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to read in RDF triple and quad data to the Blazegraph database in the stack.
+
+There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
+
+### TBox CSV Data
+
+The `"tboxcsv"` data type should be used to load TBox triples from CSV files that adhere to the TBox Generator format, example files can be found [here][tbox-examples].
+The data loader does the following when uploading RDF data:
+
+1. It uses the [`TBoxGeneration::generateTBox`][tbox-generation] method to generate an OWL file from the contents of the CSV file.
+2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
+
+There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
 
 ### CityDB Data
 
@@ -525,137 +672,6 @@ The `"raw_surface_XtoCityDB"` table has the following columns:
 In some cases, the original data require more sophisticated processing. Users can supply a custom SQL script with the `"preprocessSql"` keyword using [File by Value Name](#value-by-file-name). The query must create the `"raw_building_XtoCityDB"` and `"raw_surface_XtoCityDB"` tables in the public schema from the uploaded original data with the column names stated above. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap"`.
 
 The second SQL script populates the 3DcityDB schema with preprocessed building data.
-
-### Raster Data
-
-The `"raster"` data type should be used to load raster/coverage geospatial data.
-The data loader does three things when uploading raster data:
-
-1. It uses the GDAL [`gdal_translate`][gdal-translate] tool to read in data from a wide variety of file formats and output it to [Cloud Optimized GeoTIFF (COG)][raster-cog] files stored in the stack.
-  This is an extension of the GeoTIFF format and both are very efficient to read.
-  The full list of file formats that `gdal_translate` supports is given [here][raster-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
-2. It uses the PostGIS [`raster2pgsql`][postgis-raster-loader] tool to register the GeoTIFF files in the PostGIS database.
-   The `raster2pgsql` tool also automatically divides the data into tiles in the database to make geospatial searching more efficient.
-3. It uses the GeoServer REST API to create a new coverage layer in GeoServer that can be used to visualise the newly uploaded data.
-
-#### GDAL Options
-
-In most situations the default `gdal_translate` settings will be sufficient to upload the data but sometimes some extra options need to be supplied. [:open_file_folder:](#value-by-file-name)
-These can be specified within an `"gdalTranslateOptions"` object (previously just called `"options"`) under the following keys:
-
-##### `"sridIn"`
-
-If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
-This sets the value of the [`-a_srs`][raster-common-a_srs] argument passed to `gdal_translate`.
-
-##### `"sridOut"`
-
-If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
-This sets the value of the [`TARGET_SRS`][gdal-cog-t_srs] creation option passed to `gdal_translate`.
-This is an option specific to the [COG][gdal-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
-
-If there is no `sridIn` set in config file and gdal does not recognise the EPSG SRID (i.e. `gdalsrsinfo` returns an EPSG:-1), then the projection is assumed to be a custom one and will be appended to the spatial ref system in postGIS and GeoServer.
-This must still include an authority (although not EPSG) and a new number.
-The uploader will throw an error if the number exists already in the table.
-
-e.g. if the `sridOut` is set to `TWA:101000` and the projection is not recognised, this will be used as the SRID and authority in the newly specified custom projection.
-
-##### `"inputDatasetOpenOptions"`
-
-Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
-These can be set as key-value pairs within a `"inputDatasetOpenOptions"` object.
-These options are format specific and are generally described in a section with the heading "Open options" or "Dataset open options" on the relevant driver documentation page.
-All of the raster drivers are listed [here][raster-drivers] with links to their documentation.
-The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-oo`][gdal-translate-oo] option.
-
-##### `"creationOptions"`
-
-All raster datasets are loaded into the PostGIS database within the stack with each data subset being loaded as a separate layer/table.
-In general these options should not need to be set explicitly as the `gdal_translate` tool can usually work them out from the source dataset, or use default values.
-However, setting one or more of them may be required to fix specific problems with the input dataset.
-The creation options provided by the COG driver are described [here][raster-cog-co].
-The values are passed to the `gdal_translate` tool as `NAME=VALUE` pair arguments of the [`-co`][gdal-translate-co] option.
-
-##### `"otherOptions"`
-
-Several non-driver specific options are also available.
-These can be set as key-array-valued pairs within an `"otherOptions"` object.
-This allows for multiple values per option (`["value1", "value2"]`) but requires that single values are still placed within an array  (`["value"]`) and valueless flags are paired with an empty array (`[]`).
-A list of possible options can be found on the [raster common options][raster-common] and [gdal_translate options][gdal-translate] pages.
-
-##### `"mdimSettings"`
-
-This is for specific info about multidimensional geospatial files. Consider running `gdalinfo` and `gdalmdiminfo` on your file to get these parameters if they are not known.
-
-- `"layerArrayName"` is the array of the multidimensional file with the required data to iterate over and generate rasters
-- `"timeOptions"` contains information for geoserver to parse the time dimension. `"arrayName"` should have the name of the array with times.
-  - The `"format"` needs to be set to the [standard format][time-formatting] understood by java and geoserver e.g. `"yyyyMMddHH`".
-  Be careful that `m` is minute and `M` is month etc.
-  See above link to correctly format your datetime string.
-  This can include a timezone offset but will be overridden by `timeZone` parameter.
-  - The regex should be used in conjuction with the format to parse the filename. e.g. `"regex": ".*([0-9]{10}).*" will parse 10 digits beside each other anywhere in the filename.`
-  - The `timeZone` is passed as a `ZoneId` in java and can be something like `"GMT"` or `"Europe/Paris"`, see more [here][zone-id].
-
-##### Common Drivers
-
-- [GeoTIFF][raster-geotiff]
-- [COG – Cloud Optimized GeoTIFF][raster-cog] (mainly as the output)
-
-### netCDF Files
-
-netCDF files are commonly used in climate science projection data. The uploader can recognise these and will copy them into postgis and subsequently iterate over internal bands to create individual geotiffs for each value in the time series band. It is important to set [mdimSettings](#mdimsettings)
-
-#### GeoServer Options
-
-For raster data you can add a `geoServerSettings` node within the relevant data subset in the configuration json.
-Within that the following nodes can be added.
-
-- `"layerSettings"`
-  - `"defaultStyle"`: name of style within GeoServer that will be the style if of this layer if no other style is specified.
-
-### Tabular Data
-
-The `"tabular"` data type should be used to load non-geospatial data.
-The data loader just does one thing when uploading tabular data:
-
-1. It uses the GDAL [`ogr2ogr`][ogr2ogr] tool to read in data from a wide variety of file formats and output it to the PostgreSQL database in the stack.
-As the data is intended to be non-geospatial, this is most useful for reading in data from [comma separated value (.csv)][vector-csv], and Microsoft Excel's [XLS][vector-xls] and [XLSX][vector-xlsx] formatted files.
-The full list of file formats that `ogr2ogr` supports is given [here][vector-drivers] although some of these might not be available depending on the exact GDAL Docker image being used, see [here][gdal-docker] for details.
-
-#### GDAL Options
-
-These are the same as listed in the vector [GDAL Options](#gdal-options) although obviously the options specific to geospatial data will not be relevant.
-
-##### Common Drivers
-
-- [Comma Separated Value (.csv)][vector-csv]
-- [XLS - MS Excel format][vector-xls]
-- [XLSX - MS Office Open XML spreadsheet][vector-xlsx]
-- [PostGIS][vector-postgis] (mainly as the output)
-
-### RDF Data
-
-The `"rdf"` data type should be used to load RDF data (triples or quads) from common file formats.
-The full list of file formats that are supported is given [here][RSC-uploader].
-The data loader does the following when uploading RDF data:
-
-1. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to read in RDF triple and quad data to the Blazegraph database in the stack.
-
-There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
-
-### TBox CSV Data
-
-The `"tboxcsv"` data type should be used to load TBox triples from CSV files that adhere to the TBox Generator format, example files can be found [here][tbox-examples].
-The data loader does the following when uploading RDF data:
-
-1. It uses the [`TBoxGeneration::generateTBox`][tbox-generation] method to generate an OWL file from the contents of the CSV file.
-2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
-
-There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
 
 ### OSM Data
 
@@ -874,8 +890,12 @@ This way you can look at look at the user interfaces of the various services (se
 [tbox-examples]:   ../../../../JPS_Ontology/KBTemplates/TBox/
 
 [gdal-docker]:    https://github.com/OSGeo/gdal/tree/master/docker
-[ogr2ogr]:        https://gdal.org/programs/ogr2ogr.html#ogr2ogr
+[config-options]: https://gdal.org/user/configoptions.html#list-of-configuration-options-and-where-they-are-documented
+
 [vector-common]:  https://gdal.org/programs/vector_common_options.html#common-options-for-vector-programs
+[vector-common-config]: https://gdal.org/programs/vector_common_options.html#cmdoption-config
+
+[ogr2ogr]:        https://gdal.org/programs/ogr2ogr.html#ogr2ogr
 [ogr2ogr-a_srs]:  https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-a_srs
 [ogr2ogr-s_srs]:  https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-s_srs
 [ogr2ogr-t_srs]:  https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-t_srs
@@ -902,18 +922,21 @@ This way you can look at look at the user interfaces of the various services (se
 [time-formatting]:       https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#:~:text=All%20letters%20%27A%27%20to%20%27Z,use%0A%20%20%20%7D%20%20%20%20%20%20%20reserved%20for%20future%20use
 [sld-cookbook]:          https://docs.geoserver.org/stable/en/user/styling/sld/cookbook/index.html
 
-[gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
 [raster-common]:        https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs
+[raster-common-config]: https://gdal.org/programs/raster_common_options.html#cmdoption-config
 [raster-common-a_srs]:  https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs
-[raster-common-t_srs]:  https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs
-[gdal-cog-t_srs]:       https://gdal.org/drivers/raster/cog.html#reprojection-related-creation-options
-[gdal-cog]:             https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator
+[raster-common-t_srs]:  https://gdal.org/programs/raster_common_options.html#cmdoption-t_srshtml#reprojection-related-creation-options
+
+[gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
 [gdal-translate-oo]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo
 [gdal-translate-co]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co
+
+[gdalwarp]:       https://gdal.org/programs/gdal_translate.html#gdal-warp
 
 [raster-drivers]: https://gdal.org/drivers/raster/index.html#raster-drivers
 [raster-cog]:     https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator
 [raster-cog-co]:  https://gdal.org/drivers/raster/cog.html#creation-options
+[raster-cog-t_srs]:       https://gdal.org/drivers/raster/cog.
 [raster-geotiff]: https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format
 
 [postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader

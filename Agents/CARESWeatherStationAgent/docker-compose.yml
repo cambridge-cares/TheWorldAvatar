@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  caresWeatherStation-agent:
-    image: caresweatherstation-agent:1.5.0
+  cares-weather-station-agent:
+    image: ghcr.io/cambridge-cares/cares-weather-station-agent:1.6.0
     build: .
     container_name: caresWeatherStation-agent
     pull_policy: if_not_present

@@ -15,5 +15,11 @@
                 }
             }
         }
+    ],
+    "styles": [
+        {
+            "name": "elevation",
+            "file": "elevation.sld"
+        }
     ]
 }

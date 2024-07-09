@@ -1,200 +1,128 @@
 package uk.ac.cam.cares.jps.agent.gfaagent;
 
 import java.io.IOException;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import org.apache.jena.vocabulary.AS;
 import org.json.JSONArray;
+import org.springframework.core.io.ClassPathResource;
+import org.apache.commons.io.IOUtils;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
-
 public class CostCalculation {
-    private final String dbUrl;
-    private final String user;
-    private final String password;
+    private RemoteStoreClient remoteStoreClient;
+    private Map<String, Building> iriToBuildingMap;
 
-    private RemoteRDBStoreClient postgisClient;
-    private String ontopUrl;
-
-    private static final String MATCHING_PATH = "/resources/cost_ontobuiltenv.csv";
-
-    public CostCalculation (String postgisDb, String postgisUser, String postgisPassword, String ontopUrl){
-        this.dbUrl = postgisDb;
-        this.user = postgisUser;
-        this.password = postgisPassword;
-
-        this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
-        this.ontopUrl = ontopUrl;
+    public CostCalculation(String ontopUrl) {
+        remoteStoreClient = new RemoteStoreClient(ontopUrl);
+        iriToBuildingMap = new HashMap<>();
     }
 
-    public void calculationCost () throws IOException {
-        //get matching from csv
-        List<MatchingType> matchingType = new CsvToBeanBuilder(new FileReader(MATCHING_PATH))
-                .withType(MatchingType.class)
-                .build()
-                .parse();
-
-        List<BuildingInfo> buildings = queryBuildingUsage();
-        try (Connection srcConn = postgisClient.getConnection()) {
-            try (Statement stmt = srcConn.createStatement()) {
-
-                for (int i = 0; i < buildings.size(); i++) {
-                    BuildingInfo building = buildings.get(i);
-                    String buildingIri = building.getBuildingIri();
-                    int floors = building.getFloors();
-                    //unit cost query
-                    List<BuildingUsageInfo> usageInfos = building.getBuildingUsageInfo();
-                    for (int u = 0; u < usageInfos.size(); u++) {
-                        String typeCost = "";
-                        String keyCost = "";
-                        BuildingUsageInfo usageInfo = usageInfos.get(u);
-                    
-                        for (int j = 0; j < matchingType.size(); j++){
-                            if(usageInfo.getUsage().equals(matchingType.get(j).getenvType()) ){
-                                typeCost = matchingType.get(j).getType();
-                                // keyCost = matchingType.get(j).getKey();
-                                break;
-                            }
-                        }
-                        if(!typeCost.isEmpty()){
-                            String costQuery ="SELECT average FROM cost WHERE cost.\"Category\" = '" + typeCost + 
-                                            "' AND cost.\"Type\" = 'all'" ;
-                            Statement stmtQ = srcConn.createStatement();
-                            ResultSet costResult = stmtQ.executeQuery(costQuery);
-                            while (costResult.next()) {
-                                float cost = costResult.getFloat("average");
-                                usageInfos.get(u).setUnitCost(cost);
-                            }
-                        }
-                        
-                    }
-                    
-
-                    //GFA query
-                    String gfaQuery = "SELECT realval AS gfa, cityobject_id\r\n" + //
-                                            "FROM citydb.cityobject_genericattrib\r\n" + //
-                                            "WHERE attrname = 'GFA' AND cityobject_id = "+ //
-                                            "(SELECT cityobject_id\r\n" + //
-                                              "FROM citydb.cityobject_genericattrib WHERE strval = '" + buildingIri + "')";
-                    Statement stmtGFA = srcConn.createStatement();
-                    ResultSet gfaResult = stmtGFA.executeQuery(gfaQuery);
-                    float gfa = 0;
-                    int cityobject_id = 0;
-                    while (gfaResult.next()) {
-                        gfa = gfaResult.getFloat("gfa");
-                        cityobject_id = gfaResult.getInt("cityobject_id");
-                    }
-
-                    //cost calculation
-                    if(cityobject_id!=0){
-                        float costAll = 0;
-                        for(int t = 0; t < usageInfos.size(); t++) {
-                            float cost = usageInfos.get(t).getUnitCost() * usageInfos.get(t).getUsageShare() * gfa;
-                            costAll = costAll + cost;
-                        }
-                            
-    
-                        String costCal = "INSERT INTO citydb.cityobject_genericattrib (cityobject_id, attrname, realval)\n" +
-                                        "VALUES (" + cityobject_id + ", 'cost', " + costAll +")\n" +
-                                        "ON CONFLICT (cityobject_id, attrname) DO UPDATE SET realval= " + costAll +";";
-                        
-                        Statement stmtupdate = srcConn.createStatement();
-                        stmtupdate.executeUpdate(costCal);
-                    }
-                    
-                    
-                }
-            }
-        }catch (SQLException e) {
-            throw new JPSRuntimeException("Error connecting to source database: " + e);
+    public void setBuildings() {
+        String buildingQuery;
+        try (InputStream is = new ClassPathResource("building.sparql").getInputStream()) {
+            buildingQuery = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading building.sparql", e);
         }
-        
+
+        JSONArray queryResult = remoteStoreClient.executeQuery(buildingQuery);
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String buildingIri = queryResult.getJSONObject(i).getString("building");
+            String usage = queryResult.getJSONObject(i).getString("usage");
+            double usageShare = queryResult.getJSONObject(i).getDouble("usageShare");
+            double gfa = queryResult.getJSONObject(i).getDouble("gfa");
+
+            iriToBuildingMap.computeIfAbsent(buildingIri, Building::new);
+            iriToBuildingMap.get(buildingIri).addUsageShare(usage, usageShare);
+            iriToBuildingMap.get(buildingIri).setGFA(gfa);
+        }
     }
 
-    public List<BuildingInfo> queryBuildingUsage () {
-    
-        StringBuilder contentBuilder = new StringBuilder();
-        
-        try {
-            RemoteStoreClient storeClient = new RemoteStoreClient(this.ontopUrl);
+    public void calculateCost() {
+        Map<String, Double> usageToCostMap = getUsageToCostMap(getAISCost());
 
-            WhereBuilder usageWB = new WhereBuilder()
-                        .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                        .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
-                        .addWhere("?building", "env:hasPropertyUsage", "?property")
-                        .addWhere("?property", "a", "?buildingUsage")
-                        .addWhere("?property", "env:hasUsageShare", "?usageshare");
+        iriToBuildingMap.values().forEach(building -> {
+            List<Double> costs = new ArrayList<>();
+            // weight each usage cost according to usage share (area)
+            building.getUsageShare().entrySet().forEach(entry -> {
+                String usage = entry.getKey();
+                double usageShare = entry.getValue();
+                costs.add(usageToCostMap.get(usage) * usageShare * building.getGFA());
+            });
+            double totalCost = costs.stream().mapToDouble(Double::valueOf).sum();
+            building.setCost(totalCost);
+        });
+    }
 
-            SelectBuilder sb = new SelectBuilder()
-                    .addPrefix("env", OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
-                    .addPrefix("twa", OntologyURIHelper.getOntologyUri(OntologyURIHelper.twa))
-                    .addPrefix("rdfs", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdfs))
-                    .addPrefix("rdf", OntologyURIHelper.getOntologyUri(OntologyURIHelper.rdf))
-                    .addVar("?building").addVar("?usage").addVar("?floor").addVar("?usageshare")
-                    .addWhere("?building", "env:hasNumberOfFloors", "?NumberOfFloors")
-                    .addWhere("?NumberOfFloors", "env:hasValue", "?floor")
-                    .addOptional (usageWB)
-                    .addBind("COALESCE(?buildingUsage, 'null')",  "?usage");
-                    
-            String query = sb.build().toString();
-            JSONArray queryResultArray = storeClient.executeQuery(query);
+    public void uploadData(Connection conn) {
+        GFAPostGISClient.createSchema(conn);
+        GFAPostGISClient.createCostTable(conn);
 
-            List<BuildingInfo> buildings = new ArrayList<>();
+        iriToBuildingMap.values().forEach(building -> {
+            GFAPostGISClient.addCostData(building.getIri(), building.getCost(), conn);
+        });
+    }
 
-            for (int i = 0; i < queryResultArray.length(); i++) {
-                BuildingInfo building = new BuildingInfo();
-                BuildingUsageInfo usageInfo = new BuildingUsageInfo();
-                List<BuildingUsageInfo> usageInfos = new ArrayList<>();
-                String[] buildingIri = queryResultArray.getJSONObject(i).getString("building").split("Building/");
-                String usage = queryResultArray.getJSONObject(i).getString("usage");
-                building.setFloors(queryResultArray.getJSONObject(i).getInt("floor"));
-                if (!usage.equals("null")){
-                    String[] buildingType = usage.split("ontobuiltenv/");
-                    usageInfo.setUsge(buildingType[1]);
-                    usageInfo.setUsageShare(queryResultArray.getJSONObject(i).getFloat("usageshare"));
-                }else {
-                    usageInfo.setUsge(usage);
-                    usageInfo.setUsageShare(0);
-                }   
+    /**
+     * reads the file ais_cost.csv and calculates average cost for each category
+     * 
+     * @return
+     */
+    private Map<String, Double> getAISCost() {
+        List<AISCost> aisCost;
 
-                if (i > 0){
-                    if(!buildingIri[1].equals(buildings.get(buildings.size()-1).getBuildingIri())){
-                        building.setBuildingIri(buildingIri[1]);
-                        usageInfos.add(usageInfo);
-                        building.setBuildingUisageInfo(usageInfos);
-                        buildings.add(building);
-                    }else{
-                        buildings.get(buildings.size()-1).getBuildingUsageInfo().add(usageInfo);
-                    }
-                }else{
-                    building.setBuildingIri(buildingIri[1]);
-                    usageInfos.add(usageInfo);
-                    building.setBuildingUisageInfo(usageInfos);
-                    buildings.add(building);                   
-                }                                                                                   
-                
-            }
-            return buildings;
-        }catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        try (InputStream is = new ClassPathResource("ais_cost.csv").getInputStream()) {
+            aisCost = new CsvToBeanBuilder<AISCost>(new InputStreamReader(is)).withType(AISCost.class).build().parse();
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading ais_cost.csv", e);
         }
+
+        Map<String, List<Double>> individualCosts = new HashMap<>();
+
+        aisCost.stream().forEach(row -> {
+            individualCosts.computeIfAbsent(row.getCategory(), k -> new ArrayList<>());
+            individualCosts.get(row.getCategory()).add(row.getAverage());
+        });
+
+        // calculate overall average for each category
+        Map<String, Double> aisOverallAverage = new HashMap<>();
+
+        individualCosts.entrySet().forEach(entry -> {
+            aisOverallAverage.put(entry.getKey(),
+                    entry.getValue().stream().mapToDouble(Double::valueOf).average().getAsDouble());
+        });
+
+        return aisOverallAverage;
+    }
+
+    private Map<String, Double> getUsageToCostMap(Map<String, Double> aisCost) {
+        Map<String, Double> usageToCostMap = new HashMap<>();
+
+        List<OntoBuiltEnvMapping> ontoBuiltEnvMapping;
+
+        try (InputStream is = new ClassPathResource("ais_ontobuiltenv_mapping.csv").getInputStream()) {
+            ontoBuiltEnvMapping = new CsvToBeanBuilder<OntoBuiltEnvMapping>(new InputStreamReader(is))
+                    .withType(OntoBuiltEnvMapping.class).build().parse();
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading ais_ontobuiltenv_mapping.csv", e);
+        }
+
+        ontoBuiltEnvMapping.stream().forEach(row -> {
+            double cost = aisCost.get(row.getAISType());
+            usageToCostMap.put(row.getEnvType(), cost);
+        });
+
+        return usageToCostMap;
     }
 }

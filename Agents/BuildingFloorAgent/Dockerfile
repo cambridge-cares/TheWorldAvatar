@@ -1,6 +1,6 @@
 # First stage: download dependencies
 #==================================================================================================
-FROM maven:3.9.3-eclipse-temurin-11 as retriever
+FROM maven:3.9.3-eclipse-temurin-11 AS retriever
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 COPY ./pom.xml /root
@@ -39,10 +39,9 @@ RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked 
 
 # Third stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:9.0 as agent
+FROM tomcat:9.0 AS agent
 
-
-COPY --from=war_builder /root/code/output/buildingflooragent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=war_builder /root/code/output/BuildingFloorAgent##1.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 
