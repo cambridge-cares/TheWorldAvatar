@@ -1,7 +1,5 @@
 # Cross-domain representation of Chilean energy-related information
 
-Last update: 8th of July 2024. 
-
         * Reproduced by Feroz on Tuesday 16 of January 2024 (from Dropbox). 
         * Reproduced by Andrea on 03 July 2024 from dropbox and GitHub. 
         * Reproduced again by Feroz on 08 July 2024 in a different machine.
