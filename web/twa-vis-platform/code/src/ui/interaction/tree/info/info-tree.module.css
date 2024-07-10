@@ -95,6 +95,9 @@
   padding: 0.25rem;
   color: var(--text-color-primary);
   font-size: var(--font-size-secondary-text);
+  position: relative;
+  left: 0;
+  margin-right: auto;
 }
 
 /* Attribute Styling */
@@ -125,4 +128,8 @@
   align-items: center;
   justify-content: center;
   margin: 0.5rem
+}
+
+.iconContainer {
+  height: 5px;
 }

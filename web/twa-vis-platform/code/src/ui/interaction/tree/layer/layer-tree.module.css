@@ -62,6 +62,7 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
+    left: 0;
 }
 
 .textContainer span {

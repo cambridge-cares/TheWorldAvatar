@@ -111,5 +111,7 @@
 .treeHeaderName {
     width: 100%;
     font-size: var(--font-size-primary-text);
-    padding: 0.5rem
+    padding: 0.5rem;
+    position: relative;
+    left: 0;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 
 import IconComponent from 'ui/graphic/icon/icon';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
+import styles from './header.module.css';
 
 interface HeaderFieldProps {
   name: string;
@@ -27,18 +28,25 @@ interface HeaderFieldProps {
 export default function HeaderField(props: Readonly<HeaderFieldProps>) {
   return (
     <div style={{ paddingLeft: props.spacing }} className={props.containerStyle} onClick={props.toggleExpansion}>
+      {!props.isLoading &&
+        <IconComponent
+          icon={props.icon}
+        />
+      }
+
       {/* Header Name */}
       <div className={props.headerNameStyle}>
         {props.name}
       </div>
 
       {/* Renders a loading indicator when required, or else, shows the required icon */}
-      {props.isLoading ?
-        <LoadingSpinner isSmall={true} /> :
-        <IconComponent
-          icon={props.icon}
-        />
+      {props.isLoading &&
+        <div className={styles.iconContainer}>
+          <LoadingSpinner isSmall={true} />
+        </div>
+
       }
+
     </div>
   );
 }
