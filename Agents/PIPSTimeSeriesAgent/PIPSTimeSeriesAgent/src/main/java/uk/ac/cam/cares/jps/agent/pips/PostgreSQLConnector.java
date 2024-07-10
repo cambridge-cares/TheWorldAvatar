@@ -12,9 +12,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
+import java.sql.Timestamp;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -95,10 +97,18 @@ public class PostgreSQLConnector {
                                 JSONObject dataForASpecificTS = new JSONObject();
                                 for (int i = 1; i <= columnCount; i++) {
                                     String columnName = rsMetaData.getColumnName(i);
-                                    if (timeseriesResultSet.getObject(i) == null) {
-                                        dataForASpecificTS.put(columnName, "null");
+                                    // store timestamp as timestamp with timezone in JSONObject
+                                    if (columnName.contains("timestamp") && timeseriesResultSet.getObject(i) != null) {
+                                        Timestamp timestamp = timeseriesResultSet.getTimestamp(columnName);
+                                        OffsetDateTime offsetDateTime = timestamp.toInstant().atOffset(ZoneOffset.UTC);
+                                        dataForASpecificTS.put(columnName, offsetDateTime);
                                     } else {
-                                        dataForASpecificTS.put(columnName,timeseriesResultSet.getObject(i));   
+                                        // account for null values
+                                        if (timeseriesResultSet.getObject(i) == null) {
+                                            dataForASpecificTS.put(columnName, "null");
+                                        } else {
+                                            dataForASpecificTS.put(columnName,timeseriesResultSet.getObject(i));   
+                                        }
                                     }
                                 }
                                 tableArray.put(dataForASpecificTS);
