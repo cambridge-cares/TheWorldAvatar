@@ -1,14 +1,18 @@
+.globalContainer {
+  background-color: var(--background-primary);
+  color: var(--text-color-primary);
+}
+
 .header {
   display: flex;
   flex-direction: row;
   align-items: center;
   font-size: 1.5rem;
   padding: 1rem;
-  color: var(--text-color-primary);
-  background: var(--background-primary);
 }
 
 .option-container {
+  width: 100%;
   padding: 0.75rem;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -17,15 +21,15 @@
   /* Gap between columns */
   align-items: start;
   text-align: justify;
-  border-style: solid ;
+  border-style: solid;
   border-color: var(--border-primary);
   border-width: 1px 0 0;
   color: var(--text-color-primary);
-  background: var(--background-primary);
+  background: var(--background-secondary);
 }
+
 .option-container:hover {
   background: var(--background-tertiary);
-
 }
 
 .icon-container {
@@ -37,6 +41,7 @@
 }
 
 .icon {
+  padding: 1rem;
   height: 12vh;
   width: 12vh;
   border-radius: 50%;
