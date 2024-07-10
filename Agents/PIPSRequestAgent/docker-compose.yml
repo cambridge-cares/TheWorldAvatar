@@ -13,10 +13,14 @@ services:
        CLIENT_SECRETS: /run/secrets/client_secrets
        USERNAME: /run/secrets/username
        PASSWORD: /run/secrets/password
+       CLIENT_CERT: /run/secrets/client_certificates/client_certificate
+       CLIENT_CERT_PASSWORD: /run/secrets/client_certificates/client_cert_password
     secrets:
        - client_secrets
        - username
        - password
+       - client_certificate
+       - client_cert_password
     ports:
       - "1080:8080"
 
@@ -27,3 +31,7 @@ secrets:
     file: ./secrets/username.txt
   password:
     file: ./secrets/password.txt
+  client_certificate:
+    file: ./secrets/client_certificates/client_cert.p12
+  client_cert_password:
+    file: ./secrets/client_certificates/client_cert_password.txt
