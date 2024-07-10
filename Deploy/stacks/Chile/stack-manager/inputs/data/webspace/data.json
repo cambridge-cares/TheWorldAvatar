@@ -8,7 +8,7 @@
                     "id": "gp-source",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -16,7 +16,7 @@
                     "id": "gp-source2",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices2&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices2&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -62,7 +62,7 @@
                     "id": "gp-source3",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices3&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:nhs_gp_practices3&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -70,7 +70,7 @@
                     "id": "windfullchile05-1",
                     "type": "raster",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlaswind10m0025&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlaswind10m0025&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                     
                     ]
                 },
@@ -78,7 +78,7 @@
                     "id": "atlas-capacity-iec1-1",
                     "type": "raster",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:atlas_capacity_iec1&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
                     
                     ]
                 },
@@ -86,7 +86,7 @@
                     "id": "gov_centraleolic-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gov_centraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gov_centraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -142,7 +142,7 @@
                     "id": "IDE_weather_station-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_weather_station&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_weather_station&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -150,7 +150,7 @@
                     "id": "IDE_water_storage-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_water_storage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:IDE_water_storage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -186,7 +186,7 @@
                     "id": "gov_centralbiomass-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralbiomass&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralbiomass&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -194,7 +194,7 @@
                     "id": "gov_centralhydro-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralhydro&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralhydro&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -202,7 +202,7 @@
                     "id": "gov_centralsolar-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralsolar&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralsolar&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -210,7 +210,7 @@
                     "id": "gov_centralthermo-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralthermo&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentralthermo&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -218,7 +218,7 @@
                     "id": "gov_centraleolic-2",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcentraleolic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -298,7 +298,7 @@
                     "id": "gov-regions-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVregions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVregions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -306,7 +306,7 @@
                     "id": "gov-provinces-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVprovinces&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVprovinces&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -314,7 +314,7 @@
                     "id": "gov-comunes-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcomunes&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVcomunes&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -359,7 +359,7 @@
                     "id": "gov_energyconcessions-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVenergyconcessions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVenergyconcessions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -367,7 +367,7 @@
                     "id": "gov_fuelstorage-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVfuelstorage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVfuelstorage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -375,7 +375,7 @@
                     "id": "gov_gaslines-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVgaslines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVgaslines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -383,7 +383,7 @@
                     "id": "gov_oillines-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVoillines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVoillines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -391,7 +391,7 @@
                     "id": "gov_seaports-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVseaports&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:GOVseaports&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -456,7 +456,7 @@
                     "id": "gfabrik-buildings-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikBuildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikBuildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -464,7 +464,7 @@
                     "id": "gfabrik-roads-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikRoads&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikRoads&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -472,7 +472,7 @@
                     "id": "gfabrik-railways-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikRailways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikRailways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -480,7 +480,7 @@
                     "id": "gfabrik-water-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -488,7 +488,7 @@
                     "id": "gfabrik-waterways-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikWaterways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikWaterways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -543,7 +543,7 @@
                     "id": "gfabrik-landuse-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikLanduse&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikLanduse&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -551,7 +551,7 @@
                     "id": "gfabrik-natural-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikNatural&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikNatural&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -559,7 +559,7 @@
                     "id": "gfabrik-places-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPlaces&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPlaces&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -567,7 +567,7 @@
                     "id": "gfabrik-pofw-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPofw&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPofw&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -575,7 +575,7 @@
                     "id": "gfabrik-pois-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPois&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikPois&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -626,7 +626,7 @@
                     "id": "gfabrik-traffic-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTraffic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTraffic&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 },
@@ -634,7 +634,7 @@
                     "id": "gfabrik-transport-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTransport&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gfabrikTransport&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
@@ -664,7 +664,7 @@
                     "id": "buildings-1",
                     "type": "vector",
                     "tiles": [
-                        "http://146.190.86.59:3851/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://<IP_ADDRESS>:<PORT_NUMBER>/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     
                     ]
                 }
