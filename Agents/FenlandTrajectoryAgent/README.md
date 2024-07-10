@@ -83,17 +83,22 @@ To spin up the stack, create `postgis_password` and `geoserver_password` files i
 
 The agent will automatically register a task upon startup to assimilate the data from the target GPS folder into the Knowledge Graph (KG). This background task can be triggered via an HTTP request after the agent has started, accessible at http://localhost:{Port}/fenland-trajectory-agent. Please replace {Port} with the numerical value of the port on which your stack is running.
 
-## Provided functionality
+## Functionality Description
 
-The files for example http request are displayed at [SendHTTP] folder.
+The operation of this agent involves four steps: **load**, **preprocess**, **process**, and **instantiate**. Here is a brief description of each:
 
-- Post request to load and preprocess all GPS trajectory files 
-> ./gpstasks/fenlandtrajectoryagent/load_and_preprocess
+- **Load**: This step involves setting up a loop to read all GPS trajectory files in batch. Each file is processed one by one, moving through all the following steps before proceeding to the next file.
+- **Preprocess**: In this step, the raw file is examined to ensure the presence of essential columns (UTC Date, UTC Time, Speed, Heading, Height, Distance, Latitude, and Longitude) and to handle any empty rows or columns. Additionally, the format of the time-related columns will be checked and converted to [ISO 8601] if needed.
+- **Process**: During this step, the information inside the preprocessed file is further organised to align with the requirements of the instantiation. This mainly involves creating geometry classes for the trajectory, importing namespaces, generating IRIs, and restructuring the raw data into non-time-series lists (concepts and relations in trajectory data) and time-series lists. These will act as inputs for different instantiation clients.
+- **Instantiate**: This final step involves creating instances of the data in the knowledge graph and relational database, making it available for queries and analytics. This includes initializing the time-series client with time-series inputs and setting up the KG client with inputs of non-time-series attributes.
 
-- Post request to instantiate all GPS trajectory data to KG
-> ./gpstasks/fenlandtrajectoryagent/process_and_instantiate
+## Example HTTP Requests
+To ensure concise and smooth execution, the aforementioned steps have been combined into two HTTP requests:
 
-Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
+1. **Load and Preprocess**: These steps are grouped together to streamline the initial handling of the data. By combining loading and preprocessing, raw data is efficiently imported and prepared in a single operation. For a detailed HTTP example, refer to the [load_and_preprocess] file.
+2. **Process and Instantiate**: Similarly, processing and instantiating the data are combined into one step to ensure that once the data is prepared, it is immediately structured and instantiated into the knowledge graph and relational database. This approach enhances efficiency and maintains data integrity throughout the pipeline. For a detailed HTTP example, refer to the [process_and_instantiate] file.
+
+Although the trigger operations are merged, the logger information for each step remains clear and distinct. The logger details for loading, preprocessing, processing, and instantiating are not merged, ensuring that each step's activities are transparently recorded. Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
 &nbsp;
 # Authors
@@ -131,6 +136,7 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
+[ISO 8601]: https://www.iso.org/iso-8601-date-and-time-format.html
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile
@@ -143,3 +149,5 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
 [CURL commands folder]: ./example-requests/curl
 [SendHTTP]: ./example-requests/SendHTTP
+[load_and_preprocess]: ./example-requests/SendHTTP/gps_load_and_preprocess.http
+[process_and_instantiate]: ./example-requests/SendHTTP/gps_process_and_instantiate.http
