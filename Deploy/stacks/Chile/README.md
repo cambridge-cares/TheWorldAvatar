@@ -138,7 +138,7 @@ For example:
 ## Useful actions and links
 
 
-PRESS CONTROL + SHIFT + I  to open the developer tools and check for errors.
+Press Ctrl + Shift + I  to open the developer tools and check for errors.
 
 If capital letters are causing trouble in postgis, then use '''''' symbol
 
