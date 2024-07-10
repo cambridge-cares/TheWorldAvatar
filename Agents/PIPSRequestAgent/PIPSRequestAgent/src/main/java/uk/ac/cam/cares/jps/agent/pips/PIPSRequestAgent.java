@@ -25,6 +25,7 @@ public class PIPSRequestAgent extends JPSAgent {
     /**
      * Logging / error messages
      */
+    private static final String PARAMS_ERROR_MSG = "Missing or invalid parameters!";
     private static final String UNDEFINED_ROUTE_ERROR_MSG = "Invalid route! Requested route does not exist for : ";
     private static final String UNAUTHORIZED_ERROR_MSG = "Missing or invalid credentials!";
 
@@ -36,6 +37,9 @@ public class PIPSRequestAgent extends JPSAgent {
     private static final String TOKEN_KEY = "access_token";
     private static final String REFRESH_TOKEN_KEY = "refresh_token";
     private static final String MESSAGE_KEY = "message";
+    private static final String REQUEST_PARAM_SOURCE = "source";
+    private static final String REQUEST_PARAM_NUM = "num";
+    private static final String CLIENT_CERT_AUTH = "client_cert_auth";
     private boolean valid = false;
     private String accessToken;
     private String refreshToken;
@@ -77,14 +81,19 @@ public class PIPSRequestAgent extends JPSAgent {
             jsonMessage = statusRoute();
             break;
             case "retrieve":
-            String username = System.getenv("USERNAME");
-            String password = System.getenv("PASSWORD");
-                try {
-                    jsonMessage = retrieveRoute(username, password);
-                } catch (JSONException e) {
-                    throw new JPSRuntimeException(e.toString());
-                } catch (IOException e) {
-                    throw new JPSRuntimeException(e.toString());
+                if (requestParams.has(REQUEST_PARAM_SOURCE) && requestParams.has(REQUEST_PARAM_NUM) && requestParams.has(CLIENT_CERT_AUTH)) {
+                    String source = requestParams.getString(REQUEST_PARAM_SOURCE);
+                    int num = requestParams.getInt(REQUEST_PARAM_NUM);
+                    Boolean client_cert_auth = requestParams.getBoolean(CLIENT_CERT_AUTH);
+                    try {
+                        jsonMessage = retrieveRoute(source, num, client_cert_auth);
+                    } catch (JSONException e) {
+                        throw new JPSRuntimeException(e.toString());
+                    } catch (IOException e) {
+                        throw new JPSRuntimeException(e.toString());
+                    }
+                } else {
+                    jsonMessage.put(JSON_ERROR_KEY, PARAMS_ERROR_MSG);
                 }
             break;
             default:
@@ -118,7 +127,7 @@ public class PIPSRequestAgent extends JPSAgent {
      * @throws IOException 
      * @throws JSONException 
      */
-    private JSONObject retrieveRoute(String username, String password) throws JSONException, IOException {
+    private JSONObject retrieveRoute(String source, int num, Boolean client_cert_auth) throws JSONException, IOException {
         JSONObject message = new JSONObject();
         //request for Token if token is null
         if (accessToken == null & refreshToken == null) {
@@ -134,10 +143,10 @@ public class PIPSRequestAgent extends JPSAgent {
 
         // send access token to pips-timeseries-agent
         PIPSTSAgentAPIConnector pipsTsAgentAPIConnector = new PIPSTSAgentAPIConnector();
-        JSONObject response = pipsTsAgentAPIConnector.getTimeSeries(accessToken);
+        JSONObject response = pipsTsAgentAPIConnector.getTimeSeries(accessToken, source, num, client_cert_auth);
 
         // invalid token
-        if (response.getString(MESSAGE_KEY).contains("invalid token")) {
+        if (response.has(MESSAGE_KEY) && response.getString(MESSAGE_KEY).contains("invalid token")) {
             LOGGER.info("The access token is invalid!");
             //check refresh token is still valid
             LOGGER.info("Check refresh token validity...");
@@ -162,7 +171,7 @@ public class PIPSRequestAgent extends JPSAgent {
                 }
             }
             // try again with new access token
-            response = pipsTsAgentAPIConnector.getTimeSeries(accessToken);
+            response = pipsTsAgentAPIConnector.getTimeSeries(accessToken, source, num, client_cert_auth);
         }
 
         message = response;
