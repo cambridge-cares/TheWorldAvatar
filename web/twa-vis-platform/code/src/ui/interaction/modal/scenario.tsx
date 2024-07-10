@@ -4,16 +4,13 @@ import styles from './scenario.module.css';
 
 import { Button } from "@mui/material";
 import Dialog from '@mui/material/Dialog';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getScenarioDefinitions, setScenario } from 'state/map-feature-slice';
+import { getScenarioDefinitions, setScenario, setScenarioDefinitions } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import IconComponent from 'ui/graphic/icon/icon';
 import { getScenarios } from '../../../utils/getScenarios';
-import { setScenarioDefinitions } from 'state/map-feature-slice';
 
 interface ScenarioModalProperties {
   scenarioURL: string,
@@ -44,26 +41,33 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
     console.log("Refreshed")
   };
 
+  function scenarioTypeIcon(scenario: ScenarioDefinition) {
+    return scenario.type ? `images/credo-misc/${scenario.type}.svg` : "images/defaults/icons/about.svg";
+  }
+
   return (
     <Dialog
-      sx={{ '& .MuiDialog-paper': { width: "80vw", maxWidth: "80vw", height: "70vh", maxHeight: "70vh" } }}
+      sx={{ '& .MuiDialog-paper': { maxWidth: "80vw", maxHeight: "70vh" } }}
       open={props.show}
     >
 
-      <div className={styles.header}><h1>Select a scenario:</h1>
-        <Button style={{ marginLeft: 'auto', textTransform: 'none' }} className={styles.refreshButton} onClick={onClick}>Refresh</Button>
+      <div className={styles.globalContainer}>
+        <div className={styles.header}><h1>Select a scenario:</h1>
+          <Button style={{ marginLeft: 'auto', textTransform: 'none' }} className={styles.refreshButton} onClick={onClick}>Refresh</Button>
+        </div>
+        {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
+          <button key={scenario.name + index} value={scenario.id} className={styles["option-container"]} onClick={handleChange}>
+            <div className={styles["icon-container"]}>
+              <IconComponent icon={scenarioTypeIcon(scenario)} classes={styles.icon} />
+            </div>
+            <div className={styles.content}>
+              <span className={styles.title}><b>{scenario.name}</b></span>
+              <span className={styles.description}>{scenario.description}</span>
+            </div>
+          </button>
+        ))}
       </div>
-      {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
-        <button key={scenario.name + index} value={scenario.id} className={styles["option-container"]} onClick={handleChange}>
-          <div className={styles["icon-container"]}>
-            <IconComponent icon="images/defaults/icons/about.svg" classes={styles.icon} />
-          </div>
-          <div className={styles.content}>
-            <span className={styles.title}><b>({index + 1}) {scenario.name}</b></span>
-            <span className={styles.description}>{scenario.description}</span>
-          </div>
-        </button>
-      ))}
+
     </Dialog>
   )
 }
