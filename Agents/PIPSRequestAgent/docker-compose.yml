@@ -13,8 +13,8 @@ services:
        CLIENT_SECRETS: /run/secrets/client_secrets
        USERNAME: /run/secrets/username
        PASSWORD: /run/secrets/password
-       CLIENT_CERT: /run/secrets/client_certificates/client_certificate
-       CLIENT_CERT_PASSWORD: /run/secrets/client_certificates/client_cert_password
+       CLIENT_CERT: /run/secrets/client_certificate
+       CLIENT_CERT_PASSWORD: /run/secrets/client_cert_password
     secrets:
        - client_secrets
        - username
