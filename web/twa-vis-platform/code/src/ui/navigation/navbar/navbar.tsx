@@ -62,7 +62,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
 
       {/* Render each component as required */}
       <div className="navbarElements">
-        <KeycloakSession />
+        {/* <KeycloakSession /> */}
         {props.showLanding &&
           <NavbarComponent
             name="LANDING"
