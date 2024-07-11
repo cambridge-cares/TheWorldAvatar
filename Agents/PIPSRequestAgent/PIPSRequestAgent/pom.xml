@@ -116,37 +116,11 @@
             <version>${jps.base.version}</version>
         </dependency>
 
-        <!-- for interacting with the stack -->
-        <dependency>
-            <groupId>com.cmclinnovations</groupId>
-            <artifactId>stack-clients</artifactId>
-            <version>1.22.0</version>
-        </dependency>
-
         <!-- For sending HTTP request to the API -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.10</version>
-        </dependency>
-
-        <!-- used to parse geosparql wkt literal -->
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-geosparql</artifactId>
-            <version>4.7.0</version>
-        </dependency>
-
-        <!-- keycloak -->
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-authz-client</artifactId>
-            <version>21.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-core</artifactId>
-            <version>21.0.1</version>
         </dependency>
         
         <!-- Logging -->
@@ -167,19 +141,6 @@
         </dependency>
 
         <!-- Testing -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- For mocking APIs -->
-        <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8-standalone</artifactId>
-            <version>2.29.1</version>
-            <scope>test</scope>
-        </dependency>
         <!-- For mocking static methods -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -197,12 +158,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.15.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
             <version>1.15.3</version>
             <scope>test</scope>
         </dependency>
