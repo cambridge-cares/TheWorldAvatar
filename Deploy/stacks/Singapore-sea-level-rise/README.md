@@ -22,8 +22,8 @@ Singapore population distribution 2000 is retrieved from [Facebook Data For Good
 ### Street network data
 Street network data is retrieved from OpenStreetMap through [Geofabrik](https://download.geofabrik.de/).
 
-### Sea-Level Rise
-Sea-level rise projections are provided by the courtesy of Prof. Benjamin Horton and Dr. Timothy A. Shaw from Nanyang Technological University, Earth Observatory of Singapore, published under [`Shaw, T.A., Li, T., Ng, T. et al. Deglacial perspectives of future sea level for Singapore. Commun Earth Environ 4, 204 (2023)`](https://doi.org/10.1038/s43247-023-00868-5).
+### Sea Level Rise
+Sea level rise projections are provided by the courtesy of Prof. Benjamin Horton and Dr. Timothy A. Shaw from Nanyang Technological University, Earth Observatory of Singapore, published under [`Shaw, T.A., Li, T., Ng, T. et al. Deglacial perspectives of future sea level for Singapore. Commun Earth Environ 4, 204 (2023)`](https://doi.org/10.1038/s43247-023-00868-5).
 
 ## Agent Setup
 ### OSMAgent
@@ -35,8 +35,57 @@ Sea-level rise projections are provided by the courtesy of Prof. Benjamin Horton
 - OpenStreetMap
 - Building floors from building height
 
+The purpose of this agent is to augment buildings with more accurate data on the number of floors for the subsequent calculcations of GFA and construction cost. To run this agent: 
+- Prerequisite: OSM data and ontop mapping added by OSM agent
+- Download [HDBPropertyInformation.csv](https://www.dropbox.com/scl/fi/3pgkir5zfcbhq8dliv1kr/HDBPropertyInformation.csv?rlkey=5lmb49cjqgvyrx7rcxtos1l41&dl=0) and place it in ```./buildingfloordata```
+- Modify [sea-level.json] to include this agent within services, the following example also includes gfaagent for the next step
+```json
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent",
+            "filter-agent",
+            "sealevelimpactagent",
+            "buildingflooragent", // modified
+            "gfaagent" // modified 
+        ],
+```
+- Restart stack-manager to spin up this agent
+- Execute 
+```
+curl -X POST http://localhost:3838/buildingflooragent/
+```
+- Check contents of ```gfa_floors.floors```, the number of rows should equate the number of buildings
 ### GFAAgent
 [GFAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-sea-level-rise-singapore/Agents/GFAAgent) computes the Gross Floor Area (GFA) and the construction cost of buildings. 
+
+- Prequisites: 
+    1) Floors data added by BuildingFloorAgent
+    2) Building geometries in citydb
+    3) OSM usage information added by OSM agent
+- Modify [sea-level.json] to include this agent within services (not needed if already spun up)
+```json
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent",
+            "filter-agent",
+            "sealevelimpactagent",
+            "buildingflooragent", // modified
+            "gfaagent" // modified 
+        ],
+```
+- Execute the following
+```
+curl -X POST http://localhost:3838/gfaagent/gfa
+```
+- Make sure the table `gfa_floors.gfa` is populated with data
+- Then execute
+```
+curl -X POST http://localhost:3838/gfaagent/cost
+```
 
 ### SeaLevelImpactAgent
 [SeaLevelImpactAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/SeaLevelImpactAgent) assess the affected cultural sites, buildings, road networks and landplot, given a sea level rise projections.
@@ -58,3 +107,5 @@ Once the stack-manager is fully spin up. In the [stack-data-uploader](stack-data
 
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
+
+[sea-level.json]: ./stack-manager/inputs/config/sea-level.json
