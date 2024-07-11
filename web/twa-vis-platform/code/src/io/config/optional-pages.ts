@@ -66,8 +66,6 @@ export default class OptionalPages {
                     };
                     OptionalPages.LOADED_PAGES.push(page);
                 }
-
-                // if(fileName.endsWith(".svg")){ // Add SVG files as optional pages}
             });
 
             // Sort pages by filename
