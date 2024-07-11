@@ -51,6 +51,20 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 }
 ```
 
+The `resources` section in the configuration file allows for the specification of data resources for a viz app. One such resource is `scenario` resource, which enables scenario selection in the map page of the platform. This has so far only been applied to CReDo and an example of a config is shown below.
+
+```json
+"resources": {
+    "scenario": {
+        "url": "https://theworldavatar.io/demos/credo-ofwat/central/CentralStackAgent",
+        "data": "water"
+    }
+}
+```
+
+- `url`: This is a required field that specifies the URL from which the scenarios and their settings can be retrieved. In this example, the URL points to a stack deployed on theworldavatar.io platform.
+- `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
+
 ### 1.2 Map Settings
 
 If the map module is enabled, developers will need to supply `data.json` and `map-settings.json` files.
