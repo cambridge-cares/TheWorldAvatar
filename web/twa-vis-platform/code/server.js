@@ -15,14 +15,8 @@
 const express = require("express");
 const next = require("next");
 
-const session = require('express-session');
-const Keycloak = require('keycloak-connect');
-
-const memoryStore = new session.MemoryStore();
-const keycloak = new Keycloak({ store: memoryStore });
-
 // Configure the server port; default to 3000 if not specified in environment variables
-if (process.env.PORT) {console.log('port specified in .env file: ', process.env.PORT);}
+if (process.env.PORT) {console.log('port specified in .env: ', process.env.PORT);}
 const port = process.env.PORT || 3000;
 
 // Determine the deployment mode based on NODE_ENV; default to 'development' mode if not specified
