@@ -90,11 +90,17 @@ nav:
     - KG Operations:
       - Gateway: api/gateway.md
       - SparqlClient: api/sparql_client.md
-    - Agent Logging:
+    - Derived Information Framework:
+      - Derivation: api/derivation.md
+      - Derivation Client: api/derivation_client.md
+      - Derivation Agent: api/derivation_agent.md
+    - Logging and Configuration:
       - Logging: api/logging.md
+      - Configuration: api/conf.md
   - Examples:
     - Python-Java communications: examples/python_java.md
     - Use additional Java library: examples/additional_java_lib.md
     - Logging: examples/logging.md
     - Perform knowledge graph operations: examples/sparql.md
-    - Object Graph Mapper: examples/ogm.md
+    - Object Graph Mapper (OGM): examples/ogm.md
+    - Derived Information Framework (DIF): examples/dif.md

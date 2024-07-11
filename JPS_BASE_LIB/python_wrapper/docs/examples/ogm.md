@@ -12,7 +12,7 @@ To begin with, you can define the ontology that hosts all concepts and relations
 ```python
 # Import relevant packages
 from __future__ import annotations
-from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DataProperty, as_range
+from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty, as_range
 from twa.data_model.iris import TWA_BASE_URL
 from typing import ClassVar
 from pydantic import Field
@@ -45,7 +45,7 @@ For simplicity, `<https://www.theworldavatar.com/kg/yourontology/>` (**Note the 
 
 ### Define a property (relationship)
 
-To define custom object and data properties, the two base classes `ObjectProperty` and `DataProperty` should be used respectively. It should be noted that the user is only required to specify the `range` of these properties, as their `domain` will be automatically handled by the class that utilises the defined properties.
+To define custom object and data properties, the two base classes `ObjectProperty` and `DatatypeProperty` should be used respectively. It should be noted that the user is only required to specify the `range` of these properties, as their `domain` will be automatically handled by the class that utilises the defined properties.
 
 
 #### Object property
@@ -105,12 +105,12 @@ set_of_transitive_objects = one_transitive_property.obtain_transitive_objects()
 To define a custom data property:
 
 ```python
-class OneDataProperty(DataProperty):
+class OneDatatypeProperty(DatatypeProperty):
     # Same as ObjectProperty, `is_defined_by_ontology` is a compulsory field
     is_defined_by_ontology = YourOntology
     range: as_range(str)
 
-class AnotherDataProperty(DataProperty):
+class AnotherDatatypeProperty(DatatypeProperty):
     is_defined_by_ontology = YourOntology
     # The cardinality means maximum 1
     range: as_range(int, 0, 1)
@@ -119,12 +119,12 @@ class AnotherDataProperty(DataProperty):
 which is equivalent to the below triples in OWL:
 
 ```turtle
-yo:OneDataProperty a owl:DatatypeProperty ;
+yo:OneDatatypeProperty a owl:DatatypeProperty ;
     rdfs:domain yo:OneConcept ;
     rdfs:isDefinedBy <https://www.theworldavatar.com/kg/yourontology> ;
     rdfs:range xsd:string .
 
-yo:AnotherDataProperty a owl:DatatypeProperty ;
+yo:AnotherDatatypeProperty a owl:DatatypeProperty ;
     rdfs:domain yo:AnotherConcept ;
     rdfs:isDefinedBy <https://www.theworldavatar.com/kg/yourontology> ;
     rdfs:range xsd:integer .
@@ -133,10 +133,10 @@ yo:AnotherConcept rdfs:subClassOf [
     a owl:Restriction ;
     owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
     owl:onClass xsd:integer ;
-    owl:onProperty yo:AnotherDataProperty ] .
+    owl:onProperty yo:AnotherDatatypeProperty ] .
 ```
 
-> NOTE that the cardinality for `AnotherDataProperty` will be added as a [Blank Node](https://www.w3.org/TR/turtle/#BNodes) of `owl:Restriction` automatically to `AnotherConcept` when the class is defined.
+> NOTE that the cardinality for `AnotherDatatypeProperty` will be added as a [Blank Node](https://www.w3.org/TR/turtle/#BNodes) of `owl:Restriction` automatically to `AnotherConcept` when the class is defined.
 
 
 ### Define a class (concept)
@@ -147,15 +147,15 @@ The classes can be defined in the normal way as defining Python native classes, 
 class AnotherConcept(BaseClass):
     # Like object/data properties, `is_defined_by_ontology` is a compulsory field
     is_defined_by_ontology = YourOntology
-    anotherDataProperty: AnotherDataProperty
+    anotherDatatypeProperty: AnotherDatatypeProperty
 
 class OneConcept(BaseClass):
     is_defined_by_ontology = YourOntology
-    oneDataProperty: OneDataProperty
+    oneDatatypeProperty: OneDatatypeProperty
     pointsToAnotherConcept: PointsToAnotherConcept
 ```
 
-> NOTE that the name of field **CAN NOT** be the same as the name of the corresponding Pydantic class it is referring to, i.e. `AnotherDataProperty: AnotherDataProperty` would be invalid.
+> NOTE that the name of field **CAN NOT** be the same as the name of the corresponding Pydantic class it is referring to, i.e. `AnotherDatatypeProperty: AnotherDatatypeProperty` would be invalid.
 
 
 #### Class and subclass
@@ -163,13 +163,13 @@ class OneConcept(BaseClass):
 The subclass relationship `rdfs:subClassOf` can also be defined following the standard practice, e.g. we define a concept `SubConcept` `rdfs:subClassOf` `OneConcept`:
 
 ```python
-class AdditionalDataProperty(DataProperty):
+class AdditionalDatatypeProperty(DatatypeProperty):
     is_defined_by_ontology = YourOntology
     range: as_range(int, 0, 1)
 
 class SubConcept(OneConcept):
     # As it inherits `OneConcept`, only additional object/data properties are required
-    additionalDataProperty: AdditionalDataProperty
+    additionalDatatypeProperty: AdditionalDatatypeProperty
 ```
 
 
@@ -178,13 +178,13 @@ class SubConcept(OneConcept):
 Multiple inheritance is also possible:
 
 ```python
-class YetAnotherDataProperty(DataProperty):
+class YetAnotherDatatypeProperty(DatatypeProperty):
     is_defined_by_ontology = YourOntology
     range: as_range(int, 0, 1)
 
 class YetAnotherConcept(BaseClass):
     is_defined_by_ontology = YourOntology
-    yetAnotherDataProperty: YetAnotherDataProperty
+    yetAnotherDatatypeProperty: YetAnotherDatatypeProperty
 
 class MultipleInheritanceConcept(SubConcept, YetAnotherConcept):
     pass
@@ -244,10 +244,10 @@ YourOntology.export_to_triple_store(sparql_client)
 Taking the classes `AnotherConcept` and `OneConcept` as an example:
 
 ```python
-another_concept = AnotherConcept(anotherDataProperty=3)
+another_concept = AnotherConcept(anotherDatatypeProperty=3)
 
 one_concept = OneConcept(
-    oneDataProperty='this is a data property',
+    oneDatatypeProperty='this is a data property',
     pointsToAnotherConcept=another_concept
 )
 ```
@@ -290,7 +290,7 @@ To make changes to the local objects and update it in the triple store:
 ```python
 # Examples changes:
 # Adding a new data property
-one_concept.oneDataProperty.range.add('this is a new data property')
+one_concept.oneDatatypeProperty.range.add('this is a new data property')
 # Removing the object property
 one_concept.pointsToAnotherConcept.range.remove(another_concept)
 

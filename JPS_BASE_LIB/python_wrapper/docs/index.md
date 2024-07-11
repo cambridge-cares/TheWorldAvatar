@@ -8,8 +8,6 @@ The aim of `twa` is to provide Python access to the Java classes and methods in 
 
 However, it is important to understand that not all `TheWorldAvatar` classes/functions in Java are provided with a high-level abstraction in `twa`. Therefore, the java project documentation should also be consulted with to know which Java objects to call to perform a desired task. Additionally, not all `TheWorldAvatar` classes can be accessed. Namely, **any servlet depending classes can not be instantiated in Python without running the Apache Tomcat server first**. Since this has not been tested, it is not guaranteed that running the Apache Tomcat server would fix the problem. However, this should not be an issue for the `twa` users, given that the main purpose of the wrapper is to use the client-side `TheWorldAvatar` Java code to perform knowledge graph operations (e.g. queries and updates). Should the developers wish to develop agents (server-side code which normally developed in Java) in Python using `twa`, the native Python class `DerivationAgent` should be used.
 
-> Currently, Python class `DerivationAgent` is available in Python package `pyderivationagent`. The long-term plan is to package it as part of `twa`.
-
 ## Authors
 
 Jiaru Bai
