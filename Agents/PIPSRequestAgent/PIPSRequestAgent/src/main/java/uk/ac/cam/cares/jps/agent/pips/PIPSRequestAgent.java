@@ -64,7 +64,6 @@ public class PIPSRequestAgent extends JPSAgent {
         valid = true;
         accessToken = null;
         refreshToken = null;
-        keycloakConnector  = new KeycloakConnector();
     }
 
     /**
@@ -128,6 +127,7 @@ public class PIPSRequestAgent extends JPSAgent {
      * @throws JSONException 
      */
     private JSONObject retrieveRoute(String source, int num, Boolean client_cert_auth) throws JSONException, IOException {
+        keycloakConnector  = new KeycloakConnector();
         JSONObject message = new JSONObject();
         //request for Token if token is null
         if (accessToken == null & refreshToken == null) {
