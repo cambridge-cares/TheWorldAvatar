@@ -1,11 +1,11 @@
 // Import necessary Mapbox GL JS types for TypeScript
 import mapboxgl from 'mapbox-gl';
-import { Dispatch } from 'redux';
 
+import { Interactions } from 'io/config/interactions';
+import { DataStore } from 'io/data/data-store';
+import { Dispatch } from 'react';
 import { setIndex } from 'state/floating-panel-slice';
 import { addFeatures, clearFeatures, MapFeaturePayload } from 'state/map-feature-slice';
-import { DataStore } from 'io/data/data-store';
-import { Interactions } from 'io/config/interactions';
 
 /**
  * This class is a singleton intended to manage custom event listeners in a separate state to simplify the removal of these listeners.
@@ -25,7 +25,7 @@ export default class MapEventManager {
    * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
    * @param {DataStore} dataStore - The data store.
    */
-  public addMapboxEventListeners(dispatch: Dispatch, dataStore: DataStore) {
+  public addMapboxEventListeners(dispatch: Dispatch<any>, dataStore: DataStore) {
     this.removeAllEventListeners();
     this.addFeatureClickEventListener(dispatch, dataStore);
     this.addTooltipEventListener();
@@ -38,7 +38,7 @@ export default class MapEventManager {
    * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
    * @param {DataStore} dataStore - The data store storing the map layer information.
    */
-  private addFeatureClickEventListener(dispatch: Dispatch, dataStore: DataStore) {
+  private addFeatureClickEventListener(dispatch: Dispatch<any>, dataStore: DataStore) {
     this.addEventListener("click", (e) => {
       // Reset features upon clicked
       dispatch(clearFeatures());

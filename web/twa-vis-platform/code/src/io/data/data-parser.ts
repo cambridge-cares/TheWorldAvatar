@@ -34,9 +34,7 @@ export class DataParser {
                 this.recurse(dataset, null, null, 0);
             })
         } else {
-    
-      
-        this.recurse(rawJson, null, null, 0);
+            this.recurse(rawJson, null, null, 0);
         }
         console.info("Data definition loading complete.");
         return this.dataStore;
@@ -126,8 +124,8 @@ export class DataParser {
      * @param dataGroup group to add sources to.,
      */
     private parseLayerSources(sourceArray: JsonArray, dataGroup: DataGroup) {
-        for(const element of sourceArray) {
-            
+        for (const element of sourceArray) {
+
             const sourceID = dataGroup.id + "." + (element["id"] as string);
             const source = new LayerSource(
                 sourceID,
@@ -265,7 +263,7 @@ export class DataParser {
      * @returns 
      */
     private recurseUpForSource(dataGroup: DataGroup, sourceID: string): string {
-        for(const source of dataGroup.layerSources) {
+        for (const source of dataGroup.layerSources) {
             const sourceDef = source.definition;
             if ((sourceDef["id"] as string) === sourceID) return source.id;
         }
