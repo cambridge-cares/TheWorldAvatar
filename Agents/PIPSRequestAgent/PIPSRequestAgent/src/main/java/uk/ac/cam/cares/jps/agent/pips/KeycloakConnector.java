@@ -72,12 +72,13 @@ public class KeycloakConnector {
      * @throws IOException
      */
     private JSONObject getTokensViaCredentials() throws IOException {
+        Utils utils = new Utils();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(tokenEndpoint);
 
-        String client_secrets = readFromFile(System.getenv("CLIENT_SECRETS"));
-        String username = readFromFile(System.getenv("USERNAME"));
-        String password = readFromFile(System.getenv("PASSWORD"));
+        String client_secrets = utils.readFromFile(System.getenv("CLIENT_SECRETS"));
+        String username = utils.readFromFile(System.getenv("USERNAME"));
+        String password = utils.readFromFile(System.getenv("PASSWORD"));
         
         // Construct the request body
         String requestBody = "grant_type=password"
@@ -126,10 +127,10 @@ public class KeycloakConnector {
      * @throws IOException
      */
     public JSONObject refreshToken(String refreshToken) throws IOException {
+        Utils utils = new Utils();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(tokenEndpoint);
-
-        String client_secrets = readFromFile(System.getenv("CLIENT_SECRETS"));
+        String client_secrets = utils.readFromFile(System.getenv("CLIENT_SECRETS"));
         
         // Construct the request body
         String requestBody = "grant_type=refresh_token"
@@ -161,10 +162,11 @@ public class KeycloakConnector {
      * @throws IOException
      */
     private JSONObject introspectToken(String token) throws IOException {
+        Utils utils = new Utils();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(introspectionEndpoint);
 
-        String client_secrets = readFromFile(System.getenv("CLIENT_SECRETS"));
+        String client_secrets = utils.readFromFile(System.getenv("CLIENT_SECRETS"));
         
         // Construct the request body
         String requestBody = "token=" + token
@@ -196,24 +198,5 @@ public class KeycloakConnector {
      */
     public Boolean checkTokenStatus(String token) throws IOException {
         return introspectToken(token).getBoolean("active");
-    }
-
-    /**
-     * read content of files
-     * @param filePath file path
-     * @return content of the file
-     * @throws IOException
-     */
-    private String readFromFile(String filePath) throws IOException {
-        String content = null;
-        try (DataInputStream reader = new DataInputStream(new FileInputStream(filePath))) {
-            int nBytesToRead = reader.available();
-            if(nBytesToRead > 0) {
-                byte[] bytes = new byte[nBytesToRead];
-                reader.read(bytes);
-                content = new String(bytes);
-            }
-        }
-        return content;
     }
 }
