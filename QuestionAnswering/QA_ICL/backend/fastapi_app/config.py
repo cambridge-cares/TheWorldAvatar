@@ -77,12 +77,25 @@ class SingaporeEndpointsSettings(BaseModel):
     pollutant_concentration: str
 
 
-class EntityLinkingConfig(BaseModel):
+class EntityLinkingConfigEntry(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     cls: str | None = None
     strategy: Literal["fuzzy", "semantic"] = "fuzzy"
     k: int = 3
+
+
+class SemanticSearchSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    threshold: float
+
+
+class EntityLinkingSettings(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    semantic: SemanticSearchSettings
+    entries: tuple[EntityLinkingConfigEntry, ...]
 
 
 class ContextAugmentationSettings(BaseModel):
@@ -116,7 +129,7 @@ class AppSettings(BaseModel):
     location_iq: LocationIqSettings
     chemistry_endpoints: ChemistryEndpointsSettings
     singapore_endpoints: SingaporeEndpointsSettings
-    entity_linking: tuple[EntityLinkingConfig, ...]
+    entity_linking: EntityLinkingSettings
     semantic_parsing: SemanticParsingSettings
     ontomops_fileserver: OntomopsFileserverSettings
 

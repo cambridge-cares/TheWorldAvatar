@@ -53,7 +53,7 @@ def make_example_search_schema(vector_dim: int):
         VectorField(
             "$.nlq_embedding",
             "FLAT",
-            {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "IP"},
+            {"TYPE": "FLOAT32", "DIM": vector_dim, "DISTANCE_METRIC": "COSINE"},
             as_name="vector",
         ),
     )

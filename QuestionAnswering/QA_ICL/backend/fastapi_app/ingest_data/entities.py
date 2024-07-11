@@ -9,7 +9,6 @@ from services.ingest import (
     InsertThenIndexArgs,
     load_insert_then_index_args,
 )
-from services.stores.entity_store import get_el_configs
 from services.embed import IEmbedder, TritonEmbedder
 from services.redis import get_index_existence
 from model.lexicon import (
@@ -72,7 +71,7 @@ def make_entity_search_schema(vector_dim: int):
             {
                 "TYPE": "FLOAT32",
                 "DIM": vector_dim,
-                "DISTANCE_METRIC": "IP",
+                "DISTANCE_METRIC": "COSINE",
             },
             as_name="vector",
         ),
@@ -108,7 +107,7 @@ def main(args: InsertThenIndexArgs):
         )
 
     embedder = TritonEmbedder(url=args.text_embedding_url)
-    el_configs = get_app_settings().entity_linking
+    el_configs = get_app_settings().entity_linking.entries
     cls2config = {config.cls: config for config in el_configs}
 
     def process_func(data: list[LexiconEntry]):
