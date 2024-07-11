@@ -2,8 +2,3 @@ testcontainers>=3.4.2
 pytest>=6.2.3
 pytest-rerunfailures>=10.2
 pytest-docker-compose>=3.2.1
-mkdocs
-mkdocs-material
-mkdocstrings-python
-mkdocs-embed-external-markdown
-mike
