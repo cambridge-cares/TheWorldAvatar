@@ -129,7 +129,7 @@ WHERE {{
 
         query = """PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 
-SELECT DISTINCT *
+SELECT DISTINCT ?AM
 WHERE {{
     {triples}
     FILTER NOT EXISTS {{

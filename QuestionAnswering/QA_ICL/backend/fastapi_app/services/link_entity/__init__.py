@@ -8,7 +8,12 @@ from redis import Redis
 from redis.commands.search.query import Query
 import regex
 
-from config import AppSettings, EntityLinkingConfig, get_app_settings
+from config import (
+    AppSettings,
+    EntityLinkingConfigEntry,
+    EntityLinkingSettings,
+    get_app_settings,
+)
 from model.lexicon import ENTITIES_INDEX_NAME
 from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
@@ -33,12 +38,13 @@ class CentralEntityLinker:
         self,
         redis_client: Redis,
         embedder: IEmbedder,
-        el_configs: list[EntityLinkingConfig],
+        el_settings: EntityLinkingSettings,
         linker_managers: tuple[LinkerManager, ...],
     ):
         self.redis_client = redis_client
         self.embedder = embedder
-        self.cls2elconfig = {config.cls: config for config in el_configs}
+        self.vss_threshold = el_settings.semantic.threshold
+        self.cls2elconfig = {config.cls: config for config in el_settings.entries}
         self.cls2linker = {
             cls: linker
             for manager in linker_managers
@@ -88,18 +94,31 @@ class CentralEntityLinker:
                 )
             )
             .sort_by("vector_score")
+            .return_field("vector_score")
             .return_field("$.iri", as_field="iri")
             .dialect(2)
         )
         res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(
             knn_query, {"query_vector": encoded_query.tobytes()}
         )
+        docs = res.docs
+        doc_iris = [doc.iri for doc in docs]
+        doc_scores = [1 - float(doc.vector_score) for doc in docs]
+        logger.info("Vector similarity search results: " + str(docs))
 
-        new_iris = [doc.iri for doc in res.docs]
-        logger.info(
-            "IRIs that match surface form based on vector similiarity search: "
-            + str(new_iris)
-        )
+        new_iris = [
+            iri
+            for iri, score in zip(doc_iris, doc_scores)
+            if score >= self.vss_threshold
+        ]
+        if not new_iris:
+            idx = max(range(len(docs)), key=lambda i: doc_scores[i])
+            new_iris = [doc_iris[idx]]
+            logger.info(
+                f"All IRIs have similarity scores below {self.vss_threshold} threshold; "
+            )
+        else:
+            logger.info("Filtered IRIs: " + str(new_iris))
 
         iris.extend(new_iris)
 
@@ -176,7 +195,7 @@ class CentralEntityLinker:
         config = (
             self.cls2elconfig[cls]
             if cls in self.cls2elconfig
-            else EntityLinkingConfig()
+            else EntityLinkingConfigEntry()
         )
         logger.info("Linking strategy: " + str(config))
 
@@ -249,12 +268,12 @@ def get_linker_managers(
 def get_entity_store(
     redis_client: Annotated[Redis, Depends(get_redis_client)],
     embedder: Annotated[IEmbedder, Depends(get_embedder)],
-    el_configs: Annotated[list[EntityLinkingConfig], Depends(get_el_configs)],
+    el_configs: Annotated[list[EntityLinkingConfigEntry], Depends(get_el_configs)],
     linker_managers: Annotated[tuple[LinkerManager, ...], Depends(get_linker_managers)],
 ):
     return CentralEntityLinker(
         redis_client=redis_client,
         embedder=embedder,
-        el_configs=el_configs,
+        el_settings=el_configs,
         linker_managers=linker_managers,
     )
