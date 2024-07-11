@@ -1,5 +1,5 @@
 {
-    "name": "sealevelprojections",
+    "name": "sealevelprojections-nasa-dem",
     "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "sealevelprojections",
