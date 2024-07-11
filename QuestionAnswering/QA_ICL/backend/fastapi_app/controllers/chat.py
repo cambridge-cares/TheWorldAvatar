@@ -43,11 +43,9 @@ def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
 
 
 class ChatController:
-    SYSTEM_PROMPT = """You are a helpful assistant that provides concise answers to user queries.
-
-- Always ground your response with the provided data
-- Always format your response using markdown syntax and do not render tables
-- If only a partial view of the data is provided due to its sheer size, please suggest user to refer to the structured data shown above
+    INSTRUCTION = """### Instruction: 
+- Please answer the input question using the data retrieved from the knowledge base
+- Format your response using markdown syntax and do not render tables
 - If the provided data do not contain information needed, acknowledge the missing information and respond to the query to the best of your knowledge"""
 
     @classmethod
@@ -78,6 +76,7 @@ class ChatController:
         is_data_truncated: bool = False,
     ):
         parts = [
+            cls.INSTRUCTION,
             cls.make_context_input_query(input_question),
             (
                 cls.make_context_rewritten_query(rewritten_question)
@@ -88,17 +87,6 @@ class ChatController:
             cls.make_context_structured_answer(data, is_data_truncated),
         ]
         return "\n\n".join([x for x in parts if x])
-
-    PROMPT_TEMPLATE = """### Input question:
-{question}
-
-### Semantically parsed query:
-{data_req}
-
-### Query execution results:
-{data}
-
-Given the context information, please answer the query. For readability, please format your response using markdown syntax but do not render tables."""
 
     def __init__(
         self,
@@ -180,7 +168,6 @@ Given the context information, please answer the query. For readability, please 
         return self.openai_client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": self.SYSTEM_PROMPT},
                 {
                     "role": "user",
                     "content": msg,
