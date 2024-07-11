@@ -84,7 +84,10 @@ public class PIPSTSAgentAPIConnector {
                         return new JSONObject(EntityUtils.toString(response.getEntity()));
                     }
                     else {
-                        throw new HttpResponseException(status, response.getEntity().toString());
+                        JSONObject error_response = new JSONObject();
+                        error_response.put(JSON_ERROR_KEY, response.getStatusLine().getReasonPhrase());
+                        LOGGER.error(error_response);
+                        return error_response;
                     }
                 }
             }
@@ -94,13 +97,17 @@ public class PIPSTSAgentAPIConnector {
             SSLContextBuilder sslContextBuilder = SSLContextBuilder.create();
             try {
                 keyStore = KeyStore.getInstance("PKCS12");
+                Utils utils = new Utils();
                 try (FileInputStream keyStoreStream = new FileInputStream(System.getenv(CERT_FILE_ENV))) {
-                    keyStore.load(keyStoreStream, readFromFile(System.getenv(CERT_PASSWORD_ENV)).toCharArray());
+                    keyStore.load(keyStoreStream, utils.readFromFile(System.getenv(CERT_PASSWORD_ENV)).toCharArray());
                 }
                 // Create SSLContext with the client certificate
-                sslContextBuilder.loadKeyMaterial(keyStore, readFromFile(System.getenv(CERT_PASSWORD_ENV)).toCharArray());
+                sslContextBuilder.loadKeyMaterial(keyStore,  utils.readFromFile(System.getenv(CERT_PASSWORD_ENV)).toCharArray());
             } catch (Exception e) {
-                throw new JPSRuntimeException(RETRIEVE_CLIENT_CERT_ERROR_MSG, e);
+                JSONObject error_response = new JSONObject();
+                error_response.put(JSON_ERROR_KEY, RETRIEVE_CLIENT_CERT_ERROR_MSG);
+                LOGGER.error(error_response);
+                return error_response;
             }
 
             // Create HttpClient with the SSLContext
@@ -121,6 +128,7 @@ public class PIPSTSAgentAPIConnector {
                     else {
                         JSONObject error_response = new JSONObject();
                         error_response.put(JSON_ERROR_KEY, response.getStatusLine().getReasonPhrase());
+                        LOGGER.error(error_response);
                         return error_response;
                     }
                 }
@@ -137,25 +145,6 @@ public class PIPSTSAgentAPIConnector {
     private void setTokenAuthorization(HttpRequest request, String accessToken) {
         String authHeader = "Bearer " + accessToken;
         request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-    }
-
-    /**
-     * read content of files
-     * @param filePath file path
-     * @return content of the file
-     * @throws IOException
-     */
-    private String readFromFile(String filePath) throws IOException {
-        String content = null;
-        try (DataInputStream reader = new DataInputStream(new FileInputStream(filePath))) {
-            int nBytesToRead = reader.available();
-            if(nBytesToRead > 0) {
-                byte[] bytes = new byte[nBytesToRead];
-                reader.read(bytes);
-                content = new String(bytes);
-            }
-        }
-        return content;
     }
 
 }
