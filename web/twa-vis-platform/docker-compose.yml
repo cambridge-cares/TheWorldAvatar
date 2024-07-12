@@ -17,27 +17,31 @@ services:
       labels:
         authors: "support@cmcl.io"
         description: "TWA Visualisation Platform image."
+    volumes:
+      - ./uploads:/twa/public/
+    ports:
+      - "3000:3000" 
   
   latest:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:latest
+    profiles: ["build-only"]
 
   semantic-snapshot:
-      extends: base
-      image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}.${MINOR}.${PATCH}-${SNAPSHOT}
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}.${MINOR}.${PATCH}-${SNAPSHOT}
+    profiles: ["build-only"]
 
   major-snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}-${SNAPSHOT}
+    profiles: ["build-only"]
 
   snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${SNAPSHOT}
+    profiles: ["build-only"]
 
-    volumes:
-      - ./uploads:/twa/public/
-    ports:
-      - "80:3000" 
 secrets:
     mapbox_username:
       file: ./mapbox_username
