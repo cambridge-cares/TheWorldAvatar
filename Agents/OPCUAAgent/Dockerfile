@@ -10,13 +10,13 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY ./Ample_Client ./Ample_Client
+COPY ./OPCUAAgent ./OPCUAAgent
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-ENV POSTGRES_CONF /app/Ample_Client/config/postgres_conf.properties
-ENV OPCUA_CONF /app/Ample_Client/config/opcua_conf.properties
+ENV POSTGRES_CONF /app/OPCUAAgent/config/postgres_conf.properties
+ENV OPCUA_CONF /app/OPCUAAgent/config/opcua_conf.properties
 
 # Run command
-CMD python ./Ample_Client/ample_client.py
+CMD python ./OPCUAAgent/opcua_agent.py
