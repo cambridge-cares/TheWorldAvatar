@@ -65,7 +65,7 @@ export default function MapboxMapComponent(props: MapProperties) {
       pitch: defaultPosition["pitch"],
     });
 
-    map.addControl(new mapboxgl.ScaleControl(), "bottom-right");
+    map.addControl(new mapboxgl.ScaleControl() as mapboxgl.IControl, "bottom-right");
     map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
 
     console.info("Initialised a new Mapbox map object.");
