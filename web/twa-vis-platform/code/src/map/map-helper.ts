@@ -90,7 +90,6 @@ function resetMap(map: Map): void {
 
   layers.map(layer => {
     const layerId: string = layer.id;
-    // @ts-expect-error: Ignore TypeScript error for accessing the 'source' property
     const sourceId: string = layer.source;
     // Conditional check to protect background and default styles
     if (layer.type != "background" && sourceId != "composite") {
