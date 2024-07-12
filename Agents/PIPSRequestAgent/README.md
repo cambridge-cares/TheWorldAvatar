@@ -64,5 +64,5 @@ The request has the following format:
 curl -X GET http://localhost:1080/pips-request-agent/retrieve?source=<source>&num=<number of readings to retrieve>&client_cert_auth=<true or false>
 ```
 - `<source>` The source from which to retrieve the data from, Refer to [PIPSTimeSeriesAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PIPSTimeSeriesAgent) for more information. Replace `<schema>` with the appropriate value.
-- `<integer>` The number of latest readings to retrieve. Replace `<integer>` with the desired number.
+- `<number of readings to retrieve>` The number of latest readings to retrieve. Replace `<number of readings to retrieve>` with the desired number.
 - `<true or false>` Whether client certificate authentication is required or not. Please make sure to set up the necessary directory and files as described under the section [Set up](#set-up).
