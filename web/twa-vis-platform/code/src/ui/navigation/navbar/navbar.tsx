@@ -10,7 +10,6 @@ import IconComponent from 'ui/graphic/icon/icon';
 import { navbarItem } from 'ui/interaction/context-menu/context-menu';
 import NavbarComponent from './navbar-component';
 import Link from 'next/link';
-import KeycloakSession from './keycloak-session';
 
 // Type definition for navbar properties
 interface NavbarProps {
@@ -62,7 +61,6 @@ export default function Navbar(props: Readonly<NavbarProps>) {
 
       {/* Render each component as required */}
       <div className="navbarElements">
-        {/* <KeycloakSession /> */}
         {props.showLanding &&
           <NavbarComponent
             name="LANDING"
