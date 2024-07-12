@@ -1,18 +1,27 @@
 // Import necessary Mapbox GL JS types for TypeScript
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, { MapEvent, MapMouseEvent } from 'mapbox-gl';
 
 import { Interactions } from 'io/config/interactions';
 import { DataStore } from 'io/data/data-store';
-import { Dispatch } from 'react';
+import { Dispatch } from 'react'
 import { setIndex } from 'state/floating-panel-slice';
 import { addFeatures, clearFeatures, MapFeaturePayload } from 'state/map-feature-slice';
+
+type ActionType = ReturnType<typeof clearFeatures> | ReturnType<typeof addFeatures> | ReturnType<typeof setIndex>;
+
+interface TWAFeature {
+  id: string;
+  properties: {
+    [key: string]: string;
+  };
+}
 
 /**
  * This class is a singleton intended to manage custom event listeners in a separate state to simplify the removal of these listeners.
  */
 export default class MapEventManager {
   private map: mapboxgl.Map = null;
-  private listeners: Array<{ event: keyof mapboxgl.MapLayerEventType; layerID?: string; listener: (e: mapboxgl.MapLayerEventType[keyof mapboxgl.MapLayerEventType]) => void }> = [];
+  private listeners: Array<{ event: MapEvent; listener: (e: MapMouseEvent) => void ; layerID?: string }> = [];
 
   // Constructs an instance of this event manager
   public constructor(map: mapboxgl.Map) {
@@ -25,7 +34,7 @@ export default class MapEventManager {
    * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
    * @param {DataStore} dataStore - The data store.
    */
-  public addMapboxEventListeners(dispatch: Dispatch<any>, dataStore: DataStore) {
+  public addMapboxEventListeners(dispatch: Dispatch<ActionType>, dataStore: DataStore) {
     this.removeAllEventListeners();
     this.addFeatureClickEventListener(dispatch, dataStore);
     this.addTooltipEventListener();
@@ -38,25 +47,31 @@ export default class MapEventManager {
    * @param {Dispatch<any>} dispatch - The dispatch function from Redux for dispatching actions.
    * @param {DataStore} dataStore - The data store storing the map layer information.
    */
-  private addFeatureClickEventListener(dispatch: Dispatch<any>, dataStore: DataStore) {
+
+  private addFeatureClickEventListener(dispatch: Dispatch<ActionType>, dataStore: DataStore) {
     this.addEventListener("click", (e) => {
       // Reset features upon clicked
       dispatch(clearFeatures());
       // Store all clickable features within the clicked radius with some additional metadata
-      const features: MapFeaturePayload[] = this.map.queryRenderedFeatures(e.point).filter((feature) =>
-        dataStore?.getLayerWithID(feature.layer.id).getInjectableProperty(Interactions.CLICKABLE).style[0]
-      ).map((feature) => ({
-        ...feature.properties,
-        name: feature.properties.name ?? (feature.id !== undefined ? "Feature #" + feature.id : "Feature"),
-        stack: dataStore?.getStackEndpoint(feature.source), // Store the associated stack if available
-        layer: dataStore?.getLayerWithID(feature.layer.id).name, // Store the layer's public-facing name
-      }))
+      const features: MapFeaturePayload[] = this.map.queryRenderedFeatures(e.point)
+        .filter((feature) =>
+          dataStore && feature.layer && dataStore.getLayerWithID(feature.layer.id)?.getInjectableProperty(Interactions.CLICKABLE)?.style[0]
+        )
+        .map((feature) => {
+          const twaFeature = feature as unknown as TWAFeature; // Correct casting
+          return {
+            ...twaFeature.properties,
+            name: twaFeature.properties.name ?? (twaFeature.id !== undefined ? "Feature #" + twaFeature.id : "Feature"),
+            stack: dataStore?.getStackEndpoint(feature.source), // Store the associated stack if available
+            layer: dataStore?.getLayerWithID(feature.layer.id)?.name, // Store the layer's public-facing name
+          };
+        });
+
       dispatch(addFeatures(features));
+
       // Switch to the info tab at index 2 only if the click event occurs with at least one feature
       if (features.length > 0) {
-        dispatch(setIndex({
-          index: 2,
-        }));
+        dispatch(setIndex({ index: 2 }));
       }
     });
   }
@@ -79,8 +94,9 @@ export default class MapEventManager {
       }
       // Access the first feature under the mouse pointer
       const feature = map.queryRenderedFeatures(e.point)[0];
-      const name = feature?.properties.name ?? null;
-      let description = feature?.properties.description ?? null;
+      const twaFeature = feature as unknown as TWAFeature
+      const name = twaFeature?.properties.name ?? null;
+      let description = twaFeature?.properties.description ?? null;
       // Handle line breaks in description text
       description = description?.replace(/\n/g, '<br>');
       const lngLat: mapboxgl.LngLat = e.lngLat;
@@ -112,9 +128,10 @@ export default class MapEventManager {
         // Updates the conditional paint property with the IRI of the currently hovering feature
         this.addEventListener("mousemove", function (e) {
           const feature = map.queryRenderedFeatures(e.point)[0];
+          const twaFeature = feature as unknown as TWAFeature
           const prevIri: string = hoverProperty[1][2];
-          if (feature.properties?.iri != prevIri) {
-            hoverProperty[1][2] = feature.properties?.iri;
+          if (twaFeature.properties?.iri != prevIri) {
+            hoverProperty[1][2] = twaFeature.properties?.iri;
           }
           map.setPaintProperty(layer.id, "fill-opacity", hoverProperty);
         }, layer.id);
@@ -131,17 +148,17 @@ export default class MapEventManager {
   /**
    * Main function to add any event listener to the current map. The manager will cache these listeners for ease of removal.
    * 
-   * @param {keyof mapboxgl.MapLayerEventType} event - Event of interest.
-   * @param {(e: mapboxgl.MapLayerEventType[keyof mapboxgl.MapLayerEventType]) => void} listener - Event listener to be added.
+   * @param {MapMouseEvent} event - Event of interest.
+   * @param {(e: MapMouseEvent) => void} listener - Event listener to be added.
    * @param {string} layerID - Optional parameter for the specified layer id if available.
    */
-  private addEventListener(event: keyof mapboxgl.MapLayerEventType, listener: (e: mapboxgl.MapLayerEventType[keyof mapboxgl.MapLayerEventType]) => void, layerID?: string): void {
+  private addEventListener(event: MapEvent, listener: (e: MapMouseEvent) => void, layerID?: string): void {
     if (layerID) {
       this.map.on(event, layerID, listener);
     } else {
       this.map.on(event, listener);
     }
-    this.listeners.push({ event, layerID, listener });
+    this.listeners.push({ event, listener, layerID });
   }
 
   /**
