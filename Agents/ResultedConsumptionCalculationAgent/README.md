@@ -3,6 +3,10 @@ This `Resulted (Energy) Consumption Calculation` agent is designed to calculate 
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 
+This agent should be implemented with other agents using Derived Information Framework. This agent works with [LSOAInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/LSOAInputAgent), [CopCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/CopCalculationAgent), [UtilityCostCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/UtilityCostCalculationAgent) and [InequalityIndexCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/InequalityIndexCalculationAgent),to support the analysis of the impact of heat pumps in the UK (Details refer to   **[Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/)** with **[Preprint 281](https://como.ceb.cam.ac.uk/preprints/281/)**). You may refer to the following graph to find what is the role of this agent in these calculations:
+
+![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
+
 This agent uses Derived Infomation Framework, details provided below:
 
 
@@ -77,10 +81,6 @@ Gas consumption: # Available in the Ontop, a consumption csv file and config fil
 The Resulted Consumption Calculation Agent is intended to use the `Asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `COP`, `Electricity consumption`, `Gas Consumption`,`Boiler Efficiency`,`Proportion of Heating`,`Heat Pump Uptake`,`Energy Consumption Profile`.) and automatically updates associated `Resulted Energy Consumption`  instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
 
 After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://localhost:5200/`
-
-This agent should be implemented with other agents using Derived Information Framework. You may refer to the following graph to find what is the role of this agent in these calculations:
-
-![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
 
 ### Agent Setup
 

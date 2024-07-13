@@ -1,5 +1,9 @@
 ## Description
-This `Utility Cost Calculation` agent is designed to calculate the electricity and gas cost based on [resulted energy consumptions], with electricity and gas unit cost, and instantiated in the [The World Avatar] KG according to the [OntoCAPE] and [OntoRegionalAnalysis] ontology. Details can be found in the [home page] of this agent. 
+This `Utility Cost Calculation` agent is designed to calculate the electricity and gas cost based on [resulted energy consumptions], with electricity and gas unit cost, and instantiated in the [The World Avatar] KG according to the [OntoCAPE] and [OntoRegionalAnalysis] ontology. 
+
+This agent should be implemented with other agents using Derived Information Framework. This agent works with [LSOAInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/LSOAInputAgent), [CopCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/CopCalculationAgent), [ResultedConsumptionCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ResultedConsumptionCalculationAgent) and [UtilityCostCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/UtilityCostCalculationAgent), to support the analysis of the impact of heat pumps in the UK (Details refer to   **[Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/)** with **[Preprint 281](https://como.ceb.cam.ac.uk/preprints/281/)**). You may refer to the following graph to find what is the role of this agent in these calculations:
+
+![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
 
 ### Basic
 The underlying equation of the calculations in this agent is:
@@ -56,10 +60,6 @@ return = {'inequality_index': 0.1,
 The Utility Cost Calculation Agent is intended to use the `Asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `Resulted Electricity consumption`, `Resulted Gas Consumption`,`Electricity Unit Cost`,`Gas Unit Cost`) and automatically updates associated `Utility Cost`  instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
 
 After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://localhost:5300/`
-
-This agent should be implemented with other agents using Derived Information Framework. You may refer to the following graph to find what is the role of this agent in these calculations:
-
-![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 

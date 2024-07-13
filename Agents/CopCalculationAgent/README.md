@@ -1,6 +1,10 @@
 ## Description
 This `COP Calculation` agent is designed to calculate the Coefficient of Performance (COP) of the heat pump based on a given temperature with several assumptions, and instantiated in the [The World Avatar] KG according to the [OntoRegionalAnalysis] ontology. Calculation details can be found in the [home page] of this agent. The required data comprimise the temperature data of the Lower Super Output Area (LSOA) in the UK which can be calculated and instantiated by the [LSOAInputAgent]. This data is updated annually. 
 
+This agent should be implemented with other agents using Derived Information Framework. This agent works with [LSOAInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/LSOAInputAgent), [ResultedConsumptionCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ResultedConsumptionCalculationAgent), [UtilityCostCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/UtilityCostCalculationAgent) and [InequalityIndexCalculationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/InequalityIndexCalculationAgent),to support the analysis of the impact of heat pumps in the UK (Details refer to   **[Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/)** with **[Preprint 281](https://como.ceb.cam.ac.uk/preprints/281/)**). You may refer to the following graph to find what is the role of this agent in these calculations:
+
+![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
+
 ### Basic
 The underlying equation of the calculations in this agent is:
 
@@ -34,10 +38,6 @@ return = {'COP': [2.5]
 The COP Calculation Agent is intended to use the `sychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `temperature`, `heat pump efficiency`, `hot side temperature`.) and automatically updates associated `COP`  instances in the KG. As the agent adopts the `pyderivationagent`, it serves HTTP requests to handle synchronous derivations.
 
 After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like http://localhost:5150/
-
-This agent should be implemented with other agents using Derived Information Framework. You may refer to the following graph to find what is the role of this agent in these calculations:
-
-![Agent framework](https://i.imgur.com/vSBvBoJ.jpeg)
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 
