@@ -11,14 +11,18 @@ The underlying equation of the calculations in this agent is:
 $$
 IE =  \left(2 \frac{\Delta C - \min(\Delta C)}{\max(\Delta C) - \min(\Delta C)} - 1\right) \cdot \frac{\varphi_{FP} - \min(\varphi_{FP})}{\max(\varphi_{FP}) - \min(\varphi_{FP})}
 $$
+
 where ∆C is the change in domestic fuel cost per household <b>per year</b>, and φFP is the proportion of fuel poverty. The purpose of the min and max terms is to normalise the index. In principle they could be true extrema. However, in the analysis that follows we choose the following default parameterisation: 
+
 <div style="text-align: center;"> min<sub>∆C</sub> = P<sub>1</sub>(∆C), max<sub>∆C</sub> = P<sub>99</sub>(∆C)</div>
 <div style="text-align: center;"> min<sub>φFP</sub> = 0, max<sub>φFP</sub> = 0.2</div>
+
 where Pn(·) denotes the n<sup>th</sup>-percentile of the distribution of the argument across all households. 
 The reason for this choice is to exclude outliers, such that the inequality index for the majority of households is relatively evenly distributed in the interval [−1,1]. Parameterisation parameters mentioned above can be amended if provided in the input, see details below:
 
 
 **Arguments**:
+
 <u>change_of_cost</u>: the annual change of cost due to heat pump deployment. Details refer to UtilityCostCalculationAgent.
 
 <u>fuel_poverty</u>: the proportion of fuel poor household in the region.

@@ -11,6 +11,7 @@ The underlying equation of the calculations in this agent is:
 $$
 COP = \frac{hp\_efficiency \times T_H}{T_H - T_C}
 $$
+
 **Arguments**:
 
 <u>T<sub>C</sub></u>: The temperature of the cold side of the heat pump
