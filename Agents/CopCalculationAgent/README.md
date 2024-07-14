@@ -9,7 +9,7 @@ This agent should be implemented with other agents using Derived Information Fra
 The underlying equation of the calculations in this agent is:
 
 $$
-COP = \frac{hp\_efficiency \times T_H}{T_H - T_C}
+COP = \frac{hp\_{efficiency} \times T_H}{T_H - T_C}
 $$
 
 **Arguments**:
