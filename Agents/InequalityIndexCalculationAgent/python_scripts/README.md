@@ -3,7 +3,7 @@
 The code and data collected in this folder is dedicated to reproduce the figures in **[Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/): Impact of heat pumps and future energy prices on regional inequalities.**
 
 ## Data
-Please download the data (should be two folder, called `Data` and `GB_shapefile` respectively) from the project folder in the Dropbox (`CoMo shared/jx309/c4e-jx309-heatpumps/Codes_and_Data`, or contact Jethro), and replace it with the `./Data` and `./GB_shapefile`.
+Please download the data (there should be two folders called `Data` and `GB_shapefile` respectively) from the project folder in the the archive for preprint 323 (available on request from the corresponding author) and use it to replace the contents of the `./Data` and `./GB_shapefile` fiolders.
 
 ## Project structure
 Once the data has been sorted, the project should be organised as follows:
