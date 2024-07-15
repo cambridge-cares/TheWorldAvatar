@@ -1,6 +1,6 @@
 import { DataStore } from 'io/data/data-store';
 import { LayerSource } from 'io/data/layer-source';
-import { Map, SourceSpecification } from 'mapbox-gl';
+import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, Map, RasterSource, VectorSource, VideoSourceRaw } from 'mapbox-gl';
 import { JsonObject } from 'types/json';
 
 /**
@@ -47,7 +47,29 @@ export function addSource(map: Map, source: LayerSource) {
     // Have to cast to type specific object to meet Mapbox's API
 
     
-    let mapboxObj: SourceSpecification;
+    let mapboxObj: AnySourceData;
+    switch (source.type) {
+        case "canvas":
+            mapboxObj = ((options as unknown) as CanvasSourceRaw);
+            break;
+        case "geojson":
+            mapboxObj = ((options as unknown) as GeoJSONSourceRaw);
+            break;
+        case "image":
+            mapboxObj = ((options as unknown) as ImageSourceRaw);
+            break;
+        case "raster":
+            mapboxObj = ((options as unknown) as RasterSource);
+            break;
+        case "vector":
+            mapboxObj = ((options as unknown) as VectorSource);
+            break;
+        case "video":
+            mapboxObj = ((options as unknown) as VideoSourceRaw);
+            break;
+        default:
+            throw new Error(`Unsupported source type: ${source.type}`);
+    }
 
     // Add to the map
     map?.addSource(source.id, mapboxObj);
