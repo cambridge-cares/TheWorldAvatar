@@ -24,7 +24,7 @@
     box-sizing: border-box;
     height: 32px;
     
-    padding-right: 4px;
+    padding-right: 0.75vw;
     flex-grow: 0;
     display: flex;
     flex-direction: row;
@@ -62,6 +62,7 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
+    left: 0;
 }
 
 .textContainer span {

@@ -6,19 +6,19 @@ import React from 'react';
 import { Tooltip } from '@mui/material';
 
 import { OptionalPage } from 'io/config/optional-pages';
-import AppLink from 'ui/navigation/link/link';
 import AppImage from 'ui/graphic/image/image';
+import Link from 'next/link';
 
 // Interface for incoming parameters
 interface MarkdownPageThumbnailProps {
   page: OptionalPage;
 }
 
-interface DefaultPageThumbnailProps {
-  title: string;
-  description: string;
-  icon: string;
-  redirectUrl: string;
+export interface DefaultPageThumbnailProps {
+  title?: string;
+  caption?: string;
+  icon?: string;
+  url: string;
 }
 
 interface PageThumbnailTemplateProps {
@@ -35,8 +35,8 @@ interface PageThumbnailTemplateProps {
  * @param {OptionalPage} page Markdown page content.
  */
 export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailProps>) {
-  const thumbnail = page.thumbnail ?? "/images/defaults/icons/info.svg";
-  const url = `/posts/${page.slug}`;
+  const thumbnail = page.thumbnail ?? "./images/defaults/icons/info.svg";
+  const url = `./${page.slug}`;
 
   return (
     <PageThumbnailTemplate
@@ -60,9 +60,9 @@ export function DefaultPageThumbnail(props: Readonly<DefaultPageThumbnailProps>)
   return (
     <PageThumbnailTemplate
       header={props.title}
-      description={props.description}
+      description={props.caption}
       icon={props.icon}
-      redirectUrl={props.redirectUrl}
+      redirectUrl={props.url}
     />
   );
 }
@@ -92,16 +92,16 @@ const ForwardedPageThumbnailTemplate = React.forwardRef<HTMLDivElement, Readonly
   function ForwardedPageThumbnailTemplate({ header, description, icon, redirectUrl, ...rest }, ref): React.ReactElement {
     const imageDescription = "Thumbnail icon for the '" + header + "' page.";
     return (
-      <AppLink url={redirectUrl} className={styles.container}>
+      <Link href={redirectUrl} className={styles.container}>
         <AppImage url={icon} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
         <div ref={ref} {...rest} className={styles.content}>
-          <div className={styles.title}>
-            <h1>{header}</h1>
-          </div>
-          <div className={styles.description}>
+          <h3 className={styles.title}>
+            {header}
+          </h3>
+          <div className={styles.description} >
             {description}
           </div>
         </div>
-      </AppLink>
+      </Link >
     );
   });

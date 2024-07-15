@@ -50,8 +50,3 @@
     width: 0.5rem;
     border-radius: 50%;
 }
-
-/** Alignments **/
-.push-right {
-    margin-left: auto;
-}

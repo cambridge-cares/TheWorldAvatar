@@ -5,7 +5,7 @@ import { DataStore } from 'io/data/data-store';
 import { Interactions } from 'io/config/interactions';
 import { JsonObject } from 'types/json';
 import { ImageryOption, ImagerySettings } from 'types/settings';
-import { getCurrentImageryOption } from '../map-helper';
+import { getCurrentImageryOption } from 'map/map-helper';
 /**
  * Given a DataStore instance housing parsed DataLayer instances,
  * this function adds them all to the Mapbox map instance.
@@ -17,9 +17,9 @@ import { getCurrentImageryOption } from '../map-helper';
 export async function addAllLayers(map: Map, dataStore: DataStore, imagerySettings: ImagerySettings) {
     const currentStyle = getCurrentImageryOption(imagerySettings);
 
-    const layerArray: DataLayer[] = dataStore.getLayerList();
+    const layerArray: DataLayer[] = dataStore?.getLayerList();
     layerArray.forEach((layer) => addLayer(map, layer, currentStyle));
-    console.log("Added all registered layers to the map object.");
+    console.log(`Added ${layerArray.length} layers to the map object.`);
 }
 
 /**

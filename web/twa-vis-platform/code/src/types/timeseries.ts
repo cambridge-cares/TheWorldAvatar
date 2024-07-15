@@ -14,3 +14,12 @@ export type TimeSeries = {
   values: number[];
   valuesClass: string;
 };
+
+export type ScenarioDimensionStep = {
+  value: number;
+  label: string;
+};
+
+export type ScenarioDimensionsData = {
+  [key: string]: ScenarioDimensionStep[];
+};

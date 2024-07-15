@@ -2,7 +2,7 @@
 
 Given that the platform is designed to be generalisable, this directory exists to allow users to customise their web contents according to their needs. It acts as the target for a Docker volume or bind mount, and should be mounted to the `/twa/public` directory within the deployed container. Files within it can then be accessed using the `$HOST/...` URL route.
 
-The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions. Do note that the sample files in this directory are intended to disseminate information and not functional (i.e. to set up the platform). If you require sample files of a working example, please have a look over at the [example](../example/) directory. 
+The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions. Do note that the sample files in this directory are intended to disseminate information and not functional (i.e. to set up the platform). If you require sample files of a working example, please have a look over at the [example](../example/) directory.
 
 - [`config/`](#1-configuration): Contains config/settings files.
 - [`images/`](#2-assets): Custom image files.
@@ -26,6 +26,11 @@ The `config/ui-settings.json` file provides general settings for the platform. T
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
   - `help`: REQUIRED. Displays help page if enabled
+- `links`: optional configuration for adding or updating redirect links on the landing page. This configuration can overwrite the defaults for the map, dashboard, and help modules. It requires an `ARRAY` of the following JSON format:
+  - `url`: REQUIRED. The url is either targeted at either an external or internal link. For internal link usage, please input `map`, `dashboard`, and `help` accordingly.
+  - `title`: REQUIRED. Thumbnail title on landing page. Optional for only internal links, which defaults to the default if not set.
+  - `caption`: REQUIRED. Thumbnail caption on landing page. Optional for only internal links, which defaults to the default if not set.
+  - `icon`: REQUIRED. Thumbnail icon on landing page. Optional for only internal links, which defaults to the default if not set.
 - `resources`: optional configuration for additional resources. They follow the following format
   - `resourceName`: indicates the type of resource required - dashboard, scenario
     - `url`: REQUIRED. url of the resource
@@ -46,8 +51,10 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 ```json
 {
   "branding": {
-    "logo": "/images/whatever.svg", // Custom branding logo
-    "navbarLogo": "/images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "logo": "./images/whatever.svg", // Custom branding logo
+    "navbarLogo": "./images/defaults/navbar-logo.svg", // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "landing": "./images/path/to/svg/light.svg", // Landing page brand/company image for light mode
+    "landingDark": "./images/path/to/svg/dark.svg" // Optional landing page brand/company image for dark mode
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
@@ -97,12 +104,12 @@ Icons on the map are shown by default in the layer tree. Additional legend items
       // Group one, item one
       "Active": {
         "type": "symbol",
-        "icon": "/images/active.svg"
+        "icon": "./images/active.svg"
       },
       // Group one, item two
       "Inactive": {
         "type": "symbol",
-        "icon": "/images/inactive.jpg"
+        "icon": "./images/inactive.jpg"
       },
       // Group one, item three
       "Unknown": {
@@ -196,7 +203,7 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
   },
   "icons": {
     // Mappings for the icon name that will be called in code and its corresponding url
-    "info": "/images/defaults/icons/info.svg"
+    "info": "./images/defaults/icons/info.svg"
   }
 }
 ```
@@ -285,7 +292,9 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 - `id` (required): This is the internal ID of the layer. It needs to be unique within the current group, but is not required to be globally unique.
 - `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
 - `source` (required): This is the ID of the source used to populate the layer.
+- `order` (optional): A field that defines the layer hierarchy based on their order. Defaults to 0. Both positive and negative numbers are valid.
 - `grouping` (optional): A grouping field for displaying only a subset of layers within this group.
+- `clickable` (optional): Enables the layer to be clickable. Set to true by default.
 - `hovering` (optional): Creates a highlight effect when hovering over the layer's features. This parameter is an array of two numbers indicating the opacity for the highlighted and non-highlighted states respectively.
 
 ```json
@@ -299,13 +308,15 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 > Displaying subset of layers
 
 Users can choose to display a subset of the layers within the same group. For example, given a building dataset for the entire city, the user may wish to create the following three views. This can be set by creating at least one layer for each view and assign a `grouping` field to each. Then, a dropdown will be generated next to the building data group in the visualisation.
+
 - All buildings - `grouping`: "Default"
 - All buildings color coded by their use - `grouping`: "Building Use"
 - Buildings containing carparks or not - `grouping`: "Carpark"
 
 Instructions:
-1) All related layers must belong to the same data group and be assigned a `grouping` field
-2) The dropdown sequence is determined by the order the layers appear in the `data.json`; use the `Default` grouping to ensure that it is the first option
+
+1. All related layers must belong to the same data group and be assigned a `grouping` field
+2. The dropdown sequence is determined by the order the layers appear in the `data.json`; use the `Default` grouping to ensure that it is the first option
 
 ## 2. Assets
 

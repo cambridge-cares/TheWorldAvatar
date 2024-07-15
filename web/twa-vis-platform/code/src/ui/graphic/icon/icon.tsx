@@ -1,9 +1,7 @@
-import React from 'react';
-import SVG from 'react-inlinesvg';
 import { Icon } from '@mui/material';
+import SVG from 'react-inlinesvg';
 
 import AppImage from 'ui/graphic/image/image';
-import { formatAppUrl } from 'utils/client-utils';
 
 interface IconComponentProps {
   readonly icon: string;
@@ -30,7 +28,7 @@ export default function IconComponent(props: IconComponentProps) {
     );
   } else if (props.icon.endsWith(".svg")) {
     return (
-      <SVG className={props.classes} src={formatAppUrl(props.icon)} />
+      <SVG className={props.classes} src={props.icon} />
     );
   } else {
     const iconClassNames = ["material-symbols-outlined"].concat(props.classes).join(" ");
