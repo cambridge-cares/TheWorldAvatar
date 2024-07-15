@@ -1,0 +1,8 @@
+{
+  "realm": "twa-test",
+  "auth-server-url": "http://localhost:8081/",
+  "ssl-required": "external",
+  "resource": "oisin",
+  "public-client": true,
+  "confidential-port": 0
+}
