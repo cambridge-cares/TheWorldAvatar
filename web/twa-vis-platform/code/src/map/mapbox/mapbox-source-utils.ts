@@ -1,5 +1,6 @@
 import { DataStore } from 'io/data/data-store';
 import { LayerSource } from 'io/data/layer-source';
+// @ts-expect-error -- The MapBox types are inconsistent and all over the place but this works
 import { AnySourceData, CanvasSourceRaw, GeoJSONSourceRaw, ImageSourceRaw, Map, RasterSource, VectorSource, VideoSourceRaw } from 'mapbox-gl';
 import { JsonObject } from 'types/json';
 
