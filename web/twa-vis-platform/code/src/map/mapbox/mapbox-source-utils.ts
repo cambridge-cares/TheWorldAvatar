@@ -12,8 +12,12 @@ import { JsonObject } from 'types/json';
  */
 export function addAllSources(map: Map, dataStore: DataStore) {
     const sourceArray: LayerSource[] = dataStore?.getSourceList();
-    sourceArray.forEach((source) => addSource(map, source));
-    console.log("Added all registered sources to the map object.");
+    try {
+        sourceArray.forEach((source) => addSource(map, source));
+        console.log(`Added ${sourceArray.length} registered sources to the map object.`);
+    } catch (error) {
+        console.error("Couldn't add layer sources to map", error)
+    }
 }
 
 /**
