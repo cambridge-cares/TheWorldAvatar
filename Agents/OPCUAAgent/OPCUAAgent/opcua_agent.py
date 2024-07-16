@@ -6,10 +6,10 @@ import csv
 from datetime import datetime, timezone
 import datetime
 import sql_client
-import utils
+import OPCUAAgent.agent_utils as agent_utils
 
-filePath = utils.get_env_variable("OPCUA_CONF")
-url =utils.read_property(filePath, "opcua_server_url")
+filePath = agent_utils.get_env_variable("OPCUA_CONF")
+url =agent_utils.read_property(filePath, "opcua_server_url")
 
 # Retrieve tag names and data types in the following structure: {tag_01_name:tag_01_data_type, tag_02_name:tag_02_data_type}
 def read_tags_from_csv_file(client:Client, filename):
@@ -66,8 +66,8 @@ async def read_tag_values(client:Client, tags:dict):
 
 async def main():
     client = Client(url=url)
-    client.set_user(utils.read_property(filePath, "user"))
-    client.set_password(utils.read_property(filePath, "password"))
+    client.set_user(agent_utils.read_property(filePath, "user"))
+    client.set_password(agent_utils.read_property(filePath, "password"))
     cert_base = Path(__file__).parent
     print("connecting to the following endpoint: " + url)
     try:
@@ -79,7 +79,7 @@ async def main():
             sql_client.create_database_if_not_exist()
             connection = sql_client.connect_to_database()
             sql_client.create_if_not_exist_and_insert(connection=connection, dict=timeseries_dict)
-            await asyncio.sleep(float(utils.read_property(filePath, "interval")))
+            await asyncio.sleep(float(agent_utils.read_property(filePath, "interval")))
     except Exception as e:
         print(f"Stopping due to an exception: {e}")
     finally:

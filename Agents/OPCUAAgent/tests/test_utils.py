@@ -4,7 +4,7 @@ import os
 import pathlib
 from unittest.mock import patch
 
-from OPCUAAgent import utils
+from OPCUAAgent import agent_utils
 
 class Test_utils:
     def setUp(self):
@@ -25,7 +25,7 @@ class Test_utils:
     #Test successful utils.get_env_variable
     def test_get_env_variable_success(self):
         self.setUp()
-        assert utils.get_env_variable("TEST_GET_ENV") == "correct"
+        assert agent_utils.get_env_variable("TEST_GET_ENV") == "correct"
         self.tearDown()
     
     #Remove all environment variables
@@ -33,24 +33,20 @@ class Test_utils:
     #Test failed utils.get_env_variable
     def test_get_env_variable_fail(self):
         with pytest.raises(KeyError) as excinfo:
-            filePath = utils.get_env_variable("NON_EXISTENT_ENV")
+            filePath = agent_utils.get_env_variable("NON_EXISTENT_ENV")
         # Check correct exception message
         assert 'Environment variable \'NON_EXISTENT_ENV\' not found.' in str(excinfo.value)
         
     #Test successful utils.read_property
     def test_read_property_success(self):
         self.setUp()
-        assert utils.read_property(str(self.temp_path / 'test.properties'), "dbname") == "test"
+        assert agent_utils.read_property(str(self.temp_path / 'test.properties'), "dbname") == "test"
         self.tearDown()
     
     #Test failed utils.read_property
     def test_read_property_fail(self):
         self.setUp()
         with pytest.raises(KeyError) as excinfo:
-            value = utils.read_property(str(self.temp_path / 'test.properties'), "non_existent_key")
-            assert 'Key \'non_existent_key\' not found.' in str(excinfo.value)
+            value = agent_utils.read_property(str(self.temp_path / 'test.properties'), "non_existent_key")
+        assert 'Key \'non_existent_key\' not found.' in str(excinfo.value)
         self.tearDown()
-        
-# To invoke the pytest framework and run all tests
-if __name__ == "__main__":
-  pytest.main()

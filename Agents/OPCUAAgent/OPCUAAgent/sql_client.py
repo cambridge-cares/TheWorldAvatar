@@ -1,23 +1,23 @@
 import os
 import psycopg2
 from psycopg2 import sql
-import utils
+import OPCUAAgent.agent_utils as agent_utils
 import re
 
 # Check whether a database exist and create it if not
 def create_database_if_not_exist():
     try:
-        filePath = utils.get_env_variable("POSTGRES_CONF")
+        filePath = agent_utils.get_env_variable("POSTGRES_CONF")
         connection = psycopg2.connect(
             dbname="postgres",
-            user=utils.read_property(filePath, "user"),
-            password=utils.read_property(filePath, "password"),
-            host=utils.read_property(filePath, "host"),
-            port=utils.read_property(filePath, "port")
+            user=agent_utils.read_property(filePath, "user"),
+            password=agent_utils.read_property(filePath, "password"),
+            host=agent_utils.read_property(filePath, "host"),
+            port=agent_utils.read_property(filePath, "port")
         )
         connection.autocommit = True
         
-        dbname=utils.read_property(filePath, "dbname")
+        dbname=agent_utils.read_property(filePath, "dbname")
         cursor = connection.cursor()
         # Check if the database exists
         cursor.execute(
@@ -38,17 +38,19 @@ def create_database_if_not_exist():
 # Function to establish a connection to the PostgreSQL database
 def connect_to_database():
     try:
-        filePath = utils.get_env_variable("POSTGRES_CONF")     
+        filePath = agent_utils.get_env_variable("POSTGRES_CONF")     
         connection = psycopg2.connect(
-            dbname=utils.read_property(filePath, "dbname"),
-            user=utils.read_property(filePath, "user"),
-            password=utils.read_property(filePath, "password"),
-            host=utils.read_property(filePath, "host"),
-            port=utils.read_property(filePath, "port")
+            dbname=agent_utils.read_property(filePath, "dbname"),
+            user=agent_utils.read_property(filePath, "user"),
+            password=agent_utils.read_property(filePath, "password"),
+            host=agent_utils.read_property(filePath, "host"),
+            port=agent_utils.read_property(filePath, "port")
         )
         return connection
     except (Exception, psycopg2.Error) as error:
-        print("Error while connecting to PostgreSQL:", error)
+        print("Error while connecting to PostgreSQL:" + str(error))
+        raise Exception("Error while connecting to PostgreSQL:" + str(error))
+        
 
 # Function to create schemas and tables
 def create_if_not_exist_and_insert(connection, dict:dict):
