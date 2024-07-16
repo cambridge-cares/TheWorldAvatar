@@ -9,7 +9,7 @@
      xmlns:ontosealevel="https://www.theworldavatar.com/kg/ontosealevel/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosealevel/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 June 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 July 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Ontology for Sea Level is developed to represent information about sea level.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -210,6 +210,45 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasChildrenPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasChildrenPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of children population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has children population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasElderlyPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasElderlyPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of elderly population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has elderly population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasMenPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasMenPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of men population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has men population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontosealevel/hasPercentageQuantile -->
 
 
@@ -223,19 +262,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasPopulationAtRisk -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasPopulationAtRisk">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of population at risk due to sea level rise.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has population at risk</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontosealevel/hasProjectionYear -->
 
 
@@ -245,6 +271,58 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a sea level change and its  projection year.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has projection year</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasTotalPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasTotalPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the total number of population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has total population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasWomenPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasWomenPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of women population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has women population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasWomenofReproductiveAgePopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasWomenofReproductiveAgePopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of women of reproductive age population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has women of reproductive age population at risk</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosealevel/hasYouthPopulationAtRisk -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosealevel/hasYouthPopulationAtRisk">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosealevel/SeaLevelChange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the number of youth population at risk due to sea level rise.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosealevel/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has youth population at risk</rdfs:label>
     </owl:DatatypeProperty>
     
 

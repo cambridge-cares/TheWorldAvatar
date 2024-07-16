@@ -1,18 +1,21 @@
+import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
+
 /**
  * Interface of default settings for landing page.
  */
 export type DefaultSettings = {
   branding: {
-    [key: string]: string | number | boolean;
+    [key: string]: string;
   },
   modules: {
     [key: string]: boolean;
   },
+  links?: DefaultPageThumbnailProps[],
   resources?: {
     [key: string]: {
       url: string;
       data?: string;
-    }
+    };
   }
 }
 

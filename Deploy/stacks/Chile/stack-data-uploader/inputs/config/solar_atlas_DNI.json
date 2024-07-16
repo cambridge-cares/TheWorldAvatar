@@ -1,0 +1,26 @@
+{
+    "name": "solar_atlas_DNI",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "solar_atlas_DNI",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "solar_atlas_DNI",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "solar_atlas_DNI"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "solar_atlas_DNI",
+            "file": "solar_atlas_DNI.sld"
+        }
+    ]
+}

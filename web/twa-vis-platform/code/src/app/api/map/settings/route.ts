@@ -11,10 +11,9 @@ export const dynamic = 'force-dynamic';
 /**
  * Respond to incoming HTTP requests with map settings.
  */
-export async function GET() {
+export function GET() {
   try {
-    // Since getSettings is asynchronous, use await to get the result
-    const credentials = await SettingsStore.getCredentials();
+    const credentials = SettingsStore.getCredentials();
     return NextResponse.json({ token: credentials.key });
   } catch (error) {
     // Handle possible errors, such as file not found or JSON parse errors

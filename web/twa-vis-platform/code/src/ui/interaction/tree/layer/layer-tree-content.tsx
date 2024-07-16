@@ -1,17 +1,16 @@
 
 
-import styles from './layer-tree.module.css';
 import iconStyles from 'ui/graphic/icon/icon-button.module.css';
+import styles from './layer-tree.module.css';
 
-import SVG from 'react-inlinesvg';
-import React, { useState } from 'react';
 import { Map } from 'mapbox-gl';
+import React, { useState } from 'react';
+import SVG from 'react-inlinesvg';
 
-import { MapLayerGroup, MapLayer } from 'types/map-layer';
-import MaterialIconButton from 'ui/graphic/icon/icon-button';
+import { MapLayer, MapLayerGroup } from 'types/map-layer';
 import IconComponent from 'ui/graphic/icon/icon';
+import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import SimpleDropdownField from 'ui/interaction/dropdown/simple-dropdown';
-import { formatAppUrl } from 'utils/client-utils';
 
 // type definition for incoming properties
 interface LayerTreeHeaderProps {
@@ -147,7 +146,7 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
         {/* Tree icon, if present */}
         {group.icon != null && (
           <div className={styles.icon + " " + styles.treeIcon}>
-            <SVG src={formatAppUrl(group.icon)} />
+            <SVG src={group.icon} />
           </div>
         )}
 

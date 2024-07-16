@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -43,7 +45,10 @@ public class SeaLevelImpactAgent extends JPSAgent {
     public static String museumsTable = null;
     public static String touristattractionsTable = null;
     public static String landplotTable= null;
-    public static String populationTable= null;
+
+    private static String populationTables;
+    public static ArrayList<String> populationTableList;
+
     public static String osm_streetTable= null;
 
     private String kgEndpoint;
@@ -75,7 +80,11 @@ public class SeaLevelImpactAgent extends JPSAgent {
             this.museumsTable= prop.getProperty("museumsTable.name");
             this.touristattractionsTable= prop.getProperty("touristattractionsTable.name");
             this.landplotTable= prop.getProperty("landplotTable.name");
-            this.populationTable= prop.getProperty("populationTable.name");
+
+            this.populationTables = prop.getProperty("populationTables");
+            // Split the string using the comma as the delimiter
+            String[] tableNames = populationTables.split("\\s*,\\s*");
+            this.populationTableList = new ArrayList<String>(Arrays.asList(tableNames));
             this.osm_streetTable= prop.getProperty("osm_streetTable.name");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -132,42 +141,43 @@ public class SeaLevelImpactAgent extends JPSAgent {
 
             //Map population at risk
             try {
-                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, populationTable);
+
+                impactAssessor.mapPopulationAtRisk(remoteRDBStoreClient, seaLevelChangeUUID,populationTableList);
             }catch (Exception e) {
                 LOGGER.info("Population failed to map: ", e);
             }
 
-            //Map landplot at risk
-            try {
-                impactAssessor.mapLandplotAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, landplotTable);
-            }catch (Exception e) {
-                LOGGER.info("Landplot failed to map: ", e);
-            }
+             //Map landplot at risk
+             try {
+                 impactAssessor.mapLandplotAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, landplotTable);
+             }catch (Exception e) {
+                 LOGGER.info("Landplot failed to map: ", e);
+             }
 
-            //Map roadnetwork at risk
-            try {
-                impactAssessor.mapRoadAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, osm_streetTable);
-            }catch (Exception e) {
-                LOGGER.info("OpenStreetMap failed to map: ", e);
-            }
+             //Map roadnetwork at risk
+             try {
+                 impactAssessor.mapRoadAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, osm_streetTable);
+             }catch (Exception e) {
+                 LOGGER.info("OpenStreetMap failed to map: ", e);
+             }
 
-            //Map culturalsites at risk
-            try {
-                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, monumentsTable);
-                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, historicsitesTable);
-                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, heritagetreesTable);
-                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, museumsTable);
-                impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, touristattractionsTable);
-            }catch (Exception e) {
-                LOGGER.info("CulturalSites failed to map: ", e);
-            }
+             //Map culturalsites at risk
+             try {
+                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, monumentsTable);
+                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, historicsitesTable);
+                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, heritagetreesTable);
+                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, museumsTable);
+                 impactAssessor.mapCulturalSitesAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, touristattractionsTable);
+             }catch (Exception e) {
+                 LOGGER.info("CulturalSites failed to map: ", e);
+             }
 
-            //Map buildings at risk
-            try {
-                impactAssessor.mapBuildingAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, buildingsMatViewName);
-            }catch (Exception e) {
-                LOGGER.info("Buildings failed to map: ", e);
-            }
+             //Map buildings at risk
+             try {
+                 impactAssessor.mapBuildingAtRisk(remoteRDBStoreClient,seaLevelChangeUUID, buildingsMatViewName);
+             }catch (Exception e) {
+                 LOGGER.info("Buildings failed to map: ", e);
+             }
 
             //Upload Impact Ontop mapping
             try {

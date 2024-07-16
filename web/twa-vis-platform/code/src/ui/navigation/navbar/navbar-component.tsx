@@ -5,8 +5,8 @@ import styles from './navbar-component.module.css';
 import React from 'react';
 import Icon from '@mui/material/Icon';
 import { Tooltip } from '@mui/material';
+import Link from 'next/link';
 
-import AppLink from 'ui/navigation/link/link';
 
 // Type definition for incoming parameters
 export interface NavbarComponentProps {
@@ -29,10 +29,10 @@ export default function NavbarComponent(props: Readonly<NavbarComponentProps>) {
     }
   }
   return (
-    <AppLink
+    <Link
       className={styles.navbarButton}
       onClick={bubbleUp}
-      url={props.url}>
+      href={props.url}>
 
       <Tooltip
         title={props.tooltip}
@@ -48,6 +48,6 @@ export default function NavbarComponent(props: Readonly<NavbarComponentProps>) {
           {props.icon}
         </Icon>
       </Tooltip>
-    </AppLink>
+    </Link>
   );
 }
