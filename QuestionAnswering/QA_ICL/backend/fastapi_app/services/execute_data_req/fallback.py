@@ -48,6 +48,13 @@ class FallbackDataReqExecutor:
             for var, iris in varIrisLst
             if cls in self.cls2getter
         ]
+        vis_var2iris: dict[str, list[str]] = {
+            var: entity_bindings[var] for var in vis_vars
+        }
+
+        if not docs:
+            return [], None, vis_var2iris
+
         docs_collection = DocumentCollection(data=docs)
 
         docs_no_iris = filter_deep_remove_iris_from_list(
@@ -58,10 +65,7 @@ class FallbackDataReqExecutor:
 
         data = [docs_collection, table_data]
         artifact = docs
-        vis_var2iris: dict[str, list[str]] = {
-            var: entity_bindings[var] for var in vis_vars
-        }
-
+        
         return data, artifact, vis_var2iris
 
 

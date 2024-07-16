@@ -1,8 +1,11 @@
 from functools import cache
+import logging
 from typing import Annotated
 
 from fastapi import Depends
+from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
+from model.exceptions.execute_data_req.sparql import NamespaceNotFound
 from model.nlq2datareq import (
     DataRequestForm,
     FuncDataReqForm,
@@ -15,6 +18,9 @@ from services.execute_data_req.fallback import (
 
 from .func import FuncDataReqExecutor, get_funcReq_executor
 from .sparql import SparqlDataReqExecutor, get_sparqlReq_executor
+
+
+logger = logging.getLogger(__name__)
 
 
 class DataReqExecutor:
@@ -37,13 +43,17 @@ class DataReqExecutor:
         vis_vars: list[str],
     ):
         if isinstance(req_form, SparqlDataReqForm):
-            return self.sparql_executor.exec(
-                var2cls=var2cls,
-                entity_bindings=entity_bindings,
-                const_bindings=const_bindings,
-                req_form=req_form,
-                vis_vars=vis_vars,
-            )
+            try:
+                return self.sparql_executor.exec(
+                    var2cls=var2cls,
+                    entity_bindings=entity_bindings,
+                    const_bindings=const_bindings,
+                    req_form=req_form,
+                    vis_vars=vis_vars,
+                )
+            except NamespaceNotFound | QueryBadFormed as err:
+                logger.error(err)
+                logger.info("Fall back to default executor")
         elif isinstance(req_form, FuncDataReqForm):
             return self.func_executor.exec(
                 var2cls=var2cls,
@@ -52,13 +62,13 @@ class DataReqExecutor:
                 req_form=req_form,
                 vis_vars=vis_vars,
             )
-        else:
-            return self.fallback_exeuctor.exec(
-                var2cls=var2cls,
-                entity_bindings=entity_bindings,
-                const_bindings=const_bindings,
-                vis_vars=vis_vars,
-            )
+
+        return self.fallback_exeuctor.exec(
+            var2cls=var2cls,
+            entity_bindings=entity_bindings,
+            const_bindings=const_bindings,
+            vis_vars=vis_vars,
+        )
 
 
 @cache
