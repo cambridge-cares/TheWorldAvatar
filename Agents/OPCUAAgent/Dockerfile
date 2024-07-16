@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.9-slim AS base
 
 # Install the required Python libraries
 COPY requirements.txt .
@@ -15,8 +15,20 @@ COPY ./OPCUAAgent ./OPCUAAgent
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+FROM base AS production
+
 ENV POSTGRES_CONF /app/OPCUAAgent/config/postgres_conf.properties
 ENV OPCUA_CONF /app/OPCUAAgent/config/opcua_conf.properties
 
 # Run command
 CMD python ./OPCUAAgent/opcua_agent.py
+
+# ---------------------------------------------
+# Testing image build starts here
+# ---------------------------------------------
+FROM base AS test_opcua_agent
+
+# Copy tests
+COPY ./tests ./tests
+    
+CMD pytest
