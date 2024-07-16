@@ -4,7 +4,7 @@ import logging
 from typing import Annotated
 from fastapi import Depends
 from openai import OpenAI
-from pydantic import TypeAdapter
+from pydantic import TypeAdapter, ValidationError
 
 from config import AppSettings, get_app_settings
 from model.nlq2datareq import DataRequest
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Nlq2DataReqLLMCaller:
     PROMPT_TEMPLATE = """### Instruction: 
-Your task is to translate the input question to an executable data request based on the provided properties and translation examples. Please respond with a single JSON object exactly.
+Your task is to translate the input question to an executable data request based on the provided properties and translation examples. If no reasonable translation can be performed, return "null". Please respond with a single JSON object exactly.
 
 ### Properties:
 {properties}
@@ -38,7 +38,7 @@ Your task is to translate the input question to an executable data request based
         self.openai_model = openai_model
         self.datareq_adapter = TypeAdapter(DataRequest)
 
-    def forward(self, nlq: str, translation_context: TranslationContext) -> DataRequest:
+    def forward(self, nlq: str, translation_context: TranslationContext):
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
                 '"{input}" => {output}'.format(
@@ -83,11 +83,19 @@ Your task is to translate the input question to an executable data request based
         )
         logger.info("LLM's response: " + str(res))
 
-        if not res.choices[0].message.content:
+        content = res.choices[0].message.content
+        if not content:
             # TODO: handle empty response from OpenAI
             raise Exception()
 
-        return self.datareq_adapter.validate_json(res.choices[0].message.content)
+        if content == "null":
+            return None
+        try:
+            return self.datareq_adapter.validate_json(content)
+        except ValidationError as err:
+            logger.error(err)
+            logger.info("Treat semantic parsing result as None")
+            return None
 
 
 @cache

@@ -6,6 +6,7 @@ from fastapi import Depends
 
 from constants.namespace import PREFIX2URI
 from constants.prefixes import TWA_ABOX_PREFIXES
+from model.exceptions.execute_data_req.sparql import NamespaceNotFound
 from model.nlq2datareq import SparqlDataReqForm
 from model.structured_answer import DataItem, DocumentCollection, TableData
 from services.sparql import SparqlClient
@@ -59,13 +60,15 @@ class SparqlDataReqExecutor:
         )
         logger.info("Processed query:\n" + query)
 
+        kg = self.ns2kg.get(req_form.namespace)
+        if kg is None:
+            raise NamespaceNotFound(
+                f"Namespace {req_form.namespace} is not found; registered namespaces are: {', '.join(self.ns2kg.keys())}"
+            )
+
         prefixed_query = self.PREFIXES + query
-        logger.info(
-            "Executing query at: " + self.ns2kg[req_form.namespace].sparql.endpoint
-        )
-        vars, bindings = self.ns2kg[req_form.namespace].querySelectThenFlatten(
-            prefixed_query
-        )
+        logger.info("Executing query at: " + kg.sparql.endpoint)
+        vars, bindings = kg.querySelectThenFlatten(prefixed_query)
         vis_var2iris = {
             var: list(
                 set(
