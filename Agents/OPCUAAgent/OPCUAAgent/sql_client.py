@@ -34,6 +34,7 @@ def create_database_if_not_exist():
         )
     except (Exception, psycopg2.Error) as error:
         print("Error while connecting to PostgreSQL:", error)
+        raise Exception("Error while connecting to PostgreSQL, do check the environment variable and properties file...")
     
 # Function to establish a connection to the PostgreSQL database
 def connect_to_database():
