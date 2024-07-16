@@ -31,19 +31,17 @@ public abstract class AbstractDataObject {
     }
 
     public String getDescription() {
-        return description.map(this::handleFileValues).orElse(getName());
+        return description.map(AbstractDataObject::handleFileValues).orElse(getName());
     }
 
-    public final String handleFileValues(String value) {
+    public static final String handleFileValues(String value) {
         if (null != value && value.startsWith("@")) {
             String file = value.substring(1);
             try {
                 value = Files.readString(Path.of(file));
             } catch (IOException ex) {
                 throw new RuntimeException(
-                        "Failed to read SQL file '" + Path.of(file).toAbsolutePath().toString()
-                                + "' for '" + getName() + "'.",
-                        ex);
+                        "Failed to read file '" + Path.of(file).toAbsolutePath().toString() + "'.", ex);
             }
         }
         return value;
