@@ -159,9 +159,9 @@ export const QAResponseMetadataDiv = ({
                   {qaResponseMetadata.data_request.req_form.type ===
                   'sparql' ? (
                     <>
-                      <h4 className='font-medium'>Namespace</h4>
+                      <h4 className='font-medium'>Triplestore</h4>
                       <p className='mb-2'>
-                        {qaResponseMetadata.data_request.req_form.namespace}
+                        {qaResponseMetadata.data_request.req_form.triplestore}
                       </p>
                       <h4 className='font-medium'>SPARQL query</h4>
                       <p className='font-mono whitespace-pre bg-slate-50 p-4'>

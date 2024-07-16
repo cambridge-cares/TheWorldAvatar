@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
-from model.exceptions.execute_data_req.sparql import NamespaceNotFound
+from model.exceptions.execute_data_req.sparql import TriplestoreNotFound
 from model.nlq2datareq import (
     DataRequestForm,
     FuncDataReqForm,
@@ -51,7 +51,7 @@ class DataReqExecutor:
                     req_form=req_form,
                     vis_vars=vis_vars,
                 )
-            except NamespaceNotFound | QueryBadFormed as err:
+            except TriplestoreNotFound | QueryBadFormed as err:
                 logger.error(err)
                 logger.info("Fall back to default executor")
         elif isinstance(req_form, FuncDataReqForm):
