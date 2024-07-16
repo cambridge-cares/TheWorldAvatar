@@ -26,7 +26,7 @@ def csvrow2jsonobj(row: pd.Series):
             **{
                 k: v
                 for k, v in {
-                    "namespace": row["sparql_namespace"],
+                    "triplestore": row["sparql_triplestore"],
                     "query": row["sparql_query"],
                     "pkeys": parse_json_if_not_na(row["sparql_pkeys"]),
                 }.items()

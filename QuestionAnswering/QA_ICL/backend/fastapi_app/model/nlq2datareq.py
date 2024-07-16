@@ -8,7 +8,7 @@ NLQ2DATAREQ_EXAMPLES_INDEX_NAME = "idx:nlq2datareqExamples_vss"
 
 class SparqlDataReqForm(BaseModel):
     type: Literal["sparql"] = "sparql"
-    namespace: str
+    triplestore: str
     query: str
     pkeys: list[str]
 

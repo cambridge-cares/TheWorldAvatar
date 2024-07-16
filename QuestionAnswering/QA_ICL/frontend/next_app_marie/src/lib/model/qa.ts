@@ -64,7 +64,7 @@ export interface QARequest {
 
 export interface SparqlDataReqForm {
   type: 'sparql'
-  namespace: string
+  triplestore: string
   query: string
   pkeys: string[]
 }

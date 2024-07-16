@@ -1,2 +1,2 @@
-class NamespaceNotFound(Exception):
+class TriplestoreNotFound(Exception):
     pass

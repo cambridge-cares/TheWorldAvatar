@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class SparqlQueryProcessor:
     def __init__(self, ns2endpoint: dict[str, str] = dict()):
-        self.ns2endpoint = ns2endpoint
+        self.name2endpoint = ns2endpoint
 
     def inject_service_endpoint(self, sparql: str):
         idx = 0
@@ -34,20 +34,21 @@ class SparqlQueryProcessor:
             if end < 0:
                 break
 
-            ns = sparql[start + 1 : end]
+            triplestore_name = sparql[start + 1 : end]
 
-            logger.info("Found namespace: " + ns)
+            logger.info("Found triplestore name: " + triplestore_name)
 
-            if ns in self.ns2endpoint:
-                logger.info("Namespace URI: " + self.ns2endpoint[ns])
+            endpoint = self.name2endpoint.get(triplestore_name)
+            if endpoint:
+                logger.info(f"Triplestore endpoint: {endpoint}")
                 sparql = "{before}<{uri}>{after}".format(
                     before=sparql[:start],
-                    uri=self.ns2endpoint[ns],
+                    uri=endpoint,
                     after=sparql[end + 1 :],
                 )
-                idx = start + len(self.ns2endpoint[ns]) + 1
+                idx = start + len(endpoint) + 1
             else:
-                logger.info("Namespace URI not found")
+                logger.info("Triplestore endpoint not found")
                 idx = end + 1
 
         return sparql

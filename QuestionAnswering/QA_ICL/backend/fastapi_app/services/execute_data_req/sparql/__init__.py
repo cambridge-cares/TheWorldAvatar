@@ -6,7 +6,7 @@ from fastapi import Depends
 
 from constants.namespace import PREFIX2URI
 from constants.prefixes import TWA_ABOX_PREFIXES
-from model.exceptions.execute_data_req.sparql import NamespaceNotFound
+from model.exceptions.execute_data_req.sparql import TriplestoreNotFound
 from model.nlq2datareq import SparqlDataReqForm
 from model.structured_answer import DataItem, DocumentCollection, TableData
 from services.sparql import SparqlClient
@@ -60,10 +60,10 @@ class SparqlDataReqExecutor:
         )
         logger.info("Processed query:\n" + query)
 
-        kg = self.ns2kg.get(req_form.namespace)
+        kg = self.ns2kg.get(req_form.triplestore)
         if kg is None:
-            raise NamespaceNotFound(
-                f"Namespace {req_form.namespace} is not found; registered namespaces are: {', '.join(self.ns2kg.keys())}"
+            raise TriplestoreNotFound(
+                f"Triplestore {req_form.triplestore} is not found; registered triplestores are: {', '.join(self.ns2kg.keys())}"
             )
 
         prefixed_query = self.PREFIXES + query
