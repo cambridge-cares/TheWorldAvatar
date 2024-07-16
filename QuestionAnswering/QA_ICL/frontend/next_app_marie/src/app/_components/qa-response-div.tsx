@@ -67,7 +67,7 @@ export const QAResponseMetadataDiv = ({
                     { value: 'comment', label: 'Comment' },
                   ]}
                   data={qaResponseMetadata.translation_context.properties.map(
-                    obj => ({
+                    ([obj, _]) => ({
                       iri: makePrefixedIRI(obj.iri),
                       label: obj.label,
                       comment: obj.comment,
@@ -90,7 +90,7 @@ export const QAResponseMetadataDiv = ({
                     { value: 'req_form', label: 'Structured query form' },
                   ]}
                   data={qaResponseMetadata.translation_context.examples.map(
-                    example => ({
+                    ([example, _]) => ({
                       nlq: example.nlq,
                       var2cls: <JSONTree data={example.data_req.var2cls} />,
                       entity_bindings: (

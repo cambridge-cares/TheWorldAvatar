@@ -96,8 +96,8 @@ export interface RDFProperty {
 }
 
 export interface TranslationContext {
-  examples: Nlq2DataReqExample[]
-  properties: RDFProperty[]
+  examples: [Nlq2DataReqExample, number][]
+  properties: [RDFProperty, number][]
 }
 
 export interface QAResponseMetadata {

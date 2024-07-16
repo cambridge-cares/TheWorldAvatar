@@ -38,9 +38,7 @@ Your task is to translate the input question to an executable data request based
         self.openai_model = openai_model
         self.datareq_adapter = TypeAdapter(DataRequest)
 
-    def forward(
-        self, nlq: str, translation_context: TranslationContext
-    ) -> DataRequest:
+    def forward(self, nlq: str, translation_context: TranslationContext) -> DataRequest:
         prompt = self.PROMPT_TEMPLATE.format(
             examples="\n".join(
                 '"{input}" => {output}'.format(
@@ -50,7 +48,11 @@ Your task is to translate the input question to an executable data request based
                         exclude_none=True,
                     ),
                 )
-                for example in translation_context.examples
+                for example, _ in sorted(
+                    translation_context.examples,
+                    key=lambda x: x[1],
+                    reverse=True,
+                )  # place most relevant example towards the end of the prompt
             ),
             properties=json.dumps(
                 [
@@ -59,7 +61,11 @@ Your task is to translate the input question to an executable data request based
                         "label": prop.label,
                         "comment": prop.comment,
                     }
-                    for prop in translation_context.properties
+                    for prop, _ in sorted(
+                        translation_context.properties,
+                        key=lambda x: x[1],
+                        reverse=True,
+                    )  # place most relevant relation towards the end of the prompt
                 ],
                 indent=2,
             ),

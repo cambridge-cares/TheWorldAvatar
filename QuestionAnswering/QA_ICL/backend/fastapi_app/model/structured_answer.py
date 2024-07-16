@@ -105,5 +105,5 @@ class QARequestArtifact(BaseModel):
 
 
 class TranslationContext(BaseModel):
-    examples: list[Nlq2DataReqExample]
-    properties: list[RDFProperty]
+    examples: list[tuple[Nlq2DataReqExample, float]]
+    properties: list[tuple[RDFProperty, float]]
