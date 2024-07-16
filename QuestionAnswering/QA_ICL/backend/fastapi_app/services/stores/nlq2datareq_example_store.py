@@ -35,6 +35,7 @@ class Nlq2DataReqExampleStore:
         knn_query = (
             Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
             .sort_by("vector_score")
+            .return_field("vector_score")
             .return_field("$.nlq", as_field="nlq")
             .return_field("$.data_req", as_field="data_req")
             .dialect(2)
@@ -44,8 +45,12 @@ class Nlq2DataReqExampleStore:
         )
 
         return [
-            Nlq2DataReqExample(
-                nlq=doc.nlq, data_req=self.datareq_adapter.validate_json(doc.data_req)
+            (
+                Nlq2DataReqExample(
+                    nlq=doc.nlq,
+                    data_req=self.datareq_adapter.validate_json(doc.data_req),
+                ),
+                float(doc.vector_score),
             )
             for doc in res.docs
         ]

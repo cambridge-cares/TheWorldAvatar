@@ -26,9 +26,9 @@ class Nlq2DataReqContextRetriever:
         self.relation_num = relation_num
 
     def retrieve(self, nlq: str):
-        properties = self.schema_store.retrieve_properties(nlq=nlq, k=10)
-        examples = self.nlq2datareq_example_store.retrieve_examples(nlq=nlq, k=10)
-        return TranslationContext(examples=examples, properties=properties)
+        property_score_pairs = self.schema_store.retrieve_properties(nlq=nlq, k=self.relation_num)
+        example_score_pairs = self.nlq2datareq_example_store.retrieve_examples(nlq=nlq, k=self.example_num)
+        return TranslationContext(examples=example_score_pairs, properties=property_score_pairs)
 
 
 def get_contextAugmentation_settings(

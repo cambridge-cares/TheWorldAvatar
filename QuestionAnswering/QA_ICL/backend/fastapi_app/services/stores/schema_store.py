@@ -50,6 +50,7 @@ class SchemaStore:
         knn_query = (
             Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
             .sort_by("vector_score")
+            .return_field("vector_score")
             .return_field("$.iri", as_field="iri")
             .return_field("$.label", as_field="label")
             .return_field("$.comment", as_field="comment")
@@ -59,7 +60,10 @@ class SchemaStore:
             knn_query, {"query_vector": encoded_nlq.tobytes()}
         )
         return [
-            RDFProperty(iri=doc.iri, label=doc["label"], comment=doc["comment"])
+            (
+                RDFProperty(iri=doc.iri, label=doc["label"], comment=doc["comment"]),
+                float(doc.vector_score),
+            )
             for doc in res.docs
         ]
 
