@@ -3,7 +3,7 @@ version: '3.8'
 services:
   opcua-agent:
     build:
-      context: .
+      target: production
       dockerfile: Dockerfile
     image: opcua-agent:1.0.0
     volumes:
