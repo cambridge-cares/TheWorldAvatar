@@ -117,12 +117,12 @@ class SpeciesIdentifierKey(str, Enum):
 
 
 class OntospeciesSpecies(OntospeciesSpeciesBase):
-    alt_label: list[str] = RDFField(path=SKOS.altLabel)
+    alt_labels: list[str] = RDFField(path=SKOS.altLabel)
 
     chemical_classes: list[OntospeciesChemicalClass] = RDFField(
         path=ONTOSPECIES.hasChemicalClass
     )
     uses: list[OntospeciesUse] = RDFField(path=ONTOSPECIES.hasUse)
 
-    identifiers: dict[SpeciesIdentifierKey, list[str]]
+    identifiers: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]]
     properties: dict[SpeciesPropertyKey, list[OntospeciesProperty]]

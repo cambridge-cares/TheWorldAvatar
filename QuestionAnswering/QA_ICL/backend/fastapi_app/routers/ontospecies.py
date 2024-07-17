@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
 from model.kg.ontospecies import (
     OntospeciesChemicalClass,
+    OntospeciesSpecies,
     OntospeciesSpeciesBase,
     OntospeciesUse,
     SpeciesIdentifierKey,
@@ -127,17 +128,6 @@ async def getSpecies(
 ):
     return ontospecies_store.get_species_base(species_req)
 
-
-# TODO
-# @router.get(
-#     "/species/{iri:path}",
-#     summary="Get species",
-#     response_class=OntospeciesSpecies
-# )
-# async def getSpeciesOne(iri: str, ontospecies_store: Annotated[OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)]):
-#     pass
-
-
 class XYZResponse(Response):
     media_type = "chemical/x-xyz"
 
@@ -159,3 +149,18 @@ async def getSpeciesXyz(
         content=xyz,
         headers={"Content-Disposition": 'attachment; filename="species.xyz"'},
     )
+
+
+@router.get(
+    "/species/{iri:path}", summary="Get species", response_model=OntospeciesSpecies
+)
+async def getSpeciesOne(
+    iri: str,
+    ontospecies_store: Annotated[
+        OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
+    ],
+):
+    species = ontospecies_store.get_species_one(iri)
+    if species is None:
+        raise HTTPException(status_code=404, detail=f'No species is found with IRI "{iri}"')
+    return species
