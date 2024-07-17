@@ -121,7 +121,3 @@ OntokinKineticModelBase = Annotated[
     | OntokinTroeModel,
     Field(discriminator="type"),
 ]
-
-
-class OntokinMechanism(OntokinMechanismBase):
-    reaction: list[OntokinReactionBase] = RDFField(path=ONTOKIN.hasReaction)
