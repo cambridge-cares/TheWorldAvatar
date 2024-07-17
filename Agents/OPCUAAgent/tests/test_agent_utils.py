@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from OPCUAAgent import agent_utils
 
-class Test_utils:
+class Test_agent_utils:
     def setUp(self):
         self._temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = pathlib.Path(self._temp_dir.name)
@@ -50,3 +50,8 @@ class Test_utils:
             value = agent_utils.read_property(str(self.temp_path / 'test.properties'), "non_existent_key")
         assert 'Key \'non_existent_key\' not found.' in str(excinfo.value)
         self.tearDown()
+        
+    #Test remove_char_between_characters
+    def test_remove_char_between_characters(self):
+        assert 'testing' == agent_utils.remove_char_between_characters("testing [remove_this]", "[", "]")
+        
