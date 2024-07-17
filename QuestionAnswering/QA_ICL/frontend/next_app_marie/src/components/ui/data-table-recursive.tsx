@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Column, Row } from '@tanstack/react-table'
+import { Row } from '@tanstack/react-table'
 import { DataTable, DataTableUIOptions } from './data-table'
 
 export type DataTableCellValue =
@@ -13,7 +13,6 @@ export type DataTableCellValue =
   | string[]
   | number[]
   | DataTableRecursiveDataProps
-  | React.JSX.Element
 
 export interface DataTableRow {
   [key: string]: DataTableCellValue
@@ -34,11 +33,8 @@ export function DataTableRecursive({
   ...props
 }: DataTableRecursiveProps) {
   const processedColumns = columns.map(h => ({
-    id: h,
     accessorFn: (row: DataTableRow) => row[h],
-    header: (_: { column: Column<DataTableRow> }) => {
-      return <div>{h}</div>
-    },
+    header: h,
     cell: ({ row }: { row: Row<DataTableRow> }) => {
       const val = row.getValue(h) as DataTableCellValue
       if (!val) {
