@@ -99,8 +99,8 @@ class Test_sql_client:
         
         cursor = connection.cursor()
         cursor.execute(
-                    sql.SQL("SELECT * FROM {}.{}").format(
-                    sql.Identifier("opcua_pips"), sql.Identifier("testing")))
+                    sql.SQL("SELECT * FROM {}.{} WHERE timestamp = %s").format(
+                    sql.Identifier("opcua_pips"), sql.Identifier("testing")), (timestamp,))
         existing_record = cursor.fetchall()
         assert 1 == len(existing_record)
         self.tearDown()
