@@ -18,7 +18,7 @@ class Test_sql_client:
                                               'dbname=postgres\n' +
                                               'user=postgres\n' +
                                               'password=postgres\n' +
-                                              'host=postgres_agent_test\n' +
+                                              'host=postgres_test\n' +
                                               'port=5432\n')
         
     def setUp_fail_non_existent_db(self):
@@ -28,7 +28,7 @@ class Test_sql_client:
                                               'dbname=non_existent_db\n' +
                                               'user=postgres\n' +
                                               'password=postgres\n' +
-                                              'host=postgres_agent_test\n' +
+                                              'host=postgres_test\n' +
                                               'port=5432\n')
         
     def setUp_new_db(self):
@@ -38,7 +38,7 @@ class Test_sql_client:
                                               'dbname=test\n' +
                                               'user=postgres\n' +
                                               'password=postgres\n' +
-                                              'host=postgres_agent_test\n' +
+                                              'host=postgres_test\n' +
                                               'port=5432\n')
     
     def _create_temporary_file_with_data(self, file_path, content):
