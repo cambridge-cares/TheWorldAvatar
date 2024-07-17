@@ -1,5 +1,6 @@
 import os
 from jproperties import Properties
+import re
 
 def get_env_variable(var_name):
     try:
@@ -26,3 +27,12 @@ def read_property(file_path, key):
     except (KeyError, AttributeError) as error:
         # Handle the case where the environment variable is not set
         raise KeyError(f"Key '{key}' not found.")
+    
+def remove_char_between_characters(text, start_char, end_char):
+    # Define the regular expression pattern to match text between the specified characters
+    pattern = re.escape(start_char) + r'.*?' + re.escape(end_char)
+    
+    # Use re.sub() to replace the matched pattern with an empty string
+    cleaned_text = re.sub(pattern, '', text)
+    
+    return cleaned_text.strip()

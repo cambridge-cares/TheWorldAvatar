@@ -2,7 +2,7 @@ import os
 import psycopg2
 from psycopg2 import sql
 from OPCUAAgent import agent_utils
-import re
+
 
 # Check whether a database exist and create it if not
 def create_database_if_not_exist():
@@ -73,8 +73,8 @@ def create_if_not_exist_and_insert(connection, dict:dict):
             value_list = [str(timeseries_dict[list(timeseries_dict.keys())[0]]['timestamp'])]
             for key, timeseries in timeseries_dict.items():
                 key = key.replace(' ','_')
-                key = remove_text_between_characters(key, '(', ')')
-                key = remove_text_between_characters(key, '[', ']')
+                key = agent_utils.remove_char_between_characters(key, '(', ')')
+                key = agent_utils.remove_char_between_characters(key, '[', ']')
                 if key.endswith('_'):
                     key = key[:-1]
                 data_type = timeseries['data_type']
@@ -89,6 +89,7 @@ def create_if_not_exist_and_insert(connection, dict:dict):
                     value_list.append((timeseries['value']))
                 except (Exception, psycopg2.Error) as error:
                     print("Error while creating table:", error)
+                    raise Exception("Error while creating table:", error)
             
             try:
                 timestamp = str(timeseries_dict[list(timeseries_dict.keys())[0]]['timestamp'])
@@ -105,15 +106,7 @@ def create_if_not_exist_and_insert(connection, dict:dict):
                     print("Data inserted successfully.")
             except (Exception, psycopg2.Error) as error:
                 print("Error while inserting data:", error)
+                raise Exception("Error while inserting data:", error)
                     
         connection.commit()
         cursor.close()
-    
-def remove_text_between_characters(text, start_char, end_char):
-    # Define the regular expression pattern to match text between the specified characters
-    pattern = re.escape(start_char) + r'.*?' + re.escape(end_char)
-    
-    # Use re.sub() to replace the matched pattern with an empty string
-    cleaned_text = re.sub(pattern, '', text)
-    
-    return cleaned_text
