@@ -1,21 +1,13 @@
 'use client'
 
-import * as React from 'react'
-
 import {
-  Column,
-  Row,
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import {
-  DoubleArrowLeftIcon,
-  DoubleArrowRightIcon,
-} from '@radix-ui/react-icons'
 
-import { cn } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -24,53 +16,42 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import React from 'react'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from './select'
+import { ScrollArea, ScrollBar } from './scroll-area'
+import { Button } from './button'
+import {
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon,
+} from '@radix-ui/react-icons'
+import { cn } from '@/lib/utils'
 
-export type DataTableCellValue =
-  | null
-  | undefined
-  | string
-  | number
-  | string[]
-  | number[]
-  | DataTableDataProps
-  | React.JSX.Element
-
-export interface DataTableRow {
-  [key: string]: DataTableCellValue
-}
-
-export interface DataTableDataProps<T = {}> {
-  columns: { value: string; label: string }[]
-  data: (DataTableRow | T)[]
-}
-
-export type DataTableProps = React.HTMLAttributes<HTMLDivElement> &
-  DataTableDataProps
-
-export type DataTableBaseProps = DataTableProps & {
+export interface DataTableUIOptions {
   numbered?: boolean
   paginated?: boolean
   bordered?: boolean
   scrollable?: boolean
 }
 
-type DataTableRowNumbered = DataTableRow & { num: number }
+export type DataTableProps<TData, TValue> =
+  React.HTMLAttributes<HTMLDivElement> &
+    DataTableUIOptions & {
+      columns: ColumnDef<TData, TValue>[]
+      data: TData[]
+    }
 
-function DataTableBase({
+export function DataTable<TData, TValue>({
   columns,
   data,
   className,
   ...props
-}: DataTableBaseProps) {
+}: DataTableProps<TData, TValue>) {
   const {
     numbered = false,
     paginated = false,
@@ -81,7 +62,11 @@ function DataTableBase({
 
   const processedColumns = React.useMemo(
     () =>
-      numbered ? [{ value: 'num', label: 'No.' }].concat(columns) : columns,
+      numbered
+        ? [
+            { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, TValue>,
+          ].concat(columns)
+        : columns,
     [numbered, columns]
   )
   const processedData = React.useMemo(
@@ -90,48 +75,12 @@ function DataTableBase({
     [numbered, data]
   )
 
-  const columnsOption = processedColumns.map(h => ({
-    id: h.value,
-    accessorFn: (row: DataTableRow | DataTableRowNumbered) => row[h.value],
-    header: ({
-      column,
-    }: {
-      column: Column<DataTableRow | DataTableRowNumbered>
-    }) => {
-      return <div>{h.label}</div>
-    },
-    cell: ({ row }: { row: Row<DataTableRow | DataTableRowNumbered> }) => {
-      const val = row.getValue(h.value) as DataTableCellValue
-      if (!val) {
-        return ''
-      } else if (typeof val === 'string' || typeof val === 'number') {
-        return val
-      } else if (Array.isArray(val)) {
-        return (
-          <ul>
-            {val.map((elem, idx) => (
-              <li key={idx}>{elem}</li>
-            ))}
-          </ul>
-        )
-      } else if ('columns' in val) {
-        // TODO: Check which typescript and @types/react versions support
-        // type-narrowing with React.isValidElement instead of checking
-        // existence of a field in DataTableBaseProps
-        return <DataTableBase columns={val.columns} data={val.data} />
-      } else {
-        return val
-      }
-    },
-  }))
-
-  const tableOptions = {
+  const table = useReactTable({
     data: processedData,
-    columns: columnsOption,
+    columns: processedColumns,
     getCoreRowModel: getCoreRowModel(),
     ...(paginated ? { getPaginationRowModel: getPaginationRowModel() } : {}),
-  }
-  const table = useReactTable(tableOptions)
+  })
 
   const borderClassName = bordered ? 'rounded-md border' : ''
   const tableComponent = (
@@ -171,7 +120,7 @@ function DataTableBase({
         ) : (
           <TableRow>
             <TableCell
-              colSpan={columnsOption.length}
+              colSpan={processedColumns.length}
               className='h-24 text-center'
             >
               No results.
@@ -263,15 +212,3 @@ function DataTableBase({
     </div>
   )
 }
-
-export const DataTable = ({ columns, data, ...props }: DataTableProps) => (
-  <DataTableBase
-    columns={columns}
-    data={data}
-    numbered
-    paginated
-    bordered
-    scrollable
-    {...props}
-  />
-)

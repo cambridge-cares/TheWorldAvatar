@@ -18,6 +18,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { DataTable } from '@/components/ui/data-table'
+import { DataTableRecursive } from '@/components/ui/data-table-recursive'
 import { JSONTree } from '@/components/ui/json-tree'
 import { MolViewer } from '@/components/ui/mol-viewer'
 import { StopIcon } from '@radix-ui/react-icons'
@@ -62,9 +63,9 @@ export const QAResponseMetadataDiv = ({
               <AccordionContent>
                 <DataTable
                   columns={[
-                    { value: 'iri', label: 'IRI' },
-                    { value: 'label', label: 'Label' },
-                    { value: 'comment', label: 'Comment' },
+                    { accessorKey: 'iri', header: 'IRI' },
+                    { accessorKey: 'label', header: 'Label' },
+                    { accessorKey: 'comment', header: 'Comment' },
                   ]}
                   data={qaResponseMetadata.translation_context.properties.map(
                     ([obj, _]) => ({
@@ -84,10 +85,16 @@ export const QAResponseMetadataDiv = ({
               <AccordionContent>
                 <DataTable
                   columns={[
-                    { value: 'nlq', label: 'Natural language question' },
-                    { value: 'var2cls', label: 'Class assignment' },
-                    { value: 'entity_bindings', label: 'Entity bindings' },
-                    { value: 'req_form', label: 'Structured query form' },
+                    { accessorKey: 'nlq', header: 'Natural language question' },
+                    { accessorKey: 'var2cls', header: 'Class assignment' },
+                    {
+                      accessorKey: 'entity_bindings',
+                      header: 'Entity bindings',
+                    },
+                    {
+                      accessorKey: 'req_form',
+                      header: 'Structured query form',
+                    },
                   ]}
                   data={qaResponseMetadata.translation_context.examples.map(
                     ([example, _]) => ({
@@ -114,8 +121,8 @@ export const QAResponseMetadataDiv = ({
               <AccordionContent>
                 <DataTable
                   columns={[
-                    { value: 'var', label: 'Variable' },
-                    { value: 'cls', label: 'Class' },
+                    { accessorKey: 'var', header: 'Variable' },
+                    { accessorKey: 'cls', header: 'Class' },
                   ]}
                   data={Object.entries(
                     qaResponseMetadata.data_request.var2cls
@@ -130,10 +137,10 @@ export const QAResponseMetadataDiv = ({
               <AccordionContent>
                 <DataTable
                   columns={[
-                    { value: 'var', label: 'Variable' },
-                    { value: 'cls', label: 'Class' },
-                    { value: 'mention', label: 'Mention' },
-                    { value: 'linked_iris', label: 'Linked IRIs' },
+                    { accessorKey: 'var', header: 'Variable' },
+                    { accessorKey: 'cls', header: 'Class' },
+                    { accessorKey: 'mention', header: 'Mention' },
+                    { accessorKey: 'linked_iris', header: 'Linked IRIs' },
                   ]}
                   data={Object.entries(
                     qaResponseMetadata.data_request.entity_bindings
@@ -299,7 +306,16 @@ export const QAResponseDataDiv = ({
           )
         } else if (item.type === 'table') {
           headerText = 'Tabular data'
-          component = <DataTable columns={item.columns} data={item.data} />
+          component = (
+            <DataTableRecursive
+              columns={item.columns}
+              data={item.data}
+              numbered
+              paginated
+              bordered
+              scrollable
+            />
+          )
         }
         return headerText && component ? (
           <AccordionItem key={idx} value={idx.toString()}>

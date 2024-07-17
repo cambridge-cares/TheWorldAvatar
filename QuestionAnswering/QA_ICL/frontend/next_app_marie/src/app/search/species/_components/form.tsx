@@ -24,7 +24,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CaretSortIcon } from '@radix-ui/react-icons'
-import { capitalizeFirstLetter, cn, extractLowerUpperParams } from '@/lib/utils'
+import { capitalize, cn, extractLowerUpperParams } from '@/lib/utils'
 import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CollapsibleContent } from '@radix-ui/react-collapsible'
 import { MinMaxInput } from '@/components/ui/min-max-input'
@@ -223,9 +223,7 @@ export function SpeciesForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          {capitalizeFirstLetter(
-                            SPECIES_IDENTIFIER_KEY_LABELS[key]
-                          )}
+                          {capitalize(SPECIES_IDENTIFIER_KEY_LABELS[key])}
                         </FormLabel>
                         <FormControl>
                           <Input

@@ -13,7 +13,7 @@ export type TableDataValue =
   | TableDataBase
 
 export interface TableDataBase {
-  columns: { value: string; label: string }[]
+  columns: string[]
   data: { [key: string]: TableDataValue }[]
 }
 
