@@ -68,7 +68,6 @@ async def main():
     client = Client(url=url)
     client.set_user(agent_utils.read_property(filePath, "user"))
     client.set_password(agent_utils.read_property(filePath, "password"))
-    cert_base = Path(__file__).parent
     print("connecting to the following endpoint: " + url)
     try:
         await client.connect()
