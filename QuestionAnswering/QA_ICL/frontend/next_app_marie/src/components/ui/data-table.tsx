@@ -39,19 +39,18 @@ export interface DataTableUIOptions {
   scrollable?: boolean
 }
 
-export type DataTableProps<TData, TValue> =
-  React.HTMLAttributes<HTMLDivElement> &
+export type DataTableProps<TData> = React.HTMLAttributes<HTMLDivElement> &
   DataTableUIOptions & {
-    columns: ColumnDef<TData, TValue>[]
+    columns: ColumnDef<TData, any>[]
     data: TData[]
   }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
   columns,
   data,
   className,
   ...props
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData>) {
   const {
     numbered = false,
     paginated = false,
@@ -64,8 +63,8 @@ export function DataTable<TData, TValue>({
     () =>
       numbered
         ? [
-          { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, TValue>,
-        ].concat(columns)
+            { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, any>,
+          ].concat(columns)
         : columns,
     [numbered, columns]
   )
@@ -85,7 +84,12 @@ export function DataTable<TData, TValue>({
   const borderClassName = bordered ? 'rounded-md border' : ''
   const tableComponent = (
     <Table>
-      <TableHeader className={cn(bordered ? 'bg-secondary' : '', scrollable ? 'sticky top-0' : '')}>
+      <TableHeader
+        className={cn(
+          bordered ? 'bg-secondary' : '',
+          scrollable ? 'sticky top-0' : ''
+        )}
+      >
         {table.getHeaderGroups().map((headerGroup, i) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map(header => {
@@ -94,9 +98,9 @@ export function DataTable<TData, TValue>({
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                 </TableHead>
               )
             })}
@@ -156,9 +160,7 @@ export function DataTable<TData, TValue>({
         </div>
       )}
       {scrollable ? (
-        <ScrollArea
-          className={cn('w-full', borderClassName)}
-        >
+        <ScrollArea className={cn('w-full', borderClassName)}>
           {tableComponent}
           <ScrollBar orientation='horizontal' />
         </ScrollArea>
