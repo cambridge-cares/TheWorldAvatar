@@ -35,6 +35,7 @@ import { cn } from '@/lib/utils'
 export interface DataTableUIOptions {
   numbered?: boolean
   paginated?: boolean
+  initialPageSize?: number
   bordered?: boolean
   scrollable?: boolean
 }
@@ -49,22 +50,19 @@ export function DataTable<TData>({
   columns,
   data,
   className,
+  numbered = false,
+  paginated = false,
+  initialPageSize = 10,
+  bordered = false,
+  scrollable = false,
   ...props
 }: DataTableProps<TData>) {
-  const {
-    numbered = false,
-    paginated = false,
-    bordered = false,
-    scrollable = false,
-    ...otherProps
-  } = props
-
   const processedColumns = React.useMemo(
     () =>
       numbered
         ? [
-            { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, any>,
-          ].concat(columns)
+          { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, any>,
+        ].concat(columns)
         : columns,
     [numbered, columns]
   )
@@ -74,11 +72,13 @@ export function DataTable<TData>({
     [numbered, data]
   )
 
+  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: initialPageSize })
+
   const table = useReactTable({
     data: processedData,
     columns: processedColumns,
     getCoreRowModel: getCoreRowModel(),
-    ...(paginated ? { getPaginationRowModel: getPaginationRowModel() } : {}),
+    ...(paginated ? { getPaginationRowModel: getPaginationRowModel(), onPaginationChange: setPagination, state: { pagination } } : {}),
   })
 
   const borderClassName = bordered ? 'rounded-md border' : ''
@@ -98,9 +98,9 @@ export function DataTable<TData>({
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               )
             })}
@@ -136,7 +136,7 @@ export function DataTable<TData>({
   )
 
   return (
-    <div className={cn('flex flex-col space-y-2', className)} {...otherProps}>
+    <div className={cn('flex flex-col space-y-2', className)} {...props}>
       {paginated && (
         <div className='flex items-center space-x-2'>
           <Select
