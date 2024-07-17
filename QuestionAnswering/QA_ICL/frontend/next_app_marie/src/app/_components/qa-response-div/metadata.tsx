@@ -83,6 +83,7 @@ const SemParseExampleTable = ({
     data={examples}
     numbered
     paginated
+    initialPageSize={5}
     bordered
     scrollable
   />
