@@ -82,4 +82,8 @@
     h2 {
       @apply text-2xl font-medium text-primary m-0
     }
+
+    td {
+      @apply break-all
+    }
   }

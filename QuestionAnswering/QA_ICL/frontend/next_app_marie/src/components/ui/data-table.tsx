@@ -41,10 +41,10 @@ export interface DataTableUIOptions {
 
 export type DataTableProps<TData, TValue> =
   React.HTMLAttributes<HTMLDivElement> &
-    DataTableUIOptions & {
-      columns: ColumnDef<TData, TValue>[]
-      data: TData[]
-    }
+  DataTableUIOptions & {
+    columns: ColumnDef<TData, TValue>[]
+    data: TData[]
+  }
 
 export function DataTable<TData, TValue>({
   columns,
@@ -64,8 +64,8 @@ export function DataTable<TData, TValue>({
     () =>
       numbered
         ? [
-            { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, TValue>,
-          ].concat(columns)
+          { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, TValue>,
+        ].concat(columns)
         : columns,
     [numbered, columns]
   )
@@ -85,8 +85,8 @@ export function DataTable<TData, TValue>({
   const borderClassName = bordered ? 'rounded-md border' : ''
   const tableComponent = (
     <Table>
-      <TableHeader className={scrollable ? 'sticky top-0 bg-secondary' : ''}>
-        {table.getHeaderGroups().map(headerGroup => (
+      <TableHeader className={cn(bordered ? 'bg-secondary' : '', scrollable ? 'sticky top-0' : '')}>
+        {table.getHeaderGroups().map((headerGroup, i) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map(header => {
               return (
@@ -94,9 +94,9 @@ export function DataTable<TData, TValue>({
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               )
             })}
@@ -157,13 +157,13 @@ export function DataTable<TData, TValue>({
       )}
       {scrollable ? (
         <ScrollArea
-          className={['w-full', borderClassName].filter(x => x).join(' ')}
+          className={cn('w-full', borderClassName)}
         >
           {tableComponent}
           <ScrollBar orientation='horizontal' />
         </ScrollArea>
       ) : (
-        <div className={borderClassName}>{tableComponent}</div>
+        <div className={cn('w-full', borderClassName)}>{tableComponent}</div>
       )}
       {paginated && (
         <div className='flex justify-between'>

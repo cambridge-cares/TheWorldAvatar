@@ -31,12 +31,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-export interface QAResponseMetadataDivProps
+interface QAResponseMetadataDivProps
   extends React.HTMLAttributes<HTMLDivElement> {
   qaResponseMetadata: QAResponseMetadata
 }
 
-export const QAResponseMetadataDiv = ({
+
+const QAResponseMetadataDiv = ({
   qaResponseMetadata,
   ...props
 }: QAResponseMetadataDivProps) => (
@@ -74,6 +75,7 @@ export const QAResponseMetadataDiv = ({
                       comment: obj.comment,
                     })
                   )}
+                  bordered
                 />
               </AccordionContent>
             </AccordionItem>
@@ -86,25 +88,21 @@ export const QAResponseMetadataDiv = ({
                 <DataTable
                   columns={[
                     { accessorKey: 'nlq', header: 'Natural language question' },
-                    { accessorKey: 'var2cls', header: 'Class assignment' },
                     {
-                      accessorKey: 'entity_bindings',
-                      header: 'Entity bindings',
+                      accessorKey: 'data_req.var2cls', header: 'Class assignment', cell: (cell) => (<JSONTree data={cell.getValue()} />)
                     },
                     {
-                      accessorKey: 'req_form',
+                      accessorKey: 'data_req.entity_bindings',
+                      header: 'Entity bindings', cell: (cell) => (<JSONTree data={cell.getValue()} />)
+                    },
+                    {
+                      accessorKey: 'data_req.req_form',
                       header: 'Structured query form',
-                    },
+                      cell: (cell) => (<JSONTree data={cell.getValue()} />)
+                    }
                   ]}
                   data={qaResponseMetadata.translation_context.examples.map(
-                    ([example, _]) => ({
-                      nlq: example.nlq,
-                      var2cls: <JSONTree data={example.data_req.var2cls} />,
-                      entity_bindings: (
-                        <JSONTree data={example.data_req.entity_bindings} />
-                      ),
-                      req_form: <JSONTree data={example.data_req.req_form} />,
-                    })
+                    ([example, _]) => example
                   )}
                 />
               </AccordionContent>
@@ -127,6 +125,7 @@ export const QAResponseMetadataDiv = ({
                   data={Object.entries(
                     qaResponseMetadata.data_request.var2cls
                   ).map(([varname, cls]) => ({ var: varname, cls }))}
+                  bordered
                 />
               </AccordionContent>
             </AccordionItem>
@@ -151,11 +150,12 @@ export const QAResponseMetadataDiv = ({
                       typeof val === 'string'
                         ? val
                         : Object.entries(val)
-                            .map(([k, v]) => `${k}: ${v}`)
-                            .join('\n')
+                          .map(([k, v]) => `${k}: ${v}`)
+                          .join('\n')
                     ),
                     linked_iris: qaResponseMetadata.linked_variables[varname],
                   }))}
+                  bordered
                 />
               </AccordionContent>
             </AccordionItem>
@@ -164,7 +164,7 @@ export const QAResponseMetadataDiv = ({
                 <AccordionTrigger>Structured query form</AccordionTrigger>
                 <AccordionContent className='px-6'>
                   {qaResponseMetadata.data_request.req_form.type ===
-                  'sparql' ? (
+                    'sparql' ? (
                     <>
                       <h4 className='font-medium'>Triplestore</h4>
                       <p className='mb-2'>
