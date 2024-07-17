@@ -1,11 +1,18 @@
 'use client'
 
 import * as React from 'react'
-
 import { useSearchParams } from 'next/navigation'
+import { createColumnHelper } from '@tanstack/react-table'
+
 import { ZeoliteFrameworkBase } from '@/lib/model/ontozeolite'
 import { getZeoliteFrameworks } from '@/lib/api/ontozeolite'
 import { DataTable } from '@/components/ui/data-table'
+
+const COL_HELPER = createColumnHelper<ZeoliteFrameworkBase>()
+const COLS = [
+  COL_HELPER.accessor('IRI', { header: 'IRI' }),
+  COL_HELPER.accessor('code', { header: 'Code' }),
+]
 
 export function ZeoliteFrameworkResults() {
   const searchParams = useSearchParams()
@@ -34,21 +41,12 @@ export function ZeoliteFrameworkResults() {
 
   return data !== undefined ? (
     <DataTable
-      columns={[
-        {
-          accessorKey: 'IRI',
-          header: 'IRI',
-        },
-        {
-          accessorKey: 'code',
-          header: 'Code',
-        },
-      ]}
+      columns={COLS}
       data={data}
       numbered
       paginated
       bordered
-      className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'
+      scrollable
     />
   ) : isLoading ? (
     <div>Getting search results...</div>
