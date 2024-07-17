@@ -5,7 +5,7 @@ import matter from 'gray-matter'
 
 import { PATH_TO_RESOURCES } from '@/lib/fs'
 import { Main } from '@/components/ui/main'
-import { MarkdownStyled } from '@/components/ui/markdown'
+import { Prose } from '@/components/ui/prose'
 
 const PATH_TO_TBOX_INFO = path.join(PATH_TO_RESOURCES, 'tbox-info')
 
@@ -60,7 +60,7 @@ export default async function OntologyInfo() {
                 {heading}
               </a>
             </h2>
-            <MarkdownStyled>{mdContent}</MarkdownStyled>
+            <Prose>{mdContent}</Prose>
           </section>
         ))}
       </div>
