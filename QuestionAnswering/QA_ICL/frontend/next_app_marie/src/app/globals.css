@@ -80,6 +80,6 @@
     }
 
     h2 {
-      @apply text-3xl font-medium text-primary m-0
+      @apply text-2xl font-medium text-primary m-0
     }
   }
