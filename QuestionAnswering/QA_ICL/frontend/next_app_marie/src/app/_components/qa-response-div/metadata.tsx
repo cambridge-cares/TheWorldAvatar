@@ -17,106 +17,109 @@ import { JSONTree } from '@/components/ui/json-tree'
 import { createColumnHelper } from '@tanstack/react-table'
 import React from 'react'
 
+const SEM_PARSE_EXAMPLE_TABLE_COL_HELPER =
+  createColumnHelper<Nlq2DataReqExample>()
+const SEM_PARSE_EXAMPLE_TABLE_COLS = [
+  SEM_PARSE_EXAMPLE_TABLE_COL_HELPER.accessor('nlq', {
+    header: 'Natural language question',
+  }),
+  SEM_PARSE_EXAMPLE_TABLE_COL_HELPER.accessor('data_req.var2cls', {
+    header: 'Class assignment',
+    cell: props => (
+      <div className='flex flex-col space-y-2'>
+        {Object.entries(props.getValue()).map(([k, v], i) => (
+          <div key={i}>
+            <p className='font-medium'>{k}</p>
+            <p>{v}</p>
+          </div>
+        ))}
+      </div>
+    ),
+  }),
+  SEM_PARSE_EXAMPLE_TABLE_COL_HELPER.accessor('data_req.entity_bindings', {
+    header: 'Entity recognition',
+    cell: props => (
+      <div className='flex flex-col space-y-2'>
+        {Object.entries(props.getValue()).map(([k, v], i) => (
+          <div key={i}>
+            <p className='font-medium'>{k}</p>
+            {v
+              .map(x =>
+                typeof x === 'object'
+                  ? Object.entries(x)
+                      .map(([k, v]) => `${k}: ${v}`)
+                      .join('\n')
+                  : x
+              )
+              .map((x, i) => (
+                <p key={i}>{x}</p>
+              ))}
+          </div>
+        ))}
+      </div>
+    ),
+  }),
+  SEM_PARSE_EXAMPLE_TABLE_COL_HELPER.accessor('data_req.req_form', {
+    header: 'Structured query form',
+    cell: props => {
+      const val = props.getValue<DataRequestForm | undefined>()
+      if (val)
+        return (
+          <div className='w-[42rem]'>
+            <JSONTree data={val} />
+          </div>
+        )
+      return ''
+    },
+  }),
+]
 const SemParseExampleTable = ({
   examples,
 }: {
   examples: Nlq2DataReqExample[]
-}) => {
-  const helper = createColumnHelper<Nlq2DataReqExample>()
-  const cols = [
-    helper.accessor('nlq', {
-      header: 'Natural language question',
-    }),
-    helper.accessor('data_req.var2cls', {
-      header: 'Class assignment',
-      cell: props => (
-        <div className='flex flex-col space-y-2'>
-          {Object.entries(props.getValue()).map(([k, v], i) => (
-            <div key={i}>
-              <p className='font-medium'>{k}</p>
-              <p>{v}</p>
-            </div>
-          ))}
-        </div>
-      ),
-    }),
-    helper.accessor('data_req.entity_bindings', {
-      header: 'Entity recognition',
-      cell: props => (
-        <div className='flex flex-col space-y-2'>
-          {Object.entries(props.getValue()).map(([k, v], i) => (
-            <div key={i}>
-              <p className='font-medium'>{k}</p>
-              {v
-                .map(x =>
-                  typeof x === 'object'
-                    ? Object.entries(x)
-                        .map(([k, v]) => `${k}: ${v}`)
-                        .join('\n')
-                    : x
-                )
-                .map((x, i) => (
-                  <p key={i}>{x}</p>
-                ))}
-            </div>
-          ))}
-        </div>
-      ),
-    }),
-    helper.accessor('data_req.req_form', {
-      header: 'Structured query form',
-      cell: props => {
-        const val = props.getValue<DataRequestForm | undefined>()
-        if (val)
-          return (
-            <div className='w-[42rem]'>
-              <JSONTree data={val} />
-            </div>
-          )
-        return ''
-      },
-    }),
-  ]
+}) => (
+  <DataTable
+    columns={SEM_PARSE_EXAMPLE_TABLE_COLS}
+    data={examples}
+    numbered
+    paginated
+    bordered
+    scrollable
+  />
+)
 
-  return (
-    <DataTable
-      columns={cols}
-      data={examples}
-      numbered
-      paginated
-      bordered
-      scrollable
-    />
-  )
-}
+const RELATION_TABLE_COL_HELPER = createColumnHelper<RDFProperty>()
+const RELATION_TABLE_COLS = [
+  RELATION_TABLE_COL_HELPER.accessor('iri', {
+    header: 'IRI',
+    cell: cell => makePrefixedIRI(cell.getValue()),
+  }),
+  RELATION_TABLE_COL_HELPER.accessor('label', {
+    header: 'Label',
+  }),
+  RELATION_TABLE_COL_HELPER.accessor('comment', {
+    header: 'Comment',
+  }),
+]
+const RelationTable = ({ properties }: { properties: RDFProperty[] }) => (
+  <DataTable
+    columns={RELATION_TABLE_COLS}
+    data={properties}
+    numbered
+    paginated
+    bordered
+    scrollable
+  />
+)
 
-const RelationTable = ({ properties }: { properties: RDFProperty[] }) => {
-  const helper = createColumnHelper<RDFProperty>()
-  const cols = [
-    helper.accessor('iri', {
-      header: 'IRI',
-      cell: cell => makePrefixedIRI(cell.getValue()),
-    }),
-    helper.accessor('label', {
-      header: 'Label',
-    }),
-    helper.accessor('comment', {
-      header: 'Comment',
-    }),
-  ]
-
-  return (
-    <DataTable
-      columns={cols}
-      data={properties}
-      numbered
-      paginated
-      bordered
-      scrollable
-    />
-  )
-}
-
+const VAR2CLS_TABLE_COL_HELPER = createColumnHelper<{
+  var: string
+  cls: string
+}>()
+const VAR2CLS_TABLE_COLS = [
+  VAR2CLS_TABLE_COL_HELPER.accessor('var', { header: 'Variable' }),
+  VAR2CLS_TABLE_COL_HELPER.accessor('cls', { header: 'Class' }),
+]
 const ClassAssignmentTable = ({
   var2cls,
 }: {
@@ -128,15 +131,9 @@ const ClassAssignmentTable = ({
     [var2cls]
   )
 
-  const helper = createColumnHelper<{ var: string; cls: string }>()
-  const cols = [
-    helper.accessor('var', { header: 'Variable' }),
-    helper.accessor('cls', { header: 'Class' }),
-  ]
-
   return (
     <DataTable
-      columns={cols}
+      columns={VAR2CLS_TABLE_COLS}
       data={data}
       numbered
       paginated
@@ -186,8 +183,8 @@ const EntityRecognitionTable = ({
     }),
     helper.accessor('linked_iris', {
       header: 'Linked IRIs',
-      cell: cell => cell.getValue().join('\n')
-    })
+      cell: cell => cell.getValue().join('\n'),
+    }),
   ]
 
   return (

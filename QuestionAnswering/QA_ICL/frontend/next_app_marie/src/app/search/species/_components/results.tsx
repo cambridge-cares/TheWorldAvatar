@@ -1,10 +1,20 @@
 'use client'
 
-import { DataTable } from '@/components/ui/data-table'
+import * as React from 'react'
+import { useSearchParams } from 'next/navigation'
+import { createColumnHelper } from '@tanstack/react-table'
+
 import { getSpeciesMany } from '@/lib/api/ontospecies'
 import { SpeciesBase } from '@/lib/model/ontospecies'
-import { useSearchParams } from 'next/navigation'
-import * as React from 'react'
+import { DataTable } from '@/components/ui/data-table'
+
+const COL_HELPER = createColumnHelper<SpeciesBase>()
+const COLS = [
+  COL_HELPER.accessor('IRI', { header: 'IRI' }),
+  COL_HELPER.accessor('label', { header: 'Label' }),
+  COL_HELPER.accessor('IUPAC_name', { header: 'IUPAC name' }),
+  COL_HELPER.accessor('InChI', { header: 'InChI' }),
+]
 
 export function SpeciesSearchResults() {
   const searchParams = useSearchParams()
@@ -31,29 +41,12 @@ export function SpeciesSearchResults() {
 
   return data !== undefined ? (
     <DataTable
-      columns={[
-        {
-          accessorKey: 'IRI',
-          header: 'IRI',
-        },
-        {
-          accessorKey: 'label',
-          header: 'Label',
-        },
-        {
-          accessorKey: 'IUPAC_name',
-          header: 'IUPAC name',
-        },
-        {
-          accessorKey: 'InChI',
-          header: 'InChI',
-        },
-      ]}
+      columns={COLS}
       data={data}
       numbered
       paginated
       bordered
-      className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'
+      scrollable
     />
   ) : isLoading ? (
     <div>Getting search results...</div>
