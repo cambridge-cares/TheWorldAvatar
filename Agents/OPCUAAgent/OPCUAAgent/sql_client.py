@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from psycopg2 import sql
-import OPCUAAgent.agent_utils as agent_utils
+from OPCUAAgent import agent_utils
 import re
 
 # Check whether a database exist and create it if not
@@ -108,17 +108,6 @@ def create_if_not_exist_and_insert(connection, dict:dict):
                     
         connection.commit()
         cursor.close()
-
-def insert_data(connection, schema_name:str, table_name:str, column_list:tuple, value_list:tuple):
-    cursor = connection.cursor()
-    # Construct the INSERT INTO statement dynamically based on the columns list
-    query = f"INSERT INTO {schema_name}.{table_name} ({', '.join(column_list)}) VALUES ({', '.join(['%s'] * len(column_list))});"
-
-    # Execute the query with values
-    cursor.execute(query, value_list)
-    print("Data inserted successfully.")
-    connection.commit()
-    cursor.close()
     
 def remove_text_between_characters(text, start_char, end_char):
     # Define the regular expression pattern to match text between the specified characters

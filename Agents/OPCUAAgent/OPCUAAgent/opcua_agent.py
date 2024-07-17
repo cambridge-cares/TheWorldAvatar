@@ -5,8 +5,8 @@ from asyncua import Client
 import csv
 from datetime import datetime, timezone
 import datetime
-import sql_client
-import OPCUAAgent.agent_utils as agent_utils
+from OPCUAAgent import sql_client
+from OPCUAAgent import agent_utils
 
 filePath = agent_utils.get_env_variable("OPCUA_CONF")
 url =agent_utils.read_property(filePath, "opcua_server_url")
