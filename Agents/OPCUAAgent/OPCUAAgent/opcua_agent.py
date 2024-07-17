@@ -8,10 +8,6 @@ import datetime
 from OPCUAAgent import sql_client
 from OPCUAAgent import agent_utils
 
-filePath = agent_utils.get_env_variable("OPCUA_CONF")
-url =agent_utils.read_property(filePath, "opcua_server_url")
-
-# Retrieve tag names and data types in the following structure: {tag_01_name:tag_01_data_type, tag_02_name:tag_02_data_type}
 def read_tags_from_csv_file(client:Client, filename):
     tags = []
     datatype = []
@@ -65,6 +61,8 @@ async def read_tag_values(client:Client, tags:dict):
     return timeseries_dict
 
 async def main():
+    filePath = agent_utils.get_env_variable("OPCUA_CONF")
+    url =agent_utils.read_property(filePath, "opcua_server_url")
     client = Client(url=url)
     client.set_user(agent_utils.read_property(filePath, "user"))
     client.set_password(agent_utils.read_property(filePath, "password"))
