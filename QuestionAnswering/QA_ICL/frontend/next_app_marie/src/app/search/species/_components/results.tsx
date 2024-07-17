@@ -1,7 +1,7 @@
 'use client'
 
 import { DataTable } from '@/components/ui/data-table'
-import { getSpecies } from '@/lib/api/ontospecies'
+import { getSpeciesMany } from '@/lib/api/ontospecies'
 import { SpeciesBase } from '@/lib/model/ontospecies'
 import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
@@ -16,7 +16,7 @@ export function SpeciesSearchResults() {
     async function retrieveData() {
       setIsLoading(true)
       try {
-        setData(await getSpecies(searchParams))
+        setData(await getSpeciesMany(searchParams))
       } catch {
       } finally {
         setIsLoading(false)
@@ -33,23 +33,26 @@ export function SpeciesSearchResults() {
     <DataTable
       columns={[
         {
-          value: 'IRI',
-          label: 'IRI',
+          accessorKey: 'IRI',
+          header: 'IRI',
         },
         {
-          value: 'label',
-          label: 'label',
+          accessorKey: 'label',
+          header: 'Label',
         },
         {
-          value: 'IUPAC_name',
-          label: 'IUPAC name',
+          accessorKey: 'IUPAC_name',
+          header: 'IUPAC name',
         },
         {
-          value: 'InChI',
-          label: 'InChI',
+          accessorKey: 'InChI',
+          header: 'InChI',
         },
       ]}
       data={data}
+      numbered
+      paginated
+      bordered
       className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'
     />
   ) : isLoading ? (

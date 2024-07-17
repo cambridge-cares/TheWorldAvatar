@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MinusCircledIcon, PlusCircledIcon } from '@radix-ui/react-icons'
 import {
-  capitalizeFirstLetter,
+  capitalize,
   cn,
   extractLowerUpperParams,
   isObjectEmtpy,
@@ -393,7 +393,7 @@ export function ZeoliteFrameworkForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {capitalizeFirstLetter(key.split('-').join(' '))}
+                        {capitalize(key.split('-').join(' '))}
                         {key in SCALAR_TOPO_PROP_UNITS
                           ? ` (${SCALAR_TOPO_PROP_UNITS[key]})`
                           : ''}

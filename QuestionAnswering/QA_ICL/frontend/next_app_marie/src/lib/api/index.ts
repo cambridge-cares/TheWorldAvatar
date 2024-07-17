@@ -5,16 +5,18 @@ function throwFetchResponseIfNotOk(res: Response) {
   return res
 }
 
+export function getReq(url: string | URL, init?: RequestInit | undefined) {
+  return fetch(url, {
+    method: 'GET',
+    ...init,
+  }).then(throwFetchResponseIfNotOk)
+}
+
 export function getJson<ResT>(
   url: string | URL,
   init?: RequestInit | undefined
 ) {
-  return fetch(url, {
-    method: 'GET',
-    ...init,
-  })
-    .then(throwFetchResponseIfNotOk)
-    .then(res => res.json() as ResT)
+  return getReq(url, init).then(res => res.json() as ResT)
 }
 
 export function postJson<ReqT>(

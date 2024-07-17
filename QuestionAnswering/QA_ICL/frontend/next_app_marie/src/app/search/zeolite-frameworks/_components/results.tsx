@@ -36,15 +36,18 @@ export function ZeoliteFrameworkResults() {
     <DataTable
       columns={[
         {
-          value: 'IRI',
-          label: 'IRI',
+          accessorKey: 'IRI',
+          header: 'IRI',
         },
         {
-          value: 'code',
-          label: 'Code',
+          accessorKey: 'code',
+          header: 'Code',
         },
       ]}
       data={data}
+      numbered
+      paginated
+      bordered
       className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'
     />
   ) : isLoading ? (

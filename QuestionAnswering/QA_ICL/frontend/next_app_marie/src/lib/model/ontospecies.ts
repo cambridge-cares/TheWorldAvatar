@@ -1,13 +1,23 @@
-import { ComparisonOperator } from './comp-op'
-
-export interface ChemicalClass {
-  IRI: string
+export interface ChemicalClass extends RDFEntity {
   label: string
 }
 
-export interface Use {
-  IRI: string
+export interface Use extends RDFEntity {
   label: string
+}
+
+export interface OntospeciesIdentifier extends RDFEntity {
+  value: string
+}
+
+export interface HasValueHasUnit extends RDFEntity {
+  value: number
+  unit?: string
+}
+
+export interface OntospeciesProperty extends HasValueHasUnit {
+  reference_state?: HasValueHasUnit
+  provenance?: string
 }
 
 export const OSpeciesPropertyKey = {
@@ -83,9 +93,16 @@ export const SPECIES_IDENTIFIER_KEY_LABELS = {
   [OSpeciesIdentifierKey.SMILES]: 'SMILES string',
 }
 
-export interface SpeciesBase {
-  IRI: string
+export interface SpeciesBase extends RDFEntity {
   label?: string
   IUPAC_name?: string
   InChI: string
+}
+
+export interface Species extends SpeciesBase {
+  alt_labels: string[]
+  chemical_classes: ChemicalClass[]
+  uses: Use[]
+  identifiers: { [key in SpeciesIdentifierKey]: OntospeciesIdentifier[] }
+  properties: { [key in SpeciesPropertyKey]: OntospeciesProperty[] }
 }
