@@ -14,6 +14,8 @@ COPY ./OPCUAAgent ./OPCUAAgent
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+# Set the PYTHONPATH environment variable
+ENV PYTHONPATH=/app
 
 FROM base AS production
 
@@ -31,4 +33,4 @@ FROM base AS test_opcua_agent
 # Copy tests
 COPY ./tests ./tests
     
-CMD pytest
+CMD pytest -o log_cli=true
