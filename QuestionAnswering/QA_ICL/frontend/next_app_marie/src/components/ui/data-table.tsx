@@ -61,8 +61,8 @@ export function DataTable<TData>({
     () =>
       numbered
         ? [
-          { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, any>,
-        ].concat(columns)
+            { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, any>,
+          ].concat(columns)
         : columns,
     [numbered, columns]
   )
@@ -72,13 +72,22 @@ export function DataTable<TData>({
     [numbered, data]
   )
 
-  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: initialPageSize })
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: initialPageSize,
+  })
 
   const table = useReactTable({
     data: processedData,
     columns: processedColumns,
     getCoreRowModel: getCoreRowModel(),
-    ...(paginated ? { getPaginationRowModel: getPaginationRowModel(), onPaginationChange: setPagination, state: { pagination } } : {}),
+    ...(paginated
+      ? {
+          getPaginationRowModel: getPaginationRowModel(),
+          onPaginationChange: setPagination,
+          state: { pagination },
+        }
+      : {}),
   })
 
   const borderClassName = bordered ? 'rounded-md border' : ''
@@ -98,9 +107,9 @@ export function DataTable<TData>({
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                 </TableHead>
               )
             })}
