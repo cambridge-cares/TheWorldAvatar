@@ -1,6 +1,6 @@
 import { ReadonlyURLSearchParams } from 'next/navigation'
-import { BACKEND_ENDPOINT, getJson } from '.'
-import { ZeoliteFrameworkBase } from '../model/ontozeolite'
+import { BACKEND_ENDPOINT, getJson, getReq } from '.'
+import { ZeoliteFramework, ZeoliteFrameworkBase } from '../model/ontozeolite'
 
 const GET_CBUS_ENDPOINT = new URL(
   './ontozeolite/composite-building-units',
@@ -29,5 +29,17 @@ const GET_ZEOLITE_FRAMEWORKS_ENDPOINT = new URL(
 export function getZeoliteFrameworks(searchParams: ReadonlyURLSearchParams) {
   return getJson<ZeoliteFrameworkBase[]>(
     `${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}?${searchParams}`
+  )
+}
+
+export function getZeoliteFrameworkOne(iriEncoded: string) {
+  return getJson<ZeoliteFramework>(
+    `${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}`
+  )
+}
+
+export function getZeoliteFrameworkCIF(iriEncoded: string) {
+  return getReq(`${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}/cif`).then(
+    res => res.text()
   )
 }
