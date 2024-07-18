@@ -1,0 +1,65 @@
+# Binary archives of any kind are not allowed:
+*.tar
+*.gz
+*.zip
+*.7z
+*.rar
+*.tgz
+*.hdt
+
+# Integrated Development Environment (IDE)-specific files/folders:
+.vscode/
+.code-workspace
+.idea/
+.settings/
+.metadata
+.classpath
+.project
+*.iml
+
+# Java:
+*.jar
+*.war
+*.class
+
+# Maven:
+target/
+
+# Python:
+__pycache__/
+*.py[cod]
+*$py.class
+*.pkl
+*.egg-info/
+.venv
+venv/
+.env
+env/
+
+# JavaScript:
+node_modules/
+jspm_packages/
+package-lock.json
+
+# Compiled/binary output folders:
+bin/
+build/
+dist/
+
+# Mac/OSX-specific files:
+.DS_Store
+
+# Windows-specific files:
+Thumbs.db
+
+# Miscellaneous files/folders:
+*.index
+geckodriver.log
+notes.txt
+mynotes.txt
+
+# Data files
+*.ifc
+*.glb
+*.gltf
+*.log

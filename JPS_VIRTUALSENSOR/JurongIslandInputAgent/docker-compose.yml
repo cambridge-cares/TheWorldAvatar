@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  jurong-island-input-agent:
+    image: ghcr.io/cambridge-cares/jurong-island-input-agent:1.3
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    configs:
+      - blazegraph
+    secrets:
+      - postgis_password
+      - geoserver_password
+    volumes:
+      - logs:/root/.jps
+      - misc:/misc
+      - ./data:/data
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "${STACK_NAME}_logs"
+  misc:
+    name: "misc"

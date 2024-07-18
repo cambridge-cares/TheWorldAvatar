@@ -1,0 +1,50 @@
+- script: create-new-scenario
+  parameters:
+    project: testProject
+    scenario: testScenario
+    output-path: directory_path
+    zone: filepath_zone
+    terrain:
+    streets:
+    typology: filepath_typology
+- script: weather-helper
+  parameters:
+    scenario: scenario_path
+- script: data-initializer
+  parameters:
+    scenario: scenario_path
+    databases-path: CH
+- script: archetypes-mapper
+  parameters:
+    scenario: scenario_path
+- script: radiation
+  parameters:
+    scenario: scenario_path
+- script: schedule-maker
+  parameters:
+    scenario: scenario_path
+- script: demand
+  parameters:
+    scenario: scenario_path
+    loads-output: ['GRID', 'QH_sys', 'QC_sys', 'E_sys']
+    massflows-output: []
+    temperatures-output: []
+- script: photovoltaic
+  parameters:
+    scenario: scenario_path
+    annual-radiation-threshold: 0.
+- script: photovoltaic-thermal
+  parameters:
+    scenario: scenario_path
+    type-scpanel: FP
+    annual-radiation-threshold: 0.
+- script: solar-collector
+  parameters:
+    scenario: scenario_path
+    type-scpanel: FP
+    annual-radiation-threshold: 0.
+- script: solar-collector
+  parameters:
+    scenario: scenario_path
+    type-scpanel: ET
+    annual-radiation-threshold: 0.

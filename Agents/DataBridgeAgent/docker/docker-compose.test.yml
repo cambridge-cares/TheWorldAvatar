@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  data-bridge-agent:
+    container_name: data-bridge-agent
+    image: data-bridge-agent:1.0.0
+    build:
+      context: ..
+      target: test
+    ports:
+      - "3055:8080"
+    depends_on:
+      - blazegraph_test
+      - postgis_test
+    networks:
+        - my-network
+      # Blazegraph
+  blazegraph_test:
+    image: docker.cmclinnovations.com/blazegraph:1.1.0
+    container_name: blazegraph_test
+    restart: unless-stopped
+    ports:
+      - "9998:8080"
+    networks:
+      - my-network
+  postgis_test:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: postgis_test
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pg123
+    ports:
+      - "5431:5432"
+    networks:
+      - my-network
+networks:
+  my-network:

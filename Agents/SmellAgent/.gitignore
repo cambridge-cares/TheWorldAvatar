@@ -1,0 +1,14 @@
+__pycache__/
+.mypy_cache/
+.pytest_cache
+build/
+dist/
+*~*
+#.vscode/
+.idea/
+*venv/
+coverage.xml
+.coverage
+*.gv
+*.png
+assets

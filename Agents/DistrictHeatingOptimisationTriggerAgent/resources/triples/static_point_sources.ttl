@@ -1,0 +1,19 @@
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix :       <[prefix]> .
+
+# This file contains triples to instantiate Static Point Source instances
+# required for the Aermod Agent to retrieve emission rates with their 
+# respective locations
+# ([prefix] will be replace with actual KB prefix within agent logic)
+#
+# TODO: <IRI to be replaced manually> needs to be replaced with the actual
+#       instantiated CityObjectIRI representing the outlet for the corresponding
+#       emission before starting the agent; this needs to be done manually
+#       as there is (currently) no way to identify these instances programmatically
+
+:StaticPointSource_MunicipalUtility rdf:type disp:StaticPointSource ;
+                                    disp:hasOntoCityGMLCityObject <IRI to be replaced manually> .
+
+:StaticPointSource_EfWPlant rdf:type disp:StaticPointSource ;
+                            disp:hasOntoCityGMLCityObject <IRI to be replaced manually> .

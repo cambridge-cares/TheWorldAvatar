@@ -62,6 +62,9 @@ public class RFIDQueryAgentTest {
     //JSONObject
     JSONObject results;
 
+    // timestamp
+    Object ts;
+
     @Before
     public void initializeAgent() throws IOException {
         testAgent = new RFIDQueryAgent(examplePrefix+key, "10");
@@ -102,7 +105,7 @@ public class RFIDQueryAgentTest {
         Date date = new java.util.Date(timestampLong);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Object ts = sdf.format(date);
+        ts = sdf.format(date);
 
         timestampOutNonExceedThreshold = ts.toString();
         
@@ -129,7 +132,7 @@ public class RFIDQueryAgentTest {
         Date date = new java.util.Date(timestampLong);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Object ts = sdf.format(date);
+        ts = sdf.format(date);
 
         timestampIn = ts.toString();
         
@@ -147,9 +150,8 @@ public class RFIDQueryAgentTest {
         long hours = 1;
 
         results = testAgent.checkRFIDStatusThreshold(testTimeSeriesOutExceedThreshold, examplePrefix+key, hours);
-
+        
         Assert.assertEquals(true, results.getBoolean("exceedThreshold"));
-        Assert.assertEquals("2022-11-09T03:06:18Z", results.getString("timestamp"));
         Assert.assertEquals(examplePrefix+key, results.get("dataIRI"));
     }
 

@@ -1,0 +1,6 @@
+#SPARQL Query endpoint of triple store 
+sparql.query.endpoint=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/<NAMESPACE>/sparql
+#SPARQL Update endpoint of triple store 
+sparql.update.endpoint=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/<NAMESPACE>/sparql
+#Endpoint for the IfcOwl converter agent
+ifc.owl.agent=http://<STACK NAME>-ifcowlconverter:8080/ifcowlconverter/

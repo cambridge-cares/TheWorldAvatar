@@ -31,7 +31,7 @@ RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked m
 
 FROM builder as test
 
-RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository2,sharing=locked mkdir -p /root/.m2/repository && cp -r /root/.m2/repository2/* /root/.m2/repository
 
 CMD ["mvn", "test"]
 

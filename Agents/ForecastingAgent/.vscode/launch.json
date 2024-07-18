@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "${input:agentname}:create_app()",
+                "FLASK_APP": "forecastingagent:create_app()",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "0"
             },
@@ -24,96 +24,52 @@
             "jinja": true
         },
         {
-            "name": "Python: Debug Flask within Docker",
+            "name": "Python: Debug dockerised agent 1 (forecast overwriting)",
             "type": "python",
             "request": "attach",
+            //"justMyCode": false,
             "connect": {
-                "host": "127.0.0.1",
+                "host": "localhost",
+                "port": 5677
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
+                }
+            ]
+        },
+        {
+            "name": "Python: Debug dockerised agent 2 (no forecast overwriting)",
+            "type": "python",
+            "request": "attach",
+            //"justMyCode": false,
+            "connect": {
+                "host": "localhost",
                 "port": 5678
             },
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}/",
-                    "remoteRoot": "/app/${input:agentname}/"
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
                 }
             ]
         },
         {
+            "name": "Python: Debug dockerised tests",
             "type": "python",
-            "name": "Stack: Debug",
             "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "compose-deploy",
+            //"justMyCode": false,
+            "connect": {
+                "host": "localhost",
+                "port": 5679
+            },
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
                 }
             ]
-        },
-        {
-            "type": "python",
-            "name": "Stack: Build and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "compose-build-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
-                }
-            ]
-        },
-        {
-            "type": "python",
-            "name": "Stack: Reattach and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port.read}",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
-                }
-            ]
-        }
-    ],
-    "inputs": [
-        {
-            "id": "debug.port",
-            "type": "command",
-            // Get the next avaliable debug port and write it to the cache file
-            "command": "shellCommand.execute",
-            "args": {
-                "command": "bash ./stack.sh ports write",
-                "useFirstResult": true
-            }
-        },
-        {
-            "id": "debug.port.read",
-            "type": "command",
-            // Get the last debug port from the cache file
-            "command": "shellCommand.execute",
-            "args": {
-                "command": "bash ./stack.sh ports read",
-                "useFirstResult": true
-            }
-        },
-        {
-            "id": "agentname",
-            "type": "command",
-            // Get agentname (equivalent to agent repository name) from setup.py
-            "command": "shellCommand.execute",
-            "args": {
-            // TODO: Platform specific commands to be revisited at some point
-            // Linux (n/a option to be commented out):
-            //    "command": "python3 setup.py --name",
-            // Windows (n/a option to be commented out): 
-                "command": "python setup.py --name",
-                "useFirstResult": true
-            }
         }
     ]
 }

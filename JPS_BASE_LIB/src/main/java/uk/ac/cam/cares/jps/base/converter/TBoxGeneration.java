@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,14 +13,13 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jfree.ui.ExtensionFileFilter;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.Dialogs;
@@ -47,6 +44,7 @@ public class TBoxGeneration implements ITBoxGeneration {
 	static Logger logger = org.slf4j.LoggerFactory.getLogger(TBoxGeneration.class);
 	ITBoxManagement iTBoxManagement;
 	public static String owlFilePath;
+	public static String texFilePath;
 	public static final String HAS_IRI = "https://www.w3.org/2007/05/powder-s#hasIRI";
 	public static final String VERSION_INFO = "http://www.w3.org/2002/07/owl#versionInfo";
 	public static final String RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
@@ -111,11 +109,13 @@ public class TBoxGeneration implements ITBoxGeneration {
 		}
 		logger.info("Ontokin TBox generator started running...");
 		owlFilePath = csvFileNamePlusPath.replace(".csv", ".owl");
+		texFilePath = csvFileNamePlusPath.replace(".csv", ".tex");
 		iTBoxManagement = new TBoxManagement();
 		try {
 			iTBoxManagement.init();
 			readCSVTemplate(csvFileNamePlusPath);
 			iTBoxManagement.saveOntology(owlFilePath);
+			DescriptionLogicGenerator.generateDL(new File(owlFilePath), texFilePath);
 			logger.info("Ontokin TBox generation FINISHED.");
 		} catch (IOException e) {
 			logger.error("IOException occured.");
@@ -128,6 +128,9 @@ public class TBoxGeneration implements ITBoxGeneration {
 			throw new JPSRuntimeException(e);
 		} catch (OWLOntologyStorageException e) {
 			logger.error("OWLOntologyStorageException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (CsvValidationException e) {
+			logger.error("CsvValidationException occured.");
 			throw new JPSRuntimeException(e);
 		}
 	}
@@ -156,6 +159,9 @@ public class TBoxGeneration implements ITBoxGeneration {
 		} catch (OWLOntologyStorageException e) {
 			logger.error("OWLOntologyStorageException occured.");
 			throw new JPSRuntimeException(e);
+		} catch (CsvValidationException e) {
+			logger.error("CsvValidationException occured.");
+			throw new JPSRuntimeException(e);
 		}
 	}
 
@@ -165,9 +171,10 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
 	 * @throws OWLOntologyCreationException
+	 * @throws CsvValidationException
 	 */
 	private void readCSVTemplate(String csvFileNamePlusPath)
-			throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+			throws IOException, JPSRuntimeException, OWLOntologyCreationException, CsvValidationException {
 		storeRelationships(csvFileNamePlusPath);
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int countLine = 0;
@@ -188,9 +195,10 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
 	 * @throws OWLOntologyCreationException
+	 * @throws CsvValidationException
 	 */
 	private void storeRelationships(String csvFileNamePlusPath)
-			throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+			throws IOException, JPSRuntimeException, OWLOntologyCreationException, CsvValidationException {
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int rowCount = 0;
 		for (List<String> singleLine : brSourceCtml) {

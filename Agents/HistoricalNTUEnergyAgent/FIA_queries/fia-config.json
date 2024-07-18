@@ -1,0 +1,29 @@
+{
+  "queries": [
+    {
+      "class": "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Building",
+      "metaFile": "energy_meta.sparql",
+      "timeFile": "energy_time.sparql",
+      "databaseName": "ntuenergy",
+      "timeLimit": -1
+    },
+    {
+      "class": "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#UndergroundCable",
+      "metaFile": "branch_meta.sparql",
+      "timeFile": "",
+      "databaseName": "ntuenergy"
+    },
+    {
+      "class": "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Venue",
+      "metaFile": "venue_meta.sparql",
+      "timeFile": "",
+      "databaseName": "ntuenergy"
+    },
+    {
+      "class": "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ClassSchedule",
+      "metaFile": "class_schedule_meta.sparql",
+      "timeFile": "",
+      "databaseName": "ntuenergy"
+    }
+  ]
+}

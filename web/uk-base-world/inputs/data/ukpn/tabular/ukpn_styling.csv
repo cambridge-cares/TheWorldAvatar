@@ -1,0 +1,7 @@
+﻿voltage_level,line_colour,outline_colour,line_width,outline_width,pylon_icon,icon_size
+L,#FCE446,#895A5A,1m,4m,pylon_low_icon,50m
+M,#FCAC46,#895A5A,2m,6m,pylon_medium_icon,60m
+H,#BE1500,#895A5A,4m,8m,pylon_high_icon,70m
+S,#BE1500,#895A5A,6m,12m,pylon_superhigh_icon,80m
+DH,#B05B51,#895A5A,4m,8m,pylon_high_icon,70m
+DL,#C2B459,#895A5A,1m,4m,pylon_low_icon,50m

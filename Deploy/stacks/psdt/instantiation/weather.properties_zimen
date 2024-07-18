@@ -1,0 +1,15 @@
+#Note: URLs might look like this: http\://
+#This is to escape the ':' symbol and ensure that the properties can be loaded in properly.
+#Thu Mar 16 14:08:04 UTC 2023
+Niederschlag=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Niederschlag
+Ozon=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Ozon
+eBC_PM2-5=https\://www.theworldavatar.com/kg/ps/PirmasensStation_eBC_PM2-5
+Gesamt_UV_Strahlung=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Gesamt_UV_Strahlung
+Stickstoffdioxid=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Stickstoffdioxid
+Relative_Feuchte=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Relative_Feuchte
+Luftdruck=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Luftdruck
+Temperatur=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Temperatur
+Windrichtung_rohwert=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Windrichtung_rohwert
+PM10=https\://www.theworldavatar.com/kg/ps/PirmasensStation_PM10
+Stickstoffmonoxid=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Stickstoffmonoxid
+Windgeschwindigkeit_rohwert=https\://www.theworldavatar.com/kg/ps/PirmasensStation_Windgeschwindigkeit_rohwert

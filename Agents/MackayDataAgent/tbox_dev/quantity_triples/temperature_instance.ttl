@@ -1,0 +1,8 @@
+@prefix ems: <https://www.theworldavatar.com/kg/ontoems#>.
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+@prefix :       <https://www.theworldavatar.com/test/> .
+
+:ReportingStation_uuid1 rdf:type ems:ReportingStation;
+                        ems:Reports :AirTemperature_uuid2.
+:AirTemperature_uuid2 rdf:type om:Quantity.

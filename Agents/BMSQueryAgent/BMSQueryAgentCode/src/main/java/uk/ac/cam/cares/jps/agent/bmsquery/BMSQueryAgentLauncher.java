@@ -10,6 +10,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
  *
  * @author sandradeng20
  */
-@WebServlet(urlPatterns = {"/status", "/retrieve/equipment", "/retrieve/zones"})
+@WebServlet(urlPatterns = {"/status", "/retrieve/equipment", "/retrieve/zones", "/retrieve/lab", "/retrieve/office"})
 public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
 
@@ -71,17 +72,27 @@ public class BMSQueryAgentLauncher extends JPSAgent {
                 // handle the case "retrieve/zones", return the list of zones (buildings, facilities, rooms)
                 JSONObject queryResult = agent.queryAllZones();
 
-                LOGGER.info("query for zones is completed");
+                LOGGER.info("query for all zones is completed");
+                return queryResult;
+            } else if (url.contains("lab")) {
+                JSONObject queryResult = agent.queryLabZones();
+
+                LOGGER.info("query for lab zones is completed");
+                return queryResult;
+            } else if (url.contains("office")) {
+                JSONObject queryResult = agent.queryOfficeZones();
+
+                LOGGER.info("query for office zones is completed");
                 return queryResult;
             } else if (url.contains("equipment")) {
                 // handle the case "retrieve/equipment", return the list of equipments in a given room
 
-                if (!validateInput(request)) {
+                if (!validateInput(requestParams)) {
                     LOGGER.error(PARAMETERS_VALIDATION_ERROR_MSG);
                     throw new JPSRuntimeException(PARAMETERS_VALIDATION_ERROR_MSG);
                 }
 
-                String roomIRI = request.getParameter(KEY_ROOMIRI);
+                String roomIRI = requestParams.getString(KEY_ROOMIRI);
 
                 JSONObject queryResult = agent.queryEquipmentInstances(roomIRI);
 
@@ -96,42 +107,47 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     /**
      * Validate request params.
      *
-     * @param request Http request
+     * @param requestParams Http request
      * @return Validity of the request params
      */
-    public boolean validateInput(HttpServletRequest request) {
-        LOGGER.info("Getting requestParams: " + request.getQueryString());
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 
-        if (request.getParameterMap().isEmpty()) {
-            LOGGER.error(EMPTY_PARAMETER_ERROR_MSG);
+        LOGGER.debug(requestParams);
+
+        if (requestParams.isEmpty()) {
             return false;
         }
 
-        if (request.getParameter(KEY_ROOMIRI).isEmpty()) {
-            LOGGER.error(KEY_ROOMIRI + "is missing.");
+        if (!requestParams.has(KEY_ROOMIRI)) {
+            LOGGER.info("No " + KEY_ROOMIRI + " found.");
             return false;
         }
-        LOGGER.info("Data Received: " + request.getParameter(KEY_ROOMIRI));
 
         return true;
     }
 
     /**
      * Initialize agent and its remotestore client with EndpointConfig which get other agents' config from docker stack
-     * @return
      */
     private BMSQueryAgent initializeAgent() {
-        EndpointConfig endpointConfig = new EndpointConfig();
-
         BMSQueryAgent agent = createBMSQueryAgent();
 
-        RemoteStoreClient rsClient = new RemoteStoreClient();
-        rsClient.setUser(endpointConfig.getKguser());
-        rsClient.setPassword(endpointConfig.getKgpassword());
-        agent.setRSClient(rsClient, endpointConfig.getKgurls());
+        RemoteStoreClient labRsClient = getRsClient("lab");
+        RemoteStoreClient officeRsClient = getRsClient("caresOffice");
+        agent.setRSClient(labRsClient, officeRsClient);
 
         LOGGER.info("Input agent object initialized.");
         return agent;
+    }
+
+    private RemoteStoreClient getRsClient(String namespace) {
+        EndpointConfig endpointConfig = new EndpointConfig(namespace);
+        RemoteStoreClient rsClient = new RemoteStoreClient();
+        rsClient.setUser(endpointConfig.getKguser());
+        rsClient.setPassword(endpointConfig.getKgpassword());
+        rsClient.setQueryEndpoint(endpointConfig.getKgurl());
+        return rsClient;
     }
 
     /**

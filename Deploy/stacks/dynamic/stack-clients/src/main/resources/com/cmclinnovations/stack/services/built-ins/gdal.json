@@ -1,0 +1,37 @@
+{
+    "ServiceSpec": {
+        "Name": "gdal",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/osgeo/gdal:alpine-normal-3.8.3",
+                "Command": [
+                    "tail",
+                    "-f",
+                    "/dev/null"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "multidim_geospatial",
+                        "Target": "/multidim_geospatial"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    }
+}

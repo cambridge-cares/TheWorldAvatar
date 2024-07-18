@@ -11,11 +11,11 @@
 	</parent>
 	<groupId>com.cmclinnovations.mods</groupId>
 	<artifactId>mods-simple-agent</artifactId>
-	<version>0.3.1</version>
+	<version>0.4.0</version>
 	<name>mods-simple-agent</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<!--dependency>
@@ -46,7 +46,19 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20190722</version>
+			<version>20230227</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.20</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-csv</artifactId>
+			<version>2.13.0</version>
 		</dependency>
 
 		<dependency>
@@ -65,6 +77,13 @@
 			<artifactId>MoDS_GUI_Linux_deps</artifactId>
 			<version>0.17.0</version>
 			<type>zip</type>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<version>5.2.0</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

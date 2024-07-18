@@ -1,0 +1,23 @@
+#
+# Compose file for the TWA-VF (development).
+#
+version: "3.8"
+
+# All Services
+services:
+
+  # Compilation container.
+  # This container will compile the source code, package it for deployment, write it to the ./output folder, then shutdown.
+  compile:
+    build:
+      context: "./"
+      dockerfile: "Dockerfile.dev"
+    image: twa-vf-compilation:latest
+    container_name: "twa-vf-compile"
+    restart: "no"
+    working_dir: "/app"
+    entrypoint: "/bin/bash -c 'npm install && tsc && grunt package'"
+    volumes:
+      - type: bind
+        source: ./
+        target: /app

@@ -19,7 +19,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * Updates SimulationTime instance (input of derivation)
  * Call updateDerivation on given derivation
  */
-@WebServlet(urlPatterns = {"/TriggerUpdateDispersion"})
+@WebServlet(urlPatterns = { "/TriggerUpdateDispersion" })
 public class TriggerUpdateDispersion extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(TriggerUpdateDispersion.class);
     private DerivationClient devClient;

@@ -1,5 +1,7 @@
 # Derivation Asynchronous Example
 
+> NOTE: This example is developed and tested in **Windows Subsystem for Linux (WSL2)** environment as recommended in The World Avatar wiki. For details on environment setup, please see [Docker Environment](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment).
+
 ## Namespaces
 
 There are a few namespaces used in this example:
@@ -53,62 +55,63 @@ In these cases, the derivation agent will work out when to generate the informat
 
 ### Pure inputs
 
-The pure inputs of the first (upstream) derivation in the chain are instances of `UpperLimit` (20), `LowerLimit` (3), and `NumberOfPoints` (6), with the value in brackets as their own default value in this example. Upon initialisation, the following triples are created in blazegraph:
+The pure inputs of the first (upstream) derivation in the chain are instances of `UpperLimit` (20), `LowerLimit` (3), and `NumberOfPoints` (0), with the value in brackets as their own default value in this example. Upon initialisation, the following triples are created in blazegraph:
+
+**NOTE: As of [`jps-base-lib==1.39.0`](https://github.com/cambridge-cares/TheWorldAvatar/packages/783412?version=1.39.0), derivation framework supports situations where no output is computed. Therefore, it is possible that the derivation DAG is up-to-date but no instances are generated. Here the `NumberOfPoints` is made as 0 to mimic such a situation.**
 
 ```
 # for UpperLimit instance
-<upperlimit> <rdf:type> <example:UpperLimit>
-<upperlimit> <rdf:type> <owl:NamedIndividual>
-<upperlimit> <example:hasValue> <value1>
-<value1> <rdf:type> <example:SvalarValue>
-<value1> <example:numericalValue> 20
-<upperlimit> <time:hasTime> <timestamp1>
-<timestamp1> <time:inTimePosition> <unixtime1>
-<unixtime1> <time:numericPosition> 123
+<upperlimit> <rdf:type> <example:UpperLimit> .
+<upperlimit> <rdf:type> <owl:NamedIndividual> .
+<upperlimit> <example:hasValue> <value1> .
+<value1> <rdf:type> <example:SvalarValue> .
+<value1> <example:numericalValue> 20 .
+<upperlimit> <time:hasTime> <timestamp1> .
+<timestamp1> <time:inTimePosition> <unixtime1> .
+<unixtime1> <time:numericPosition> 123 .
 
 # for LowerLimit instance
-<lowerlimit> <rdf:type> <example:LowerLimit>
-<lowerlimit> <rdf:type> <owl:NamedIndividual>
-<lowerlimit> <example:hasValue> <value2>
-<value2> <rdf:type> <example:SvalarValue>
-<value2> <example:numericalValue> 3
-<lowerlimit> <time:hasTime> <timestamp2>
-<timestamp2> <time:inTimePosition> <unixtime2>
-<unixtime2> <time:numericPosition> 123
+<lowerlimit> <rdf:type> <example:LowerLimit> .
+<lowerlimit> <rdf:type> <owl:NamedIndividual> .
+<lowerlimit> <example:hasValue> <value2> .
+<value2> <rdf:type> <example:SvalarValue> .
+<value2> <example:numericalValue> 3 .
+<lowerlimit> <time:hasTime> <timestamp2> .
+<timestamp2> <time:inTimePosition> <unixtime2> .
+<unixtime2> <time:numericPosition> 123 .
 
 # for NumberOfPoints instance
-<numofpoints> <rdf:type> <example:NumberOfPoints>
-<numofpoints> <rdf:type> <owl:NamedIndividual>
-<numofpoints> <example:hasValue> <value3>
-<value3> <rdf:type> <example:SvalarValue>
-<value3> <example:numericalValue> 6
-<numofpoints> <time:hasTime> <timestamp3>
-<timestamp3> <time:inTimePosition> <unixtime3>
-<unixtime3> <time:numericPosition> 123
+<numofpoints> <rdf:type> <example:NumberOfPoints> .
+<numofpoints> <rdf:type> <owl:NamedIndividual> .
+<numofpoints> <example:hasValue> <value3> .
+<value3> <rdf:type> <example:SvalarValue> .
+<value3> <example:numericalValue> 0 .
+<numofpoints> <time:hasTime> <timestamp3> .
+<timestamp3> <time:inTimePosition> <unixtime3> .
+<unixtime3> <time:numericPosition> 123 .
 ```
 
-Note that the `value1` `value2` `value3` instances contain data used by the first derivation (Random Number Generation Derivation) that `OntoDerivation:isDerivedFrom` these three inputs. The RNGAgent is responsible for monitoring the derivation and will generate an instance of `example:ListOfRandomPoints`. The `timestamp1` `timestamp2` `timestamp3` are used to check whether the derivation is out-of-date compared to the inputs.
+Note that the `value1` `value2` `value3` instances contain data used by the first derivation (Random Number Generation Derivation) that `OntoDerivation:isDerivedFrom` these three inputs. The RNGAgent is responsible for monitoring the derivation and will generate a list of instances of `example:Point`. The `timestamp1` `timestamp2` `timestamp3` are used to check whether the derivation is out-of-date compared to the inputs.
 
 ### Random Number Generation Derivation
 
-The property instance:
+The instances of each `example:Point` (if exists):
 
 ```
-<listOfRandomPoints> <rdf:type> <example:ListOfRandomPoints>
-<listOfRandomPoints> <example:hasPoint> <point> # there are multiple similar triples that each refers to one point in the list
-<point> <example:hasValue> <valueOfPoint>
-<valueOfPoint> <example:numericalValue> 123
+<point> <rdf:type> <example:Point> .
+<point> <example:hasValue> <valueOfPoint> .
+<valueOfPoint> <example:numericalValue> 123 .
 ```
 
 The derivation instance:
 
 ```
-<derivation_of_rng> <OntoDerivation:isDerivedFrom> <upperlimit>
-<derivation_of_rng> <OntoDerivation:isDerivedFrom> <lowerlimit>
-<derivation_of_rng> <OntoDerivation:isDerivedFrom> <numofpoints>
-<listOfRandomPoints> <OntoDerivation:belongsTo> <derivation_of_rng>
-<derivation_of_rng> <OntoDerivation:isDerivedUsing> <RNGAgent>
-<derivation_of_rng> <OntoDerivation:hasStatus> <rng_status>
+<derivation_of_rng> <OntoDerivation:isDerivedFrom> <upperlimit> .
+<derivation_of_rng> <OntoDerivation:isDerivedFrom> <lowerlimit> .
+<derivation_of_rng> <OntoDerivation:isDerivedFrom> <numofpoints> .
+<point> <OntoDerivation:belongsTo> <derivation_of_rng> # if exists .
+<derivation_of_rng> <OntoDerivation:isDerivedUsing> <RNGAgent> .
+<derivation_of_rng> <OntoDerivation:hasStatus> <rng_status> .
 ```
 
 The agent for this instance, `RNGAgent`, when it satisfies `<rng_status> <rdf:type> <OntoDerivation:Requested>`, retrieves the inputs of this derivation:
@@ -117,20 +120,21 @@ The agent for this instance, `RNGAgent`, when it satisfies `<rng_status> <rdf:ty
 {"agent_input": {"example:UpperLimit": ["<upperlimit>"], "example:LowerLimit": ["<lowerlimit>"], "example:NumberOfPoints": ["<numofpoints>"]}}
 ```
 
-generates `<numofpoints>` random points bounded by the `<upperlimit>` and `<lowerlimit>`, and connects them with a new instance of `example:ListOfRandomPoints`, all triples are written to the knowledge graph, e.g.
+generates `<numofpoints>` random points bounded by the `<upperlimit>` and `<lowerlimit>`, all triples are written to the knowledge graph, e.g.
 
 ```
-<new_listOfRandomPoints> <rdf:type> <example:ListOfRandomPoints>
-<new_listOfRandomPoints> <example:hasPoint> <new_point> # again, there are multiple similar triples that each refers to a new generated point in the list
-<new_point> <example:hasValue> <new_valueOfPoint>
-<new_valueOfPoint> <example:numericalValue> 123
+# below triples are for each point (if exists), there can be multiple similar triples that each refers to other new generated points
+<new_point> <rdf:type> <example:Point> .
+<new_point> <example:hasValue> <new_valueOfPoint> .
+<new_valueOfPoint> <example:numericalValue> 123 .
 ```
 
-the old instance `<listOfRandomPoints>` will be deleted, the new instance will be connected with derivations, e.g.
+the old instance `<point>` (if exists, and any other points) will be deleted, the new instance will be connected with derivations, e.g.
 
 ```
-<new_listOfRandomPoints> <OntoDerivation:belongsTo> <derivation_of_rng>
-<derivation_of_max> <OntoDerivation:isDerivedFrom> <new_listOfRandomPoints>
+<new_point> <OntoDerivation:belongsTo> <derivation_of_rng> .
+<derivation_of_max> <OntoDerivation:isDerivedFrom> <new_point> .
+<derivation_of_min> <OntoDerivation:isDerivedFrom> <new_point> .
 ```
 
 ### Maximum value
@@ -138,39 +142,39 @@ the old instance `<listOfRandomPoints>` will be deleted, the new instance will b
 The property instance:
 
 ```
-<max> <rdf:type> <example:MaxValue>
-<max> <example:hasValue> <valueOfMax> 
-<valueOfMax> <example:numericalValue> 123
+<max> <rdf:type> <example:MaxValue> .
+<max> <example:hasValue> <valueOfMax>  .
+<valueOfMax> <example:numericalValue> 123 .
 ```
 
 The derivation instance:
 
 ```
-<derivation_of_max> <OntoDerivation:isDerivedFrom> <new_listOfRandomPoints>
-<max> <OntoDerivation:belongsTo> <derivation_of_max>
-<derivation_of_max> <OntoDerivation:isDerivedUsing> <MaxValueAgent>
-<derivation_of_max> <OntoDerivation:hasStatus> <max_status>
+<derivation_of_max> <OntoDerivation:isDerivedFrom> <new_point> .
+<max> <OntoDerivation:belongsTo> <derivation_of_max> .
+<derivation_of_max> <OntoDerivation:isDerivedUsing> <MaxValueAgent> .
+<derivation_of_max> <OntoDerivation:hasStatus> <max_status> .
 ```
 
 The agent for this instance, `MaxValueAgent`, when it satisfies `<max_status> <rdf:type> <OntoDerivation:Requested>`, retrieves the inputs of this derivation:
 
 ```json
-{"agent_input": {"example:ListOfRandomPoints": ["<new_listOfRandomPoints>"]}}
+{"agent_input": {"example:Point": ["<new_point>"]}}
 ```
 
 queries the maximum value from the list of `<new_point>`, and writes a new instance, e.g.
 
 ```
-<new_max> <rdf:type> <example:MaxValue>
-<new_max> <example:hasValue> <newMaxValue>
-<newMaxValue> <example:numericalValue> 123
+<new_max> <rdf:type> <example:MaxValue> .
+<new_max> <example:hasValue> <newMaxValue> .
+<newMaxValue> <example:numericalValue> 123 .
 ```
 
 the old instance `<max>` will be deleted, the new instance will be connected with derivations, e.g.
 
 ```
-<new_max> <OntoDerivation:belongsTo> <derivation_of_max>
-<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_max>
+<new_max> <OntoDerivation:belongsTo> <derivation_of_max> .
+<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_max> .
 ```
 
 ### Minimum value
@@ -178,39 +182,39 @@ the old instance `<max>` will be deleted, the new instance will be connected wit
 The property instance:
 
 ```
-<min> <rdf:type> <example:MinValue>
-<min> <example:hasValue> <valueOfMin> 
-<valueOfMin> <example:numericalValue> 123
+<min> <rdf:type> <example:MinValue> .
+<min> <example:hasValue> <valueOfMin> .
+<valueOfMin> <example:numericalValue> 123 .
 ```
 
 The derivation instance:
 
 ```
-<derivation_of_min> <OntoDerivation:isDerivedFrom> <new_listOfRandomPoints>
-<min> <OntoDerivation:belongsTo> <derivation_of_min>
-<derivation_of_min> <OntoDerivation:isDerivedUsing> <MinValueAgent>
-<derivation_of_min> <OntoDerivation:hasStatus> <min_status>
+<derivation_of_min> <OntoDerivation:isDerivedFrom> <new_point> .
+<min> <OntoDerivation:belongsTo> <derivation_of_min> .
+<derivation_of_min> <OntoDerivation:isDerivedUsing> <MinValueAgent> .
+<derivation_of_min> <OntoDerivation:hasStatus> <min_status> .
 ```
 
 The agent for this instance, `MinValueAgent`, when it satisfies `<min_status> <rdf:type> <OntoDerivation:Requested>`, retrieves the inputs of this derivation:
 
 ```json
-{"agent_input": {"example:ListOfRandomPoints": ["<new_listOfRandomPoints>"]}}
+{"agent_input": {"example:Point": ["<new_point>"]}}
 ```
 
 queries the minimum value from the list of `<new_point>`, and writes a new instance, e.g.
 
 ```
-<new_min> <rdf:type> <example:MinValue>
-<new_min> <example:hasValue> <newMinValue>
-<newMinValue> <example:numericalValue> 123
+<new_min> <rdf:type> <example:MinValue> .
+<new_min> <example:hasValue> <newMinValue> .
+<newMinValue> <example:numericalValue> 123 .
 ```
 
 the old instance `<min>` will be deleted, the new instance will be connected with derivations, e.g.
 
 ```
-<new_min> <OntoDerivation:belongsTo> <derivation_of_min>
-<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_min>
+<new_min> <OntoDerivation:belongsTo> <derivation_of_min> .
+<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_min> .
 ```
 
 ### Difference
@@ -218,19 +222,19 @@ the old instance `<min>` will be deleted, the new instance will be connected wit
 The difference instance is also identical, except that it has the rdf:type `example:Difference`.
 
 ```
-<diff> <rdf:type> <example:Difference>
-<diff> <example:hasValue> <valueOfDiff> 
-<valueOfDiff> <example:numericalValue> 123
+<diff> <rdf:type> <example:Difference> .
+<diff> <example:hasValue> <valueOfDiff>  .
+<valueOfDiff> <example:numericalValue> 123 .
 ```
 
 The derivation instance contains two inputs - the maximum value and minimum value instances.
 
 ```
-<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_max>
-<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_min>
-<diff> <OntoDerivation:belongsTo> <derivation_of_diff>
-<derivation_of_diff> <OntoDerivation:isDerivedUsing> <DifferenceAgent>
-<derivation_of_diff> <OntoDerivation:hasStatus> <diff_status>
+<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_max> .
+<derivation_of_diff> <OntoDerivation:isDerivedFrom> <new_min> .
+<diff> <OntoDerivation:belongsTo> <derivation_of_diff> .
+<derivation_of_diff> <OntoDerivation:isDerivedUsing> <DifferenceAgent> .
+<derivation_of_diff> <OntoDerivation:hasStatus> <diff_status> .
 ```
 
 Again, when it satisfies `<diff_status> <rdf:type> <OntoDerivation:Requested>`, `DifferenceAgent` retrieves the inputs of this derivation:
@@ -242,15 +246,15 @@ Again, when it satisfies `<diff_status> <rdf:type> <OntoDerivation:Requested>`, 
 It then queries the values using the given IRIs and calculate the difference between the values. The agent creates a new instance
 
 ```
-<new_diff> <rdf:type> <example:Difference>
-<new_diff> <example:hasValue> <newDiffValue>
-<newDiffValue> <example:numericalValue> 123
+<new_diff> <rdf:type> <example:Difference> .
+<new_diff> <example:hasValue> <newDiffValue> .
+<newDiffValue> <example:numericalValue> 123 .
 ```
 
 the old instance `<diff>` will be deleted, as the new instance is not input of another other derivations, only one connection will be made with derivation instance, e.g.
 
 ```
-<new_diff> <OntoDerivation:belongsTo> <derivation_of_diff>
+<new_diff> <OntoDerivation:belongsTo> <derivation_of_diff> .
 ```
 
 ## Docker setup
@@ -367,11 +371,20 @@ Once the new information is generated is finished, you may get results from SPAR
 
 During the course of update, you may also see IRIs appear at the `status` and `status_type` columns, and there may be instances `0` appear in `inputTime` for `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_7843ed41-a60e-4fdb-94eb-450164b6ed93>`, `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_28aea05d-4801-4f63-a498-a61287e664ee>`, and `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_ecb4acda-b4e8-499c-b1ed-ec6a9e9d1c47>` - as by design these async derivations are directly connected with its upstream derivation via `<isDerivedFrom>` before the outputs of the upstream derivations are generated, thus the inputs of these three derivation instances are all in fact their upstream derivations, thus timestamp with `0` are added.
 
-## Updating existing information
-If after the outputs of all derivations are generated successfully and you would like to try the mode that updates existing information, `InputAgent` provides such an option - the input instance of `NumberOfPoints` can be updated using it. Each time the agent is called, the value of the `numofpoints` is increased by 1. In addition, it also updates the unix time stamp of the instance in the triple-store (blazegraph).
+Note that that `NumberOfPoints` is initialised as 0 in the current example, therefore, no random points will be generated and subsequently no max/min/difference instances will be computed. The above derivations will still be linked directly to each other after they are all up-to-date.
 
+## Updating existing information
+If after all derivations are up-to-date (this includes both situations where no output is generated and outputs are generated successfully) and you would like to try the mode that updates existing information, `InputAgent` provides such an option - the input instance of `NumberOfPoints` can be updated using it. Each time the agent is called, the value of the `numofpoints` is updated. In addition, it also updates the unix time stamp of the instance in the triple-store (blazegraph).
+
+By default, the value of the `numofpoints` is increased by 1:
 ```
 curl http://localhost:58085/DerivationAsynExample/InputAgent
+```
+
+Alternatively, the value of the `numofpoints` can be changed to any arbitrary number supplied to `<new_numofpoints>`:
+> **Warning: The derivation update for synchronous derivation could fail if the value of `<new_numofpoints>` is too big. This is due to the limitation of length in the HTTP GET request which is currently implemented in `JPSAgent`. For more details, please refer to this [comment](https://github.com/cambridge-cares/TheWorldAvatar/issues/304#issuecomment-1602373673) and its associated issue.**
+```
+curl http://localhost:58085/DerivationAsynExample/InputAgent?NumberOfPoints=<new_numofpoints>
 ```
 
 If the update of `numofpoints` value is successful, you should receive an HTTP response, e.g.:

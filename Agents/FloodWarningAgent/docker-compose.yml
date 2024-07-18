@@ -2,9 +2,8 @@ version: "3.8"
 
 services:
   floodwarnings_agent:
-    image: ghcr.io/cambridge-cares/floodwarnings_agent:1.1.0
+    image: ghcr.io/cambridge-cares/floodwarnings_agent:1.1.3
     environment:
-      - STACK_NAME=${STACK_NAME}
       # Target Blazegraph namespace
       - NAMESPACE=kingslynn
       # Target PostGIS database name
@@ -12,7 +11,7 @@ services:
       - DATABASE=postgres
       # Target table name in PostGIS (also layer name in Geoserver)
       - LAYERNAME=floodwarnings
-      - GEOSERVER_WORKSPACE=floodwarnings
+      - GEOSERVER_WORKSPACE=kingslynn
       - ONTOP_FILE=/app/resources/ontop.obda
       # PostGIS table with building footprints
       - BUILDINGS_TABLE=buildings

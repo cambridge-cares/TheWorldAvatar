@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -53,11 +55,15 @@ public class MinValueAgent extends DerivationAgent {
 		LOGGER.debug("MinValueAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
-		String listOfRandomPoints_iri = derivationInputs
-				.getIris(SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints)).get(0);
-		
+		List<String> pts = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Point));
+
+		if (Objects.isNull(pts) || pts.isEmpty()) {
+			LOGGER.info("No points found in the input IRIs.");
+			return;
+		}
+
 		// find the maximum value
-		Integer minvalue = sparqlClient.getExtremeValueInList(listOfRandomPoints_iri, false);
+		Integer minvalue = sparqlClient.getExtremeValueInList(pts, false);
 		
 		// write the output triples to derivationOutputs
 		String min_iri = SparqlClient.namespace + UUID.randomUUID().toString();
@@ -69,7 +75,7 @@ public class MinValueAgent extends DerivationAgent {
 		LOGGER.info(
 				"Created a new min value instance <" + min_iri + ">, and its value instance <" + value_iri + ">");
 	}
-	
+
 	@Override
 	public void init() throws ServletException {
 		LOGGER.info("\n---------------------- Min Value Agent has started ----------------------\n");

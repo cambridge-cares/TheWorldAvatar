@@ -43,9 +43,12 @@ def create_diff_reverse_app():
 def create_update_endpoint():
     update_agent = cft.create_update_endpoint()
 
+    update_agent.set_diff_agent_service(cft.DIFFAGENT_SERVICE)
+    update_agent.set_diff_reverse_agent_service(cft.DIFFREVERSEAGENT_SERVICE)
+
     update_agent.add_url_pattern(
         '/update', 'update_derivation',
-        update_agent.update_derivations, methods=['GET']
+        update_agent.update_derivations, methods=['POST']
     )
 
     return update_agent.app

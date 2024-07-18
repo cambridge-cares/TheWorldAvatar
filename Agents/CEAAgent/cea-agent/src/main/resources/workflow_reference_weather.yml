@@ -1,0 +1,13 @@
+- script: create-new-scenario
+  parameters:
+    project: testProject
+    scenario: testScenario
+    output-path: directory_path
+    zone: filepath_zone
+    terrain:
+    streets:
+    typology:
+- script: weather-helper
+  parameters:
+    scenario: scenario_path
+    weather: Zuerich-ETHZ_1990-2010_TMY

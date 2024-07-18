@@ -347,6 +347,18 @@ class PyDerivationClient:
     ##############################################
     ## Methods for requesting update derivation ##
     ##############################################
+    def getDerivations(self, agentIRI: str) -> list:
+        """Get the derivations of the given agent.
+
+        Args:
+            agentIRI (str): IRI of the agent
+
+        Returns:
+            list: List of IRIs of the derivations that isDerivedUsing the given agent
+        """
+        return list(self.derivation_client.getDerivations(agentIRI))
+
+
     def getDerivationsOf(self, entities: List[str]) -> Dict[str, str]:
         """Get the derivations of the given entities.
 

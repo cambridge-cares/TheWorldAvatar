@@ -1,0 +1,26 @@
+{
+    "name": "atlas_PowerDensity50m",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlas_PowerDensity50m",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "atlas_PowerDensity50m",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "atlas_power_density"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "atlas_power_density",
+            "file": "atlas_power_density.sld"
+        }
+    ]
+}

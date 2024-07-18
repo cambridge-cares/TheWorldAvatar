@@ -9,6 +9,7 @@ from sklearn.metrics.pairwise import laplacian_kernel
 from tqdm import tqdm
 
 import ontomatch.converter
+import ontomatch.evaluate
 import ontomatch.hpo
 import ontomatch.matchManager
 import ontomatch.scoring
@@ -35,7 +36,7 @@ class InstanceMatcherBase():
 
         elif mode == 'fixed':
             prop_prop_sim_tuples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
-            logging.info('created prop_prop_sim_tuples from params_mapping =%s', prop_prop_sim_tuples)
+            logging.debug('created prop_prop_sim_tuples from params_mapping =%s', prop_prop_sim_tuples)
 
             property_mapping = []
             for t in prop_prop_sim_tuples:
@@ -50,7 +51,7 @@ class InstanceMatcherBase():
                 property_mapping.append(row)
             logging.info('added prop_prop_sim_tuples to score manager, number=%s', len(self.score_manager.get_prop_prop_fct_tuples()))
 
-            self.score_manager.calculate_similarities_between_datasets()
+            self.score_manager.calculate_similarities_between_datasets(params_mapping)
 
         else:
             raise RuntimeError('unknown mode', mode)
@@ -146,58 +147,39 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
     def start_internal(self, srconto, tgtonto, params_model_specific, params_blocking, params_post_processing=None, params_mapping=None):
 
         logging.info('starting InstanceMatcherWithAutoCalibration, params=%s', params_model_specific)
-        perfect = params_model_specific.get('perfect')
-        symmetric = params_model_specific['symmetric']
-        delta = params_model_specific.get('delta')
-        if delta is None:
-            delta = 0.025
-        purge_alpha = params_model_specific.get('purge_alpha')
-        purge_majority = params_model_specific.get('purge_majority')
-        if purge_majority is None:
-            purge_majority = 0.
-        threshold_ratio = params_model_specific.get('threshold_ratio')
-        if threshold_ratio is None:
-            threshold_ratio = 1.
+        delta = params_model_specific['delta']
 
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
 
         manager = self.score_manager
+        manager.calculate_maximum_scores()
 
-        match_file = None
+        # TODO-AE 221024: switch off MAXSIM, only for the paper
+        '''
         if params_post_processing:
-            match_file = params_post_processing.get('evaluation_file')
-            if match_file:
-                matches_minus_fn = self.read_matches_minus_fn(match_file)
-
-        if perfect:
-            self.calculate_perfect_maximum_scores(matches_minus_fn)
-        else:
-            manager.calculate_maximum_scores(symmetric=symmetric)
-            if symmetric and purge_alpha:
-                # purging works only if both directions are considered for calculating max sim vectors
-                manager.df_max_scores_1, manager.df_max_scores_2 = self.purge_low_max_scores(
-                        manager.df_max_scores_1, manager.df_max_scores_2, manager.df_scores, purge_alpha, purge_majority)
-
-        if match_file:
-            self.evaluate_maximum_scores(matches_minus_fn)
-
+            test_file = params_post_processing.get('test_file')
+            if test_file:
+                df_union = ontomatch.utils.util.read_and_concat_csv_table_ditto_format(test_file)
+                matches = df_union[df_union['label'] == 1].index
+                self.evaluate_maximum_scores(matches)
+        '''
+        
         df_scores = manager.get_scores()
         df_max_scores = manager.get_max_scores_1()
         self.df_total_scores, self.df_total_best_scores_1 = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping, delta)
         self.df_total_best_scores = self.df_total_best_scores_1
 
-        if symmetric:
-            df_max_scores_2 = manager.get_max_scores_2()
-            df_scores_2 = manager.get_scores()
+        df_max_scores_2 = manager.get_max_scores_2()
+        df_scores_2 = manager.get_scores()
 
-            df_total_scores_2, self.df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, delta, dataset_id=2)
-            self.df_total_scores = self.combine(self.df_total_scores, df_total_scores_2)
-            mask = (self.df_total_scores['best'])
-            self.df_total_best_scores = self.df_total_scores[mask].copy()
+        df_total_scores_2, self.df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, delta, dataset_id=2)
+        self.df_total_scores = self.combine(self.df_total_scores, df_total_scores_2)
+        mask = (self.df_total_scores['best'])
+        self.df_total_best_scores = self.df_total_scores[mask].copy()
 
         logging.debug('total scores=%s, best total scores=%s', len(self.df_total_scores), len(self.df_total_best_scores))
 
-        estimated_threshold = self.estimate_best_threshold(self.df_total_scores, delta, threshold_ratio, log=True)
+        estimated_threshold = self.estimate_best_threshold(self.df_total_scores, delta, log=True)
 
         mask = ~(self.df_total_scores['best'])
         self.df_total_scores.at[mask, 'score'] = 0
@@ -226,37 +208,14 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         return df_combined
 
-
     def read_matches_minus_fn(self, match_file):
         index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
         df_scores = self.score_manager.get_scores()
         return df_scores.index.intersection(index_matches)
 
-    def calculate_perfect_maximum_scores(self, matches_minus_fn):
-        df_tmp = self.score_manager.get_scores().loc[matches_minus_fn].copy()
-        logging.warning('calculating PERFECT maximum scores=%s', len(df_tmp))
-        columns_dict = {}
-        for c in [ str(c) for c in df_tmp.columns]:
-            columns_dict.update({ c: c + '_max'})
-        logging.debug('columns before=%s', [ str(c) for c in df_tmp.columns])
-        df_tmp.rename(columns=columns_dict, inplace=True)
-        logging.debug('columns after=%s', [ str(c) for c in df_tmp.columns])
-        self.score_manager.df_max_scores_1 = df_tmp.copy()
-        logging.warning('PERFECT maximum scores statistics 1: \n%s', self.score_manager.df_max_scores_1.describe())
-
-        logging.debug('max sim 2 index before=%s', df_tmp.index[0])
-        df_tmp = df_tmp.reorder_levels(order=['idx_2', 'idx_1'])
-        logging.debug('max sim 2 index after=%s', df_tmp.index[0])
-        self.score_manager.df_max_scores_2 = df_tmp.copy()
-        logging.warning('PERFECT maximum scores statistics 2: \n%s', self.score_manager.df_max_scores_2.describe())
-
-    def evaluate_maximum_scores(self, matches_minus_fn):
+    def evaluate_maximum_scores(self, matches):
         df_max_1 = self.score_manager.df_max_scores_1
         df_max_2 = self.score_manager.df_max_scores_2
-
-        if df_max_2 is None:
-            logging.warning('evaluate_maximum_scores skipped because symmetric=False')
-            return
 
         logging.info('evaluating maximum scores: df_max_1=%s, df_max=2=%s', len(df_max_1), len(df_max_2))
 
@@ -280,105 +239,42 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         rate = None
         if len(index_virtual) > 0:
             rate = round(len(index_non_virtual) / len(index_virtual), 2)
-        logging.info('non-virtual 1=%s, non-virtual 2=%s, all 1+2=%s, non_virtual 1+2=%s, virtual 1+2=%s, rate=%s',
+        logging.debug('non-virtual 1=%s, non-virtual 2=%s, all 1+2=%s, non_virtual 1+2=%s, virtual 1+2=%s, rate=%s',
                 len(index_1_non_virtual), len(index_2_non_virtual), len(index_max_1_2), len(index_non_virtual), len(index_virtual), rate)
 
-        TP = len(index_non_virtual.intersection(matches_minus_fn))
+        TP = len(index_non_virtual.intersection(matches))
         pred_matches = len(index_non_virtual)
         FP = pred_matches - TP
-        FN = len(matches_minus_fn.difference(index_non_virtual))
+        FN = len(matches.difference(index_non_virtual))
 
-        precision = round(TP / (TP + FP), 5)
-        recall = round(TP / (TP + FN), 5)
-        if precision == 0 or recall == 0:
-            f1 = 0
+        if TP == 0:
+            precision = 0.
+            recall = 0.
+            f1 = 0.
         else:
+            precision = round(TP / (TP + FP), 5)
+            recall = round(TP / (TP + FN), 5)
             f1 = round(2 * precision * recall / (precision + recall), 5)
         logging.info('evaluated maximum scores: MAXSIM f1=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s', f1, precision, recall, TP, FP, FN)
-
-    def purge_low_max_scores(self, df_max_1, df_max_2, df_scores, purge_alpha, purge_majority, dataset_id=1):
-        logging.info('purging low max scores vectors, original max scores 1=%s, original max scores 2=%s', len(df_max_1), len(df_max_2))
-        c_idx_1 = 'idx_1'
-        c_idx_2 = 'idx_2'
-        if dataset_id != 1:
-            c_idx_1 = 'idx_2'
-            c_idx_2 = 'idx_1'
-            df_scores = df_scores.reorder_levels(order=['idx_2', 'idx_1'])
-
-        columns = ontomatch.utils.util.get_prop_columns(df_max_1)
-        logging.info('purging for columns=%s', columns)
-
-        df_max_1 = df_max_1.reset_index(c_idx_2)
-        df_max_2 = df_max_2.reset_index(c_idx_1)
-
-        df_max_1['purge'] = False
-        df_max_2['purge'] = False
-        idx_1_unique = df_max_1.index.unique()
-
-        logging.debug('idx_1_unique=%s', len(idx_1_unique))
-
-        for idx_1 in tqdm(idx_1_unique):
-            row_1 = df_max_1.loc[idx_1]
-
-            for idx_2 in df_scores.loc[idx_1].index:
-                try:
-                    row_2 = df_max_2.loc[idx_2]
-                except KeyError:
-                    continue
-
-                count_comparisons = 0
-                count_purge_1 = 0
-                count_purge_2 = 0
-                for col in columns:
-                    max_score_1 = row_1.loc[col]
-                    max_score_2 = row_2.loc[col]
-                    if max_score_1 is None or max_score_2 is None:
-                        continue
-                    count_comparisons += 1
-                    if max_score_1 <= max_score_2:
-                        if max_score_1 <= purge_alpha * max_score_2:
-                            #df_max_1.at[idx_1, 'purge'] = True
-                            count_purge_1 += 1
-                    else:
-                        if max_score_2 <= purge_alpha * max_score_1:
-                            #df_max_2.at[idx_2, 'purge'] = True
-                            count_purge_2 += 1
-
-                if (count_purge_1 > count_purge_2) and (count_purge_1 >= purge_majority * count_comparisons):
-                    df_max_1.at[idx_1, 'purge'] = True
-                elif (count_purge_2 > count_purge_1) and (count_purge_2 >= purge_majority * count_comparisons):
-                    df_max_2.at[idx_2, 'purge'] = True
-
-        logging.info('marked for purging from max scores 1=%s, from max scores 2=%s', len(df_max_1[df_max_1['purge']]), len(df_max_2[df_max_2['purge']]))
-
-        df_max_1 = df_max_1[~df_max_1['purge']].copy()
-        df_max_1 = df_max_1.reset_index(c_idx_1)
-        df_max_1.set_index([c_idx_1, c_idx_2], inplace=True)
-        df_max_1.drop(columns='purge', inplace=True)
-        logging.info('maximum scores statistics after purging, max scores 1: \n%s', df_max_1.describe())
-
-        df_max_2 = df_max_2[~df_max_2['purge']].copy()
-        df_max_2 = df_max_2.reset_index(c_idx_2)
-        df_max_2.set_index([c_idx_2, c_idx_1], inplace=True)
-        df_max_2.drop(columns='purge', inplace=True)
-        logging.info('maximum scores statistics after purging, max scores 2: \n%s', df_max_2.describe())
-
-        if dataset_id != 1:
-            df_scores = df_scores.reorder_levels(order=['idx_1', 'idx_2'])
-
-        logging.info('purging finished, max scores 1=%s, max scores 2=%s', len(df_max_1), len(df_max_2))
-
-        return df_max_1, df_max_2
 
     def calculate_auto_calibrated_total_scores_for_index(self, df_scores, sliding_counts, property_mapping, idx_1, skip_column_number = 1):
         best_score = 0
         best_pos = None
         total_score_rows = []
 
+        prop_weights = {}
+        for propmap in property_mapping:
+            key = propmap['prop1'] + "_" + propmap['prop2']
+            value = prop_weights.get(key)
+            if value:
+                prop_weights[key] = value + 1
+            else:
+                prop_weights[key] = 1
+
         for pos, (idx_2, row) in enumerate(df_scores.loc[idx_1].iterrows()):
             score = 0
-            number_columns = len(property_mapping)
             prop_score = {}
+            prop_keys = set()
             for propmap in property_mapping:
                 c_max = propmap['key']
                 c = c_max.split('_')[0]
@@ -397,17 +293,16 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
                             logging.debug('column score exceeds 1, %s', column_score)
                             column_score = 1.
 
-                    score += column_score
+                    key = propmap['prop1'] + "_" + propmap['prop2']
+                    prop_keys.add(key)
+                    score += (column_score / prop_weights[key])
                     prop_score.update({c: column_score})
 
-                else:
-                    number_columns = number_columns - 1
-
-            if number_columns <= skip_column_number:
+            if len(prop_keys) <= skip_column_number:
                 score = 0.
-                logging.debug('score = 0 since number columns=%s, idx_1=%s, idx_2=%s', number_columns, idx_1, idx_2)
+                logging.debug('score = 0 since number columns=%s, idx_1=%s, idx_2=%s', len(prop_keys), idx_1, idx_2)
             else:
-                score = score / number_columns
+                score = score / len(prop_weights)
 
             total_score_row = {
                 'idx_1': idx_1,
@@ -439,7 +334,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             df_scores = df_scores_orig.copy()
         else:
             df_scores = df_scores_orig.reorder_levels(['idx_2', 'idx_1'])
-            logging.info('reordered levels of df_scores since dataset_id=%s', dataset_id)
+            logging.debug('reordered levels of df_scores since dataset_id=%s', dataset_id)
 
         df_scores['score'] = 0.
 
@@ -472,7 +367,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         if dataset_id == 2:
             df_total_scores = df_total_scores.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1'})
-            logging.info('reordered index and position names of df_total scores since dataset_id=%s', dataset_id)
+            logging.debug('reordered index and position names of df_total scores since dataset_id=%s', dataset_id)
 
         df_total_scores.set_index(['idx_1', 'idx_2'], inplace=True)
         mask = (df_total_scores['best'] == True)
@@ -509,7 +404,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         return sliding_count_internal
 
-    def estimate_best_threshold(self, df_total, delta, threshold_ratio, log=False):
+    def estimate_best_threshold(self, df_total, delta, log=False):
 
         logging.info('estimating best threshold')
 
@@ -544,7 +439,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             counts_best.append(count_best)
             counts_nonbest.append(count_nonbest)
             if count_above_one < 3:
-                if ratio < threshold_ratio:
+                if ratio < 1.:
                     count_above_one = 0
                     best_pos = -1
                 else:
@@ -564,6 +459,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         logging.info('estimated best threshold=%s, best pos=%s', best_threshold, best_pos)
 
         return best_threshold
+
 
 class InstanceMatcherWithScoringWeights(InstanceMatcherBase):
 
@@ -657,28 +553,42 @@ def dump(dump_dir, matcher):
         else:
             raise RuntimeError('unsupported type of matcher', type(matcher))
 
-def evaluate(match_file, test_file, matcher, train_set=None, hint='', estimated_threshold=None):
+def evaluate_OLD(match_file, test_file, matcher, train_set=None, hint='', estimated_threshold=None):
+
+    logging.info('match_file=%s, test_file=%s', match_file, test_file)
+    if test_file and test_file.endswith('test.csv'):
+        # i.e. DITTO format
+        df_test = ontomatch.utils.util.read_csv_table_ditto_format(test_file)
+        index_test_matches = df_test[df_test['label'] == 1].index
+        logging.debug('test_file in DITTO format is configured, all=%s, matches=%s', len(df_test), len(index_test_matches))
+
     index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
     df_scores = matcher.get_scores()
-    if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
 
-        logging.info('test_file=%s', test_file)
+    if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
+        
         if test_file:
-            df_split = ontomatch.utils.util.read_csv(test_file)
-            prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
-            for c in df_split.columns:
-                c = str(c)
-                if c.startswith('ml_phase') and not 'ratio' in c:
-                #if c.startswith('ml_phase_0.1'):
-                    x_train, x_test, _, _ = ontomatch.utils.util.split_df(df_split, df_scores, prop_columns, column_ml_phase=c)
-                    index_train_set = x_train.index if x_train is not None else None
-                    index_test_set = x_test.index
-                    hint = c
-                    ontomatch.evaluate.evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, index_matches, hint, estimated_threshold)
-        else:
-            hint = 'test on entire candidate set'
-            index_test_set = df_scores.index
-            ontomatch.evaluate.evaluate_on_train_test_split(df_scores, None, index_test_set, index_matches, hint, estimated_threshold)
+            if test_file.endswith('test.csv'):
+                index_test_set = df_test.index
+                hint = 'test on test.csv'
+                ontomatch.evaluate.evaluate_on_train_test_split(df_scores, None, index_test_set, index_test_matches, hint, estimated_threshold)
+            else:
+                # previous format with different train/test splits
+                df_split = ontomatch.utils.util.read_csv(test_file)
+                prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
+                for c in df_split.columns:
+                    c = str(c)
+                    if c.startswith('ml_phase') and not 'ratio' in c:
+                    #if c.startswith('ml_phase_0.1'):
+                        x_train, x_test, _, _ = ontomatch.utils.util.split_df(df_split, df_scores, prop_columns, column_ml_phase=c)
+                        index_train_set = x_train.index if x_train is not None else None
+                        index_test_set = x_test.index
+                        hint = c
+                        ontomatch.evaluate.evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, index_matches, hint, estimated_threshold)
+        
+        hint = 'test on entire candidate set'
+        index_test_set = df_scores.index
+        ontomatch.evaluate.evaluate_on_train_test_split(df_scores, None, index_test_set, index_matches, hint, estimated_threshold)
     else:
         if train_set is None:
             index_train_set = None
@@ -687,6 +597,49 @@ def evaluate(match_file, test_file, matcher, train_set=None, hint='', estimated_
             index_train_set = train_set.index
             index_test_set = df_scores.index.difference(index_train_set)
         ontomatch.evaluate.evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, index_matches, hint)
+
+def evaluate(match_file, test_file, matcher, train_set=None, hint='', estimated_threshold=None, candidate_set=False):
+
+    logging.info('starting evaluation for test_file=%s, match_file=%s, estimated_threshold=%s', test_file, match_file, estimated_threshold)
+
+    # the index of scores dataframe corresponds to the entire candidate set 
+    df_candidate_scores = matcher.get_scores()
+
+    # Both the match file and the test file contain a list of ground truth matches.
+    # The evaluation method called below considers ground truth matches outside the candidate set as false negatives.
+
+    if test_file:
+
+        # evaluate on test set
+        hint = 'evaluation result on test set'
+        df_test = ontomatch.utils.util.read_csv_table_ditto_format(test_file)
+        index_intersection = df_test.index.intersection(df_candidate_scores.index)
+        df_scores = df_candidate_scores.loc[index_intersection]
+        index_matches = df_test[df_test['label'] == 1].index       
+        index_matches_intersection = index_matches.intersection(df_candidate_scores.index) 
+        logging.info('test_file=%s, all=%s, intersection=%s, matches=%s, matches_intersection=%s', test_file, len(df_test), len(index_intersection), 
+            len(index_matches), len(index_matches_intersection))
+        ontomatch.evaluate.evaluate(df_scores, index_matches, hint=hint, estimated_threshold=estimated_threshold)
+
+        # evaluate on union of train, valid and test set
+        hint = 'evaluation result on union of train, valid and test set'
+        df_union = ontomatch.utils.util.read_and_concat_csv_table_ditto_format(test_file)
+        index_intersection = df_union.index.intersection(df_candidate_scores.index)
+        df_scores = df_candidate_scores.loc[index_intersection]
+        index_matches_union = df_union[df_union['label'] == 1].index   
+        index_matches_intersection = index_matches_union.intersection(df_candidate_scores.index)     
+        logging.info('union of train, valid and test set, all=%s, intersection=%s, matches=%s, matches_intersection=%s', len(df_union), len(index_intersection), 
+            len(index_matches_union), len(index_matches_intersection))
+        ontomatch.evaluate.evaluate(df_scores, index_matches_union, hint=hint, estimated_threshold=estimated_threshold)
+
+    # evaluate on the entire candidate set
+    hint = 'evaluation result on entire candidate set'
+    if match_file:
+        index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
+        index_matches_intersection = index_matches.intersection(df_candidate_scores.index) 
+        logging.info('candidate set, all=%s, intersection=%s, matches=%s, matches_intersection=%s', len(df_candidate_scores), 'n.a.', 
+        len(index_matches), len(index_matches_intersection))
+        ontomatch.evaluate.evaluate(df_candidate_scores, index_matches, hint=hint, estimated_threshold=estimated_threshold)
 
 def link(link_file, matcher, estimated_threshold):
     logging.info('linking predicted matches')
@@ -709,9 +662,10 @@ def postprocess(params_post_processing, matcher, train_set=None, hint='', estima
     if dump_dir:
         dump(dump_dir, matcher)
     match_file = params_post_processing.get('evaluation_file')
-    if match_file:
-        test_file = params_post_processing.get('test_file')
-        evaluate(match_file, test_file, matcher, train_set, hint, estimated_threshold)
+    test_file = params_post_processing.get('test_file')
+    candidate_set = params_post_processing.get('candidate_set')
+    if match_file or test_file:
+        evaluate(match_file, test_file, matcher, train_set, hint, estimated_threshold, candidate_set)
     link_file = params_post_processing.get('link_file')
     if link_file:
         if not isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):

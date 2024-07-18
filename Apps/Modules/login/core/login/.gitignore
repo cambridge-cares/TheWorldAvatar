@@ -1,0 +1,8 @@
+*.iml
+.gradle
+/local.properties
+/build
+
+/.idea
+
+auth_config_*

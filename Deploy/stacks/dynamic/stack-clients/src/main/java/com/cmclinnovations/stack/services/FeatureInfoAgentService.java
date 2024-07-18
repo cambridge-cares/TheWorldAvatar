@@ -11,8 +11,8 @@ public class FeatureInfoAgentService extends ContainerService {
 
     public static final String TYPE = "feature-info-agent";
 
-    public FeatureInfoAgentService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public FeatureInfoAgentService(String stackName, ServiceConfig config) {
+        super(stackName, config);
     }
 
     @Override

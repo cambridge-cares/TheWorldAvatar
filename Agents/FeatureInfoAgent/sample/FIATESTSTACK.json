@@ -1,0 +1,16 @@
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent"
+        ],
+        "excludes": [
+            "citytiler",
+            "citydbimpexp"
+        ]
+    },
+    "volumes": {
+        "vis-files": "vis-files",
+        "fia-queries": "fia-queries"
+    }
+}

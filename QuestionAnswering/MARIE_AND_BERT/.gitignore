@@ -1,0 +1,12 @@
+/DATA
+/archived
+/**/*.log
+/Training/ScoringFunction/playground/entity_list
+/EvaluationData
+*.csv
+*.pb
+*.tsv
+*.out
+/Training/RelationPrediction/input
+/Evaluation/EvaluationData
+/static/js/label_dict.js

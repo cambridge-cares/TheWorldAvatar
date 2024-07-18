@@ -11,6 +11,7 @@ import json
 import re
 import requests
 import time
+import unicodedata
 
 from datetime import datetime as dt
 
@@ -67,9 +68,9 @@ def retrieve_current_warnings(county: str = None, mock_api: str = None) -> list:
             d = {}
             # Transient flood warning identifier (i.e. might not resolve in the future on API)
             d['warning_uri'] = w['@id']
-            # Replace non-UTF-8 narrow space character from some messages
-            d['label'] = None if not w.get('description') else w['description'].replace('\n', ' ').replace('\u202F', ' ')
-            d['message'] = None if not w.get('message') else w['message'].replace('\n', ' ').replace('\u202F', ' ')
+            # Normalise string elements
+            d['label'] = None if not w.get('description') else normalise_string(w['description'])
+            d['message'] = None if not w.get('message') else normalise_string(w['message'])
             # The severity of the warning as a text label: 'Flood Alert', 'Flood Warning', 'Severe Flood Warning' or 'Warning no Longer in Force'
             d['severity'] = None if not w.get('severity') else w['severity']
             # URI for the flood alert or flood warning area affected
@@ -118,8 +119,8 @@ def retrieve_flood_area_data(area_uri: str) -> dict:
         area['area_uri'] = area_uri
         # Name of the county intersecting the flood area, as entered by the Flood Incident Management Team
         area['county'] = None if not data.get('county') else data['county']
-        descr1 = None if not data.get('label') else data['label'].replace('\n', ' ').replace('\u202F', ' ')
-        descr2 = None if not data.get('description') else data['description'].replace('\n', ' ').replace('\u202F', ' ')
+        descr1 = None if not data.get('label') else normalise_string(data['label'])
+        descr2 = None if not data.get('description') else normalise_string(data['description'])
         area['label']  = descr1 + ': ' + descr2 if descr1 and descr2 else descr1 if descr1 else descr2
         # Identifying code for the corresponding Target Area in Flood Warnings direct
         # (used to link between various external datasets)
@@ -170,10 +171,10 @@ def retrieve_flood_area_polygon(polygon_uri: str) -> dict:
         # Extract relevant information
         props_new = {}
         # Try to retrieve most detailed name first
-        props_new['name'] = None if not props.get('TA_NAME') else props['TA_NAME'].replace('\n', ' ').replace('\u202F', ' ')
+        props_new['name'] = None if not props.get('TA_NAME') else normalise_string(props['TA_NAME'])
         if not props_new.get('name'):
-            props_new['name'] = None if not props.get('AREA') else props['AREA'].replace('\n', ' ').replace('\u202F', ' ')
-        props_new['description'] = None if not props.get('DESCRIP') else props['DESCRIP'].replace('\n', ' ').replace('\u202F', ' ')
+            props_new['name'] = None if not props.get('AREA') else normalise_string(props['AREA'])
+        props_new['description'] = None if not props.get('DESCRIP') else normalise_string(props['DESCRIP'])
         # Assign updated properties to polygon
         poly['features'][0]['properties'] = props_new
 
@@ -253,3 +254,20 @@ def assess_waterbody_type(waterbody: str) -> str:
     # ... otherwise, return general 'waterbody'
     # (also applies if no water body is provided)
     return 'waterbody'
+
+
+def normalise_string(input_string):
+    # Normalise Unicode characters and remove non-ASCII characters
+    normalised_string = unicodedata.normalize('NFKD', input_string).encode('ascii', 'ignore').decode('utf-8')
+    # Replace line breaks with a single space
+    normalised_string = normalised_string.replace('\n', ' ').replace('\r', ' ')
+    # Replace characters which could cause issues in SPARQL
+    # 1) replace { with ( and } with )
+    normalised_string = normalised_string.replace('{', '(').replace('}', ')')
+    # 2) remove potential double quotes
+    normalised_string = normalised_string.replace('"', '')
+
+    # Replace double spaces with a single space
+    normalised_string = ' '.join(normalised_string.split())
+
+    return normalised_string

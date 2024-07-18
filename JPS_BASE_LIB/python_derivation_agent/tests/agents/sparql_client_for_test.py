@@ -9,13 +9,11 @@ RANDOM_EXAMPLE_NUMOFPOINTS = RANDOM_EXAMPLE_TBOX + 'NumOfPoints'
 RANDOM_EXAMPLE_UPPERLIMIT = RANDOM_EXAMPLE_TBOX + 'UpperLimit'
 RANDOM_EXAMPLE_LOWERLIMIT = RANDOM_EXAMPLE_TBOX + 'LowerLimit'
 RANDOM_EXAMPLE_POINT = RANDOM_EXAMPLE_TBOX + 'Point'
-RANDOM_EXAMPLE_LISTOFPOINTS = RANDOM_EXAMPLE_TBOX + 'ListOfPoints'
 RANDOM_EXAMPLE_MINVALUE = RANDOM_EXAMPLE_TBOX + 'MinValue'
 RANDOM_EXAMPLE_MAXVALUE = RANDOM_EXAMPLE_TBOX + 'MaxValue'
 RANDOM_EXAMPLE_DIFFERENCE = RANDOM_EXAMPLE_TBOX + 'Difference'
 RANDOM_EXAMPLE_DIFFERENCEREVERSE = RANDOM_EXAMPLE_TBOX + 'DifferenceReverse'
 RANDOM_EXAMPLE_HASVALUE = RANDOM_EXAMPLE_TBOX + 'hasValue'
-RANDOM_EXAMPLE_HASPOINT = RANDOM_EXAMPLE_TBOX + 'hasPoint'
 RANDOM_EXAMPLE_BASE_URL = 'https://www.example.com/triplestore/random/random_data_1/'
 RANDOM_STRING_WITH_SPACES = 'Random string with spaces'
 RANDOM_EXAMPLE_SPECIALVALUE = RANDOM_EXAMPLE_TBOX + 'specialValue'
@@ -24,19 +22,6 @@ RANDOM_EXAMPLE_OUTPUTPLACEHOLDEREXCEPTIONTHROW = RANDOM_EXAMPLE_TBOX + 'OutputPl
 RANDOM_EXAMPLE_EXCEPTION_THROW_MSG = 'Throw an exception for ExceptionThrowAgent test.'
 
 class PySparqlClientForTest(PySparqlClient):
-    def getListOfPoints(self):
-        query = dm.PREFIX_RDF + \
-                """SELECT ?listofpoints \
-                WHERE { ?listofpoints rdf:type <%s> . }""" % (RANDOM_EXAMPLE_LISTOFPOINTS)
-        response = self.performQuery(query)
-
-        if len(response) > 1:
-            raise Exception("There should only be one instance of RandomExample:ListOfPoints, found multiple: " + response)
-        elif len(response) == 1:
-            return response[0]['listofpoints']
-
-        return None
-
     def pointHasAllSpecialValues(self, pt_iri):
         query = f"""SELECT ?value WHERE {{ <{pt_iri}> <{RANDOM_EXAMPLE_SPECIALVALUE}>  ?value. }}"""
         response = self.performQuery(query)
@@ -57,33 +42,6 @@ class PySparqlClientForTest(PySparqlClient):
 
         return True
 
-    def createListOfPoints(self, points):
-        listofpoints_iri = RANDOM_EXAMPLE_BASE_URL + 'ListOfPoints_' + str(uuid.uuid4())
-        pt_iris = []
-        update = dm.PREFIX_RDF + \
-                """INSERT DATA { <%s> rdf:type <%s> . """ % (listofpoints_iri, RANDOM_EXAMPLE_LISTOFPOINTS)
-        for pt in points:
-            pt_iri = RANDOM_EXAMPLE_BASE_URL + 'Point_' + str(uuid.uuid4())
-            pt_iris.append(pt_iri)
-            update += "<%s> <%s> <%s> . <%s> rdf:type <%s>; <%s> %s ." % (
-                listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, pt_iri, pt_iri, RANDOM_EXAMPLE_POINT, RANDOM_EXAMPLE_HASVALUE, pt)
-        update += """}"""
-        self.performUpdate(update)
-        return listofpoints_iri, pt_iris
-
-    def getPointsInList(self, listofpoints_iri: str) -> dict:
-        listofpoints_iri = dm.trimIRI(listofpoints_iri)
-        query = """SELECT ?pt ?val \
-                WHERE { <%s> <%s> ?pt . \
-                ?pt <%s> ?val .}""" % (listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, RANDOM_EXAMPLE_HASVALUE)
-        response = self.performQuery(query)
-
-        if len(response) > 0:
-            pt_dict = { pt['pt'] : int(pt['val']) for pt in response }
-            return pt_dict
-
-        return None
-
     def getPointsInKG(self) -> dict:
         query = """SELECT ?pt ?val WHERE{ ?pt a <%s>. ?pt <%s> ?val.}""" % (
             RANDOM_EXAMPLE_POINT, RANDOM_EXAMPLE_HASVALUE)
@@ -93,7 +51,7 @@ class PySparqlClientForTest(PySparqlClient):
             pt_dict = {pt['pt']: int(pt['val']) for pt in response}
             return pt_dict
 
-        return None
+        return {}
 
     def getPointsRdfsCommentInKG(self) -> dict:
         query = f"""{dm.PREFIX_RDFS} SELECT ?pt ?comment WHERE{{ ?pt a <{RANDOM_EXAMPLE_POINT}>. ?pt rdfs:comment ?comment.}}"""
@@ -103,7 +61,7 @@ class PySparqlClientForTest(PySparqlClient):
             pt_dict = {pt['pt']: pt['comment'] for pt in response}
             return pt_dict
 
-        return None
+        return {}
 
     def getValue(self, iri):
         iri = dm.trimIRI(iri)
@@ -152,10 +110,13 @@ class PySparqlClientForTest(PySparqlClient):
 
         return None
 
-    def getExtremeValueInList(self, listofpoints_iri: str, max: bool) -> int:
-        listofpoints_iri = dm.trimIRI(listofpoints_iri)
-        query = """SELECT ?value WHERE { <%s> <%s>/<%s> ?value. } """ % (
-            listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, RANDOM_EXAMPLE_HASVALUE)
+    def getExtremeValueInList(self, list_points_iri: list, max: bool) -> int:
+        list_points_iri = dm.trimIRI(list_points_iri)
+        query = f"""SELECT ?value
+                WHERE {{
+                    VALUES ?pt {{ <{'> <'.join(list_points_iri)}> }}
+                    ?pt <{RANDOM_EXAMPLE_HASVALUE}> ?value.
+                }} """
         query += "ORDER BY DESC(?value) " if max else "ORDER BY ?value "
         query += "LIMIT 1"
 
@@ -239,6 +200,13 @@ class PySparqlClientForTest(PySparqlClient):
             """DELETE {?numofpoints <%s> ?value .} INSERT {?numofpoints <%s> ?increased .} \
             WHERE { ?numofpoints rdf:type <%s> . ?numofpoints <%s> ?value . BIND (?value+1 AS ?increased)}""" % (
             RANDOM_EXAMPLE_HASVALUE, RANDOM_EXAMPLE_HASVALUE, RANDOM_EXAMPLE_NUMOFPOINTS, RANDOM_EXAMPLE_HASVALUE)
+        self.performUpdate(update)
+
+    def updateNumOfPointsTo(self, new_num_of_pts):
+        update = dm.PREFIX_RDF + \
+            """DELETE {?numofpoints <%s> ?value .} INSERT {?numofpoints <%s> %s .} \
+            WHERE { ?numofpoints rdf:type <%s> . ?numofpoints <%s> ?value .}""" % (
+            RANDOM_EXAMPLE_HASVALUE, RANDOM_EXAMPLE_HASVALUE, new_num_of_pts, RANDOM_EXAMPLE_NUMOFPOINTS, RANDOM_EXAMPLE_HASVALUE)
         self.performUpdate(update)
 
     def getDiffReverseValues(self):

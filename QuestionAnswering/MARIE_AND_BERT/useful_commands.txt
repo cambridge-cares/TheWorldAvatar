@@ -1,0 +1,68 @@
+# to train embedding using pykg2vec
+pykg2vec-train -exp True -mn TransE -ds pubchem -dsp '../../../DATA/PubChemMiniFull' -hpf config.yaml
+pykg2vec-train -mn TransE -ds pubchem100 -dsp ./DATA/pubchem_100 -l 5000 -device cuda -ngr 1 -lr 0.001
+pykg2vec-train -mn TransR -ds pubchem100 -dsp ./DATA/pubchem_100_R -l 5000 -device cpu -ngr 1 -lr 0.001
+
+
+pykg2vec-train -mn TransE -ds pubchem100 -dsp ./DATA/pubchem_100_20D -l 5000 -device cpu -ngr 1 -lr 0.001 -k 20
+
+pykg2vec-train -mn TransE -ds pubchem100 -dsp ./DATA/pubchem_100 -l 5000 -device cuda -ngr 1 -lr 0.001
+
+pykg2vec-train -mn TransE -ds pubchem500 -dsp ./DATA/pubchem_500 -l 5000 -device cuda -ngr 1 -lr 0.001
+
+pykg2vec-train -mn TransE -ds pubchem5000 -dsp ./DATA/pubchem_5000 -l 5000 -device cpu -ngr 1 -lr 0.0001 -k 20
+
+cd E:\JPS_2022_05\JPS\MARIE_AND_BERT
+env_gpu
+
+# minimal command for pykg2vec
+pykg2vec-train -mn TransE -ds pubchem_mini -dsp ./DATA/pubchem_mini_full
+
+
+pykg2vec-train -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation -l 5000 -device cuda -ngr 1 -lr 0.001
+pykg2vec-train -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation -l 5000 -device cuda -ngr 1 -lr 0.001
+pykg2vec-train -mn Complex -ds wikidata_c -dsp ./DATA/wikidata_c -l 500 -device cuda -ngr 10 -lr 0.2 -lmda = 0.00001
+pykg2vec-train -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation -l 5000 -device cuda -ngr 1 -lr 0.001
+
+
+
+python tune_model.py -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation
+pykg2vec-train -mn Complex -ds pubchem500c -dsp ./DATA/pubchem500c -l 500 -lr 1 -k 20 -ts 50 -device cuda -ngr 1
+
+python tune_model.py -mn Complex -ds pubchem500c -dsp ./DATA/pubchem500c -l 500 -k 20 -ts 50 -device cuda
+
+        self.general_hyper_group = self.parser.add_argument_group('Generic Hyperparameters')
+        self.general_hyper_group.add_argument('-lmda', dest='lmbda', default=0.1, type=float, help='The lmbda for regularization.')
+        self.general_hyper_group.add_argument('-b', dest='batch_size', default=128, type=int, help='training batch size')
+        self.general_hyper_group.add_argument('-mg', dest='margin', default=0.8, type=float, help='Margin to take')
+        self.general_hyper_group.add_argument('-opt', dest='optimizer', default='adam', type=str, help='optimizer to be used in training.')
+        self.general_hyper_group.add_argument('-s', dest='sampling', default='uniform', type=str, help='strategy to do negative sampling.')
+        self.general_hyper_group.add_argument('-ngr', dest='neg_rate', default=1, type=int, help='The number of negative samples generated per positve one.')
+        self.general_hyper_group.add_argument('-l', dest='epochs', default=100, type=int, help='The total number of Epochs')
+        self.general_hyper_group.add_argument('-lr', dest='learning_rate', default=0.01, type=float, help='learning rate')
+        self.general_hyper_group.add_argument('-k', dest='hidden_size', default=50, type=int, help='Hidden embedding size.')
+        self.general_hyper_group.add_argument('-km', dest='ent_hidden_size', default=50, type=int, help="Hidden embedding size for entities.")
+        self.general_hyper_group.add_argument('-kr', dest='rel_hidden_size', default=50, type=int, help="Hidden embedding size for relations.")
+        self.general_hyper_group.add_argument('-k2', dest='hidden_size_1', default=10, type=int, help="Hidden embedding size for relations.")
+        self.general_hyper_group.add_argument('-l1', dest='l1_flag', default=True, type=lambda x: (str(x).lower() == 'true'), help='The flag of using L1 or L2 norm.')
+        self.general_hyper_group.add_argument('-al', dest='alpha', default=0.1, type=float, help='The alpha used in self-adversarial negative sampling.')
+        self.general_hyper_group.add_argument('-fsize', dest='filter_sizes', default=[1, 2, 3], nargs='+', type=int, help='Filter sizes to be used in convKB which acts as the widths of the kernals')
+        self.general_hyper_group.add_argument('-fnum', dest='num_filters', default=50, type=int, help='Filter numbers to be used in convKB and InteractE.')
+        self.general_hyper_group.add_argument('-fmd', dest='feature_map_dropout', default=0.2, type=float, help='feature map dropout value used in ConvE and InteractE.')
+        self.general_hyper_group.add_argument('-idt', dest='input_dropout', default=0.3, type=float, help='input dropout value used in ConvE and InteractE.')
+        self.general_hyper_group.add_argument('-hdt', dest='hidden_dropout', default=0.3, type=float, help='hidden dropout value used in ConvE.')
+        self.general_hyper_group.add_argument('-hdt1', dest='hidden_dropout1', default=0.4, type=float, help='hidden dropout value used in TuckER.')
+        self.general_hyper_group.add_argument('-hdt2', dest='hidden_dropout2', default=0.5, type=float, help='hidden dropout value used in TuckER.')
+        self.general_hyper_group.add_argument('-lbs', dest='label_smoothing', default=0.1, type=float, help='The parameter used in label smoothing.')
+        self.general_hyper_group.add_argument('-cmax', dest='cmax', default=0.05, type=float, help='The parameter for clipping values for KG2E.')
+        self.general_hyper_group.add_argument('-cmin', dest='cmin', default=5.00, type=float, help='The parameter for clipping values for KG2E.')
+        self.general_hyper_group.add_argument('-fp', dest='feature_permutation', default=1, type=int, help='The number of feature permutations for InteractE.')
+        self.general_hyper_group.add_argument('-rh', dest='reshape_height', default=20, type=int, help='The height of the reshaped matrix for InteractE.')
+        self.general_hyper_group.add_argument('-rw', dest='reshape_width', default=10, type=int, help='The width of the reshaped matrix for InteractE.')
+        self.general_hyper_group.add_argument('-ks', dest='kernel_size', default=9, type=int, help='The kernel size to use for InteractE.')
+        self.general_hyper_group.add_argument('-ic', dest='in_channels', default=9, type=int, help='The kernel size to use for InteractE.')
+        self.general_hyper_group.add_argument('-w', dest='way', default="parallel", type=str, choices=["serial", "parallel"], help='The way used by AcrE to organize standard convolution and atrous convolutions.')
+        self.general_hyper_group.add_argument('-fa', dest='first_atrous', default=1, type=int, help='The first layer expansion coefficient to use for Acre')
+        self.general_hyper_group.add_argument('-sa', dest='second_atrous', default=2, type=int, help='The second layer expansion coefficient to use for Acre')
+        self.general_hyper_group.add_argument('-ta', dest='third_atrous', default=2, type=int, help='The third layer expansion coefficient to use for Acre')
+        self.general_hyper_group.add_argument('-ab', dest='acre_bias', default=True, action='store_true', help='Whether to use bias in the Acre model')

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -42,12 +43,12 @@ public class InitialiseInstances extends JPSAgent {
 
 	public static final int upper_limit_value = 20;
 	public static final int lower_limit_value = 3;
-	public static final int number_of_points = 6;
+	public static final int number_of_points = 0;
 
 	public static final String upper_limit_instance_key = "UpperLimit instance";
 	public static final String lower_limit_instance_key = "LowerLimit instance";
 	public static final String num_of_pts_instance_key = "NumberOfPoints instance";
-	public static final String list_rand_pts_instance_key = "ListOfRandomPoints instance";
+	public static final String pt_instances_key = "Point instances";
 	public static final String maxvalue_instance_key = "MaxValue instance";
 	public static final String minvalue_instance_key = "MinValue instance";
 	public static final String difference_instance_key = "Difference instance";
@@ -171,26 +172,26 @@ public class InitialiseInstances extends JPSAgent {
 		sparqlClient.clearKG();
 
 		// get the IRIs
-		String ul_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.UpperLimit);
-		String ll_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.LowerLimit);
-		String np_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints);
-		String lp_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints);
-		String maxv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
-		String minv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
-		String diff_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.Difference);
-		String diff_reverse_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.DifferenceReverse);
+		String ulRdfType = SparqlClient.getRdfTypeString(SparqlClient.UpperLimit);
+		String llRdfType = SparqlClient.getRdfTypeString(SparqlClient.LowerLimit);
+		String npRdfType = SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints);
+		String ptRdfType = SparqlClient.getRdfTypeString(SparqlClient.Point);
+		String maxvRdfType = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
+		String minvRdfType = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
+		String diffRdfType = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+		String diffReverseRdfType = SparqlClient.getRdfTypeString(SparqlClient.DifferenceReverse);
 
 		// create ontoagent instances
 		devClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
-				Arrays.asList(ul_rdf_type, ll_rdf_type, np_rdf_type), Arrays.asList(lp_rdf_type));
+				Arrays.asList(ulRdfType, llRdfType, npRdfType), Arrays.asList(ptRdfType));
 		devClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
-				Arrays.asList(lp_rdf_type), Arrays.asList(maxv_rdf_type));
+				Arrays.asList(ptRdfType), Arrays.asList(maxvRdfType));
 		devClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
-				Arrays.asList(lp_rdf_type), Arrays.asList(minv_rdf_type));
+				Arrays.asList(ptRdfType), Arrays.asList(minvRdfType));
 		devClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
-				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_rdf_type));
+				Arrays.asList(maxvRdfType, minvRdfType), Arrays.asList(diffRdfType));
 		devClient.createOntoAgentInstance(Config.agentIriDiffReverse, Config.agentHttpUrlDiffReverse,
-				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_reverse_rdf_type));
+				Arrays.asList(maxvRdfType, minvRdfType), Arrays.asList(diffReverseRdfType));
 
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
@@ -220,18 +221,19 @@ public class InitialiseInstances extends JPSAgent {
 			LOGGER.info("Created RNG derivation <" + rng_dev + ">");
 			response.put(rng_dev_key, rng_dev);
 
-			List<String> listOfRandomPoints_iris = rng_derivation
-					.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints));
-			if (listOfRandomPoints_iris.size() != 1) {
-				throw new IllegalStateException("Expected 1 ListOfRandomPoints instance, got "
-						+ listOfRandomPoints_iris.size());
-			}
-			String listOfRandomPoints_iri = listOfRandomPoints_iris.get(0);
-			LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints_iri + ">");
-			response.put(list_rand_pts_instance_key, listOfRandomPoints_iri);
+			List<String> ptIRIs = rng_derivation
+					.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.Point));
+			LOGGER.info("Created list of random Point instances: " + ptIRIs);
+			response.put(pt_instances_key, new JSONArray(ptIRIs));
 
-			maxDevInputs.add(listOfRandomPoints_iri);
-			minDevInputs.add(listOfRandomPoints_iri);
+			if (ptIRIs.isEmpty()) {
+				// if no points were created, then add rng derivation as inputs for the max and min derivations
+				maxDevInputs.add(rng_dev);
+				minDevInputs.add(rng_dev);
+			} else {
+				maxDevInputs.addAll(ptIRIs);
+				minDevInputs.addAll(ptIRIs);
+			}
 
 			// create maxvalue, minvalue via maxvalue and minvalue derivation
 			if (max) {
@@ -243,14 +245,18 @@ public class InitialiseInstances extends JPSAgent {
 
 				List<String> maxValue_iris = max_derivation
 						.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue));
-				if (maxValue_iris.size() != 1) {
-					throw new IllegalStateException("Expected 1 MaxValue instance, got " + maxValue_iris.size());
+				String maxValue = new String();
+				if (maxValue_iris.size() > 1) {
+					throw new IllegalStateException("Expected maximum 1 MaxValue instance, got " + maxValue_iris.size());
+				} else if (maxValue_iris.size() == 1) {
+					maxValue = maxValue_iris.get(0);
+					diffDevInputs.add(maxValue);
+				} else {
+					// when no maxvalue instance is created, just add the max derivation
+					diffDevInputs.add(max_dev);
 				}
-				String maxValue = maxValue_iris.get(0);
 				LOGGER.info("Created MaxValue instance <" + maxValue + ">");
 				response.put(maxvalue_instance_key, maxValue);
-
-				diffDevInputs.add(maxValue);
 			} else {
 				String max_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriMaxValue,
 						maxDevInputs);
@@ -267,14 +273,18 @@ public class InitialiseInstances extends JPSAgent {
 
 				List<String> minValue_iris = min_derivation
 						.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue));
-				if (minValue_iris.size() != 1) {
-					throw new IllegalStateException("Expected 1 MinValue instance, got " + minValue_iris.size());
+				String minValue = new String();
+				if (minValue_iris.size() > 1) {
+					throw new IllegalStateException("Expected maximum 1 MinValue instance, got " + minValue_iris.size());
+				} else if (minValue_iris.size() == 1) {
+					minValue = minValue_iris.get(0);
+					diffDevInputs.add(minValue);
+				} else {
+					// when no minvalue instance is created, just add the min derivation
+					diffDevInputs.add(min_dev);
 				}
-				String minValue = minValue_iris.get(0);
 				LOGGER.info("Created MinValue instance <" + minValue + ">");
 				response.put(minvalue_instance_key, minValue);
-
-				diffDevInputs.add(minValue);
 			} else {
 				String min_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriMinValue,
 						minDevInputs);
@@ -292,11 +302,13 @@ public class InitialiseInstances extends JPSAgent {
 
 				List<String> difference_iris = diff_derivation
 						.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.Difference));
-				if (difference_iris.size() != 1) {
-					throw new IllegalStateException("Expected 1 Difference instance, got "
+				String difference = new String();
+				if (difference_iris.size() > 1) {
+					throw new IllegalStateException("Expected maximum 1 Difference instance, got "
 							+ difference_iris.size());
+				} else if (difference_iris.size() == 1) {
+					difference = difference_iris.get(0);
 				}
-				String difference = difference_iris.get(0);
 				LOGGER.info("Created Difference instance <" + difference + ">");
 				response.put(difference_instance_key, difference);
 

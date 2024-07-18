@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -53,11 +55,15 @@ public class MaxValueAgent extends DerivationAgent {
 		LOGGER.debug("MaxValueAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
-		String listOfRandomPoints_iri = derivationInputs
-				.getIris(SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints)).get(0);
-		
+		List<String> pts = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Point));
+
+		if (Objects.isNull(pts) || pts.isEmpty()) {
+			LOGGER.info("No points found in the input IRIs.");
+			return;
+		}
+
 		// find the maximum value
-		Integer maxvalue = sparqlClient.getExtremeValueInList(listOfRandomPoints_iri, true);
+		Integer maxvalue = sparqlClient.getExtremeValueInList(pts, true);
 
 		// write the output triples to derivationOutputs
 		String max_iri = SparqlClient.namespace + UUID.randomUUID().toString();

@@ -7,8 +7,8 @@ class TestGeocoding(unittest.TestCase):
 #The set of tests only works when flask server is online
     def test_coordinator_api(self):
 
-
-        config_file = "../conf/http_test/conf_test_webagent.json"
+        #config_file = "../conf/http_test/conf_test_webagent.json"
+        config_file = "./conf/http_test/conf_test_webagent.json"
         #config_file ="../conf/power_plant_DEU/conf_power_plant_DEU_auto_5_geo_http_link.json"
         params = ontomatch.utils.util.read_json_from_path(config_file)
         params_str = json.dumps(params)
@@ -47,7 +47,8 @@ class TestGeocoding(unittest.TestCase):
 
     def test_matchmanager_api(self):
         #get handle from blackboard
-        config_file = "../conf/http_test/conf_test_webagent.json"
+        #config_file = "../conf/http_test/conf_test_webagent.json"
+        config_file = "./conf/http_test/conf_test_webagent.json"
         params = ontomatch.utils.util.read_json_from_path(config_file)
         params_str = json.dumps(params)
 

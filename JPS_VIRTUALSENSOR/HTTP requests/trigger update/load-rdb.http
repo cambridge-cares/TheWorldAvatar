@@ -1,0 +1,2 @@
+# parameters:
+POST http://localhost:4242/ship-input-agent/load-rdb

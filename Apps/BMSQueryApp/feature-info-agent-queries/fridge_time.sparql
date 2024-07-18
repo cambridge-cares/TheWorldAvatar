@@ -1,0 +1,18 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+prefix ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+prefix ontobms: <https://www.theworldavatar.com/kg/ontobms/>
+prefix saref: <https://saref.etsi.org/core/>
+prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+prefix : <https://www.theworldavatar.com/kg/ontobms/>
+
+select distinct ?Measurement ?Name ?Unit where {
+
+    [IRI] saref:hasTypicalConsumption ?consumption.
+    BIND(REPLACE(STRAFTER(STR(?consumption), "-"), "^[0-9]+", "")  AS ?Name).
+    ?consumption om:hasValue ?Measurement.
+    ?Measurement om:hasUnit/om:symbol ?Unit.
+
+}

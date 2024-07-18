@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontocarpark/"
+     xml:base="https://www.theworldavatar.com/kg/ontocarpark/"
+     xmlns:ontocarpark="https://www.theworldavatar.com/kg/ontocarpark/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontocarpark/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 March 2024</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoCarpark is an ontology for representing a carpark's information.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasAvailableLots -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasAvailableLots">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/LotType"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/AvailableLots"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a type of parking lot and it's availability.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has available lots</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasLotType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasLotType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/Carpark"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/LotType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a carpark and the type of parking lots it provides.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has lot type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasAgency -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasAgency">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/Carpark"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the agency that manages the carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has agency</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasCarparkRates -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasCarparkRates">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/Carpark"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the rates of a carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">carpark rates</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/Carpark"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the ID assigned to a carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasSaturdayRates -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasSaturdayRates">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/hasCarparkRates"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the Saturday rates of a carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">saturday rates</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasSundayAndPHRates -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasSundayAndPHRates">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/hasCarparkRates"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the Sunday and Public Holidays rates of a carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">sunday and PH rates</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/hasWeekdayRates -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontocarpark/hasWeekdayRates">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/hasCarparkRates"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the weekday rates of a carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">weekday rates</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/AvailableLots -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontocarpark/AvailableLots">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The number of available lots for a particular type of parking lot in a carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Available lots</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/Carpark -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontocarpark/Carpark">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area or building where cars or other vehicles may be left temporarily.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carpark</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/Cars -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontocarpark/Cars">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/LotType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A parking lot for cars.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cars</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/HeavyVehicles -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontocarpark/HeavyVehicles">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/LotType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A parking lot for heavy vehicles.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heavy vehicles</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/LotType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontocarpark/LotType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The types of parking lots in a carpark.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lot type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontocarpark/Motorcycles -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontocarpark/Motorcycles">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/LotType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A parking lot for motorcycles.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontocarpark/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Motorcycles</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

@@ -14,19 +14,20 @@ import org.jooq.InsertValuesStepN;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.postgis.Point;
 import org.postgis.Polygon;
 
 public class DispersionPostGISClient {
     private String dburl;
-	private String dbuser;
-	private String dbpassword;
+    private String dbuser;
+    private String dbpassword;
     private Table<?> table = DSL.table(DSL.name(Config.SCOPE_TABLE_NAME));
     private static final Logger LOGGER = LogManager.getLogger(DispersionPostGISClient.class);
 
     DispersionPostGISClient(String dburl, String dbuser, String dbpassword) {
         this.dburl = dburl;
-		this.dbuser = dbuser;
-		this.dbpassword = dbpassword;
+        this.dbuser = dbuser;
+        this.dbpassword = dbpassword;
     }
 
     public Connection getConnection() throws SQLException {
@@ -38,20 +39,23 @@ public class DispersionPostGISClient {
         }
         return DriverManager.getConnection(this.dburl, this.dbuser, this.dbpassword);
     }
+
     DSLContext getContext(Connection conn) {
         return DSL.using(conn, SQLDialect.POSTGRES);
     }
 
     boolean tableExists(String tableName, Connection conn) {
         String condition = String.format("table_name = '%s'", tableName);
-        return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 1;
+        return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0,
+                int.class) == 1;
     }
 
     void createTable(String tableName, Connection conn) throws SQLException {
         String sqlTemplate = "CREATE TABLE %s (" +
-            "iri character varying," + 
-            "geom geometry," +
-            "geom_iri character varying)";
+                "iri character varying," +
+                "geom geometry," +
+                "main_uuid character varying," +
+                "geom_uuid character varying)";
 
         String sql = String.format(sqlTemplate, tableName);
         try (Statement stmt = conn.createStatement()) {
@@ -60,7 +64,8 @@ public class DispersionPostGISClient {
     }
 
     Polygon getPolygonAs4326(Polygon polygon, Connection conn) {
-        String sqlTemplate = String.format("SELECT ST_AsEWKT(ST_Transform(ST_GeomFromText('%s'), 4326))", polygon.toString());
+        String sqlTemplate = String.format("SELECT ST_AsEWKT(ST_Transform(ST_GeomFromText('%s'), 4326))",
+                polygon.toString());
 
         try (Statement stmt = conn.createStatement()) {
             ResultSet result = stmt.executeQuery(sqlTemplate);
@@ -71,14 +76,15 @@ public class DispersionPostGISClient {
         } catch (SQLException e) {
             LOGGER.error("SQL state: {}", e.getSQLState());
             LOGGER.error(e.getMessage());
-            throw new RuntimeException("Failed to convert polygon to EPSG:4326",e);
+            throw new RuntimeException("Failed to convert polygon to EPSG:4326", e);
         }
     }
 
-    boolean scopeExists(Polygon polygon, Connection conn) {         
+    boolean scopeExists(Polygon polygon, Connection conn) {
         boolean scopeExists = false;
         if (polygon != null) {
-            String sql = String.format("SELECT ST_Equals(geom, ST_GeomFromText('%s')) FROM %s", polygon.toString(), Config.SCOPE_TABLE_NAME);
+            String sql = String.format("SELECT ST_Equals(geom, ST_GeomFromText('%s')) FROM %s", polygon.toString(),
+                    Config.SCOPE_TABLE_NAME);
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
@@ -96,12 +102,53 @@ public class DispersionPostGISClient {
         return scopeExists;
     }
 
+    String getScopeIri(Polygon polygon, Connection conn) {
+        String scopeIri = null;
+        String sql = String.format("SELECT iri FROM %s WHERE ST_Equals(geom, ST_GeomFromText('%s'))",
+                Config.SCOPE_TABLE_NAME, polygon.toString());
+
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            // there should not be any duplicates
+            while (result.next()) {
+                scopeIri = result.getString("iri");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+        }
+
+        return scopeIri;
+    }
+
+    boolean sensorExists(Point target, Connection conn) {
+        if (!tableExists(Config.SENSORS_TABLE_NAME, conn))
+            return false;
+
+        // Critical distance is arbitrarily set to 0.05.
+        String sql = String.format(
+                "SELECT scope_iri from %S WHERE ST_DISTANCE(wkb_geometry, ST_GeomFromText('%s')) <= %f ",
+                Config.SENSORS_TABLE_NAME, target.toString(), 0.05);
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            if (result.first())
+                return true;
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+        }
+
+        return false;
+    }
+
     String addScope(Polygon polygon, Connection conn) {
         String scopeIri = null;
         try {
-            scopeIri = QueryClient.PREFIX + UUID.randomUUID();
-            String geomIri = QueryClient.PREFIX + UUID.randomUUID();
-            InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, geomIri);
+            String scopeUuid = UUID.randomUUID().toString();
+            scopeIri = QueryClient.PREFIX + scopeUuid;
+            String geomUuid = UUID.randomUUID().toString();
+            InsertValuesStepN<?> insertStep = getContext(conn).insertInto(table).values(scopeIri, polygon, scopeUuid,
+                    geomUuid);
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(insertStep.toString());
             }

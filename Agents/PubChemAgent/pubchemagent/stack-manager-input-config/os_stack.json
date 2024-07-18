@@ -1,0 +1,13 @@
+{
+    "services": {
+        "includes": [
+            "pubchem-agent"
+        ],
+        "excludes": [
+            "ontop",
+            "gdal",
+            "geoserver",
+		"postgis"
+        ]
+    }
+}

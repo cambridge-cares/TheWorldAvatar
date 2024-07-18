@@ -4,41 +4,33 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.utils.TempFile;
 
-public class OntopClient extends ContainerClient implements ClientWithEndpoint {
+public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
     public static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
 
-    private static OntopClient instance = null;
-
-    private OntopEndpointConfig ontopEndpoint;
+    private static Map<String, OntopClient> instances = new HashMap<>();
 
     public static OntopClient getInstance() {
-        if (null == instance) {
-            instance = new OntopClient();
-        }
-        return instance;
+        return getInstance(EndpointNames.ONTOP);
     }
 
-    private OntopClient() {
+    public static OntopClient getInstance(String containerName) {
+        return instances.computeIfAbsent(containerName, OntopClient::new);
     }
 
-    @Override
-    public OntopEndpointConfig getEndpoint() {
-        if (null == ontopEndpoint) {
-            ontopEndpoint = readEndpointConfig(EndpointNames.ONTOP, OntopEndpointConfig.class);
-        }
-        return ontopEndpoint;
+    private OntopClient(String containerName) {
+        super(containerName, OntopEndpointConfig.class);
     }
 
     public void updateOBDA(Path newMappingFilePath) {
-        String containerId = getContainerId("ontop");
+        String containerId = getContainerId(getContainerName());
         Path ontopMappingFilePath = getEnvironmentVariable(containerId, ONTOP_MAPPING_FILE)
                 .map(Path::of)
                 .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_MAPPING_FILE

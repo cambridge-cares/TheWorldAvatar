@@ -46,8 +46,8 @@ public class SupersetService extends ContainerService {
     private static final String DEFAULT_SECRET_KEY_FILE = "/run/secrets/superset_secret_key";
     private static final String DEFAULT_CREDENTIAL_PROVIDER = "db";
 
-    public SupersetService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public SupersetService(String stackName, ServiceConfig config) {
+        super(stackName, config);
 
         setEnvironmentVariableIfAbsent("SUPERSET_USERNAME", DEFAULT_USERNAME);
         setEnvironmentVariableIfAbsent("SUPERSET_PASSWORD_FILE", DEFAULT_PASSWORD_FILE);
@@ -63,6 +63,8 @@ public class SupersetService extends ContainerService {
                 getEnvironmentVariable("SUPERSET_FIRSTNAME"), getEnvironmentVariable("SUPERSET_LASTNAME"),
                 getEnvironmentVariable("SUPERSET_EMAIL"), getEnvironmentVariable("DEFAULT_SECRET_KEY_FILE"),
                 getEnvironmentVariable("SUPERSET_CREDENTIAL_PROVIDER"));
+
+        addEndpointConfig(endpointConfig);
     }
 
     @Override
@@ -116,7 +118,7 @@ public class SupersetService extends ContainerService {
     }
 
     @Override
-    public void doPreStartUpConfiguration() {
+    protected void doPreStartUpConfiguration() {
         writeSupersetFlaskConfig();
     }
 
@@ -136,9 +138,6 @@ public class SupersetService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-
-        writeEndpointConfig(endpointConfig);
-
         makeUser(endpointConfig);
 
         executeCommand("sh", "-c",
