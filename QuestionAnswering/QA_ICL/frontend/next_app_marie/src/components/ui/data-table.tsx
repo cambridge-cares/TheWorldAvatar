@@ -61,8 +61,8 @@ export function DataTable<TData>({
     () =>
       numbered
         ? [
-            { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, any>,
-          ].concat(columns)
+          { accessorKey: 'num', header: 'No.' } as ColumnDef<TData, any>,
+        ].concat(columns)
         : columns,
     [numbered, columns]
   )
@@ -83,10 +83,10 @@ export function DataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     ...(paginated
       ? {
-          getPaginationRowModel: getPaginationRowModel(),
-          onPaginationChange: setPagination,
-          state: { pagination },
-        }
+        getPaginationRowModel: getPaginationRowModel(),
+        onPaginationChange: setPagination,
+        state: { pagination },
+      }
       : {}),
   })
 
@@ -95,24 +95,23 @@ export function DataTable<TData>({
     <Table>
       <TableHeader
         className={cn(
-          bordered ? 'bg-secondary' : '',
+          'bg-secondary',
           scrollable ? 'sticky top-0' : ''
         )}
       >
-        {table.getHeaderGroups().map((headerGroup, i) => (
+        {table.getHeaderGroups().map(headerGroup => (
           <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map(header => {
-              return (
-                <TableHead key={header.id}>
+            {headerGroup.headers.map(header => (
+                <TableHead key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               )
-            })}
+            )}
           </TableRow>
         ))}
       </TableHeader>
