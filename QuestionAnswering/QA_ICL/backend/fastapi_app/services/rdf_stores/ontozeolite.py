@@ -11,6 +11,7 @@ from model.kg.ontozeolite import (
     OntocrystalQuantity,
     OntocrystalTiledStructure,
     OntocrystalUnitCell,
+    OntozeoliteZeoliteFramework,
     OntozeoliteZeoliteFrameworkBase,
     OntozeoliteZeoliticMaterialBase,
 )
@@ -175,6 +176,9 @@ WHERE {{
 
     def get_zeolite_frameworks_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntozeoliteZeoliteFrameworkBase, iris)
+
+    def get_zeolite_framework_one(self, iri: str):
+        return self.get_one(OntozeoliteZeoliteFramework, iri)
 
     def get_zeolitic_materials_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntozeoliteZeoliticMaterialBase, iris)

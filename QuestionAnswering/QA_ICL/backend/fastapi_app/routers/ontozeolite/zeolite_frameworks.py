@@ -3,7 +3,10 @@ from typing import Annotated, get_args
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
-from model.kg.ontozeolite import OntozeoliteZeoliteFrameworkBase
+from model.kg.ontozeolite import (
+    OntozeoliteZeoliteFramework,
+    OntozeoliteZeoliteFrameworkBase,
+)
 from model.web.ontozeolite import (
     ScalarTopologicalPropertyKey,
     UnitCellKey,
@@ -105,30 +108,12 @@ async def getZeoliteFrameworks(
     return ontozeolite_store.get_zeolite_frameworks(framework_req)
 
 
-class CIFResponse(Response):
-    media_type = "chemical/x-cif"
-
-
 @router.get(
-    "/{iri:path}/cif",
-    summary="Get CIF geometry file for zeolite framework",
-    response_class=CIFResponse,
+    "/{iri:path}",
+    summary="Get zeolite framework",
+    response_model=OntozeoliteZeoliteFramework,
+    response_model_exclude_none=True,
 )
-async def getZeoliteFrameworkCIF(
-    iri: str, cif_manager: Annotated[CIFManager, Depends(get_cif_manager)]
-):
-    cif = cif_manager.get([iri])[0]
-    if not cif:
-        raise HTTPException(
-            status_code=404, detail=f"CIF not found for zeolite `{iri}`"
-        )
-    return CIFResponse(
-        content=cif,
-        headers={"Content-Disposition": 'attachment; filename="zeolite.cif"'},
-    )
-
-
-@router.get("/{iri:path}", summary="Get zeolite framework")
 async def getZeoliteFrameworkOne(
     iri: str,
     ontozeolite_store: Annotated[

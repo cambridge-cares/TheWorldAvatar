@@ -127,7 +127,12 @@ async def getSpeciesXYZ(
     )
 
 
-@router.get("/{iri:path}", summary="Get species", response_model=OntospeciesSpecies)
+@router.get(
+    "/{iri:path}",
+    summary="Get species",
+    response_model_exclude_none=True,
+    response_model=OntospeciesSpecies,
+)
 async def getSpeciesOne(
     iri: str,
     ontospecies_store: Annotated[
