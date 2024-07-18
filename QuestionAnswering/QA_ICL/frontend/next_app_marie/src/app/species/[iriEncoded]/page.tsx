@@ -16,6 +16,23 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
     getSpeciesXYZ(params.iriEncoded),
   ])
 
+  const identifiers = [
+    ...[['The World Avatar IRI', [data.IRI]] as [string, string[]]],
+    ...Object.entries(data.identifiers)
+      .filter(([_, lst]) => lst.length > 0)
+      .map(
+        ([key, lst]) =>
+          [
+            key,
+            lst
+              .map(x => x.value)
+              .filter(
+                (value, index, array) => array.indexOf(value) === index
+              ),
+          ] as [string, string[]]
+      ),
+  ]
+
   return (
     <Main className='flex flex-col items-center'>
       <div className='w-full mt-8 px-4 flex flex-col space-y-2 md:max-w-screen-md lg:max-w-screen-lg'>
@@ -29,23 +46,16 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
               Identifiers
             </a>
           </h2>
-          {Object.entries(data.identifiers)
-            .filter(([_, lst]) => lst.length > 0)
-            .map(([key, lst], i) => (
-              <div key={i} className='mb-2'>
-                <h3 className='font-semibold'>{key}</h3>
-                <ul>
-                  {lst
-                    .map(x => x.value)
-                    .filter(
-                      (value, index, array) => array.indexOf(value) === index
-                    )
-                    .map((x, j) => (
-                      <li key={j}>{x}</li>
-                    ))}
-                </ul>
-              </div>
-            ))}
+          {identifiers.map(([key, lst], i) => (
+            <div key={i} className='mb-2'>
+              <h3 className='font-semibold'>{key}</h3>
+              <ul>
+                {lst.map((x, j) => (
+                  <li key={j}>{x}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </section>
         <section>
           <h2 id='chemical-classes'>

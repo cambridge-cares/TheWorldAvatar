@@ -7,10 +7,25 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { getSpeciesMany } from '@/lib/api/ontospecies'
 import { SpeciesBase } from '@/lib/model/ontospecies'
 import { DataTable } from '@/components/ui/data-table'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 const COL_HELPER = createColumnHelper<SpeciesBase>()
 const COLS = [
-  COL_HELPER.accessor('IRI', { header: 'IRI' }),
+  COL_HELPER.accessor('IRI', {
+    header: '',
+    cell: cell => {
+      const val = cell.getValue()
+      return (
+        <Link
+          href={`/species/${encodeURIComponent(val)}`}
+          className='hover:underline'
+        >
+          <Button variant='secondary'>View</Button>
+        </Link>
+      )
+    },
+  }),
   COL_HELPER.accessor('label', { header: 'Label' }),
   COL_HELPER.accessor('IUPAC_name', { header: 'IUPAC name' }),
   COL_HELPER.accessor('InChI', { header: 'InChI' }),
