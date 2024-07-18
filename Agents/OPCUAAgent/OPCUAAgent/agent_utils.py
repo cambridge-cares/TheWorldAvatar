@@ -3,6 +3,9 @@ from jproperties import Properties
 import re
 
 def get_env_variable(var_name):
+    """
+    Get the value of the environment variable
+    """
     try:
         # Get the value of the environment variable
         value = os.environ[var_name]
@@ -12,6 +15,9 @@ def get_env_variable(var_name):
         raise KeyError(f"Environment variable '{var_name}' not found.")
 
 def read_property(file_path, key):
+    """
+    Get the value of a key in the provided properties file
+    """
     # Create an instance of the Properties class
     properties = Properties()
 
@@ -29,6 +35,9 @@ def read_property(file_path, key):
         raise KeyError(f"Key '{key}' not found.")
     
 def remove_char_between_characters(text, start_char, end_char):
+    """
+    Remove characters between start_char and end_char, returned back the cleaned string
+    """
     # Define the regular expression pattern to match text between the specified characters
     pattern = re.escape(start_char) + r'.*?' + re.escape(end_char)
     

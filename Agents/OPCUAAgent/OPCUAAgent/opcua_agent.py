@@ -9,6 +9,11 @@ from OPCUAAgent import sql_client
 from OPCUAAgent import agent_utils
 
 def read_tags_from_csv_file(client:Client, filename):
+    """
+    Read tags, datatype from csv file. \n
+    Read sub identifier or prefix from csv file and combine it with tags to form the tags node id. \n
+    Use OPCUA client to retrieve node instances for each tag node id.
+    """
     tags = []
     datatype = []
     tags_nodeid=[]
@@ -26,7 +31,14 @@ def read_tags_from_csv_file(client:Client, filename):
             nodes.append(client.get_node(f"{sub_identifier}.{tag}"))
     return tags,datatype,tags_nodeid,nodes
 
+
 def read_tags_from_csv_files(client:Client, folder_path):
+    """
+    Read tags, datatype from all csv files. \n
+    Read sub identifier or prefix from all csv files and combine it with tags to form the tags node id. \n
+    Use OPCUA client to retrieve node instances for each tag node id. \n
+    Return all information as a dictionary. 
+    """
     # Check if the folder path exists
     if not os.path.exists(folder_path):
         print(f"The folder '{folder_path}' does not exist.")
@@ -46,9 +58,11 @@ def read_tags_from_csv_files(client:Client, folder_path):
     # Return all retrieved tags as a dictionary
     return tags_dict
 
-# Iterate throuh dict to retrieve value from OPC-UA server
-# Insert retrieved values, data type, timestamps at point of retrieval into timeseries_dict
 async def read_tag_values(client:Client, tags:dict):
+    """
+    Iterate through dictionary and read tag values from OPCUA server. \n
+    Return dictionary containing retrieved values, data type, timestamps at point of retrieval.
+    """
     timeseries_dict={}
     for key, tag_and_data_type_dict in tags.items():
         values = {}
@@ -61,6 +75,11 @@ async def read_tag_values(client:Client, tags:dict):
     return timeseries_dict
 
 async def main():
+    """
+    Main method that establishes a connection to the OPCUA server, \n
+    retrieve the timeseries data of all the tags indicated in the csv files, \n
+    insert the timeseries data into a PostgreSQL database.
+    """
     filePath = agent_utils.get_env_variable("OPCUA_CONF")
     url =agent_utils.read_property(filePath, "opcua_server_url")
     client = Client(url=url)
