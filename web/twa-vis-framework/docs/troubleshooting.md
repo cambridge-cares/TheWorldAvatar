@@ -27,6 +27,8 @@ This section is relevant to all uses of the TWA-VF, regardless of the selected m
 | What URL do I use to load content from GeoServer? | Check the [Building the WMS URL](./mapbox.md#building-the-wms-url) section of the Mapbox documentation. |
 | How do I setup data-driven styling? | Using Mapbox's expressions system within layer styles. Try the tutorial [here](https://docs.mapbox.com/help/tutorials/mapbox-gl-js-expressions/). |
 | Getting an "Unimplemented Type 4" error | This is normally thrown by Mapbox when it cannot pull data from a WMS endpoint correctly, double check your URL. |
+| I keep seeing the same data regardless of the location I'm viewing | Double check that your WMS URLs are correctly using the placeholder string for the `bbox` parameter (e.g. "bbox={bbox-epsg-3857}"), using literal values here tells Mapbox to use the same tile of data for the entire map. |
+| My data's projection looks off | Mapbox displays data using the EPSG 3857 projection, this is the CRS that should be used in your WMS URLs (think of the URL as how to display the data, not how the data was originally uploaded). |
 
 <br/>
 

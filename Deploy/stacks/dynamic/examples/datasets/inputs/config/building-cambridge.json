@@ -1,7 +1,7 @@
 {
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "datasetDirectory": "building-cambridge",
+    "datasetDirectory": "buildings",
     "dataSubsets": [
         {
             "type": "XtoCityDB",

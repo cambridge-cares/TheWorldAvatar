@@ -1,0 +1,25 @@
+Source,Type,Target,Relation,Value,Data Type
+OntoZeolite,Ontology,http://www.theworldavatar.com/kg/ontozeolite/OntoZeolite.owl,http://www.w3.org/2002/07/owl#imports,,
+OntoZeolite,Ontology,http://www.theworldavatar.com/kg/ontozeolite,base,,
+Zeolite_ABW_31b0aa28-3045-469e-afbe-ea1e79efaecd,Instance,ZeoliteFramework,,,
+http://www.theworldavatar.com/kg/ontozeolite/hasZeoliteCode,Data Property,Zeolite_ABW_31b0aa28-3045-469e-afbe-ea1e79efaecd,,ABW,string
+ZeoliteCIF_ABW_27c96dc4-7785-457e-b8b8-03df466caea0,Instance,CrystalInformation,,,
+UnitCell_ABW_1f477d67-78ab-4676-bf2e-7ee53864faae,Instance,UnitCell,,,
+Zeolite_ABW_31b0aa28-3045-469e-afbe-ea1e79efaecd,instance,ZeoliteCIF_ABW_27c96dc4-7785-457e-b8b8-03df466caea0,http://www.theworldavatar.com/kg/ontocrystal/hasCrystalInformation,,
+ZeoliteCIF_ABW_27c96dc4-7785-457e-b8b8-03df466caea0,Instance,UnitCell_ABW_1f477d67-78ab-4676-bf2e-7ee53864faae,http://www.theworldavatar.com/kg/ontocrystal/hasUnitCell,,
+UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb,Instance,UnitCellLengths,,,
+UnitCell_ABW_1f477d67-78ab-4676-bf2e-7ee53864faae,Instance,UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb,http://www.theworldavatar.com/kg/ontocrystal/hasUnitCellLengths,,
+UnitCellLengths_ABW_comp_a_d2b81967-fff7-456d-9154-9432b0f92974,Instance,VectorComponent,,,
+UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb,Instance,UnitCellLengths_ABW_comp_a_d2b81967-fff7-456d-9154-9432b0f92974,http://www.theworldavatar.com/kg/ontocrystal/hasVectorComponent,,
+http://www.theworldavatar.com/kg/ontocrystal/hasLabel,Data Property,UnitCellLengths_ABW_comp_a_d2b81967-fff7-456d-9154-9432b0f92974,,a,string
+http://www.theworldavatar.com/kg/ontocrystal/hasComponentValue,Data Property,UnitCellLengths_ABW_comp_a_d2b81967-fff7-456d-9154-9432b0f92974,,9.873,rdfs:Literal
+UnitCellLengths_ABW_error_866d40fc-abfc-410c-a250-08b06cabe2a5,Instance,http://www.theworldavatar.com/kg/ontocrystal/Vector,,,
+UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb,Instance,UnitCellLengths_ABW_error_866d40fc-abfc-410c-a250-08b06cabe2a5,http://www.theworldavatar.com/kg/ontocrystal/hasUncertaintyVector,,
+UnitCellLengths_ABW_err_a_a315f1e4-ebc4-4152-930e-eb3f897d8e50,Instance,VectorComponent,,,
+UnitCellLengths_ABW_error_866d40fc-abfc-410c-a250-08b06cabe2a5,Instance,UnitCellLengths_ABW_err_a_a315f1e4-ebc4-4152-930e-eb3f897d8e50,http://www.theworldavatar.com/kg/ontocrystal/hasVectorComponent,,
+http://www.theworldavatar.com/kg/ontocrystal/hasLabel,Data Property,UnitCellLengths_ABW_err_a_a315f1e4-ebc4-4152-930e-eb3f897d8e50,,a,string
+http://www.theworldavatar.com/kg/ontocrystal/hasComponentValue,Data Property,UnitCellLengths_ABW_err_a_a315f1e4-ebc4-4152-930e-eb3f897d8e50,,0,rdfs:Literal
+UnitCellLengths_ABW_comp_b_69a3d8ca-3d59-49a5-b267-5f1b07b324fc,Instance,VectorComponent,,,
+UnitCellLengths_ABW_7cd790c3-6e09-4f15-9cd0-71111d8cc7fb,Instance,UnitCellLengths_ABW_comp_b_69a3d8ca-3d59-49a5-b267-5f1b07b324fc,http://www.theworldavatar.com/kg/ontocrystal/hasVectorComponent,,
+http://www.theworldavatar.com/kg/ontocrystal/hasLabel,Data Property,UnitCellLengths_ABW_comp_b_69a3d8ca-3d59-49a5-b267-5f1b07b324fc,,b,string
+http://www.theworldavatar.com/kg/ontocrystal/hasComponentValue,Data Property,UnitCellLengths_ABW_comp_b_69a3d8ca-3d59-49a5-b267-5f1b07b324fc,,5.254,rdfs:Literal

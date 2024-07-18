@@ -1,0 +1,96 @@
+{
+    "name": "kingslynn_routing_layers",
+    "database": "postgres",
+    "workspace": "kingslynn",
+    "datasetDirectory": "kingslynn",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "name": "shortest_paths_with_flood_10",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/shortest_paths_with_flood_10.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "52",
+                            "regexpValidator": "^^[\\w\\d\\s]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "4",
+                            "regexpValidator": "^[\\w\\d\\s]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "name": "shortest_paths_with_flood_30",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/shortest_paths_with_flood_30.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "52",
+                            "regexpValidator": "^^[\\w\\d\\s]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "4",
+                            "regexpValidator": "^[\\w\\d\\s]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "name": "shortest_paths_with_flood_90",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/shortest_paths_with_flood_90.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "52",
+                            "regexpValidator": "^^[\\w\\d\\s]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "4",
+                            "regexpValidator": "^[\\w\\d\\s]+$"
+                        }
+                    ]
+                }
+            }
+        }
+       
+    ]
+}

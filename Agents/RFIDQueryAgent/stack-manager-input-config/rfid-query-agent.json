@@ -3,7 +3,19 @@
         "Name": "rfid-query-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "rfid-query-agent:1.1.0",
+                "Image": "docker.io/library/rfid-query-agent:1.2.0",
+                "Env": [
+                    "CLIENT_PROPERTIES=/app/config/client.properties",
+                    "SPECIES_PROPERTIES=/app/config/species.properties",
+                    "EMAIL_AGENT_URL=http://host.docker.internal:8080/email_agent"
+                  ],
+                "Mounts": [
+                    {
+                      "Type": "bind",
+                      "Source": "<YOUR_WORK_DIR>/TheWorldAvatar/Agents/RFIDQueryAgent/config",
+                      "Target": "/app/config"
+                    }
+                ],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
@@ -13,6 +25,9 @@
                     }
                 ],
                 "Secrets": [
+                    {
+                        "SecretName": "blazegraph_password"
+                    },
                     {
                         "SecretName": "postgis_password"
                     }

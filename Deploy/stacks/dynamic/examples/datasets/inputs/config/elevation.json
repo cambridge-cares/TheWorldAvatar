@@ -7,12 +7,19 @@
         {
             "type": "raster",
             "name": "elevation",
+            "subdirectory": "elevation",
             "skip": false,
             "geoServerSettings": {
                 "layerSettings": {
                     "defaultStyle": "elevation"
                 }
             }
+        }
+    ],
+    "styles": [
+        {
+            "name": "elevation",
+            "file": "elevation.sld"
         }
     ]
 }

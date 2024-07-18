@@ -38,7 +38,9 @@ class KGClient(PySparqlClient):
                         ts:hasTimeseries <tsIRI> .
               <tsIRI> ts:hasRDB <...> ;
                       ts:hasTimeUnit <...> .
-
+        NOTE: Currently only ONE om:Measure per om:Qunatity is supported, i.e.,
+              multiple om:Measures for different units are not (yet) supported!
+        
         Arguments:
             iri_to_forecast (str) -- IRI of instance for which to create forecast
         Returns:
@@ -50,9 +52,9 @@ class KGClient(PySparqlClient):
             SELECT DISTINCT ?data_iri ?ts_iri ?fc_iri ?unit ?rdb_url ?time_format
             WHERE {{   
             VALUES ?iri {{ <{iri_to_forecast}> }} 
-            ?iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri .
-            ?ts_iri ^<{TS_HASTIMESERIES}> ?data_iri ;
-                     <{TS_HASRDB}> ?rdb_url .
+            ?iri <{OM_HASVALUE}>* ?data_iri .
+            ?data_iri <{TS_HASTIMESERIES}> ?ts_iri .
+            ?ts_iri <{TS_HASRDB}> ?rdb_url .
             OPTIONAL {{ ?data_iri <{OM_HASUNIT}> ?unit . }}
             OPTIONAL {{ ?ts_iri <{TS_HASTIMEUNIT}> ?time_format . }}
             OPTIONAL {{ ?iri <{TS_HASFORECAST}> ?fc_iri . }}
@@ -77,7 +79,7 @@ class KGClient(PySparqlClient):
             if len(res) == 0:
                 msg = f"No time series associated with data IRI: {iri_to_forecast}."
             else:
-                msg = f"Multiple time series associated with data IRI: {iri_to_forecast}."
+                msg = f"Multiple om:Measures or ts:TimeSeries associated with data IRI: {iri_to_forecast}."
             logger.error(msg)
             raise ValueError(msg)
         
@@ -285,27 +287,6 @@ class KGClient(PySparqlClient):
 
         # Return unique query result (otherwise exception is thrown)
         return get_unique_value(res, 'dataIRI')
-    
-
-    def get_tsIRI(self, dataIRI:str):
-        """
-        Returns tsIRI associated with given dataIRI.
-
-        Returns:
-            tsIRI {str} -- tsIRI associated with given dataIRI
-        """
-
-        query = f"""
-            SELECT DISTINCT ?tsIRI
-            WHERE {{   
-            <{dataIRI}> <{TS_HASTIMESERIES}> ?tsIRI .
-            }}
-        """
-        query = remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
-
-        # Return unique query result (otherwise exception is thrown)
-        return get_unique_value(res, 'tsIRI')
 
 
     def get_all_tsIRIs(self):

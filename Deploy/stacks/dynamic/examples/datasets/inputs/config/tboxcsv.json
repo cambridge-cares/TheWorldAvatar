@@ -10,7 +10,8 @@
     "dataSubsets": [
         {
             "type": "tboxcsv",
-            "skip": false
+            "skip": false,
+            "subdirectory": "tboxcsv"
         }
     ]
 }

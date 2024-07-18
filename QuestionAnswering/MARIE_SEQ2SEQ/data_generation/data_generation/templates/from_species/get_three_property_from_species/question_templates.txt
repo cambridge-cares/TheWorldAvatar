@@ -1,0 +1,19 @@
+What are the {PropertyName1}, {PropertyName2} and {PropertyName3} of {species}?
+Can you list the {PropertyName1}, {PropertyName2}, and {PropertyName3} associated with {species}?
+Provide the {PropertyName1}, {PropertyName2}, and {PropertyName3} of {species}.
+What are the {PropertyName1}, {PropertyName2}, and {PropertyName3} of {species}?
+Enumerate the {PropertyName1}, {PropertyName2}, and {PropertyName3} of {species}.
+I'm curious about the {PropertyName1}, {PropertyName2}, and {PropertyName3} of {species}. Can you elaborate?
+Could you tell me about the {PropertyName1}, {PropertyName2}, and {PropertyName3} that define {species}?
+{PropertyName1}, {PropertyName2}, and {PropertyName3} of {species}.
+I'd like to know the {PropertyName1}, {PropertyName2}, and {PropertyName3} that pertain to {species}.
+What are {species}'s {PropertyName1}, {PropertyName2}, and {PropertyName3}?
+Tell me about the {PropertyName1}, {PropertyName2}, and {PropertyName3} exhibited by {species}.
+Discuss the {PropertyName1}, {PropertyName2}, and {PropertyName3} attributed to {species}.
+I'm interested in the {PropertyName1}, {PropertyName2}, and {PropertyName3} that define {species}.
+Can you shed light on the {PropertyName1}, {PropertyName2}, and {PropertyName3} observed in {species}?
+What can you tell me about {species}'s {PropertyName1}, {PropertyName2}, and {PropertyName3}?
+Let's delve into the {PropertyName1}, {PropertyName2}, and {PropertyName3} that characterize {species}.
+Describe the {PropertyName1}, {PropertyName2}, and {PropertyName3} associated with {species}.
+Enlighten me about the {PropertyName1}, {PropertyName2}, and {PropertyName3} specific to {species}.
+Share insights into the {PropertyName1}, {PropertyName2}, and {PropertyName3} of {species}.

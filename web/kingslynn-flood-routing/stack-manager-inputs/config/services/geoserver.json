@@ -1,0 +1,48 @@
+{
+    "type": "geoserver",
+    "ServiceSpec": {
+        "Name": "geoserver",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.osgeo.org/geoserver:2.23.1",
+                "Env": [
+					"GEOSERVER_CSRF_DISABLED=true",
+                    "GEOSERVER_CSRF_WHITELIST=localhost",
+                    "INSTALL_EXTENSIONS=true",
+                    "STABLE_EXTENSIONS=vectortiles",
+                    "CORS_ENABLED=true",
+                    "SKIP_DEMO_DATA=true"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs",
+                        "ReadOnly": false
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_datadir",
+                        "Target": "/opt/geoserver_data"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080/geoserver/",
+            "externalPath": "/geoserver/"
+        }
+    }
+}

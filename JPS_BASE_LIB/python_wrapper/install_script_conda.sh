@@ -3,8 +3,8 @@
 
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-VENV_NAME='py4jps_venv'
-PROJECT_NAME='py4jps'
+VENV_NAME='twa_venv'
+PROJECT_NAME='twa'
 DEP_FILE='dependencies.yml'
 DO_NOT_PROMPT='n'
 

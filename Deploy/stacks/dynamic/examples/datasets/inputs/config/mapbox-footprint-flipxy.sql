@@ -3,7 +3,7 @@ WITH "uuid_table" AS (
         "strval" AS "uuid",
         "cityobject_id"
     FROM
-        "cityobject_genericattrib"
+        "citydb"."cityobject_genericattrib"
     WHERE
         "attrname" = 'uuid'
 ),
@@ -12,7 +12,7 @@ WITH "uuid_table" AS (
         "urival" AS "iri",
         "cityobject_id"
     FROM
-        "cityobject_genericattrib"
+        "citydb"."cityobject_genericattrib"
     WHERE
         "attrname" = 'iri'
 )
@@ -23,9 +23,9 @@ SELECT
     "uuid",
     "iri"
 FROM
-    "building"
-    JOIN "surface_geometry" ON "surface_geometry"."root_id" = "building"."lod0_footprint_id"
-    JOIN "uuid_table" ON "building"."id" = "uuid_table"."cityobject_id"
-    JOIN "iri_table" ON "building"."id" = "iri_table"."cityobject_id"
+    "citydb"."building"
+    JOIN "citydb"."surface_geometry" ON "citydb"."surface_geometry"."root_id" = "citydb"."building"."lod0_footprint_id"
+    JOIN "uuid_table" ON "citydb"."building"."id" = "uuid_table"."cityobject_id"
+    JOIN "iri_table" ON "citydb"."building"."id" = "iri_table"."cityobject_id"
 WHERE
-    "surface_geometry"."geometry" IS NOT NULL
+    "citydb"."surface_geometry"."geometry" IS NOT NULL

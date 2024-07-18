@@ -32,14 +32,14 @@ public class TimeSeriesHelper {
      * Creates and initialises a time series using the time series client
      * @param fixedIris map containing time series iris mapped to measurement type
      */
-    public void createTimeSeries(LinkedHashMap<String,String> fixedIris, String graph, OntologyURIHelper ontologyUriHelper) {
+    public void createTimeSeries(LinkedHashMap<String,String> fixedIris) {
         tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
 
         // Create a iri for each measurement
         List<String> iris = new ArrayList<>();
         for(String measurement: CEAConstants.TIME_SERIES){
             String iri = measurement+"_"+ UUID.randomUUID()+ "/";
-            iri = !graph.isEmpty() ? graph + iri : ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + iri ;
+            iri = OntologyURIHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + iri ;
             iris.add(iri);
             fixedIris.put(measurement, iri);
         }
@@ -103,7 +103,7 @@ public class TimeSeriesHelper {
      * Checks whether a time series exists by checking whether any of the IRIs that should be attached to
      * the time series is not initialised in the central RDB lookup table using the time series client.
      * @param iris The IRIs that should be attached to the same time series provided as list of strings.
-     * @return True if all IRIs have a time series attached, false otherwise.
+     * @return true if all IRIs have a time series attached, false otherwise.
      */
     private boolean timeSeriesExist(List<String> iris) {
         // If any of the IRIs does not have a time series the time series does not exist
@@ -129,7 +129,6 @@ public class TimeSeriesHelper {
         }
         return true;
     }
-
 
     /**
      * Returns data using time series client for given data iri

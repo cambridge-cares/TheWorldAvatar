@@ -3,7 +3,6 @@ package com.cmclinnovations.featureinfo;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
@@ -19,6 +18,7 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.core.ClassHandler;
 import com.cmclinnovations.featureinfo.core.meta.MetaHandler;
 import com.cmclinnovations.featureinfo.core.time.TimeHandler;
+import com.cmclinnovations.featureinfo.objects.Request;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -49,10 +49,6 @@ public class QueryManager {
      */
     private TimeSeriesClient<Instant> tsClient;
     
-    /**
-     * Optional enforced URL endpoint for all KG queries.
-     */
-    private String enforcedEndpoint;
 
     /**
      * Initialise a new QueryManager instance.
@@ -101,44 +97,33 @@ public class QueryManager {
      * - Get time series data from the relational database.
      * - Format and return as JSON.
      * 
-     * @param requestParams HTTP request parameters.
-     * @param response HTTP response to write back to.
+     * @param request   Request object containing parameters.
+     * @param response  HTTP response to write back to.
      * 
      * @return resulting JSON of discovered meta and time series data.
      * 
      * @throws IOException if response cannot be written to.
      */
-    public JSONObject processRequest(JSONObject requestParams, HttpServletResponse response) throws IOException {
+    public JSONObject processRequest(Request request, HttpServletResponse response) throws IOException {
 
-        // Get the feature IRI
-        String iri = (requestParams.has("iri")) ? requestParams.getString("iri") : requestParams.getString("IRI");
-        LOGGER.info("Incoming IRI is: {}", iri);
+        LOGGER.info("Incoming IRI is: {}", request.getIri());
+        request.getEndpoint().ifPresentOrElse(
+                endpoint -> LOGGER.info("Incoming enforced endpoint is: {}", endpoint),
+                () -> LOGGER.info("No incoming enforced endpoint, will attempt federation."));
 
-        // Get the enforced endpoint (if set)
-        if(requestParams.has("endpoint") || requestParams.has("ENDPOINT")) {
-            this.enforcedEndpoint = (requestParams.has("endpoint")) ?
-                requestParams.getString("endpoint") :
-                requestParams.getString("ENDPOINT");
-
-            LOGGER.info("Incoming enforced endpoint is: {}", this.enforcedEndpoint);
-        } else {
-            LOGGER.info("No incoming enforced endpoint, will attempt federation.");
-        }
-
-     
         // Determine class matches
         List<ConfigEntry> classMatches = null;
         try {
-            classMatches = this.determineClasses(iri, response);
-        } catch(IOException exception) {
+            classMatches = this.determineClasses(request, response);
+        } catch (IOException exception) {
             return null;
         }
 
         // Get meta data
-        JSONObject metadata = getMeta(iri, classMatches, response);
+        JSONObject metadata = getMeta(request, classMatches, response);
 
         // Get time data
-        JSONArray timedata = getTime(iri, classMatches, response);
+        JSONArray timedata = getTime(request, classMatches, response);
 
         // Combine into a single JSON structure
         JSONObject result = new JSONObject();
@@ -163,11 +148,11 @@ public class QueryManager {
      * 
      * @throws IOException if response cannot be written to.
      */
-    private List<ConfigEntry> determineClasses(String iri, HttpServletResponse response) throws IOException {
+    private List<ConfigEntry> determineClasses(Request request, HttpServletResponse response) throws IOException {
         ClassHandler classHandler = new ClassHandler(this.configStore, this.kgClient);
         
         try {
-            return classHandler.determineClassMatches(iri, this.enforcedEndpoint);
+            return classHandler.determineClassMatches(request);
         } catch(IllegalStateException exception) {
             response.setStatus(Response.Status.NO_CONTENT.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
@@ -190,8 +175,8 @@ public class QueryManager {
      * 
      * @return formatted meta data.
      */
-    private JSONObject getMeta(String iri, List<ConfigEntry> classMatches, HttpServletResponse response) {
-        MetaHandler metaHandler = new MetaHandler(iri, this.enforcedEndpoint, this.configStore);
+    private JSONObject getMeta(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
+        MetaHandler metaHandler = new MetaHandler(request.getIri(), request.getEndpoint(), this.configStore);
         metaHandler.setClient(this.kgClient);
         return metaHandler.getData(classMatches, response);
     }
@@ -206,8 +191,8 @@ public class QueryManager {
      * 
      * @return formatted time series data.
      */
-    private JSONArray getTime(String iri, List<ConfigEntry> classMatches, HttpServletResponse response) {
-        TimeHandler timeHandler = new TimeHandler(iri, this.enforcedEndpoint, this.configStore);
+    private JSONArray getTime(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
+        TimeHandler timeHandler = new TimeHandler(request.getIri(), request.getEndpoint(), this.configStore);
         timeHandler.setClients(this.kgClient, this.tsClient, null);
         return timeHandler.getData(classMatches, response);
     }

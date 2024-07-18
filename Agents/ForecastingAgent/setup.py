@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='forecastingagent',
-    version='2.1.1',
+    version='2.2.1',
     author='Markus Hofmeister, Magnus Mueller',
     author_email='mh807@cam.ac.uk',
     license='MIT',
@@ -19,8 +19,8 @@ setup(
         'requests~=2.28.1',
         'configobj~=5.0.6',
         'fire~=0.4.0',
-        'py4jps~=1.0.37', 
-        'pyderivationagent~=1.5.0',
+        'py4jps~=1.0.38', 
+        'pyderivationagent~=1.6.0',
         # To ensure loading of GPU-trained model on CPU-only machines, specific 
         # versions of darts, torchmetrics and pytorch-lightning are required.
         'darts==0.21.0',

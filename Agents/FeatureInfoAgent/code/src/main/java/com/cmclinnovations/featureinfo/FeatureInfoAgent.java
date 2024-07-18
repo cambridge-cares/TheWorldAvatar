@@ -18,8 +18,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.cmclinnovations.featureinfo.config.ConfigStore;
+import com.cmclinnovations.featureinfo.objects.Request;
 import com.cmclinnovations.featureinfo.utils.TimeSeriesCreator;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -62,6 +64,11 @@ public class FeatureInfoAgent extends JPSAgent {
      * Manager class to run information gathering logic.
      */
     private QueryManager queryManager;
+
+    /**
+     * Object mapper used for Jackson serialisation and deserialiation.
+     */
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     
     /**
      * Perform required setup.
@@ -204,7 +211,8 @@ public class FeatureInfoAgent extends JPSAgent {
         }
 
         // Run information gathering logic
-        JSONObject result = this.getQueryManager().processRequest(requestParams, response);
+        Request request = OBJECT_MAPPER.readValue(requestParams.toString(),Request.class);
+        JSONObject result = this.getQueryManager().processRequest(request, response);
         if(result != null) {
             response.setStatus(Response.Status.OK.getStatusCode());
             response.getWriter().write(result.toString(2));

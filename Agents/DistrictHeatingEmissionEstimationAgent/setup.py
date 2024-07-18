@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='dhemission',
-    version='1.0.0',
+    version='1.1.0',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',
@@ -17,8 +17,8 @@ setup(
         'CoolProp~=6.5.0',
         'flask~=2.1.0',
         'pandas~=2.0.3',
-        'py4jps~=1.0.37', 
-        'pyderivationagent~=1.5.0'
+        'py4jps~=1.0.38', 
+        'pyderivationagent~=1.6.0'
     ],
     extras_require={
         "dev": [

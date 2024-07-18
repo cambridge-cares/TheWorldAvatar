@@ -133,6 +133,47 @@ def test_add_where_triple():
     # Test assertion
     assert builder.where_string == expected
 
+def test_add_optional_triple():
+    """
+    Tests the add_optional_triple method of QueryBuilder
+    """
+    # Initialise test cases
+    prefix = "base:"
+    subject = "sub"
+    predicate = "prop"
+    object_node = "obj"
+    # Initialise expected where clause
+    expected = "WHERE {"
+    # Initialise class
+    builder = QueryBuilder(0)
+    # Execute methods
+    # No variable
+    builder.add_optional_triple(prefix + subject, prefix + predicate, prefix + object_node)
+    expected += "OPTIONAL {" + prefix + subject + " " + prefix + predicate + " " + prefix + object_node + ".}\n"
+    # Subject is variable
+    builder.add_optional_triple(subject, prefix + predicate, prefix + object_node, 1)
+    expected += "OPTIONAL {?" + subject + " " + prefix + predicate + " " + prefix + object_node + ".}\n"
+    # Predicate is variable
+    builder.add_optional_triple(prefix + subject, predicate, prefix + object_node, 2)
+    expected += "OPTIONAL {" + prefix + subject + " ?" + predicate + " " + prefix + object_node + ".}\n"
+    # Object is variable
+    builder.add_optional_triple(prefix + subject, prefix + predicate, object_node, 3)
+    expected += "OPTIONAL {" + prefix + subject + " " + prefix + predicate + " ?"+ object_node + ".}\n"
+    # Subject and predicate are variables
+    builder.add_optional_triple(subject, predicate, prefix + object_node, 4)
+    expected += "OPTIONAL {?" + subject + " ?" + predicate + " " + prefix + object_node + ".}\n"
+    # Subject and object are variables
+    builder.add_optional_triple(subject, prefix + predicate, object_node, 5)
+    expected += "OPTIONAL {?" + subject + " " + prefix + predicate + " ?" + object_node + ".}\n"
+    # Predicate and object are variables
+    builder.add_optional_triple(prefix + subject, predicate, object_node, 6)
+    expected += "OPTIONAL {" + prefix + subject + " ?" + predicate + " ?" + object_node + ".}\n"
+    # All nodes are variables
+    builder.add_optional_triple(subject, predicate, object_node, 7)
+    expected += "OPTIONAL {?" + subject + " ?" + predicate + " ?" + object_node + ".}\n"
+    # Test assertion
+    assert builder.where_string == expected
+
 
 def test_add_where_triple_fail():
     """

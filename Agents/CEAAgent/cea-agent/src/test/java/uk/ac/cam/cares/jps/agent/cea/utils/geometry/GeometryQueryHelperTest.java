@@ -4,46 +4,94 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
+import uk.ac.cam.cares.jps.agent.cea.utils.FileReader;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class GeometryQueryHelperTest {
     @Test
-    public void testGetBuildingGeometry() {
-        OntologyURIHelper ontologyURIHelper = new OntologyURIHelper("CEAAgentConfig");
+    public void testGetBuildingHeight() {
+        JSONArray heightArray = new JSONArray().put(new JSONObject().put("height", "11.0"));
 
-        GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyURIHelper);
+        String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
+                "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
+                "uri.ontology.geo=test/\nuri.ontology.geofunction=test/\nuri.ontology.bldg=test/\nuri.ontology.grp=test/\nuri.ontology.gml=test/\n" +
+                "uri.ontology.geoliteral=test/\nuri.ontology.geofunction=test/\nuri.opengis.epsg=test/\nuri.service.geo=test/";
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+        try (MockedStatic<uk.ac.cam.cares.jps.agent.cea.utils.FileReader> fileReaderMock = mockStatic(uk.ac.cam.cares.jps.agent.cea.utils.FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            try (MockedConstruction<RemoteStoreClient> remoteStoreClientMock = mockConstruction(RemoteStoreClient.class,
+                    (mock, context) -> {
+                        when(mock.executeQuery(anyString())).thenReturn(heightArray);
+                    })) {
+                String result = GeometryQueryHelper.getBuildingHeight("", "");
 
-        String uriString = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn-open-data/sparql/cityobject/UUID_test/";
-        String type = "height";
-        String route = "test_route";
-        String value = "HeightMeasuredHeigh";
-        String result = "5.2";
+                assertTrue(result.equals("11.0"));
+            }
+        }
+    }
 
-        JSONArray expected = new JSONArray().put(new JSONObject().put(value, result));
-        JSONArray expectedBlank = new JSONArray();
+    @Test
+    public void testGetLod0Footprint() {
+        String geometry = "POLYGON((0 0, 0 4, 4 4, 4 0, 0 0))";
+        String testCRS = "4326";
 
-        try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
-            // test with mocked AccessAgentCaller when there is no height information store on knowledge graph to return
-            accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                    .thenReturn(expectedBlank);
+        JSONArray testArray = new JSONArray().put(new JSONObject().put("wkt", geometry).put("crs", testCRS));
 
-            assertTrue(geometryQueryHelper.getBuildingGeometry(uriString, route, type).equals("10.0"));
-            accessAgentCallerMock.verify(
-                    times(3), () -> AccessAgentCaller.queryStore(anyString(), anyString())
-            );
+        String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
+                "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
+                "uri.ontology.geo=test/\nuri.ontology.geofunction=test/\nuri.ontology.bldg=test/\nuri.ontology.grp=test/\nuri.ontology.gml=test/\n" +
+                "uri.ontology.geoliteral=test/\nuri.ontology.geofunction=test/\nuri.opengis.epsg=test/\nuri.service.geo=test/";
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+        try (MockedStatic<uk.ac.cam.cares.jps.agent.cea.utils.FileReader> fileReaderMock = mockStatic(uk.ac.cam.cares.jps.agent.cea.utils.FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            try (MockedConstruction<RemoteStoreClient> remoteStoreClientMock = mockConstruction(RemoteStoreClient.class,
+                    (mock, context) -> {
+                        when(mock.executeQuery(anyString())).thenReturn(testArray);
+                    })) {
+                try (MockedStatic<GeometryHandler> geometryHandlerMock = mockStatic(GeometryHandler.class)) {
+                    geometryHandlerMock.when(() -> GeometryHandler.extractFootprint(any(), anyString(), anyDouble()))
+                            .thenReturn(new ArrayList<>());
 
-            accessAgentCallerMock.when(() -> AccessAgentCaller.queryStore(anyString(), anyString()))
-                    .thenReturn((expected));
-            assertTrue(geometryQueryHelper.getBuildingGeometry(uriString, route, type).equals(result));
-            accessAgentCallerMock.verify(
-                    times(4), () -> AccessAgentCaller.queryStore(anyString(), anyString())
-            );
+                    CEAGeometryData result = GeometryQueryHelper.getLod0Footprint("", "", "10.0", true);
+
+                    assertNotNull(result);
+                    assertTrue(result.getHeight().equals("10.0"));
+                    assertTrue(result.getFootprint().isEmpty());
+                    assertTrue(result.getCrs().equals(testCRS));
+                    geometryHandlerMock.verify(times(1), () -> GeometryHandler.extractFootprint(any(), anyString(), anyDouble()));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCheckCRS84() {
+        JSONArray crsArray = new JSONArray().put(new JSONObject().put("crs", "CRS84"));
+
+        String content = "uri.ontology.ontocitygml=test/\nuri.ontology.om=test/\nuri.ontology.ontoubemmp=test/\nuri.ontology.rdf=test/\nuri.ontology.owl=test/\n" +
+                "uri.ontology.bot=test/\nuri.ontology.ontobuiltenv=test/\nuri.ontology.ontobuiltstructure=test/\nuri.ontology.ontotimeseries=test/\nuri.ontology.ontoems=test/\n" +
+                "uri.ontology.geo=test/\nuri.ontology.geofunction=test/\nuri.ontology.bldg=test/\nuri.ontology.grp=test/\nuri.ontology.gml=test/\n" +
+                "uri.ontology.geoliteral=test/\nuri.ontology.geofunction=test/\nuri.opengis.epsg=test/\nuri.service.geo=test/";
+        InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
+        try (MockedStatic<uk.ac.cam.cares.jps.agent.cea.utils.FileReader> fileReaderMock = mockStatic(uk.ac.cam.cares.jps.agent.cea.utils.FileReader.class)) {
+            fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
+            try (MockedConstruction<RemoteStoreClient> remoteStoreClientMock = mockConstruction(RemoteStoreClient.class,
+                    (mock, context) -> {
+                        when(mock.executeQuery(anyString())).thenReturn(crsArray);
+                    })) {
+                assertTrue(GeometryQueryHelper.checkCRS84(""));
+            }
         }
     }
 }
