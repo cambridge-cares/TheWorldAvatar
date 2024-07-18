@@ -33,4 +33,4 @@ FROM base AS test_opcua_agent
 # Copy tests
 COPY ./tests ./tests
     
-CMD pytest -o log_cli=true
+CMD pytest --log-cli-level=INFO
