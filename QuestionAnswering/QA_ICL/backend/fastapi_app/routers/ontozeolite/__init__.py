@@ -37,27 +37,4 @@ async def get_sbu_all(
     return ontozeolite_store.get_sbu_all()
 
 
-class CIFResponse(Response):
-    media_type = "chemical/x-cif"
-
-
-@router.get(
-    "/{iri:path}/cif",
-    summary="Get zeolite's CIF geometry file",
-    response_class=CIFResponse,
-)
-async def getZeoliteFrameworkCIF(
-    iri: str, cif_manager: Annotated[CIFManager, Depends(get_cif_manager)]
-):
-    cif = cif_manager.get([iri])[0]
-    if not cif:
-        raise HTTPException(
-            status_code=404, detail=f"CIF not found for zeolite `{iri}`"
-        )
-    return CIFResponse(
-        content=cif,
-        headers={"Content-Disposition": 'attachment; filename="zeolite.cif"'},
-    )
-
-
 router.include_router(zeolite_framework_router, prefix="/zeolite-frameworks")

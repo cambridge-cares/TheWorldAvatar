@@ -26,9 +26,7 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
             key,
             lst
               .map(x => x.value)
-              .filter(
-                (value, index, array) => array.indexOf(value) === index
-              ),
+              .filter((value, index, array) => array.indexOf(value) === index),
           ] as [string, string[]]
       ),
   ]

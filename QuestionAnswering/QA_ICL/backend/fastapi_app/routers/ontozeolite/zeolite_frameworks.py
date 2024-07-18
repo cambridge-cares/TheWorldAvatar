@@ -13,6 +13,7 @@ from model.web.ontozeolite import (
     XRDPeakRequest,
     ZeoliteFrameworkRequest,
 )
+from routers.ontozeolite.base import CIFResponse
 from services.mol_vis.cif import CIFManager, get_cif_manager
 from services.rdf_stores.ontozeolite import (
     OntozeoliteRDFStore,
@@ -106,6 +107,25 @@ async def getZeoliteFrameworks(
     ],
 ):
     return ontozeolite_store.get_zeolite_frameworks(framework_req)
+
+
+@router.get(
+    "/{iri:path}/cif",
+    summary="Get zeolite's CIF geometry file",
+    response_class=CIFResponse,
+)
+async def getZeoliteFrameworkCIF(
+    iri: str, cif_manager: Annotated[CIFManager, Depends(get_cif_manager)]
+):
+    cif = cif_manager.get([iri])[0]
+    if not cif:
+        raise HTTPException(
+            status_code=404, detail=f"CIF not found for zeolite `{iri}`"
+        )
+    return CIFResponse(
+        content=cif,
+        headers={"Content-Disposition": 'attachment; filename="zeolite.cif"'},
+    )
 
 
 @router.get(
