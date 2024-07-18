@@ -51,6 +51,11 @@ app.prepare().then(() => {
   server.use(keycloak.middleware());
 
   server.get('/api/userinfo', keycloak.protect(), (req, res) => {
+    const username = req.kauth.grant.access_token.content.preferred_username;
+    const firstName = req.kauth.grant.access_token.content.given_name;
+    const lastName = req.kauth.grant.access_token.content.family_name;
+    res.json({ username, firstName, lastName });
+  });
   server.get('/logout', (req, res) => {
     req.logout(); // This tells Keycloak to logout
     req.session.destroy(() => { // This destroys the session
