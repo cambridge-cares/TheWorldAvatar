@@ -11,6 +11,7 @@ from psycopg2 import sql
 from OPCUAAgent import sql_client
 
 class Test_sql_client:
+    # set up temp properties file with default postgresql information
     def setUp(self):
         self._temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = pathlib.Path(self._temp_dir.name)
@@ -21,6 +22,7 @@ class Test_sql_client:
                                               'host=postgres_test\n' +
                                               'port=5432\n')
         
+    # set up temp properties file with postgresql information and non existent db name
     def setUp_fail_non_existent_db(self):
         self._temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = pathlib.Path(self._temp_dir.name)
@@ -31,6 +33,7 @@ class Test_sql_client:
                                               'host=postgres_test\n' +
                                               'port=5432\n')
         
+    # set up temp properties file with postgresql information and new db called test
     def setUp_new_db(self):
         self._temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = pathlib.Path(self._temp_dir.name)
@@ -40,14 +43,17 @@ class Test_sql_client:
                                               'password=postgres\n' +
                                               'host=postgres_test\n' +
                                               'port=5432\n')
-    
+        
+    # write data to temp file
     def _create_temporary_file_with_data(self, file_path, content):
         with open(file_path, 'w') as ifile:
             ifile.write(content)
-
+            
+    # clean up temp directory and files
     def tearDown(self):
         self._temp_dir.cleanup()
         
+    # test create_database_if_not_exist without environment variable POSTGRES_CONF
     def test_create_database_if_not_exist_fail(self):
         self.setUp_new_db()
         #sleep test to wait for postgresql container to spin up
@@ -56,7 +62,8 @@ class Test_sql_client:
             sql_client.create_database_if_not_exist()
         assert "Error while connecting to PostgreSQL, do check the environment variable and properties file..." in str(excinfo.value)
         self.tearDown()
-            
+        
+    # test create_database_if_not_exist with environment variable POSTGRES_CONF pointing to the temp file containing postgresql information
     def test_create_database_if_not_exist_success(self):
         self.setUp_new_db()
         #sleep test to wait for postgresql container to spin up
@@ -66,7 +73,8 @@ class Test_sql_client:
             connection = sql_client.connect_to_database()
         assert connection != None
         assert "test" == connection.info.dbname
-          
+        
+    # test connect_to_database with non-existent database
     def test_connect_to_database_fail(self):
         self.setUp_fail_non_existent_db()
         #sleep test to wait for postgresql container to spin up
@@ -77,6 +85,7 @@ class Test_sql_client:
             assert "FATAL:  database \"non_existent_db\" does not exist" in str(excinfo.value)
         self.tearDown()
         
+    # test connect_to_database with default database
     def test_connect_to_database_success(self):
         self.setUp()
         #sleep test to wait for postgresql container to spin up
@@ -87,6 +96,7 @@ class Test_sql_client:
         assert "postgres" == connection.info.dbname
         self.tearDown()
         
+    # test create_if_not_exist_and_insert by inserting a mock timeseries data into the database and query the database to check whether the timeseries data exist
     def test_create_if_not_exist_and_insert(self):
         self.setUp_new_db()
         time.sleep(3)
