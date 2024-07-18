@@ -131,20 +131,18 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
           }}
         />
         <Divider orientation="vertical" flexItem />
-        {props.hasScenario &&
+        {currentScenarioName &&
           <RibbonComponentToggle
             key="scenario" id="scenario"
-            icon="huboutlined"
             tooltip="Select another scenario."
             initialState={false}
             action={props.toggleScenarioSelection}
-          />
-        }
-        { currentScenarioName &&
-          <div className={styles.selectedScenarioDisplay}>
-            <span>{currentScenarioName}</span>
-            <IconComponent icon={scenarioTypeIcon(currentScenarioType)} classes={styles.navbarScenarioIcon} />
-          </div>
+          >
+            <div className={styles.selectedScenarioDisplay}>
+              <span>{currentScenarioName}</span>
+              <IconComponent icon={scenarioTypeIcon(currentScenarioType)} classes={styles.navbarScenarioIcon} />
+            </div>
+          </RibbonComponentToggle>
         }
       </div>)
   }

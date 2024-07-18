@@ -10,10 +10,11 @@ import IconComponent from 'ui/graphic/icon/icon';
 
 interface RibbonComponentToggleProps {
     id: string,
-    icon: string,
+    icon?: string,
     text?: string,
     tooltip: string,
     initialState: boolean,
+    children?: React.ReactNode,
     action: (state: boolean) => void
 }
 
@@ -47,9 +48,12 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
 
                 <>
                     <div className={classNames.join(" ")}>
-                        <div className={styles.ribbonComponentIcon}>
-                            <IconComponent icon={props.icon} />
-                        </div>
+                        {props.icon &&
+                            <div className={styles.ribbonComponentIcon}>
+                                <IconComponent icon={props.icon} />
+                            </div>
+                        }
+                        { props.children }
                         {props.text &&
                             <div className={styles.ribbonComponentText}>
                                 {props.text}
