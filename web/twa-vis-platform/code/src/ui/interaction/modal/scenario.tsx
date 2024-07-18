@@ -19,6 +19,9 @@ interface ScenarioModalProperties {
   setShowState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+export function scenarioTypeIcon(scenarioType: string) {
+  return scenarioType ? `images/credo-misc/${scenarioType}.svg` : "images/defaults/icons/about.svg";
+}
 /**
  * A modal component for users to select their scenario
  * 
@@ -45,9 +48,6 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
     console.log("Refreshed")
   };
 
-  function scenarioTypeIcon(scenario: ScenarioDefinition) {
-    return scenario.type ? `images/credo-misc/${scenario.type}.svg` : "images/defaults/icons/about.svg";
-  }
 
   return (
     <Dialog
@@ -62,7 +62,7 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
         {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
           <button key={scenario.name + index} value={scenario.id} className={styles["option-container"]} onClick={handleChange}>
             <div className={styles["icon-container"]}>
-              <IconComponent icon={scenarioTypeIcon(scenario)} classes={styles.icon} />
+              <IconComponent icon={scenarioTypeIcon(scenario.type)} classes={styles.icon} />
             </div>
             <div className={styles.content}>
               <span className={styles.title}><b>{scenario.name}</b></span>

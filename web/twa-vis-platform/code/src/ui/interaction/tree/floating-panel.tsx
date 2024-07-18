@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { DataStore } from 'io/data/data-store';
 import { getIndex, setIndex } from 'state/floating-panel-slice';
-import { getFeatures, getIri, getProperties, getScenario, getStack, MapFeaturePayload } from 'state/map-feature-slice';
+import { getFeatures, getIri, getProperties, getScenarioID, getStack, MapFeaturePayload } from 'state/map-feature-slice';
 import { MapLayerGroup } from 'types/map-layer';
 import { IconSettings, LegendSettings } from 'types/settings';
 import { generateFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
@@ -46,7 +46,7 @@ export default function FloatingPanelContainer(
   const selectedIri = useSelector(getIri);
   const selectedProperties = useSelector(getProperties);
   const selectedStack = useSelector(getStack);
-  const selectedScenario = useSelector(getScenario);
+  const selectedScenario = useSelector(getScenarioID);
   const availableFeatures: MapFeaturePayload[] = useSelector(getFeatures);
   //TODO fetch from api
   const buttonClass = styles.headButton;
