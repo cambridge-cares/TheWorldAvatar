@@ -80,42 +80,4 @@ public class DataParserTest {
         assertEquals(testList.size(), result.size());
         assertIterableEquals(testList, result);
     }
-
-    @Test
-    public void testCalculateAnnual() {
-        List<String> iris = new ArrayList<>();
-        String iri1 = "test_iri_1";
-        String iri2 = "test_iri_2";
-        iris.add(iri1);
-        iris.add(iri2);
-
-        Double value1 = 1.687;
-        Double value2 = 2.141;
-        Double value3 = 3.621;
-        Double value4 = 4.7;
-
-        List<List<?>> values = new ArrayList<>();
-        List<Double> test_list_1 = new ArrayList<>();
-        test_list_1.add(value1);
-        test_list_1.add(value2);
-
-        List<Double> test_list_2 = new ArrayList<>();
-        test_list_2.add(value3);
-        test_list_2.add(value4);
-
-        values.add(test_list_1);
-        values.add(test_list_2);
-
-        List<OffsetDateTime> times = new ArrayList<>();
-        times.add(OffsetDateTime.now());
-        times.add(OffsetDateTime.now());
-        TimeSeries<OffsetDateTime> timeSeries = new TimeSeries<>(times, iris, values);
-
-        Double expected1 = 3.83;
-        Double expected2 = 8.32;
-
-        assertEquals(expected1.toString(), DataParser.calculateAnnual(timeSeries, iri1));
-        assertEquals(expected2.toString(), DataParser.calculateAnnual(timeSeries, iri2));
-
-    }
 }

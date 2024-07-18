@@ -1,0 +1,21 @@
+Provide a catalog of compounds exhibiting {PropertyName} below {value}.
+Enumerate molecules wherein the {PropertyName} is less than {value}.
+Offer a compilation of species with {PropertyName} that falls under {value}.
+Present a roster of substances having a {PropertyName} lower than {value}.
+List molecules with {PropertyName} beneath the threshold of {value}.
+Outline a collection of compounds demonstrating {PropertyName} below {value}.
+Identify species with {PropertyName} that is lesser than {value}
+Detail a register of substances displaying a {PropertyName} lower than {value}.
+Tabulate molecules exhibiting {PropertyName} below the specified {value}.
+Enlist species with {PropertyName} falling within the range of less than {value}
+Catalogue compounds where the {PropertyName} is lower than {value}.
+Compile a list of molecules with a {PropertyName} that is below {value}.
+Provide an inventory of species showing {PropertyName} below the given {value}
+Offer a summary of substances with {PropertyName} lesser than {value}.
+Present a directory of compounds demonstrating {PropertyName} beneath {value}.
+Identify species with a {PropertyName} that is lower than {value}.
+Detail a compilation of substances exhibiting a {PropertyName} lower than {value}.
+Tabulate molecules with {PropertyName} below the designated {value}.
+Enlist species displaying {PropertyName} falling under the stipulated {value}.
+Catalog compounds wherein the {PropertyName} is lower than the specified {value}
+Give me a list of molecules with {PropertyName} lower than {value}.

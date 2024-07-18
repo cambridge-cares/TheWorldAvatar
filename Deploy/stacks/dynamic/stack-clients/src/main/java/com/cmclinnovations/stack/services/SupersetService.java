@@ -63,6 +63,8 @@ public class SupersetService extends ContainerService {
                 getEnvironmentVariable("SUPERSET_FIRSTNAME"), getEnvironmentVariable("SUPERSET_LASTNAME"),
                 getEnvironmentVariable("SUPERSET_EMAIL"), getEnvironmentVariable("DEFAULT_SECRET_KEY_FILE"),
                 getEnvironmentVariable("SUPERSET_CREDENTIAL_PROVIDER"));
+
+        addEndpointConfig(endpointConfig);
     }
 
     @Override
@@ -116,7 +118,7 @@ public class SupersetService extends ContainerService {
     }
 
     @Override
-    protected void doPreStartUpConfigurationImpl() {
+    protected void doPreStartUpConfiguration() {
         writeSupersetFlaskConfig();
     }
 
@@ -136,9 +138,6 @@ public class SupersetService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-
-        writeEndpointConfig(endpointConfig);
-
         makeUser(endpointConfig);
 
         executeCommand("sh", "-c",

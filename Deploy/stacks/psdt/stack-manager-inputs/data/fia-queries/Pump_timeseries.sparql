@@ -1,0 +1,20 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+SELECT ?Measurement ?Name ?Unit
+WHERE {
+  {
+    [IRI] <https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities> ?q .
+    ?q om:hasValue ?Measurement .
+    ?Measurement rdfs:label ?Name .
+    ?Measurement om:hasUnit ?u .
+    ?u om:symbol ?Unit
+  }
+  UNION
+  {
+    [IRI] <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#hasUtilityCost> ?q .
+    ?q om:hasValue ?Measurement .
+    ?Measurement rdfs:label ?Name .
+    ?Measurement om:hasUnit ?u .
+    ?u om:symbol ?Unit
+  }
+}

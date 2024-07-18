@@ -15,14 +15,6 @@
                 "Mounts": [
                     {
                         "Type": "volume",
-                        "Source": "geoserver_datadir",
-                        "Target": "/var/geoserver/datadir",
-                        "VolumeOptions": {
-                            "NoCopy": false
-                        }
-                    },
-                    {
-                        "Type": "volume",
                         "Source": "geotiffs",
                         "Target": "/geotiffs",
                         "ReadOnly": false
@@ -37,6 +29,11 @@
                         "Type": "volume",
                         "Source": "geoserver_datadir",
                         "Target": "/opt/geoserver_data"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_plugins",
+                        "Target": "/opt/additional_libs/"
                     }
                 ],
                 "Configs": [

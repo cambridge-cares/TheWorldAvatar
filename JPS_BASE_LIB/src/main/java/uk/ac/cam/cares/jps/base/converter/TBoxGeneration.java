@@ -1,11 +1,8 @@
 package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,14 +13,13 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jfree.ui.ExtensionFileFilter;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.Dialogs;
@@ -133,6 +129,9 @@ public class TBoxGeneration implements ITBoxGeneration {
 		} catch (OWLOntologyStorageException e) {
 			logger.error("OWLOntologyStorageException occured.");
 			throw new JPSRuntimeException(e);
+		} catch (CsvValidationException e) {
+			logger.error("CsvValidationException occured.");
+			throw new JPSRuntimeException(e);
 		}
 	}
 
@@ -160,6 +159,9 @@ public class TBoxGeneration implements ITBoxGeneration {
 		} catch (OWLOntologyStorageException e) {
 			logger.error("OWLOntologyStorageException occured.");
 			throw new JPSRuntimeException(e);
+		} catch (CsvValidationException e) {
+			logger.error("CsvValidationException occured.");
+			throw new JPSRuntimeException(e);
 		}
 	}
 
@@ -169,9 +171,10 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
 	 * @throws OWLOntologyCreationException
+	 * @throws CsvValidationException
 	 */
 	private void readCSVTemplate(String csvFileNamePlusPath)
-			throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+			throws IOException, JPSRuntimeException, OWLOntologyCreationException, CsvValidationException {
 		storeRelationships(csvFileNamePlusPath);
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int countLine = 0;
@@ -192,9 +195,10 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
 	 * @throws OWLOntologyCreationException
+	 * @throws CsvValidationException
 	 */
 	private void storeRelationships(String csvFileNamePlusPath)
-			throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+			throws IOException, JPSRuntimeException, OWLOntologyCreationException, CsvValidationException {
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int rowCount = 0;
 		for (List<String> singleLine : brSourceCtml) {

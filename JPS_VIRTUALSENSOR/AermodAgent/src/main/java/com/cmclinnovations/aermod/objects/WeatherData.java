@@ -1,5 +1,7 @@
 package com.cmclinnovations.aermod.objects;
 
+import org.glassfish.hk2.api.Self;
+
 public class WeatherData {
     // comments on the right indicates unit stored in KG
     private double temperature; // celcius
@@ -29,10 +31,12 @@ public class WeatherData {
     }
 
     public long getTemperatureInFahrenheit() {
-        if (temperature < 0) {
-            throw new RuntimeException("Temperatures below zero degree Celsius are not supported yet");
+        long tempFahrenheit = Math.round((temperature * 1.8) + 32);
+        // there are only 3 spaces for temperature
+        if (tempFahrenheit < -100) {
+            throw new RuntimeException("Calculated temperature is less than -100: " + tempFahrenheit);
         }
-        return Math.round((temperature * 1.8) + 32);
+        return tempFahrenheit;
     }
 
     public long getWindSpeedInKnots() {
@@ -44,7 +48,12 @@ public class WeatherData {
     }
 
     public long getWindDirectionInTensOfDegrees() {
-        return Math.round(windDirection / 10);
+        long wd = Math.round(windDirection / 10);
+        if (wd == 0 && getWindSpeedInKnots() > 0) {
+            // wind direction can only be zero if it is calm (wind speed = 0)
+                wd = 36;
+            }
+        return wd;
     }
 
     /**

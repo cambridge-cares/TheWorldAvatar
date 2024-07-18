@@ -1,0 +1,23 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "./",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "buildings",
+            "subdirectory": "buildings",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"],
+                    "-unsetFieldWidth": []
+                }
+            }
+        }
+    ]
+}

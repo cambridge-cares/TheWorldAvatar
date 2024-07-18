@@ -1,0 +1,10 @@
+
+POST http://localhost:3838/dispersion-interactor/ScheduledDispersion
+?ewkt=SRID=3857;POLYGON((1100000 7074000,1120000 7074000,1120000 7094000, 1100000 7094000,1100000 7074000))
+&nx=100
+&ny=100
+&z=0
+&z=50
+&label=Hamburg
+&delayMinutes=0
+&intervalMinutes=30

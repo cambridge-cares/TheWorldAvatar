@@ -5,7 +5,7 @@
 #
 # Author: Michael Hillman (mdhillman<@>cmcl.io)
 
-CHANGELOG="./web/twa-vis-framework/CHANGELOG.md"
+CHANGELOG="./web/twa-vis-framework/library/CHANGELOG.md"
 regexp="^#\s.*"
 SECTION=0
 

@@ -1,0 +1,25 @@
+{
+    "services": {
+        "includes": [
+            "grafana",
+            "dh-instantiation",
+            "forecasting-agent",
+            "dh-optimisation-agent",
+            "dh-emission-agent",
+            "dh-optimisation-trigger-agent",
+			"file-server",
+			"weather-agent",
+			"dispersion-interactor",
+			"aermod-agent",
+			"python-service",
+			"visualisation",
+			"feature-info-agent"
+        ],
+        "excludes": [
+        ]
+    },
+    "volumes": {
+        "vis-files": "visualisation",
+        "fia-queries": "fia-queries"
+    }
+}

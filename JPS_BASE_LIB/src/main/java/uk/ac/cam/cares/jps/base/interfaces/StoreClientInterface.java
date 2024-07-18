@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.interfaces;
 
-import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 
 /**

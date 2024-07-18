@@ -162,8 +162,7 @@ public class Http {
 //            return null;
 //        }
         // to preserve line endings, use this code
-        try {
-            InputStream inputStream = req.getInputStream();
+        try (InputStream inputStream = req.getInputStream()){
             return FileUtil.inputStreamToString(inputStream);
         } catch (IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);

@@ -24,21 +24,21 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 # Copy in the properties file
-COPY ./config/client.properties /root/client.properties
+COPY ./config/client.properties /app/config/client.properties
 
 # Copy in the second properties file
-COPY ./config/species.properties /root/species.properties
+COPY ./config/species.properties /app/config/species.properties
 
 # Set the required environment variable for ts client properties
-ENV CLIENT_PROPERTIES="/root/client.properties"
+ENV CLIENT_PROPERTIES="/app/config/client.properties"
 
 # Set the required environment variable for species properties
-ENV SPECIES_PROPERTIES="/root/species.properties"
+ENV SPECIES_PROPERTIES="/app/config/species.properties"
 
 # Set the environment variable that points to where the email agent is located at
 ENV EMAIL_AGENT_URL="http://host.docker.internal:8080/email_agent"
 
-COPY --from=builder /root/RFIDQueryAgentCode/output/rfid-query-agent##1.1.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/RFIDQueryAgentCode/output/rfid-query-agent##1.2.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

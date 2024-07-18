@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   forecasting-agent-w-overwrite:
-    image:  ghcr.io/cambridge-cares/forecasting-agent-test-debug:2.1.1
+    image:  ghcr.io/cambridge-cares/forecasting-agent-test-debug:2.2.1
     build:
       context: .
       target: debug_test
@@ -31,7 +31,7 @@ services:
       - ./tests:/app/tests
 
   forecasting-agent-wo-overwrite:
-    image:  ghcr.io/cambridge-cares/forecasting-agent-test-debug:2.1.1
+    image:  ghcr.io/cambridge-cares/forecasting-agent-test-debug:2.2.1
     build:
       context: .
       target: debug_test

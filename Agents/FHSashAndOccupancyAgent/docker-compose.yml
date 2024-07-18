@@ -3,7 +3,7 @@ version: "3.9"
 services:
   fh-sash-and-occupancy-agent:
     container_name: fh-sash-and-occupancy-agent
-    image: fh-sash-and-occupancy-agent:1.1.0
+    image: fh-sash-and-occupancy-agent:1.2.0
     build:
       context: .
       target: agent
