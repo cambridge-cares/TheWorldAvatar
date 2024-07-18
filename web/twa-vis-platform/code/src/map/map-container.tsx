@@ -12,7 +12,7 @@ import { DataStore } from 'io/data/data-store';
 import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
-import { getScenario } from 'state/map-feature-slice';
+import { getScenarioID } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import { MapSettings } from 'types/settings';
 import ScenarioModal from 'ui/interaction/modal/scenario';
@@ -40,7 +40,7 @@ export default function MapContainer(props: MapContainerProps) {
   const [showDialog, setShowDialog] = useState<boolean>(!!props.scenarios);
   const [mapData, setMapData] = useState<DataStore>(null);
   const mapSettings: MapSettings = JSON.parse(props.settings);
-  const selectedScenario = useSelector(getScenario);
+  const selectedScenario = useSelector(getScenarioID);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
   const dimensionSliderValue = useSelector((state: ReduxState) => state.dimensionSlider.value);
 

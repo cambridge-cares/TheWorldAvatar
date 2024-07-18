@@ -7,7 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getScenarioDefinitions, setScenario, setScenarioDefinitions } from 'state/map-feature-slice';
+import { getScenarioDefinitions, setScenarioID, setScenarioName, setScenarioType, setScenarioDefinitions } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import IconComponent from 'ui/graphic/icon/icon';
 import { getScenarios } from '../../../utils/getScenarios';
@@ -30,7 +30,11 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
   const dispatch = useDispatch();
 
   const handleChange = (event: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch(setScenario(event.currentTarget.value));
+    const scenarioID = event.currentTarget.value;
+    const selectedScenario: ScenarioDefinition = (scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).find(scenario => scenario.id === scenarioID);
+    dispatch(setScenarioID(scenarioID));
+    dispatch(setScenarioName(selectedScenario.name))
+    dispatch(setScenarioType(selectedScenario.type))
     props.setShowState(false);
   };
 
