@@ -23,7 +23,7 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
     const dispatch = useDispatch();
 
     const classNames = [styles.ribbonComponentInner];
-    if (toggled?.selection != null && toggled.selection === true) {
+    if (props.icon && toggled?.selection != null && toggled.selection === true) {
         classNames.push(styles.toggled);
     } else if (toggled?.selection == null && props.initialState) {
         classNames.push(styles.toggled);
@@ -53,7 +53,7 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
                                 <IconComponent icon={props.icon} />
                             </div>
                         }
-                        { props.children }
+                        {props.children}
                         {props.text &&
                             <div className={styles.ribbonComponentText}>
                                 {props.text}
