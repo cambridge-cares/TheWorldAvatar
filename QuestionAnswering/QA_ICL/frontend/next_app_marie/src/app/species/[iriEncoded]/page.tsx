@@ -24,7 +24,11 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
           <MolViewer type='xyz' data={xyz} />
         </section>
         <section>
-          <h2>Identifiers</h2>
+          <h2 id='identifiers'>
+            <a href='#identifiers' className='hover:underline'>
+              Identifiers
+            </a>
+          </h2>
           {Object.entries(data.identifiers)
             .filter(([_, lst]) => lst.length > 0)
             .map(([key, lst], i) => (
@@ -44,12 +48,44 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
             ))}
         </section>
         <section>
-          <h2>Properties</h2>
+          <h2 id='chemical-classes'>
+            <a href='#chemical-classes' className='hover:underline'>
+              Chemical classifications
+            </a>
+          </h2>
+          <ul className='list-disc list-inside'>
+            {data.chemical_classes.map((node, i) => (
+              <li key={i}>{node.label}</li>
+            ))}
+          </ul>
+        </section>
+        <section>
+          <h2 id='uses'>
+            <a href='#uses' className='hover:underline'>
+              Uses
+            </a>
+          </h2>
+          <ul className='list-disc list-inside'>
+            {data.uses.map((node, i) => (
+              <li key={i}>{node.label}</li>
+            ))}
+          </ul>
+        </section>
+        <section>
+          <h2 id='properties'>
+            <a href='#properties' className='hover:underline'>
+              Properties
+            </a>
+          </h2>
           {Object.entries(data.properties)
             .filter(([_, lst]) => lst.length > 0)
             .map(([key, lst], i) => (
               <div key={i} className='mb-2'>
-                <h3 className='font-semibold'>{key}</h3>
+                <h3 id={`properties-${key}`} className='font-semibold'>
+                  <a href={`#properties-${key}`} className='hover:underline'>
+                    {key}
+                  </a>
+                </h3>
                 <React.Suspense>
                   <PropertyTable rows={lst} />
                 </React.Suspense>
