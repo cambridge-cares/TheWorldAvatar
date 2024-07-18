@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import org.postgis.Point;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
@@ -51,10 +52,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
 
     @Override
     public void initIRIs() {
-        bearingIRI = getBearingIRI();
-        speedIRI = getSpeedIRI();
-        altitudeIRI = getAltitudeIRI();
-        pointIRI = getPointIRI();
+        getIrisFromKg();
 
         if (bearingIRI.isEmpty() && speedIRI.isEmpty() && altitudeIRI.isEmpty() && pointIRI.isEmpty()) {
             bearingIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_" + UUID.randomUUID();
@@ -92,7 +90,12 @@ public class LocationDataProcessor extends SensorDataProcessor {
         geomLocationList.clear();
     }
 
-    String getBearingIRI() {
+    @Override
+    void getIrisFromKg() {
+        Var bearing = Var.alloc("bearing");
+        Var altitude = Var.alloc("altitude");
+        Var speed = Var.alloc("speed");
+        Var point = Var.alloc("point");
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("slma", SLA)
@@ -104,75 +107,109 @@ public class LocationDataProcessor extends SensorDataProcessor {
                 .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Bearing")
                 .addWhere("?Bearing", "rdf:type", "slma:Bearing")
-                .addWhere("?Bearing", "om:hasValue", VAR_O);
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
-
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
-    }
-
-    String getAltitudeIRI() {
-
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma", SLA)
-                .addPrefix("saref", SAREF)
-                .addPrefix("ontodevice", ONTODEVICE)
-                .addPrefix("rdf", RDF)
-                .addPrefix("om", OM)
-                .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
-                .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
+                .addWhere("?Bearing", "om:hasValue", bearing)
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Altitude")
                 .addWhere("?Altitude", "rdf:type", "slma:Altitude")
-                .addWhere("?Altitude", "om:hasValue", VAR_O);
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
-
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
-    }
-
-    String getSpeedIRI() {
-
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma", SLA)
-                .addPrefix("saref", SAREF)
-                .addPrefix("ontodevice", ONTODEVICE)
-                .addPrefix("rdf", RDF)
-                .addPrefix("om", OM)
-                .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
-                .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
+                .addWhere("?Altitude", "om:hasValue", altitude)
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Speed")
                 .addWhere("?Speed", "rdf:type", "om:Speed")
-                .addWhere("?Speed", "om:hasValue", VAR_O);
+                .addWhere("?Speed", "om:hasValue", speed)
+                .addWhere("?GPSDevice", "ontodevice:hasGeoLocation", point)
+                .addWhere(point, "rdf:type", "sf:Point");
 
         SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
-
+                .addVar(bearing).addVar(altitude).addVar(speed).addVar(point).addWhere(wb);
         JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
+        if (queryResult.isEmpty()) {
+            return;
+        }
+        bearingIRI = queryResult.getJSONObject(0).optString("bearing");
+        altitudeIRI = queryResult.getJSONObject(0).optString("altitude");
+        speedIRI = queryResult.getJSONObject(0).optString("speed");
+        pointIRI = queryResult.getJSONObject(0).optString("point");
     }
 
-    String getPointIRI() {
-
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma", SLA)
-                .addPrefix("saref", SAREF)
-                .addPrefix("ontodevice", ONTODEVICE)
-                .addPrefix("rdf", RDF)
-                .addPrefix("om", OM)
-                .addPrefix("sf", SF)
-                .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
-                .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
-                .addWhere("?GPSDevice", "ontodevice:hasGeoLocation", VAR_O)
-                .addWhere(VAR_O, "rdf:type", "sf:Point");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
-
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
-    }
+//    String getBearingIRI() {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
+//                .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
+//                .addWhere("?GPSDevice", "ontodevice:measures", "?Bearing")
+//                .addWhere("?Bearing", "rdf:type", "slma:Bearing")
+//                .addWhere("?Bearing", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
+//
+//    String getAltitudeIRI() {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
+//                .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
+//                .addWhere("?GPSDevice", "ontodevice:measures", "?Altitude")
+//                .addWhere("?Altitude", "rdf:type", "slma:Altitude")
+//                .addWhere("?Altitude", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
+//
+//    String getSpeedIRI() {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
+//                .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
+//                .addWhere("?GPSDevice", "ontodevice:measures", "?Speed")
+//                .addWhere("?Speed", "rdf:type", "om:Speed")
+//                .addWhere("?Speed", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
+//
+//    String getPointIRI() {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addPrefix("sf", SF)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
+//                .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
+//                .addWhere("?GPSDevice", "ontodevice:hasGeoLocation", VAR_O)
+//                .addWhere(VAR_O, "rdf:type", "sf:Point");
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
 }

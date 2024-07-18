@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
@@ -14,7 +15,7 @@ import java.util.*;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
-public class RelativeBrightnessProcessor extends SensorDataProcessor{
+public class RelativeBrightnessProcessor extends SensorDataProcessor {
     private String relativeBrightnessIRI;
 
     private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
@@ -42,7 +43,8 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor{
 
     @Override
     public void initIRIs() {
-        relativeBrightnessIRI = getRelativeBrightnessIRI();
+        getIrisFromKg();
+
         if (relativeBrightnessIRI.isEmpty()) {
             relativeBrightnessIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/relativeBrightness_" + UUID.randomUUID();
 
@@ -68,24 +70,50 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor{
         brightnessList.clear();
     }
 
-    String getRelativeBrightnessIRI()  {
+    @Override
+    void getIrisFromKg() {
+        Var VAR_O = Var.alloc("o");
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("slma", SLA)
-                .addPrefix ("saref",SAREF)
+                .addPrefix("saref", SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
-                .addPrefix("om",OM)
-                .addWhere(smartphoneIRINode,"ontodevice:hasScreenBrightness","?relativeBrightness")
-                .addWhere("?relativeBrightness","rdf:type","ontodevice:RelativeBrightness")
-                .addWhere("?relativeBrightness","rdf:type","?om_ratio")
+                .addPrefix("om", OM)
+                .addWhere(smartphoneIRINode, "ontodevice:hasScreenBrightness", "?relativeBrightness")
+                .addWhere("?relativeBrightness", "rdf:type", "ontodevice:RelativeBrightness")
+                .addWhere("?relativeBrightness", "rdf:type", "?om_ratio")
                 .addWhere("?om_ratio", "rdf:type", "om:Ratio")
-                .addWhere("?om_ratio","om:hasValue", VAR_O);
+                .addWhere("?om_ratio", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
 
-        JSONArray queryResult=storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
+        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+        if (queryResult.isEmpty()) {
+            return;
+        }
+        relativeBrightnessIRI = queryResult.getJSONObject(0).optString("o");
     }
+
+//    String getRelativeBrightnessIRI() {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "ontodevice:hasScreenBrightness", "?relativeBrightness")
+//                .addWhere("?relativeBrightness", "rdf:type", "ontodevice:RelativeBrightness")
+//                .addWhere("?relativeBrightness", "rdf:type", "?om_ratio")
+//                .addWhere("?om_ratio", "rdf:type", "om:Ratio")
+//                .addWhere("?om_ratio", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
 }

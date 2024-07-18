@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
@@ -43,7 +44,7 @@ public class DBFSDataProcessor extends SensorDataProcessor {
 
     @Override
     public void initIRIs() {
-        dbfsIRI = getSoundPressureLevelIRI();
+        getIrisFromKg();
 
         if (dbfsIRI.isEmpty()) {
             dbfsIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_dbfs_" + UUID.randomUUID();
@@ -70,7 +71,9 @@ public class DBFSDataProcessor extends SensorDataProcessor {
         dBFSList.clear();
     }
 
-    String getSoundPressureLevelIRI()  {
+    @Override
+    void getIrisFromKg() {
+        Var VAR_O = Var.alloc("o");
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("slma", SLA)
@@ -87,6 +90,29 @@ public class DBFSDataProcessor extends SensorDataProcessor {
                 .addVar(VAR_O).addWhere(wb);
 
         JSONArray queryResult=storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
+        if (queryResult.isEmpty()) {
+            return;
+        }
+        dbfsIRI = queryResult.getJSONObject(0).optString("o");
     }
+
+//    String getSoundPressureLevelIRI()  {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("slma", SLA)
+//                .addPrefix ("saref",SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om",OM)
+//                .addWhere(smartphoneIRINode,"saref:consistsOf","?microphone")
+//                .addWhere("?microphone","rdf:type","ontodevice:Microphone")
+//                .addWhere("?microphone","ontodevice:measures","?om_soundPressureLevel")
+//                .addWhere("?om_soundPressureLevel", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult=storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
 }

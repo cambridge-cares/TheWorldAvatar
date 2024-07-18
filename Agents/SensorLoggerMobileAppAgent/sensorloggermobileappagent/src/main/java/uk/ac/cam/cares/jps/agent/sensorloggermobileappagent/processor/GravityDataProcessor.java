@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
@@ -51,9 +52,7 @@ public class GravityDataProcessor extends SensorDataProcessor {
 
     @Override
     public void initIRIs() {
-        xIri = getXIri();
-        yIri = getYIri();
-        zIri = getZIri();
+        getIrisFromKg();
 
         if (xIri.isEmpty() && yIri.isEmpty() && zIri.isEmpty()) {
             xIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_gravity_x_" + UUID.randomUUID();
@@ -86,7 +85,12 @@ public class GravityDataProcessor extends SensorDataProcessor {
         zList.clear();
     }
 
-    String getXIri() {
+    @Override
+    void getIrisFromKg() {
+        Var x = Var.alloc("x");
+        Var y = Var.alloc("y");
+        Var z = Var.alloc("z");
+
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ontoslma", ONTOSLMA)
                 .addPrefix("slma", SLA)
@@ -99,56 +103,86 @@ public class GravityDataProcessor extends SensorDataProcessor {
                 .addWhere("?gravitySensor", "ontodevice:measures", "?vector")
                 .addWhere("?vector", "rdf:type", "ontoslma:GravityVector")
                 .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", VAR_O);
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
-
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
-    }
-
-    String getYIri() {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoslma", ONTOSLMA)
-                .addPrefix("slma", SLA)
-                .addPrefix("saref", SAREF)
-                .addPrefix("ontodevice", ONTODEVICE)
-                .addPrefix("rdf", RDF)
-                .addPrefix("om", OM)
-                .addWhere(smartphoneIRINode, "saref:consistsOf", "?gravitySensor")
-                .addWhere("?gravitySensor", "rdf:type", "ontodevice:GravitySensor")
-                .addWhere("?gravitySensor", "ontodevice:measures", "?vector")
-                .addWhere("?vector", "rdf:type", "ontoslma:GravityVector")
+                .addWhere("?quantity", "om:hasValue", x)
                 .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", VAR_O);
-        SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
-
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
-    }
-
-    String getZIri() {
-
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoslma", ONTOSLMA)
-                .addPrefix("slma", SLA)
-                .addPrefix("saref", SAREF)
-                .addPrefix("ontodevice", ONTODEVICE)
-                .addPrefix("rdf", RDF)
-                .addPrefix("om", OM)
-                .addWhere(smartphoneIRINode, "saref:consistsOf", "?gravitySensor")
-                .addWhere("?gravitySensor", "rdf:type", "ontodevice:GravitySensor")
-                .addWhere("?gravitySensor", "ontodevice:measures", "?vector")
-                .addWhere("?vector", "rdf:type", "ontoslma:GravityVector")
+                .addWhere("?quantity", "om:hasValue", y)
                 .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", VAR_O);
-
+                .addWhere("?quantity", "om:hasValue", z);
         SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
+                .addVar(x).addVar(y).addVar(z).addWhere(wb);
 
         JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
+        if (queryResult.isEmpty()) {
+            return;
+        }
+        xIri = queryResult.getJSONObject(0).optString("x");
+        yIri = queryResult.getJSONObject(0).optString("y");
+        zIri = queryResult.getJSONObject(0).optString("z");
     }
+
+//    String getXIri() {
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("ontoslma", ONTOSLMA)
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?gravitySensor")
+//                .addWhere("?gravitySensor", "rdf:type", "ontodevice:GravitySensor")
+//                .addWhere("?gravitySensor", "ontodevice:measures", "?vector")
+//                .addWhere("?vector", "rdf:type", "ontoslma:GravityVector")
+//                .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
+//                .addWhere("?quantity", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
+//
+//    String getYIri() {
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("ontoslma", ONTOSLMA)
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?gravitySensor")
+//                .addWhere("?gravitySensor", "rdf:type", "ontodevice:GravitySensor")
+//                .addWhere("?gravitySensor", "ontodevice:measures", "?vector")
+//                .addWhere("?vector", "rdf:type", "ontoslma:GravityVector")
+//                .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
+//                .addWhere("?quantity", "om:hasValue", VAR_O);
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
+//
+//    String getZIri() {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("ontoslma", ONTOSLMA)
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?gravitySensor")
+//                .addWhere("?gravitySensor", "rdf:type", "ontodevice:GravitySensor")
+//                .addWhere("?gravitySensor", "ontodevice:measures", "?vector")
+//                .addWhere("?vector", "rdf:type", "ontoslma:GravityVector")
+//                .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
+//                .addWhere("?quantity", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
 }

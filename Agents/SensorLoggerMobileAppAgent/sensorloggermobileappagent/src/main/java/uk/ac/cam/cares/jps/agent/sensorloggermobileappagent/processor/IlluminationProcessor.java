@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
@@ -44,7 +45,7 @@ public class IlluminationProcessor extends SensorDataProcessor {
 
     @Override
     public void initIRIs() {
-        illuminationIri = getIlluminanceIRIArray();
+        getIrisFromKg();
         if (illuminationIri.isEmpty()) {
             illuminationIri = "https://www.theworldavatar.com/kg/sensorloggerapp/light_value_" + UUID.randomUUID();
 
@@ -70,7 +71,9 @@ public class IlluminationProcessor extends SensorDataProcessor {
         illuminationList.clear();
     }
 
-    String getIlluminanceIRIArray() {
+    @Override
+    void getIrisFromKg() {
+        Var VAR_O = Var.alloc("o");
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("slma", SLA)
@@ -87,6 +90,29 @@ public class IlluminationProcessor extends SensorDataProcessor {
                 .addVar(VAR_O).addWhere(wb);
 
         JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-        return getIRIfromJSONArray(queryResult);
+        if (queryResult.isEmpty()) {
+            return;
+        }
+        illuminationIri = queryResult.getJSONObject(0).optString("o");
     }
+
+//    String getIlluminanceIRIArray() {
+//
+//        WhereBuilder wb = new WhereBuilder()
+//                .addPrefix("slma", SLA)
+//                .addPrefix("saref", SAREF)
+//                .addPrefix("ontodevice", ONTODEVICE)
+//                .addPrefix("rdf", RDF)
+//                .addPrefix("om", OM)
+//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?camera")
+//                .addWhere("?camera", "rdf:type", "ontodevice:Camera")
+//                .addWhere("?camera", "ontodevice:measures", "?om_illuminance")
+//                .addWhere("?om_illuminance", "om:hasValue", VAR_O);
+//
+//        SelectBuilder sb = new SelectBuilder()
+//                .addVar(VAR_O).addWhere(wb);
+//
+//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+//        return getIRIfromJSONArray(queryResult);
+//    }
 }
