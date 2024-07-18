@@ -35,7 +35,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = express();
   server.set('trust proxy', true);
-  
+
   // Configure the server to use session storage for keycloak authentication
   const memoryStore = new session.MemoryStore();
   server.use(
@@ -46,7 +46,7 @@ app.prepare().then(() => {
       store: memoryStore,
     })
   );
-  
+
   const keycloak = new Keycloak({ store: memoryStore });
   server.use(keycloak.middleware());
 
@@ -56,6 +56,23 @@ app.prepare().then(() => {
     const lastName = req.kauth.grant.access_token.content.family_name;
     res.json({ username, firstName, lastName });
   });
+
+  server.get('/protected', keycloak.protect('oisin:secured'), (req, res, next) => {
+    console.log(`Accessing ${req.path} by ${req.method}`);
+    console.log(`User details: ${JSON.stringify(req.kauth.grant.access_token.content)}`);
+
+    keycloak.protect('oisin:secured')(req, res, (err) => {
+      if (err) {
+        console.error("Error during Keycloak protection:", err);
+        return next(err);
+      }
+
+      // Proceed with the original handler logic if there's no error
+      const authorisation = "hello!";
+      res.json({ authorisation });
+    });
+  });
+
   server.get('/logout', (req, res) => {
     req.logout(); // This tells Keycloak to logout
     req.session.destroy(() => { // This destroys the session
@@ -65,27 +82,6 @@ app.prepare().then(() => {
   });
 
   server.get('/map', keycloak.protect());
-// , (req, res) => {
-//   res.redirect('/explore');
-//   return app.render(req, res, '/explore', req.query);
-// });
-
-
-    // app.get('/auth', keycloak.protect(), (req, res, next) => {
-    //   const details = parseToken(req.session['keycloak-token']);
-    //   const embedded_params = {};
-
-    //   if (details) {
-    //     embedded_params.name = details.name;
-    //     embedded_params.email = details.email;
-    //     embedded_params.username = details.preferred_username;
-    //   }
-
-    //   res.render('home', {
-    //     user: embedded_params,
-    //   });
-    // });
-
 
   server.get('/CentralStackAgent/*', keycloak.enforcer('user:CentralStackAgent'))
 
@@ -106,19 +102,3 @@ app.prepare().then(() => {
     console.log(`Running on port ${port}, development mode is: ${dev}`);
   });
 });
-
-// const parseToken = raw => {
-//   if (!raw || typeof raw !== 'string') return null;
-
-//   try {
-//     raw = JSON.parse(raw);
-//     const token = raw.id_token ? raw.id_token : raw.access_token;
-//     const content = token.split('.')[1];
-
-//     return JSON.parse(Buffer.from(content, 'base64').toString('utf-8'));
-//   } catch (e) {
-//     console.error('Error while parsing token: ', e);
-//   }
-// };
-
-
