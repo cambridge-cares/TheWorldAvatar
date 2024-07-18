@@ -4,49 +4,24 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
 from model.kg.ontospecies import (
-    OntospeciesChemicalClass,
     OntospeciesSpecies,
     OntospeciesSpeciesBase,
-    OntospeciesUse,
     SpeciesIdentifierKey,
     SpeciesPropertyKey,
 )
 from model.web.ontospecies import SpeciesRequest
-from routers.utils import parse_rhs_colon
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
 )
 from utils.str import CAMEL_CASE_PATTERN
+from routers.utils import parse_rhs_colon
 
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-
-@router.get(
-    "/chemical-classes",
-    summary="Get all chemical classes",
-    response_model=list[OntospeciesChemicalClass],
-)
-async def getChemicalClasses(
-    ontospecies_store: Annotated[OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)]
-):
-    return ontospecies_store.get_chemical_classes_all()
-
-
-@router.get(
-    "/uses",
-    summary="Get all uses",
-    response_model=list[OntospeciesUse],
-)
-async def getUses(
-    ontospecies_store: Annotated[OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)]
-):
-    return ontospecies_store.get_uses_all()
-
 
 SPECIES_PROPERTY_QUERY_KEYS = {
     key: CAMEL_CASE_PATTERN.sub("-", key.value).lower() for key in SpeciesPropertyKey
@@ -94,7 +69,7 @@ async def parse_species_request(
 
 
 @router.get(
-    "/species",
+    "/",
     summary="Get species",
     openapi_extra={
         "parameters": [
@@ -128,16 +103,17 @@ async def getSpecies(
 ):
     return ontospecies_store.get_species_base(species_req)
 
+
 class XYZResponse(Response):
     media_type = "chemical/x-xyz"
 
 
 @router.get(
-    "/species/{iri:path}/xyz",
+    "/{iri:path}/xyz",
     summary="Get species' XYZ geometry file",
     response_class=XYZResponse,
 )
-async def getSpeciesXyz(
+async def getSpeciesXYZ(
     iri: str, xyz_manager: Annotated[XYZManager, Depends(get_xyz_manager)]
 ):
     xyz = xyz_manager.get_from_pubchem([iri])[0]
@@ -151,9 +127,7 @@ async def getSpeciesXyz(
     )
 
 
-@router.get(
-    "/species/{iri:path}", summary="Get species", response_model=OntospeciesSpecies
-)
+@router.get("/{iri:path}", summary="Get species", response_model=OntospeciesSpecies)
 async def getSpeciesOne(
     iri: str,
     ontospecies_store: Annotated[
@@ -162,5 +136,7 @@ async def getSpeciesOne(
 ):
     species = ontospecies_store.get_species_one(iri)
     if species is None:
-        raise HTTPException(status_code=404, detail=f'No species is found with IRI "{iri}"')
+        raise HTTPException(
+            status_code=404, detail=f'No species is found with IRI "{iri}"'
+        )
     return species

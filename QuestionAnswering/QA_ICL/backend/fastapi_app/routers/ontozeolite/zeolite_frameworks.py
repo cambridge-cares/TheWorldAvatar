@@ -10,39 +10,18 @@ from model.web.ontozeolite import (
     XRDPeakRequest,
     ZeoliteFrameworkRequest,
 )
-from routers.utils import parse_rhs_colon
+from services.mol_vis.cif import CIFManager, get_cif_manager
 from services.rdf_stores.ontozeolite import (
     OntozeoliteRDFStore,
     get_ontozeolite_rdfStore,
 )
+from routers.utils import parse_rhs_colon
 from utils.str import CAMEL_CASE_PATTERN
 
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-
-@router.get(
-    "/composite-building-units",
-    summary="Get all composite building units",
-    response_model=list[str],
-)
-async def get_cbu_all(
-    ontozeolite_store: Annotated[OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)]
-):
-    return ontozeolite_store.get_cbu_all()
-
-
-@router.get(
-    "/secondary-building-units",
-    summary="Get all secondary building units",
-    response_model=list[str],
-)
-async def get_sbu_all(
-    ontozeolite_store: Annotated[OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)]
-):
-    return ontozeolite_store.get_sbu_all()
 
 
 UNIT_CELL_QUERY_KEYS = {
@@ -88,7 +67,7 @@ async def parse_zeolite_frameworks_request(
 
 
 @router.get(
-    "/zeolite-frameworks",
+    "/",
     summary="Get zeolite frameworks",
     openapi_extra={
         "parameters": [
@@ -113,7 +92,7 @@ async def parse_zeolite_frameworks_request(
             ),
         ]
     },
-    response_model=list[OntozeoliteZeoliteFrameworkBase]
+    response_model=list[OntozeoliteZeoliteFrameworkBase],
 )
 async def getZeoliteFrameworks(
     framework_req: Annotated[
@@ -124,3 +103,36 @@ async def getZeoliteFrameworks(
     ],
 ):
     return ontozeolite_store.get_zeolite_frameworks(framework_req)
+
+
+class CIFResponse(Response):
+    media_type = "chemical/x-cif"
+
+
+@router.get(
+    "/{iri:path}/cif",
+    summary="Get CIF geometry file for zeolite framework",
+    response_class=CIFResponse,
+)
+async def getZeoliteFrameworkCIF(
+    iri: str, cif_manager: Annotated[CIFManager, Depends(get_cif_manager)]
+):
+    cif = cif_manager.get([iri])[0]
+    if not cif:
+        raise HTTPException(
+            status_code=404, detail=f"CIF not found for zeolite `{iri}`"
+        )
+    return CIFResponse(
+        content=cif,
+        headers={"Content-Disposition": 'attachment; filename="zeolite.cif"'},
+    )
+
+
+@router.get("/{iri:path}", summary="Get zeolite framework")
+async def getZeoliteFrameworkOne(
+    iri: str,
+    ontozeolite_store: Annotated[
+        OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
+    ],
+):
+    return ontozeolite_store.get_zeolite_framework_one(iri)
