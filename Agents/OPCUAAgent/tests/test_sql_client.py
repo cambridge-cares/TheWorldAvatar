@@ -6,6 +6,7 @@ import os
 import pathlib
 from unittest.mock import patch
 import time
+import logging
 from psycopg2 import sql
 
 from OPCUAAgent import sql_client
@@ -13,6 +14,7 @@ from OPCUAAgent import sql_client
 class Test_sql_client:
     # set up temp properties file with default postgresql information
     def setUp(self):
+        logging.info("Set up temp properties file with default postgresql information")
         self._temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = pathlib.Path(self._temp_dir.name)
         self._create_temporary_file_with_data(self.temp_path / 'test_conf.properties',
@@ -24,6 +26,7 @@ class Test_sql_client:
         
     # set up temp properties file with postgresql information and non existent db name
     def setUp_fail_non_existent_db(self):
+        logging.info("Set up temp properties file with postgresql information and non existent db name")
         self._temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = pathlib.Path(self._temp_dir.name)
         self._create_temporary_file_with_data(self.temp_path / 'test_conf.properties',
@@ -35,6 +38,7 @@ class Test_sql_client:
         
     # set up temp properties file with postgresql information and new db called test
     def setUp_new_db(self):
+        logging.info("Set up temp properties file with postgresql information and new db called test")
         self._temp_dir = tempfile.TemporaryDirectory()
         self.temp_path = pathlib.Path(self._temp_dir.name)
         self._create_temporary_file_with_data(self.temp_path / 'test_conf.properties',
@@ -56,6 +60,7 @@ class Test_sql_client:
     # test create_database_if_not_exist without environment variable POSTGRES_CONF
     def test_create_database_if_not_exist_fail(self):
         self.setUp_new_db()
+        logging.info("Test create_database_if_not_exist without environment variable POSTGRES_CONF, this should raise an exception")
         #sleep test to wait for postgresql container to spin up
         time.sleep(3)
         with pytest.raises(Exception) as excinfo:
@@ -66,6 +71,7 @@ class Test_sql_client:
     # test create_database_if_not_exist with environment variable POSTGRES_CONF pointing to the temp file containing postgresql information
     def test_create_database_if_not_exist_success(self):
         self.setUp_new_db()
+        logging.info("Test create_database_if_not_exist with environment variable POSTGRES_CONF pointing to the temp properties file")
         #sleep test to wait for postgresql container to spin up
         time.sleep(3)
         with patch.dict(os.environ, {"POSTGRES_CONF":str(self.temp_path / 'test_conf.properties')}, clear=True):
@@ -77,6 +83,7 @@ class Test_sql_client:
     # test connect_to_database with non-existent database
     def test_connect_to_database_fail(self):
         self.setUp_fail_non_existent_db()
+        logging.info("Test connect_to_database with non-existent database, this should raise an exception")
         #sleep test to wait for postgresql container to spin up
         time.sleep(3)
         with patch.dict(os.environ, {"POSTGRES_CONF":str(self.temp_path / 'test_conf.properties')}, clear=True):
@@ -88,6 +95,7 @@ class Test_sql_client:
     # test connect_to_database with default database
     def test_connect_to_database_success(self):
         self.setUp()
+        logging.info("Test connect_to_database with default database")
         #sleep test to wait for postgresql container to spin up
         time.sleep(3)
         with patch.dict(os.environ, {"POSTGRES_CONF":str(self.temp_path / 'test_conf.properties')}, clear=True):
@@ -99,6 +107,9 @@ class Test_sql_client:
     # test create_if_not_exist_and_insert by inserting a mock timeseries data into the database and query the database to check whether the timeseries data exist
     def test_create_if_not_exist_and_insert(self):
         self.setUp_new_db()
+        logging.info("Test create_if_not_exist_and_insert by:\n" +
+                     "creating a new database called \"test\"\n" +
+                     "inserting a mock timeseries data into the database and query the database to check whether the timeseries data exist")
         time.sleep(3)
         with patch.dict(os.environ, {"POSTGRES_CONF":str(self.temp_path / 'test_conf.properties')}, clear=True):
             sql_client.create_database_if_not_exist()
