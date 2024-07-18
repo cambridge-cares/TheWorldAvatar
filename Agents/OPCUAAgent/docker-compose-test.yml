@@ -10,8 +10,8 @@ services:
     container_name: test_opcua_agent
 
   # PostgreSQL
-  postgres_agent_test:
-    container_name: postgres_agent_test
+  postgres_test:
+    container_name: postgres_test
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
