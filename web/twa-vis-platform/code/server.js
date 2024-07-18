@@ -51,9 +51,12 @@ app.prepare().then(() => {
   server.use(keycloak.middleware());
 
   server.get('/api/userinfo', keycloak.protect(), (req, res) => {
-    const username = req.kauth.grant.access_token.content.preferred_username; // Or another field that holds the username
-    res.json({ username });
-    console.log('username: ', username);
+  server.get('/logout', (req, res) => {
+    req.logout(); // This tells Keycloak to logout
+    req.session.destroy(() => { // This destroys the session
+      res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
+      res.redirect('http://localhost:8081/realms/twa-test/protocol/openid-connect/logout?post_logout_redirect_uri=http%3A%2F%2Flocalhost%3A1997&client_id=oisin');
+    });
   });
 
   server.get('/map', keycloak.protect());
