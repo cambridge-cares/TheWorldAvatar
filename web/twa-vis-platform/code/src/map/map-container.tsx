@@ -43,17 +43,13 @@ export default function MapContainer(props: MapContainerProps) {
   const selectedScenario = useSelector(getScenarioID);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
   const dimensionSliderValue = useSelector((state: ReduxState) => state.dimensionSlider.value);
+  const [dataJSONString, setdataJSONString] = useState<string>(null)
 
 
   useEffect(() => {
     if (mapData && currentScenario && selectedScenario) {
-      console.log('dataset URL', `${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`);
-      fetch(`${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionSliderValue.toString());
-          setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
-        });
+      const dataString: string = dataJSONString.replace(/{dim_time_index}/g, dimensionSliderValue.toString());
+      setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
     }
   }, [dimensionSliderValue]);
 
@@ -69,9 +65,9 @@ export default function MapContainer(props: MapContainerProps) {
         .then((res) => res.json())
         .then((data) => {
           const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, "1");
+          setdataJSONString(dataString)
           setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
         });
-
     } else {
       setMapData(parseMapDataSettings(JSON.parse(props.data), mapSettings?.type));
     }
