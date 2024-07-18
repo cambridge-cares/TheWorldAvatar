@@ -71,11 +71,11 @@ public class PIPSTSAgentAPIConnector {
      * @throws IOException
      */
     private JSONObject retrieveTimeSeriesData(String accessToken, String source, int num, Boolean include_client_cert) throws IOException {
-        pipsAgentTimeSeriesPath = pipsAgentTimeSeriesPath + "?source=" + source + "&num=" + num;
+        String newPath = pipsAgentTimeSeriesPath + "?source=" + source + "&num=" + num;
         if (!include_client_cert) {
             LOGGER.info("Attempting to send request without client certificates...");
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-                HttpGet readingRequest = new HttpGet(pipsAgentTimeSeriesPath);
+                HttpGet readingRequest = new HttpGet(newPath);
                 setTokenAuthorization(readingRequest, accessToken);
     
                 try (CloseableHttpResponse response = httpClient.execute(readingRequest)) {
@@ -117,7 +117,7 @@ public class PIPSTSAgentAPIConnector {
                 .setSSLContext(sslContextBuilder.build())
                 .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                 .build();
-                HttpGet readingRequest = new HttpGet(pipsAgentTimeSeriesPath);
+                HttpGet readingRequest = new HttpGet(newPath);
                 setTokenAuthorization(readingRequest, accessToken);
     
                 try (CloseableHttpResponse response = httpClient.execute(readingRequest)) {
