@@ -20,11 +20,11 @@
             "dom.iterable",
             "esnext"
         ],
-        "paths": {
-            "../*": [
-                "./*"
-            ]
-        },
+        // "paths": {
+        //     "../*": [
+        //         "./*"
+        //     ]
+        // },
         "plugins": [
             {
                 "name": "next"
