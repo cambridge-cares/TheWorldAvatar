@@ -2,10 +2,7 @@
 # Dockerfile for TWA-VF build environment.
 #
 
-FROM ubuntu:23.10 AS twavf-build
-
-# Install latest NodeJS and NPM
-RUN apt update && apt install -y nodejs npm
+FROM node:latest AS twavf-build
 
 # Install Grunt
 RUN npm install -g grunt-cli
