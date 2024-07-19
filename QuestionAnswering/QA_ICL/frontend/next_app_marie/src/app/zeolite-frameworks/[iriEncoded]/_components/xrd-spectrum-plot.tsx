@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import * as React from 'react';
+import * as React from 'react'
 import Chart from 'chart.js/auto'
 
-import { XRDPeak } from '@/lib/model/ontozeolite';
+import { XRDPeak } from '@/lib/model/ontozeolite'
 
 export const XRDSpectrumPlot = ({ data }: { data: XRDPeak[] }) => {
   const ref = React.useRef<null | HTMLCanvasElement>(null)
@@ -17,9 +17,12 @@ export const XRDSpectrumPlot = ({ data }: { data: XRDPeak[] }) => {
         datasets: [
           {
             barThickness: 1,
-            data: data.map(datum => ({ x: datum.two_theta_position, y: datum.relative_intensity })),
-          }
-        ]
+            data: data.map(datum => ({
+              x: datum.two_theta_position,
+              y: datum.relative_intensity,
+            })),
+          },
+        ],
       },
       options: {
         scales: {
@@ -29,19 +32,21 @@ export const XRDSpectrumPlot = ({ data }: { data: XRDPeak[] }) => {
             title: { display: true, text: '2θ' },
           },
           y: {
-            title: { display: true, text: 'Relative intensity' }
-          }
+            title: { display: true, text: 'Relative intensity' },
+          },
         },
         plugins: {
-          legend: { display: false }
-        }
-      }
+          legend: { display: false },
+        },
+      },
     })
 
     return () => chart.destroy()
   }, [data])
 
   return (
-    <div className='flex items-center'><canvas ref={ref} /></div>
+    <div className='flex items-center'>
+      <canvas ref={ref} />
+    </div>
   )
 }

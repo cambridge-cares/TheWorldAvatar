@@ -24,7 +24,5 @@ const COLS = [
 ]
 
 export const XRDPeakTable = ({ data }: { data: XRDPeak[] }) => {
-  return (
-    <DataTable columns={COLS} data={data} numbered paginated bordered />
-  )
+  return <DataTable columns={COLS} data={data} numbered paginated bordered />
 }
