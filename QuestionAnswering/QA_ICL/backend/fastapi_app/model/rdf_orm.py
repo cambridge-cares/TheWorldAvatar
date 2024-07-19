@@ -35,9 +35,9 @@ class RDFEntity(BaseModel):
     @cache
     def get_rdf_fields(cls):
         return {
-            field: (info, rdf_meta)
-            for field, (info, rdf_meta) in {
-                field: (info, _get_rdf_field_metadata(info))
+            field: rdf_meta
+            for field, rdf_meta in {
+                field: _get_rdf_field_metadata(info)
                 for field, info in cls.model_fields.items()
                 if field != "IRI"
             }.items()

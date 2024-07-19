@@ -49,9 +49,10 @@ WHERE {{
     BIND ( "{field}" as ?field )
     ?iri {predicate} ?value .
 }}""".format(
-                    field=field, predicate=metadata["path"].n3()
+                    field=field,
+                    predicate=metadata["path"].n3(),
                 )
-                for field, (_, metadata) in T.get_rdf_fields().items()
+                for field, metadata in T.get_rdf_fields().items()
             ),
         )
 
@@ -64,7 +65,7 @@ WHERE {{
                 continue
             field2iri2values[binding["field"]][binding["iri"]].append(binding["value"])
 
-        def resolve_field_value(field: str, info: FieldInfo):
+        def resolve_field_value_batch(field: str, info: FieldInfo):
             annotation = info.annotation
             if annotation and get_origin(annotation) is list:
                 t = get_args(annotation)[0]
@@ -94,8 +95,8 @@ WHERE {{
             return iri2value
 
         field2iri2data = {
-            field: resolve_field_value(field, info)
-            for field, (info, _) in T.get_rdf_fields().items()
+            field: resolve_field_value_batch(field, info)
+            for field, info in T.model_fields.items()
         }
 
         iri2field2data: defaultdict[
@@ -105,16 +106,49 @@ WHERE {{
             for iri, data in iri2data.items():
                 iri2field2data[iri][field] = data
 
+        def resolve_field_value(
+            model_fields: dict[str, FieldInfo],
+            field2data: dict[str, RDFEntity | str | list[RDFEntity] | list[str]],
+        ):
+            if all(field in field2data for field in model_fields.keys()):
+                return field2data
+
+            data = dict(field2data)
+            for field, info in model_fields.items():
+                if field in data:
+                    continue
+                annotation = info.annotation
+                if annotation:
+                    if get_origin(annotation) is list:
+                        data[field] = list()
+                    else:
+                        try:
+                            if NoneType in get_args(annotation):
+                                data[field] = None
+                        except:
+                            pass
+            return data
+
         adapter = TypeAdapter(list[T])
         models = adapter.validate_python(
-            [{"IRI": iri, **field2data} for iri, field2data in iri2field2data.items()]
+            [
+                {
+                    "IRI": iri,
+                    **resolve_field_value(
+                        model_fields=T.model_fields, field2data=field2data
+                    ),
+                }
+                for iri, field2data in iri2field2data.items()
+            ]
         )
         iri2model = {model.IRI: model for model in models}
         return [iri2model.get(iri) for iri in iris]
 
     def get_many(self, T: type[T], iris: list[str] | tuple[str]):
         return [
-            x for batch in batched(iris, self.BATCH_SIZE) for x in self._get_many(T=T, iris=batch)
+            x
+            for batch in batched(iris, self.BATCH_SIZE)
+            for x in self._get_many(T=T, iris=batch)
         ]
 
     def get_one(self, T: type[T], iri: str):
