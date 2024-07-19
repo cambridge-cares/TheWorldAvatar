@@ -3,6 +3,17 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.3.1
+
+### Features 
+
+* Scenario selection button now displays current scenario
+
+### Bug Fixes and Improvements
+
+* Several major updates in dependencies
+* Dev dependencies no longer shipped with production, reducing number of node packages installed inside the container by ~66%
+
 ## 5.3.0
 
 ### Features
