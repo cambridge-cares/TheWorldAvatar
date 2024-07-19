@@ -24,11 +24,7 @@ const COLS = [
 ]
 
 export const XRDPeakTable = ({ data }: { data: XRDPeak[] }) => {
-  const sortedData = React.useMemo(
-    () => data.toSorted((a, b) => a.two_theta_position - b.two_theta_position),
-    [data]
-  )
   return (
-    <DataTable columns={COLS} data={sortedData} numbered paginated bordered />
+    <DataTable columns={COLS} data={data} numbered paginated bordered />
   )
 }

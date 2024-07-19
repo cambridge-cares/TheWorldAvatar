@@ -1,3 +1,6 @@
+import * as React from 'react'
+
+import { CrystalInfo, VectorComponent } from '@/lib/model/ontozeolite'
 import {
   Accordion,
   AccordionContent,
@@ -5,10 +8,10 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { AtomicStructureTable } from './atomic-structure-table'
-import { CrystalInfo, VectorComponent } from '@/lib/model/ontozeolite'
 import { MatrixTable } from './matrix-table'
 import { TileTable } from './tile-table'
 import { XRDPeakTable } from './xrd-peak-table'
+import { XRDSpectrumPlot } from './xrd-spectrum-plot'
 
 export const CrystalInfoAccordion = ({
   atomic_structure,
@@ -16,8 +19,11 @@ export const CrystalInfoAccordion = ({
   unit_cell,
   tiled_structure,
   xrd_spectrum,
-}: CrystalInfo) => (
-  <Accordion type='multiple'>
+}: CrystalInfo) => {
+  const sortedXRDPeaks = React.useMemo(() => xrd_spectrum?.peak.toSorted((a, b) => a.two_theta_position - b.two_theta_position), [xrd_spectrum])
+  
+  return (
+<Accordion type='multiple'>
     <AccordionItem value='atomic-structure'>
       <AccordionTrigger>
         <h3>Atomic structure</h3>
@@ -155,15 +161,18 @@ export const CrystalInfoAccordion = ({
         </AccordionContent>
       </AccordionItem>
     )}
-    {xrd_spectrum && (
+    {sortedXRDPeaks && (
       <AccordionItem value='xrd-spectrum'>
         <AccordionTrigger>
           <h3>XRD spectrum</h3>
         </AccordionTrigger>
         <AccordionContent>
-          <XRDPeakTable data={xrd_spectrum.peak} />
+          <XRDSpectrumPlot data={sortedXRDPeaks} />
+          <XRDPeakTable data={sortedXRDPeaks} />
         </AccordionContent>
       </AccordionItem>
     )}
   </Accordion>
-)
+  )
+}
+  
