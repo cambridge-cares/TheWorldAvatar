@@ -1,9 +1,6 @@
 #
 # Compose file for the TWA-VF (development).
 #
-version: "3.8"
-
-# All Services
 services:
 
   # Compilation container.
