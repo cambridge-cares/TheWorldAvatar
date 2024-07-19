@@ -33,7 +33,7 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
 
   return (
     <Main className='flex flex-col items-center'>
-      <div className='w-full mt-8 px-4 flex flex-col space-y-2 md:max-w-screen-md lg:max-w-screen-lg'>
+      <div className='w-full mt-8 px-4 flex flex-col space-y-4 md:max-w-screen-md lg:max-w-screen-lg'>
         <h1>{data.IUPAC_name ? capitalize(data.IUPAC_name) : data.InChI}</h1>
         <section>
           <MolViewer type='xyz' data={xyz} />
@@ -61,9 +61,9 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
               Chemical classifications
             </a>
           </h2>
-          <ul className='list-disc list-inside'>
+          <ul className='list-disc list-inside grid md:grid-cols-2 md:grid-flow-row-dense'>
             {data.chemical_classes.map((node, i) => (
-              <li key={i}>{node.label}</li>
+              <li key={i} className={i <= (data.chemical_classes.length - 1) / 2 ? 'md:col-start-1' : 'md:col-start-2'}>{node.label}</li>
             ))}
           </ul>
         </section>
@@ -73,13 +73,13 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
               Uses
             </a>
           </h2>
-          <ul className='list-disc list-inside'>
+          <ul className='list-disc list-inside grid grid-cols-2 grid-flow-row-dense'>
             {data.uses.map((node, i) => (
-              <li key={i}>{node.label}</li>
+              <li key={i} className={i <= (data.uses.length - 1) / 2 ? 'md:col-start-1' : 'md:col-start-2'}>{node.label}</li>
             ))}
           </ul>
         </section>
-        <section>
+        <section className='pb-8'>
           <h2 id='properties'>
             <a href='#properties' className='hover:underline'>
               Properties
