@@ -4,7 +4,8 @@ import * as React from 'react'
 import Chart from 'chart.js/auto'
 import { cn } from '@/lib/utils'
 
-export interface SpeciesPropertiesPlotProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface SpeciesPropertiesPlotProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   data: {
     x: number
     y: number
