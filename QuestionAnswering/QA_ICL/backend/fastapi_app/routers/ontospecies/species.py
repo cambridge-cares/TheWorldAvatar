@@ -9,7 +9,8 @@ from model.kg.ontospecies import (
     SpeciesIdentifierKey,
     SpeciesPropertyKey,
 )
-from model.web.ontospecies import SpeciesRequest
+from model.web.comp_op import ComparisonOperator
+from model.web.ontospecies import SpeciesReqReturnFields, SpeciesRequest
 from services.mol_vis.xyz import XYZManager, get_xyz_manager
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
@@ -23,6 +24,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+SPECIES_CHEMCLASS_QUERY_KEY = "chemical-class"
+SPECIES_USE_QUERY_KEY = "use"
 SPECIES_PROPERTY_QUERY_KEYS = {
     key: CAMEL_CASE_PATTERN.sub("-", key.value).lower() for key in SpeciesPropertyKey
 }
@@ -46,25 +49,68 @@ SPECIES_IDENTIFIER_KEY_TO_LABEL = {
 }
 
 
+async def parse_identifier_query_params(req: Request):
+    return {
+        py_key: req.query_params[query_key]
+        for py_key, query_key in SPECIES_IDENTIFIER_QUERY_KEYS.items()
+        if query_key in req.query_params
+    }
+
+
+async def parse_property_query_params(req: Request):
+    return {
+        py_key: [parse_rhs_colon(val) for val in req.query_params.getlist(query_key)]
+        for py_key, query_key in SPECIES_PROPERTY_QUERY_KEYS.items()
+        if query_key in req.query_params
+    }
+
+
+async def parse_return_fields(
+    return_field: Annotated[list[str], Query(..., alias="return-field")] = []
+):
+    if not return_field:
+        return None
+
+    return_fields_set = set(return_field)
+    return SpeciesReqReturnFields(
+        alt_label="alt-label" in return_fields_set,
+        chemical_class=SPECIES_CHEMCLASS_QUERY_KEY in return_fields_set,
+        use=SPECIES_USE_QUERY_KEY in return_fields_set,
+        identifier=[
+            key
+            for key, qk in SPECIES_PROPERTY_QUERY_KEYS.items()
+            if qk in return_fields_set
+        ],
+        property=[
+            key
+            for key, qk in SPECIES_PROPERTY_QUERY_KEYS.items()
+            if qk in return_fields_set
+        ],
+    )
+
+
 async def parse_species_request(
-    req: Request,
-    chemical_class: Annotated[list[str], Query(..., alias="chemical-class")] = [],
-    use: Annotated[list[str], Query()] = [],
+    identifier: Annotated[
+        dict[SpeciesIdentifierKey, str], Depends(parse_identifier_query_params)
+    ],
+    property: Annotated[
+        dict[SpeciesPropertyKey, list[tuple[ComparisonOperator, float]]],
+        Depends(parse_property_query_params),
+    ],
+    return_fields: Annotated[
+        SpeciesReqReturnFields | None, Depends(parse_return_fields)
+    ],
+    chemical_class: Annotated[
+        list[str], Query(..., alias=SPECIES_CHEMCLASS_QUERY_KEY)
+    ] = [],
+    use: Annotated[list[str], Query(..., alias=SPECIES_USE_QUERY_KEY)] = [],
 ):
     return SpeciesRequest(
         chemical_class=chemical_class,
         use=use,
-        identifier={
-            py_key: req.query_params[query_key]
-            for py_key, query_key in SPECIES_IDENTIFIER_QUERY_KEYS.items()
-            if query_key in req.query_params
-        },
-        property={
-            py_key: [
-                parse_rhs_colon(val) for val in req.query_params.getlist(query_key)
-            ]
-            for py_key, query_key in SPECIES_PROPERTY_QUERY_KEYS.items()
-        },
+        identifier=identifier,
+        property=property,
+        return_fields=return_fields,
     )
 
 
@@ -135,11 +181,16 @@ async def getSpeciesXYZ(
 )
 async def getSpeciesOne(
     iri: str,
+    return_fields: Annotated[
+        SpeciesReqReturnFields | None, Depends(parse_return_fields)
+    ],
     ontospecies_store: Annotated[
         OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
 ):
-    species = ontospecies_store.get_species_one(iri)
+    species = ontospecies_store.get_species_fields(
+        iris=[iri], return_fields=return_fields
+    )[0]
     if species is None:
         raise HTTPException(
             status_code=404, detail=f'No species is found with IRI "{iri}"'
