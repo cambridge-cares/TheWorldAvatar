@@ -16,7 +16,7 @@ import java.util.*;
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class RelativeBrightnessProcessor extends SensorDataProcessor {
-    private String relativeBrightnessIRI;
+    private String relativeBrightnessIRI = "";
 
     private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> brightnessList = new ArrayList<>();
@@ -45,10 +45,11 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
     public void initIRIs() {
         getIrisFromKg();
 
-        if (relativeBrightnessIRI.isEmpty()) {
+        if (relativeBrightnessIRI == null || relativeBrightnessIRI.isEmpty()) {
             relativeBrightnessIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/relativeBrightness_" + UUID.randomUUID();
 
             isIriInstantiationNeeded = true;
+            isRbdInstantiationNeeded = true;
         }
     }
 
@@ -95,25 +96,4 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
         }
         relativeBrightnessIRI = queryResult.getJSONObject(0).optString("o");
     }
-
-//    String getRelativeBrightnessIRI() {
-//
-//        WhereBuilder wb = new WhereBuilder()
-//                .addPrefix("slma", SLA)
-//                .addPrefix("saref", SAREF)
-//                .addPrefix("ontodevice", ONTODEVICE)
-//                .addPrefix("rdf", RDF)
-//                .addPrefix("om", OM)
-//                .addWhere(smartphoneIRINode, "ontodevice:hasScreenBrightness", "?relativeBrightness")
-//                .addWhere("?relativeBrightness", "rdf:type", "ontodevice:RelativeBrightness")
-//                .addWhere("?relativeBrightness", "rdf:type", "?om_ratio")
-//                .addWhere("?om_ratio", "rdf:type", "om:Ratio")
-//                .addWhere("?om_ratio", "om:hasValue", VAR_O);
-//
-//        SelectBuilder sb = new SelectBuilder()
-//                .addVar(VAR_O).addWhere(wb);
-//
-//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-//        return getIRIfromJSONArray(queryResult);
-//    }
 }

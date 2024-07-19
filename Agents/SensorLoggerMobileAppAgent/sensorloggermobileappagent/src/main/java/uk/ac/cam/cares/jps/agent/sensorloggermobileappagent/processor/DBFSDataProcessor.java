@@ -46,10 +46,11 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     public void initIRIs() {
         getIrisFromKg();
 
-        if (dbfsIRI.isEmpty()) {
+        if (dbfsIRI == null || dbfsIRI.isEmpty()) {
             dbfsIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_dbfs_" + UUID.randomUUID();
 
             isIriInstantiationNeeded = true;
+            isRbdInstantiationNeeded = true;
         }
     }
 
@@ -95,24 +96,4 @@ public class DBFSDataProcessor extends SensorDataProcessor {
         }
         dbfsIRI = queryResult.getJSONObject(0).optString("o");
     }
-
-//    String getSoundPressureLevelIRI()  {
-//
-//        WhereBuilder wb = new WhereBuilder()
-//                .addPrefix("slma", SLA)
-//                .addPrefix ("saref",SAREF)
-//                .addPrefix("ontodevice", ONTODEVICE)
-//                .addPrefix("rdf", RDF)
-//                .addPrefix("om",OM)
-//                .addWhere(smartphoneIRINode,"saref:consistsOf","?microphone")
-//                .addWhere("?microphone","rdf:type","ontodevice:Microphone")
-//                .addWhere("?microphone","ontodevice:measures","?om_soundPressureLevel")
-//                .addWhere("?om_soundPressureLevel", "om:hasValue", VAR_O);
-//
-//        SelectBuilder sb = new SelectBuilder()
-//                .addVar(VAR_O).addWhere(wb);
-//
-//        JSONArray queryResult=storeClient.executeQuery(sb.buildString());
-//        return getIRIfromJSONArray(queryResult);
-//    }
 }

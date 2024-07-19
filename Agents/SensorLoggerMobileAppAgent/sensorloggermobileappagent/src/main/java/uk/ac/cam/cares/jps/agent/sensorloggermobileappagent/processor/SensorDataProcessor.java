@@ -14,6 +14,7 @@ public abstract class SensorDataProcessor {
     RemoteStoreClient storeClient;
     Node smartphoneIRINode;
     boolean isIriInstantiationNeeded = false;
+    boolean isRbdInstantiationNeeded = false;
 
     public SensorDataProcessor(DownSampleConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         this.config = config;
@@ -21,11 +22,6 @@ public abstract class SensorDataProcessor {
         this.smartphoneIRINode = smartphoneIRINode;
         initIRIs();
     }
-
-//    String getIRIfromJSONArray(JSONArray jsonArray){
-//        if(jsonArray.length()!=1){System.out.println("There is more than 1 data in this JSONArray, only the first one is returned");}
-//        return jsonArray.getJSONObject(0).get(str_o).toString();
-//    }
 
     public abstract void addData(HashMap data);
 
@@ -40,7 +36,19 @@ public abstract class SensorDataProcessor {
     abstract void clearData();
     abstract void getIrisFromKg();
 
-    public boolean isInstantiationNeeded() {
+    public boolean isIriInstantiationNeeded() {
         return isIriInstantiationNeeded;
+    }
+
+    public void setIriInstantiationNeeded(boolean iriInstantiationNeeded) {
+        isIriInstantiationNeeded = iriInstantiationNeeded;
+    }
+
+    public boolean isRbdInstantiationNeeded() {
+        return isRbdInstantiationNeeded;
+    }
+
+    public void setRbdInstantiationNeeded(boolean rbdInstantiationNeeded) {
+        isRbdInstantiationNeeded = rbdInstantiationNeeded;
     }
 }

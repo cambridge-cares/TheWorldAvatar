@@ -52,12 +52,15 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
     public void initIRIs() {
         getIrisFromKg();
 
-        if (xIri.isEmpty() && yIri.isEmpty() && zIri.isEmpty()) {
+        if ((xIri == null || xIri.isEmpty())
+                && (yIri == null || yIri.isEmpty())
+                && (zIri == null || zIri.isEmpty())) {
             xIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_x_" + UUID.randomUUID();
             yIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_y_" + UUID.randomUUID();
             zIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_z_" + UUID.randomUUID();
 
             isIriInstantiationNeeded = true;
+            isRbdInstantiationNeeded = true;
         }
     }
 
@@ -117,71 +120,4 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
         yIri = queryResult.getJSONObject(0).optString("y");
         zIri = queryResult.getJSONObject(0).optString("z");
     }
-
-//    String getMagnetometerIriX() {
-//
-//        WhereBuilder wb = new WhereBuilder()
-//                .addPrefix("ontoslma", ONTOSLMA)
-//                .addPrefix("slma", SLA)
-//                .addPrefix("saref", SAREF)
-//                .addPrefix("ontodevice", ONTODEVICE)
-//                .addPrefix("rdf", RDF)
-//                .addPrefix("om", OM)
-//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?magnetometer")
-//                .addWhere("?magnetometer", "rdf:type", "ontodevice:Magnetometer")
-//                .addWhere("?magnetometer", "ontodevice:measures", "?vector")
-//                .addWhere("?vector", "rdf:type", "ontoslma:MagneticFluxDensityVector")
-//                .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
-//                .addWhere("?quantity", "om:hasValue", VAR_O);
-//        SelectBuilder sb = new SelectBuilder()
-//                .addVar(VAR_O).addWhere(wb);
-//
-//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-//        return getIRIfromJSONArray(queryResult);
-//    }
-//
-//    String getMagnetometerIriY() {
-//        WhereBuilder wb = new WhereBuilder()
-//                .addPrefix("ontoslma", ONTOSLMA)
-//                .addPrefix("slma", SLA)
-//                .addPrefix("saref", SAREF)
-//                .addPrefix("ontodevice", ONTODEVICE)
-//                .addPrefix("rdf", RDF)
-//                .addPrefix("om", OM)
-//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?magnetometer")
-//                .addWhere("?magnetometer", "rdf:type", "ontodevice:Magnetometer")
-//                .addWhere("?magnetometer", "ontodevice:measures", "?vector")
-//                .addWhere("?vector", "rdf:type", "ontoslma:MagneticFluxDensityVector")
-//                .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
-//                .addWhere("?quantity", "om:hasValue", VAR_O);
-//
-//        SelectBuilder sb = new SelectBuilder()
-//                .addVar(VAR_O).addWhere(wb);
-//
-//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-//        return getIRIfromJSONArray(queryResult);
-//    }
-//
-//    String getMagnetometerIriZ() {
-//
-//        WhereBuilder wb = new WhereBuilder()
-//                .addPrefix("ontoslma", ONTOSLMA)
-//                .addPrefix("slma", SLA)
-//                .addPrefix("saref", SAREF)
-//                .addPrefix("ontodevice", ONTODEVICE)
-//                .addPrefix("rdf", RDF)
-//                .addPrefix("om", OM)
-//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?magnetometer")
-//                .addWhere("?magnetometer", "rdf:type", "ontodevice:Magnetometer")
-//                .addWhere("?magnetometer", "ontodevice:measures", "?vector")
-//                .addWhere("?vector", "rdf:type", "ontoslma:MagneticFluxDensityVector")
-//                .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
-//                .addWhere("?quantity", "om:hasValue", VAR_O);
-//
-//        SelectBuilder sb = new SelectBuilder()
-//                .addVar(VAR_O).addWhere(wb);
-//
-//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-//        return getIRIfromJSONArray(queryResult);
-//    }
 }

@@ -16,7 +16,7 @@ import java.util.*;
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class IlluminationProcessor extends SensorDataProcessor {
-    private String illuminationIri;
+    private String illuminationIri = "";
 
     private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> illuminationList = new ArrayList<>();
@@ -46,10 +46,11 @@ public class IlluminationProcessor extends SensorDataProcessor {
     @Override
     public void initIRIs() {
         getIrisFromKg();
-        if (illuminationIri.isEmpty()) {
+        if (illuminationIri == null || illuminationIri.isEmpty()) {
             illuminationIri = "https://www.theworldavatar.com/kg/sensorloggerapp/light_value_" + UUID.randomUUID();
 
             isIriInstantiationNeeded = true;
+            isRbdInstantiationNeeded = true;
         }
     }
 
@@ -95,24 +96,4 @@ public class IlluminationProcessor extends SensorDataProcessor {
         }
         illuminationIri = queryResult.getJSONObject(0).optString("o");
     }
-
-//    String getIlluminanceIRIArray() {
-//
-//        WhereBuilder wb = new WhereBuilder()
-//                .addPrefix("slma", SLA)
-//                .addPrefix("saref", SAREF)
-//                .addPrefix("ontodevice", ONTODEVICE)
-//                .addPrefix("rdf", RDF)
-//                .addPrefix("om", OM)
-//                .addWhere(smartphoneIRINode, "saref:consistsOf", "?camera")
-//                .addWhere("?camera", "rdf:type", "ontodevice:Camera")
-//                .addWhere("?camera", "ontodevice:measures", "?om_illuminance")
-//                .addWhere("?om_illuminance", "om:hasValue", VAR_O);
-//
-//        SelectBuilder sb = new SelectBuilder()
-//                .addVar(VAR_O).addWhere(wb);
-//
-//        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
-//        return getIRIfromJSONArray(queryResult);
-//    }
 }
