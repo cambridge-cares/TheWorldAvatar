@@ -1,3 +1,7 @@
+export const CHEMICAL_CLASS_KEY = "ChemicalClass"
+export const USE_KEY = "Use"
+export const RETURN_FIELD_KEY = "ReturnField"
+
 export interface ChemicalClass extends RDFEntity {
   label: string
 }
@@ -11,7 +15,7 @@ export interface OntospeciesIdentifier extends RDFEntity {
 }
 
 export interface HasValueHasUnit extends RDFEntity {
-  value: number
+  value: string
   unit?: string
 }
 
@@ -21,64 +25,64 @@ export interface OntospeciesProperty extends HasValueHasUnit {
 }
 
 export const OSpeciesPropertyKey = {
-  ATOM_CHIRAL_COUNT: 'atom-chiral-count',
-  ATOM_CHIRAL_DEF_COUNT: 'atom-chiral-def-count',
-  ATOM_CHIRAL_UNDEF_COUNT: 'atom-chiral-undef-count',
-  AUTOIGNITION_TEMPERATURE: 'autoignition-temperature',
-  BOILING_POINT: 'boiling-point',
-  BOND_CHIRAL_COUNT: 'bond-chiral-count',
-  BOND_CHIRAL_DEF_COUNT: 'bond-chiral-def-count',
-  BOND_CHIRAL_UNDEF_COUNT: 'bond-chiral-undef-count',
-  CACO2_PERMEABILITY: 'caco2-permeability',
-  CHARGE: 'charge',
-  COLLISION_CROSS_SECTION: 'collision-cross-section',
-  COMPOUND_COMPLEXITY: 'compound-complexity',
-  COVALENT_UNIT_COUNT: 'covalent-unit-count',
-  DENSITY: 'density',
-  DISSOCIATION_CONSTANTS: 'dissociation-constants',
-  ENTHALPYOF_SUBLIMATION: 'enthalpyof-sublimation',
-  EXACT_MASS: 'exact-mass',
-  FLASH_POINT: 'flash-point',
-  HEAT_CAPACITY: 'heat-capacity',
-  HEATOF_COMBUSTION: 'heatof-combustion',
-  HEATOF_VAPORIZATION: 'heatof-vaporization',
-  HEAVY_ATOM_COUNT: 'heavy-atom-count',
-  HENRYS_LAW_CONSTANT: 'henrys-law-constant',
-  HIGHER_HEATING_VALUE: 'higher-heating-value',
-  HYDROGEN_BOND_ACCEPTOR_COUNT: 'hydrogen-bond-acceptor-count',
-  HYDROGEN_BOND_DONOR_COUNT: 'hydrogen-bond-donor-count',
-  HYDROPHOBICITY: 'hydrophobicity',
-  IONIZATION_POTENTIAL: 'ionization-potential',
-  ISOELECTRIC_POINT: 'isoelectric-point',
-  ISOTOPE_ATOM_COUNT: 'isotope-atom-count',
-  LOG_P: 'log-p',
-  LOG_S: 'log-s',
-  LOWER_HEATING_VALUE: 'lower-heating-value',
-  MELTING_POINT: 'melting-point',
-  MOLECULAR_WEIGHT: 'molecular-weight',
-  MONO_ISOTOPIC_WEIGHT: 'mono-isotopic-weight',
-  OPTICAL_ROTATION: 'optical-rotation',
-  POLAR_SURFACE_AREA: 'polar-surface-area',
-  ROTATABLE_BOND_COUNT: 'rotatable-bond-count',
-  SOLUBILITY: 'solubility',
-  SURFACE_TENSION: 'surface-tension',
-  TAUTOMERS_COUNT: 'tautomers-count',
-  VAPOR_DENSITY: 'vapor-density',
-  VAPOR_PRESSURE: 'vapor-pressure',
-  VISCOSITY: 'viscosity',
-  X_LOG_P3: 'x-log-p3',
+  ATOM_CHIRAL_COUNT: 'AtomChiralCount',
+  ATOM_CHIRAL_DEF_COUNT: 'AtomChiralDefCount',
+  ATOM_CHIRAL_UNDEF_COUNT: 'AtomChiralUndefCount',
+  AUTOIGNITION_TEMPERATURE: 'AutoignitionTemperature',
+  BOILING_POINT: 'BoilingPoint',
+  BOND_CHIRAL_COUNT: 'BondChiralCount',
+  BOND_CHIRAL_DEF_COUNT: 'BondChiralDefCount',
+  BOND_CHIRAL_UNDEF_COUNT: 'BondChiralUndefCount',
+  CACO2_PERMEABILITY: 'Caco2Permeability',
+  CHARGE: 'Charge',
+  COLLISION_CROSS_SECTION: 'CollisionCrossSection',
+  COMPOUND_COMPLEXITY: 'CompoundComplexity',
+  COVALENT_UNIT_COUNT: 'CovalentUnitCount',
+  DENSITY: 'Density',
+  DISSOCIATION_CONSTANTS: 'DissociationConstants',
+  ENTHALPY_OF_SUBLIMATION: 'EnthalpyofSublimation',
+  EXACT_MASS: 'ExactMass',
+  FLASH_POINT: 'FlashPoint',
+  HEAT_CAPACITY: 'HeatCapacity',
+  HEAT_OF_COMBUSTION: 'HeatofCombustion',
+  HEAT_OF_VAPORIZATION: 'HeatofVaporization',
+  HEAVY_ATOM_COUNT: 'HeavyAtomCount',
+  HENRYS_LAW_CONSTANT: 'HenrysLawConstant',
+  HIGHER_HEATING_VALUE: 'HigherHeatingValue',
+  HYDROGEN_BOND_ACCEPTOR_COUNT: 'HydrogenBondAcceptorCount',
+  HYDROGEN_BOND_DONOR_COUNT: 'HydrogenBondDonorCount',
+  HYDROPHOBICITY: 'Hydrophobicity',
+  IONIZATION_POTENTIAL: 'IonizationPotential',
+  ISOELECTRIC_POINT: 'IsoelectricPoint',
+  ISOTOPE_ATOM_COUNT: 'IsotopeAtomCount',
+  LOG_P: 'LogP',
+  LOG_S: 'LogS',
+  LOWER_HEATING_VALUE: 'LowerHeatingValue',
+  MELTING_POINT: 'MeltingPoint',
+  MOLECULAR_WEIGHT: 'MolecularWeight',
+  MONO_ISOTOPIC_WEIGHT: 'MonoIsotopicWeight',
+  OPTICAL_ROTATION: 'OpticalRotation',
+  POLAR_SURFACE_AREA: 'PolarSurfaceArea',
+  ROTATABLE_BOND_COUNT: 'RotatableBondCount',
+  SOLUBILITY: 'Solubility',
+  SURFACE_TENSION: 'SurfaceTension',
+  TAUTOMERS_COUNT: 'TautomersCount',
+  VAPOR_DENSITY: 'VaporDensity',
+  VAPOR_PRESSURE: 'VaporPressure',
+  VISCOSITY: 'Viscosity',
+  XLOGP3: 'XLogP3',
 } as const
 export type SpeciesPropertyKey =
   (typeof OSpeciesPropertyKey)[keyof typeof OSpeciesPropertyKey]
 
 export const OSpeciesIdentifierKey = {
-  CID: 'cid',
-  CHEBI_ID: 'chebi-id',
-  IUPAC_NAME: 'iupac-name',
-  INCHI: 'inchi',
-  INCHI_KEY: 'inchi-key',
-  MOLECULAR_FORMULA: 'molecular-formula',
-  SMILES: 'smiles',
+  CID: 'CID',
+  CHEBI_ID: 'ChebiId',
+  IUPAC_NAME: 'IUPACName',
+  INCHI: 'InChI',
+  INCHI_KEY: 'InChIKey',
+  MOLECULAR_FORMULA: 'MolecularFormula',
+  SMILES: 'SMILES',
 } as const
 export type SpeciesIdentifierKey =
   (typeof OSpeciesIdentifierKey)[keyof typeof OSpeciesIdentifierKey]

@@ -17,7 +17,7 @@ export default async function SpeciesPage() {
         <h1 className='mb-4'>Species search</h1>
         <React.Suspense>
           <SpeciesForm
-            allChemicalClasses={chemicalClasses}
+            chemicalClassOptions={chemicalClasses}
             allUses={uses}
             className='mb-12'
           />

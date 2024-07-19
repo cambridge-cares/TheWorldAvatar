@@ -63,7 +63,16 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
           </h2>
           <ul className='list-disc list-inside grid md:grid-cols-2 md:grid-flow-row-dense'>
             {data.chemical_classes.map((node, i) => (
-              <li key={i} className={i <= (data.chemical_classes.length - 1) / 2 ? 'md:col-start-1' : 'md:col-start-2'}>{node.label}</li>
+              <li
+                key={i}
+                className={
+                  i <= (data.chemical_classes.length - 1) / 2
+                    ? 'md:col-start-1'
+                    : 'md:col-start-2'
+                }
+              >
+                {node.label}
+              </li>
             ))}
           </ul>
         </section>
@@ -75,7 +84,16 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
           </h2>
           <ul className='list-disc list-inside grid grid-cols-2 grid-flow-row-dense'>
             {data.uses.map((node, i) => (
-              <li key={i} className={i <= (data.uses.length - 1) / 2 ? 'md:col-start-1' : 'md:col-start-2'}>{node.label}</li>
+              <li
+                key={i}
+                className={
+                  i <= (data.uses.length - 1) / 2
+                    ? 'md:col-start-1'
+                    : 'md:col-start-2'
+                }
+              >
+                {node.label}
+              </li>
             ))}
           </ul>
         </section>

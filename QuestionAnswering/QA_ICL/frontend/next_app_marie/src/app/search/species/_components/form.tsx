@@ -7,11 +7,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
 import {
+  CHEMICAL_CLASS_KEY,
   ChemicalClass,
   OSpeciesIdentifierKey,
   OSpeciesPropertyKey,
   SPECIES_IDENTIFIER_KEY_LABELS,
   Use,
+  USE_KEY,
 } from '@/lib/model/ontospecies'
 import {
   Form,
@@ -63,12 +65,12 @@ const FORM_INIT_VALUES = {
 
 export interface SpeciesFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
-  allChemicalClasses: ChemicalClass[]
+  chemicalClassOptions: ChemicalClass[]
   allUses: Use[]
 }
 
 export function SpeciesForm({
-  allChemicalClasses,
+  chemicalClassOptions,
   allUses,
   className,
   ...props
@@ -88,12 +90,12 @@ export function SpeciesForm({
   })
 
   React.useEffect(() => {
-    const chemicalClass = searchParams.get('chemical-class')
+    const chemicalClass = searchParams.get(CHEMICAL_CLASS_KEY)
     if (chemicalClass) {
       form.setValue('chemicalClass', chemicalClass)
     }
 
-    const use = searchParams.get('use')
+    const use = searchParams.get(USE_KEY)
     if (use) {
       form.setValue('use', use)
     }
@@ -111,16 +113,13 @@ export function SpeciesForm({
   }, [form, searchParams])
 
   function onSubmit(values: z.infer<typeof SPECIES_FORM_SCHEMA>) {
-    const chemicalClassParams = values.chemicalClass
+    const chemicalClassParams: [string, string][] = values.chemicalClass
       ? [
-          ['chemical-class', encodeURI(values.chemicalClass)] as [
-            string,
-            string,
-          ],
-        ]
+        [CHEMICAL_CLASS_KEY, encodeURI(values.chemicalClass)]
+      ]
       : []
-    const useParams = values.use
-      ? [['use', encodeURI(values.use)] as [string, string]]
+    const useParams: [string, string][] = values.use
+      ? [[USE_KEY, encodeURI(values.use)]]
       : []
     const propertyParams = Object.entries(values.property).flatMap(
       ([key, { lower, upper }]) =>
@@ -161,7 +160,7 @@ export function SpeciesForm({
                 <FormControl>
                   <Combobox
                     itemCls='chemical class'
-                    items={allChemicalClasses.map(({ IRI, label }) => ({
+                    items={chemicalClassOptions.map(({ IRI, label }) => ({
                       value: IRI,
                       label,
                     }))}

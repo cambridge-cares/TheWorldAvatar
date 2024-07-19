@@ -16,7 +16,6 @@ from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
 )
-from utils.str import CAMEL_CASE_PATTERN
 from routers.utils import parse_rhs_colon
 
 
@@ -24,20 +23,10 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-SPECIES_CHEMCLASS_QUERY_KEY = "chemical-class"
-SPECIES_USE_QUERY_KEY = "use"
-SPECIES_PROPERTY_QUERY_KEYS = {
-    key: CAMEL_CASE_PATTERN.sub("-", key.value).lower() for key in SpeciesPropertyKey
-}
-SPECIES_IDENTIFIER_QUERY_KEYS = {
-    SpeciesIdentifierKey.CID: "cid",
-    SpeciesIdentifierKey.CHEBI_ID: "chebi-id",
-    SpeciesIdentifierKey.IUPAC_NAME: "iupac-name",
-    SpeciesIdentifierKey.INCHI: "inchi",
-    SpeciesIdentifierKey.INCHI_KEY: "inchi-key",
-    SpeciesIdentifierKey.MOLECULAR_FORMULA: "molecular-formula",
-    SpeciesIdentifierKey.SMILES: "smiles-string",
-}
+SPECIES_CHEMCLASS_QUERY_KEY = "ChemicalClass"
+SPECIES_USE_QUERY_KEY = "Use"
+RETURN_FIELD_QUERY_KEY = "ReturnField"
+
 SPECIES_IDENTIFIER_KEY_TO_LABEL = {
     SpeciesIdentifierKey.CID: "CID",
     SpeciesIdentifierKey.CHEBI_ID: "ChEBI ID",
@@ -51,22 +40,22 @@ SPECIES_IDENTIFIER_KEY_TO_LABEL = {
 
 async def parse_identifier_query_params(req: Request):
     return {
-        py_key: req.query_params[query_key]
-        for py_key, query_key in SPECIES_IDENTIFIER_QUERY_KEYS.items()
-        if query_key in req.query_params
+        key: req.query_params[key.value]
+        for key in SpeciesIdentifierKey
+        if key.value in req.query_params
     }
 
 
 async def parse_property_query_params(req: Request):
     return {
-        py_key: [parse_rhs_colon(val) for val in req.query_params.getlist(query_key)]
-        for py_key, query_key in SPECIES_PROPERTY_QUERY_KEYS.items()
-        if query_key in req.query_params
+        key: [parse_rhs_colon(val) for val in req.query_params.getlist(key.value)]
+        for key in SpeciesPropertyKey
+        if key.value in req.query_params
     }
 
 
 async def parse_return_fields(
-    return_field: Annotated[list[str], Query(..., alias="return-field")] = []
+    return_field: Annotated[list[str], Query(..., alias=RETURN_FIELD_QUERY_KEY)] = []
 ):
     if not return_field:
         return None
@@ -77,15 +66,9 @@ async def parse_return_fields(
         chemical_class=SPECIES_CHEMCLASS_QUERY_KEY in return_fields_set,
         use=SPECIES_USE_QUERY_KEY in return_fields_set,
         identifier=[
-            key
-            for key, qk in SPECIES_IDENTIFIER_QUERY_KEYS.items()
-            if qk in return_fields_set
+            key for key in SpeciesIdentifierKey if key.value in return_fields_set
         ],
-        property=[
-            key
-            for key, qk in SPECIES_PROPERTY_QUERY_KEYS.items()
-            if qk in return_fields_set
-        ],
+        property=[key for key in SpeciesPropertyKey if key.value in return_fields_set],
     )
 
 
@@ -122,16 +105,16 @@ async def parse_species_request(
             *(
                 {
                     "in": "query",
-                    "name": name,
+                    "name": key.value,
                     "schema": {"type": "array", "items": {"type": "string"}},
                     "description": "RHS colon filters e.g. `eq:100`, `lte:200`",
                 }
-                for name in SPECIES_PROPERTY_QUERY_KEYS.values()
+                for key in SpeciesPropertyKey
             ),
             *(
                 {
                     "in": "query",
-                    "name": SPECIES_IDENTIFIER_QUERY_KEYS[key],
+                    "name": key.value,
                     "schema": {"type": "string"},
                     "description": label,
                 }
