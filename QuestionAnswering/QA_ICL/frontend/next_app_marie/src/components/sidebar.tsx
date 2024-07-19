@@ -65,6 +65,15 @@ const UPPER_SIDEBAR_ITEMS = [
       },
     ],
   },
+  {
+    label: 'Explore',
+    items: [
+      {
+        href: '/plots/species',
+        label: 'SpeciesExplorer'
+      }
+    ]
+  }
 ]
 
 const LOWER_SIDEBAR_ITEMS = [
