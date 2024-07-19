@@ -18,6 +18,8 @@ on:
       - main
     paths:
       - Agents/FeatureInfoAgent/**
+      - '!**.md'
+      - '!**/release.html'
 
 
 # Job definitions
