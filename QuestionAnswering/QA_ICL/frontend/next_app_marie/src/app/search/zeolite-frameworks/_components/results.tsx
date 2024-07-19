@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button'
 const COL_HELPER = createColumnHelper<ZeoliteFrameworkBase>()
 const COLS = [
   COL_HELPER.accessor('IRI', {
-    header: '', cell: cell => {
+    header: '',
+    cell: cell => {
       const val = cell.getValue()
       return (
         <Link
@@ -23,7 +24,7 @@ const COLS = [
           <Button variant='secondary'>View</Button>
         </Link>
       )
-    }
+    },
   }),
   COL_HELPER.accessor('code', { header: 'Code' }),
 ]

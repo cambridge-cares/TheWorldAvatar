@@ -1,6 +1,6 @@
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { getJson, BACKEND_ENDPOINT, getReq } from '.'
-import { ChemicalClass, Species, SpeciesBase, Use } from '../model/ontospecies'
+import { ChemicalClass, Species, Use } from '../model/ontospecies'
 
 const GET_CHEMICAL_CLASSES_ENDPOINT = new URL(
   './ontospecies/chemical-classes',
@@ -20,8 +20,8 @@ export function getUses() {
 }
 
 const GET_SPECIES_ENDPOINT = new URL('./ontospecies/species', BACKEND_ENDPOINT)
-export function getSpeciesMany(searchParams: ReadonlyURLSearchParams) {
-  return getJson<SpeciesBase[]>(`${GET_SPECIES_ENDPOINT}?${searchParams}`)
+export function getSpeciesMany(searchParams: URLSearchParams) {
+  return getJson<Species[]>(`${GET_SPECIES_ENDPOINT}?${searchParams}`)
 }
 
 export function getSpeciesOne(iriEncoded: string) {
