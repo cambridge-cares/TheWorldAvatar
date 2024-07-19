@@ -12,8 +12,8 @@ class OntocrystalQuantity(Om2Quantity):
 
 
 class OntocrystalVectorComponent(RDFEntity):
-    index: int | None = RDFField(default=None, path=ONTOCRYSTAL.hasComponentIndex)
-    label: str | None = RDFField(default=None, path=ONTOCRYSTAL.hasComponentLabel)
+    index: int | None = RDFField(path=ONTOCRYSTAL.hasComponentIndex)
+    label: str | None = RDFField(path=ONTOCRYSTAL.hasComponentLabel)
     value: float = RDFField(path=ONTOCRYSTAL.hasComponentValue)
 
 
@@ -73,15 +73,9 @@ class OntocrystalCoordinateTransformation(RDFEntity):
 
 
 class OntocrystalUnitCell(RDFEntity):
-    lattice_system: str | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasLatticeSystem
-    )
-    space_group_symbol: str | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasSpaceGroupSymbol
-    )
-    symmetry_number: int | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasSymmetryNumber
-    )
+    lattice_system: str | None = RDFField(path=ONTOCRYSTAL.hasLatticeSystem)
+    space_group_symbol: str | None = RDFField(path=ONTOCRYSTAL.hasSpaceGroupSymbol)
+    symmetry_number: int | None = RDFField(path=ONTOCRYSTAL.hasSymmetryNumber)
     angles: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellAngles)
     reciprocal_angles: OntocrystalMeasureVector = RDFField(
         path=ONTOCRYSTAL.hasReciprocalUnitCellAngles
@@ -97,7 +91,7 @@ class OntocrystalUnitCell(RDFEntity):
 
 
 class OntocrystalTileFace(RDFEntity):
-    face_code: str | None = RDFField(default=None, path=ONTOCRYSTAL.hasFaceCode)
+    face_code: str | None = RDFField(path=ONTOCRYSTAL.hasFaceCode)
     edge_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfEdges)
 
 
@@ -140,15 +134,9 @@ class OntozeoliteZeoliticMaterial(OntozeoliteZeoliticMaterialBase):
 
 
 class OntocrystalUnitCell(RDFEntity):
-    lattice_system: str | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasLatticeSystem
-    )
-    space_group_symbol: str | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasSpaceGroupSymbol
-    )
-    symmetry_number: str | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasSymmetryNumber
-    )
+    lattice_system: str | None = RDFField(path=ONTOCRYSTAL.hasLatticeSystem)
+    space_group_symbol: str | None = RDFField(path=ONTOCRYSTAL.hasSpaceGroupSymbol)
+    symmetry_number: str | None = RDFField(path=ONTOCRYSTAL.hasSymmetryNumber)
 
     angles: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellAngles)
     lengths: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellLengths)
@@ -191,10 +179,10 @@ class OntocrystalCrystalInfo(RDFEntity):
     )
     unit_cell: OntocrystalUnitCell = RDFField(path=ONTOCRYSTAL.hasUnitCell)
     tiled_structure: OntocrystalTiledStructure | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasTiledStructure
+        path=ONTOCRYSTAL.hasTiledStructure
     )
     xrd_spectrum: OntocrystalXRDSpectrum | None = RDFField(
-        default=None, path=ONTOCRYSTAL.hasXRDSpectrum
+        path=ONTOCRYSTAL.hasXRDSpectrum
     )
 
 
@@ -208,7 +196,7 @@ class OntozeoliteTAtom(RDFEntity):
     name: str = RDFField(path=ONTOZEOLITE.hasTAtomName)
 
     coord_seq: OntocrystalMeasureVector | None = RDFField(
-        default=None, path=ONTOZEOLITE.hasCooridnateSequence
+        path=ONTOZEOLITE.hasCooridnateSequence
     )
     vertex_symbol: list[OntozeoliteVertexSymbol] = RDFField(
         path=ONTOZEOLITE.hasVertexSymbol
@@ -267,14 +255,14 @@ class OntozeoliteTopoProps(RDFEntity):
         path=ONTOZEOLITE.hasTopologicalDensity
     )
 
-    RDLS: float | None = RDFField(default=None, path=ONTOZEOLITE.hasRDLS)
+    RDLS: float | None = RDFField(path=ONTOZEOLITE.hasRDLS)
     ring_sizes: OntocrystalMeasureVector = RDFField(path=ONTOZEOLITE.hasRingSizes)
     T_atom: list[OntozeoliteTAtom] = RDFField(path=ONTOZEOLITE.hasTAtom)
     secondary_bu: list[str] = RDFField(path=ONTOZEOLITE.hasSecondaryBU)
     composite_bu: OntozeoliteCompositeBU | None = RDFField(
-        default=None, path=ONTOZEOLITE.hasCompositeBU
+        path=ONTOZEOLITE.hasCompositeBU
     )
-    abc_seq: str | None = RDFField(default=None, path=ONTOZEOLITE.hasABCSequence)
+    abc_seq: str | None = RDFField(path=ONTOZEOLITE.hasABCSequence)
 
 
 class OntozeoliteZeoliteFramework(OntozeoliteZeoliteFrameworkBase):

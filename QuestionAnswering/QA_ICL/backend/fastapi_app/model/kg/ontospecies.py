@@ -14,16 +14,14 @@ class PeriodictableElement(RDFEntity):
 
 class OntospeciesHasValueHasUnit(RDFEntity):
     value: str = RDFField(path=ONTOSPECIES.value)
-    unit: str | None = RDFField(default=None, path=ONTOSPECIES.unit / RDFS.label)
+    unit: str | None = RDFField(path=ONTOSPECIES.unit / RDFS.label)
 
 
 class OntospeciesProperty(OntospeciesHasValueHasUnit):
     reference_state: OntospeciesHasValueHasUnit | None = RDFField(
-        default=None, path=ONTOSPECIES.hasReferenceState
+        path=ONTOSPECIES.hasReferenceState
     )
-    provenance: str | None = RDFField(
-        default=None, path=ONTOSPECIES.hasProvenance / RDFS.label
-    )
+    provenance: str | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
 
 
 class GcAtom(RDFEntity):
@@ -50,10 +48,8 @@ class OntospeciesUse(RDFEntity):
 
 
 class OntospeciesSpeciesBase(RDFEntity):
-    label: str | None = RDFField(default=None, path=RDFS.label)
-    IUPAC_name: str | None = RDFField(
-        default=None, path=ONTOSPECIES.hasIUPACName / ONTOSPECIES.value
-    )
+    label: str | None = RDFField(path=RDFS.label)
+    IUPAC_name: str | None = RDFField(path=ONTOSPECIES.hasIUPACName / ONTOSPECIES.value)
     InChI: str = RDFField(path=ONTOSPECIES.hasInChI / ONTOSPECIES.value)
 
 
