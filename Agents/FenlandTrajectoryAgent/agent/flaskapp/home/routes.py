@@ -88,11 +88,11 @@ def home():
             }
             
             function loadAndPreprocess() {
-                sendPostRequest('load_and_preprocess', {"file_path": "/app/agent/raw_data/gps_target_folder"});
+                sendPostRequest('preprocess', {"file_path": "/app/agent/raw_data/gps_target_folder"});
             }
 
             function processAndInstantiate() {
-                sendPostRequest('process_and_instantiate', {"file_path": "/app/agent/raw_data/gps_target_folder"});
+                sendPostRequest('instantiate', {"file_path": "/app/agent/raw_data/gps_target_folder"});
             }
 
             function createLayer() {

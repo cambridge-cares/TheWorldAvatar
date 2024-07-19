@@ -85,7 +85,7 @@ The agent will automatically register a task upon startup to assimilate the data
 
 ## Functionality Description
 
-The operation of this agent involves four steps: **load**, **preprocess**, **process**, and **instantiate**. Here is a brief description of each:
+The operation of this agent involves three key steps: **preprocess**, **process**, and **instantiate**. Here is a brief description of each:
 
 - **Load**: This step involves setting up a loop to read all GPS trajectory files in batch. Each file is processed one by one, moving through all the following steps before proceeding to the next file.
 - **Preprocess**: In this step, the raw file is examined to ensure the presence of essential columns (UTC Date, UTC Time, Speed, Heading, Height, Distance, Latitude, and Longitude) and to handle any empty rows or columns. Additionally, the format of the time-related columns will be checked and converted to [ISO 8601] if needed.
