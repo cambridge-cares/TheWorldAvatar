@@ -11,7 +11,7 @@
 #
 
 # ---- Development Image ----
-FROM node:18.18-slim AS develop
+FROM node:22.4-slim AS develop
 
 # Make directory to house application
 RUN mkdir -p /twa
@@ -27,7 +27,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 CMD [ "/bin/bash", "-c", "npm run dev" ]
 
 # ---- Production Image ----
-FROM node:18 AS prod
+FROM node:22.4 AS prod
 
 # Next.js collects completely anonymous telemetry data about general usage and should be disabled
 ENV NEXT_TELEMETRY_DISABLED 1
