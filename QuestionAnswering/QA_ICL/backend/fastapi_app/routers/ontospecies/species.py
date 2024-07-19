@@ -78,7 +78,7 @@ async def parse_return_fields(
         use=SPECIES_USE_QUERY_KEY in return_fields_set,
         identifier=[
             key
-            for key, qk in SPECIES_PROPERTY_QUERY_KEYS.items()
+            for key, qk in SPECIES_IDENTIFIER_QUERY_KEYS.items()
             if qk in return_fields_set
         ],
         property=[
@@ -139,15 +139,27 @@ async def parse_species_request(
             ),
         ]
     },
-    response_model=list[OntospeciesSpeciesBase],
+    response_model=list[OntospeciesSpecies],
 )
 async def getSpecies(
     species_req: Annotated[SpeciesRequest, Depends(parse_species_request)],
+    return_fields: Annotated[
+        SpeciesReqReturnFields | None, Depends(parse_return_fields)
+    ],
     ontospecies_store: Annotated[
         OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
 ):
-    return ontospecies_store.get_species_base(species_req)
+    iris = ontospecies_store.get_species_IRIs(species_req)
+
+    if return_fields is None:
+        return_fields = SpeciesReqReturnFields()
+
+    return [
+        x
+        for x in ontospecies_store.get_species_fields(iris, return_fields=return_fields)
+        if x
+    ]
 
 
 class XYZResponse(Response):

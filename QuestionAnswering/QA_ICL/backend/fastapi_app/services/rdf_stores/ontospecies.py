@@ -47,7 +47,7 @@ class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
     def get_species_base_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntospeciesSpeciesBase, iris)
 
-    def get_species_base(self, req: SpeciesRequest):
+    def get_species_IRIs(self, req: SpeciesRequest):
         chemclass_patterns = [
             f"?Species os:hasChemicalClass/rdfs:subClassOf* <{iri}> ."
             for iri in req.chemical_class
@@ -91,10 +91,7 @@ WHERE {{
             )
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        species = self.get_species_base_many(
-            [binding["Species"] for binding in bindings]
-        )
-        return [x for x in species if x]
+        return [binding["Species"] for binding in bindings]
 
     def get_species_fields(
         self, iris: list[str], return_fields: SpeciesReqReturnFields | None = None
@@ -140,6 +137,23 @@ WHERE {{
             if pair
         ]
 
+        if not field_pred_pairs:
+            return [
+                (
+                    OntospeciesSpecies(
+                        **base_model.model_dump(),
+                        alt_labels=list(),
+                        chemical_classes=list(),
+                        uses=list(),
+                        properties=dict(),
+                        identifiers=dict(),
+                    )
+                    if base_model
+                    else None
+                )
+                for base_model in species_base
+            ]
+
         query = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
@@ -165,8 +179,6 @@ WHERE {{
             field2iri2values[binding["field"]][binding["Species"]].append(
                 binding["value"]
             )
-
-        print(field2iri2values)
 
         speciesIRI_to_chemclassIRIs = field2iri2values["chemicalClass"]
         chemical_classes = (
@@ -215,9 +227,17 @@ WHERE {{
             }
             for key, speciesIRI_to_nodeIRIs in identifier_speciesIRI_to_nodeIRIs.items()
         }
+        iri2identifiers: defaultdict[
+            str, dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]]
+        ] = defaultdict(dict)
+        for key, iri2nodes in identifier_iri2nodes.items():
+            for iri, nodes in iri2nodes.items():
+                iri2identifiers[iri][key] = nodes
 
         property_speciesIRI_to_nodeIRIs = {
-            key: field2iri2values[key.value] for key in SpeciesPropertyKey
+            key: field2iri2values[key.value]
+            for key in SpeciesPropertyKey
+            if key.value in field2iri2values
         }
         properties = (
             x
@@ -239,29 +259,25 @@ WHERE {{
             }
             for key, speciesIRI_to_nodeIRIs in property_speciesIRI_to_nodeIRIs.items()
         }
+        iri2properties: defaultdict[
+            str, dict[SpeciesPropertyKey, list[OntospeciesProperty]]
+        ] = defaultdict(dict)
+        for key, iri2nodes in property_iri2nodes.items():
+            for iri, nodes in iri2nodes.items():
+                iri2properties[iri][key] = nodes
 
         return [
-            OntospeciesSpecies(
-                **base_model.model_dump(),
-                alt_labels=field2iri2values["altLabel"][iri],
-                chemical_classes=iri2chemclass.get(iri, list()),
-                uses=iri2use.get(iri, list()),
-                identifiers={
-                    k: v
-                    for k, v in {
-                        key: identifier_iri2nodes[key].get(iri)
-                        for key in SpeciesIdentifierKey
-                    }.items()
-                    if v
-                },
-                properties={
-                    k: v
-                    for k, v in {
-                        key: property_iri2nodes[key].get(iri)
-                        for key in SpeciesPropertyKey
-                    }.items()
-                    if v
-                },
+            (
+                OntospeciesSpecies(
+                    **base_model.model_dump(),
+                    alt_labels=field2iri2values["altLabel"][iri],
+                    chemical_classes=iri2chemclass.get(iri, list()),
+                    uses=iri2use.get(iri, list()),
+                    identifiers=iri2identifiers[iri],
+                    properties=iri2properties[iri],
+                )
+                if base_model
+                else None
             )
             for iri, base_model in zip(iris, species_base)
         ]
