@@ -91,7 +91,7 @@ The operation of this agent is streamlined into two key steps: **Preprocess** an
 
 - **Instantiate**: This further step involves creating geometry classes for the trajectories, generating IRIs, and structuring the data into lists categorized as time-series and non-time-series. These lists serve as inputs for the [TimeSeriesClient] and the [KGClient], respectively. This organized data is then instantiated in both the knowledge graph and the relational database to facilitate queries and analytics.
 
-Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organized, making it ready for use in the knowledge graph and relational databases
+Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organized, making it ready for use in the knowledge graph and the relational database.
 
 ## Example HTTP Requests
 Example HTTP requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file and the [instantiate] file.
