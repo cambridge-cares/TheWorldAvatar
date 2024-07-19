@@ -85,21 +85,18 @@ The agent will automatically register a task upon startup to assimilate the data
 
 ## Functionality Description
 
-The operation of this agent involves three key steps: **preprocess**, **process**, and **instantiate**. Here is a brief description of each:
+The operation of this agent is streamlined into two key steps: **Preprocess** and **Instantiate**. Here is a brief description of each:
 
-- **Load**: This step involves setting up a loop to read all GPS trajectory files in batch. Each file is processed one by one, moving through all the following steps before proceeding to the next file.
-- **Preprocess**: In this step, the raw file is examined to ensure the presence of essential columns (UTC Date, UTC Time, Speed, Heading, Height, Distance, Latitude, and Longitude) and to handle any empty rows or columns. Additionally, the format of the time-related columns will be checked and converted to [ISO 8601] if needed.
-- **Process**: During this step, the information inside the preprocessed file is further organised to align with the requirements of the instantiation. This mainly involves creating geometry classes for the trajectory, importing namespaces, generating IRIs, and restructuring the raw data into non-time-series lists (concepts and relations in trajectory data) and time-series lists. These will act as inputs for different instantiation clients.
-- **Instantiate**: This final step involves creating instances of the data in the knowledge graph and relational database, making it available for queries and analytics. It mainly includes deploying the [TimeSeriesClient] with time-series inputs and utilizing the tailored [KGClient] class for non-time-series attributes. Unlike an encapsulated tool, the [KGClient] class is adapted for each project, providing essential functionalities for interacting with the knowledge graph. These functionalities mainly include executing SPARQL queries and updates. All of these are detailed in the [knowledge graph operations guidance].
+- **Preprocess**:  This initial step involves loading and examining the GPS trajectory files in batch to ensure efficient processing. Each file is checked for essential columns (UTC Date, UTC Time, Speed, Heading, Height, Distance, Latitude, and Longitude). Any missing data or misformatted columns, particularly those related to time, are corrected to conform with the [ISO 8601] standard. During this phase, data is extracted into a  temporary dataframe, allowing for necessary restructuring and corrections without altering the original files.
+
+- **Instantiate**: This further step involves creating geometry classes for the trajectories, generating IRIs, and structuring the data into lists categorized as time-series and non-time-series. These lists serve as inputs for the [TimeSeriesClient] and the [KGClient], respectively. This organized data is then instantiated in both the knowledge graph and the relational database to facilitate queries and analytics.
+
+Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organized, making it ready for use in the knowledge graph and relational databases
 
 ## Example HTTP Requests
-To ensure concise and smooth execution, the aforementioned steps have been combined into two HTTP requests:
+Example HTTP requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file and the [instantiate] file.
 
-1. **Load and Preprocess**: These steps are grouped together to streamline the initial handling of the data. By combining loading and preprocessing, raw data is efficiently imported and prepared in a single operation. For a detailed HTTP example, refer to the [load_and_preprocess] file.
-2. **Process and Instantiate**: Similarly, processing and instantiating the data are combined into one step to ensure that once the data is prepared, it is immediately structured and instantiated into the knowledge graph and relational database. This approach enhances efficiency and maintains data integrity throughout the pipeline. For a detailed HTTP example, refer to the [process_and_instantiate] file.
-
-Although the trigger operations are merged, the logger information for each step remains independent, ensuring that each step's activities are transparently recorded. Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. This method provides a straightforward and scriptable way to interact with the agent. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
-
+Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
 
 &nbsp;
@@ -153,6 +150,6 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [stack manager configuration directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/
 [CURL commands folder]: ./example-requests/curl
 [SendHTTP]: ./example-requests/SendHTTP
-[load_and_preprocess]: ./example-requests/SendHTTP/gps_load_and_preprocess.http
-[process_and_instantiate]: ./example-requests/SendHTTP/gps_process_and_instantiate.http
+[preprocess]: ./example-requests/SendHTTP/gps_preprocess.http
+[instantiate]: ./example-requests/SendHTTP/gps_instantiate.http
 [KGClient]: ./agent/kgutils/kgclient.py
