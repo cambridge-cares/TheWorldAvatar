@@ -15,9 +15,27 @@ import { getSpeciesMany } from '@/lib/api/ontospecies'
 import { Combobox } from '@/components/ui/combobox'
 import { SpeciesPropertiesPlot } from './plot'
 
-
 function selectSpeciesPropertyNode(nodes: OntospeciesProperty[]) {
   return nodes.find(node => node.provenance === 'PubChem agent') || nodes[0]
+}
+
+function deriveUnitOptions(data: Species[], key: SpeciesPropertyKey) {
+  return Object.entries(
+    data
+      .map(datum => datum.properties[key])
+      .filter(x => x)
+      .flatMap(nodes => nodes.map(node => node.unit))
+      .filter((x): x is string => typeof x === 'string')
+      .reduce(
+        (acc, x) => {
+          acc[x] = (acc[x] || 0) + 1
+          return acc
+        },
+        {} as { [key: string]: number }
+      )
+  )
+    .toSorted(([_unitA, freqA], [_unitB, freqB]) => freqB - freqA) // sort by descending frequency
+    .map(([unit, _]) => unit)
 }
 
 export interface SpeciesPropertiesPlotCtxProps {
@@ -29,14 +47,27 @@ export const SpeciesPropertiesPlotCtx = ({
 }: SpeciesPropertiesPlotCtxProps) => {
   const [xProp, setXProp] =
     React.useState<SpeciesPropertyKey>('MolecularWeight')
+  const [xUnitOptions, setXUnitOptions] = React.useState<string[] | undefined>(
+    undefined
+  )
+  const [xUnit, setXUnit] = React.useState<string | undefined>(undefined)
+
   const [yProp, setYProp] = React.useState<SpeciesPropertyKey>('MeltingPoint')
+  const [yUnitOptions, setYUnitOptions] = React.useState<string[] | undefined>(
+    undefined
+  )
+  const [yUnit, setYUnit] = React.useState<string | undefined>(undefined)
+
   const [chemClass, setChemClass] = React.useState<string>(
     (
       chemicalClassOptions.find(node => node.label === 'alkane') ||
       chemicalClassOptions[0]
     ).IRI
   )
-  const [plotData, setPlotData] = React.useState<{ x: number, y: number }[] | undefined>(undefined)
+  const [data, setData] = React.useState<Species[] | undefined>(undefined)
+  const [plotData, setPlotData] = React.useState<
+    { x: number; y: number }[] | undefined
+  >(undefined)
 
   React.useEffect(() => {
     async function getData() {
@@ -46,20 +77,51 @@ export const SpeciesPropertiesPlotCtx = ({
         [RETURN_FIELD_KEY, yProp],
       ])
       const res = await getSpeciesMany(params)
-      const data = res
-        .filter(datum => datum.properties[xProp] !== undefined && datum.properties[yProp] !== undefined)
-        .map(datum => ({
-          x: xProp in datum.properties ? Number(selectSpeciesPropertyNode(datum.properties[xProp]).value) : undefined,
-          y: yProp in datum.properties ? Number(selectSpeciesPropertyNode(datum.properties[yProp]).value) : undefined,
-        }))
-        .filter(
-          (datum): datum is { x: number; y: number } =>
-            typeof datum.x === 'number' && typeof datum.y === 'number'
-        )
-      setPlotData(data)
+      setData(res)
+      setXUnitOptions(deriveUnitOptions(res, xProp))
+      setYUnitOptions(deriveUnitOptions(res, yProp))
     }
     getData()
   }, [xProp, yProp, chemClass])
+
+  React.useEffect(() => {
+    if (xUnitOptions === undefined) return
+    setXUnit(xUnitOptions.find(x => x !== ''))
+  }, [xUnitOptions])
+
+  React.useEffect(() => {
+    if (yUnitOptions === undefined) return
+    setYUnit(yUnitOptions.find(x => x !== ''))
+  }, [yUnitOptions])
+
+  React.useEffect(() => {
+    if (data === undefined || xUnit === undefined || yUnit === undefined) return
+
+    setPlotData(
+      data
+        .map(({ properties }) => ({
+          x: properties[xProp]
+            ? properties[xProp].filter(node => node.unit === xUnit)
+            : undefined,
+          y: properties[yProp]
+            ? properties[yProp].filter(node => node.unit === yUnit)
+            : undefined,
+        }))
+        .filter(
+          (
+            datum
+          ): datum is { x: OntospeciesProperty[]; y: OntospeciesProperty[] } =>
+            datum.x !== undefined &&
+            datum.x.length > 0 &&
+            datum.y !== undefined &&
+            datum.y.length > 0
+        )
+        .map(({ x, y }) => ({
+          x: Number(selectSpeciesPropertyNode(x).value),
+          y: Number(selectSpeciesPropertyNode(y).value),
+        }))
+    )
+  }, [data, xProp, yProp, xUnit, yUnit])
 
   return (
     <div className='flex flex-col space-y-12'>
@@ -79,36 +141,66 @@ export const SpeciesPropertiesPlotCtx = ({
         </div>
         <div>
           <div>X-axis</div>
-          <Combobox
-            itemCls='species property'
-            items={Object.values(OSpeciesPropertyKey).map(val => ({
-              value: val,
-              label: val,
-            }))}
-            value={xProp}
-            onCmdItemSelect={value => setXProp(value as SpeciesPropertyKey)}
-            closePopoverOnCmdItemSelect
-          />
+          <div
+            className={xUnitOptions && xUnit ? 'grid grid-cols-5 gap-2' : ''}
+          >
+            <Combobox
+              itemCls='species property'
+              items={Object.values(OSpeciesPropertyKey).map(val => ({
+                value: val,
+                label: val,
+              }))}
+              value={xProp}
+              onCmdItemSelect={value => setXProp(value as SpeciesPropertyKey)}
+              closePopoverOnCmdItemSelect
+              className='col-span-3'
+            />
+            {xUnitOptions && xUnit && (
+              <Combobox
+                itemCls='unit'
+                items={xUnitOptions.map(val => ({ value: val, label: val }))}
+                value={xUnit}
+                onCmdItemSelect={value => setXUnit(value)}
+                closePopoverOnCmdItemSelect
+                className='col-span-2'
+              />
+            )}
+          </div>
         </div>
         <div>
           <div>Y-axis</div>
-          <Combobox
-            itemCls='species property'
-            items={Object.values(OSpeciesPropertyKey).map(val => ({
-              value: val,
-              label: val,
-            }))}
-            value={yProp}
-            onCmdItemSelect={value => setYProp(value as SpeciesPropertyKey)}
-            closePopoverOnCmdItemSelect
-          />
+          <div
+            className={yUnitOptions && yUnit ? 'grid grid-cols-5 gap-2' : ''}
+          >
+            <Combobox
+              itemCls='species property'
+              items={Object.values(OSpeciesPropertyKey).map(val => ({
+                value: val,
+                label: val,
+              }))}
+              value={yProp}
+              onCmdItemSelect={value => setYProp(value as SpeciesPropertyKey)}
+              closePopoverOnCmdItemSelect
+              className='col-span-3'
+            />
+            {yUnitOptions && yUnit && (
+              <Combobox
+                itemCls='unit'
+                items={yUnitOptions.map(val => ({ value: val, label: val }))}
+                value={yUnit}
+                onCmdItemSelect={value => setXUnit(value)}
+                closePopoverOnCmdItemSelect
+                className='col-span-2'
+              />
+            )}
+          </div>
         </div>
       </div>
       {plotData && plotData.length > 0 && (
         <SpeciesPropertiesPlot
           data={plotData}
-          xAxisLabel={xProp}
-          yAxisLabel={yProp}
+          xAxisLabel={`${xProp} (${xUnit})`}
+          yAxisLabel={`${yProp} (${yUnit})`}
           className='w-full'
         />
       )}

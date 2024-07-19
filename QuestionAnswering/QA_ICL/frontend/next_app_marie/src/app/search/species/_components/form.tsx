@@ -114,9 +114,7 @@ export function SpeciesForm({
 
   function onSubmit(values: z.infer<typeof SPECIES_FORM_SCHEMA>) {
     const chemicalClassParams: [string, string][] = values.chemicalClass
-      ? [
-        [CHEMICAL_CLASS_KEY, encodeURI(values.chemicalClass)]
-      ]
+      ? [[CHEMICAL_CLASS_KEY, encodeURI(values.chemicalClass)]]
       : []
     const useParams: [string, string][] = values.use
       ? [[USE_KEY, encodeURI(values.use)]]

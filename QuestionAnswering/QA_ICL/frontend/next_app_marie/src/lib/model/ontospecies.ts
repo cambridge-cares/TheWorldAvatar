@@ -1,6 +1,6 @@
-export const CHEMICAL_CLASS_KEY = "ChemicalClass"
-export const USE_KEY = "Use"
-export const RETURN_FIELD_KEY = "ReturnField"
+export const CHEMICAL_CLASS_KEY = 'ChemicalClass'
+export const USE_KEY = 'Use'
+export const RETURN_FIELD_KEY = 'ReturnField'
 
 export interface ChemicalClass extends RDFEntity {
   label: string

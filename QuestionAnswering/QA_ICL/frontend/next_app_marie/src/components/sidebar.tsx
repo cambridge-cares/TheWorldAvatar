@@ -70,10 +70,10 @@ const UPPER_SIDEBAR_ITEMS = [
     items: [
       {
         href: '/plots/species',
-        label: 'SpeciesExplorer'
-      }
-    ]
-  }
+        label: 'SpeciesExplorer',
+      },
+    ],
+  },
 ]
 
 const LOWER_SIDEBAR_ITEMS = [
