@@ -18,8 +18,11 @@ $$
 **Arguments**:
 
 <u>Resulted Electricity Consumption</u>: refer to resulted energy consumption calculation agents for details.
+
 <u>Resulted Gas Consumption</u>: refer to resulted energy consumption calculation agents for details.
+
 <u>Electricity unit cost</u>: pout the value in the docker-compose file, in the unit of £/kWh.
+
 <u>Gas unit cost</u>: put the value in the docker-compose file, in the unit of £/kWh.
 
 **Example input:**

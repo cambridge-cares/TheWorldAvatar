@@ -34,12 +34,19 @@ $$
 
 <u>Uptake</u>: a index which quantify the extent of the deployment of heat pump by measureing the gas being replaced by using heat pump comparing to conventional fossil fule heating system.
 Defined as (change of gas / gas used for heating), or (change of gas / (total gas consumption * propotion of heating)).
+
 <u>Gas consumption</u>: Value should be in unit of kWh.
+
 <u>Electricity consumption</u>: Value should be in unit of kWh.
+
 <u>Propotion of heating</u>: the propotion of gas which is used for heating(see equation above), if not provided, 0.9 will be used as default value.
+
 <u>COP</u>: Coefficient of Performance. Details refer to COPCalculation agent.
+
 <u>Boiler efficiency</u>: boiler efficiency (see equation above), if not provided, 0.8 will be used as default value.
+
 <u>Electricity consumption profile</u>: A list containing 12 data represents the electricity consumption value from Jan to Dec.
+
 <u>Gas consumption profile</u>: A list containing 12 data represents the gas consumption value from Jan to Dec.
 
 
