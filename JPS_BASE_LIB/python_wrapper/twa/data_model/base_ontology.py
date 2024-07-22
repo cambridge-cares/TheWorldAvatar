@@ -1207,20 +1207,20 @@ class BaseClass(BaseModel, validate_assignment=True):
             ops = target_clz.get_object_properties()
             dps = target_clz.get_data_properties()
             # handle object properties (where the recursion happens)
-            # TODO need to consider what to do when two instances pointing to each other, or if there's circular nodes
+            # TODO [I think this is solved?] need to consider what to do when two instances pointing to each other, or if there's circular nodes
             # here object_properties_dict is a fetch of the remote KG
-            object_properties_dict = {
-                op_dct['field']: op_dct['type'](
-                    set() if op_iri not in props else op_dct['type'].reveal_object_property_range(
-                        ).pull_from_kg(props[op_iri], sparql_client, recursive_depth) if flag_pull else props[op_iri]
-                ) for op_iri, op_dct in ops.items()
-            }
+            object_properties_dict = {}
+            for op_iri, op_dct in ops.items():
+                _set = set()
+                if op_iri in props:
+                    if flag_pull:
+                        c_tp: BaseClass = get_args(op_dct['type'])[0]
+                        _set = c_tp.pull_from_kg(props[op_iri], sparql_client, recursive_depth)
+                    else:
+                        _set = set(props[op_iri])
+                object_properties_dict[op_dct['field']] = _set
             # here we handle data properties (data_properties_dict is a fetch of the remote KG)
-            data_properties_dict = {
-                dp_dct['field']: dp_dct['type'](
-                    props[dp_iri] if dp_iri in props else set()
-                ) for dp_iri, dp_dct in dps.items()
-            }
+            data_properties_dict = {dp_dct['field']: set(props[dp_iri]) if dp_iri in props else set() for dp_iri, dp_dct in dps.items()}
             # handle rdfs:label and rdfs:comment (also fetch of the remote KG)
             rdfs_properties_dict = {}
             if RDFS.label.toPython() in props:
@@ -1241,15 +1241,16 @@ class BaseClass(BaseModel, validate_assignment=True):
                         # but triple <a> <to_b> <b> does not exist in the KG
                         # this code then ensures the cache of object `b` is accurate
                         # TODO [future] below query can be combined with those connected in the KG to save amount of queries
-                        op_dct['type'].reveal_object_property_range().pull_from_kg(
-                            set(inst.get_object_property_range_iris(op_dct['field'])) - set(props.get(op_iri, [])),
+                        c_tp: BaseClass = get_args(op_dct['type'])[0]
+                        c_tp.pull_from_kg(
+                            set([o.instance_iri if isinstance(o, BaseClass) else o for o in getattr(inst, op_dct['field'])]) - set(props.get(op_iri, [])),
                             sparql_client, recursive_depth)
                 # now collect all featched values
                 fetched = {
-                    k: v.__class__(set([o.instance_iri if isinstance(o, BaseClass) else o for o in v.range]))
+                    k: set([o.instance_iri if isinstance(o, BaseClass) else o for o in v])
                     for k, v in object_properties_dict.items()
                 } # object properties
-                fetched.update({k: v.__class__(set(copy.deepcopy(v.range))) for k, v in data_properties_dict.items()}) # data properties
+                fetched.update({k: set(copy.deepcopy(v)) for k, v in data_properties_dict.items()}) # data properties
                 fetched.update(rdfs_properties_dict) # rdfs properties
                 # compare it with cached values and local values for all object/data/rdfs properties
                 # if the object is already in the lookup, then update the object for those fields that are not modified in the python
@@ -1452,9 +1453,9 @@ class BaseClass(BaseModel, validate_assignment=True):
                 in memory or string IRIs when reconnecting the range of object properties
         """
         for p_iri, p_dct in self.__class__.get_object_and_data_properties().items():
-            fetched_value = fetched.get(p_dct['field']).range if p_dct['field'] in fetched else set()
-            cached_value = self._latest_cache.get(p_dct['field']).range if p_dct['field'] in self._latest_cache else set()
-            local_value = getattr(self, p_dct['field']).range
+            fetched_value = fetched.get(p_dct['field']) if p_dct['field'] in fetched else set()
+            cached_value = self._latest_cache.get(p_dct['field']) if p_dct['field'] in self._latest_cache else set()
+            local_value = getattr(self, p_dct['field'])
             # below code compare the three values, the expected behaviour elaborated:
             # if fetched == cached --> no remote changes, update cache, no need to worry about local changes
             # if fetched != cached --> remote changed, now should check if local has changed:
@@ -1466,7 +1467,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             if fetched_value != cached_value:
                 if local_value == cached_value:
                     # no local changes, therefore update both cached (delayed later) and local values to the fetched value
-                    getattr(self, p_dct['field']).reassign_range(copy.deepcopy(fetched_value))
+                    setattr(self, p_dct['field'], copy.deepcopy(fetched_value))
                 else:
                     # there are both local and remote changes, now compare these two
                     if local_value != fetched_value:
@@ -1475,17 +1476,17 @@ class BaseClass(BaseModel, validate_assignment=True):
                             Objects appear in the remote but not in the local: {fetched_value}
                             Triples appear in the local but not the remote: {local_value}""")
             # the cache can be updated regardless as long as there are no exceptions
-            self._latest_cache.get(p_dct['field']).reassign_range(copy.deepcopy(fetched_value))
+            self._latest_cache[p_dct['field']] = copy.deepcopy(fetched_value)
 
             # when pulling the same objects again but with different recursive_depth
             # below ensures python objects in memory / the IRIs are used correctly for range of object properties
             if ObjectProperty._is_inherited(p_dct['type']):
-                _local_value_set = getattr(self, p_dct['field']).range
+                _local_value_set = getattr(self, p_dct['field'])
                 if bool(_local_value_set):
                     if flag_connect_object and isinstance(next(iter(_local_value_set)), str):
-                        getattr(self, p_dct['field']).reassign_range(set([KnowledgeGraph.get_object_from_lookup(o) for o in _local_value_set]))
+                        setattr(self, p_dct['field'], set([KnowledgeGraph.get_object_from_lookup(o) for o in _local_value_set]))
                     if not flag_connect_object and isinstance(next(iter(_local_value_set)), BaseClass):
-                        getattr(self, p_dct['field']).reassign_range(set([o.instance_iri for o in _local_value_set]))
+                        setattr(self, p_dct['field'], set([o.instance_iri for o in _local_value_set]))
 
         # compare rdfs_comment and rdfs_label
         for r in ['rdfs_comment', 'rdfs_label']:
@@ -1519,17 +1520,17 @@ class BaseClass(BaseModel, validate_assignment=True):
         else:
             return None
 
-    def get_object_property_range_iris(self, field_name: str) -> List[str]:
-        """
-        This function returns the IRIs of the range of the object property.
+    # def get_object_property_range_iris(self, field_name: str) -> List[str]:
+    #     """
+    #     This function returns the IRIs of the range of the object property.
 
-        Args:
-            field_name (str): The name of the field, e.g. 'myObjectProperty'
+    #     Args:
+    #         field_name (str): The name of the field, e.g. 'myObjectProperty'
 
-        Returns:
-            List[str]: A list of IRIs of the range of the object property
-        """
-        return [o.instance_iri if isinstance(o, BaseClass) else o for o in getattr(self, field_name).range]
+    #     Returns:
+    #         List[str]: A list of IRIs of the range of the object property
+    #     """
+    #     return [o.instance_iri if isinstance(o, BaseClass) else o for o in getattr(self, field_name)]
 
     def delete_in_kg(self, sparql_client: PySparqlClient):
         # TODO implement this method
@@ -1601,10 +1602,9 @@ class BaseClass(BaseModel, validate_assignment=True):
         traversed_iris.add(self.instance_iri)
         for f, field_info in self.model_fields.items():
             # TODO Optional[]
-            tp = field_info.annotation = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
+            tp: ObjectProperty | DatatypeProperty = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
             if _BaseProperty._is_inherited(tp):
                 # # TODO optimise the below codes
-                tp: ObjectProperty | DatatypeProperty
                 # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
                 # NOTE this is only revelant for object properties
                 flag_collect = abs(recursive_depth) > 0
@@ -1641,7 +1641,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                     # if flag_collect and issubclass(tp, ObjectProperty):
                     #     d_py = d if isinstance(d, BaseClass) else KnowledgeGraph.get_object_from_lookup(d)
                     #     if d_py is not None:
-                    #         g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
+                    #         g_to_remove, g_to_add = d_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
 
                 # besides the differences between the local values and cache
                 # also need to consider the intersection of the local values and cache when recursive for object property
@@ -1651,7 +1651,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                         d_py = d if isinstance(d, BaseClass) else KnowledgeGraph.get_object_from_lookup(d)
                         # only collect the diff if the object exists in the memory, otherwise it's not necessary
                         if d_py is not None:
-                            g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
+                            g_to_remove, g_to_add = d_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
 
             elif f == 'rdfs_comment':
                 if self._latest_cache.get(f) != self.rdfs_comment:
@@ -1886,15 +1886,15 @@ class ObjectProperty(_BaseProperty):
         """
         return super().export_to_owl(g, rdfs_domain, rdfs_range, True)
 
-    @classmethod
-    def reveal_object_property_range(cls) -> T:
-        """
-        This function reveals the Pydantic class of the range of the object property.
+    # @classmethod
+    # def reveal_object_property_range(cls) -> T:
+    #     """
+    #     This function reveals the Pydantic class of the range of the object property.
 
-        Returns:
-            T: The Pydantic class of the range of the object property
-        """
-        return cls.model_fields['range'].annotation.__args__[0].__args__[0]
+    #     Returns:
+    #         T: The Pydantic class of the range of the object property
+    #     """
+    #     return cls.model_fields['range'].annotation.__args__[0].__args__[0]
 
     # @classmethod
     # def reveal_possible_property_range(cls) -> Set[T]:
