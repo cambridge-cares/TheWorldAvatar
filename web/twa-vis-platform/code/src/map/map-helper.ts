@@ -64,19 +64,13 @@ const PLACENAME_LAYERS: string[] = [
  * @param {MapSettings} mapSettings The user specified map settings.
  * @param {DataStore} data The data of interest to add to the map.
  */
-export function addData(map: Map, mapSettings: MapSettings, data: DataStore): void {
+export async function addData(map: Map, mapSettings: MapSettings, data: DataStore): Promise<void> {
   // Parse data configuration and load icons
-  const iconPromise = addIcons(map, mapSettings.icons);
+  await addIcons(map, mapSettings.icons)
+  resetMap(map);
+  addAllSources(map, data);
+  addAllLayers(map, data, mapSettings.imagery);
 
-  Promise.all([iconPromise]).then(() => {
-    // Once that is done and completed...
-    console.log("Data definitions fetched and parsed.");
-    // Reset the map
-    resetMap(map);
-    // Plot data
-    addAllSources(map, data);
-    addAllLayers(map, data, mapSettings.imagery);
-  });
 }
 
 /**
