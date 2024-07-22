@@ -48,8 +48,9 @@ export const SpeciesPropertiesPlot = ({
         plugins: {
           legend: { display: false },
           tooltip: {
+            displayColors: false,
             callbacks: {
-              label: ctx => (ctx.raw as { label: string }).label,
+              label: ({parsed: {x, y}, raw}) => [`${(raw as { label: string }).label}`, `(${x}, ${y})`]
             },
           },
         },
