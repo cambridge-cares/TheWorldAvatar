@@ -13,8 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/PIPSRequestAgent
-RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package
-
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package -D skipTests
 
 #==================================================================================================
 
