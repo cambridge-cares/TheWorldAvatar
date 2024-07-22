@@ -2,7 +2,7 @@ import os
 import glob
 import fitz  # PyMuPDF
 import tiktoken
-import main
+from pipeline import get_literature, ChatGPTAPI
 
 
     
@@ -157,7 +157,7 @@ def use_openai(file_path:str, output_dir:str):
     else:   
         doi         = name[:] 
     doi                         = doi.replace("_", "/")
-    prompt                      = 6
+    prompt                      = 10
     match prompt:
         case 1:
                 extend        = ".txt"
@@ -169,7 +169,7 @@ def use_openai(file_path:str, output_dir:str):
 
                                         Here is the text: """
         case 2:
-                mop_formula   = main.get_literature(doi)
+                mop_formula   = pipeline.get_literature(doi)
                 extend        = "_prompt_2.txt"
                 prompt_syn    = f"""  For the following MOP or MOPs: {mop_formula}, please rewrite the provided synthesis procedures into separate,
                                 clear, and self-contained step-by-step instructions.  Ensure that each synthesis procedure is entirely
@@ -183,7 +183,7 @@ def use_openai(file_path:str, output_dir:str):
                                 Here is the text:
                                 """
         case 3:
-                mop_formula   = main.get_literature(doi)
+                mop_formula   = pipeline.get_literature(doi)
                 extend        = ".txt"
                 prompt_syn    = f""" Objective: Extract and provide an exact word-for-word copy of each paragraph specifically related to synthesis procedures from the given text, focusing on the experimental section.
 
@@ -277,7 +277,7 @@ Yield: 0.15g (76%)
 ...
 Provided Text: """ 
         case 5:
-            mop_formula   = main.get_literature(doi)
+            mop_formula   = pipeline.get_literature(doi)
             extend        = ".txt"
             prompt_syn    = f""" 
 Objective: 
@@ -338,7 +338,7 @@ N, 3.13 Found: C, 45.11; H, 5.32; N, 3.31.)
 
 Provided Text: """
         case 6:
-            mop_formula   = main.get_literature(doi)
+            mop_formula   = pipeline
             extend        = ".txt"
             prompt_syn    = f""" 
 Task Specification:
@@ -373,9 +373,145 @@ Example CSV Entry:
 "1","Goldberg MOP-4","4,4’,4’’-s-Triazine-2,4,6-triyl-tribenzoic acid (H3TATB) (25 mg), VOSO4·5H2O (51 mg)","DMF (3 mL)","433 K","48 hours","N/A","N/A","Parr Teflon-lined stainless steel vessel","20 mg (40%)","Elemental analysis","1552951","[WV5O11]12[(C3N3)(C6H4)3(CO2)3]20"
 
 Synthesis Text:"""
-    chatgpt_api                 = main.ChatGPTAPI()
+            
+
+        case 7:
+            json_output   = False
+            mop_formula   = get_literature(doi)
+            extend        = ".txt"
+            prompt_syn    = f""" 
+Step-by-Step Instructions: Break down each synthesis procedure into precise and sequential steps. Each procedure should stand alone and not reference any other procedures or require shared understanding.
+Assign the steps in categories of Add, Heat chill, Filter, Stirr, and Sonicate. Category specification: Add is a step where material is added to a mixture or vessel.
+If more than one reagent or solvent is added group each of them in their own step. An Add step requires a vessel and the name of the chemical that is added.
+HeatChill is a synthesis step where a mixture or vessel is heated or cooled. If a mixture is heated or cooled to several different temperatures, 
+assign each entry to a new step for each temperature. Each Heat and cooling step requires a target temperature to which is heated or cooled.
+Make sure to assign the heating rate to the step with the assigned target temperature. 
+Filter is a step in which a solid is extracted by filtration or washed with a solvent. 
+Stirr is a step where a mixture is stirred for a certain time without heating, cooling, adding or filtering material. 
+Sonication describes the use of a sonication device for a certain time. Explicit Details: Ensure that all implicit information in the original text is made explicit.
+For example, specify temperature, time, and any other conditions that are critical for the synthesis but may not be directly stated.
+Include explicit comments from the text regarding MOP chemcial formula and CCDC number. 
+Formatting: Use bullet points or numbered lists to clearly delineate steps. 
+Truthfulness and Completeness: Answer the questions based solely on the provided context. 
+If any information is missing or unclear, use "N/A" to indicate this. Make sure to start with the general synthesis information if provided in the input text 
+and continue with the component specific synthesis descriptions.
+Example:## MOP-14 Synthesis: 
+1. **Add:** Place glycine tert-butyl ester hydrochloride (Gly-tBu·HCl, 242 mg) into a vessel.
+2. **Add:** Add 6.0 mL of DMF into the vessel.
+3. **Add:** Add triethylamine (TEA, 0.20 mL) into the vessel.
+4. **Filter:** Remove the white precipitate (TEA·HCl) by filtration.
+5. **Add:** Add Cu(OAc)2·H2O (144 mg) into a new vessel.
+6. **Add:** Add 6 mL of DMF into the vessel containing Cu(OAc)2·H2O.
+7. **Stirr:** Stir the solution for 10 minutes until the color turns blue-violet (solution A).
+8. **Add:** Dissolve H25-Br-mBDC (36 mg) in 2.4 mL of DMF.
+9. **Add:** Mix 2.2 mL of solution A with the dissolved H25-Br-mBDC in a capped vial (20 mL).
+10. **HeatChill:** Heat the mixture to 85 °C at a constant rate and maintain for 14 hours.
+11. **Filter:** Collect the green cubic crystals formed by washing with 3 × 2 mL of DMF.
+12. **Filter:** Wash the crystals with 2 × 1 mL of cyclohexane.
+13. **Comment:** Yield: 18 mg, 24% based on H25-Br-mBDC. MOP Formula: [Cu2]12[(C6H3Br)(CO2)2]24, CCDC Number: 706816.
+"""
+           
+
+        case 9:
+            json_output   = False
+            mop_formula   = get_literature(doi)
+            extend        = ".txt"
+            prompt_syn    = f""" 
+Task Specification: "Summarize the given synthesis text into a CSV table. Each row in the CSV should represent a unique chemical species." 
+Column Headers: "Use the following column headers exactly as provided: Nr, Chemical Name, Chemical Formula, CCDC Number, Alternative Names, Synthesis Role" 
+Data Entry Guidelines: "For each synthesis described in the text, fill in the relevant details under these columns.
+If any information is missing or uncertain, fill the cell with N/A." 
+Data Extraction Instructions: Nr: Sequential numbering starting from 1 for each unique synthesis. Chemical Name: Name of the chemical entity used in the text. Chemical Formula: Chemical Formula extracted from the text.
+CCDC Number: Number specified as assigned CCDC number Often noted in or as a comment. Alternative Names: 
+Other Names and Chemical Formulas used in the text including empirical formulas. 
+Synthesis Role: For each entry assign one of the following roles in a synthesis that fits best the part they 
+take in the synthesis: "Reagent", "Solvent", "Product". 
+Example CSV Entry: "Nr", "Chemical Name", "Chemical Formula", "CCDC Number", "Alternative Names", "Synthesis Role" "1", "Goldberg MOP-4", "[WV5O11]12[(C3N3)(C6H4)3(CO2)3]20", "1212282", "MOP-4", "Product" 
+Extract the data from the following text:
+"""
+
+            
+        case 10:
+            json_output   = False
+            mop_formula   = get_literature(doi)
+            extend        = ".txt"
+            prompt_syn    = f""" 
+Task Specification: "Summarize the given synthesis text into a CSV table.
+Each row in the CSV should represent a unique vessel used in the synthesis.
+" Column Headers: "Use the following column headers exactly as provided: Nr, Vessel Name, Vessel Volume, Vessel Dimensions,
+Vessel Material, Synthesis Product Name, Synthesis Product CCDC Number" Data Entry Guidelines: 
+"For each synthesis described in the text, fill in the relevant details under these columns. 
+If any information is missing or uncertain, fill the cell with N/A." Data Extraction Instructions: 
+Nr: Sequential numbering starting from 1 for each unique vessel. Vessel Name: Name of the vessel entity used in the text.
+Vessel Volume: Specified volume of the vessel from the text. Vessel Material: Specified material or infered material. 
+Vessel Dimensions: If applicaply copy the specified length and/or width of the vessel. Synthesis Product Name: 
+Assign each vessel to the synthesis it is used for and list the main synthesis product name. 
+Synthesis Product CCDC Number: Assign each vessel to the synthesis it is used for and list the CCDC number of the MOP 
+product if applicable. " Example CSV Entry: "Nr", "Vessel Name", "Vessel Volume", "Vessel Dimensions", "Vessel Material", 
+"Synthesis Product Name", "Synthesis Product CCDC Number" "1", "Glass vial", "6 mL", "5 mm diameter and 100 mm length).",
+"glass", "[Zr3O(OH)3(C5H5)3]4[(C6H4)2(CO2)2]6", "950332" Extract the data from the following text:
+"""
+        case 8:
+            json_output   = True
+            mop_formula   = get_literature(doi)
+            extend        = ".json"
+            prompt_syn    = f""" 
+Task Description:
+Write a JSON file that organizes synthesis steps. Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema. Ensure that each step has an entry step number that represents the chronological order of the steps in the input steps.
+Category Specifications:
+Add: Steps involving adding material to a mixture or vessel. If multiple reagents or solvents are added, group each separately.
+HeatChill: Steps where a mixture or vessel is heated or cooled. If multiple temperature changes occur, separate each into distinct steps.
+Filter: Steps involving filtration or washing of a solid with a solvent.
+Stirr: Steps where a mixture is stirred without additional actions.
+Sonicate: Steps where sonication is used.
+Procedure for Handling Synthesis Steps:
+Group Steps: Categorize all synthesis steps into their respective groups (Add, HeatChill, Filter, Stirr, Sonicate) while maintaining their original chronological order.
+Assign Step Numbers: Retain the original step number from the input. If steps are omitted or slit into several steps correct the number in the other synthesis steps as well. There should never be duplicate step numbers.
+Return:
+Provide a single JSON document containing the categorized synthesis steps with assigned step numbers, ensuring it accurately represents the chronological order of the entire synthesis procedure.
+JSOUND schema that should be used as a basis for the output file: 
+{{
+"Synthesis": 
+    [{{
+    "product name"          : "string",
+    "product CCDC number"   : "string",
+    "Add"                   : {{
+        "used Vessel"                   : "string"  ,
+        "added chemical name"           : "string"  ,
+        "added chemical amount"         : "string"  ,
+        "step number"                   : "integer"
+    }},
+    "HeatChill"             : {{
+        "Heat or cooling Time"          : "string"  ,
+        "used Device"                   : "string"  ,
+        "Target temperature"            : "string"  ,
+        "Heating or cooling rate"       : "string"  ,
+        "under Vacuum"                  : "boolean" ,
+        "sealed Vessel"                 : "boolean" ,
+        "step Number"                   : "integer" 
+    }},
+    "Filter"                : {{
+        "Name of the washing solvent"   : "string"  ,
+        "Amount of washing solvent"     : "string"  ,
+        "Repetitions"                   : "integer" ,
+        "step Number"                   : "integer"
+    }}, 
+    "Stirr"                 : {{
+        "stirring Time"                 : "string"  ,
+        "step Number"                   : "integer"
+    }},
+    "Sonicate"              : {{
+        "SonicationTime"                : "string"  ,
+        "step Number"                   : "integer" 
+    }}
+    }}]
+}}
+
+Synthesis Text: 
+"""
+    chatgpt_api                 = ChatGPTAPI()
     model_name                  = "gpt-4o-2024-05-13"
-    response                    = chatgpt_api.send_request(content, prompt_syn, model_name)
+    response                    = chatgpt_api.send_request(content, prompt_syn, model_name, json_output)
     with open(output_dir+"/"+name+extend, "w", encoding="utf-8") as txt_file:
         txt_file.write(response) 
     with open(output_dir+"/"+"_prompt.txt", "w", encoding="utf-8") as txt_file:
@@ -385,12 +521,12 @@ Synthesis Text:"""
 def main():
     """Main function to run the script."""
     script_dir              = os.path.dirname(os.path.abspath(__file__))
-    in_directory            = os.path.join(script_dir, "../Data/testing_procedure_steps")
-    out_directory           = os.path.join(script_dir, "../Data/testing_procedure_steps")
+    in_directory            = os.path.join(script_dir, "../Data/first10_pdf")
+    out_directory           = os.path.join(script_dir, "../Data/first10_prompt3")
     #processor.process_files_in_directory(processor.transform_xyz_string)
     #processor.process_files_in_directory(processor.extract_text_from_pdf)
-    #processor.process_files_in_directory(processor.use_openai)
-    process_files_in_directory(count_tokens_and_calculate_cost, in_directory, out_directory)
+    process_files_in_directory(use_openai, in_directory, out_directory)
+    #process_files_in_directory(count_tokens_and_calculate_cost, in_directory, out_directory)
     #main.append_si_to_paper(out_directory)
 
 if __name__ == "__main__":
