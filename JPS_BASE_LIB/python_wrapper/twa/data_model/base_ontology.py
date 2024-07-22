@@ -1962,16 +1962,25 @@ class TransitiveProperty(ObjectProperty):
     """
     rdfs_isDefinedBy = Owl
 
-    def obtain_transitive_objects(self, transitive_objects: set=None):
-        if transitive_objects is None:
-            transitive_objects = set()
-        for o in self.range:
-            if isinstance(o, str):
-                o = KnowledgeGraph.get_object_from_lookup(o)
-            prop = o.get_object_property_by_iri(self.predicate_iri)
-            transitive_objects.add(o)
-            if prop is not None:
-                transitive_objects = prop.obtain_transitive_objects(transitive_objects)
+    @classmethod
+    def obtain_transitive_objects(cls, instance: Union[BaseClass, str]):
+        if isinstance(instance, str):
+            _inst = KnowledgeGraph.get_object_from_lookup(instance)
+            if _inst is None:
+                warnings.warn(f"Transitive objects for object property {cls.predicate_iri} not looked up beyond instance {instance} as it is not found in the Python memory.")
+                return set()
+            else:
+                instance = _inst
+
+        _transitive_objects = instance.get_object_property_by_iri(cls.predicate_iri)
+        transitive_objects = set(copy.deepcopy(_transitive_objects)) if _transitive_objects else set()
+
+        if not _transitive_objects:
+            return transitive_objects
+
+        for o in _transitive_objects:
+            transitive_objects = transitive_objects.union(cls.obtain_transitive_objects(o))
+
         return transitive_objects
 
 
