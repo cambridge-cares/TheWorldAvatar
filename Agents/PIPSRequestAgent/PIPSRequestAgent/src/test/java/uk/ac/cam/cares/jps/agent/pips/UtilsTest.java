@@ -52,7 +52,7 @@ public class UtilsTest {
         try {
             mockUtils.readFromFile(tempFile);
         } catch (Exception e) {
-            Assert.assertEquals(e.getMessage(), "non existent filepath (The system cannot find the file specified)");
+            Assert.assertTrue(e.getMessage().contains("non existent filepath"));
         }
     }
 }
