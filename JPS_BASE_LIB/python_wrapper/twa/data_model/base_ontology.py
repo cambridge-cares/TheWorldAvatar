@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Set, Tuple, Union, TypeVar, ClassVar, Type, Optional, ForwardRef
-from typing_extensions import Annotated
+from typing import _UnionGenericAlias
+from typing import Any, Dict, List, Set, Tuple, Union, Generic, TypeVar, ClassVar, Type, Optional, ForwardRef
+from typing_extensions import Annotated, get_args, get_origin
 from annotated_types import Len
 
 from pydantic import BaseModel, Field, PrivateAttr
-from pydantic_core import PydanticUndefined
+from pydantic import AfterValidator, GetCoreSchemaHandler, ValidationInfo
+from pydantic_core import PydanticUndefined, CoreSchema, core_schema
 import rdflib
 from rdflib import Graph, URIRef, Literal, BNode
 from rdflib.namespace import RDF, RDFS, OWL, XSD, DC
@@ -38,7 +40,7 @@ class KnowledgeGraph(BaseModel):
     # this is to avoid the problem of mutable default arguments which is then shared across all subclasses
     ontology_lookup: ClassVar[Dict[str, BaseOntology]] = None
     class_lookup: ClassVar[Dict[str, BaseClass]] = None
-    property_lookup: ClassVar[Dict[str, BaseProperty]] = None
+    property_lookup: ClassVar[Dict[str, _BaseProperty]] = None
     iri_loading_in_progress: ClassVar[Set[str]] = None
 
     @classmethod
@@ -153,7 +155,7 @@ class KnowledgeGraph(BaseModel):
         cls.ontology_lookup[ontology.get_namespace_iri()] = ontology
 
     @classmethod
-    def register_class(cls, ontolgy_class: BaseClass):
+    def register_class(cls, ontology_class: BaseClass):
         """
         This method registers a BaseClass (the Pydantic class itself) to the knowledge graph in Python memory.
 
@@ -162,10 +164,13 @@ class KnowledgeGraph(BaseModel):
         """
         if cls.class_lookup is None:
             cls.class_lookup = {}
-        cls.class_lookup[ontolgy_class.get_rdf_type()] = ontolgy_class
+        # TODO bring below back
+        # if ontology_class.rdf_type in cls.class_lookup:
+        #     raise ValueError(f'Class with rdf_type {ontology_class.rdf_type} already exists in the knowledge graph: {cls.class_lookup[ontology_class.rdf_type]}.')
+        cls.class_lookup[ontology_class.rdf_type] = ontology_class
 
     @classmethod
-    def register_property(cls, prop: BaseProperty):
+    def register_property(cls, prop: _BaseProperty):
         """
         This method registers a BaseProperty (the Pydantic class itself) to the knowledge graph in Python memory.
 
@@ -174,27 +179,46 @@ class KnowledgeGraph(BaseModel):
         """
         if cls.property_lookup is None:
             cls.property_lookup = {}
-        cls.property_lookup[prop.get_predicate_iri()] = prop
+        # TODO bring below back
+        # if prop.predicate_iri in cls.property_lookup:
+        #     raise ValueError(f'Property with predicate IRI {prop.predicate_iri} already exists in the knowledge graph: {cls.property_lookup[prop.predicate_iri]}.')
+        cls.property_lookup[prop.predicate_iri] = prop
 
+    @classmethod
+    def construct_property_domain_range_lookup(cls) -> Dict[str, Dict[str, str]]:
+        property_domain_range_lookup = {}
+        for onto_cls in cls.class_lookup.values():
+            try:
+                onto_cls.model_rebuild()
+            except Exception as e:
+                raise Exception(f'Constructing property_domain_range_lookup failed, class {onto_cls} is not fully built: {onto_cls.model_fields}') from e
+            for p_iri, info in onto_cls.get_object_and_data_properties().items():
+                if p_iri not in property_domain_range_lookup:
+                    property_domain_range_lookup[p_iri] = {'rdfs_domain': set(), 'rdfs_range': set()}
+                property_domain_range_lookup[p_iri]['rdfs_domain'].add(onto_cls.rdf_type)
+                property_domain_range_lookup[p_iri]['rdfs_range'].add(
+                    get_args(info['type'])[0].rdf_type if issubclass(info['type'], ObjectProperty) else _castPythonToXSD(get_args(info['type'])[0])
+                )
+        return property_domain_range_lookup
 
-def as_range(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set:
-    """
-    This function is used to wrap the data type as the range of an object/data property in the ontology.
+# def as_range(t: T, min_cardinality: int = 0, max_cardinality: int = None) -> Set:
+#     """
+#     This function is used to wrap the data type as the range of an object/data property in the ontology.
 
-    Args:
-        t (T): The type of the class to be the range
-        min_cardinality (int): The minimum cardinality of the object/data property
-        max_cardinality (int): The maximum cardinality of the object/data property
+#     Args:
+#         t (T): The type of the class to be the range
+#         min_cardinality (int): The minimum cardinality of the object/data property
+#         max_cardinality (int): The maximum cardinality of the object/data property
 
-    Returns:
-        The object property with the specified range in the form of a set, with `str` as an alternative type
-    """
-    if min_cardinality < 0 or max_cardinality is not None and max_cardinality < 0:
-        raise ValueError('min_cardinality and max_cardinality must be greater than or equal to 0')
-    if issubclass(t, BaseClass):
-        return Annotated[Set[Union[t, str]], Len(min_cardinality, max_cardinality)]
-    else:
-        return Annotated[Set[t], Len(min_cardinality, max_cardinality)]
+#     Returns:
+#         The object property with the specified range in the form of a set, with `str` as an alternative type
+#     """
+#     if min_cardinality < 0 or max_cardinality is not None and max_cardinality < 0:
+#         raise ValueError('min_cardinality and max_cardinality must be greater than or equal to 0')
+#     if issubclass(t, BaseClass):
+#         return Annotated[Set[Union[t, str]], Len(min_cardinality, max_cardinality)]
+#     else:
+#         return Annotated[Set[t], Len(min_cardinality, max_cardinality)]
 
 
 _list = copy.deepcopy(rdflib.term._GenericPythonToXSDRules)
@@ -222,7 +246,6 @@ class BaseOntology(BaseModel):
         data_property_lookup: A dictionary of DatatypeProperty classes with their predicate IRI as keys
         rdfs_comment: The comment of the ontology
         owl_versionInfo: The version of the ontology
-        forward_refs: A dictionary of set of BaseClass classes with their forward referenced BaseProperty
     """
     base_url: ClassVar[str] = TWA_BASE_URL
     namespace: ClassVar[str] = None
@@ -231,41 +254,87 @@ class BaseOntology(BaseModel):
     data_property_lookup: ClassVar[Dict[str, DatatypeProperty]] = None
     rdfs_comment: ClassVar[str] = None
     owl_versionInfo: ClassVar[str] = None
-    forward_refs: ClassVar[Dict[str, Set[Type[BaseClass]]]] = None
+    # TODO remove below
+    # class_lookup_name_as_key: ClassVar[Dict[str, BaseClass]] = None
+    # object_property_lookup_name_as_key: ClassVar[Dict[str, ObjectProperty]] = None
+    # data_property_lookup_name_as_key: ClassVar[Dict[str, DatatypeProperty]] = None
+    # forward_refs_key_predicate: ClassVar[Dict[str, Set[Type[BaseClass]]]] = None
+    # forward_refs_key_range: ClassVar[Dict[str, Set[str]]] = None
 
     @classmethod
     def get_namespace_iri(cls) -> str:
-        """ This method is used to retrieve the namespace IRI of the ontology. """
+        """
+        This method is used to retrieve the namespace IRI of the ontology.
+        It is a concatenation of its base URL and the class name in lower case (if class variable `namespace` is not provided).
+        """
+        # if cls.namespace is None:
+        #     cls.namespace = cls.__name__.lower()
         return construct_namespace_iri(cls.base_url, cls.namespace)
 
-    @classmethod
-    def postpone_property_domain(cls, forward_ref_property: str, cls_as_domain: Type[BaseClass]):
-        """
-        This method is used to record the object/data properties that are forward referenced,
-        whose registration as domain is therefore postponed.
+    # TODO remove below
+    # @classmethod
+    # def postpone_rdfs_domain_range(cls, forward_ref_property: str, cls_as_domain: Type[BaseClass]):
+    #     """
+    #     This method is used to record the object/data properties that are forward referenced,
+    #     whose registration as domain is therefore postponed.
 
-        Args:
-            forward_ref_property (str): The name of the forward referenced object/data property
-            cls_as_domain (Type[BaseClass]): The class to be added as the domain of the object/data property
-        """
-        if cls.forward_refs is None:
-            cls.forward_refs = {}
-        if forward_ref_property not in cls.forward_refs:
-            cls.forward_refs[forward_ref_property] = set()
-        cls.forward_refs[forward_ref_property].add(cls_as_domain)
+    #     Args:
+    #         forward_ref_property (str): The name of the forward referenced object/data property
+    #         cls_as_domain (Type[BaseClass]): The class to be added as the domain of the object/data property
+    #     """
+    #     if cls.forward_refs_key_predicate is None:
+    #         cls.forward_refs_key_predicate = {}
+    #     f = forward_ref_property.strip()
+    #     # Handle Optional and other variations
+    #     if f.startswith('Optional[') and f.endswith(']'):
+    #         f = f[len('Optional['):-1]
+    #     cls_as_range = None
+    #     if f.endswith(']'):
+    #         cls_as_range = f[f.index('[')+1:f.index(']')]
+    #         f = f[:f.index('[')]
+    #     if f not in cls.forward_refs_key_predicate:
+    #         cls.forward_refs_key_predicate[f] = {'rdfs_domain': set(), 'rdfs_range': set()}
+    #     cls.forward_refs_key_predicate[f]['rdfs_domain'].add(cls_as_domain)
+    #     if cls_as_range is not None:
+    #         if cls.forward_refs_key_range is None:
+    #             cls.forward_refs_key_range = {}
+    #         if cls_as_range not in cls.forward_refs_key_range:
+    #             cls.forward_refs_key_range[cls_as_range] = set()
+    #         cls.forward_refs_key_range[cls_as_range].add(f)
+    #         cls.forward_refs_key_predicate[f]['rdfs_range'].add(cls_as_range)
 
-    @classmethod
-    def retrieve_postponed_property_domain(cls, property_name):
-        """
-        This method is used to retrieve the classes whose registration as domain of the object/data property
-        is postponed.
+    # TODO remove below
+    # @classmethod
+    # def retrieve_postponed_property_given_range(cls, range_name):
+    #     if cls.forward_refs_key_range is None:
+    #         cls.forward_refs_key_predicate = {}
+    #         return set()
+    #     return cls.forward_refs_key_range.pop(range_name, set())
 
-        Args:
-            property_name (str): The name of the forward referenced object/data property
-        """
-        if cls.forward_refs is None:
-            return set()
-        return cls.forward_refs.pop(property_name, set())
+    # TODO remove below
+    # @classmethod
+    # def retrieve_postponed_property_domain(cls, property_name):
+    #     """
+    #     This method is used to retrieve the classes whose registration as domain of the object/data property
+    #     is postponed.
+
+    #     Args:
+    #         property_name (str): The name of the forward referenced object/data property
+    #     """
+    #     if cls.forward_refs_key_predicate is None:
+    #         return set()
+    #     if property_name in cls.forward_refs_key_predicate:
+    #         return cls.forward_refs_key_predicate[property_name].pop('rdfs_domain', set())
+    #     return set()
+
+    # TODO remove below
+    # @classmethod
+    # def retrieve_postponed_property_range(cls, property_name):
+    #     if cls.forward_refs_key_predicate is None:
+    #         return set()
+    #     if property_name in cls.forward_refs_key_predicate:
+    #         return cls.forward_refs_key_predicate[property_name].pop('rdfs_range', set())
+    #     return set()
 
     @classmethod
     def register_class(cls, ontolgy_class: BaseClass):
@@ -276,10 +345,26 @@ class BaseOntology(BaseModel):
         Args:
             ontolgy_class (BaseClass): The BaseClass class to be registered
         """
+        # register with rdf:type as key
         if cls.class_lookup is None:
             cls.class_lookup = {}
-        cls.class_lookup[ontolgy_class.get_rdf_type()] = ontolgy_class
+        # TODO bring below back
+        # if ontolgy_class.rdf_type in cls.class_lookup:
+        #     raise ValueError(f'Class with rdf_type {ontolgy_class.rdf_type} already exists in {cls}: {cls.class_lookup[ontolgy_class.rdf_type]}.')
+        cls.class_lookup[ontolgy_class.rdf_type] = ontolgy_class
+
+        # also register with knowledge graph
         KnowledgeGraph.register_class(ontolgy_class)
+
+
+        # TODO remove below
+        # # register with name as key
+        # if cls.class_lookup_name_as_key is None:
+        #     cls.class_lookup_name_as_key = {}
+        # # if ontolgy_class.__name__ in cls.class_lookup_name_as_key:
+        # #     raise ValueError(f'Class with name {ontolgy_class.__name__} already exists in {cls}: {cls.class_lookup_name_as_key[ontolgy_class.rdf_type]}.')
+        # cls.class_lookup_name_as_key[ontolgy_class.__name__] = ontolgy_class
+
 
     @classmethod
     def register_object_property(cls, prop: ObjectProperty):
@@ -290,10 +375,26 @@ class BaseOntology(BaseModel):
         Args:
             prop (ObjectProperty): The ObjectProperty class to be registered
         """
+        # register with iri as key
         if cls.object_property_lookup is None:
             cls.object_property_lookup = {}
-        cls.object_property_lookup[prop.get_predicate_iri()] = prop
+        # TODO bring below back
+        # if prop.predicate_iri in cls.object_property_lookup:
+        #     raise ValueError(f'Object property with predicate IRI {prop.predicate_iri} already exists in {cls}: {cls.object_property_lookup[prop.predicate_iri]}.')
+        cls.object_property_lookup[prop.predicate_iri] = prop
+
+        # also register with knowledge graph
         KnowledgeGraph.register_property(prop)
+
+
+        # TODO remove below
+        # # register with name as key
+        # if cls.object_property_lookup_name_as_key is None:
+        #     cls.object_property_lookup_name_as_key = {}
+        # # TODO bring below back
+        # # if prop.__name__ in cls.object_property_lookup_name_as_key:
+        # #     raise ValueError(f'Object property with name {prop.__name__} already exists in {cls}: {cls.object_property_lookup_name_as_key[prop.predicate_iri]}.')
+        # cls.object_property_lookup_name_as_key[prop.__name__] = prop
 
     @classmethod
     def register_data_property(cls, prop: DatatypeProperty):
@@ -304,10 +405,26 @@ class BaseOntology(BaseModel):
         Args:
             prop (DatatypeProperty): The DatatypeProperty class to be registered
         """
+        # register with iri as key
         if cls.data_property_lookup is None:
             cls.data_property_lookup = {}
-        cls.data_property_lookup[prop.get_predicate_iri()] = prop
+        # TODO bring below back
+        # if prop.predicate_iri in cls.data_property_lookup:
+        #     raise ValueError(f'Data property with predicate IRI {prop.predicate_iri} already exists in {cls}: {cls.data_property_lookup[prop.predicate_iri]}.')
+        cls.data_property_lookup[prop.predicate_iri] = prop
+
+        # also register with knowledge graph
         KnowledgeGraph.register_property(prop)
+
+
+        # TODO remove below
+        # # register with name as key
+        # if cls.data_property_lookup_name_as_key is None:
+        #     cls.data_property_lookup_name_as_key = {}
+        # # TODO bring below back
+        # # if prop.__name__ in cls.data_property_lookup_name_as_key:
+        # #     raise ValueError(f'Data property with name {prop.__name__} already exists in {cls}: {cls.data_property_lookup_name_as_key[prop.predicate_iri]}.')
+        # # cls.data_property_lookup_name_as_key[prop.__name__] = prop
 
     @classmethod
     def export_to_graph(cls, g: Graph = None) -> Graph:
@@ -331,14 +448,23 @@ class BaseOntology(BaseModel):
         if bool(cls.class_lookup):
             for clz in cls.class_lookup.values():
                 g = clz.export_to_owl(g)
-        # handle all object properties
+        # handle all object and data properties
+        property_domain_range_lookup = KnowledgeGraph.construct_property_domain_range_lookup()
         if bool(cls.object_property_lookup):
             for prop in cls.object_property_lookup.values():
-                g = prop.export_to_owl(g)
+                g = prop.export_to_owl(
+                    g,
+                    property_domain_range_lookup[prop.predicate_iri]['rdfs_domain'],
+                    property_domain_range_lookup[prop.predicate_iri]['rdfs_range'],
+                )
         # handle all data properties
         if bool(cls.data_property_lookup):
             for prop in cls.data_property_lookup.values():
-                g = prop.export_to_owl(g)
+                g = prop.export_to_owl(
+                    g,
+                    property_domain_range_lookup[prop.predicate_iri]['rdfs_domain'],
+                    property_domain_range_lookup[prop.predicate_iri]['rdfs_range'],
+                )
 
         return g
 
@@ -377,73 +503,106 @@ class Owl(BaseOntology):
     # It is not intended to be used as a standalone ontology
     base_url: ClassVar[str] = OWL_BASE_URL
 
+class _BaseProperty(set, Generic[T]):
+    rdfs_isDefinedBy: ClassVar[Type[BaseOntology]] = None
+    predicate_iri: ClassVar[str] = None
+    owl_minQualifiedCardinality: ClassVar[int] = 0
+    owl_maxQualifiedCardinality: ClassVar[int] = None
+    # TODO remove below
+    # rdfs_domain: ClassVar[Set[str]] = None
+    # rdfs_range: ClassVar[Set[str]] = None
 
-class BaseProperty(BaseModel, validate_assignment=True):
+# class BaseProperty(BaseModel, validate_assignment=True):
     # NOTE validate_assignment=True is to make sure the validation is triggered when range is updated
     """
     Base class that is inherited by ObjectProperty and DatatypeProperty.
 
     Attributes:
-        is_defined_by_ontology: The ontology that defines the property
+        rdfs_isDefinedBy: The ontology that defines the property
         predicate_iri: The predicate IRI of the property
-        domain: The domain of the property
-        range: The range of the property
+        rdfs_domain: The domain of the property
+        rdfs_range: The range of the property
     """
 
-    is_defined_by_ontology: ClassVar[BaseOntology] = None
-    domain: ClassVar[Set] = None
-    # setting default_factory to set is safe here, i.e. it won't be shared between instances
-    # see https://docs.pydantic.dev/latest/concepts/models/#fields-with-non-hashable-default-values
-    range: Set = Field(default_factory=set)
+#     rdfs_isDefinedBy: ClassVar[BaseOntology] = None
+#     rdfs_domain: ClassVar[Set] = None
+#     # setting default_factory to set is safe here, i.e. it won't be shared between instances
+#     # see https://docs.pydantic.dev/latest/concepts/models/#fields-with-non-hashable-default-values
+#     rdfs_range: Set = Field(default_factory=set)
 
-    # TODO [future] vanilla set operations don't trigger the validation as of pydantic 2.6.1
-    # it also seems this will not be supported in the near future
-    # see https://github.com/pydantic/pydantic/issues/496
-    # for a workaround, see https://github.com/pydantic/pydantic/issues/8575
-    # and https://gist.github.com/geospackle/8f317fc19469b1e216edee3cc0f1c898
+#     # TODO [future] vanilla set operations don't trigger the validation as of pydantic 2.6.1
+#     # it also seems this will not be supported in the near future
+#     # see https://github.com/pydantic/pydantic/issues/496
+#     # for a workaround, see https://github.com/pydantic/pydantic/issues/8575
+#     # and https://gist.github.com/geospackle/8f317fc19469b1e216edee3cc0f1c898
 
-    def __init__(self, **data) -> None:
-        """
-        The constructor of the BaseProperty class.
-        It parses the range attribute to make sure it's always a set.
-        """
-        # below code is to make sure range is always a set even if it's a single value
-        if 'range' in data:
-            if not isinstance(data['range'], set):
-                if not isinstance(data['range'], list):
-                    data['range'] = [data['range']]
-                data['range'] = set(data['range'])
-        else:
-            data['range'] = set()
-        super().__init__(**data)
+    # def __init__(self, **data) -> None:
+    #     """
+    #     The constructor of the BaseProperty class.
+    #     It parses the rdfs_range attribute to make sure it's always a set.
+    #     """
+    #     # below code is to make sure rdfs_range is always a set even if it's a single value
+    #     if 'rdfs_range' in data:
+    #         if not isinstance(data['rdfs_range'], set):
+    #             if not isinstance(data['rdfs_range'], list):
+    #                 data['rdfs_range'] = [data['rdfs_range']]
+    #             data['rdfs_range'] = set(data['rdfs_range'])
+    #     else:
+    #         data['rdfs_range'] = set()
+    #     super().__init__(**data)
 
-    def __hash__(self) -> int:
-        return hash(tuple([self.predicate_iri] + sorted([o.__hash__() for o in self.range])))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    @property
-    def predicate_iri(self):
-        return self.__class__.get_predicate_iri()
+    def __hash__(self):
+        return hash((frozenset(self), self.predicate_iri))
+
+    # def __hash__(self) -> int:
+    #     return hash(tuple([self.predicate_iri] + sorted([o.__hash__() for o in self.rdfs_range])))
+
+    # @property
+    # def predicate_iri(self):
+    #     return self.__class__.predicate_iri
+
+    # @classmethod
+    # def get_predicate_iri(cls) -> str:
+    #     """ Get the predicate IRI of the property. """
+    #     return construct_rdf_type(
+    #         cls.rdfs_isDefinedBy.get_namespace_iri(), cls.__name__[:1].lower() + cls.__name__[1:])
+
+    # @classmethod
+    # def add_to_rdfs_domain(cls, domain: Type[BaseClass]):
+    #     """
+    #     Add an IRI to the set of property's domain.
+
+    #     Args:
+    #         domain (Type[BaseClass]): The class to be added as the rdfs_domain
+    #     """
+    #     if cls.rdfs_domain is None:
+    #         cls.rdfs_domain = set()
+    #     cls.rdfs_domain.add(domain.rdf_type)
+
+    # @classmethod
+    # def add_to_rdfs_range(cls, range: Type[T]):
+    #     """
+    #     Add an IRI to the set of property's range.
+
+    #     Args:
+    #         range (Type[T]): The class to be added as the rdfs_range
+    #     """
+    #     if cls.rdfs_range is None:
+    #         cls.rdfs_range = set()
+    #     try:
+    #         if issubclass(range, BaseClass):
+    #             cls.rdfs_range.add(range.rdf_type)
+    #         else:
+    #             cls.rdfs_range.add(_castPythonToXSD(range))
+    #     except TypeError:
+    #         raise TypeError(f'Invalid range type: {range}')
+    #         # cls.rdfs_range.add(_castPythonToXSD(range))
 
     @classmethod
-    def get_predicate_iri(cls) -> str:
-        """ Get the predicate IRI of the property. """
-        return construct_rdf_type(
-            cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__[:1].lower() + cls.__name__[1:])
-
-    @classmethod
-    def add_to_domain(cls, domain: BaseClass):
-        """
-        Add an IRI to the set of property's domain.
-
-        Args:
-            domain (BaseClass): The domain class to be added
-        """
-        if cls.domain is None:
-            cls.domain = set()
-        cls.domain.add(domain.get_rdf_type())
-
-    @classmethod
-    def is_inherited(cls, prop: Any) -> bool:
+    def _is_inherited(cls, prop: Any) -> bool:
         """
         This method is used to check whether a property is a subclass of the BaseProperty class.
         > Note this method is used to replace issubclass() as pydantic has its own special logic
@@ -463,14 +622,14 @@ class BaseProperty(BaseModel, validate_assignment=True):
         except TypeError:
             return False
 
-    def reassign_range(self, new_value):
-        """ This function reassigns range of the object/data properties to new values. """
-        setattr(self, 'range', new_value)
+    # def reassign_range(self, new_value):
+    #     """ This function reassigns range of the object/data properties to new values. """
+    #     setattr(self, 'range', new_value)
 
     def collect_range_diff_to_graph(
         self,
         subject: str,
-        cache: BaseProperty,
+        cache: _BaseProperty,
         g_to_remove: Graph,
         g_to_add: Graph,
         recursive_depth: int = 0,
@@ -495,7 +654,7 @@ class BaseProperty(BaseModel, validate_assignment=True):
         raise NotImplementedError("This is an abstract method.")
 
     @classmethod
-    def export_to_owl(cls, g: Graph, is_object_property: bool = True) -> Graph:
+    def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set, is_object_property: bool = True) -> Graph:
         """
         This method is used to export the triples of the property to an OWL file.
         It operates at the TBox level.
@@ -507,10 +666,8 @@ class BaseProperty(BaseModel, validate_assignment=True):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
-        # rebuild model to resovle any ForwardRef
-        cls.model_rebuild()
-        property_iri = cls.get_predicate_iri()
-        g.add((URIRef(property_iri), RDFS.isDefinedBy, URIRef(cls.is_defined_by_ontology.get_namespace_iri())))
+        property_iri = cls.predicate_iri
+        g.add((URIRef(property_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.get_namespace_iri())))
         # add rdf:type and super properties
         if is_object_property:
             g.add((URIRef(property_iri), RDF.type, OWL.ObjectProperty))
@@ -519,21 +676,21 @@ class BaseProperty(BaseModel, validate_assignment=True):
             g.add((URIRef(property_iri), RDF.type, OWL.DatatypeProperty))
             idx = cls.__mro__.index(DatatypeProperty)
         for i in range(1, idx):
-            g.add((URIRef(property_iri), RDFS.subPropertyOf, URIRef(cls.__mro__[i].get_predicate_iri())))
+            g.add((URIRef(property_iri), RDFS.subPropertyOf, URIRef(cls.__mro__[i].predicate_iri)))
         # add domain
-        if cls.domain is None:
+        if len(rdfs_domain) == 0:
             # it is possible that a property is defined without specifying its domain, so we only print a warning
             warnings.warn(f'Warning: property {cls} has no domain to be added, i.e. it is not used by any classes!')
-        elif len(cls.domain) > 1:
+        elif len(rdfs_domain) > 1:
             # union of class as domain
             bn = BNode()
             bn_union = BNode()
             g.add((bn, RDF.type, OWL.Class))
             g.add((bn, OWL.unionOf, bn_union))
             bn_union_lst = [bn_union]
-            for d in cls.domain:
+            for d in rdfs_domain:
                 g.add((bn_union_lst[-1], RDF.first, URIRef(d)))
-                if len(bn_union_lst) < len(cls.domain):
+                if len(bn_union_lst) < len(rdfs_domain):
                     bn_union_new = BNode()
                     g.add((bn_union_lst[-1], RDF.rest, bn_union_new))
                     bn_union_lst.append(bn_union_new)
@@ -542,39 +699,46 @@ class BaseProperty(BaseModel, validate_assignment=True):
             g.add((URIRef(property_iri), RDFS.domain, bn))
         else:
             # single class as domain
-            for d in cls.domain:
+            for d in rdfs_domain:
                 g.add((URIRef(property_iri), RDFS.domain, URIRef(d)))
         # add range
-        g.add((URIRef(property_iri), RDFS.range, URIRef(cls.reveal_property_range_iri())))
+        if len(rdfs_range) == 0:
+            # it is possible that a property is defined without specifying its range, so we only print a warning
+            warnings.warn(f'Warning: property {cls} has no range to be added, i.e. it is not used by any classes!')
+        elif len(rdfs_range) == 1:
+            for r in rdfs_range:
+                g.add((URIRef(property_iri), RDFS.range, URIRef(r)))
+        else:
+            raise NotImplementedError(f'Union of range is not supported yet! Property: {cls}. rdfs_domain: {rdfs_domain}. rdfs_range: {rdfs_range}')
         return g
 
-    @classmethod
-    def reveal_possible_property_range(cls) -> Set[T]:
-        """
-        This is an abstract method that should be implemented by the subclasses.
-        It should unpack the range of the property from use_as_range.
+    # @classmethod
+    # def reveal_possible_property_range(cls) -> Set[T]:
+    #     """
+    #     This is an abstract method that should be implemented by the subclasses.
+    #     It should unpack the range of the property from use_as_range.
 
-        Raises:
-            NotImplementedError: This is an abstract method.
+    #     Raises:
+    #         NotImplementedError: This is an abstract method.
 
-        Returns:
-            Set[T]: The set of possible range of the property
-        """
-        raise NotImplementedError("This is an abstract method.")
+    #     Returns:
+    #         Set[T]: The set of possible range of the property
+    #     """
+    #     raise NotImplementedError("This is an abstract method.")
 
-    @classmethod
-    def reveal_property_range_iri(cls) -> str:
-        """
-        This is an abstract method that should be implemented by the subclasses.
-        It should return the IRI of the range of the property.
+    # @classmethod
+    # def reveal_property_range_iri(cls) -> str:
+    #     """
+    #     This is an abstract method that should be implemented by the subclasses.
+    #     It should return the IRI of the range of the property.
 
-        Raises:
-            NotImplementedError: This is an abstract method.
+    #     Raises:
+    #         NotImplementedError: This is an abstract method.
 
-        Returns:
-            str: The IRI of the range of the property
-        """
-        raise NotImplementedError("This is an abstract method.")
+    #     Returns:
+    #         str: The IRI of the range of the property
+    #     """
+    #     raise NotImplementedError("This is an abstract method.")
 
     @classmethod
     def retrieve_cardinality(cls) -> Tuple[int, int]:
@@ -584,10 +748,9 @@ class BaseProperty(BaseModel, validate_assignment=True):
         Returns:
             Tuple[int, int]: The minimum and maximum cardinality of the property
         """
-        cardinality = cls.model_fields['range'].metadata[0]
-        return cardinality.min_length, cardinality.max_length
+        return cls.owl_minQualifiedCardinality, cls.owl_maxQualifiedCardinality
 
-    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> BaseProperty:
+    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> _BaseProperty:
         """
         This is an abstract method that should be implemented by the subclasses.
         It is used to create a cache for the property.
@@ -611,17 +774,87 @@ class BaseProperty(BaseModel, validate_assignment=True):
                 g.add((URIRef(subject), URIRef(self.predicate_iri), Literal(o)))
         return g
 
-    def get_range_assume_one(self):
+    @classmethod
+    def my_method(cls):
+        print(f'My method called for {cls.__name__}')
+
+    @classmethod
+    def _validate_before(cls, value: Any, info: ValidationInfo) -> Any:
         """
-        This function returns the range of the calling object/data property assuming there is only one item.
+        Developer can overwrite this method to add custom validation.
+
+        Args:
+            value (Any): The value to be assigned to the field
+            info (ValidationInfo): Additional information can be used for validation,
+                e.g. info.field_name is the name of the field being validated
 
         Returns:
-            Any: The returned range
+            Any: The validated value
         """
-        if len(self.range) != 1:
-            raise Exception(f"""Assumed one for property {self.predicate_iri},
-                encounterred {len(self.range)}: {self.range}""")
-        return next(iter(self.range))
+        # print('==================================================')
+        # print('before')
+        # print(value)
+        # print(type(value))
+        # print(len(value))
+        # print(info)
+        # # print(cls.model_fields[info.field_name])
+        # print('end')
+        # print('==================================================')
+        return value
+
+    # @classmethod
+    # def _validate(cls, value, validator_info):
+    #     # this runs for each field
+    #     print(value)
+    #     print(validator_info)
+    #     if not isinstance(value, set):
+    #         if not isinstance(value, list):
+    #             value = [value]
+    #         value = cls(value)
+    #     # if  is not None and len(value) < cls.owl_minQualifiedCardinality:
+    #     #     raise ValueError(f'Set must contain at least {cls.owl_minQualifiedCardinality} items, got {len(value)}: {value}.')
+    #     # if  is not None and len(value) > cls.owl_maxQualifiedCardinality:
+    #     #     raise ValueError(f'Set must contain at most {cls.owl_maxQualifiedCardinality} items, got {len(value)}: {value}.')
+    #     return value
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:
+        # https://docs.pydantic.dev/latest/concepts/types/#handling-custom-generic-classes
+        # print('************************************************************')
+        try:
+            tp = get_args(source_type)[0]
+        except Exception as e:
+            raise ValueError(f"""Error: {e}. Type used as the field for object/data property: {source_type}.
+                Did you forget to include the range in the class definition?
+                E.g. `{source_type.__name__.lower()}: {source_type.__name__}[str]` for data property.
+                or `{source_type.__name__.lower()}: {source_type.__name__}[MyClass]` for object property.""")
+        # print(get_origin(source_type))
+        # print('ah haha', source_type)
+        # print(get_args(source_type))
+        # print(tp)
+        if issubclass(tp, BaseClass):
+            # the set can contain either actual objects of BaseClass or string IRIs
+            tp_schema = core_schema.union_schema(choices=[handler.generate_schema(tp), core_schema.str_schema()])
+        else:
+            # the means datatype properties, therefore the set can only contain the data type
+            tp_schema = handler.generate_schema(tp)
+
+        return core_schema.chain_schema(
+            [
+                core_schema.with_info_before_validator_function(
+                    cls._validate_before,
+                    core_schema.set_schema(
+                        items_schema=tp_schema,
+                        # add validation for cardinality
+                        min_length=cls.owl_minQualifiedCardinality,
+                        max_length=cls.owl_maxQualifiedCardinality,
+                    ),
+                    field_name=handler.field_name,
+                ),
+            ]
+        )
 
 
 class BaseClass(BaseModel, validate_assignment=True):
@@ -629,7 +862,7 @@ class BaseClass(BaseModel, validate_assignment=True):
     Base class for all the Python classes that are used to define the classes in ontology.
 
     Attributes:
-        is_defined_by_ontology (Ontology): The ontology that defines the class
+        rdfs_isDefinedBy (Ontology): The ontology that defines the class
         object_lookup (Dict[str, BaseClass]): A dictionary that maps the IRI of the object to the object
         rdfs_comment (str): The comment of the instance
         rdfs_label (str): The label of the instance
@@ -657,13 +890,14 @@ class BaseClass(BaseModel, validate_assignment=True):
     # (IV) end BaseModel __init__;
     # (V) end BaseClass __init__
 
-    is_defined_by_ontology: ClassVar[BaseOntology] = None
-    """ > NOTE for all subclasses, one can just use `is_defined_by_ontology = MyOntology`,
+    rdfs_isDefinedBy: ClassVar[BaseOntology] = None
+    """ > NOTE for all subclasses, one can just use `rdfs_isDefinedBy = MyOntology`,
         see [this discussion in Pydantic](https://github.com/pydantic/pydantic/issues/2061)"""
+    rdf_type: ClassVar[str] = OWL_BASE_URL + 'Class'
+    """ > NOTE rdf_type is the automatically generated IRI of the class which can also be accessed at the instance level. """
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
     rdfs_comment: Optional[str] = Field(default=None)
     rdfs_label: Optional[str] = Field(default=None)
-    rdf_type: str = Field(default=None)
     instance_iri: str = Field(default=None)
     # format of the cache for all properties: {property_name: property_object}
     _latest_cache: Dict[str, Any] = PrivateAttr(default_factory=dict)
@@ -671,66 +905,116 @@ class BaseClass(BaseModel, validate_assignment=True):
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
-        # ensure that the cls already has field is_defined_by_ontology
-        if cls.is_defined_by_ontology is None:
-            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your class {cls}?")
+        # ensure that the cls already has field rdfs_isDefinedBy
+        if cls.rdfs_isDefinedBy is None:
+            raise AttributeError(f"Did you forget to specify `rdfs_isDefinedBy` for your class {cls}?")
 
-        # set the domain of all object/data properties
-        for f, field_info in cls.model_fields.items():
-            if BaseProperty.is_inherited(field_info.annotation):
-                field_info.annotation.add_to_domain(cls)
-            elif isinstance(field_info.annotation, ForwardRef):
-                # if the field is ForwardRef, then postpone the adding of domain
-                cls.is_defined_by_ontology.postpone_property_domain(field_info.annotation.__forward_arg__, cls)
+        # set the rdf_type
+        cls.rdf_type = construct_rdf_type(cls.rdfs_isDefinedBy.get_namespace_iri(), cls.__name__)
+
+        # TODO remove below
+        # # set the domain of all object/data properties
+        # for f, field_info in cls.model_fields.items():
+        #     tp = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
+        #     if _BaseProperty._is_inherited(tp):
+        #         tp.add_to_rdfs_domain(cls)
+        #         tp.add_to_rdfs_range(get_args(tp)[0])
+        #     elif isinstance(tp, ForwardRef):
+        #         # possible situations:
+        #         # - ForwardRef('MyObjectProperty[MyClass]')
+        #         # - ForwardRef('Optional[MyObjectProperty[MyClass]]')
+        #         # if the field is ForwardRef, then postpone the adding of domain
+        #         cls.rdfs_isDefinedBy.postpone_rdfs_domain_range(tp.__forward_arg__, cls)
+
+        # TODO remove below
+        # # check if there's any forward referenced object properties with this class as range
+        # set_properties = cls.rdfs_isDefinedBy.retrieve_postponed_property_given_range(cls.__name__)
+        # for p in set_properties:
+        #     if p in cls.rdfs_isDefinedBy.object_property_lookup_name_as_key:
+        #         prop = cls.rdfs_isDefinedBy.object_property_lookup_name_as_key[p]
+        #         # add the current class as range of the property also remove it from the dict
+        #         prop.add_to_rdfs_range(cls)
+        #         cls.rdfs_isDefinedBy.forward_refs_key_predicate[p]['rdfs_range'].remove(cls.__name__)
+        #         # add the classes as domain of the property
+        #         to_add_as_domain = cls.rdfs_isDefinedBy.retrieve_postponed_property_domain(prop.__name__)
+        #         for c in to_add_as_domain:
+        #             prop.add_to_rdfs_domain(c)
+        #     else:
+        #         if cls.__name__ not in cls.rdfs_isDefinedBy.forward_refs_key_predicate:
+        #             cls.rdfs_isDefinedBy.forward_refs_key_range[cls.__name__] = set()
+        #         cls.rdfs_isDefinedBy.forward_refs_key_range[cls.__name__].add(p)
 
         # register the class to the ontology
-        cls.is_defined_by_ontology.register_class(cls)
+        cls.rdfs_isDefinedBy.register_class(cls)
 
-    def __init__(self, **data) -> None:
-        """
-        The constructor of the BaseClass.
-        It processes the range of the properties so that allows to simplify the input for the user.
-        i.e. the user can directly assign the object/data property with a list of objects as its range.
-        e.g. object = BaseClass(myObjectProperty=[obj1, obj2, obj3])
-        """
-        for f, field_info in self.__class__.model_fields.items():
-            if BaseProperty.is_inherited(field_info.annotation):
-                if f in data:
-                    possible_type = field_info.annotation.reveal_possible_property_range()
-                    if isinstance(data[f], list):
-                        if all(isinstance(i, possible_type) for i in data[f]):
-                            data[f] = field_info.annotation(range=set(data[f]))
-                    elif isinstance(data[f], set):
-                        if all(isinstance(i, possible_type) for i in data[f]):
-                            data[f] = field_info.annotation(range=data[f])
-                    elif isinstance(data[f], possible_type):
-                        data[f] = field_info.annotation(range=data[f])
-                    # for all the other cases, we will let the pydantic to validate the input
-                else:
-                    # if the object/data property is not in the input
-                    if field_info.default is PydanticUndefined and field_info.default_factory is None:
-                        # also if the default value is undefined and there is no default_factory
-                        # we will set it to its default initialisation
-                        # this doesn't affect the validation process
-                        # as the actual validation will be done by checking the cardinality of the property
-                        # the default initialisation of the range is an empty set
-                        data[f] = field_info.annotation(range=set())
-            elif isinstance(field_info.annotation, ForwardRef):
-                # this means the object/data property is not resolved yet
-                # pydantic will re-build the model in super().__init__(**data)
-                # therefore we need to get it ready in format of dictionary {'range': ...} to avoid validation error
-                if f in data:
-                    if not BaseProperty.is_inherited(type(data[f])):
-                        data[f] = {'range': data[f]}
-                else:
-                    data[f] = {'range': set()}
+    # NOTE TODO the __init__ is commented out for now, maybe bring it back later?
+    # def __init__(self, **data) -> None:
+    #     """
+    #     The constructor of the BaseClass.
+    #     It processes the range of the properties so that allows to simplify the input for the user.
+    #     i.e. the user can directly assign the object/data property with a list of objects as its range.
+    #     e.g. object = BaseClass(myObjectProperty=[obj1, obj2, obj3])
+    #     """
+    #     for f, field_info in self.__class__.model_fields.items():
+    #         if _BaseProperty._is_inherited(field_info.annotation):
+    #             if f in data:
+    #                 possible_type = get_args(field_info.annotation)
+    #                 if isinstance(data[f], list):
+    #                     if all(isinstance(i, possible_type) for i in data[f]):
+    #                         data[f] = field_info.annotation(set(data[f]))
+    #                 elif isinstance(data[f], set):
+    #                     if all(isinstance(i, possible_type) for i in data[f]):
+    #                         data[f] = field_info.annotation(data[f])
+    #                 elif isinstance(data[f], possible_type):
+    #                     data[f] = field_info.annotation(data[f])
+    #                 # for all the other cases, we will let the pydantic to validate the input
+    #             else:
+    #                 # if the object/data property is not in the input
+    #                 if field_info.default is PydanticUndefined and field_info.default_factory is None:
+    #                     # also if the default value is undefined and there is no default_factory
+    #                     # we will set it to its default initialisation
+    #                     # this doesn't affect the validation process
+    #                     # as the actual validation will be done by checking the cardinality of the property
+    #                     # the default initialisation of the range is an empty set
+    #                     data[f] = field_info.annotation(set())
+    #         elif isinstance(field_info.annotation, ForwardRef):
+    #             # this means the object/data property is not resolved yet
+    #             # pydantic will re-build the model in super().__init__(**data)
+    #             # therefore we need to get it ready in format of dictionary {'range': ...} to avoid validation error
+    #             if f in data:
+    #                 if not _BaseProperty._is_inherited(type(data[f])):
+    #                     data[f] = {data[f]}
+    #             else:
+    #                 data[f] = set()
 
-        super().__init__(**data)
+    #     super().__init__(**data)
+
+    # def __getattribute__(self, name) -> Any:
+    #     _fields = super().__getattribute__('model_fields')
+    #     if name in _fields:
+    #         if _BaseProperty._is_inherited(_fields[name].annotation):
+    #             return super().__getattribute__(name).range
+    #     return super().__getattribute__(name)
+
+    # def __setattr__(self, name: str, value: Any) -> None:
+    #     _fields = super().__getattribute__('model_fields')
+    #     if name in _fields:
+    #         if _BaseProperty._is_inherited(_fields[name].annotation):
+    #             if not isinstance(value, set):
+    #                 if not isinstance(value, list):
+    #                     value = [value]
+    #                 value = set(value)
+    #             super().__getattribute__(name).range = value
+    #             return
+    #     super().__setattr__(name, value)
+
+    # def get_original_property_field(self, name: str) -> Any:
+    #     return object.__getattribute__(self, name)
 
     def model_post_init(self, __context: Any) -> None:
         """
         The post init process of the BaseClass.
-        It sets the rdf_type and instance_iri if they are not set.
+        It sets the instance_iri if it is not set.
         It also registers the object to the lookup dictionary of the class.
 
         Args:
@@ -739,11 +1023,9 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             None: It calls the super().model_post_init(__context) to finish the post init process
         """
-        if not bool(self.rdf_type):
-            self.rdf_type = self.__class__.get_rdf_type()
         if not bool(self.instance_iri):
             self.instance_iri = init_instance_iri(
-                self.__class__.is_defined_by_ontology.get_namespace_iri(),
+                self.__class__.rdfs_isDefinedBy.get_namespace_iri(),
                 self.__class__.__name__
             )
         # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
@@ -777,7 +1059,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             Type[BaseClass]: The subclass of the BaseClass
         """
-        if iri == cls.get_rdf_type():
+        if iri == cls.rdf_type:
             return cls
         return cls.construct_subclass_dictionary()[iri]
 
@@ -791,7 +1073,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         """
         subclass_dict = {}
         for clz in cls.__subclasses__():
-            subclass_dict[clz.get_rdf_type()] = clz
+            subclass_dict[clz.rdf_type] = clz
             # recursively add the subclass of the subclass
             subclass_dict.update(clz.construct_subclass_dictionary())
         return subclass_dict
@@ -822,17 +1104,17 @@ class BaseClass(BaseModel, validate_assignment=True):
             for i in iris:
                 del cls.object_lookup[i]
 
-    @classmethod
-    def get_rdf_type(cls) -> str:
-        """
-        This function returns the rdf_type of the class.
+    # @classmethod
+    # def get_rdf_type(cls) -> str:
+    #     """
+    #     This function returns the rdf_type of the class.
 
-        Returns:
-            str: The rdf_type of the class (rdf:type in owl)
-        """
-        if cls == BaseClass:
-            return OWL_BASE_URL + 'Class'
-        return construct_rdf_type(cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__)
+    #     Returns:
+    #         str: The rdf_type of the class (rdf:type in owl)
+    #     """
+    #     if cls == BaseClass:
+    #         return OWL_BASE_URL + 'Class'
+    #     return construct_rdf_type(cls.rdfs_isDefinedBy.get_namespace_iri(), cls.__name__)
 
     @classmethod
     def pull_from_kg(cls, iris: List[str], sparql_client: PySparqlClient, recursive_depth: int = 0) -> List[BaseClass]:
@@ -881,10 +1163,10 @@ class BaseClass(BaseModel, validate_assignment=True):
             # TODO optimise the time complexity of the following code when the number of instances is large
             # check if the rdf:type of the instance matches the calling class or any of its subclasses
             target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
-            if target_clz_rdf_type != cls.get_rdf_type() and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
+            if target_clz_rdf_type != cls.rdf_type and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
                 raise ValueError(
                     f"""The instance {iri} is of type {props[RDF.type.toPython()]},
-                    it doesn't match the rdf:type of class {cls.__name__} ({cls.get_rdf_type()}),
+                    it doesn't match the rdf:type of class {cls.__name__} ({cls.rdf_type}),
                     nor any of its subclasses ({cls.construct_subclass_dictionary()}),
                     therefore it cannot be instantiated.""")
             inst = KnowledgeGraph.get_object_from_lookup(iri)
@@ -902,14 +1184,14 @@ class BaseClass(BaseModel, validate_assignment=True):
             # here object_properties_dict is a fetch of the remote KG
             object_properties_dict = {
                 op_dct['field']: op_dct['type'](
-                    range=set() if op_iri not in props else op_dct['type'].reveal_object_property_range(
+                    set() if op_iri not in props else op_dct['type'].reveal_object_property_range(
                         ).pull_from_kg(props[op_iri], sparql_client, recursive_depth) if flag_pull else props[op_iri]
                 ) for op_iri, op_dct in ops.items()
             }
             # here we handle data properties (data_properties_dict is a fetch of the remote KG)
             data_properties_dict = {
                 dp_dct['field']: dp_dct['type'](
-                    range=props[dp_iri] if dp_iri in props else set()
+                    props[dp_iri] if dp_iri in props else set()
                 ) for dp_iri, dp_dct in dps.items()
             }
             # handle rdfs:label and rdfs:comment (also fetch of the remote KG)
@@ -937,10 +1219,10 @@ class BaseClass(BaseModel, validate_assignment=True):
                             sparql_client, recursive_depth)
                 # now collect all featched values
                 fetched = {
-                    k: v.__class__(range=set([o.instance_iri if isinstance(o, BaseClass) else o for o in v.range]))
+                    k: v.__class__(set([o.instance_iri if isinstance(o, BaseClass) else o for o in v.range]))
                     for k, v in object_properties_dict.items()
                 } # object properties
-                fetched.update({k: v.__class__(range=set(copy.deepcopy(v.range))) for k, v in data_properties_dict.items()}) # data properties
+                fetched.update({k: v.__class__(set(copy.deepcopy(v.range))) for k, v in data_properties_dict.items()}) # data properties
                 fetched.update(rdfs_properties_dict) # rdfs properties
                 # compare it with cached values and local values for all object/data/rdfs properties
                 # if the object is already in the lookup, then update the object for those fields that are not modified in the python
@@ -976,11 +1258,11 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             Set[BaseClass]: A set of objects that are pulled from the KG
         """
-        iris = sparql_client.get_all_instances_of_class(cls.get_rdf_type())
+        iris = sparql_client.get_all_instances_of_class(cls.rdf_type)
         return cls.pull_from_kg(iris, sparql_client, recursive_depth)
 
     @classmethod
-    def get_object_and_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[BaseProperty]]]]:
+    def get_object_and_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[_BaseProperty]]]]:
         """
         This function returns the object and data properties of the calling class.
         This method calls the get_object_properties and get_data_properties functions and returns the combined dictionary.
@@ -1000,11 +1282,12 @@ class BaseClass(BaseModel, validate_assignment=True):
                 in the format of {predicate_iri: {'field': field_name, 'type': field_clz}}
                 e.g. {'https://twa.com/myObjectProperty': {'field': 'myObjectProperty', 'type': MyObjectProperty}}
         """
-        return {
-            field_info.annotation.get_predicate_iri(): {
-                'field': f, 'type': field_info.annotation
-            } for f, field_info in cls.model_fields.items() if ObjectProperty.is_inherited(field_info.annotation)
-        }
+        dct_op = {}
+        for f, field_info in cls.model_fields.items():
+            op = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
+            if ObjectProperty._is_inherited(op):
+                dct_op[op.predicate_iri] = {'field': f, 'type': op}
+        return dct_op
 
     @classmethod
     def get_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[DatatypeProperty]]]]:
@@ -1016,11 +1299,12 @@ class BaseClass(BaseModel, validate_assignment=True):
                 in the format of {predicate_iri: {'field': field_name, 'type': field_clz}}
                 e.g. {'https://twa.com/myDatatypeProperty': {'field': 'myDatatypeProperty', 'type': MyDatatypeProperty}}
         """
-        return {
-            field_info.annotation.get_predicate_iri(): {
-                'field': f, 'type': field_info.annotation
-            } for f, field_info in cls.model_fields.items() if DatatypeProperty.is_inherited(field_info.annotation)
-        }
+        dct_dp = {}
+        for f, field_info in cls.model_fields.items():
+            dp = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
+            if DatatypeProperty._is_inherited(dp):
+                dct_dp[dp.predicate_iri] = {'field': f, 'type': dp}
+        return dct_dp
 
     @classmethod
     def export_to_owl(cls, g: Graph) -> Graph:
@@ -1036,13 +1320,13 @@ class BaseClass(BaseModel, validate_assignment=True):
         """
         # rebuild model to resovle any ForwardRef
         cls.model_rebuild()
-        cls_iri = cls.get_rdf_type()
+        cls_iri = cls.rdf_type
         g.add((URIRef(cls_iri), RDF.type, OWL.Class))
-        g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.is_defined_by_ontology.get_namespace_iri())))
+        g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.get_namespace_iri())))
         # add super classes
         idx = cls.__mro__.index(BaseClass)
         for i in range(1, idx):
-            g.add((URIRef(cls_iri), RDFS.subClassOf, URIRef(cls.__mro__[i].get_rdf_type())))
+            g.add((URIRef(cls_iri), RDFS.subClassOf, URIRef(cls.__mro__[i].rdf_type)))
         # add cardinality for object and data properties
         for prop_iri, prop_dct in cls.get_object_and_data_properties().items():
             prop = prop_dct['type']
@@ -1057,7 +1341,10 @@ class BaseClass(BaseModel, validate_assignment=True):
                 if bool(max_car):
                     g.add((restriction, OWL.maxQualifiedCardinality, Literal(max_car, datatype=XSD.nonNegativeInteger)))
                 g.add((restriction, RDF.type, OWL.Restriction))
-                g.add((restriction, OWL.onClass, URIRef(prop.reveal_property_range_iri())))
+                if issubclass(prop, ObjectProperty):
+                    g.add((restriction, OWL.onClass, URIRef(get_args(prop)[0].rdf_type)))
+                else:
+                    g.add((restriction, OWL.onClass, URIRef(_castPythonToXSD(get_args(prop)[0]))))
                 g.add((restriction, OWL.onProperty, URIRef(prop_iri)))
                 g.add((URIRef(cls_iri), RDFS.subClassOf, restriction))
         return g
@@ -1079,7 +1366,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             return
         traversed_iris.add(self.instance_iri)
         for f, cached in self._latest_cache.items():
-            if BaseProperty.is_inherited(type(cached)):
+            if _BaseProperty._is_inherited(type(cached)):
                 disconnected_object_properties = cached.range - getattr(self, f).range
                 for o in disconnected_object_properties:
                     obj = KnowledgeGraph.get_object_from_lookup(o)
@@ -1087,14 +1374,14 @@ class BaseClass(BaseModel, validate_assignment=True):
                         obj.create_cache(recursive_depth, traversed_iris)
         # secondly (and finally), create cache for all currently connected properties
         self._latest_cache = {f: getattr(self, f).create_cache(recursive_depth, traversed_iris)
-                              if BaseProperty.is_inherited(field_info.annotation) else copy.deepcopy(getattr(self, f))
+                              if _BaseProperty._is_inherited(field_info.annotation) else copy.deepcopy(getattr(self, f))
                               for f, field_info in self.model_fields.items()}
 
     def revert_local_changes(self):
         """ This function reverts the local changes made to the python object to cached values. """
         for f, field_info in self.model_fields.items():
-            if BaseProperty.is_inherited(field_info.annotation):
-                setattr(self, f, copy.deepcopy(self._latest_cache.get(f, field_info.annotation(range=set()))))
+            if _BaseProperty._is_inherited(field_info.annotation):
+                setattr(self, f, copy.deepcopy(self._latest_cache.get(f, field_info.annotation(set()))))
             else:
                 setattr(self, f, copy.deepcopy(self._latest_cache.get(f, None)))
 
@@ -1137,7 +1424,7 @@ class BaseClass(BaseModel, validate_assignment=True):
 
             # when pulling the same objects again but with different recursive_depth
             # below ensures python objects in memory / the IRIs are used correctly for range of object properties
-            if ObjectProperty.is_inherited(p_dct['type']):
+            if ObjectProperty._is_inherited(p_dct['type']):
                 _local_value_set = getattr(self, p_dct['field']).range
                 if bool(_local_value_set):
                     if flag_connect_object and isinstance(next(iter(_local_value_set)), str):
@@ -1258,7 +1545,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             return g_to_remove, g_to_add
         traversed_iris.add(self.instance_iri)
         for f, field_info in self.model_fields.items():
-            if BaseProperty.is_inherited(field_info.annotation):
+            if _BaseProperty._is_inherited(field_info.annotation):
                 # returning None as p_cache supports the default_factory that initialise the object with empty input values
                 # for those properties with minimum cardinality 1, otherwise it will fail the pydantic validation
                 p_cache = self._latest_cache.get(f, None)
@@ -1295,15 +1582,16 @@ class BaseClass(BaseModel, validate_assignment=True):
         """
         if g is None:
             g = Graph()
+        print(self.model_fields)
         for f, field_info in self.model_fields.items():
-            if ObjectProperty.is_inherited(field_info.annotation):
+            if ObjectProperty._is_inherited(field_info.annotation):
                 prop = getattr(self, f)
-                for o in prop.range:
-                    g.add((URIRef(self.instance_iri), URIRef(prop.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
-            elif DatatypeProperty.is_inherited(field_info.annotation):
+                for o in prop:
+                    g.add((URIRef(self.instance_iri), URIRef(field_info.annotation.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
+            elif DatatypeProperty._is_inherited(field_info.annotation):
                 prop = getattr(self, f)
-                for o in prop.range:
-                    g.add((URIRef(self.instance_iri), URIRef(prop.predicate_iri), Literal(o)))
+                for o in prop:
+                    g.add((URIRef(self.instance_iri), URIRef(field_info.annotation.predicate_iri), Literal(o)))
             elif f == 'rdf_type':
                 g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
             elif f == 'rdfs_comment' and self.rdfs_comment is not None:
@@ -1367,25 +1655,39 @@ class BaseClass(BaseModel, validate_assignment=True):
         return o
 
 
-class ObjectProperty(BaseProperty):
+class ObjectProperty(_BaseProperty):
     """
     Base class for object properties.
     It inherits the BaseProperty class.
     """
 
     @classmethod
-    def __pydantic_init_subclass__(cls, **kwargs):
-        # ensure that the cls already has field is_defined_by_ontology
-        if cls.is_defined_by_ontology is None:
-            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your object property {cls}?")
+    def __init_subclass__(cls, **kwargs):
+    # def __pydantic_init_subclass__(cls, **kwargs):
+        # ensure that the cls already has field rdfs_isDefinedBy
+        if cls.rdfs_isDefinedBy is None:
+            raise AttributeError(f"Did you forget to specify `rdfs_isDefinedBy` for your object property {cls}?")
 
-        # add the postponed domains
-        to_add_as_domain = cls.is_defined_by_ontology.retrieve_postponed_property_domain(cls.__name__)
-        for c in to_add_as_domain:
-            cls.add_to_domain(c)
+        # set the predicate_iri
+        cls.predicate_iri = f'{cls.rdfs_isDefinedBy.base_url}/{cls.__name__}'
+
+        # TODO remove below
+        # # add the postponed domains
+        # to_add_as_domain = cls.rdfs_isDefinedBy.retrieve_postponed_property_domain(cls.__name__)
+        # print(cls.__name__)
+        # for c in to_add_as_domain:
+        #     cls.add_to_rdfs_domain(c)
+        # to_add_as_range = cls.rdfs_isDefinedBy.retrieve_postponed_property_range(cls.__name__)
+        # for r in to_add_as_range:
+        #     if r in cls.rdfs_isDefinedBy.class_lookup_name_as_key:
+        #         cls.add_to_rdfs_range(cls.rdfs_isDefinedBy.class_lookup_name_as_key[r])
+        #     else:
+        #         if 'rdfs_range' not in cls.rdfs_isDefinedBy.forward_refs_key_predicate[cls.__name__]:
+        #             cls.rdfs_isDefinedBy.forward_refs_key_predicate[cls.__name__]['rdfs_range'] = set()
+        #         cls.rdfs_isDefinedBy.forward_refs_key_predicate[cls.__name__]['rdfs_range'].add(r)
 
         # register the class to the ontology
-        cls.is_defined_by_ontology.register_object_property(cls)
+        cls.rdfs_isDefinedBy.register_object_property(cls)
 
     def _collect_diff(
         self,
@@ -1464,7 +1766,7 @@ class ObjectProperty(BaseProperty):
         return g_to_remove, g_to_add
 
     @classmethod
-    def export_to_owl(cls, g: Graph) -> Graph:
+    def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
         """
         This function exports the triples of the object property to an OWL ontology.
         It calls the super class function with the flag 'is_object_property' set to True.
@@ -1475,7 +1777,7 @@ class ObjectProperty(BaseProperty):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
-        return super().export_to_owl(g, True)
+        return super().export_to_owl(g, rdfs_domain, rdfs_range, True)
 
     @classmethod
     def reveal_object_property_range(cls) -> T:
@@ -1487,25 +1789,25 @@ class ObjectProperty(BaseProperty):
         """
         return cls.model_fields['range'].annotation.__args__[0].__args__[0]
 
-    @classmethod
-    def reveal_possible_property_range(cls) -> Set[T]:
-        """
-        This function reveals the possible range of the object property.
+    # @classmethod
+    # def reveal_possible_property_range(cls) -> Set[T]:
+    #     """
+    #     This function reveals the possible range of the object property.
 
-        Returns:
-            Set[T]: The set of possible range of the property
-        """
-        return cls.model_fields['range'].annotation.__args__[0].__args__
+    #     Returns:
+    #         Set[T]: The set of possible range of the property
+    #     """
+    #     return cls.model_fields['range'].annotation.__args__[0].__args__
 
-    @classmethod
-    def reveal_property_range_iri(cls) -> str:
-        """
-        This function reveals the IRI of the range of the object property.
+    # @classmethod
+    # def reveal_property_range_iri(cls) -> str:
+    #     """
+    #     This function reveals the IRI of the range of the object property.
 
-        Returns:
-            str: IRI of the range of the object property
-        """
-        return cls.reveal_object_property_range().get_rdf_type()
+    #     Returns:
+    #         str: IRI of the range of the object property
+    #     """
+    #     return cls.reveal_object_property_range().rdf_type
 
     def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> ObjectProperty:
         """
@@ -1532,7 +1834,7 @@ class ObjectProperty(BaseProperty):
             else:
                 raise Exception(f"Unsupported datatype {type(o)} for range of object property {self}")
         # return the cache that will actually be used for comparison when pulling/pushing
-        return self.__class__(range=set([
+        return self.__class__(set([
             o.instance_iri if isinstance(o, BaseClass) else o for o in self.range
         ]))
 
@@ -1542,7 +1844,7 @@ class TransitiveProperty(ObjectProperty):
     Base class for transitive object properties.
     It inherits the ObjectProperty class.
     """
-    is_defined_by_ontology = Owl
+    rdfs_isDefinedBy = Owl
 
     def obtain_transitive_objects(self, transitive_objects: set=None):
         if transitive_objects is None:
@@ -1557,25 +1859,31 @@ class TransitiveProperty(ObjectProperty):
         return transitive_objects
 
 
-class DatatypeProperty(BaseProperty):
+class DatatypeProperty(_BaseProperty):
     """
     Base class for data properties.
     It inherits the BaseProperty class.
     """
 
     @classmethod
-    def __pydantic_init_subclass__(cls, **kwargs):
-        # ensure that the cls already has field is_defined_by_ontology
-        if cls.is_defined_by_ontology is None:
-            raise AttributeError(f"Did you forget to specify `is_defined_by_ontology` for your data property {cls}?")
+    def __init_subclass__(cls, **kwargs):
+    # def __pydantic_init_subclass__(cls, **kwargs):
+        # ensure that the cls already has field rdfs_isDefinedBy
+        if cls.rdfs_isDefinedBy is None:
+            raise AttributeError(f"Did you forget to specify `rdfs_isDefinedBy` for your data property {cls}?")
 
-        # add the postponed domains
-        to_add_as_domain = cls.is_defined_by_ontology.retrieve_postponed_property_domain(cls.__name__)
-        for c in to_add_as_domain:
-            cls.add_to_domain(c)
+        # ensure that the field predicate_iri is set
+        if cls.predicate_iri is None:
+            cls.predicate_iri = f'{cls.rdfs_isDefinedBy.base_url}/{cls.__name__}'
+
+        # TODO remove below
+        # # add the postponed domains
+        # to_add_as_domain = cls.rdfs_isDefinedBy.retrieve_postponed_property_domain(cls.__name__)
+        # for c in to_add_as_domain:
+        #     cls.add_to_rdfs_domain(c)
 
         # register the class to the ontology
-        cls.is_defined_by_ontology.register_data_property(cls)
+        cls.rdfs_isDefinedBy.register_data_property(cls)
 
     def collect_range_diff_to_graph(
         self,
@@ -1641,7 +1949,7 @@ class DatatypeProperty(BaseProperty):
         return g
 
     @classmethod
-    def export_to_owl(cls, g: Graph) -> Graph:
+    def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
         """
         This function exports the triples of the data property to an OWL ontology.
         It calls the super class function with the flag 'is_object_property' set to False.
@@ -1652,7 +1960,7 @@ class DatatypeProperty(BaseProperty):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
-        return super().export_to_owl(g, False)
+        return super().export_to_owl(g, rdfs_domain, rdfs_range, False)
 
     @classmethod
     def reveal_data_property_range(cls) -> T:
@@ -1662,27 +1970,28 @@ class DatatypeProperty(BaseProperty):
         Returns:
             T: The range of the data property
         """
+        print('hahs')
         return cls.model_fields['range'].annotation.__args__[0]
 
-    @classmethod
-    def reveal_possible_property_range(cls) -> Set[T]:
-        """
-        This function reveals the possible range of the object property.
+    # @classmethod
+    # def reveal_possible_property_range(cls) -> Set[T]:
+    #     """
+    #     This function reveals the possible range of the object property.
 
-        Returns:
-            Set[T]: The set of possible range of the property
-        """
-        return cls.model_fields['range'].annotation.__args__
+    #     Returns:
+    #         Set[T]: The set of possible range of the property
+    #     """
+    #     return cls.model_fields['range'].annotation.__args__
 
-    @classmethod
-    def reveal_property_range_iri(cls) -> str:
-        """
-        This function reveals the IRI of the range of the data property.
+    # @classmethod
+    # def reveal_property_range_iri(cls) -> str:
+    #     """
+    #     This function reveals the IRI of the range of the data property.
 
-        Returns:
-            str: IRI of the range of the data property
-        """
-        return _castPythonToXSD(cls.reveal_data_property_range())
+    #     Returns:
+    #         str: IRI of the range of the data property
+    #     """
+    #     return _castPythonToXSD(cls.reveal_data_property_range())
 
     def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> DatatypeProperty:
         """
@@ -1696,4 +2005,33 @@ class DatatypeProperty(BaseProperty):
         Returns:
             DatatypeProperty: The cache of the data property
         """
-        return self.__class__(range=set(copy.deepcopy(self.range)))
+        return self.__class__(set(copy.deepcopy(self.range)))
+
+
+def create_object_property(
+    class_name: str,
+    ontology: Type[BaseOntology],
+    min_cardinality: Optional[int] = 0,
+    max_cardinality: Optional[int] = None,
+    base_property: Type[ObjectProperty] = ObjectProperty,
+) -> Type[ObjectProperty]:
+    # NOTE we inherit cardinality from the base_property if not specified
+    return type(class_name, (base_property,), {
+        'rdfs_isDefinedBy': ontology,
+        'owl_minQualifiedCardinality': min_cardinality if bool(min_cardinality) else base_property.owl_minQualifiedCardinality,
+        'owl_maxQualifiedCardinality': max_cardinality if bool(max_cardinality) else base_property.owl_maxQualifiedCardinality,
+    })
+
+def create_datatype_property(
+    class_name: str,
+    ontology: Type[BaseOntology],
+    min_cardinality: Optional[int] = 0,
+    max_cardinality: Optional[int] = None,
+    base_property: Type[DatatypeProperty] = DatatypeProperty,
+) -> Type[DatatypeProperty]:
+    # NOTE we inherit cardinality from the base_property if not specified
+    return type(class_name, (base_property,), {
+        'rdfs_isDefinedBy': ontology,
+        'owl_minQualifiedCardinality': min_cardinality if bool(min_cardinality) else base_property.owl_minQualifiedCardinality,
+        'owl_maxQualifiedCardinality': max_cardinality if bool(max_cardinality) else base_property.owl_maxQualifiedCardinality,
+    })
