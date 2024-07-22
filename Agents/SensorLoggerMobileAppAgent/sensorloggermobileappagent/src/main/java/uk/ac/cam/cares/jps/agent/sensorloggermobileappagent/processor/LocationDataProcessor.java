@@ -21,7 +21,6 @@ public class LocationDataProcessor extends SensorDataProcessor {
     private String altitudeIRI;
     private String pointIRI;
 
-    private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> bearingList = new ArrayList<>();
     private final List<Double> speedList = new ArrayList<>();
     private final List<Double> altitudeList = new ArrayList<>();
@@ -41,11 +40,12 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries getProcessedTimeSeries() throws Exception {
+    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() {
         // todo: do processing of location data
         List<String> dataIRIList = Arrays.asList(bearingIRI, speedIRI, altitudeIRI, pointIRI);
         List<List<?>> valueList = Arrays.asList(bearingList, speedList, altitudeList, geomLocationList);
-        TimeSeries ts = new TimeSeries(timeList, dataIRIList, valueList);
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
+
         clearData();
         return ts;
     }
@@ -69,8 +69,8 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class> getDataClass() {
-        List<Class> dataClass = new ArrayList<>(Collections.nCopies(getDataIRIMap().size() - 1, Double.class));
+    public List<Class<?>> getDataClass() {
+        List<Class<?>> dataClass = new ArrayList<>(Collections.nCopies(getDataIRIMap().size() - 1, Double.class));
         dataClass.add(Point.class);
         return dataClass;
     }

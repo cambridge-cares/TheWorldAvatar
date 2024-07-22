@@ -17,8 +17,6 @@ import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants
 
 public class DBFSDataProcessor extends SensorDataProcessor {
     private String dbfsIRI;
-
-    private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> dBFSList = new ArrayList<>();
 
     public DBFSDataProcessor(DownSampleConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
@@ -32,10 +30,10 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries getProcessedTimeSeries() throws Exception {
+    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Collections.singletonList(dbfsIRI);
         List<List<?>> valueList = Collections.singletonList(dBFSList);
-        TimeSeries ts = new TimeSeries(timeList, dataIRIList, valueList);
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getDbfsDSResolution(), config.getDbfsDSType());
 
         clearData();
@@ -55,7 +53,7 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class> getDataClass() {
+    public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIMap().size(), Double.class);
     }
 

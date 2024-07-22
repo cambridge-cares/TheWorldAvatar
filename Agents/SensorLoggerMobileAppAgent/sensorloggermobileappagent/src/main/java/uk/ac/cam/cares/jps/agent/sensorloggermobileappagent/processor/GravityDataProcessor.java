@@ -21,7 +21,6 @@ public class GravityDataProcessor extends SensorDataProcessor {
     private String yIri;
     private String zIri;
 
-    private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> xList = new ArrayList<>();
     private final List<Double> yList = new ArrayList<>();
     private final List<Double> zList = new ArrayList<>();

@@ -21,7 +21,6 @@ public class AccelerometerProcessor extends SensorDataProcessor {
     private String yIri;
     private String zIri;
 
-    private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> xList = new ArrayList<>();
     private final List<Double> yList = new ArrayList<>();
     private final List<Double> zList = new ArrayList<>();
@@ -39,11 +38,10 @@ public class AccelerometerProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries getProcessedTimeSeries() throws Exception {
-        // todo: dedicated thread is because don't want to call db too frequently, check better way to do buffer
-        List<List<Double>> valueList = Arrays.asList(xList, yList, zList);
+    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
+        List<List<?>> valueList = Arrays.asList(xList, yList, zList);
         List<String> iriList = Arrays.asList(xIri, yIri, zIri);
-        TimeSeries ts = new TimeSeries(timeList, iriList, valueList);
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<OffsetDateTime>(timeList, iriList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getAccelDSResolution(), config.getAccelDSType());
 
         clearData();
@@ -67,7 +65,7 @@ public class AccelerometerProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class> getDataClass() {
+    public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIMap().size(), Double.class);
     }
 

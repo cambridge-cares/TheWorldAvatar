@@ -16,9 +16,8 @@ import java.util.*;
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class RelativeBrightnessProcessor extends SensorDataProcessor {
-    private String relativeBrightnessIRI = "";
+    private String relativeBrightnessIRI;
 
-    private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> brightnessList = new ArrayList<>();
 
     public RelativeBrightnessProcessor(DownSampleConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
@@ -32,12 +31,13 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries getProcessedTimeSeries() throws Exception {
+    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Collections.singletonList(relativeBrightnessIRI);
         List<List<?>> valueList = Collections.singletonList(brightnessList);
-        TimeSeries ts = new TimeSeries(timeList, dataIRIList, valueList);
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getRbDSResolution(), config.getRbDSType());
 
+        clearData();
         return ts;
     }
 
@@ -54,7 +54,7 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class> getDataClass() {
+    public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIMap().size(), Double.class);
     }
 

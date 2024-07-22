@@ -20,7 +20,6 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
     private String yIri;
     private String zIri;
 
-    private final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     private final List<Double> xList = new ArrayList<>();
     private final List<Double> yList = new ArrayList<>();
     private final List<Double> zList = new ArrayList<>();
@@ -38,10 +37,10 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries getProcessedTimeSeries() throws Exception {
+    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Arrays.asList(xIri, yIri, zIri);
         List<List<?>> valueList = Arrays.asList(xList, yList, zList);
-        TimeSeries ts = new TimeSeries(timeList, dataIRIList, valueList);
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getMagnetometerDSResolution(), config.getMagnetometerDSType());
 
         clearData();
@@ -65,7 +64,7 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class> getDataClass() {
+    public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIMap().size(), Double.class);
     }
 
