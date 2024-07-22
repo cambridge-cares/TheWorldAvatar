@@ -103,12 +103,12 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
                 .addWhere("?magnetometer", "rdf:type", "ontodevice:Magnetometer")
                 .addWhere("?magnetometer", "ontodevice:measures", "?vector")
                 .addWhere("?vector", "rdf:type", "ontoslma:MagneticFluxDensityVector")
-                .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", x)
-                .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", y)
-                .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", z);
+                .addWhere("?vector", "ontoslma:hasXComponent", "?quantityX")
+                .addWhere("?quantityX", "om:hasValue", x)
+                .addWhere("?vector", "ontoslma:hasYComponent", "?quantityY")
+                .addWhere("?quantityY", "om:hasValue", y)
+                .addWhere("?vector", "ontoslma:hasZComponent", "?quantityZ")
+                .addWhere("?quantityZ", "om:hasValue", z);
         SelectBuilder sb = new SelectBuilder()
                 .addVar(x).addVar(y).addVar(z).addWhere(wb);
 

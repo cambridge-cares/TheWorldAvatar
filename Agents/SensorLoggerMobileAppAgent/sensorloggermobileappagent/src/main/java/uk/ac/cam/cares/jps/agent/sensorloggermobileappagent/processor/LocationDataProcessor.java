@@ -70,7 +70,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
 
     @Override
     public List<Class> getDataClass() {
-        List<Class> dataClass = Collections.nCopies(getDataIRIMap().size() - 1, Double.class);
+        List<Class> dataClass = new ArrayList<>(Collections.nCopies(getDataIRIMap().size() - 1, Double.class));
         dataClass.add(Point.class);
         return dataClass;
     }
@@ -107,6 +107,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om", OM)
+                .addPrefix("sf",SF)
                 .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
                 .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Bearing")

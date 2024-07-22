@@ -39,11 +39,11 @@ public class GravityDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries getProcessedTimeSeries() throws Exception {
+    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Arrays.asList(xIri, yIri, zIri);
-        List<List<Double>> dataValues = Arrays.asList(xList, yList, zList);
+        List<List<?>> dataValues = Arrays.asList(xList, yList, zList);
 
-        TimeSeries ts = new TimeSeries(timeList, dataIRIList, dataValues);
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, dataValues);
         ts = Downsampling.downsampleTS(ts, config.getGravityDSResolution(), config.getGravityDSType());
 
         clearData();
@@ -67,7 +67,7 @@ public class GravityDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class> getDataClass() {
+    public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIMap().size(), Double.class);
     }
 
@@ -105,12 +105,12 @@ public class GravityDataProcessor extends SensorDataProcessor {
                 .addWhere("?gravitySensor", "rdf:type", "ontodevice:GravitySensor")
                 .addWhere("?gravitySensor", "ontodevice:measures", "?vector")
                 .addWhere("?vector", "rdf:type", "ontoslma:GravityVector")
-                .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", x)
-                .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", y)
-                .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
-                .addWhere("?quantity", "om:hasValue", z);
+                .addWhere("?vector", "ontoslma:hasXComponent", "?quantityX")
+                .addWhere("?quantityX", "om:hasValue", x)
+                .addWhere("?vector", "ontoslma:hasYComponent", "?quantityY")
+                .addWhere("?quantityY", "om:hasValue", y)
+                .addWhere("?vector", "ontoslma:hasZComponent", "?quantityZ")
+                .addWhere("?quantityZ", "om:hasValue", z);
         SelectBuilder sb = new SelectBuilder()
                 .addVar(x).addVar(y).addVar(z).addWhere(wb);
 
