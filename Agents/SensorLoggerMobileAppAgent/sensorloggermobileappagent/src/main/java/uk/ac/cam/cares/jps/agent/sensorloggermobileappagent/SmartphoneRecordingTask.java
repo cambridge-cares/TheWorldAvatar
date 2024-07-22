@@ -2,15 +2,14 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor.*;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.Map.Entry;
@@ -29,68 +28,95 @@ public class SmartphoneRecordingTask {
     RelativeBrightnessProcessor relativeBrightnessProcessor;
     List<SensorDataProcessor> sensorDataProcessorList;
 
-    private RemoteStoreClient storeClient;
-    private RemoteRDBStoreClient rdbStoreClient;
-    private DownSampleConfig config;
+    private final Node smartphoneIRI;
+
+    private final RemoteStoreClient storeClient;
+    private final TimeSeriesClient<OffsetDateTime> tsClient;
+    private final DownSampleConfig config;
 
     private long lastProcessedTime;
     private long lastActiveTime;
+    private boolean isProcessing;
 
     public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient, DownSampleConfig config, String phoneId) {
-        // todo: haven't decided whether the client is passed from outside or built inside
-//        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-//        storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-
-        LOGGER = Logger.getLogger("SmartphoneRecordingTask_" + phoneId);
+        LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + phoneId);
 
         this.storeClient = storeClient;
-        this.rdbStoreClient = rdbStoreClient;
+        this.tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class,
+                rdbStoreClient.getRdbURL(), rdbStoreClient.getUser(), rdbStoreClient.getPassword());
         this.config = config;
         lastActiveTime = System.currentTimeMillis();
         lastProcessedTime = System.currentTimeMillis();
 
-        initSensorProcessors(phoneId);
+        String smartphoneString = "https://www.theworldavatar.com/kg/sensorloggerapp/smartphone_" + phoneId;
+        smartphoneIRI = NodeFactory.createURI(smartphoneString);
 
-        bulkInitKg();
-        bulkInitRdb();
+        initSensorProcessors();
+
     }
 
-    public void addData(HashMap data) {
+    public synchronized void addData(HashMap<String, List<?>> data) {
+        LOGGER.info("adding data...");
         sensorDataProcessorList.forEach(p -> p.addData(data));
         lastActiveTime = System.currentTimeMillis();
+        LOGGER.info("finish adding data and the last active time is updated to " + lastActiveTime);
     }
 
-    public void processData(boolean skipTimeCheck) {
-        if (System.currentTimeMillis() - lastProcessedTime < config.getTimerFrequency() * 1000L && !skipTimeCheck) {
-            LOGGER.debug("time from the last processed time is less than the set frequency, no need to update the rdb yet");
+    public synchronized boolean shouldProcessData() {
+        if (System.currentTimeMillis() - lastProcessedTime < config.getTimerFrequency() * 1000L) {
+            LOGGER.debug(String.format("Current time: %d, last processed time: %d; No need to process data.",
+                    System.currentTimeMillis(),
+                    lastProcessedTime));
+            return false;
+        } else if (isProcessing) {
+            LOGGER.debug("Another thread is processing the data, current thread should skip");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public synchronized void processAndSendData() {
+        isProcessing = true;
+
+        LOGGER.info("Processing and sending data");
+        if (sensorDataProcessorList.stream().allMatch(SensorDataProcessor::isIriInstantiationNeeded)) {
+            LOGGER.info("Need to init kg");
+            bulkInitKg();
+        }
+
+        if (sensorDataProcessorList.stream().anyMatch(SensorDataProcessor::isRbdInstantiationNeeded)) {
+            LOGGER.info("Need to init rdb");
+            bulkInitRdb();
+        }
+
+        try {
+            bulkAddTimeSeriesData();
+        } catch (RuntimeException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getCause());
+
+            lastProcessedTime = System.currentTimeMillis();
+            isProcessing = false;
             return;
         }
 
-        List<TimeSeries> tsList = sensorDataProcessorList.stream().map(sensorDataProcessor -> {
-            try {
-                return sensorDataProcessor.getProcessedTimeSeries();
-            } catch (Exception e) {
-                LOGGER.error("unable to downsample the data of " + sensorDataProcessor.getClass().getName());
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList());
-        bulkAddTimeSeriesData(tsList);
         lastProcessedTime = System.currentTimeMillis();
+        LOGGER.info("Done with sending data, and update the processed time to " + lastProcessedTime);
+
+        isProcessing = false;
     }
 
-    public boolean checkTaskTermination() {
+    public synchronized boolean checkTaskTermination() {
         if (System.currentTimeMillis() - lastActiveTime > 600 * 1000L) {
-            processData(true);
+            processAndSendData();
             return true;
         }
 
         return false;
     }
 
-    private void initSensorProcessors(String phoneId) {
-        String smartphoneString = "https://www.theworldavatar.com/kg/sensorloggerapp/smartphone_" + phoneId;
-        Node smartphoneIRI = NodeFactory.createURI(smartphoneString);
-
+    private void initSensorProcessors() {
         accelerometerProcessor = new AccelerometerProcessor(this.config, this.storeClient, smartphoneIRI);
         dbfsDataProcessor = new DBFSDataProcessor(this.config, this.storeClient, smartphoneIRI);
         gravityDataProcessor = new GravityDataProcessor(this.config, this.storeClient, smartphoneIRI);
@@ -106,40 +132,64 @@ public class SmartphoneRecordingTask {
                 locationDataProcessor,
                 magnetometerDataProcessor,
                 relativeBrightnessProcessor);
+        LOGGER.info("sensor data iri created: " + sensorDataProcessorList.stream()
+                .map(SensorDataProcessor::getDataIRIMap)
+                .flatMap(map -> map.entrySet().stream())
+                .map(Entry::getValue)
+                .collect(Collectors.joining("; ")));
     }
 
     private void bulkInitKg() {
-        if (sensorDataProcessorList.stream().allMatch(SensorDataProcessor::isInstantiationNeeded)) {
-            StaticInstantiation.instantiationMethod(sensorDataProcessorList.stream()
-                    .map(SensorDataProcessor::getDataIRIMap)
-                    .flatMap(map -> map.entrySet().stream())
-                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
-        }
+        Map<String, String> iriMap = sensorDataProcessorList.stream()
+                .map(SensorDataProcessor::getDataIRIMap)
+                .flatMap(map -> map.entrySet().stream())
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        iriMap.put("deviceID", smartphoneIRI.getURI());
+        StaticInstantiation.instantiationMethod(sensorDataProcessorList.stream()
+                .map(SensorDataProcessor::getDataIRIMap)
+                .flatMap(map -> map.entrySet().stream())
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+
+        sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
+        LOGGER.info("finish instantiating kg");
     }
 
     private void bulkInitRdb() {
-        Iterator<SensorDataProcessor> iterator = sensorDataProcessorList.stream().filter(SensorDataProcessor::isInstantiationNeeded).iterator();
+        Iterator<SensorDataProcessor> iterator = sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded).iterator();
         List<List<String>> dataIris = new ArrayList<>();
-        List<List<Class>> dataClasses = new ArrayList<>();
+        List<List<Class<?>>> dataClasses = new ArrayList<>();
         while (iterator.hasNext()) {
             SensorDataProcessor p = iterator.next();
             dataIris.add(new ArrayList<>(p.getDataIRIMap().values()));
             dataClasses.add(p.getDataClass());
         }
 
+        LOGGER.info("bulk init iris in rdb");
         List<String> timeUnits = Collections.nCopies(dataIris.size(), OffsetDateTime.class.getSimpleName());
-        TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
         tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits);
+
+        sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded).forEach(p -> p.setRbdInstantiationNeeded(false));
+        LOGGER.info("finish init postgres dbTable and the corresponding table");
     }
 
     // todo: make it async
-    private void bulkAddTimeSeriesData(List<TimeSeries> tsList) {
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-            tsClient.bulkaddTimeSeriesData(tsList, conn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
+    private void bulkAddTimeSeriesData() throws RuntimeException {
+        List<TimeSeries<OffsetDateTime>> tsList = sensorDataProcessorList.stream()
+                .filter(p -> p.getTimeSeriesLength() > 0)
+                .map(p -> {
+                    try {
+                        return p.getProcessedTimeSeries();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toList());
+        if (tsList.isEmpty() || tsList.stream().mapToInt(ts -> ts.getTimes().size()).sum() == 0) {
+            LOGGER.info("No new data, skip bulk add time series data");
+            return;
         }
+
+        LOGGER.info(String.format("bulk adding %d time series", tsList.size()));
+        tsClient.bulkaddTimeSeriesData(tsList);
+        LOGGER.info("finish adding data to postgres tables");
     }
 }
