@@ -31,7 +31,16 @@ export default function HeaderField(props: Readonly<HeaderFieldProps>) {
       {!props.isLoading &&
         <IconComponent
           icon={props.icon}
+          classes={styles.icon}
         />
+      }
+
+      {/* Renders a loading indicator when required, or else, shows the required icon */}
+      {props.isLoading &&
+        <div className={`${styles.iconContainer} ${styles.icon}`}>
+          <LoadingSpinner isSmall={true}
+          />
+        </div>
       }
 
       {/* Header Name */}
@@ -39,13 +48,6 @@ export default function HeaderField(props: Readonly<HeaderFieldProps>) {
         {props.name}
       </div>
 
-      {/* Renders a loading indicator when required, or else, shows the required icon */}
-      {props.isLoading &&
-        <div className={styles.iconContainer}>
-          <LoadingSpinner isSmall={true} />
-        </div>
-
-      }
 
     </div>
   );
