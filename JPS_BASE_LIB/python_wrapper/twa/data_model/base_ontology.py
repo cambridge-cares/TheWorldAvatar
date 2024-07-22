@@ -622,36 +622,45 @@ class _BaseProperty(set, Generic[T]):
         except TypeError:
             return False
 
+    @classmethod
+    def add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
+        # try:
+        #     g.add((URIRef(s), URIRef(cls.predicate_iri), Literal(o)))
+        # except Exception as e:
+        #     raise TypeError(f'Type of {o} ({type(o)}) is not supported by rdflib as a data property for {cls.predicate_iri}.', e)
+        # return g
+        raise NotImplementedError('This is an abstract method.')
+
     # def reassign_range(self, new_value):
     #     """ This function reassigns range of the object/data properties to new values. """
     #     setattr(self, 'range', new_value)
 
-    def collect_range_diff_to_graph(
-        self,
-        subject: str,
-        cache: _BaseProperty,
-        g_to_remove: Graph,
-        g_to_add: Graph,
-        recursive_depth: int = 0,
-        traversed_iris: set = None,
-    ):
-        """
-        This is an abstract method that should be implemented by the subclasses.
-        It is used to collect the difference between the range of the property and the cache.
-        The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
+    # def collect_range_diff_to_graph(
+    #     self,
+    #     subject: str,
+    #     cache: _BaseProperty,
+    #     g_to_remove: Graph,
+    #     g_to_add: Graph,
+    #     recursive_depth: int = 0,
+    #     traversed_iris: set = None,
+    # ):
+    #     """
+    #     This is an abstract method that should be implemented by the subclasses.
+    #     It is used to collect the difference between the range of the property and the cache.
+    #     The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
 
-        Args:
-            subject (str): The subject of the property
-            cache (BaseProperty): The cache of the property to compare with
-            g_to_remove (Graph): The rdflib.Graph object to which the triples to be removed will be added
-            g_to_add (Graph): The rdflib.Graph object to which the triples to be added will be added
-            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
-            traversed_iris (set): A set of IRIs that were already traversed in recursion
+    #     Args:
+    #         subject (str): The subject of the property
+    #         cache (BaseProperty): The cache of the property to compare with
+    #         g_to_remove (Graph): The rdflib.Graph object to which the triples to be removed will be added
+    #         g_to_add (Graph): The rdflib.Graph object to which the triples to be added will be added
+    #         recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+    #         traversed_iris (set): A set of IRIs that were already traversed in recursion
 
-        Raises:
-            NotImplementedError: This is an abstract method.
-        """
-        raise NotImplementedError("This is an abstract method.")
+    #     Raises:
+    #         NotImplementedError: This is an abstract method.
+    #     """
+    #     raise NotImplementedError("This is an abstract method.")
 
     @classmethod
     def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set, is_object_property: bool = True) -> Graph:
@@ -750,20 +759,20 @@ class _BaseProperty(set, Generic[T]):
         """
         return cls.owl_minQualifiedCardinality, cls.owl_maxQualifiedCardinality
 
-    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> _BaseProperty:
-        """
-        This is an abstract method that should be implemented by the subclasses.
-        It is used to create a cache for the property.
-        The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
+    # def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> _BaseProperty:
+    #     """
+    #     This is an abstract method that should be implemented by the subclasses.
+    #     It is used to create a cache for the property.
+    #     The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
 
-        Args:
-            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
-            traversed_iris (set): A set of IRIs that were already traversed in recursion
+    #     Args:
+    #         recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+    #         traversed_iris (set): A set of IRIs that were already traversed in recursion
 
-        Raises:
-            NotImplementedError: This is an abstract method.
-        """
-        return NotImplementedError("This is an abstract method.")
+    #     Raises:
+    #         NotImplementedError: This is an abstract method.
+    #     """
+    #     return NotImplementedError("This is an abstract method.")
 
     def _graph(self, subject: str, g: Graph, is_object_property: bool = True):
         if is_object_property:
@@ -774,9 +783,27 @@ class _BaseProperty(set, Generic[T]):
                 g.add((URIRef(subject), URIRef(self.predicate_iri), Literal(o)))
         return g
 
+    # TODO remove the below
     @classmethod
     def my_method(cls):
         print(f'My method called for {cls.__name__}')
+
+    @classmethod
+    def create_from_base(
+        cls,
+        class_name: str,
+        ontology: Type[BaseOntology],
+        min_cardinality: Optional[int] = 0,
+        max_cardinality: Optional[int] = None,
+        base_property: Type[_BaseProperty] = None,
+    ) -> Type[_BaseProperty]:
+        # NOTE we inherit cardinality from the base_property if not specified
+        base = cls if base_property is None else base_property
+        return type(class_name, (base,), {
+            'rdfs_isDefinedBy': ontology,
+            'owl_minQualifiedCardinality': min_cardinality if bool(min_cardinality) else base.owl_minQualifiedCardinality,
+            'owl_maxQualifiedCardinality': max_cardinality if bool(max_cardinality) else base.owl_maxQualifiedCardinality,
+        })
 
     @classmethod
     def _validate_before(cls, value: Any, info: ValidationInfo) -> Any:
@@ -1366,16 +1393,44 @@ class BaseClass(BaseModel, validate_assignment=True):
             return
         traversed_iris.add(self.instance_iri)
         for f, cached in self._latest_cache.items():
-            if _BaseProperty._is_inherited(type(cached)):
-                disconnected_object_properties = cached.range - getattr(self, f).range
+            # TODO revisit this part
+            f_tp = get_args(self.model_fields[f].annotation)[0] if type(self.model_fields[f].annotation) == _UnionGenericAlias else self.model_fields[f].annotation
+            if ObjectProperty._is_inherited(f_tp):
+                disconnected_object_properties = cached - getattr(self, f)
                 for o in disconnected_object_properties:
                     obj = KnowledgeGraph.get_object_from_lookup(o)
                     if obj is not None:
                         obj.create_cache(recursive_depth, traversed_iris)
         # secondly (and finally), create cache for all currently connected properties
-        self._latest_cache = {f: getattr(self, f).create_cache(recursive_depth, traversed_iris)
-                              if _BaseProperty._is_inherited(field_info.annotation) else copy.deepcopy(getattr(self, f))
-                              for f, field_info in self.model_fields.items()}
+        recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
+        for f, field_info in self.model_fields.items():
+            tp = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
+            if DatatypeProperty._is_inherited(tp):
+                self._latest_cache[f] = copy.deepcopy(getattr(self, f))
+            elif ObjectProperty._is_inherited(tp):
+                _set_for_comparison = set()
+                for o in getattr(self, f):
+                    if isinstance(o, BaseClass):
+                        # this function will be useful when pushing a brand new (nested) object to knowledge graph
+                        # so that the cache of those objects appeared at deeper recursive_depth are also updated
+                        o.create_cache(recursive_depth, traversed_iris)
+                        _set_for_comparison.add(o.instance_iri)
+                    elif isinstance(o, str):
+                        obj = KnowledgeGraph.get_object_from_lookup(o)
+                        if obj is not None:
+                            obj.create_cache(recursive_depth, traversed_iris)
+                        _set_for_comparison.add(o)
+                    else:
+                        raise Exception(f"Unsupported datatype {type(o)} for range of object property {self}")
+                # add the as the set that will actually be used for comparison when pulling/pushing to cache
+                self._latest_cache[f] = copy.deepcopy(_set_for_comparison)
+            else:
+                self._latest_cache[f] = copy.deepcopy(getattr(self, f))
+
+        # TODO remove below
+        # self._latest_cache = {f: getattr(self, f).create_cache(recursive_depth, traversed_iris)
+        #                       if _BaseProperty._is_inherited(field_info.annotation) else copy.deepcopy(getattr(self, f))
+        #                       for f, field_info in self.model_fields.items()}
 
     def revert_local_changes(self):
         """ This function reverts the local changes made to the python object to cached values. """
@@ -1545,29 +1600,79 @@ class BaseClass(BaseModel, validate_assignment=True):
             return g_to_remove, g_to_add
         traversed_iris.add(self.instance_iri)
         for f, field_info in self.model_fields.items():
-            if _BaseProperty._is_inherited(field_info.annotation):
-                # returning None as p_cache supports the default_factory that initialise the object with empty input values
+            # TODO Optional[]
+            tp = field_info.annotation = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
+            if _BaseProperty._is_inherited(tp):
+                # # TODO optimise the below codes
+                tp: ObjectProperty | DatatypeProperty
+                # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+                # NOTE this is only revelant for object properties
+                flag_collect = abs(recursive_depth) > 0
+                recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
+
+                # TODO [revise this statement] returning None as p_cache supports the default_factory that initialise the object with empty input values
                 # for those properties with minimum cardinality 1, otherwise it will fail the pydantic validation
-                p_cache = self._latest_cache.get(f, None)
+                p_cache = self._latest_cache.get(f, set())
                 p_now = getattr(self, f)
-                p_now.collect_range_diff_to_graph(self.instance_iri, p_cache, g_to_remove, g_to_add, recursive_depth, traversed_iris)
-            elif f == 'rdf_type' and not self._exist_in_kg and not bool(self._latest_cache.get(f)):
-                g_to_add.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
-                # assume that the instance is in KG once the triples are added
-                # TODO [future] or need to a better way to represent this?
-                self._exist_in_kg = True
+                # # TODO remove below
+                # try:
+                #     p_now.collect_range_diff_to_graph(self.instance_iri, p_cache, g_to_remove, g_to_add, recursive_depth, traversed_iris)
+                # except Exception as e:
+                #     raise Exception(f'f: {f}. p_cache: {p_cache}. p_now: {p_now}') from e
+
+                # # [What-is-this???] NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
+                # cached_range = cache.range if cache is not None else set()
+                # # compare the range and its cache to find out what to remove and what to add
+                # # NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
+                # cached_range = cache.range if cache is not None else set()
+                # diff_to_remove = cached_range - self.range
+                # diff_to_add = self.range - cached_range
+
+                # compare the range and its cache to find out what to remove and what to add
+                # remove the objects that are in cache but not in local values
+                diff_to_remove = p_cache - p_now
+                for d in diff_to_remove:
+                    g_to_remove = tp.add_to_graph(g_to_remove, self.instance_iri, d)
+
+                # add the objects that are in local values but not in cache
+                diff_to_add = p_now - p_cache
+                for d in diff_to_add:
+                    g_to_add = tp.add_to_graph(g_to_add, self.instance_iri, d)
+                    # if flag_collect and issubclass(tp, ObjectProperty):
+                    #     d_py = d if isinstance(d, BaseClass) else KnowledgeGraph.get_object_from_lookup(d)
+                    #     if d_py is not None:
+                    #         g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
+
+                # besides the differences between the local values and cache
+                # also need to consider the intersection of the local values and cache when recursive for object property
+                _all = set.union(p_now, p_cache)
+                if flag_collect and issubclass(tp, ObjectProperty):
+                    for d in _all:
+                        d_py = d if isinstance(d, BaseClass) else KnowledgeGraph.get_object_from_lookup(d)
+                        # only collect the diff if the object exists in the memory, otherwise it's not necessary
+                        if d_py is not None:
+                            g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
+
             elif f == 'rdfs_comment':
                 if self._latest_cache.get(f) != self.rdfs_comment:
                     if self._latest_cache.get(f) is not None:
                         g_to_remove.add((URIRef(self.instance_iri), RDFS.comment, Literal(self._latest_cache.get(f))))
                     if self.rdfs_comment is not None:
                         g_to_add.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
+
             elif f == 'rdfs_label':
                 if self._latest_cache.get(f) != self.rdfs_label:
                     if self._latest_cache.get(f) is not None:
                         g_to_remove.add((URIRef(self.instance_iri), RDFS.label, Literal(self._latest_cache.get(f))))
                     if self.rdfs_label is not None:
                         g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
+
+        if not self._exist_in_kg:
+            g_to_add.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
+            # assume that the instance is in KG once the triples are added
+            # TODO [future] or need to a better way to represent this?
+            self._exist_in_kg = True
+
         return g_to_remove, g_to_add
 
     def graph(self, g: Graph = None) -> Graph:
@@ -1583,17 +1688,19 @@ class BaseClass(BaseModel, validate_assignment=True):
         if g is None:
             g = Graph()
         print(self.model_fields)
+        g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
         for f, field_info in self.model_fields.items():
-            if ObjectProperty._is_inherited(field_info.annotation):
+            tp = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
+            if ObjectProperty._is_inherited(tp):
+                tp: ObjectProperty
                 prop = getattr(self, f)
                 for o in prop:
-                    g.add((URIRef(self.instance_iri), URIRef(field_info.annotation.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
-            elif DatatypeProperty._is_inherited(field_info.annotation):
+                    g.add((URIRef(self.instance_iri), URIRef(tp.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
+            elif DatatypeProperty._is_inherited(tp):
+                tp: DatatypeProperty
                 prop = getattr(self, f)
                 for o in prop:
-                    g.add((URIRef(self.instance_iri), URIRef(field_info.annotation.predicate_iri), Literal(o)))
-            elif f == 'rdf_type':
-                g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
+                    g.add((URIRef(self.instance_iri), URIRef(tp.predicate_iri), Literal(o)))
             elif f == 'rdfs_comment' and self.rdfs_comment is not None:
                     g.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
             elif f == 'rdfs_label' and self.rdfs_label is not None:
@@ -1689,81 +1796,81 @@ class ObjectProperty(_BaseProperty):
         # register the class to the ontology
         cls.rdfs_isDefinedBy.register_object_property(cls)
 
-    def _collect_diff(
-        self,
-        o: Any,
-        g_to_remove: Graph,
-        g_to_add: Graph,
-        flag_collect: bool,
-        recursive_depth: int = 0,
-        traversed_iris: set = None,
-    ):
-        if flag_collect:
-            if isinstance(o, BaseClass):
-                o_iri = o.instance_iri
-                g_to_remove, g_to_add = o.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
-            elif isinstance(o, str):
-                o_iri = o
-                o_py = KnowledgeGraph.get_object_from_lookup(o)
-                # only collect the diff if the object exists in the memory, otherwise it's not necessary
-                if o_py is not None:
-                    g_to_remove, g_to_add = o_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
-            else:
-                raise TypeError(f"Type of {o} is not supported for range of {self}.")
-        else:
-            o_iri = o.instance_iri if isinstance(o, BaseClass) else o
-        return g_to_remove, g_to_add, o_iri
+    # def _collect_diff(
+    #     self,
+    #     o: Any,
+    #     g_to_remove: Graph,
+    #     g_to_add: Graph,
+    #     flag_collect: bool,
+    #     recursive_depth: int = 0,
+    #     traversed_iris: set = None,
+    # ):
+    #     if flag_collect:
+    #         if isinstance(o, BaseClass):
+    #             o_iri = o.instance_iri
+    #             g_to_remove, g_to_add = o.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
+    #         elif isinstance(o, str):
+    #             o_iri = o
+    #             o_py = KnowledgeGraph.get_object_from_lookup(o)
+    #             # only collect the diff if the object exists in the memory, otherwise it's not necessary
+    #             if o_py is not None:
+    #                 g_to_remove, g_to_add = o_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
+    #         else:
+    #             raise TypeError(f"Type of {o} is not supported for range of {self}.")
+    #     else:
+    #         o_iri = o.instance_iri if isinstance(o, BaseClass) else o
+    #     return g_to_remove, g_to_add, o_iri
 
-    def collect_range_diff_to_graph(
-        self,
-        subject: str,
-        cache: ObjectProperty,
-        g_to_remove: Graph,
-        g_to_add: Graph,
-        recursive_depth: int = 0,
-        traversed_iris: set = None,
-    ) -> Tuple[Graph, Graph]:
-        """
-        This function collects the differences between the latest cache and the current instance of the calling object.
-        The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
+    # def collect_range_diff_to_graph(
+    #     self,
+    #     subject: str,
+    #     cache: ObjectProperty,
+    #     g_to_remove: Graph,
+    #     g_to_add: Graph,
+    #     recursive_depth: int = 0,
+    #     traversed_iris: set = None,
+    # ) -> Tuple[Graph, Graph]:
+    #     """
+    #     This function collects the differences between the latest cache and the current instance of the calling object.
+    #     The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
 
-        Args:
-            subject (str): The subject of the property when adding/removing triples
-            cache (ObjectProperty): The cache of the property to compare with
-            g_to_remove (Graph): The rdflib.Graph object to which the triples to be removed will be added
-            g_to_add (Graph): The rdflib.Graph object to which the triples to be added will be added
-            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
-            traversed_iris (set): A set of IRIs that were already traversed in recursion
+    #     Args:
+    #         subject (str): The subject of the property when adding/removing triples
+    #         cache (ObjectProperty): The cache of the property to compare with
+    #         g_to_remove (Graph): The rdflib.Graph object to which the triples to be removed will be added
+    #         g_to_add (Graph): The rdflib.Graph object to which the triples to be added will be added
+    #         recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+    #         traversed_iris (set): A set of IRIs that were already traversed in recursion
 
-        Returns:
-            Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
-        """
-        # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
-        flag_collect = abs(recursive_depth) > 0
-        recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
+    #     Returns:
+    #         Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
+    #     """
+    #     # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+    #     flag_collect = abs(recursive_depth) > 0
+    #     recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
 
-        # TODO optimise the below codes
-        # compare the range and its cache to find out what to remove and what to add
-        # NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
-        cached_range = cache.range if cache is not None else set()
-        diff_to_remove = cached_range - self.range
-        diff_to_add = self.range - cached_range
+    #     # TODO optimise the below codes
+    #     # compare the range and its cache to find out what to remove and what to add
+    #     # NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
+    #     cached_range = cache.range if cache is not None else set()
+    #     diff_to_remove = cached_range - self.range
+    #     diff_to_add = self.range - cached_range
 
-        # iterate the differences and add them to the graph
-        for o in diff_to_add:
-            g_to_remove, g_to_add, o_iri = self._collect_diff(o, g_to_remove, g_to_add, flag_collect, recursive_depth, traversed_iris)
-            g_to_add.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o_iri)))
+    #     # iterate the differences and add them to the graph
+    #     for o in diff_to_add:
+    #         g_to_remove, g_to_add, o_iri = self._collect_diff(o, g_to_remove, g_to_add, flag_collect, recursive_depth, traversed_iris)
+    #         g_to_add.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o_iri)))
 
-        for o in diff_to_remove:
-            g_to_remove, g_to_add, o_iri = self._collect_diff(o, g_to_remove, g_to_add, flag_collect, recursive_depth, traversed_iris)
-            g_to_remove.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o_iri)))
+    #     for o in diff_to_remove:
+    #         g_to_remove, g_to_add, o_iri = self._collect_diff(o, g_to_remove, g_to_add, flag_collect, recursive_depth, traversed_iris)
+    #         g_to_remove.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o_iri)))
 
-        # besides the differences between the range and its cache
-        # also need to consider the intersection of the range and its cache when recursive
-        for o in self.range.intersection(cached_range):
-            g_to_remove, g_to_add, o_iri = self._collect_diff(o, g_to_remove, g_to_add, flag_collect, recursive_depth, traversed_iris)
+    #     # besides the differences between the range and its cache
+    #     # also need to consider the intersection of the range and its cache when recursive
+    #     for o in self.range.intersection(cached_range):
+    #         g_to_remove, g_to_add, o_iri = self._collect_diff(o, g_to_remove, g_to_add, flag_collect, recursive_depth, traversed_iris)
 
-        return g_to_remove, g_to_add
+    #     return g_to_remove, g_to_add
 
     @classmethod
     def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
@@ -1809,34 +1916,43 @@ class ObjectProperty(_BaseProperty):
     #     """
     #     return cls.reveal_object_property_range().rdf_type
 
-    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> ObjectProperty:
-        """
-        This function creates a cache of the object property.
-        The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
+    # def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> ObjectProperty:
+    #     """
+    #     This function creates a cache of the object property.
+    #     The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
 
-        Args:
-            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
-            traversed_iris (set): A set of IRIs that were already traversed in recursion
+    #     Args:
+    #         recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+    #         traversed_iris (set): A set of IRIs that were already traversed in recursion
 
-        Returns:
-            ObjectProperty: The cache of the object property
-        """
-        recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
-        for o in self.range:
-            if isinstance(o, BaseClass):
-                # this function will be useful when pushing a brand new (nested) object to knowledge graph
-                # so that the cache of those objects appeared at deeper recursive_depth are also updated
-                o.create_cache(recursive_depth, traversed_iris)
-            elif isinstance(o, str):
-                obj = KnowledgeGraph.get_object_from_lookup(o)
-                if obj is not None:
-                    obj.create_cache(recursive_depth, traversed_iris)
-            else:
-                raise Exception(f"Unsupported datatype {type(o)} for range of object property {self}")
-        # return the cache that will actually be used for comparison when pulling/pushing
-        return self.__class__(set([
-            o.instance_iri if isinstance(o, BaseClass) else o for o in self.range
-        ]))
+    #     Returns:
+    #         ObjectProperty: The cache of the object property
+    #     """
+    #     recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
+    #     for o in self.range:
+    #         if isinstance(o, BaseClass):
+    #             # this function will be useful when pushing a brand new (nested) object to knowledge graph
+    #             # so that the cache of those objects appeared at deeper recursive_depth are also updated
+    #             o.create_cache(recursive_depth, traversed_iris)
+    #         elif isinstance(o, str):
+    #             obj = KnowledgeGraph.get_object_from_lookup(o)
+    #             if obj is not None:
+    #                 obj.create_cache(recursive_depth, traversed_iris)
+    #         else:
+    #             raise Exception(f"Unsupported datatype {type(o)} for range of object property {self}")
+    #     # return the cache that will actually be used for comparison when pulling/pushing
+    #     return self.__class__(set([
+    #         o.instance_iri if isinstance(o, BaseClass) else o for o in self.range
+    #     ]))
+
+    @classmethod
+    def add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
+        if isinstance(o, BaseClass):
+            o_iri = o.instance_iri
+        elif isinstance(o, str):
+            o_iri = o
+        g.add((URIRef(s), URIRef(cls.predicate_iri), URIRef(o_iri)))
+        return g
 
 
 class TransitiveProperty(ObjectProperty):
@@ -1885,68 +2001,68 @@ class DatatypeProperty(_BaseProperty):
         # register the class to the ontology
         cls.rdfs_isDefinedBy.register_data_property(cls)
 
-    def collect_range_diff_to_graph(
-        self,
-        subject: str,
-        cache: DatatypeProperty,
-        g_to_remove: Graph,
-        g_to_add: Graph,
-        recursive_depth: int = 0,
-        traversed_iris: set = None,
-    ) -> Tuple[Graph, Graph]:
-        """
-        This function collects the differences between the latest cache and the current instance of the calling object.
-        The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
+    # def collect_range_diff_to_graph(
+    #     self,
+    #     subject: str,
+    #     cache: DatatypeProperty,
+    #     g_to_remove: Graph,
+    #     g_to_add: Graph,
+    #     recursive_depth: int = 0,
+    #     traversed_iris: set = None,
+    # ) -> Tuple[Graph, Graph]:
+    #     """
+    #     This function collects the differences between the latest cache and the current instance of the calling object.
+    #     The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
 
-        Args:
-            subject (str): The subject of the property when adding/removing triples
-            cache (DatatypeProperty): The cache of the property to compare with
-            g_to_remove (Graph): The rdflib.Graph object to which the triples to be removed will be added
-            g_to_add (Graph): The rdflib.Graph object to which the triples will be added
-            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
-                > this parameter is not used in this function, but it is kept for compatibility with the method in the parent class BaseProperty
-            traversed_iris (set): A set of IRIs that were already traversed in recursion
+    #     Args:
+    #         subject (str): The subject of the property when adding/removing triples
+    #         cache (DatatypeProperty): The cache of the property to compare with
+    #         g_to_remove (Graph): The rdflib.Graph object to which the triples to be removed will be added
+    #         g_to_add (Graph): The rdflib.Graph object to which the triples will be added
+    #         recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+    #             > this parameter is not used in this function, but it is kept for compatibility with the method in the parent class BaseProperty
+    #         traversed_iris (set): A set of IRIs that were already traversed in recursion
 
-        Returns:
-            Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
-        """
-        # create an empty set for the cache.range if the cache is None
-        # NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
-        cached_range = cache.range if cache is not None else set()
+    #     Returns:
+    #         Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
+    #     """
+    #     # create an empty set for the cache.range if the cache is None
+    #     # NOTE this supports the default_factory that initialise the object with empty input values for those properties with minimum cardinality 1
+    #     cached_range = cache.range if cache is not None else set()
 
-        # compare the range and its cache to find out what to remove and what to add
-        diff_to_remove = cached_range - self.range
-        for d in diff_to_remove:
-            self.add_property_to_graph(subject, d, g_to_remove)
+    #     # compare the range and its cache to find out what to remove and what to add
+    #     diff_to_remove = cached_range - self.range
+    #     for d in diff_to_remove:
+    #         self.add_property_to_graph(subject, d, g_to_remove)
 
-        diff_to_add = self.range - cached_range
-        # iterate the differences and add them to the graph
-        for d in diff_to_add:
-            self.add_property_to_graph(subject, d, g_to_add)
+    #     diff_to_add = self.range - cached_range
+    #     # iterate the differences and add them to the graph
+    #     for d in diff_to_add:
+    #         self.add_property_to_graph(subject, d, g_to_add)
 
-        return g_to_remove, g_to_add
+    #     return g_to_remove, g_to_add
 
-    def add_property_to_graph(self, subject: str, object: Any, g: Graph) -> Graph:
-        """
-        This function adds a data property to the graph.
+    # def add_property_to_graph(self, subject: str, object: Any, g: Graph) -> Graph:
+    #     """
+    #     This function adds a data property to the graph.
 
-        Args:
-            subject (str): The subject of the triple
-            object (Any): The object of the triple
-            g (Graph): The rdflib.Graph object to which the triple will be added
+    #     Args:
+    #         subject (str): The subject of the triple
+    #         object (Any): The object of the triple
+    #         g (Graph): The rdflib.Graph object to which the triple will be added
 
-        Raises:
-            TypeError: The type of the object is not supported by rdflib as a data property
+    #     Raises:
+    #         TypeError: The type of the object is not supported by rdflib as a data property
 
-        Returns:
-            Graph: The rdflib.Graph object with the added triple
-        """
-        try:
-            g.add((URIRef(subject), URIRef(self.predicate_iri), Literal(object)))
-        except Exception as e:
-            raise TypeError(
-                f"Type of {object} ({type(object)}) is not supported by rdflib as a data property for {self.predicate_iri}.", e)
-        return g
+    #     Returns:
+    #         Graph: The rdflib.Graph object with the added triple
+    #     """
+    #     try:
+    #         g.add((URIRef(subject), URIRef(self.predicate_iri), Literal(object)))
+    #     except Exception as e:
+    #         raise TypeError(
+    #             f"Type of {object} ({type(object)}) is not supported by rdflib as a data property for {self.predicate_iri}.", e)
+    #     return g
 
     @classmethod
     def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
@@ -1962,16 +2078,16 @@ class DatatypeProperty(_BaseProperty):
         """
         return super().export_to_owl(g, rdfs_domain, rdfs_range, False)
 
-    @classmethod
-    def reveal_data_property_range(cls) -> T:
-        """
-        This function reveals the range of the data property.
+    # @classmethod
+    # def reveal_data_property_range(cls) -> T:
+    #     """
+    #     This function reveals the range of the data property.
 
-        Returns:
-            T: The range of the data property
-        """
-        print('hahs')
-        return cls.model_fields['range'].annotation.__args__[0]
+    #     Returns:
+    #         T: The range of the data property
+    #     """
+    #     print('hahs')
+    #     return cls.model_fields['range'].annotation.__args__[0]
 
     # @classmethod
     # def reveal_possible_property_range(cls) -> Set[T]:
@@ -1993,45 +2109,24 @@ class DatatypeProperty(_BaseProperty):
     #     """
     #     return _castPythonToXSD(cls.reveal_data_property_range())
 
-    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> DatatypeProperty:
-        """
-        This function creates a cache of the data property.
-        The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
+    # def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> DatatypeProperty:
+    #     """
+    #     This function creates a cache of the data property.
+    #     The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
 
-        Args:
-            recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
-            traversed_iris (set): A set of IRIs that were already traversed in recursion
+    #     Args:
+    #         recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+    #         traversed_iris (set): A set of IRIs that were already traversed in recursion
 
-        Returns:
-            DatatypeProperty: The cache of the data property
-        """
-        return self.__class__(set(copy.deepcopy(self.range)))
+    #     Returns:
+    #         DatatypeProperty: The cache of the data property
+    #     """
+    #     return self.__class__(set(copy.deepcopy(self.range)))
 
-
-def create_object_property(
-    class_name: str,
-    ontology: Type[BaseOntology],
-    min_cardinality: Optional[int] = 0,
-    max_cardinality: Optional[int] = None,
-    base_property: Type[ObjectProperty] = ObjectProperty,
-) -> Type[ObjectProperty]:
-    # NOTE we inherit cardinality from the base_property if not specified
-    return type(class_name, (base_property,), {
-        'rdfs_isDefinedBy': ontology,
-        'owl_minQualifiedCardinality': min_cardinality if bool(min_cardinality) else base_property.owl_minQualifiedCardinality,
-        'owl_maxQualifiedCardinality': max_cardinality if bool(max_cardinality) else base_property.owl_maxQualifiedCardinality,
-    })
-
-def create_datatype_property(
-    class_name: str,
-    ontology: Type[BaseOntology],
-    min_cardinality: Optional[int] = 0,
-    max_cardinality: Optional[int] = None,
-    base_property: Type[DatatypeProperty] = DatatypeProperty,
-) -> Type[DatatypeProperty]:
-    # NOTE we inherit cardinality from the base_property if not specified
-    return type(class_name, (base_property,), {
-        'rdfs_isDefinedBy': ontology,
-        'owl_minQualifiedCardinality': min_cardinality if bool(min_cardinality) else base_property.owl_minQualifiedCardinality,
-        'owl_maxQualifiedCardinality': max_cardinality if bool(max_cardinality) else base_property.owl_maxQualifiedCardinality,
-    })
+    @classmethod
+    def add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
+        try:
+            g.add((URIRef(s), URIRef(cls.predicate_iri), Literal(o)))
+        except Exception as e:
+            raise TypeError(f'Type of {o} ({type(o)}) is not supported by rdflib as a data property for {cls.predicate_iri}.', e)
+        return g
