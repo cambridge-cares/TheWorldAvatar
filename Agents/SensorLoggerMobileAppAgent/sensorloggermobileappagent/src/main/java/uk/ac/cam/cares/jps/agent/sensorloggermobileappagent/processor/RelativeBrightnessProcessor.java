@@ -25,7 +25,7 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap data) {
+    public void addData(HashMap<String, List<?>> data) {
         timeList.addAll((List<OffsetDateTime>) data.get("brightness_tsList"));
         brightnessList.addAll((List<Double>) data.get("brightnessList"));
     }

@@ -29,7 +29,7 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap data) {
+    public void addData(HashMap<String, List<?>> data) {
         timeList.addAll((List<OffsetDateTime>) data.get("magnetometer_tsList"));
         xList.addAll((List<Double>) data.get("magnetometerList_x"));
         yList.addAll((List<Double>) data.get("magnetometerList_y"));

@@ -24,7 +24,7 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap data) {
+    public void addData(HashMap<String, List<?>> data) {
         timeList.addAll((List<OffsetDateTime>) data.get("dBFS_tsList"));
         dBFSList.addAll((List<Double>) data.get("dBFSList"));
     }

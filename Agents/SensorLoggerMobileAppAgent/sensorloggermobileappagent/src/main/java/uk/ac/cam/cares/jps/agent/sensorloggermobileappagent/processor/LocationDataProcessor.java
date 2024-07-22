@@ -31,7 +31,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap data) {
+    public void addData(HashMap<String, List<?>> data) {
         timeList.addAll((List<OffsetDateTime>) data.get("location_tsList"));
         bearingList.addAll((List<Double>) data.get("bearingList"));
         speedList.addAll((List<Double>) data.get("speedList"));

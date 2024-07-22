@@ -26,7 +26,7 @@ public abstract class SensorDataProcessor {
         initIRIs();
     }
 
-    public abstract void addData(HashMap data);
+    public abstract void addData(HashMap<String, List<?>> data);
 
     public abstract TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception;
 
