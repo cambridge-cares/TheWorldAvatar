@@ -66,20 +66,28 @@ export const SpeciesPropertiesPlotCtx = ({
   )
   const [data, setData] = React.useState<Species[] | undefined>(undefined)
   const [plotData, setPlotData] = React.useState<
-    { x: number; y: number }[] | undefined
+    { x: number; y: number; label: string }[] | undefined
   >(undefined)
+  const [isProcessing, setIsProcessing] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     async function getData() {
-      const params = new URLSearchParams([
-        [CHEMICAL_CLASS_KEY, chemClass],
-        [RETURN_FIELD_KEY, xProp],
-        [RETURN_FIELD_KEY, yProp],
-      ])
-      const res = await getSpeciesMany(params)
-      setData(res)
-      setXUnitOptions(deriveUnitOptions(res, xProp))
-      setYUnitOptions(deriveUnitOptions(res, yProp))
+      setIsProcessing(true)
+
+      try {
+        const params = new URLSearchParams([
+          [CHEMICAL_CLASS_KEY, chemClass],
+          [RETURN_FIELD_KEY, xProp],
+          [RETURN_FIELD_KEY, yProp],
+        ])
+        const res = await getSpeciesMany(params)
+        setData(res)
+        setXUnitOptions(deriveUnitOptions(res, xProp))
+        setYUnitOptions(deriveUnitOptions(res, yProp))
+      } catch {
+      } finally {
+        setIsProcessing(false)
+      }
     }
     getData()
   }, [xProp, yProp, chemClass])
@@ -99,26 +107,32 @@ export const SpeciesPropertiesPlotCtx = ({
 
     setPlotData(
       data
-        .map(({ properties }) => ({
+        .map(({ properties, IUPAC_name, InChI }) => ({
           x: properties[xProp]
             ? properties[xProp].filter(node => node.unit === xUnit)
             : undefined,
           y: properties[yProp]
             ? properties[yProp].filter(node => node.unit === yUnit)
             : undefined,
+          label: IUPAC_name || InChI,
         }))
         .filter(
           (
             datum
-          ): datum is { x: OntospeciesProperty[]; y: OntospeciesProperty[] } =>
+          ): datum is {
+            x: OntospeciesProperty[]
+            y: OntospeciesProperty[]
+            label: string
+          } =>
             datum.x !== undefined &&
             datum.x.length > 0 &&
             datum.y !== undefined &&
             datum.y.length > 0
         )
-        .map(({ x, y }) => ({
+        .map(({ x, y, label }) => ({
           x: Number(selectSpeciesPropertyNode(x).value),
           y: Number(selectSpeciesPropertyNode(y).value),
+          label,
         }))
     )
   }, [data, xProp, yProp, xUnit, yUnit])
@@ -142,7 +156,11 @@ export const SpeciesPropertiesPlotCtx = ({
         <div>
           <div>X-axis</div>
           <div
-            className={xUnitOptions && xUnit ? 'grid grid-cols-5 gap-2' : ''}
+            className={
+              xUnitOptions && xUnit !== undefined
+                ? 'grid grid-cols-5 gap-2'
+                : ''
+            }
           >
             <Combobox
               itemCls='species property'
@@ -155,7 +173,7 @@ export const SpeciesPropertiesPlotCtx = ({
               closePopoverOnCmdItemSelect
               className='col-span-3'
             />
-            {xUnitOptions && xUnit && (
+            {xUnitOptions && xUnit !== undefined && (
               <Combobox
                 itemCls='unit'
                 items={xUnitOptions.map(val => ({ value: val, label: val }))}
@@ -170,7 +188,11 @@ export const SpeciesPropertiesPlotCtx = ({
         <div>
           <div>Y-axis</div>
           <div
-            className={yUnitOptions && yUnit ? 'grid grid-cols-5 gap-2' : ''}
+            className={
+              yUnitOptions && yUnit !== undefined
+                ? 'grid grid-cols-5 gap-2'
+                : ''
+            }
           >
             <Combobox
               itemCls='species property'
@@ -183,12 +205,12 @@ export const SpeciesPropertiesPlotCtx = ({
               closePopoverOnCmdItemSelect
               className='col-span-3'
             />
-            {yUnitOptions && yUnit && (
+            {yUnitOptions && yUnit !== undefined && (
               <Combobox
                 itemCls='unit'
                 items={yUnitOptions.map(val => ({ value: val, label: val }))}
                 value={yUnit}
-                onCmdItemSelect={value => setXUnit(value)}
+                onCmdItemSelect={value => setYUnit(value)}
                 closePopoverOnCmdItemSelect
                 className='col-span-2'
               />
@@ -196,6 +218,7 @@ export const SpeciesPropertiesPlotCtx = ({
           </div>
         </div>
       </div>
+      {isProcessing && <div>Retrieving data...</div>}
       {plotData && plotData.length > 0 && (
         <SpeciesPropertiesPlot
           data={plotData}

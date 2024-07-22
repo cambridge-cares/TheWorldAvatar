@@ -9,6 +9,7 @@ export interface SpeciesPropertiesPlotProps
   data: {
     x: number
     y: number
+    label: string
   }[]
   xAxisLabel: string
   yAxisLabel: string
@@ -46,6 +47,11 @@ export const SpeciesPropertiesPlot = ({
         },
         plugins: {
           legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => (ctx.raw as { label: string }).label,
+            },
+          },
         },
       },
     })
