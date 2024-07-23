@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 
 import org.apache.jena.graph.Node;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class SensorDataProcessor {
-    DownSampleConfig config;
+    AgentConfig config;
     RemoteStoreClient storeClient;
     Node smartphoneIRINode;
     final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
     boolean isIriInstantiationNeeded = false;
     boolean isRbdInstantiationNeeded = false;
 
-    public SensorDataProcessor(DownSampleConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
+    public SensorDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         this.config = config;
         this.storeClient = storeClient;
         this.smartphoneIRINode = smartphoneIRINode;

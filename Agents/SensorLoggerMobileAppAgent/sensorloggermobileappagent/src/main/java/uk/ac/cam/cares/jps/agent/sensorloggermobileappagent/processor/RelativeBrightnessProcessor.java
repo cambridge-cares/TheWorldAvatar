@@ -6,7 +6,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -20,7 +20,7 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
 
     private final List<Double> brightnessList = new ArrayList<>();
 
-    public RelativeBrightnessProcessor(DownSampleConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
+    public RelativeBrightnessProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
     }
 

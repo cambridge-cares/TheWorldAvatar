@@ -27,7 +27,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient rdbStoreClient;
-    private DownSampleConfig downSampleConfig;
+    private AgentConfig agentConfig;
     private ExecutorService addDataExecutor;
     private ExecutorService sendDataExecutor;
     private static final HashMap<String, SmartphoneRecordingTask> smartphoneHashmap = new HashMap<>();
@@ -35,7 +35,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     public void init() {
         loggerTest();
 
-        downSampleConfig = new DownSampleConfig();
+        agentConfig = new AgentConfig();
 
         EndpointConfig endpointConfig = new EndpointConfig();
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
@@ -69,7 +69,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                     }
                 }
             }
-        }, downSampleConfig.getTimerDelay() * 1000L, downSampleConfig.getTimerFrequency() * 1000L);
+        }, agentConfig.getTimerDelay() * 1000L, agentConfig.getTimerFrequency() * 1000L);
     }
 
     private void loggerTest() {
@@ -121,7 +121,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             }
 
             LOGGER.info(deviceId + ": creating new task");
-            SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, downSampleConfig, deviceId);
+            SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, agentConfig, deviceId);
             smartphoneHashmap.put(deviceId, task);
             return task;
         }

@@ -33,13 +33,13 @@ public class SmartphoneRecordingTask {
 
     private final RemoteStoreClient storeClient;
     private final TimeSeriesClient<OffsetDateTime> tsClient;
-    private final DownSampleConfig config;
+    private final AgentConfig config;
 
     private long lastProcessedTime;
     private long lastActiveTime;
     private boolean isProcessing;
 
-    public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient, DownSampleConfig config, String deviceId) {
+    public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient, AgentConfig config, String deviceId) {
         LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
 
         this.storeClient = storeClient;

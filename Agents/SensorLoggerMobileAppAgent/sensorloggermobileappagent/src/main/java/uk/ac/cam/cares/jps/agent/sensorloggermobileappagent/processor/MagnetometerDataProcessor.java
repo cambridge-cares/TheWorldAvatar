@@ -6,7 +6,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -24,7 +24,7 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
     private final List<Double> yList = new ArrayList<>();
     private final List<Double> zList = new ArrayList<>();
 
-    public MagnetometerDataProcessor(DownSampleConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
+    public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
     }
 

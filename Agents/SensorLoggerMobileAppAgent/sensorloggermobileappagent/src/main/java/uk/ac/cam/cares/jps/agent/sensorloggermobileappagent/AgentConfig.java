@@ -4,7 +4,7 @@ import uk.ac.cam.cares.downsampling.Downsampling;
 
 import java.util.ResourceBundle;
 
-public class DownSampleConfig {
+public class AgentConfig {
     private final Long accelDSResolution;
     private final Downsampling.Type accelDSType;
 
@@ -28,7 +28,7 @@ public class DownSampleConfig {
 
     private final int taskInactiveTime;
 
-    public DownSampleConfig() {
+    public AgentConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
 
         accelDSResolution = Long.valueOf(config.getString("accelDSResolution"));

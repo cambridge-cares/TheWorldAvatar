@@ -6,7 +6,7 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.DownSampleConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -19,7 +19,7 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     private String dbfsIRI;
     private final List<Double> dBFSList = new ArrayList<>();
 
-    public DBFSDataProcessor(DownSampleConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
+    public DBFSDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
         super(config, storeClient, smartphoneNode);
     }
 
