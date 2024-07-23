@@ -1,6 +1,6 @@
-# UK Base World - Data
+# Augmented UK - Data
 
-This page details the data currently available on the visualisation of the UK Base World.
+This page details the data currently available on the visualisation of the augmented UK.
 
 ## Adding the data
 

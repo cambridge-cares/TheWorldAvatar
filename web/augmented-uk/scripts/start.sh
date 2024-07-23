@@ -32,7 +32,7 @@ START=$(pwd)
 
 echo 
 echo "This script will remove any existing stack manager configurations, launch a new"
-echo "stack for the UK Base World, then upload the supplied data sets and dashboards."
+echo "stack for the augmented UK, then upload the supplied data sets and dashboards."
 echo 
 read -p "Has the data been provided and required packages installed (Y/N)? " -n 1 -r
 echo

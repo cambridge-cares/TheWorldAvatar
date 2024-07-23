@@ -13,7 +13,7 @@ Unfortunately we've discovered a number of issues with the 2023 data set (the la
 
 ## Acquiring the data
 
-The UK Government publishes the DUKES data set once a year on their [data portal website](https://www.gov.uk/government/collections/digest-of-uk-energy-statistics-dukes). At the time of writing, the UK Base World visualisation is using document 5.11 of the 2023 DUKES data set, entitled "Power stations in the United Kingdom, May 2023 (DUKES 5.11)" from the "Chapter 5: Electricity" section.
+The UK Government publishes the DUKES data set once a year on their [data portal website](https://www.gov.uk/government/collections/digest-of-uk-energy-statistics-dukes). At the time of writing, the augmented UK visualisation is using document 5.11 of the 2023 DUKES data set, entitled "Power stations in the United Kingdom, May 2023 (DUKES 5.11)" from the "Chapter 5: Electricity" section.
 
 A copy of the raw XLSX file, and the cleaned-up CSV file, have been archived at CMCL on their Pavilion server (get in touch with the CMCL team for more details).
 
