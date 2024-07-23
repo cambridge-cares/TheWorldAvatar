@@ -285,6 +285,19 @@ def test_push_to_kg_fresh(initialise_sparql_client):
     assert sparql_client.check_if_triple_exist(a2.instance_iri, DataProperty_A.predicate_iri, "a2", XSD.string.toPython())
 
 
+def test_push_pull_empty_object_property(initialise_sparql_client):
+    # initialise with empty object property and push
+    bb = B(data_property_b={1})
+    sparql_client = initialise_sparql_client
+    bb.push_to_kg(initialise_sparql_client, -1)
+    KnowledgeGraph.clear_object_lookup()
+    # pull the object from the KG that has empty object property
+    bb_pulled = B.pull_from_kg(bb.instance_iri, sparql_client, -1)[0]
+    # the content should be the same but not the memory address
+    assert id(bb) != id(bb_pulled)
+    assert bb == bb_pulled
+
+
 def test_pull_from_kg(initialise_sparql_client):
     a1, a2, a3, b, c, d = init()
     sparql_client = initialise_sparql_client

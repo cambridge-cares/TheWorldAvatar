@@ -174,7 +174,7 @@ class KnowledgeGraph(BaseModel):
         This method registers a BaseClass (the Pydantic class itself) to the knowledge graph in Python memory.
 
         Args:
-            ontolgy_class (BaseClass): The class to be registered
+            ontology_class (BaseClass): The class to be registered
         """
         if cls.class_lookup is None:
             cls.class_lookup = {}
@@ -944,8 +944,9 @@ class BaseClass(BaseModel, validate_assignment=True):
                         # this code then ensures the cache of object `b` is accurate
                         # TODO [future] below query can be combined with those connected in the KG to save amount of queries
                         c_tp: BaseClass = get_args(op_dct['type'])[0]
+                        _o = getattr(inst, op_dct['field']) if getattr(inst, op_dct['field']) is not None else set()
                         c_tp.pull_from_kg(
-                            set([o.instance_iri if isinstance(o, BaseClass) else o for o in getattr(inst, op_dct['field'])]) - set(props.get(op_iri, [])),
+                            set([o.instance_iri if isinstance(o, BaseClass) else o for o in _o]) - set(props.get(op_iri, [])),
                             sparql_client, recursive_depth, force_overwrite_local)
                 # now collect all featched values
                 fetched = {
@@ -1123,7 +1124,8 @@ class BaseClass(BaseModel, validate_assignment=True):
                 self._latest_cache[f] = copy.deepcopy(getattr(self, f))
             elif ObjectProperty._is_inherited(tp):
                 _set_for_comparison = set()
-                for o in getattr(self, f):
+                _o = getattr(self, f) if getattr(self, f) is not None else set()
+                for o in _o:
                     if isinstance(o, BaseClass):
                         # this function will be useful when pushing a brand new (nested) object to knowledge graph
                         # so that the cache of those objects appeared at deeper recursive_depth are also updated
@@ -1321,6 +1323,8 @@ class BaseClass(BaseModel, validate_assignment=True):
 
                 p_cache = self._latest_cache.get(f, set())
                 p_now = getattr(self, f)
+                if p_now is None:
+                    p_now = set() # allows set operations
 
                 # compare the range and its cache to find out what to remove and what to add
                 # remove the objects that are in cache but not in local values
@@ -1397,7 +1401,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                     g.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
         return g
 
-    def triples(self):
+    def triples(self) -> str:
         """
         This method generates the turtle representation for all outgoing triples of the calling object.
 
