@@ -42,6 +42,33 @@ class KnowledgeGraph(BaseModel):
     iri_loading_in_progress: ClassVar[Set[str]] = None
 
     @classmethod
+    def graph(cls) -> Graph:
+        g = Graph()
+        for iri, o in cls.construct_object_lookup().items():
+            g += o.graph()
+        return g
+
+    @classmethod
+    def all_triples_of_nodes(cls, iris) -> Graph:
+        # ensure iris is a list
+        if isinstance(iris, str):
+            iris = [iris]
+
+        # convert strings to URIRef if necessary
+        iris = [URIRef(iri) if isinstance(iri, str) else iri for iri in iris]
+
+        source_g = cls.graph()
+        result_g = Graph()
+
+        # add triples to result_graph
+        for iri in iris:
+            for triple in source_g.triples((iri, None, None)):
+                result_g.add(triple)
+            for triple in source_g.triples((None, None, iri)):
+                result_g.add(triple)
+        return result_g
+
+    @classmethod
     def construct_object_lookup(cls) -> Dict[str, BaseClass]:
         """
         This method is used to retrieve all BaseClass (pydantic) objects created in Python memory.
@@ -185,14 +212,14 @@ def _castPythonToXSD(python_clz):
 
 class BaseOntology(BaseModel):
     """
-    This class is used to represent an ontology which consists of a list of BaseClass and ObjectProperty/DataProperty.
+    This class is used to represent an ontology which consists of a list of BaseClass and ObjectProperty/DatatypeProperty.
 
     Attributes:
         base_url: The base URL to be used to construct the namespace IRI, the default value is 'https://www.theworldavatar.com/kg/'
         namespace: The namespace of the ontology, e.g. 'ontolab'
         class_lookup: A dictionary of BaseClass classes with their rdf:type as keys
         object_property_lookup: A dictionary of ObjectProperty classes with their predicate IRI as keys
-        data_property_lookup: A dictionary of DataProperty classes with their predicate IRI as keys
+        data_property_lookup: A dictionary of DatatypeProperty classes with their predicate IRI as keys
         rdfs_comment: The comment of the ontology
         owl_versionInfo: The version of the ontology
         forward_refs: A dictionary of set of BaseClass classes with their forward referenced BaseProperty
@@ -201,7 +228,7 @@ class BaseOntology(BaseModel):
     namespace: ClassVar[str] = None
     class_lookup: ClassVar[Dict[str, BaseClass]] = None
     object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = None
-    data_property_lookup: ClassVar[Dict[str, DataProperty]] = None
+    data_property_lookup: ClassVar[Dict[str, DatatypeProperty]] = None
     rdfs_comment: ClassVar[str] = None
     owl_versionInfo: ClassVar[str] = None
     forward_refs: ClassVar[Dict[str, Set[Type[BaseClass]]]] = None
@@ -269,13 +296,13 @@ class BaseOntology(BaseModel):
         KnowledgeGraph.register_property(prop)
 
     @classmethod
-    def register_data_property(cls, prop: DataProperty):
+    def register_data_property(cls, prop: DatatypeProperty):
         """
-        This method registers a DataProperty (the Pydantic class itself) to the BaseOntology class.
-        It also registers the DataProperty to the KnowledgeGraph class.
+        This method registers a DatatypeProperty (the Pydantic class itself) to the BaseOntology class.
+        It also registers the DatatypeProperty to the KnowledgeGraph class.
 
         Args:
-            prop (DataProperty): The DataProperty class to be registered
+            prop (DatatypeProperty): The DatatypeProperty class to be registered
         """
         if cls.data_property_lookup is None:
             cls.data_property_lookup = {}
@@ -354,7 +381,7 @@ class Owl(BaseOntology):
 class BaseProperty(BaseModel, validate_assignment=True):
     # NOTE validate_assignment=True is to make sure the validation is triggered when range is updated
     """
-    Base class that is inherited by ObjectProperty and DataProperty.
+    Base class that is inherited by ObjectProperty and DatatypeProperty.
 
     Attributes:
         is_defined_by_ontology: The ontology that defines the property
@@ -480,6 +507,8 @@ class BaseProperty(BaseModel, validate_assignment=True):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
+        # rebuild model to resovle any ForwardRef
+        cls.model_rebuild()
         property_iri = cls.get_predicate_iri()
         g.add((URIRef(property_iri), RDFS.isDefinedBy, URIRef(cls.is_defined_by_ontology.get_namespace_iri())))
         # add rdf:type and super properties
@@ -488,7 +517,7 @@ class BaseProperty(BaseModel, validate_assignment=True):
             idx = cls.__mro__.index(ObjectProperty)
         else:
             g.add((URIRef(property_iri), RDF.type, OWL.DatatypeProperty))
-            idx = cls.__mro__.index(DataProperty)
+            idx = cls.__mro__.index(DatatypeProperty)
         for i in range(1, idx):
             g.add((URIRef(property_iri), RDFS.subPropertyOf, URIRef(cls.__mro__[i].get_predicate_iri())))
         # add domain
@@ -573,6 +602,27 @@ class BaseProperty(BaseModel, validate_assignment=True):
         """
         return NotImplementedError("This is an abstract method.")
 
+    def _graph(self, subject: str, g: Graph, is_object_property: bool = True):
+        if is_object_property:
+            for o in self.range:
+                g.add((URIRef(subject), URIRef(self.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
+        else:
+            for o in self.range:
+                g.add((URIRef(subject), URIRef(self.predicate_iri), Literal(o)))
+        return g
+
+    def get_range_assume_one(self):
+        """
+        This function returns the range of the calling object/data property assuming there is only one item.
+
+        Returns:
+            Any: The returned range
+        """
+        if len(self.range) != 1:
+            raise Exception(f"""Assumed one for property {self.predicate_iri},
+                encounterred {len(self.range)}: {self.range}""")
+        return next(iter(self.range))
+
 
 class BaseClass(BaseModel, validate_assignment=True):
     """
@@ -588,7 +638,7 @@ class BaseClass(BaseModel, validate_assignment=True):
     Example:
     class MyClass(BaseOntology):
         myObjectProperty: MyObjectProperty
-        myDataProperty: MyDataProperty
+        myDatatypeProperty: MyDatatypeProperty
     """
 
     # NOTE validate_assignment=True is to make sure the validation is triggered when range is updated
@@ -780,6 +830,8 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             str: The rdf_type of the class (rdf:type in owl)
         """
+        if cls == BaseClass:
+            return OWL_BASE_URL + 'Class'
         return construct_rdf_type(cls.is_defined_by_ontology.get_namespace_iri(), cls.__name__)
 
     @classmethod
@@ -838,6 +890,9 @@ class BaseClass(BaseModel, validate_assignment=True):
             inst = KnowledgeGraph.get_object_from_lookup(iri)
             # obtain the target class in case it is a subclass
             target_clz = cls.retrieve_subclass(target_clz_rdf_type)
+            # rebuild the model in case there're any ForwardRef that were not resolved previously
+            target_clz.model_rebuild()
+
             # instead of calling cls.get_object_properties() and cls.get_data_properties()
             # calling methods of target_clz ensures that all properties are correctly inherited
             ops = target_clz.get_object_properties()
@@ -952,19 +1007,19 @@ class BaseClass(BaseModel, validate_assignment=True):
         }
 
     @classmethod
-    def get_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[DataProperty]]]]:
+    def get_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[DatatypeProperty]]]]:
         """
         This function returns the data properties of the calling class.
 
         Returns:
-            Dict[str, Dict[str, Union[str, Type[DataProperty]]]]: A dictionary containing the data properties of the calling class
+            Dict[str, Dict[str, Union[str, Type[DatatypeProperty]]]]: A dictionary containing the data properties of the calling class
                 in the format of {predicate_iri: {'field': field_name, 'type': field_clz}}
-                e.g. {'https://twa.com/myDataProperty': {'field': 'myDataProperty', 'type': MyDataProperty}}
+                e.g. {'https://twa.com/myDatatypeProperty': {'field': 'myDatatypeProperty', 'type': MyDatatypeProperty}}
         """
         return {
             field_info.annotation.get_predicate_iri(): {
                 'field': f, 'type': field_info.annotation
-            } for f, field_info in cls.model_fields.items() if DataProperty.is_inherited(field_info.annotation)
+            } for f, field_info in cls.model_fields.items() if DatatypeProperty.is_inherited(field_info.annotation)
         }
 
     @classmethod
@@ -979,6 +1034,8 @@ class BaseClass(BaseModel, validate_assignment=True):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
+        # rebuild model to resovle any ForwardRef
+        cls.model_rebuild()
         cls_iri = cls.get_rdf_type()
         g.add((URIRef(cls_iri), RDF.type, OWL.Class))
         g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.is_defined_by_ontology.get_namespace_iri())))
@@ -1226,6 +1283,44 @@ class BaseClass(BaseModel, validate_assignment=True):
                         g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
         return g_to_remove, g_to_add
 
+    def graph(self, g: Graph = None) -> Graph:
+        """
+        This method adds all the outgoing triples of the calling object.
+
+        Args:
+            g (Graph, optional): The rdflib.Graph object to which the triples should be added
+
+        Returns:
+            Graph: The rdflib.Graph object containing the triples added
+        """
+        if g is None:
+            g = Graph()
+        for f, field_info in self.model_fields.items():
+            if ObjectProperty.is_inherited(field_info.annotation):
+                prop = getattr(self, f)
+                for o in prop.range:
+                    g.add((URIRef(self.instance_iri), URIRef(prop.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
+            elif DatatypeProperty.is_inherited(field_info.annotation):
+                prop = getattr(self, f)
+                for o in prop.range:
+                    g.add((URIRef(self.instance_iri), URIRef(prop.predicate_iri), Literal(o)))
+            elif f == 'rdf_type':
+                g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
+            elif f == 'rdfs_comment' and self.rdfs_comment is not None:
+                    g.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
+            elif f == 'rdfs_label' and self.rdfs_label is not None:
+                    g.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
+        return g
+
+    def triples(self):
+        """
+        This method generates the turtle representation for all outgoing triples of the calling object.
+
+        Returns:
+            str: The outgoing triples in turtle format
+        """
+        return self.graph().serialize(format='ttl')
+
     def _exclude_keys_for_compare_(self, *keys_to_exclude):
         list_keys_to_exclude = list(keys_to_exclude) if not isinstance(
             keys_to_exclude, list) else keys_to_exclude
@@ -1462,7 +1557,7 @@ class TransitiveProperty(ObjectProperty):
         return transitive_objects
 
 
-class DataProperty(BaseProperty):
+class DatatypeProperty(BaseProperty):
     """
     Base class for data properties.
     It inherits the BaseProperty class.
@@ -1485,7 +1580,7 @@ class DataProperty(BaseProperty):
     def collect_range_diff_to_graph(
         self,
         subject: str,
-        cache: DataProperty,
+        cache: DatatypeProperty,
         g_to_remove: Graph,
         g_to_add: Graph,
         recursive_depth: int = 0,
@@ -1497,7 +1592,7 @@ class DataProperty(BaseProperty):
 
         Args:
             subject (str): The subject of the property when adding/removing triples
-            cache (DataProperty): The cache of the property to compare with
+            cache (DatatypeProperty): The cache of the property to compare with
             g_to_remove (Graph): The rdflib.Graph object to which the triples to be removed will be added
             g_to_add (Graph): The rdflib.Graph object to which the triples will be added
             recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
@@ -1589,7 +1684,7 @@ class DataProperty(BaseProperty):
         """
         return _castPythonToXSD(cls.reveal_data_property_range())
 
-    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> DataProperty:
+    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None) -> DatatypeProperty:
         """
         This function creates a cache of the data property.
         The recursion stops when the IRI is traversed already, the logic to determine this is at the BaseClass side.
@@ -1599,6 +1694,6 @@ class DataProperty(BaseProperty):
             traversed_iris (set): A set of IRIs that were already traversed in recursion
 
         Returns:
-            DataProperty: The cache of the data property
+            DatatypeProperty: The cache of the data property
         """
         return self.__class__(range=set(copy.deepcopy(self.range)))

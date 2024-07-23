@@ -12,6 +12,14 @@ resources/
 *.png
 
 ## User defined
+# Miscellaneous files/folders:
+# ignore all environment files *.env
+*.env
+
+# email_auth
+email_auth.json
+
+# python package related
 *.egg-info
 
 # mkdocs documentation

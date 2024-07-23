@@ -25,4 +25,4 @@ jobs:
           CONFIG_FILE: JPS_BASE_LIB/python_wrapper/mkdocs.yml
           EXTRA_PACKAGES: build-base
           # GITHUB_DOMAIN: github.myenterprise.com
-          REQUIREMENTS: JPS_BASE_LIB/python_wrapper/dev_requirements.txt
+          REQUIREMENTS: JPS_BASE_LIB/python_wrapper/twa_docs_deploy.txt

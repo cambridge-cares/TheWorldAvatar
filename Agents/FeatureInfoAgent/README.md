@@ -186,7 +186,7 @@ The FIA is currently set up with two automated GitHub actions:
   - Only runs when files within the agent have changed AND on commits that are part of a non-draft PR to the main branch.
   - Tests the FIA by running its unit tests and compiling a Docker image (which is NOT pushed at this stage).
   
-- **Push the FeatureInfoAgent:**
+- **Release the FeatureInfoAgent:**
   - Only runs when files within the agent are changed AND on commits to the main branch (i.e. after a PR is approved and merged).
   - Builds the FIA's Docker image (inc. running the unit tests again) AND pushes it to the TWA GitHub image registry.
 
@@ -199,9 +199,7 @@ A number of different projects have made use of the FeatureInfoAgent, some good 
 
 Packaged within this directory is also a number of configuration and data files used to spin up a [small sample stack](./sample/) used to manually test the FIA. Whilst this has not been put together to act as a shining example of the FIA, one is free to look at the configuration files to determine proper syntax.
 
-## Tutorial
-
-A tutorial that walks through how to use the FIA can be found in the associated [FIA Tutorial document](./docs/tutorial.md).
+It should be noted that no specialist tutorial for the FeatureInfoAgent exists at the time of writing; however, the FeatureInfoAgent is a core component of the aforementioned examples. These examples (along with the documentation on this page) can be used as an introduction/tutorial to the FeatureInfoAgent.
 
 ## Troubleshooting
 

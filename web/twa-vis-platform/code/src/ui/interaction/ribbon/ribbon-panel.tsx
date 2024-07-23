@@ -1,4 +1,4 @@
-import styles from './ribbon-panel.module.css';
+import styles from './ribbon.module.css';
 
 import React from 'react';
 

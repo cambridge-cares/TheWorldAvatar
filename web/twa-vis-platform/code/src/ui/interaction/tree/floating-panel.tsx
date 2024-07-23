@@ -1,19 +1,21 @@
 import { Icon, Tooltip } from '@mui/material';
 import styles from './floating-panel.module.css';
 
+import { Map } from 'mapbox-gl';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Map } from 'mapbox-gl';
 
-import { getIndex, setIndex } from 'state/floating-panel-slice';
-import { getQueryTrigger, getIri, getStack, getScenario, setQueryTrigger, getProperties, getFeatures, MapFeaturePayload } from 'state/map-feature-slice';
-import { useGetMetadataQuery } from 'utils/server-utils';
 import { DataStore } from 'io/data/data-store';
+import { getIndex, setIndex } from 'state/floating-panel-slice';
+import { getFeatures, getIri, getProperties, getScenario, getStack, MapFeaturePayload } from 'state/map-feature-slice';
 import { MapLayerGroup } from 'types/map-layer';
 import { IconSettings, LegendSettings } from 'types/settings';
-import LayerTree from './layer/layer-tree';
-import LegendTree from './legend/legend-tree';
+import { generateFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
+import DimensionSlider from 'ui/interaction/controls/slider';
 import InfoTree from './info/info-tree';
+import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
+import LegendTree from './legend/legend-tree';
+import { ScenarioDimensionsData } from 'types/timeseries';
 
 // Incoming parameters for component.
 interface FloatingPanelContainerProps {
@@ -21,14 +23,9 @@ interface FloatingPanelContainerProps {
   dataStore: DataStore;
   icons: IconSettings;
   legend: LegendSettings;
+  scenarioDimensions: ScenarioDimensionsData;
+  isDimensionsFetching: boolean;
   hideInfo?: boolean;
-}
-
-function genQueryEndpoint(iri: string, stack: string, scenario: string): string {
-  if (scenario) {
-    return `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}`;
-  }
-  return `${stack}/feature-info-agent/get?iri=${encodeURIComponent(iri)}`;
 }
 
 /**
@@ -38,7 +35,6 @@ export default function FloatingPanelContainer(
   props: Readonly<FloatingPanelContainerProps>
 ) {
   const [isPanelVisible, setIsPanelVisible] = useState(true);
-  const [queriedData, setQueriedData] = useState(null);
   const [activeInfoTab, setActiveInfoTab] = React.useState(0);
   const [mapLayerGroups, setMapLayerGroups] = useState<MapLayerGroup[]>([]);
 
@@ -51,38 +47,18 @@ export default function FloatingPanelContainer(
   const selectedProperties = useSelector(getProperties);
   const selectedStack = useSelector(getStack);
   const selectedScenario = useSelector(getScenario);
-  const trigger = useSelector(getQueryTrigger);
   const availableFeatures: MapFeaturePayload[] = useSelector(getFeatures);
-
+  //TODO fetch from api
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
-
   // Execute API call
-  const { data, isFetching } = useGetMetadataQuery(genQueryEndpoint(selectedIri, selectedStack, selectedScenario), { skip: !trigger });
+  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(generateFIAEndpoint(selectedIri, selectedStack, selectedScenario), selectedIri, selectedProperties)
+  // check if scenario dimensions passed down from parent component has multiple dimensions
+  const hasMultipleDimensions = Object.values(props.scenarioDimensions).some(array => array.length > 1);
 
-  // Effect to display additional feature information retrieved from an agent only once it has been loaded
   useEffect(() => {
-    if (isFetching) {
-      // WIP: Add required functionality while data is still being fetched
-    } else {
-      // If there is any data retrieved, set that first
-      if (data && Object.keys(data).length !== 0) {
-        setQueriedData(data);
-        dispatch(setQueryTrigger(false));
-      } else if (selectedProperties) {
-      // Else default to built in data that excludes IRI
-        const builtInData = {
-          meta: {
-            Properties: Object.fromEntries(
-              Object.entries(selectedProperties)
-                .filter(([key]) => key !== 'iri')
-            )
-          }
-        }
-        setQueriedData(builtInData);
-      }
-    }
-  }, [isFetching]);
+    parseIntoTreeStucture(props.dataStore, props.icons, setMapLayerGroups);
+  }, [props.dataStore, props.icons])
 
   const clickAction = (index: number) => {
     dispatch(
@@ -145,14 +121,16 @@ export default function FloatingPanelContainer(
         )}
 
         {/* Toggle visibility button */}
-        <button onClick={() => setIsPanelVisible(!isPanelVisible)}>
+        <button
+          className={styles.expandButton}
+          onClick={() => setIsPanelVisible(!isPanelVisible)}>
           <Tooltip
             title={isPanelVisible ? "Collapse Panel" : "Expand Panel"}
             enterDelay={500}
             leaveDelay={200}
           >
             <Icon className="material-symbols-outlined">
-              {isPanelVisible ? "arrow_drop_up" : "arrow_drop_down"}
+              {isPanelVisible ? "keyboard_arrow_down" : "keyboard_arrow_up"}
             </Icon>
           </Tooltip>
         </button>
@@ -160,26 +138,38 @@ export default function FloatingPanelContainer(
 
       {/* Conditionally render the panel's body */}
       {isPanelVisible && (
-        <div className={styles.floatingPanelBody}>
-          {activeIndex === 0 && <LayerTree
-            map={props.map}
-            dataStore={props.dataStore}
-            icons={props.icons}
-            mapGroups={mapLayerGroups}
-            setMapGroups={setMapLayerGroups}
-          />}
-          {activeIndex === 1 && <LegendTree settings={props.legend} />}
-          {activeIndex === 2 &&
-            <InfoTree
-              data={queriedData}
-              isFetching={isFetching}
-              activeTab={{
-                index: activeInfoTab,
-                setActiveTab: setActiveInfoTab,
-              }}
-              features={availableFeatures}
+        <>
+          <div className={styles.floatingPanelBody}>
+            {mapLayerGroups.length > 0 && activeIndex === 0 && <LayerTree
+              map={props.map}
+              dataStore={props.dataStore}
+              icons={props.icons}
+              mapGroups={mapLayerGroups}
+              setMapGroups={setMapLayerGroups}
             />}
-        </div>
+            {activeIndex === 1 && <LegendTree settings={props.legend} />}
+            {activeIndex === 2 &&
+              <InfoTree
+                attributes={attributes}
+                timeSeries={timeSeries}
+                featureName={selectedProperties?.name}
+                isFetching={isFetching}
+                isUpdating={isUpdating}
+                activeTab={{
+                  index: activeInfoTab,
+                  setActiveTab: setActiveInfoTab,
+                }}
+                features={availableFeatures}
+              />}
+          </div>
+
+          {!props.isDimensionsFetching && props.scenarioDimensions && hasMultipleDimensions && (
+            <div className={styles.floatingPanelControls}>
+              <DimensionSlider
+                data={props.scenarioDimensions} />
+            </div>)}
+
+        </>
       )}
     </div>
   );

@@ -3,15 +3,15 @@
 #
 services:
   # Empty visualisation image for deployment.
-  visualise:
-    image: ghcr.io/cambridge-cares/twa-vf:latest
+  base:
+    image: ghcr.io/cambridge-cares/twa-vf
     container_name: "twa-vf"
     restart: "no"
     secrets:
       - mapbox_username
       - mapbox_api_key
     build:
-      context: "./"
+      context: .
       dockerfile: "Dockerfile"
       target: prod
       labels:
@@ -20,7 +20,28 @@ services:
     volumes:
       - ./uploads:/twa/public/
     ports:
-      - "80:3000" 
+      - "3000:3000" 
+  
+  latest:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:latest
+    profiles: ["build-only"]
+
+  semantic-snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}.${MINOR}.${PATCH}-${SNAPSHOT}
+    profiles: ["build-only"]
+
+  major-snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}-${SNAPSHOT}
+    profiles: ["build-only"]
+
+  snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${SNAPSHOT}
+    profiles: ["build-only"]
+
 secrets:
     mapbox_username:
       file: ./mapbox_username

@@ -65,17 +65,50 @@ const PLACENAME_LAYERS: string[] = [
  * @param {DataStore} data The data of interest to add to the map.
  */
 export function addData(map: Map, mapSettings: MapSettings, data: DataStore): void {
-   // Parse data configuration and load icons
-   const iconPromise = addIcons(map, mapSettings.icons);
+  // Parse data configuration and load icons
+  const iconPromise = addIcons(map, mapSettings.icons);
 
-   Promise.all([iconPromise]).then(() => {
-     // Once that is done and completed...
-     console.log("Data definitions fetched and parsed.");
+  Promise.all([iconPromise]).then(() => {
+    // Once that is done and completed...
+    console.log("Data definitions fetched and parsed.");
+    // Reset the map
+    resetMap(map);
+    // Plot data
+    addAllSources(map, data);
+    addAllLayers(map, data, mapSettings.imagery);
+  });
+}
 
-     // Plot data
-     addAllSources(map, data);
-     addAllLayers(map, data, mapSettings.imagery);
-   });
+/**
+ * Resets the map to its initial blank state.
+ * 
+ * @param {Map} map The current Mapbox map instance.
+ */
+function resetMap(map: Map): void {
+  const layers: mapboxgl.AnyLayer[] = map.getStyle().layers;
+  const sources: Set<string> = new Set();
+
+  layers.map(layer => {
+    const layerId: string = layer.id;
+    const sourceId: string = layer.source;
+    // Conditional check to protect background and default styles
+    if (layer.type != "background" && sourceId != "composite") {
+      // Remove the layer
+      if (map.getLayer(layerId)) {
+        map.removeLayer(layerId);
+      }
+
+      // Add the source to the set if any exists
+      if (map.getSource(sourceId)) {
+        sources.add(sourceId);
+      }
+    }
+  });
+
+  // Remove sources independently from layers to prevent errors when multiple layers uses the same source
+  sources.forEach(source => {
+    map.removeSource(source);
+  });
 }
 
 /**
@@ -121,7 +154,7 @@ export function getCameraPositions(cameraSettings: CameraSettings): string[] {
  */
 export function getDefaultImageryOption(imagerySettings: ImagerySettings): ImageryOption {
   // If users do not specify imagery settings, use the defaults
-  if (imagerySettings == null) {
+  if (!imagerySettings) {
     imagerySettings = DEFAULT_IMAGERY_OPTIONS;
   }
 
@@ -175,7 +208,7 @@ export function getCurrentImageryOption(imagerySettings: ImagerySettings): Image
   if (items == null || items.length == 0) {
     return getDefaultImageryOption(imagerySettings);
   } else {
-    const match = items.find(option => option.name === "Imagery");
+    const match = items.find(option => option.id === "map-style");
     if (match == null) {
       return getDefaultImageryOption(imagerySettings);
     } else {
@@ -220,7 +253,7 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): vo
   const items = reduxState.ribbonComponents.items;
   let shouldHide = true;
   if (items != null && items.length > 0) {
-    shouldHide = items.find(option => option.name === "Hide Labels")?.selection;
+    shouldHide = items.find(option => option.id === "placenames")?.selection;
   }
   const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
@@ -287,7 +320,7 @@ export function resetCamera(cameraSettings: CameraSettings, map: Map): void {
   if (items.length == 0) {
     position = getDefaultCameraPosition(cameraSettings);
   } else {
-    const positionName = items.find(position => position.name === "Reset Camera")?.selection;
+    const positionName = items.find(position => position.id === "reset")?.selection;
     position = getCameraPosition(positionName, cameraSettings);
   }
 
