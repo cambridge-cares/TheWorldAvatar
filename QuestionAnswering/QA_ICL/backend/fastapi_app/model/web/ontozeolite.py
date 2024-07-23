@@ -43,11 +43,21 @@ ScalarTopologicalPropertyKey = Literal[
 ]
 
 
-class ZeoliteFrameworkRequest(BaseModel):
+class CrystalInfoRequest(BaseModel):
     xrd_peak: list[XRDPeakRequest]
     unit_cell: dict[UnitCellKey, list[tuple[ComparisonOperator, float]]]
-    scalar_topological_properties: dict[
+
+class TopoPropsRequest(BaseModel):
+    scalars: dict[
         ScalarTopologicalPropertyKey, list[tuple[ComparisonOperator, float]]
     ]
     composite_bu: list[str]
     secondary_bu: list[str]
+
+class ZeoliteFrameworkReqReturnFields(BaseModel):
+    pass
+
+class ZeoliteFrameworkRequest(BaseModel):
+    crystal_info: CrystalInfoRequest
+    topo_props: TopoPropsRequest
+    return_fields: ZeoliteFrameworkReqReturnFields | None
