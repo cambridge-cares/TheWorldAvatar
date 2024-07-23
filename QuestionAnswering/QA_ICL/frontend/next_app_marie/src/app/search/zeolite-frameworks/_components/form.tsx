@@ -16,16 +16,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MinusCircledIcon, PlusCircledIcon } from '@radix-ui/react-icons'
-import {
-  capitalize,
-  cn,
-  extractLowerUpperParams,
-  isObjectEmtpy,
-} from '@/lib/utils'
+import { cn, extractLowerUpperParams, isObjectEmtpy } from '@/lib/utils'
 import {
   OUnitCellAngleKey,
   OUnitCellLengthKey,
-  SCALAR_TOPO_PROP_UNITS,
+  SCALAR_TOPO_PROP_KEYS,
+  TOPO_PROP_UNITS,
 } from '@/lib/model/ontozeolite'
 import { MinMaxInput } from '@/components/ui/min-max-input'
 import { Combobox } from '@/components/ui/combobox'
@@ -58,7 +54,7 @@ export const ZEOLITE_FRAMEWORK_FORM_SCHEMA = z.object({
   }),
   scalarTopoProps: z.object(
     Object.fromEntries(
-      Object.keys(SCALAR_TOPO_PROP_UNITS).map(key => [
+      SCALAR_TOPO_PROP_KEYS.map(key => [
         key,
         z.object({ lower: z.string(), upper: z.string() }),
       ])
@@ -85,10 +81,7 @@ const FORM_INIT_VALUES = {
     ),
   },
   scalarTopoProps: Object.fromEntries(
-    Object.keys(SCALAR_TOPO_PROP_UNITS).map(key => [
-      key,
-      { lower: '', upper: '' },
-    ])
+    SCALAR_TOPO_PROP_KEYS.map(key => [key, { lower: '', upper: '' }])
   ),
   compositeBUs: [''],
   secondaryBU: '',
@@ -145,7 +138,7 @@ export function ZeoliteFrameworkForm({
 
     const scalarTopoProps = extractLowerUpperParams(
       searchParams,
-      Object.keys(SCALAR_TOPO_PROP_UNITS)
+      SCALAR_TOPO_PROP_KEYS
     )
     form.setValue('scalarTopoProps', scalarTopoProps)
 
@@ -384,7 +377,7 @@ export function ZeoliteFrameworkForm({
           <div>
             <div>Topological properties</div>
             <div className='grid md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-2'>
-              {Object.entries(SCALAR_TOPO_PROP_UNITS).map(([key, unit], i) => (
+              {Object.entries(TOPO_PROP_UNITS).map(([key, unit], i) => (
                 <FormField
                   key={i}
                   control={form.control}

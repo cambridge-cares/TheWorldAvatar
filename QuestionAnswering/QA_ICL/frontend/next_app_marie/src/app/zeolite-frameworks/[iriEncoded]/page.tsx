@@ -7,6 +7,10 @@ import {
   getZeoliteFrameworkOne,
 } from '@/lib/api/ontozeolite'
 import { CrystalInfoAccordion } from './_components/crystal-info-accordion'
+import { TopoPropsDiv } from './_components/topo-props-div'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Button } from '@/components/ui/button'
+import { CaretSortIcon } from '@radix-ui/react-icons'
 
 interface ZeoliteFrameworkPageInterface {
   params: { iriEncoded: string }
@@ -36,14 +40,24 @@ export default async function ZeoliteFrameworkPage({
             </h2>
             <CrystalInfoAccordion {...data.CrystalInformation} />
           </section>
-          {/* <section>
-          <h2 id='topo-props'>
-            <a href='#topo-props' className='hover:underline'>
-              Topological properties
-            </a>
-          </h2>
-          <div>{JSON.stringify(data.topo_props)}</div>
-        </section> */}
+          <section>
+            <Collapsible>
+              <h2 id='topo-props' className='inline'>
+                <a href='#topo-props' className='hover:underline'>
+                  Topological properties
+                </a>
+              </h2>
+              <CollapsibleTrigger asChild>
+                <Button variant='ghost' size='sm'>
+                  <CaretSortIcon className='h-4 w-4' />
+                  <span className='sr-only'>Toggle</span>
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <TopoPropsDiv data={data.TopologicalProperties} />
+              </CollapsibleContent>
+            </Collapsible>
+          </section>
           <section className='pb-12'>
             <h2 id='materials'>
               <a href='#materials' className='hover:underline'>

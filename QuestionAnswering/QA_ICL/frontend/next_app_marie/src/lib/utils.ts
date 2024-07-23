@@ -34,7 +34,7 @@ export function capitalize(text: string) {
 
 export function extractLowerUpperParams(
   searchParams: ReadonlyURLSearchParams,
-  keys: string[],
+  keys: readonly string[],
   keyPrefix: string = ''
 ) {
   return Object.fromEntries(

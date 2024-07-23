@@ -11,7 +11,6 @@ import {
   ChemicalClass,
   OSpeciesIdentifierKey,
   OSpeciesPropertyKey,
-  SPECIES_IDENTIFIER_KEY_LABELS,
   Use,
   USE_KEY,
 } from '@/lib/model/ontospecies'
@@ -30,6 +29,16 @@ import { capitalize, cn, extractLowerUpperParams } from '@/lib/utils'
 import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CollapsibleContent } from '@radix-ui/react-collapsible'
 import { MinMaxInput } from '@/components/ui/min-max-input'
+
+const SPECIES_IDENTIFIER_KEY_LABELS = {
+  [OSpeciesIdentifierKey.CID]: 'CID',
+  [OSpeciesIdentifierKey.CHEBI_ID]: 'ChEBI ID',
+  [OSpeciesIdentifierKey.IUPAC_NAME]: 'IUPAC name',
+  [OSpeciesIdentifierKey.INCHI]: 'InChI',
+  [OSpeciesIdentifierKey.INCHI_KEY]: 'InChIKey',
+  [OSpeciesIdentifierKey.MOLECULAR_FORMULA]: 'molecular formula',
+  [OSpeciesIdentifierKey.SMILES]: 'SMILES string',
+}
 
 export const SPECIES_FORM_SCHEMA = z.object({
   chemicalClass: z.string(),

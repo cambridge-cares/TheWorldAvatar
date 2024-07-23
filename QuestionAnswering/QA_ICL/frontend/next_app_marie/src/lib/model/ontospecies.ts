@@ -87,16 +87,6 @@ export const OSpeciesIdentifierKey = {
 export type SpeciesIdentifierKey =
   (typeof OSpeciesIdentifierKey)[keyof typeof OSpeciesIdentifierKey]
 
-export const SPECIES_IDENTIFIER_KEY_LABELS = {
-  [OSpeciesIdentifierKey.CID]: 'CID',
-  [OSpeciesIdentifierKey.CHEBI_ID]: 'ChEBI ID',
-  [OSpeciesIdentifierKey.IUPAC_NAME]: 'IUPAC name',
-  [OSpeciesIdentifierKey.INCHI]: 'InChI',
-  [OSpeciesIdentifierKey.INCHI_KEY]: 'InChIKey',
-  [OSpeciesIdentifierKey.MOLECULAR_FORMULA]: 'molecular formula',
-  [OSpeciesIdentifierKey.SMILES]: 'SMILES string',
-}
-
 export interface SpeciesBase extends RDFEntity {
   label?: string
   IUPACName?: string
