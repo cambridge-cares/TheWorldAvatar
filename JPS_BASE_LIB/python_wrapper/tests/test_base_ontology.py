@@ -12,29 +12,6 @@ from twa.data_model.base_ontology import BaseOntology, BaseClass, DatatypeProper
 from twa.data_model.base_ontology import KnowledgeGraph
 from twa.data_model.iris import OWL_BASE_URL
 
-# TODO validate type of each item in the set
-# TODO test object property subclass
-# TODO test datatype property subclass
-# TODO test transitive property subclass
-# TODO test .field_name.get
-# TODO test .field_name.add
-# TODO test .field_name.remove
-# TODO test .field_name = new_value
-# TODO test .field_name = None
-# TODO change is_defined_by_ontology to rdfs_isDefinedBy
-# TODO __get_pydantic_core_schema__ in BaseProperty
-# TODO model_json_schema
-# TODO A() throws error about set cannot have keyword args
-# TODO a1 = A(data_property_a={'a1'}), should support a1 = A(data_property_a='a1')?
-# TODO uncomment tests for forward refs
-# TODO fix d = D(object_property_d_a=[a1], object_property_d_c=[c], object_property_d_b=[], data_property_d=set())
-# TODO many-to-many relationship with cardinality
-# TODO add rdfs_range for data properties
-# TODO rename BaseOntology.get_namespace_iri()
-# TODO support create object/data property with another object/data property as its base
-# TODO make functions within classes private if not intended to be used as API
-# TODO documentation
-# TODO double // in the IRI name
 
 EXAMPLE_BASE_URL = 'https://example.org/'
 EXAMPLE_NAMESPACE = 'example'
@@ -56,13 +33,13 @@ class DataProperty_A(DatatypeProperty):
 DataProperty_B = DatatypeProperty.create_from_base('DataProperty_B', ExampleOntology, 1, 1)
 Data_Property_C = DatatypeProperty.create_from_base('Data_Property_C', ExampleOntology, 0, 5)
 
+
 class A(BaseClass):
     rdfs_isDefinedBy = ExampleOntology
     data_property_a: Optional[DataProperty_A[str]] = None
 
+
 ObjectProperty_B_A = ObjectProperty.create_from_base('ObjectProperty_B_A', ExampleOntology)
-
-
 ObjectProperty_C_A = ObjectProperty.create_from_base('ObjectProperty_C_A', ExampleOntology, 0, 3)
 
 
@@ -83,23 +60,17 @@ class C(BaseClass):
 
 
 ObjectProperty_D_C = ObjectProperty.create_from_base('ObjectProperty_D_C', ExampleOntology)
-
-
 ObjectProperty_D_B = ObjectProperty.create_from_base('ObjectProperty_D_B', ExampleOntology)
-
-
 ObjectProperty_D_A = ObjectProperty.create_from_base('ObjectProperty_D_A', ExampleOntology)
-
-
 Data_Property_D = DatatypeProperty.create_from_base('Data_Property_D', ExampleOntology)
 
 
 class D(BaseClass):
     rdfs_isDefinedBy = ExampleOntology
     object_property_d_c: ObjectProperty_D_C[C]
-    object_property_d_b: ObjectProperty_D_B[B]
+    object_property_d_b: Optional[ObjectProperty_D_B[B]] = set()
     object_property_d_a: ObjectProperty_D_A[A]
-    data_property_d: Data_Property_D[str]
+    data_property_d: Optional[Data_Property_D[str]] = set()
 
 
 class E(D):
@@ -128,7 +99,7 @@ def init():
     # 4 triples: c --> a2, a3, b, 'c'
     c = C(object_property_c_a=[a2, a3], object_property_c_b=[b], data_property_c={'c'})
     # 2 triples: d --> a1, c
-    d = D(object_property_d_a=[a1], object_property_d_c=[c], object_property_d_b=[], data_property_d=set())
+    d = D(object_property_d_a=[a1], object_property_d_c=[c])
     # and 6 rdf:type triples
     # in total 20 triples
     return a1, a2, a3, b, c, d
@@ -174,6 +145,9 @@ def test_register_and_clear():
 
 
 def test_basics():
+    # able to generate the json schema without exception
+    assert bool(D.model_json_schema())
+
     # test create object
     a = A(data_property_a={'a'}, rdfs_comment='my comment', rdfs_label='my label')
     assert a.data_property_a == {'a'}
@@ -250,18 +224,6 @@ def test_basics():
     E             Input should be a valid set [type=set_type, input_value=None, input_type=NoneType]
     E               For further information visit https://errors.pydantic.dev/2.8/v/set_type
     """
-
-# TODO remove this test
-# def test_added_to_domain():
-#     a1, a2, a3, b, c, d = init()
-#     for p in [DataProperty_A]:
-#         assert set([A.rdf_type]) == p.rdfs_domain
-#     for p in [DataProperty_B, ObjectProperty_B_A]:
-#         assert set([B.rdf_type]) == p.rdfs_domain
-#     for p in [Data_Property_C, ObjectProperty_C_A, ObjectProperty_C_B]:
-#         assert set([C.rdf_type]) == p.rdfs_domain
-#     for p in [Data_Property_D, ObjectProperty_D_A, ObjectProperty_D_B, ObjectProperty_D_C]:
-#         assert set([D.rdf_type, E.rdf_type]) == p.rdfs_domain
 
 
 def test_rdf_type():
@@ -584,6 +546,7 @@ class F(BaseClass):
     rdfs_isDefinedBy = ExampleOntology
     fg: Optional[Fg[G]] = set()
 
+
 Fg = ObjectProperty.create_from_base('Fg', ExampleOntology)
 
 
@@ -593,25 +556,17 @@ class G(BaseClass):
 
 FProp = DatatypeProperty.create_from_base('FProp', ExampleOntology, 0, 1)
 
-# TODO enable the below
+
 from pydantic import create_model
 F1 = create_model('F1', fProp=(ForwardRef('Optional[F1Prop[str]]'), set()), __base__=F)
 F2 = create_model('F2', fProp=(ForwardRef('F2Prop[str]'), ...), __base__=F)
 F3 = create_model('F3', fProp=(ForwardRef('F3Prop[str]'), ...), __base__=F)
 
+
 F1Prop = DatatypeProperty.create_from_base('F1Prop', ExampleOntology, base_property=FProp)
 F2Prop = DatatypeProperty.create_from_base('F2Prop', ExampleOntology, min_cardinality=1, base_property=FProp)
 F3Prop = DatatypeProperty.create_from_base('F3Prop', ExampleOntology, max_cardinality=5, base_property=FProp)
 
-def test_subclassing_data_property():
-    # base property should be in the mro
-    assert FProp in F1Prop.__mro__
-    assert FProp in F2Prop.__mro__
-    assert FProp in F3Prop.__mro__
-    # cardinality should be inherited correctly
-    assert F1Prop.retrieve_cardinality() == (0, 1)
-    assert F2Prop.retrieve_cardinality() == (1, 1)
-    assert F3Prop.retrieve_cardinality() == (0, 5)
 
 def test_forward_refs_object_property():
     # this test exist to cover the case where classes are defined before the definition of object properties
@@ -656,12 +611,55 @@ def test_forward_refs_data_property(clz, prop, arg, rdfs_range, optional):
     assert clz.model_fields['fProp'].annotation == Optional[prop[rdfs_range]] if optional else prop[rdfs_range]
 
 
+Fg1 = ObjectProperty.create_from_base('Fg1', ExampleOntology, base_property=Fg)
+Fg2 = ObjectProperty.create_from_base('Fg2', ExampleOntology, min_cardinality=1, base_property=Fg)
+Fg3 = ObjectProperty.create_from_base('Fg3', ExampleOntology, max_cardinality=5, base_property=Fg)
+
+
+def test_subclassing_object_property():
+    # base property should be in the mro
+    assert Fg in Fg1.__mro__
+    assert Fg in Fg2.__mro__
+    assert Fg in Fg3.__mro__
+    # cardinality should be inherited correctly
+    assert Fg1.retrieve_cardinality() == (0, None)
+    assert Fg2.retrieve_cardinality() == (1, None)
+    assert Fg3.retrieve_cardinality() == (0, 5)
+    # predicate_iri should be set different from its base
+    assert Fg1.predicate_iri != Fg.predicate_iri
+    assert Fg2.predicate_iri != Fg.predicate_iri
+    assert Fg3.predicate_iri != Fg.predicate_iri
+
+
+def test_subclassing_data_property():
+    # base property should be in the mro
+    assert FProp in F1Prop.__mro__
+    assert FProp in F2Prop.__mro__
+    assert FProp in F3Prop.__mro__
+    # cardinality should be inherited correctly
+    assert F1Prop.retrieve_cardinality() == (0, 1)
+    assert F2Prop.retrieve_cardinality() == (1, 1)
+    assert F3Prop.retrieve_cardinality() == (0, 5)
+    # predicate_iri should be set different from its base
+    assert F1Prop.predicate_iri != FProp.predicate_iri
+    assert F2Prop.predicate_iri != FProp.predicate_iri
+    assert F3Prop.predicate_iri != FProp.predicate_iri
+
+
+def test_subclassing_transitive_property():
+    # base property should be in the mro
+    assert TransitiveProperty in HasPart.__mro__
+    # predicate_iri should be set different from its base
+    assert HasPart.predicate_iri != TransitiveProperty.predicate_iri
+
+
 # NOTE below we define classes for testing circular graph pattern
 C1C2 = ObjectProperty.create_from_base('C1C2', ExampleOntology)
+
+
 class Circ1(BaseClass):
     rdfs_isDefinedBy = ExampleOntology
     c1c2: Optional[C1C2[Circ2]] = set()
-
 
 
 class Circ2(BaseClass):
@@ -722,8 +720,14 @@ def test_push_circular_graph_pattern(initialise_sparql_client):
 # NOTE this test is put at the end of this test script
 # NOTE so that the ForwardRef are not evaluated
 # NOTE and therefore can be tested by the tests at the beginning of this file
-def test_export_to_graph():
+def test_export_to_graph(recwarn):
     g = ExampleOntology.export_to_graph()
+    assert len(recwarn) == 8
+    warning_messages = [str(w.message) for w in recwarn]
+    for c in [Fg1, Fg2, Fg3, FProp]:
+        assert f'Warning: property {c} has no domain to be added, i.e. it is not used by any classes!' in warning_messages
+        assert f'Warning: property {c} has no range to be added, i.e. it is not used by any classes!' in warning_messages
+
     print(g.serialize(format='ttl'))
 
     # object property C1C2, testing for triples:
