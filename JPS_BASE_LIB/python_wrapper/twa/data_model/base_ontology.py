@@ -1114,7 +1114,8 @@ class BaseClass(BaseModel, validate_assignment=True):
         for f, cached in self._latest_cache.items():
             f_tp = get_args(self.model_fields[f].annotation)[0] if type(self.model_fields[f].annotation) == _UnionGenericAlias else self.model_fields[f].annotation
             if ObjectProperty._is_inherited(f_tp):
-                disconnected_object_properties = cached - getattr(self, f)
+                _o = getattr(self, f) if getattr(self, f) is not None else set()
+                disconnected_object_properties = cached - _o
                 for o in disconnected_object_properties:
                     obj = KnowledgeGraph.get_object_from_lookup(o)
                     if obj is not None:
@@ -1390,12 +1391,12 @@ class BaseClass(BaseModel, validate_assignment=True):
             tp = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
             if ObjectProperty._is_inherited(tp):
                 tp: ObjectProperty
-                prop = getattr(self, f)
+                prop = getattr(self, f) if getattr(self, f) is not None else set()
                 for o in prop:
                     g.add((URIRef(self.instance_iri), URIRef(tp.predicate_iri), URIRef(o.instance_iri if isinstance(o, BaseClass) else o)))
             elif DatatypeProperty._is_inherited(tp):
                 tp: DatatypeProperty
-                prop = getattr(self, f)
+                prop = getattr(self, f) if getattr(self, f) is not None else set()
                 for o in prop:
                     g.add((URIRef(self.instance_iri), URIRef(tp.predicate_iri), Literal(o)))
             elif f == 'rdfs_comment' and self.rdfs_comment is not None:
