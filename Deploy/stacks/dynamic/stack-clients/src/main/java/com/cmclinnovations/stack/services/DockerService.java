@@ -327,12 +327,12 @@ public class DockerService extends AbstractService
                 String containerId = taskStatus.getContainerStatus().getContainerID();
                 return getContainerFromID(containerId);
             default:
-            String errMessage = taskStatus.getErr();
-            if (null != errMessage) {
-                errMessage = taskStatus.getMessage();
-            }
-            throw new RuntimeException("Failed to start service '" + containerName
-                    + "'. Error message is:\n" + errMessage);
+                String errMessage = taskStatus.getErr();
+                if (null != errMessage) {
+                    errMessage = taskStatus.getMessage();
+                }
+                throw new RuntimeException("Failed to start service '" + containerName
+                        + "'. Error message is:\n" + errMessage);
         }
     }
 
@@ -453,8 +453,8 @@ public class DockerService extends AbstractService
                 }
                 break;
             default:
-            }
         }
+    }
 
     protected void interpolateConfigs(ContainerSpec containerSpec) {
         List<ContainerSpecConfig> containerSpecConfigs = containerSpec.getConfigs();
@@ -552,7 +552,7 @@ public class DockerService extends AbstractService
 
     protected void pullImage(ContainerService service) {
         String imageName = service.getImage();
-        if (!image.contains(":")) {
+        if (!imageName.contains(":")) {
             throw new RuntimeException("Docker image '" + imageName + "' must include a version.");
         }
         if (dockerClient.getInternalClient().listImagesCmd().withReferenceFilter(imageName).exec().isEmpty()) {
@@ -563,9 +563,8 @@ public class DockerService extends AbstractService
                 if (null != authConfig) {
                     pullImageCmd.withAuthConfig(authConfig);
                 }
-                pullImageCmd
-                        .exec(new PullImageResultCallback())
-                        .awaitCompletion();
+
+                pullImageCmd.exec(new PullImageResultCallback()).awaitCompletion();
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("Docker image pull command interupted", ex);
