@@ -13,16 +13,16 @@ import {
 } from '@/lib/model/ontospecies'
 import { getSpeciesMany } from '@/lib/api/ontospecies'
 import { Combobox } from '@/components/ui/combobox'
-import { SpeciesPropertiesPlot } from './plot'
+import { ScatterPlot, ScatterPlotDataPoint } from '@/components/ui/plot'
 
 function selectSpeciesPropertyNode(nodes: OntospeciesProperty[]) {
-  return nodes.find(node => node.provenance === 'PubChem agent') || nodes[0]
+  return nodes.find(node => node.Provenance === 'PubChem agent') || nodes[0]
 }
 
 function deriveUnitOptions(data: Species[], key: SpeciesPropertyKey) {
   return Object.entries(
     data
-      .map(datum => datum.properties[key])
+      .map(datum => datum.Property[key])
       .filter(x => x)
       .flatMap(nodes => nodes.map(node => node.unit))
       .filter((x): x is string => typeof x === 'string')
@@ -66,7 +66,7 @@ export const SpeciesPropertiesPlotCtx = ({
   )
   const [data, setData] = React.useState<Species[] | undefined>(undefined)
   const [plotData, setPlotData] = React.useState<
-    { x: number; y: number; label: string }[] | undefined
+    ScatterPlotDataPoint[] | undefined
   >(undefined)
   const [isProcessing, setIsProcessing] = React.useState<boolean>(false)
 
@@ -107,14 +107,14 @@ export const SpeciesPropertiesPlotCtx = ({
 
     setPlotData(
       data
-        .map(({ properties, IUPAC_name, InChI }) => ({
-          x: properties[xProp]
-            ? properties[xProp].filter(node => node.unit === xUnit)
+        .map(({ Property, IUPACName, InChI }) => ({
+          x: Property[xProp]
+            ? Property[xProp].filter(node => node.unit === xUnit)
             : undefined,
-          y: properties[yProp]
-            ? properties[yProp].filter(node => node.unit === yUnit)
+          y: Property[yProp]
+            ? Property[yProp].filter(node => node.unit === yUnit)
             : undefined,
-          label: IUPAC_name || InChI,
+          label: IUPACName || InChI,
         }))
         .filter(
           (
@@ -220,7 +220,7 @@ export const SpeciesPropertiesPlotCtx = ({
       </div>
       {isProcessing && <div>Retrieving data...</div>}
       {plotData && plotData.length > 0 && (
-        <SpeciesPropertiesPlot
+        <ScatterPlot
           data={plotData}
           xAxisLabel={`${xProp} (${xUnit})`}
           yAxisLabel={`${yProp} (${yUnit})`}

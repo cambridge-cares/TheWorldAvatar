@@ -34,7 +34,7 @@ export default async function ZeoliteFrameworkPage({
                 Crystal information
               </a>
             </h2>
-            <CrystalInfoAccordion {...data.crystal_information} />
+            <CrystalInfoAccordion {...data.CrystalInformation} />
           </section>
           {/* <section>
           <h2 id='topo-props'>
@@ -51,8 +51,8 @@ export default async function ZeoliteFrameworkPage({
               </a>
             </h2>
             <ul className='list-disc list-inside'>
-              {data.material.map((node, i) => (
-                <li key={i}>{node.chemical_formula}</li>
+              {data.ZeoliticMaterial.map((node, i) => (
+                <li key={i}>{node.ChemicalFormula}</li>
               ))}
             </ul>
           </section>

@@ -23,7 +23,6 @@ import {
   isObjectEmtpy,
 } from '@/lib/utils'
 import {
-  OScalarTopoPropKey,
   OUnitCellAngleKey,
   OUnitCellLengthKey,
   SCALAR_TOPO_PROP_UNITS,
@@ -59,7 +58,7 @@ export const ZEOLITE_FRAMEWORK_FORM_SCHEMA = z.object({
   }),
   scalarTopoProps: z.object(
     Object.fromEntries(
-      Object.values(OScalarTopoPropKey).map(key => [
+      Object.keys(SCALAR_TOPO_PROP_UNITS).map(key => [
         key,
         z.object({ lower: z.string(), upper: z.string() }),
       ])
@@ -86,7 +85,7 @@ const FORM_INIT_VALUES = {
     ),
   },
   scalarTopoProps: Object.fromEntries(
-    Object.values(OScalarTopoPropKey).map(key => [
+    Object.keys(SCALAR_TOPO_PROP_UNITS).map(key => [
       key,
       { lower: '', upper: '' },
     ])
@@ -131,12 +130,12 @@ export function ZeoliteFrameworkForm({
 
     const unitCellLengths = extractLowerUpperParams(
       searchParams,
-      OUnitCellLengthKey,
+      Object.values(OUnitCellLengthKey),
       'unit-cell-'
     )
     const unitCellAngles = extractLowerUpperParams(
       searchParams,
-      OUnitCellAngleKey,
+      Object.values(OUnitCellAngleKey),
       'unit-cell-'
     )
     form.setValue('unitCell', {
@@ -146,7 +145,7 @@ export function ZeoliteFrameworkForm({
 
     const scalarTopoProps = extractLowerUpperParams(
       searchParams,
-      OScalarTopoPropKey
+      Object.keys(SCALAR_TOPO_PROP_UNITS)
     )
     form.setValue('scalarTopoProps', scalarTopoProps)
 
@@ -385,19 +384,14 @@ export function ZeoliteFrameworkForm({
           <div>
             <div>Topological properties</div>
             <div className='grid md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-2'>
-              {Object.values(OScalarTopoPropKey).map((key, i) => (
+              {Object.entries(SCALAR_TOPO_PROP_UNITS).map(([key, unit], i) => (
                 <FormField
                   key={i}
                   control={form.control}
                   name={`scalarTopoProps.${key}`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        {capitalize(key.split('-').join(' '))}
-                        {key in SCALAR_TOPO_PROP_UNITS
-                          ? ` (${SCALAR_TOPO_PROP_UNITS[key]})`
-                          : ''}
-                      </FormLabel>
+                      <FormLabel>{`${key} (${unit})`}</FormLabel>
                       <FormControl>
                         <MinMaxInput
                           minValue={field.value.lower}

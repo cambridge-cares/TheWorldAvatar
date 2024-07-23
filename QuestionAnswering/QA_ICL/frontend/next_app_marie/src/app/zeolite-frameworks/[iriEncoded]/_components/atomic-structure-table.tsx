@@ -11,28 +11,26 @@ const COLS = [
   COL_HELPER.group({
     header: 'Cartesian position (Å)',
     columns: ['x', 'y', 'z'].map(axis =>
-      COL_HELPER.accessor('cart_pos', {
+      COL_HELPER.accessor('CartesianPosition', {
         id: `cart-${axis}`,
         header: axis,
         cell: cell =>
           cell
             .getValue<MeasureVector>()
-            .vector_component.find(component => component.label === axis)
-            ?.value,
+            .component.find(component => component.label === axis)?.value,
       })
     ),
   }),
   COL_HELPER.group({
     header: 'Fractional position',
     columns: ['x', 'y', 'z'].map(axis =>
-      COL_HELPER.accessor('fract_pos', {
+      COL_HELPER.accessor('FractionalPosition', {
         id: `fract-${axis}`,
         header: axis,
         cell: cell =>
           cell
             .getValue<MeasureVector>()
-            .vector_component.find(component => component.label === axis)
-            ?.value,
+            .component.find(component => component.label === axis)?.value,
       })
     ),
   }),

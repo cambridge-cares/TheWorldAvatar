@@ -14,10 +14,10 @@ import { XRDPeakTable } from './xrd-peak-table'
 import { XRDSpectrumPlot } from './xrd-spectrum-plot'
 
 const UNIT_CELL_DIM_KEY = {
-  LENGTHS: 'lengths',
-  RECIPROCAL_LENGTHS: 'reciprocal_lengths',
-  ANGLES: 'angles',
-  RECIPROCAL_ANGLES: 'reciprocal_angles',
+  LENGTHS: 'Lengths',
+  RECIPROCAL_LENGTHS: 'ReciprocalLengths',
+  ANGLES: 'Angles',
+  RECIPROCAL_ANGLES: 'ReciprocalAngles',
 } as const
 
 const UNIT_CELL_DIM_KEY_LABEL = {
@@ -39,18 +39,18 @@ const UNIT_CELL_DIM_CONFIGS = [
 ]
 
 export const CrystalInfoAccordion = ({
-  atomic_structure,
-  coord_transform,
-  unit_cell,
-  tiled_structure,
-  xrd_spectrum,
+  AtomicStructure,
+  CoordinateTransformation,
+  UnitCell,
+  TiledStructure,
+  XRDSpectrum,
 }: CrystalInfo) => {
   const sortedXRDPeaks = React.useMemo(
     () =>
-      xrd_spectrum?.peak.toSorted(
-        (a, b) => a.two_theta_position - b.two_theta_position
+      XRDSpectrum?.Peak.toSorted(
+        (a, b) => a.TwoThetaPosition - b.TwoThetaPosition
       ),
-    [xrd_spectrum]
+    [XRDSpectrum]
   )
 
   return (
@@ -60,7 +60,7 @@ export const CrystalInfoAccordion = ({
           <h3>Atomic structure</h3>
         </AccordionTrigger>
         <AccordionContent>
-          <AtomicStructureTable atomicStructure={atomic_structure.atom_site} />
+          <AtomicStructureTable atomicStructure={AtomicStructure.AtomSite} />
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value='coord-transform'>
@@ -73,7 +73,10 @@ export const CrystalInfoAccordion = ({
               Fractional to Cartesian transformation matrix
             </h4>
             <MatrixTable
-              data={coord_transform.transform_matrix_to_cart.matrix_component}
+              data={
+                CoordinateTransformation.TransformationMatrixToCartesian
+                  .component
+              }
             />
           </div>
           <div>
@@ -83,7 +86,7 @@ export const CrystalInfoAccordion = ({
             (
             {[1, 2, 3]
               .map(index =>
-                coord_transform.transform_vector_to_cart.vector_component.find(
+                CoordinateTransformation.TransformationVectorToCartesian.component.find(
                   x => x.index === index
                 )
               )
@@ -96,7 +99,10 @@ export const CrystalInfoAccordion = ({
               Cartesian to fractional transformation matrix
             </h4>
             <MatrixTable
-              data={coord_transform.transform_matrix_to_frac.matrix_component}
+              data={
+                CoordinateTransformation.TransformationMatrixToFractional
+                  .component
+              }
             />
           </div>
           <div>
@@ -106,7 +112,7 @@ export const CrystalInfoAccordion = ({
             (
             {[1, 2, 3]
               .map(index =>
-                coord_transform.transform_vector_to_frac.vector_component.find(
+                CoordinateTransformation.TransformationVectorToFractional.component.find(
                   x => x.index === index
                 )
               )
@@ -124,9 +130,9 @@ export const CrystalInfoAccordion = ({
           <div className='grid md:grid-cols-2 gap-2'>
             {(
               [
-                ['Lattice system', unit_cell.lattice_system],
-                ['Space group symbol', unit_cell.space_group_symbol],
-                ['Symmetry number', unit_cell.symmetry_number],
+                ['Lattice system', UnitCell.LatticeSystem],
+                ['Space group symbol', UnitCell.SpaceGroupSymbol],
+                ['Symmetry number', UnitCell.SymmetryNumber],
               ] as [string, string | undefined][]
             )
               .filter(([_, val]) => val)
@@ -142,7 +148,7 @@ export const CrystalInfoAccordion = ({
               keys.map(key => ({
                 key,
                 vectorLabels,
-                vectorComponents: unit_cell[key].vector_component,
+                vectorComponents: UnitCell[key].component,
               }))
             )
               .map(({ key, vectorLabels, vectorComponents }) => ({
@@ -167,7 +173,7 @@ export const CrystalInfoAccordion = ({
           </div>
         </AccordionContent>
       </AccordionItem>
-      {tiled_structure && (
+      {TiledStructure && (
         <AccordionItem value='tiled-structure'>
           <AccordionTrigger>
             <h3>Tiled structure</h3>
@@ -175,9 +181,9 @@ export const CrystalInfoAccordion = ({
           <AccordionContent className='px-6'>
             <div className='mb-4'>
               <h4 className='font-semibold'>Signature</h4>
-              <div>{tiled_structure.signature}</div>
+              <div>{TiledStructure.Signature}</div>
             </div>
-            <TileTable tileNums={tiled_structure.tile_num} />
+            <TileTable tileNums={TiledStructure.TileNumber} />
           </AccordionContent>
         </AccordionItem>
       )}

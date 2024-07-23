@@ -1,3 +1,4 @@
+from enum import Enum
 from constants.namespace import OM2, ONTOCRYSTAL, ONTOZEOLITE
 from model.rdf_orm import RDFEntity, RDFField
 
@@ -19,20 +20,20 @@ class OntocrystalVectorComponent(RDFEntity):
 
 class OntocrystalMeasureVector(RDFEntity):
     unit: str = RDFField(path=OM2.hasUnit)
-    vector_component: list[OntocrystalVectorComponent] = RDFField(
+    component: list[OntocrystalVectorComponent] = RDFField(
         path=ONTOCRYSTAL.hasVectorComponent
     )
 
 
 class OntocrystalMatrixComponent(RDFEntity):
-    col_index: int = RDFField(path=ONTOCRYSTAL.hasColumnIndex)
-    row_index: int = RDFField(path=ONTOCRYSTAL.hasRowIndex)
+    col: int = RDFField(path=ONTOCRYSTAL.hasColumnIndex)
+    row: int = RDFField(path=ONTOCRYSTAL.hasRowIndex)
     value: float = RDFField(path=ONTOCRYSTAL.hasComponentValue)
 
 
 class OntocrystalMeasureMatrix(RDFEntity):
     unit: str = RDFField(path=OM2.hasUnit)
-    matrix_component: list[OntocrystalMatrixComponent] = RDFField(
+    component: list[OntocrystalMatrixComponent] = RDFField(
         path=ONTOCRYSTAL.hasMatrixComponent
     )
 
@@ -42,163 +43,141 @@ class OntozeoliteZeoliteFrameworkBase(RDFEntity):
 
 
 class OntozeoliteZeoliticMaterialBase(RDFEntity):
-    chemical_formula: str = RDFField(path=ONTOZEOLITE.hasChemicalFormula)
+    ChemicalFormula: str = RDFField(path=ONTOZEOLITE.hasChemicalFormula)
 
 
 class OntocrystalAtomSite(RDFEntity):
     label: str = RDFField(path=ONTOCRYSTAL.hasAtomSiteLabel)
-    cart_pos: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasCartesianPosition)
-    fract_pos: OntocrystalMeasureVector = RDFField(
+    CartesianPosition: OntocrystalMeasureVector = RDFField(
+        path=ONTOCRYSTAL.hasCartesianPosition
+    )
+    FractionalPosition: OntocrystalMeasureVector = RDFField(
         path=ONTOCRYSTAL.hasFractionalPosition
     )
 
 
 class OntocrystalAtomicStructure(RDFEntity):
-    atom_site: list[OntocrystalAtomSite] = RDFField(path=ONTOCRYSTAL.hasAtomSite)
+    AtomSite: list[OntocrystalAtomSite] = RDFField(path=ONTOCRYSTAL.hasAtomSite)
 
 
 class OntocrystalCoordinateTransformation(RDFEntity):
-    transform_matrix_to_cart: OntocrystalMeasureMatrix = RDFField(
+    TransformationMatrixToCartesian: OntocrystalMeasureMatrix = RDFField(
         path=ONTOCRYSTAL.hasTransformationMatrixToCartesian
     )
-    transform_matrix_to_frac: OntocrystalMeasureMatrix = RDFField(
+    TransformationMatrixToFractional: OntocrystalMeasureMatrix = RDFField(
         path=ONTOCRYSTAL.hasTransformationMatrixToFractional
     )
-    transform_vector_to_cart: OntocrystalMeasureVector = RDFField(
+    TransformationVectorToCartesian: OntocrystalMeasureVector = RDFField(
         path=ONTOCRYSTAL.hasTransformationVectorToCartesian
     )
-    transform_vector_to_frac: OntocrystalMeasureVector = RDFField(
-        path=ONTOCRYSTAL.hasTransformationVectorToCartesian
+    TransformationVectorToFractional: OntocrystalMeasureVector = RDFField(
+        path=ONTOCRYSTAL.hasTransformationVectorToFractional
     )
 
 
 class OntocrystalUnitCell(RDFEntity):
-    lattice_system: str | None = RDFField(path=ONTOCRYSTAL.hasLatticeSystem)
-    space_group_symbol: str | None = RDFField(path=ONTOCRYSTAL.hasSpaceGroupSymbol)
-    symmetry_number: int | None = RDFField(path=ONTOCRYSTAL.hasSymmetryNumber)
-    angles: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellAngles)
-    reciprocal_angles: OntocrystalMeasureVector = RDFField(
-        path=ONTOCRYSTAL.hasReciprocalUnitCellAngles
-    )
-    lengths: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellLengths)
-    reciprocal_lengths: OntocrystalMeasureVector = RDFField(
-        path=ONTOCRYSTAL.hasReciprocalUnitCellLengths
-    )
-    vector_set: list[OntocrystalMeasureVector] = RDFField(
+    LatticeSystem: str | None = RDFField(path=ONTOCRYSTAL.hasLatticeSystem)
+    SpaceGroupSymbol: str | None = RDFField(path=ONTOCRYSTAL.hasSpaceGroupSymbol)
+    SymmetryNumber: int | None = RDFField(path=ONTOCRYSTAL.hasSymmetryNumber)
+
+    Lengths: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellLengths)
+    Angles: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellAngles)
+    VectorSet: list[OntocrystalMeasureVector] = RDFField(
         path=ONTOCRYSTAL.hasUnitCellVectorSet
     )
-    volume: Om2Quantity = RDFField(path=ONTOCRYSTAL.hasUnitCellVolume)
+
+    ReciprocalLengths: OntocrystalMeasureVector = RDFField(
+        path=ONTOCRYSTAL.hasReciprocalUnitCellLengths
+    )
+    ReciprocalAngles: OntocrystalMeasureVector = RDFField(
+        path=ONTOCRYSTAL.hasReciprocalUnitCellAngles
+    )
+    ReciprocalVectorSet: list[OntocrystalMeasureVector] = RDFField(
+        path=ONTOCRYSTAL.hasUnitCellReciprocalVectorSet
+    )
+    
+    Volume: Om2Quantity = RDFField(path=ONTOCRYSTAL.hasUnitCellVolume)
 
 
 class OntocrystalTileFace(RDFEntity):
-    face_code: str | None = RDFField(path=ONTOCRYSTAL.hasFaceCode)
-    edge_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfEdges)
+    FaceCode: str | None = RDFField(path=ONTOCRYSTAL.hasFaceCode)
+    EdgeNum: int = RDFField(path=ONTOCRYSTAL.hasNumberOfEdges)
 
 
 class OntocrystalTileFaceNumber(RDFEntity):
     value: int = RDFField(path=ONTOCRYSTAL.hasValue)
-    tile_face: OntocrystalTileFace = RDFField(path=ONTOCRYSTAL.isNumberOfTileFaces)
+    TileFace: OntocrystalTileFace = RDFField(path=ONTOCRYSTAL.isNumberOfTileFaces)
 
 
 class OntocrystalTile(RDFEntity):
-    edge_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfEdges)
-    face_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfFaces)
-    vertex_num: int = RDFField(path=ONTOCRYSTAL.hasNumberOfVertices)
-    tile_code: str = RDFField(path=ONTOCRYSTAL.hasTileCode)
-    signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
-    tile_face_number: list[OntocrystalTileFaceNumber] = RDFField(
+    Signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
+    TileCode: str = RDFField(path=ONTOCRYSTAL.hasTileCode)
+    EdgeNum: int = RDFField(path=ONTOCRYSTAL.hasNumberOfEdges)
+    FaceNum: int = RDFField(path=ONTOCRYSTAL.hasNumberOfFaces)
+    VertexNum: int = RDFField(path=ONTOCRYSTAL.hasNumberOfVertices)
+    TileFaceNumber: list[OntocrystalTileFaceNumber] = RDFField(
         path=ONTOCRYSTAL.hasTileFaceNumber
     )
 
 
 class OntocrystalTileNumber(RDFEntity):
     value: int = RDFField(path=ONTOCRYSTAL.hasValue)
-    tile: OntocrystalTile = RDFField(path=ONTOCRYSTAL.isNumberOfTiles)
+    Tile: OntocrystalTile = RDFField(path=ONTOCRYSTAL.isNumberOfTiles)
 
 
 class OntocrystalTiledStructure(RDFEntity):
-    signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
-    tile_num: list[OntocrystalTileNumber] = RDFField(path=ONTOCRYSTAL.hasTileNumber)
-
-
-class OntozeoliteZeoliteFramework(OntozeoliteZeoliteFrameworkBase):
-    zeolitic_material: list[OntozeoliteZeoliticMaterialBase] = RDFField(
-        path=ONTOZEOLITE.hasZeoliticMaterial
-    )
+    Signature: str = RDFField(path=ONTOCRYSTAL.hasTileSignature)
+    TileNumber: list[OntocrystalTileNumber] = RDFField(path=ONTOCRYSTAL.hasTileNumber)
 
 
 class OntozeoliteZeoliticMaterial(OntozeoliteZeoliticMaterialBase):
-    framework: OntozeoliteZeoliteFrameworkBase = RDFField(
+    Framework: OntozeoliteZeoliteFrameworkBase = RDFField(
         path=~ONTOZEOLITE.hasZeoliticMaterial
     )
 
 
-class OntocrystalUnitCell(RDFEntity):
-    lattice_system: str | None = RDFField(path=ONTOCRYSTAL.hasLatticeSystem)
-    space_group_symbol: str | None = RDFField(path=ONTOCRYSTAL.hasSpaceGroupSymbol)
-    symmetry_number: str | None = RDFField(path=ONTOCRYSTAL.hasSymmetryNumber)
-
-    angles: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellAngles)
-    lengths: OntocrystalMeasureVector = RDFField(path=ONTOCRYSTAL.hasUnitCellLengths)
-    vector_set: list[OntocrystalMeasureVector] = RDFField(
-        path=ONTOCRYSTAL.hasUnitCellVectorSet / ONTOCRYSTAL.hasUnitCellVector
-    )
-
-    reciprocal_angles: OntocrystalMeasureVector = RDFField(
-        path=ONTOCRYSTAL.hasReciprocalUnitCellAngles
-    )
-    reciprocal_lengths: OntocrystalMeasureVector = RDFField(
-        path=ONTOCRYSTAL.hasReciprocalUnitCellLengths
-    )
-    reciprocal_vector_set: list[OntocrystalMeasureVector] = RDFField(
-        path=ONTOCRYSTAL.hasReciprocalUnitCellVectorSet / ONTOCRYSTAL.hasUnitCellVector
-    )
-
-    volume: OntocrystalQuantity = RDFField(path=ONTOCRYSTAL.hasUnitCellVolume)
-
-
 class OntocrystalXRDPeak(RDFEntity):
-    relative_intensity: float = RDFField(path=ONTOCRYSTAL.hasRelativeIntensity)
-    two_theta_position: float = RDFField(path=ONTOCRYSTAL.hasTwoThetaPosition)
-    is_simulated: bool = RDFField(path=ONTOCRYSTAL.isSimulated)
-    miller_indices: OntocrystalMeasureVector = RDFField(
+    RelativeIntensity: float = RDFField(path=ONTOCRYSTAL.hasRelativeIntensity)
+    TwoThetaPosition: float = RDFField(path=ONTOCRYSTAL.hasTwoThetaPosition)
+    isSimulated: bool = RDFField(path=ONTOCRYSTAL.isSimulated)
+    MillerIndices: OntocrystalMeasureVector = RDFField(
         path=ONTOCRYSTAL.hasMillerIndices
     )
 
 
 class OntocrystalXRDSpectrum(RDFEntity):
-    peak: list[OntocrystalXRDPeak] = RDFField(path=ONTOCRYSTAL.hasCharacteristicPeak)
+    Peak: list[OntocrystalXRDPeak] = RDFField(path=ONTOCRYSTAL.hasCharacteristicPeak)
 
 
 class OntocrystalCrystalInfo(RDFEntity):
-    atomic_structure: OntocrystalAtomicStructure = RDFField(
+    AtomicStructure: OntocrystalAtomicStructure = RDFField(
         path=ONTOCRYSTAL.hasAtomicStructure
     )
-    coord_transform: OntocrystalCoordinateTransformation = RDFField(
+    CoordinateTransformation: OntocrystalCoordinateTransformation = RDFField(
         path=ONTOCRYSTAL.hasCoordinateTransformation
     )
-    unit_cell: OntocrystalUnitCell = RDFField(path=ONTOCRYSTAL.hasUnitCell)
-    tiled_structure: OntocrystalTiledStructure | None = RDFField(
+    UnitCell: OntocrystalUnitCell = RDFField(path=ONTOCRYSTAL.hasUnitCell)
+    TiledStructure: OntocrystalTiledStructure | None = RDFField(
         path=ONTOCRYSTAL.hasTiledStructure
     )
-    xrd_spectrum: OntocrystalXRDSpectrum | None = RDFField(
+    XRDSpectrum: OntocrystalXRDSpectrum | None = RDFField(
         path=ONTOCRYSTAL.hasXRDSpectrum
     )
 
 
 class OntozeoliteVertexSymbol(RDFEntity):
-    ring_size: str = RDFField(path=ONTOZEOLITE.hasRingSize)
-    symbol_position: int = RDFField(path=ONTOZEOLITE.hasSymbolPosition)
+    RingSize: str = RDFField(path=ONTOZEOLITE.hasRingSize)
+    SymbolPosition: int = RDFField(path=ONTOZEOLITE.hasSymbolPosition)
 
 
 class OntozeoliteTAtom(RDFEntity):
     index: int = RDFField(path=ONTOZEOLITE.hasTAtomIndex)
     name: str = RDFField(path=ONTOZEOLITE.hasTAtomName)
 
-    coord_seq: OntocrystalMeasureVector | None = RDFField(
+    CooridnateSequence: OntocrystalMeasureVector | None = RDFField(
         path=ONTOZEOLITE.hasCooridnateSequence
     )
-    vertex_symbol: list[OntozeoliteVertexSymbol] = RDFField(
+    VertexSymbol: list[OntozeoliteVertexSymbol] = RDFField(
         path=ONTOZEOLITE.hasVertexSymbol
     )
 
@@ -209,69 +188,122 @@ class OntozeoliteTopoDensity(RDFEntity):
 
 
 class OntozeoliteCompositeBU(RDFEntity):
-    cage: list[str] = RDFField(path=ONTOZEOLITE.hasCage)
-    T_cage: list[str] = RDFField(path=ONTOZEOLITE.hasTCage)
+    Cage: list[str] = RDFField(path=ONTOZEOLITE.hasCage)
+    TCage: list[str] = RDFField(path=ONTOZEOLITE.hasTCage)
+
+
+class TopologicalPropertyKey(str, Enum):
+    ACCESSIBLE_AREA_PER_CELL = "AccessibleAreaPerCell"
+    ACCESSIBLE_AREA_PER_GRAM = "AccessibleAreaPerGram"
+    ACCESSIBLE_VOLUME = "AccessibleVolume"
+    ACCESSIBLE_VOLUME_PER_CELL = "AccessibleVolumePerCell"
+
+    OCCUPIABLE_AREA_PER_CELL = "OccupiableAreaPerCell"
+    OCCUPIABLE_AREA_PER_GRAM = "OccupiableAreaPerGram"
+    OCCUPIABLE_VOLUME = "OccupiableVolume"
+    OCCUPIABLE_VOLUME_PER_CELL = "OccupiableVolumePerCell"
+
+    SPECIFIC_ACCESSIBLE_AREA = "SpecificAccessibleArea"
+    SPECIFIC_OCCUPIABLE_AREA = "SpecificOccupiableArea"
+
+    DENSITY = "Density"
+    FRAMEWORK_DENSITY = "FrameworkDensity"
+    TOPOLOGICAL_DENSITY = "TopologicalDensity"
+
+    RDLS = "RDLS"
+    RING_SIZES = "RingSizes"
+    SECONDARY_BU = "SecondaryBU"
+    COMPOSITE_BU = "CompositeBU"
+    SPHERE_DIAMETER = "SphereDiameter"
+    T_ATOM = "TAtom"
+    ABC_SEQUENCE = "ABCSequence"
 
 
 class OntozeoliteTopoProps(RDFEntity):
-    accessible_area_per_cell: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasAccessibleAreaPerCell
+    AccessibleAreaPerCell: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasAccessibleAreaPerCell,
+        alias=TopologicalPropertyKey.ACCESSIBLE_AREA_PER_CELL,
     )
-    accessible_area_per_gram: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasAccessibleAreaPerGram
+    AccessibleAreaPerGram: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasAccessibleAreaPerGram,
+        alias=TopologicalPropertyKey.ACCESSIBLE_AREA_PER_GRAM,
     )
-    accessible_volume: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasAccessibleVolume
+    AccessibleVolume: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasAccessibleVolume,
+        alias=TopologicalPropertyKey.ACCESSIBLE_VOLUME,
     )
-    accessible_volume_per_cell: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasAccessibleVolumePerCell
-    )
-
-    occupiable_area_per_cell: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasOccupiableAreaPerCell
-    )
-    occupiable_area_per_gram: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasOccupiableAreaPerGram
-    )
-    occupiable_volume: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasOccupiableVolume
-    )
-    occupiable_volume_per_cell: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasOccupiableVolumePerCell
+    AccessibleVolumePerCell: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasAccessibleVolumePerCell,
+        alias=TopologicalPropertyKey.ACCESSIBLE_VOLUME_PER_CELL,
     )
 
-    specific_accessible_area: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasSpecificAccessibleArea
+    OccupiableAreaPerCell: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasOccupiableAreaPerCell,
+        alias=TopologicalPropertyKey.OCCUPIABLE_AREA_PER_CELL,
     )
-    specific_occupiable_area: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasSpecificOccupiableArea
+    OccupiableAreaPerGram: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasOccupiableAreaPerGram,
+        alias=TopologicalPropertyKey.OCCUPIABLE_AREA_PER_GRAM,
+    )
+    OccupiableVolume: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasOccupiableVolume,
+        alias=TopologicalPropertyKey.OCCUPIABLE_VOLUME,
+    )
+    OccupiableVolumePerCell: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasOccupiableVolumePerCell,
+        alias=TopologicalPropertyKey.OCCUPIABLE_VOLUME_PER_CELL,
     )
 
-    density: OntocrystalQuantity = RDFField(path=ONTOZEOLITE.hasDensity)
-    framework_density: OntocrystalQuantity = RDFField(
-        path=ONTOZEOLITE.hasFrameworkDensity
+    SpecificAccessibleArea: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasSpecificAccessibleArea,
+        alias=TopologicalPropertyKey.SPECIFIC_ACCESSIBLE_AREA,
     )
-    topo_density: OntozeoliteTopoDensity = RDFField(
-        path=ONTOZEOLITE.hasTopologicalDensity
+    SpecificOccupiableArea: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasSpecificOccupiableArea,
+        alias=TopologicalPropertyKey.SPECIFIC_OCCUPIABLE_AREA,
     )
 
-    RDLS: float | None = RDFField(path=ONTOZEOLITE.hasRDLS)
-    ring_sizes: OntocrystalMeasureVector = RDFField(path=ONTOZEOLITE.hasRingSizes)
-    T_atom: list[OntozeoliteTAtom] = RDFField(path=ONTOZEOLITE.hasTAtom)
-    secondary_bu: list[str] = RDFField(path=ONTOZEOLITE.hasSecondaryBU)
-    composite_bu: OntozeoliteCompositeBU | None = RDFField(
-        path=ONTOZEOLITE.hasCompositeBU
+    Density: OntocrystalQuantity = RDFField(path=ONTOZEOLITE.hasDensity)
+    FrameworkDensity: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasFrameworkDensity,
+        alias=TopologicalPropertyKey.FRAMEWORK_DENSITY,
     )
-    abc_seq: str | None = RDFField(path=ONTOZEOLITE.hasABCSequence)
+    TopologicalDensity: OntozeoliteTopoDensity = RDFField(
+        path=ONTOZEOLITE.hasTopologicalDensity,
+        alias=TopologicalPropertyKey.TOPOLOGICAL_DENSITY,
+    )
+
+    SphereDiameter: OntocrystalMeasureVector = RDFField(
+        path=ONTOZEOLITE.hasSphereDiameter, alias=TopologicalPropertyKey.SPHERE_DIAMETER
+    )
+    RingSizes: OntocrystalMeasureVector = RDFField(
+        path=ONTOZEOLITE.hasRingSizes, alias=TopologicalPropertyKey.RING_SIZES
+    )
+
+    RDLS: float | None = RDFField(
+        path=ONTOZEOLITE.hasRDLS, alias=TopologicalPropertyKey.RDLS
+    )
+    TAtom: list[OntozeoliteTAtom] = RDFField(
+        path=ONTOZEOLITE.hasTAtom, alias=TopologicalPropertyKey.T_ATOM
+    )
+    SecondaryBU: list[str] = RDFField(
+        path=ONTOZEOLITE.hasSecondaryBU, alias=TopologicalPropertyKey.SECONDARY_BU
+    )
+    CompositeBU: OntozeoliteCompositeBU | None = RDFField(
+        path=ONTOZEOLITE.hasCompositeBU, alias=TopologicalPropertyKey.COMPOSITE_BU
+    )
+    ABCSequence: str | None = RDFField(
+        path=ONTOZEOLITE.hasABCSequence, alias=TopologicalPropertyKey.ABC_SEQUENCE
+    )
 
 
 class OntozeoliteZeoliteFramework(OntozeoliteZeoliteFrameworkBase):
-    crystal_information: OntocrystalCrystalInfo = RDFField(
+    CrystalInformation: OntocrystalCrystalInfo = RDFField(
         path=ONTOCRYSTAL.hasCrystalInformation
     )
-    topo_props: OntozeoliteTopoProps = RDFField(
+    TopologicalProperties: OntozeoliteTopoProps = RDFField(
         path=ONTOZEOLITE.hasTopologicalProperties
     )
-    material: list[OntozeoliteZeoliticMaterialBase] = RDFField(
+    ZeoliticMaterial: list[OntozeoliteZeoliticMaterialBase] = RDFField(
         path=ONTOZEOLITE.hasZeoliticMaterial
     )

@@ -8,13 +8,13 @@ import { DataTable } from '@/components/ui/data-table'
 
 const COL_HELPER = createColumnHelper<XRDPeak>()
 const COLS = [
-  COL_HELPER.accessor('two_theta_position', { header: '2θ' }),
-  COL_HELPER.accessor('relative_intensity', { header: 'Relative intensity' }),
-  COL_HELPER.accessor('is_simulated', { header: 'Simulated' }),
-  COL_HELPER.accessor('miller_indices', {
+  COL_HELPER.accessor('TwoThetaPosition', { header: '2θ' }),
+  COL_HELPER.accessor('RelativeIntensity', { header: 'Relative intensity' }),
+  COL_HELPER.accessor('isSimulated', { header: 'Simulated' }),
+  COL_HELPER.accessor('MillerIndices', {
     header: 'Miller indices',
     cell: cell => {
-      const components = cell.getValue<MeasureVector>().vector_component
+      const components = cell.getValue<MeasureVector>().component
       const sortedComponents = ['h', 'k', 'l'].map(label =>
         components.find(component => component.label === label)
       )

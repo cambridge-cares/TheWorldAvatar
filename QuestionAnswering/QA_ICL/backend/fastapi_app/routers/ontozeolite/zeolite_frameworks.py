@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated, get_args
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from model.kg.ontozeolite import (
     OntozeoliteZeoliteFramework,
@@ -34,7 +34,7 @@ UNIT_CELL_QUERY_KEYS = {
 
 SCALAR_TOPOLOGY_PROPERTY_QUERY_KEYS = {
     CAMEL_CASE_PATTERN.sub("-", key.value).lower(): key
-    for key in ScalarTopologicalPropertyKey
+    for key in get_args(ScalarTopologicalPropertyKey)
 }
 
 

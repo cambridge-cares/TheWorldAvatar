@@ -18,10 +18,10 @@ class OntospeciesHasValueHasUnit(RDFEntity):
 
 
 class OntospeciesProperty(OntospeciesHasValueHasUnit):
-    reference_state: OntospeciesHasValueHasUnit | None = RDFField(
+    ReferenceState: OntospeciesHasValueHasUnit | None = RDFField(
         path=ONTOSPECIES.hasReferenceState
     )
-    provenance: str | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
+    Provenance: str | None = RDFField(path=ONTOSPECIES.hasProvenance / RDFS.label)
 
 
 class GcAtom(RDFEntity):
@@ -49,7 +49,7 @@ class OntospeciesUse(RDFEntity):
 
 class OntospeciesSpeciesBase(RDFEntity):
     label: str | None = RDFField(path=RDFS.label)
-    IUPAC_name: str | None = RDFField(path=ONTOSPECIES.hasIUPACName / ONTOSPECIES.value)
+    IUPACName: str | None = RDFField(path=ONTOSPECIES.hasIUPACName / ONTOSPECIES.value)
     InChI: str = RDFField(path=ONTOSPECIES.hasInChI / ONTOSPECIES.value)
 
 
@@ -112,13 +112,20 @@ class SpeciesIdentifierKey(str, Enum):
     SMILES = "SMILES"
 
 
+class SpeciesAttrKey(str, Enum):
+    ALT_LABEL = "altLabel"
+    CHEMICAL_CLASS = "ChemicalClass"
+    USE = "Use"
+    IDENTIFIER = "Identifier"
+    PROPERTY = "Property"
+
 class OntospeciesSpecies(OntospeciesSpeciesBase):
-    alt_labels: list[str] = RDFField(path=SKOS.altLabel)
+    altLabel: list[str] = RDFField(path=SKOS.altLabel, alias=SpeciesAttrKey.ALT_LABEL)
 
-    chemical_classes: list[OntospeciesChemicalClass] = RDFField(
-        path=ONTOSPECIES.hasChemicalClass
+    ChemicalClass: list[OntospeciesChemicalClass] = RDFField(
+        path=ONTOSPECIES.hasChemicalClass, alias=SpeciesAttrKey.CHEMICAL_CLASS
     )
-    uses: list[OntospeciesUse] = RDFField(path=ONTOSPECIES.hasUse)
+    Use: list[OntospeciesUse] = RDFField(path=ONTOSPECIES.hasUse, alias=SpeciesAttrKey.USE)
 
-    identifiers: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]]
-    properties: dict[SpeciesPropertyKey, list[OntospeciesProperty]]
+    Identifier: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]]
+    Property: dict[SpeciesPropertyKey, list[OntospeciesProperty]]

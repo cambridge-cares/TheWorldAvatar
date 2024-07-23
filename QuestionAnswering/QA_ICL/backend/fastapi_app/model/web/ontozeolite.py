@@ -1,6 +1,8 @@
 from enum import Enum
+from typing import Literal
 from pydantic import BaseModel
 
+from model.kg.ontozeolite import TopologicalPropertyKey
 from model.web.comp_op import ComparisonOperator
 
 
@@ -25,20 +27,20 @@ class UnitCellAngleKey(str, Enum):
 UnitCellKey = UnitCellLengthKey | UnitCellAngleKey
 
 
-class ScalarTopologicalPropertyKey(str, Enum):
-    ACCESSIBLE_AREA_PER_CELL = "AccessibleAreaPerCell"
-    ACCESSIBLE_AREA_PER_GRAM = "AccessibleAreaPerGram"
-    ACCESSIBLE_VOLUME = "AccessibleVolume"
-    ACCESSIBLE_VOLUME_PER_CELL = "AccessibleVolumePerCell"
-    DENSITY = "Density"
-    FRAMEWORK_DENSITY = "FrameworkDensity"
-    OCCUPIABLE_AREA_PER_CELL = "OccupiableAreaPerCell"
-    OCCUPIABLE_AREA_PER_GRAM = "OccupiableAreaPerGram"
-    OCCUPIABLE_VOLUME = "OccupiableVolume"
-    OCCUPIABLE_VOLUME_PER_CELL = "OccupiableVolumePerCell"
-    SPECIFIC_ACCESSIBLE_AREA = "SpecificAccessibleArea"
-    SPECIFIC_OCCUPIABLE_AREA = "SpecificOccupiableArea"
-    TOPOLOGICAL_DENSITY = "TopologicalDensity"
+ScalarTopologicalPropertyKey = Literal[
+    TopologicalPropertyKey.ACCESSIBLE_AREA_PER_CELL,
+    TopologicalPropertyKey.ACCESSIBLE_AREA_PER_GRAM,
+    TopologicalPropertyKey.ACCESSIBLE_VOLUME,
+    TopologicalPropertyKey.ACCESSIBLE_VOLUME_PER_CELL,
+    TopologicalPropertyKey.OCCUPIABLE_AREA_PER_CELL,
+    TopologicalPropertyKey.OCCUPIABLE_AREA_PER_GRAM,
+    TopologicalPropertyKey.OCCUPIABLE_VOLUME,
+    TopologicalPropertyKey.OCCUPIABLE_VOLUME_PER_CELL,
+    TopologicalPropertyKey.SPECIFIC_ACCESSIBLE_AREA,
+    TopologicalPropertyKey.SPECIFIC_OCCUPIABLE_AREA,
+    TopologicalPropertyKey.DENSITY,
+    TopologicalPropertyKey.FRAMEWORK_DENSITY,
+]
 
 
 class ZeoliteFrameworkRequest(BaseModel):

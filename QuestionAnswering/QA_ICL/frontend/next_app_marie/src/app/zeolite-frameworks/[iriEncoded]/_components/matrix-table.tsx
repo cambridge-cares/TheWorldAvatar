@@ -5,11 +5,11 @@ import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 
 export const MatrixTable = ({ data }: { data: MatrixComponent[] }) => {
   const colNum = React.useMemo(
-    () => Math.max(...data.map(component => component.col_index)),
+    () => Math.max(...data.map(component => component.col)),
     [data]
   )
   const rowNum = React.useMemo(
-    () => Math.max(...data.map(component => component.row_index)),
+    () => Math.max(...data.map(component => component.row)),
     [data]
   )
 
@@ -23,8 +23,7 @@ export const MatrixTable = ({ data }: { data: MatrixComponent[] }) => {
                 {
                   data.find(
                     component =>
-                      component.row_index === i + 1 &&
-                      component.col_index === j + 1
+                      component.row === i + 1 && component.col === j + 1
                   )?.value
                 }
               </TableCell>

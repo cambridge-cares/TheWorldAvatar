@@ -20,8 +20,8 @@ export interface HasValueHasUnit extends RDFEntity {
 }
 
 export interface OntospeciesProperty extends HasValueHasUnit {
-  reference_state?: HasValueHasUnit
-  provenance?: string
+  ReferenceState?: HasValueHasUnit
+  Provenance?: string
 }
 
 export const OSpeciesPropertyKey = {
@@ -99,14 +99,14 @@ export const SPECIES_IDENTIFIER_KEY_LABELS = {
 
 export interface SpeciesBase extends RDFEntity {
   label?: string
-  IUPAC_name?: string
+  IUPACName?: string
   InChI: string
 }
 
 export interface Species extends SpeciesBase {
-  alt_labels: string[]
-  chemical_classes: ChemicalClass[]
-  uses: Use[]
-  identifiers: { [key in SpeciesIdentifierKey]: OntospeciesIdentifier[] }
-  properties: { [key in SpeciesPropertyKey]: OntospeciesProperty[] }
+  altLabel: string[]
+  ChemicalClass: ChemicalClass[]
+  Use: Use[]
+  Identifier: { [key in SpeciesIdentifierKey]: OntospeciesIdentifier[] }
+  Property: { [key in SpeciesPropertyKey]: OntospeciesProperty[] }
 }

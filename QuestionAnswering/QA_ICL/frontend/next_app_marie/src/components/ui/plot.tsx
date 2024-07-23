@@ -4,24 +4,25 @@ import * as React from 'react'
 import Chart from 'chart.js/auto'
 import { cn } from '@/lib/utils'
 
-export interface SpeciesPropertiesPlotProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  data: {
-    x: number
-    y: number
-    label: string
-  }[]
+export interface ScatterPlotDataPoint {
+  x: number
+  y: number
+  label: string
+}
+
+export interface ScatterPlotProps extends React.HTMLAttributes<HTMLDivElement> {
+  data: ScatterPlotDataPoint[]
   xAxisLabel: string
   yAxisLabel: string
 }
 
-export const SpeciesPropertiesPlot = ({
+export const ScatterPlot = ({
   data,
   xAxisLabel,
   yAxisLabel,
   className,
   ...props
-}: SpeciesPropertiesPlotProps) => {
+}: ScatterPlotProps) => {
   const ref = React.useRef<null | HTMLCanvasElement>(null)
 
   React.useEffect(() => {
@@ -50,7 +51,10 @@ export const SpeciesPropertiesPlot = ({
           tooltip: {
             displayColors: false,
             callbacks: {
-              label: ({parsed: {x, y}, raw}) => [`${(raw as { label: string }).label}`, `(${x}, ${y})`]
+              label: ({ parsed: { x, y }, raw }) => [
+                `${(raw as ScatterPlotDataPoint).label}`,
+                `(${x}, ${y})`,
+              ],
             },
           },
         },

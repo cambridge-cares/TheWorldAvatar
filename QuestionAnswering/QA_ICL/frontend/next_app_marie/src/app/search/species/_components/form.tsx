@@ -108,7 +108,10 @@ export function SpeciesForm({
     )
     form.setValue('identifier', identifier)
 
-    const property = extractLowerUpperParams(searchParams, OSpeciesPropertyKey)
+    const property = extractLowerUpperParams(
+      searchParams,
+      Object.values(OSpeciesPropertyKey)
+    )
     form.setValue('property', property)
   }, [form, searchParams])
 
