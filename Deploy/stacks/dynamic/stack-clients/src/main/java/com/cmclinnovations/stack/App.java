@@ -1,13 +1,11 @@
 package com.cmclinnovations.stack;
 
-import java.net.MalformedURLException;
-
 /**
  * Hello world!
  *
  */
 public class App {
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) {
 
         // TODO Move this code into tests.
         TempTestCalls.doStuff();
