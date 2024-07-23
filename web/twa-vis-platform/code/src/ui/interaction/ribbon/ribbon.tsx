@@ -5,6 +5,8 @@ import { Map } from 'mapbox-gl';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import styles from './ribbon.module.css';
+
 import {
   getCameraPositions,
   getDefaultImageryOption,
@@ -16,13 +18,15 @@ import {
   togglePlacenames
 } from 'map/map-helper';
 import { addItem, selectItem } from 'state/context-menu-slice';
+import { getScenarioName, getScenarioType } from 'state/map-feature-slice';
 import { ImageryOption, MapSettings } from 'types/settings';
 import { ContextItemDefinition } from 'ui/interaction/context-menu/context-item';
 import { closeFullscreen, openFullscreen } from 'utils/client-utils';
 import RibbonComponentClick from './components/ribbon-component-click';
 import RibbonComponentOptions from './components/ribbon-component-options';
 import RibbonComponentToggle from './components/ribbon-component-toggle';
-import RibbonPanel from './ribbon-panel';
+import IconComponent from 'ui/graphic/icon/icon';
+import { scenarioTypeIcon } from '../modal/scenario';
 
 // Type definition for Ribbon parameters
 export interface RibbonProps {
@@ -56,16 +60,16 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
   }, [isRibbonToggled, ribbonState?.toggled])
 
 
+  const currentScenarioName = useSelector(getScenarioName);
+  const currentScenarioType = useSelector(getScenarioType);
+
   // State for map configuration settings
   const dispatch = useDispatch();
   dispatch(addItem(ribbonContextItem));   // Add context menu item
 
-
-  // Return renderable element
   if (isRibbonToggled) {
     return (
-      <RibbonPanel>
-        {/* TODO remove this unnecessary wrapper */}
+      <div className={styles.ribbon}>
         <RibbonComponentClick
           key="location" id="location"
           icon="my_location"
@@ -127,15 +131,19 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
           }}
         />
         <Divider orientation="vertical" flexItem />
-        {props.hasScenario &&
+        {currentScenarioName &&
           <RibbonComponentToggle
             key="scenario" id="scenario"
-            icon="huboutlined"
             tooltip="Select another scenario."
             initialState={false}
             action={props.toggleScenarioSelection}
-          />
+          >
+            <div className={styles.selectedScenarioDisplay}>
+              <span>{currentScenarioName}</span>
+              <IconComponent icon={scenarioTypeIcon(currentScenarioType)} classes={styles.navbarScenarioIcon} />
+            </div>
+          </RibbonComponentToggle>
         }
-      </RibbonPanel>)
+      </div>)
   }
 }

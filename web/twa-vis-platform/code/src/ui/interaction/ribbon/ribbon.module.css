@@ -1,4 +1,4 @@
-.ribbonPanel {
+.ribbon {
     width: 100%;
 
     display: flex !important;
@@ -37,4 +37,17 @@
     font-weight: bold;
     background-color: var(--background-tertiary);
     color: inherit !important;
+}
+
+.selectedScenarioDisplay {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5rem;
+    height: 100%;
+}
+
+.navbarScenarioIcon {
+    height: 30px;
+    margin: 0 0.5rem;
 }

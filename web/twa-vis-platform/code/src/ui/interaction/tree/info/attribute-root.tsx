@@ -72,7 +72,7 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(group.isCollapsed);
   const [isSubqueryLoading, setIsSubqueryLoading] = useState<boolean>(false);
   const collapsedIcon: string = isCollapsed ? "keyboard_arrow_right" : "keyboard_arrow_down";
-  const displayIcon: string = group.subQueryIri ? "./images/defaults/icons/fia-logo.svg" : collapsedIcon;
+  const displayIcon: string = group.subQueryIri ? "./images/defaults/icons/sparkle.svg" : collapsedIcon;
 
   const toggleExpansion = () => {
     if (group.subQueryIri) {
