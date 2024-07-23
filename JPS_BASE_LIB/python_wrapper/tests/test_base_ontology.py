@@ -196,9 +196,9 @@ def test_basics():
     assert b.data_property_b == {2}
 
     # test set to new value
-    b.object_property_b_a = {a}
+    b.object_property_b_a = a
     assert b.object_property_b_a == {a}
-    b.data_property_b = {1}
+    b.data_property_b = 1
     assert b.data_property_b == {1}
 
     # test clear set
@@ -211,18 +211,18 @@ def test_basics():
     # object_property_b_a can be set to None as it's optional
     b.object_property_b_a = None
     assert b.object_property_b_a == None
-    # data_property_b cannot be set to None as it's not optional
+    # data_property_b cannot be set to None as it's not optional and it should be an int
     with pytest.raises(ValidationError) as e_info:
         b.data_property_b = None
     assert e_info.match('1 validation error for B')
     assert e_info.match('data_property_b')
-    assert e_info.match('Input should be a valid set')
+    assert e_info.match('Input should be a valid integer')
     """
     an example:
     E           pydantic_core._pydantic_core.ValidationError: 1 validation error for B
     E           data_property_b
-    E             Input should be a valid set [type=set_type, input_value=None, input_type=NoneType]
-    E               For further information visit https://errors.pydantic.dev/2.8/v/set_type
+    E             Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]
+    E               For further information visit https://errors.pydantic.dev/2.8/v/int_type
     """
 
 

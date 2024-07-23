@@ -595,6 +595,10 @@ class _BaseProperty(set, Generic[T]):
         Returns:
             Any: The validated value
         """
+        # this makes sure the value is a list or set
+        # converting list to set and validating all the elements will be done by the validation process of pydantic
+        if not isinstance(value, set) and not isinstance(value, list):
+            value = [value]
         return value
 
     @classmethod
