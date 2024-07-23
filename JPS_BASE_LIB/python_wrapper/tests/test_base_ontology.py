@@ -304,6 +304,48 @@ def test_pull_from_kg(initialise_sparql_client):
     # test exception when pulling an object that does not match the type of the class
     with pytest.raises(ValueError) as e_info:
         A.pull_from_kg(c.instance_iri, sparql_client)
+    assert e_info.match(f"""The instance {c.instance_iri} is of type {set([C.rdf_type])}""")
+    assert e_info.match(f"""it doesn't match the rdf:type of class {A.__name__} \({A.rdf_type}\)""")
+
+
+def test_pull_from_kg_force_overwrite_local(initialise_sparql_client, recwarn):
+    a1, a2, a3, b, c, d = init()
+    sparql_client = initialise_sparql_client
+    # clear the data property of c (this will make it easier later to detect the error message)
+    c.data_property_c.clear()
+    c.push_to_kg(sparql_client, -1)
+
+    # firstly, modify the remote triple by adding a new data property to c
+    c_remote = 'c_remote ' + str(uuid.uuid4())
+    sparql_client.perform_update(f"""INSERT DATA {{<{c.instance_iri}> <{Data_Property_C.predicate_iri}> '{c_remote}'.}}""")
+
+    # secondly, modify the local object by adding a new data property to c
+    c_local = 'c_local ' + str(uuid.uuid4())
+    c.data_property_c.add(c_local)
+
+    # thirdly, pull the object from the KG which should raise exception
+    with pytest.raises(Exception) as e_info:
+        new_c = C.pull_from_kg(c.instance_iri, sparql_client, -1)[0]
+    assert KnowledgeGraph.iri_loading_in_progress == set()
+    assert e_info.match(f"""The remote changes in knowledge graph conflicts with local changes""")
+    assert e_info.match(f"""for {c.instance_iri} {Data_Property_C.predicate_iri}""")
+    assert e_info.match(f"""Objects appear in the remote but not in the local: {set([c_remote])}""")
+    assert e_info.match(f"""Triples appear in the local but not the remote: {set([c_local])}""")
+    assert e_info.match(f"""Triples cached in the local: {set()}""")
+
+    # fourthly, pull the object from the KG with force_overwrite_local set to True
+    # this should be executed without issue
+    new_c = C.pull_from_kg(c.instance_iri, sparql_client, -1, True)[0]
+    # warning messages should also be raised
+    assert len(recwarn) == 1
+    warning_message = str(recwarn[0].message)
+    assert f"""The remote changes in knowledge graph conflicts with local changes""" in warning_message
+    assert f"""for {c.instance_iri} {Data_Property_C.predicate_iri} but is now overwritten by the remote changes:""" in warning_message
+    assert f"""Objects appear in the remote but not in the local: {set([c_remote])}""" in warning_message
+    assert f"""Triples appear in the local but not the remote: {set([c_local])}""" in warning_message
+    assert f"""Triples cached in the local: {set()}""" in warning_message
+    # also the local values should be overwritten
+    assert new_c.data_property_c == {c_remote}
 
 
 def test_pull_all_instance_from_kg(initialise_sparql_client):

@@ -795,17 +795,23 @@ class BaseClass(BaseModel, validate_assignment=True):
         return subclass_dict
 
     @classmethod
-    def push_all_instances_to_kg(cls, sparql_client: PySparqlClient, recursive_depth: int = 0):
+    def push_all_instances_to_kg(
+        cls,
+        sparql_client: PySparqlClient,
+        recursive_depth: int = 0,
+        force_overwrite_local: bool = False,
+    ):
         """
         This function pushes all the instances of the class to the knowledge graph.
 
         Args:
             sparql_client (PySparqlClient): The SPARQL client that is used to push the data to the KG
             recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+            force_overwrite_local (bool): Whether to force overwrite the local values with the remote values
         """
         g_to_remove = Graph()
         g_to_add = Graph()
-        cls.pull_from_kg(cls.object_lookup.keys(), sparql_client, recursive_depth)
+        cls.pull_from_kg(cls.object_lookup.keys(), sparql_client, recursive_depth, force_overwrite_local)
         for obj in cls.object_lookup.values():
             g_to_remove, g_to_add = obj.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
         sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
@@ -821,7 +827,13 @@ class BaseClass(BaseModel, validate_assignment=True):
                 del cls.object_lookup[i]
 
     @classmethod
-    def pull_from_kg(cls, iris: List[str], sparql_client: PySparqlClient, recursive_depth: int = 0) -> List[BaseClass]:
+    def pull_from_kg(
+        cls,
+        iris: List[str],
+        sparql_client: PySparqlClient,
+        recursive_depth: int = 0,
+        force_overwrite_local: bool = False,
+    ) -> List[BaseClass]:
         """
         This function pulls the objects from the KG based on the given IRIs.
 
@@ -829,6 +841,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             iris (List[str]): The list of IRIs of the objects that one wants to pull from the KG
             sparql_client (PySparqlClient): The SPARQL client that is used to pull the data from the KG
             recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+            force_overwrite_local (bool): Whether to force overwrite the local values with the remote values
 
         Raises:
             ValueError: The rdf:type of the IRI provided does not match the calling class
@@ -868,6 +881,9 @@ class BaseClass(BaseModel, validate_assignment=True):
             # check if the rdf:type of the instance matches the calling class or any of its subclasses
             target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
             if target_clz_rdf_type != cls.rdf_type and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
+                # if there's any error, remove the iri from the loading status
+                # otherwise it will block any further pulling of the same object
+                KnowledgeGraph.remove_iri_from_loading(iri)
                 raise ValueError(
                     f"""The instance {iri} is of type {props[RDF.type.toPython()]},
                     it doesn't match the rdf:type of class {cls.__name__} ({cls.rdf_type}),
@@ -893,12 +909,19 @@ class BaseClass(BaseModel, validate_assignment=True):
                 if op_iri in props:
                     if flag_pull:
                         c_tp: BaseClass = get_args(op_dct['type'])[0]
-                        _set = c_tp.pull_from_kg(props[op_iri], sparql_client, recursive_depth)
+                        _set = c_tp.pull_from_kg(props[op_iri], sparql_client, recursive_depth, force_overwrite_local)
                     else:
                         _set = set(props[op_iri])
                 object_properties_dict[op_dct['field']] = _set
             # here we handle data properties (data_properties_dict is a fetch of the remote KG)
-            data_properties_dict = {dp_dct['field']: set(props[dp_iri]) if dp_iri in props else set() for dp_iri, dp_dct in dps.items()}
+            data_properties_dict = {}
+            for dp_iri, dp_dct in dps.items():
+                if dp_iri in props:
+                    # here we need to convert the data property to the correct type
+                    _dp_tp = get_args(dp_dct['type'])[0]
+                    data_properties_dict[dp_dct['field']] = set([_dp_tp(_) for _ in props[dp_iri]])
+                else:
+                    data_properties_dict[dp_dct['field']] = set()
             # handle rdfs:label and rdfs:comment (also fetch of the remote KG)
             rdfs_properties_dict = {}
             if RDFS.label.toPython() in props:
@@ -922,7 +945,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                         c_tp: BaseClass = get_args(op_dct['type'])[0]
                         c_tp.pull_from_kg(
                             set([o.instance_iri if isinstance(o, BaseClass) else o for o in getattr(inst, op_dct['field'])]) - set(props.get(op_iri, [])),
-                            sparql_client, recursive_depth)
+                            sparql_client, recursive_depth, force_overwrite_local)
                 # now collect all featched values
                 fetched = {
                     k: set([o.instance_iri if isinstance(o, BaseClass) else o for o in v])
@@ -932,7 +955,13 @@ class BaseClass(BaseModel, validate_assignment=True):
                 fetched.update(rdfs_properties_dict) # rdfs properties
                 # compare it with cached values and local values for all object/data/rdfs properties
                 # if the object is already in the lookup, then update the object for those fields that are not modified in the python
-                inst.update_according_to_fetch(fetched, flag_pull)
+                try:
+                    inst.update_according_to_fetch(fetched, flag_pull, force_overwrite_local)
+                except Exception as e:
+                    # if there's any error, remove the iri from the loading status
+                    # otherwise it will block any further pulling of the same object
+                    KnowledgeGraph.remove_iri_from_loading(inst.instance_iri)
+                    raise e
             else:
                 # if the object is not in the lookup, create a new object
                 inst = target_clz(
@@ -951,7 +980,12 @@ class BaseClass(BaseModel, validate_assignment=True):
         return instance_lst
 
     @classmethod
-    def pull_all_instances_from_kg(cls, sparql_client: PySparqlClient, recursive_depth: int = 0) -> Set[BaseClass]:
+    def pull_all_instances_from_kg(
+        cls,
+        sparql_client: PySparqlClient,
+        recursive_depth: int = 0,
+        force_overwrite_local: bool = False,
+    ) -> Set[BaseClass]:
         """
         This function pulls all instances of the calling class from the knowledge graph (triplestore).
         It calls the pull_from_kg function with the IRIs of all instances of the calling class.
@@ -960,12 +994,13 @@ class BaseClass(BaseModel, validate_assignment=True):
         Args:
             sparql_client (PySparqlClient): The SPARQL client that is used to pull the data from the KG
             recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
+            force_overwrite_local (bool): Whether to force overwrite the local values with the remote values
 
         Returns:
             Set[BaseClass]: A set of objects that are pulled from the KG
         """
         iris = sparql_client.get_all_instances_of_class(cls.rdf_type)
-        return cls.pull_from_kg(iris, sparql_client, recursive_depth)
+        return cls.pull_from_kg(iris, sparql_client, recursive_depth, force_overwrite_local)
 
     @classmethod
     def get_object_and_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[_BaseProperty]]]]:
@@ -1113,7 +1148,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             else:
                 setattr(self, f, copy.deepcopy(self._latest_cache.get(f, None)))
 
-    def update_according_to_fetch(self, fetched: dict, flag_connect_object: bool):
+    def update_according_to_fetch(self, fetched: dict, flag_connect_object: bool, force_overwrite_local: bool = False):
         """
         This function compares the fetched values with the cached values and local values.
         It updates the cache and local values depend on the comparison results.
@@ -1133,7 +1168,9 @@ class BaseClass(BaseModel, validate_assignment=True):
             # if fetched != cached --> remote changed, now should check if local has changed:
             #     if local == cached --> no local changes, can update both cache and local values with fetched value
             #     if local != cached --> there are local changed, now should check if the local changes are the same as remote (unlikely tho)
-            #         if local != fetched --> raise exception
+            #         if local != fetched --> now check the flag force_overwrite_local
+            #             if True --> update local and cache values with fetched value
+            #             if False --> raise exception
             #         if local == fetched --> (which is really unlikely) update cache only
             # in practice, the above logic can be simplified:
             if fetched_value != cached_value:
@@ -1142,11 +1179,20 @@ class BaseClass(BaseModel, validate_assignment=True):
                     setattr(self, p_dct['field'], copy.deepcopy(fetched_value))
                 else:
                     # there are both local and remote changes, now compare these two
-                    if local_value != fetched_value:
+                    if local_value != fetched_value and not force_overwrite_local:
                         raise Exception(f"""The remote changes in knowledge graph conflicts with local changes
                             for {self.instance_iri} {p_iri}:
                             Objects appear in the remote but not in the local: {fetched_value}
-                            Triples appear in the local but not the remote: {local_value}""")
+                            Triples appear in the local but not the remote: {local_value}
+                            Triples cached in the local: {cached_value}""")
+                    else:
+                        # update the local changes as force_overwrite_local is set to True
+                        setattr(self, p_dct['field'], copy.deepcopy(fetched_value))
+                        warnings.warn(f"""The remote changes in knowledge graph conflicts with local changes
+                            for {self.instance_iri} {p_iri} but is now overwritten by the remote changes:
+                            Objects appear in the remote but not in the local: {fetched_value}
+                            Triples appear in the local but not the remote: {local_value}
+                            Triples cached in the local: {cached_value}""")
             # the cache can be updated regardless as long as there are no exceptions
             self._latest_cache[p_dct['field']] = copy.deepcopy(fetched_value)
 
@@ -1202,6 +1248,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         recursive_depth: int = 0,
         pull_first: bool = False,
         maximum_retry: int = 0,
+        force_overwrite_if_pull_first: bool = False,
     ) -> Tuple[Graph, Graph]:
         """
         This function pushes the triples of the calling object to the knowledge graph (triplestore).
@@ -1211,6 +1258,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             recursive_depth (int): The depth of the recursion, 0 means no recursion, -1 means infinite recursion, n means n-level recursion
             pull_first (bool): Whether to pull the latest triples from the KG before pushing the triples
             maximum_retry (int): The number of retries if any exception was raised during SPARQL update
+            force_overwrite_if_pull_first (bool): Whether to force overwrite the local values with the remote values if `pull_first` is `True`
 
         Returns:
             Tuple[Graph, Graph]: A tuple of two rdflib.Graph objects containing the triples to be removed and added
@@ -1221,7 +1269,7 @@ class BaseClass(BaseModel, validate_assignment=True):
 
         # pull the latest triples from the KG if needed
         if pull_first:
-            self.__class__.pull_from_kg(self.instance_iri, sparql_client, recursive_depth)
+            self.__class__.pull_from_kg(self.instance_iri, sparql_client, recursive_depth, force_overwrite_if_pull_first)
         # type of changes: remove old triples, add new triples
         g_to_remove = Graph()
         g_to_add = Graph()
@@ -1329,7 +1377,6 @@ class BaseClass(BaseModel, validate_assignment=True):
         """
         if g is None:
             g = Graph()
-        print(self.model_fields)
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
         for f, field_info in self.model_fields.items():
             tp = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
