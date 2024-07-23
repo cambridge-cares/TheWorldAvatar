@@ -298,6 +298,14 @@ final class DCATUpdateQuery {
                         .optional());
     }
 
+    private void addMetadata(Dataset dataset) {
+        Metadata metadataRDF = dataset.getAdditionalMetadata();
+        metadataRDF.getTriplePatterns().ifPresent(tps -> {
+            metadataRDF.getPrefixes().forEach(query::prefix);
+            query.insert(tps);
+        });
+    }
+
     public String getUpdateQuery(Dataset dataset) {
 
         addDataset(dataset);
@@ -318,6 +326,8 @@ final class DCATUpdateQuery {
         addGeoServerServer(dataset);
 
         addOntopServer(dataset);
+
+        addMetadata(dataset);
 
         return getQuery();
     }

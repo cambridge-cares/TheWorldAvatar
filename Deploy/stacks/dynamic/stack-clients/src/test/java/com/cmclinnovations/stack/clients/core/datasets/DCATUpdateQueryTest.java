@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +42,7 @@ import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 class DCATUpdateQueryTest {
@@ -250,6 +252,97 @@ class DCATUpdateQueryTest {
                     .build();
             buildAndRunQuery(dataset);
         });
+    }
+
+    @Test
+    void testAddMetadataSimple() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of(), Optional.of("<http://p/a> <http://q/b> <http://r/c>")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataPrefixOnly() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of("p", "http://p/"), Optional.empty()))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataPrefix() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of("p", "http://p/"), Optional.of("p:a <http://q/b> <http://r/c>")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataMissingPrefixes() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of(),
+                        Optional.of("<http://p/a> rdf:type <http://p/A>; rdfs:label \"Hello\"")))
+                .build();
+        Assertions.assertThrows(JPSRuntimeException.class, () -> buildAndRunQuery(dataset));
+    }
+
+    @Test
+    void testAddMetadataUseBuiltinPrefix() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
+                        Optional.of("<http://p/a> rdfs:label \"Hello\"")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataOverrideBuiltinPrefixes() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(
+                        Map.of("rdf", "http://cmcl.io/rdf#", "rdfs", "http://cmcl.io/rdfs#", "dcat",
+                                "http://purl.org/dc/terms/", "xsd", "http://cmcl.io/xsd#"),
+                        Optional.of("<http://p/a> rdf:type <http://p/A>; rdfs:label \"Hello\"^^xsd:string")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataFromFile() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of(),
+                        Optional.of(
+                                "@src/test/resources/com/cmclinnovations/stack/clients/core/datasets/datasetMetadata.ttl")))
+                .build();
+        buildAndRunQuery(dataset);
     }
 
     @Test

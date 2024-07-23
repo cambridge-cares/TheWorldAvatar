@@ -126,6 +126,7 @@ function getThumbnails(): React.ReactElement[] {
   pages.forEach(page => {
     const thumbnail = (
       <MarkdownPageThumbnail
+        key={page.slug}
         page={page}
       />
     );

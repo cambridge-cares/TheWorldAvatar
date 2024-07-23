@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Install dependencies
-npm install
+# Install dependencies (not devDependencies)
+npm install --omit=dev
 
 # Build your application
 npm run build

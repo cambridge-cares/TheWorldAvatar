@@ -14,7 +14,9 @@ export const mapFeatureSlice = createSlice({
         iri: null,
         stack: null,
         scenarioDefinitions: [],
-        scenario: null,
+        scenarioID: null,
+        scenarioName: null,
+        scenarioType: null,
         features: [] as MapFeaturePayload[],
     },
     reducers: {
@@ -30,8 +32,14 @@ export const mapFeatureSlice = createSlice({
         setScenarioDefinitions: (state, action: PayloadAction<ScenarioDefinition[]>) => {
             state.scenarioDefinitions = action.payload;
         },
-        setScenario: (state, action) => {
-            state.scenario = action.payload;
+        setScenarioID: (state, action) => {
+            state.scenarioID = action.payload;
+        },
+        setScenarioName: (state, action) => {
+            state.scenarioName = action.payload
+        },
+        setScenarioType: (state, action) => {
+            state.scenarioType = action.payload
         },
         addFeatures: (state, action: PayloadAction<MapFeaturePayload[]>) => {
             state.features = state.features.concat(action.payload);
@@ -47,11 +55,13 @@ export const getProperties = (state: ReduxState) => state.mapFeature.properties;
 export const getIri = (state: ReduxState) => state.mapFeature.iri;
 export const getStack = (state: ReduxState) => state.mapFeature.stack;
 export const getScenarioDefinitions = (state: ReduxState) => state.mapFeature.scenarioDefinitions;
-export const getScenario = (state: ReduxState) => state.mapFeature.scenario;
+export const getScenarioID = (state: ReduxState) => state.mapFeature.scenarioID;
+export const getScenarioType = (state: ReduxState) => state.mapFeature.scenarioType;
+export const getScenarioName = (state: ReduxState) => state.mapFeature.scenarioName;
 export const getFeatures = (state: ReduxState) => state.mapFeature.features;
 
 // Export the actions
-export const { setProperties, setIri, setStack, setScenario, setScenarioDefinitions, addFeatures, clearFeatures } = mapFeatureSlice.actions;
+export const { setProperties, setIri, setStack, setScenarioID, setScenarioName, setScenarioType, setScenarioDefinitions, addFeatures, clearFeatures } = mapFeatureSlice.actions;
 
 // Export the reducer
 export default mapFeatureSlice.reducer;

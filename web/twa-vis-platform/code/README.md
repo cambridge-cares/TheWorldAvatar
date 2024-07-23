@@ -151,7 +151,7 @@ Additionally, reusable components are provided to facilitate this. For navigatio
 Before attempting local development with the platform, the below software needs to be installed and configured.
 
 - Node.js & npm
-- `MAPBOX_USER` environment variable
+- `MAPBOX_USERNAME` environment variable
 - `MAPBOX_API_KEY` environment variable
 
 Note that the environment variables listed above are only needed during local development. In production, Docker secrets within The Stack will handle these.
