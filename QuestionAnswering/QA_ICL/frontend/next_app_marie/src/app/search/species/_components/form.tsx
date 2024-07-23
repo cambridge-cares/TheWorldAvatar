@@ -80,7 +80,7 @@ export function SpeciesForm({
   const router = useRouter()
 
   const [isIdentifiersPanelOpen, setIsIdentifiersPanelOpen] =
-    React.useState(false)
+    React.useState(true)
   const [isPropertiesPanelOpen, setIsPropertiesPanelOpen] =
     React.useState(false)
 
@@ -148,10 +148,10 @@ export function SpeciesForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('w-full', className)}
+        className={cn('w-full flex flex-col space-y-4', className)}
         {...props}
       >
-        <div className='w-full grid lg:grid-cols-2 gap-4 mb-4'>
+        <div className='grid lg:grid-cols-2 gap-x-8'>
           <FormField
             control={form.control}
             name='chemicalClass'
@@ -202,99 +202,105 @@ export function SpeciesForm({
               </FormItem>
             )}
           />
-          <Collapsible
-            open={isIdentifiersPanelOpen}
-            onOpenChange={setIsIdentifiersPanelOpen}
-            className='col-span-2'
-          >
-            <CollapsibleTrigger asChild>
-              <Button variant='ghost' size='sm'>
-                <CaretSortIcon className='h-4 w-4' />
-                <span className='sr-only'>Toggle</span>
-              </Button>
-            </CollapsibleTrigger>
+        </div>
+        <Collapsible
+          open={isIdentifiersPanelOpen}
+          onOpenChange={setIsIdentifiersPanelOpen}
+          className='col-span-2'
+        >
+          <div className='flex items-center'>
             Identifiers
-            <CollapsibleContent className='grid grid-cols-2 gap-x-8 gap-y-4 mx-2'>
-              {Object.values(OSpeciesIdentifierKey).map((key, i) => (
-                <div key={i}>
-                  <FormField
-                    control={form.control}
-                    name={`identifier.${key}`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {capitalize(SPECIES_IDENTIFIER_KEY_LABELS[key])}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            value={field.value}
-                            onChange={e => field.onChange(e.target.value)}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              ))}
-            </CollapsibleContent>
-          </Collapsible>
-          <Collapsible
-            open={isPropertiesPanelOpen}
-            onOpenChange={setIsPropertiesPanelOpen}
-            className='col-span-2'
-          >
             <CollapsibleTrigger asChild>
               <Button variant='ghost' size='sm'>
                 <CaretSortIcon className='h-4 w-4' />
                 <span className='sr-only'>Toggle</span>
               </Button>
             </CollapsibleTrigger>
-            Properties
-            <CollapsibleContent className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-4 mx-2'>
-              {Object.values(OSpeciesPropertyKey).map((key, i) => (
+          </div>
+          <CollapsibleContent className='grid grid-cols-2 gap-x-8 gap-y-4'>
+            {Object.values(OSpeciesIdentifierKey).map((key, i) => (
+              <div key={i}>
                 <FormField
-                  key={i}
                   control={form.control}
-                  name={`property.${key}`}
+                  name={`identifier.${key}`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{key}</FormLabel>
+                      <FormLabel>
+                        {capitalize(SPECIES_IDENTIFIER_KEY_LABELS[key])}
+                      </FormLabel>
                       <FormControl>
-                        <MinMaxInput
-                          minValue={field.value.lower}
-                          onMinChange={e =>
-                            field.onChange({
-                              ...field.value,
-                              lower: e.target.value,
-                            })
-                          }
-                          maxValue={field.value.upper}
-                          onMaxChange={e =>
-                            field.onChange({
-                              ...field.value,
-                              upper: e.target.value,
-                            })
-                          }
+                        <Input
+                          value={field.value}
+                          onChange={e => field.onChange(e.target.value)}
                         />
                       </FormControl>
                     </FormItem>
                   )}
                 />
-              ))}
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
-        <Button
-          type='button'
-          variant='secondary'
-          onClick={() => form.reset()}
-          className='w-full mb-2'
+              </div>
+            ))}
+          </CollapsibleContent>
+        </Collapsible>
+        <Collapsible
+          open={isPropertiesPanelOpen}
+          onOpenChange={setIsPropertiesPanelOpen}
+          className='col-span-2'
         >
-          Reset fields
-        </Button>
-        <Button type='submit' className='w-full'>
-          Search
-        </Button>
+          <div className='flex items-center'>
+            Properties
+            <CollapsibleTrigger asChild>
+              <Button variant='ghost' size='sm'>
+                <CaretSortIcon className='h-4 w-4' />
+                <span className='sr-only'>Toggle</span>
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-4'>
+            {Object.values(OSpeciesPropertyKey).map((key, i) => (
+              <FormField
+                key={i}
+                control={form.control}
+                name={`property.${key}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{key}</FormLabel>
+                    <FormControl>
+                      <MinMaxInput
+                        minValue={field.value.lower}
+                        onMinChange={e =>
+                          field.onChange({
+                            ...field.value,
+                            lower: e.target.value,
+                          })
+                        }
+                        maxValue={field.value.upper}
+                        onMaxChange={e =>
+                          field.onChange({
+                            ...field.value,
+                            upper: e.target.value,
+                          })
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            ))}
+          </CollapsibleContent>
+        </Collapsible>
+        <div>
+          <Button
+            type='button'
+            variant='secondary'
+            onClick={() => form.reset()}
+            className='w-full mb-2'
+          >
+            Reset fields
+          </Button>
+          <Button type='submit' className='w-full'>
+            Search
+          </Button>
+        </div>
       </form>
     </Form>
   )
