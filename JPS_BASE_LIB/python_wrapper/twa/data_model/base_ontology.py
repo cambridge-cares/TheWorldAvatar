@@ -560,7 +560,6 @@ class _BaseProperty(set, Generic[T]):
         ontology: Type[BaseOntology],
         min_cardinality: Optional[int] = 0,
         max_cardinality: Optional[int] = None,
-        base_property: Type[_BaseProperty] = None,
     ) -> Type[_BaseProperty]:
         """
         This method is used to create a new property class from the base property class.
@@ -572,17 +571,15 @@ class _BaseProperty(set, Generic[T]):
             ontology (Type[BaseOntology]): The ontology that defines the property
             min_cardinality (Optional[int], optional): The minimum qualified cardinality of the property (defaults to 0)
             max_cardinality (Optional[int], optional): The maximum qualified cardinality of the property (defaults to None meaning infinite)
-            base_property (Type[_BaseProperty], optional): The base property class to be subclassed from (defaults to None meaning the calling class)
 
         Returns:
             Type[_BaseProperty]: The new property class
         """
-        # NOTE we inherit cardinality from the base_property if not specified
-        base = cls if base_property is None else base_property
-        return type(class_name, (base,), {
+        # NOTE we inherit cardinality from the calling cls if not specified
+        return type(class_name, (cls,), {
             'rdfs_isDefinedBy': ontology,
-            'owl_minQualifiedCardinality': min_cardinality if bool(min_cardinality) else base.owl_minQualifiedCardinality,
-            'owl_maxQualifiedCardinality': max_cardinality if bool(max_cardinality) else base.owl_maxQualifiedCardinality,
+            'owl_minQualifiedCardinality': min_cardinality if bool(min_cardinality) else cls.owl_minQualifiedCardinality,
+            'owl_maxQualifiedCardinality': max_cardinality if bool(max_cardinality) else cls.owl_maxQualifiedCardinality,
         })
 
     @classmethod

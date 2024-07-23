@@ -605,9 +605,9 @@ F2 = create_model('F2', fProp=(ForwardRef('F2Prop[str]'), ...), __base__=F)
 F3 = create_model('F3', fProp=(ForwardRef('F3Prop[str]'), ...), __base__=F)
 
 
-F1Prop = DatatypeProperty.create_from_base('F1Prop', ExampleOntology, base_property=FProp)
-F2Prop = DatatypeProperty.create_from_base('F2Prop', ExampleOntology, min_cardinality=1, base_property=FProp)
-F3Prop = DatatypeProperty.create_from_base('F3Prop', ExampleOntology, max_cardinality=5, base_property=FProp)
+F1Prop = FProp.create_from_base('F1Prop', ExampleOntology)
+F2Prop = FProp.create_from_base('F2Prop', ExampleOntology, min_cardinality=1)
+F3Prop = FProp.create_from_base('F3Prop', ExampleOntology, max_cardinality=5)
 
 
 def test_forward_refs_object_property():
@@ -653,9 +653,9 @@ def test_forward_refs_data_property(clz, prop, arg, rdfs_range, optional):
     assert clz.model_fields['fProp'].annotation == Optional[prop[rdfs_range]] if optional else prop[rdfs_range]
 
 
-Fg1 = ObjectProperty.create_from_base('Fg1', ExampleOntology, base_property=Fg)
-Fg2 = ObjectProperty.create_from_base('Fg2', ExampleOntology, min_cardinality=1, base_property=Fg)
-Fg3 = ObjectProperty.create_from_base('Fg3', ExampleOntology, max_cardinality=5, base_property=Fg)
+Fg1 = Fg.create_from_base('Fg1', ExampleOntology)
+Fg2 = Fg.create_from_base('Fg2', ExampleOntology, min_cardinality=1)
+Fg3 = Fg.create_from_base('Fg3', ExampleOntology, max_cardinality=5)
 
 
 def test_subclassing_object_property():
