@@ -29,6 +29,7 @@ public class SmartphoneRecordingTask {
     List<SensorDataProcessor> sensorDataProcessorList;
 
     private final Node smartphoneIRI;
+    private final String deviceId;
 
     private final RemoteStoreClient storeClient;
     private final TimeSeriesClient<OffsetDateTime> tsClient;
@@ -38,8 +39,8 @@ public class SmartphoneRecordingTask {
     private long lastActiveTime;
     private boolean isProcessing;
 
-    public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient, DownSampleConfig config, String phoneId) {
-        LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + phoneId);
+    public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient, DownSampleConfig config, String deviceId) {
+        LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
 
         this.storeClient = storeClient;
         this.tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class,
@@ -48,8 +49,9 @@ public class SmartphoneRecordingTask {
         lastActiveTime = System.currentTimeMillis();
         lastProcessedTime = System.currentTimeMillis();
 
-        String smartphoneString = "https://www.theworldavatar.com/kg/sensorloggerapp/smartphone_" + phoneId;
+        String smartphoneString = "https://www.theworldavatar.com/kg/sensorloggerapp/smartphone_" + deviceId;
         smartphoneIRI = NodeFactory.createURI(smartphoneString);
+        this.deviceId = deviceId;
 
         initSensorProcessors();
 
@@ -144,11 +146,8 @@ public class SmartphoneRecordingTask {
                 .map(SensorDataProcessor::getDataIRIMap)
                 .flatMap(map -> map.entrySet().stream())
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        iriMap.put("deviceID", smartphoneIRI.getURI());
-        StaticInstantiation.instantiationMethod(sensorDataProcessorList.stream()
-                .map(SensorDataProcessor::getDataIRIMap)
-                .flatMap(map -> map.entrySet().stream())
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+        iriMap.put("deviceID", deviceId);
+        StaticInstantiation.instantiationMethod(iriMap);
 
         sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
         LOGGER.info("finish instantiating kg");

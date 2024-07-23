@@ -25,7 +25,6 @@ import java.util.concurrent.Executors;
 
 public class SensorLoggerMobileAppAgent extends JPSAgent {
     Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
-    private KGQueryClient KGQueryClient;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient rdbStoreClient;
     private DownSampleConfig downSampleConfig;
@@ -41,7 +40,6 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         EndpointConfig endpointConfig = new EndpointConfig();
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        KGQueryClient = new KGQueryClient(storeClient);
 
         addDataExecutor = Executors.newFixedThreadPool(5);
         sendDataExecutor = Executors.newFixedThreadPool(5);
@@ -82,7 +80,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         SmartphoneRecordingTask task = getSmartphoneRecordingTask(deviceId);
         addDataExecutor.submit(() -> {
             try {
-                LOGGER.info(deviceId + ": is fetched and start to add data");
+                LOGGER.info(deviceId + " is fetched and start to add data");
                 HashMap<String, List<?>> dataHashmap = processRequestQueue(requestParams.getJSONArray("payload"));
                 task.addData(dataHashmap);
             } catch (JsonProcessingException jsonError) {
@@ -105,13 +103,14 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     private SmartphoneRecordingTask getSmartphoneRecordingTask(String deviceId) {
         synchronized (smartphoneHashmap) {
-            if (!smartphoneHashmap.containsKey(deviceId) ||
-                    KGQueryClient.getSmartPhoneIRI(deviceId).isEmpty()) {
-                LOGGER.info(deviceId + ": device not exists, creating...");
-                SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, downSampleConfig, deviceId);
-                smartphoneHashmap.put(deviceId, task);
+            if (smartphoneHashmap.containsKey(deviceId)) {
+                return smartphoneHashmap.get(deviceId);
             }
-            return smartphoneHashmap.get(deviceId);
+
+            LOGGER.info(deviceId + ": creating new task");
+            SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, downSampleConfig, deviceId);
+            smartphoneHashmap.put(deviceId, task);
+            return task;
         }
     }
 
