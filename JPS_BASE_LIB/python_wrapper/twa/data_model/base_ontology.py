@@ -39,7 +39,7 @@ class KnowledgeGraph(BaseModel):
     # this is to avoid the problem of mutable default arguments which is then shared across all subclasses
     ontology_lookup: ClassVar[Dict[str, BaseOntology]] = None
     class_lookup: ClassVar[Dict[str, BaseClass]] = None
-    property_lookup: ClassVar[Dict[str, _BaseProperty]] = None
+    property_lookup: ClassVar[Dict[str, BaseProperty]] = None
     iri_loading_in_progress: ClassVar[Set[str]] = None
 
     @classmethod
@@ -116,7 +116,7 @@ class KnowledgeGraph(BaseModel):
             cls.clear_object_lookup()
 
     @classmethod
-    def add_iri_to_loading(cls, iri: str):
+    def _add_iri_to_loading(cls, iri: str):
         """
         This method temporarily stores the IRI of the object that is loading into Python.
         This is to prevent circular graph patterns causing infinite recursion when pulling from the knowledge graph.
@@ -129,7 +129,7 @@ class KnowledgeGraph(BaseModel):
         cls.iri_loading_in_progress.add(iri)
 
     @classmethod
-    def is_iri_been_loading(cls, iri: str) -> bool:
+    def _is_iri_been_loading(cls, iri: str) -> bool:
         """
         This method detects whether a given IRI is been loading into Python by other process.
 
@@ -144,7 +144,7 @@ class KnowledgeGraph(BaseModel):
         return iri in cls.iri_loading_in_progress
 
     @classmethod
-    def remove_iri_from_loading(cls, iri: str):
+    def _remove_iri_from_loading(cls, iri: str):
         """
         This method removes the IRI of the object that is loaded into Python.
 
@@ -157,7 +157,7 @@ class KnowledgeGraph(BaseModel):
             cls.iri_loading_in_progress.discard(iri)
 
     @classmethod
-    def register_ontology(cls, ontology: BaseOntology):
+    def _register_ontology(cls, ontology: BaseOntology):
         """
         This method registers an ontology to the knowledge graph in Python memory.
 
@@ -166,10 +166,10 @@ class KnowledgeGraph(BaseModel):
         """
         if cls.ontology_lookup is None:
             cls.ontology_lookup = {}
-        cls.ontology_lookup[ontology.get_namespace_iri()] = ontology
+        cls.ontology_lookup[ontology.namespace_iri] = ontology
 
     @classmethod
-    def register_class(cls, ontology_class: BaseClass):
+    def _register_class(cls, ontology_class: BaseClass):
         """
         This method registers a BaseClass (the Pydantic class itself) to the knowledge graph in Python memory.
 
@@ -184,9 +184,9 @@ class KnowledgeGraph(BaseModel):
         cls.class_lookup[ontology_class.rdf_type] = ontology_class
 
     @classmethod
-    def register_property(cls, prop: _BaseProperty):
+    def _register_property(cls, prop: BaseProperty):
         """
-        This method registers a _BaseProperty (the Pydantic class itself) to the knowledge graph in Python memory.
+        This method registers a BaseProperty (the Pydantic class itself) to the knowledge graph in Python memory.
 
         Args:
             prop (BaseProperty): The property to be registered
@@ -199,7 +199,7 @@ class KnowledgeGraph(BaseModel):
         cls.property_lookup[prop.predicate_iri] = prop
 
     @classmethod
-    def construct_property_domain_range_lookup(cls) -> Dict[str, Dict[str, str]]:
+    def _construct_property_domain_range_lookup(cls) -> Dict[str, Dict[str, str]]:
         """
         This method constructs a dictionary of property domain and range lookup.
 
@@ -246,6 +246,7 @@ class BaseOntology(BaseModel):
     Attributes:
         base_url: The base URL to be used to construct the namespace IRI, the default value is 'https://www.theworldavatar.com/kg/'
         namespace: The namespace of the ontology, e.g. 'ontolab'
+        namespace_iri: The namespace IRI of the ontology, e.g. 'https://www.theworldavatar.com/kg/ontolab'
         class_lookup: A dictionary of BaseClass classes with their rdf:type as keys
         object_property_lookup: A dictionary of ObjectProperty classes with their predicate IRI as keys
         data_property_lookup: A dictionary of DatatypeProperty classes with their predicate IRI as keys
@@ -254,6 +255,7 @@ class BaseOntology(BaseModel):
     """
     base_url: ClassVar[str] = TWA_BASE_URL
     namespace: ClassVar[str] = None
+    namespace_iri: ClassVar[str] = None
     class_lookup: ClassVar[Dict[str, BaseClass]] = None
     object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = None
     data_property_lookup: ClassVar[Dict[str, DatatypeProperty]] = None
@@ -261,15 +263,20 @@ class BaseOntology(BaseModel):
     owl_versionInfo: ClassVar[str] = None
 
     @classmethod
-    def get_namespace_iri(cls) -> str:
+    def __pydantic_init_subclass__(cls, **kwargs):
         """
-        This method is used to retrieve the namespace IRI of the ontology.
-        It is a concatenation of its base URL and the class name in lower case (if class variable `namespace` is not provided).
+        This method is used to initialise the subclass of the BaseOntology.
+        It sets the `namespace_iri` as a concatenation of the `base_url` and the `namespace` provided as ClassVar of the ontology.
+        It registers the ontology to the KnowledgeGraph.
         """
-        return construct_namespace_iri(cls.base_url, cls.namespace)
+        # set the namespace_iri
+        cls.namespace_iri = construct_namespace_iri(cls.base_url, cls.namespace)
+
+        # register the ontology to the knowledge graph
+        KnowledgeGraph._register_ontology(cls)
 
     @classmethod
-    def register_class(cls, ontolgy_class: BaseClass):
+    def _register_class(cls, ontolgy_class: BaseClass):
         """
         This method registers a BaseClass (the Pydantic class itself) to the BaseOntology class.
         It also registers the BaseClass to the KnowledgeGraph class.
@@ -286,11 +293,10 @@ class BaseOntology(BaseModel):
         cls.class_lookup[ontolgy_class.rdf_type] = ontolgy_class
 
         # also register with knowledge graph
-        KnowledgeGraph.register_class(ontolgy_class)
-
+        KnowledgeGraph._register_class(ontolgy_class)
 
     @classmethod
-    def register_object_property(cls, prop: ObjectProperty):
+    def _register_object_property(cls, prop: ObjectProperty):
         """
         This method registers an ObjectProperty (the Pydantic class itself) to the BaseOntology class.
         It also registers the ObjectProperty to the KnowledgeGraph class.
@@ -307,11 +313,10 @@ class BaseOntology(BaseModel):
         cls.object_property_lookup[prop.predicate_iri] = prop
 
         # also register with knowledge graph
-        KnowledgeGraph.register_property(prop)
-
+        KnowledgeGraph._register_property(prop)
 
     @classmethod
-    def register_data_property(cls, prop: DatatypeProperty):
+    def _register_data_property(cls, prop: DatatypeProperty):
         """
         This method registers a DatatypeProperty (the Pydantic class itself) to the BaseOntology class.
         It also registers the DatatypeProperty to the KnowledgeGraph class.
@@ -328,8 +333,7 @@ class BaseOntology(BaseModel):
         cls.data_property_lookup[prop.predicate_iri] = prop
 
         # also register with knowledge graph
-        KnowledgeGraph.register_property(prop)
-
+        KnowledgeGraph._register_property(prop)
 
     @classmethod
     def export_to_graph(cls, g: Graph = None) -> Graph:
@@ -343,21 +347,21 @@ class BaseOntology(BaseModel):
         if g is None:
             g = Graph()
         # metadata
-        g.add((URIRef(cls.get_namespace_iri()), RDF.type, OWL.Ontology))
-        g.add((URIRef(cls.get_namespace_iri()), DC.date, Literal(datetime.now().isoformat())))
+        g.add((URIRef(cls.namespace_iri), RDF.type, OWL.Ontology))
+        g.add((URIRef(cls.namespace_iri), DC.date, Literal(datetime.now().isoformat())))
         if bool(cls.rdfs_comment):
-            g.add((URIRef(cls.get_namespace_iri()), RDFS.comment, Literal(cls.rdfs_comment)))
+            g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(cls.rdfs_comment)))
         if bool(cls.owl_versionInfo):
-            g.add((URIRef(cls.get_namespace_iri()), OWL.versionInfo, Literal(cls.owl_versionInfo)))
+            g.add((URIRef(cls.namespace_iri), OWL.versionInfo, Literal(cls.owl_versionInfo)))
         # handle all classes
         if bool(cls.class_lookup):
             for clz in cls.class_lookup.values():
-                g = clz.export_to_owl(g)
+                g = clz._export_to_owl(g)
         # handle all object and data properties
-        property_domain_range_lookup = KnowledgeGraph.construct_property_domain_range_lookup()
+        property_domain_range_lookup = KnowledgeGraph._construct_property_domain_range_lookup()
         if bool(cls.object_property_lookup):
             for prop in cls.object_property_lookup.values():
-                g = prop.export_to_owl(
+                g = prop._export_to_owl(
                     g,
                     property_domain_range_lookup.get(prop.predicate_iri, {'rdfs_domain': set()})['rdfs_domain'],
                     property_domain_range_lookup.get(prop.predicate_iri, {'rdfs_range': set()})['rdfs_range'],
@@ -365,7 +369,7 @@ class BaseOntology(BaseModel):
         # handle all data properties
         if bool(cls.data_property_lookup):
             for prop in cls.data_property_lookup.values():
-                g = prop.export_to_owl(
+                g = prop._export_to_owl(
                     g,
                     property_domain_range_lookup.get(prop.predicate_iri, {'rdfs_domain': set()})['rdfs_domain'],
                     property_domain_range_lookup.get(prop.predicate_iri, {'rdfs_range': set()})['rdfs_range'],
@@ -409,7 +413,7 @@ class Owl(BaseOntology):
     base_url: ClassVar[str] = OWL_BASE_URL
 
 
-class _BaseProperty(set, Generic[T]):
+class BaseProperty(set, Generic[T]):
     """
     Base class that is inherited by ObjectProperty and DatatypeProperty.
 
@@ -440,9 +444,9 @@ class _BaseProperty(set, Generic[T]):
     @classmethod
     def _is_inherited(cls, prop: Any) -> bool:
         """
-        This method is used to check whether a property is a subclass of the _BaseProperty class.
+        This method is used to check whether a property is a subclass of the BaseProperty class.
         > Note this method is used to replace issubclass() as pydantic has its own special logic
-        most likely relates to how the abstract class is handled, e.g. issubclass(list[str], _BaseProperty)
+        most likely relates to how the abstract class is handled, e.g. issubclass(list[str], BaseProperty)
         throws `TypeError: issubclass() arg 1 must be a class`
 
         > For more details, see [this discussion](https://github.com/pydantic/pydantic/discussions/5970)
@@ -459,7 +463,7 @@ class _BaseProperty(set, Generic[T]):
             return False
 
     @classmethod
-    def add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
+    def _add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
         """
         This method is used to add the property to a rdflib.Graph object.
         The method is abstract and should be implemented by the subclasses.
@@ -479,7 +483,7 @@ class _BaseProperty(set, Generic[T]):
         raise NotImplementedError('This is an abstract method.')
 
     @classmethod
-    def export_to_owl(
+    def _export_to_owl(
         cls,
         g: Graph,
         rdfs_domain: set,
@@ -498,7 +502,7 @@ class _BaseProperty(set, Generic[T]):
             Graph: The rdflib.Graph object with the added triples
         """
         property_iri = cls.predicate_iri
-        g.add((URIRef(property_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.get_namespace_iri())))
+        g.add((URIRef(property_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.namespace_iri)))
         # add rdf:type and super properties
         if is_object_property:
             g.add((URIRef(property_iri), RDF.type, OWL.ObjectProperty))
@@ -560,11 +564,10 @@ class _BaseProperty(set, Generic[T]):
         ontology: Type[BaseOntology],
         min_cardinality: Optional[int] = 0,
         max_cardinality: Optional[int] = None,
-    ) -> Type[_BaseProperty]:
+    ) -> Type[BaseProperty]:
         """
-        This method is used to create a new property class from the base property class.
-        The new property class will inherit the min and max cardinality from the base property class if not specified.
-        The base property to be subclassed from will be the calling class if not specified.
+        This method is used to create a new property class from the calling class.
+        The new property class will inherit the min and max cardinality from the calling class if not specified.
 
         Args:
             class_name (str): The name of the new property class
@@ -573,7 +576,7 @@ class _BaseProperty(set, Generic[T]):
             max_cardinality (Optional[int], optional): The maximum qualified cardinality of the property (defaults to None meaning infinite)
 
         Returns:
-            Type[_BaseProperty]: The new property class
+            Type[BaseProperty]: The new property class
         """
         # NOTE we inherit cardinality from the calling cls if not specified
         return type(class_name, (cls,), {
@@ -723,10 +726,10 @@ class BaseClass(BaseModel, validate_assignment=True):
             raise AttributeError(f"Did you forget to specify `rdfs_isDefinedBy` for your class {cls}?")
 
         # set the rdf_type
-        cls.rdf_type = construct_rdf_type(cls.rdfs_isDefinedBy.get_namespace_iri(), cls.__name__)
+        cls.rdf_type = construct_rdf_type(cls.rdfs_isDefinedBy.namespace_iri, cls.__name__)
 
         # register the class to the ontology
-        cls.rdfs_isDefinedBy.register_class(cls)
+        cls.rdfs_isDefinedBy._register_class(cls)
 
     def model_post_init(self, __context: Any) -> None:
         """
@@ -742,7 +745,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         """
         if not bool(self.instance_iri):
             self.instance_iri = init_instance_iri(
-                self.__class__.rdfs_isDefinedBy.get_namespace_iri(),
+                self.__class__.rdfs_isDefinedBy.namespace_iri,
                 self.__class__.__name__
             )
         # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
@@ -814,7 +817,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         g_to_add = Graph()
         cls.pull_from_kg(cls.object_lookup.keys(), sparql_client, recursive_depth, force_overwrite_local)
         for obj in cls.object_lookup.values():
-            g_to_remove, g_to_add = obj.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
+            g_to_remove, g_to_add = obj._collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
         sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
 
     @classmethod
@@ -862,13 +865,13 @@ class BaseClass(BaseModel, validate_assignment=True):
         # check if any of the iris are loading
         i_loading = set()
         for i in iris:
-            if KnowledgeGraph.is_iri_been_loading(i):
+            if KnowledgeGraph._is_iri_been_loading(i):
                 # for those that are loading, use string here and remove it from query
                 instance_lst.append(i)
                 i_loading.add(i)
             else:
                 # for those that are not loading, indicate they are to be loaded now
-                KnowledgeGraph.add_iri_to_loading(i)
+                KnowledgeGraph._add_iri_to_loading(i)
         iris = iris - i_loading
 
         # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
@@ -884,7 +887,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             if target_clz_rdf_type != cls.rdf_type and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
                 # if there's any error, remove the iri from the loading status
                 # otherwise it will block any further pulling of the same object
-                KnowledgeGraph.remove_iri_from_loading(iri)
+                KnowledgeGraph._remove_iri_from_loading(iri)
                 raise ValueError(
                     f"""The instance {iri} is of type {props[RDF.type.toPython()]},
                     it doesn't match the rdf:type of class {cls.__name__} ({cls.rdf_type}),
@@ -958,11 +961,11 @@ class BaseClass(BaseModel, validate_assignment=True):
                 # compare it with cached values and local values for all object/data/rdfs properties
                 # if the object is already in the lookup, then update the object for those fields that are not modified in the python
                 try:
-                    inst.update_according_to_fetch(fetched, flag_pull, force_overwrite_local)
+                    inst._update_according_to_fetch(fetched, flag_pull, force_overwrite_local)
                 except Exception as e:
                     # if there's any error, remove the iri from the loading status
                     # otherwise it will block any further pulling of the same object
-                    KnowledgeGraph.remove_iri_from_loading(inst.instance_iri)
+                    KnowledgeGraph._remove_iri_from_loading(inst.instance_iri)
                     raise e
             else:
                 # if the object is not in the lookup, create a new object
@@ -972,13 +975,13 @@ class BaseClass(BaseModel, validate_assignment=True):
                     **object_properties_dict,
                     **data_properties_dict,
                 )
-                inst.create_cache()
+                inst._create_cache()
 
             inst._exist_in_kg = True
             # update cache here
             instance_lst.append(inst)
             # remote inst from the loading status
-            KnowledgeGraph.remove_iri_from_loading(inst.instance_iri)
+            KnowledgeGraph._remove_iri_from_loading(inst.instance_iri)
         return instance_lst
 
     @classmethod
@@ -1005,7 +1008,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         return cls.pull_from_kg(iris, sparql_client, recursive_depth, force_overwrite_local)
 
     @classmethod
-    def get_object_and_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[_BaseProperty]]]]:
+    def get_object_and_data_properties(cls) -> Dict[str, Dict[str, Union[str, Type[BaseProperty]]]]:
         """
         This function returns the object and data properties of the calling class.
         This method calls the get_object_properties and get_data_properties functions and returns the combined dictionary.
@@ -1050,7 +1053,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         return dct_dp
 
     @classmethod
-    def export_to_owl(cls, g: Graph) -> Graph:
+    def _export_to_owl(cls, g: Graph) -> Graph:
         """
         This function exports the triples of the calling class to an RDF graph in OWL format.
         It operates at the TBox level.
@@ -1065,7 +1068,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         cls.model_rebuild()
         cls_iri = cls.rdf_type
         g.add((URIRef(cls_iri), RDF.type, OWL.Class))
-        g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.get_namespace_iri())))
+        g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.namespace_iri)))
         # add super classes
         idx = cls.__mro__.index(BaseClass)
         for i in range(1, idx):
@@ -1092,7 +1095,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                 g.add((URIRef(cls_iri), RDFS.subClassOf, restriction))
         return g
 
-    def create_cache(self, recursive_depth: int = 0, traversed_iris: set = None):
+    def _create_cache(self, recursive_depth: int = 0, traversed_iris: set = None):
         """
         This function creates a cache of the instance of the calling class.
         The recursion stops when the IRI is traversed already.
@@ -1115,7 +1118,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                 for o in disconnected_object_properties:
                     obj = KnowledgeGraph.get_object_from_lookup(o)
                     if obj is not None:
-                        obj.create_cache(recursive_depth, traversed_iris)
+                        obj._create_cache(recursive_depth, traversed_iris)
         # secondly (and finally), create cache for all currently connected properties
         recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
         for f, field_info in self.model_fields.items():
@@ -1129,12 +1132,12 @@ class BaseClass(BaseModel, validate_assignment=True):
                     if isinstance(o, BaseClass):
                         # this function will be useful when pushing a brand new (nested) object to knowledge graph
                         # so that the cache of those objects appeared at deeper recursive_depth are also updated
-                        o.create_cache(recursive_depth, traversed_iris)
+                        o._create_cache(recursive_depth, traversed_iris)
                         _set_for_comparison.add(o.instance_iri)
                     elif isinstance(o, str):
                         obj = KnowledgeGraph.get_object_from_lookup(o)
                         if obj is not None:
-                            obj.create_cache(recursive_depth, traversed_iris)
+                            obj._create_cache(recursive_depth, traversed_iris)
                         _set_for_comparison.add(o)
                     else:
                         raise Exception(f"Unsupported datatype {type(o)} for range of object property {self}")
@@ -1146,12 +1149,12 @@ class BaseClass(BaseModel, validate_assignment=True):
     def revert_local_changes(self):
         """ This function reverts the local changes made to the python object to cached values. """
         for f, field_info in self.model_fields.items():
-            if _BaseProperty._is_inherited(field_info.annotation):
+            if BaseProperty._is_inherited(field_info.annotation):
                 setattr(self, f, copy.deepcopy(self._latest_cache.get(f, field_info.annotation(set()))))
             else:
                 setattr(self, f, copy.deepcopy(self._latest_cache.get(f, None)))
 
-    def update_according_to_fetch(self, fetched: dict, flag_connect_object: bool, force_overwrite_local: bool = False):
+    def _update_according_to_fetch(self, fetched: dict, flag_connect_object: bool, force_overwrite_local: bool = False):
         """
         This function compares the fetched values with the cached values and local values.
         It updates the cache and local values depend on the comparison results.
@@ -1276,7 +1279,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         # type of changes: remove old triples, add new triples
         g_to_remove = Graph()
         g_to_add = Graph()
-        g_to_remove, g_to_add = self.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
+        g_to_remove, g_to_add = self._collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
 
         # retry push if any exception is raised
         retry_delay = 2
@@ -1284,7 +1287,7 @@ class BaseClass(BaseModel, validate_assignment=True):
             try:
                 sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
                 # if no exception was thrown, update cache
-                self.create_cache(recursive_depth)
+                self._create_cache(recursive_depth)
                 return g_to_remove, g_to_add
             except Exception as e:
                 if attempt < maximum_retry:
@@ -1292,7 +1295,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                 else:
                     raise e
 
-    def collect_diff_to_graph(self, g_to_remove: Graph, g_to_add: Graph, recursive_depth: int = 0, traversed_iris: set = None) -> Tuple[Graph, Graph]:
+    def _collect_diff_to_graph(self, g_to_remove: Graph, g_to_add: Graph, recursive_depth: int = 0, traversed_iris: set = None) -> Tuple[Graph, Graph]:
         """
         This function collects the differences between the latest cache and the current instance of the calling object.
         The recursion stops when the IRI is traversed already.
@@ -1314,7 +1317,7 @@ class BaseClass(BaseModel, validate_assignment=True):
         for f, field_info in self.model_fields.items():
             # enable handling Optional[]
             tp: ObjectProperty | DatatypeProperty = get_args(field_info.annotation)[0] if type(field_info.annotation) == _UnionGenericAlias else field_info.annotation
-            if _BaseProperty._is_inherited(tp):
+            if BaseProperty._is_inherited(tp):
                 # # TODO optimise the below codes
                 # behaviour of recursive_depth: 0 means no recursion, -1 means infinite recursion, n means n-level recursion
                 # NOTE this is only revelant for object properties
@@ -1330,12 +1333,12 @@ class BaseClass(BaseModel, validate_assignment=True):
                 # remove the objects that are in cache but not in local values
                 diff_to_remove = p_cache - p_now
                 for d in diff_to_remove:
-                    g_to_remove = tp.add_to_graph(g_to_remove, self.instance_iri, d)
+                    g_to_remove = tp._add_to_graph(g_to_remove, self.instance_iri, d)
 
                 # add the objects that are in local values but not in cache
                 diff_to_add = p_now - p_cache
                 for d in diff_to_add:
-                    g_to_add = tp.add_to_graph(g_to_add, self.instance_iri, d)
+                    g_to_add = tp._add_to_graph(g_to_add, self.instance_iri, d)
 
                 # besides the differences between the local values and cache
                 # also need to consider the intersection of the local values and cache when recursive for object property
@@ -1346,7 +1349,7 @@ class BaseClass(BaseModel, validate_assignment=True):
                         d_py = d if isinstance(d, BaseClass) else KnowledgeGraph.get_object_from_lookup(d)
                         # only collect the diff if the object exists in the memory, otherwise it's not necessary
                         if d_py is not None:
-                            g_to_remove, g_to_add = d_py.collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
+                            g_to_remove, g_to_add = d_py._collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
 
             elif f == 'rdfs_comment':
                 if self._latest_cache.get(f) != self.rdfs_comment:
@@ -1456,10 +1459,15 @@ class BaseClass(BaseModel, validate_assignment=True):
         return o
 
 
-class ObjectProperty(_BaseProperty):
+class ObjectProperty(BaseProperty):
     """
-    Base class for object properties.
-    It inherits the _BaseProperty class.
+    Base class for object properties. It inherits the BaseProperty class.
+
+    Attributes:
+        rdfs_isDefinedBy: The ontology that defines the property
+        predicate_iri: The predicate IRI of the property
+        owl_minQualifiedCardinality: The minimum qualified cardinality of the property (default is 0)
+        owl_maxQualifiedCardinality: The maximum qualified cardinality of the property (default is None, meaning infinite)
     """
 
     @classmethod
@@ -1478,15 +1486,15 @@ class ObjectProperty(_BaseProperty):
 
         # set the predicate_iri
         cls.predicate_iri = construct_rdf_type(
-            cls.rdfs_isDefinedBy.get_namespace_iri(),
+            cls.rdfs_isDefinedBy.namespace_iri,
             cls.__name__[:1].lower() + cls.__name__[1:]
         )
 
         # register the class to the ontology
-        cls.rdfs_isDefinedBy.register_object_property(cls)
+        cls.rdfs_isDefinedBy._register_object_property(cls)
 
     @classmethod
-    def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
+    def _export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
         """
         This function exports the triples of the object property to an OWL ontology.
         It calls the super class function with the flag 'is_object_property' set to True.
@@ -1497,10 +1505,10 @@ class ObjectProperty(_BaseProperty):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
-        return super().export_to_owl(g, rdfs_domain, rdfs_range, True)
+        return super()._export_to_owl(g, rdfs_domain, rdfs_range, True)
 
     @classmethod
-    def add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
+    def _add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
         """
         This function adds the triples to the graph for the object property.
         The triple to be added is in the format of (s, predicate_iri, o).
@@ -1520,11 +1528,50 @@ class ObjectProperty(_BaseProperty):
         g.add((URIRef(s), URIRef(cls.predicate_iri), URIRef(o_iri)))
         return g
 
+    @classmethod
+    def retrieve_cardinality(cls) -> Tuple[int, int]:
+        """
+        This method is used to retrieve the cardinality of the property.
+
+        Returns:
+            Tuple[int, int]: The minimum and maximum cardinality of the property
+        """
+        return super().retrieve_cardinality()
+
+    @classmethod
+    def create_from_base(
+        cls,
+        class_name: str,
+        ontology: Type[BaseOntology],
+        min_cardinality: Optional[int] = 0,
+        max_cardinality: Optional[int] = None,
+    ) -> Type[ObjectProperty]:
+        """
+        This method is used to create a new property class from the calling property class.
+        The new property class will inherit the min and max cardinality from the calling class if not specified.
+
+        Args:
+            class_name (str): The name of the new property class
+            ontology (Type[BaseOntology]): The ontology that defines the property
+            min_cardinality (Optional[int], optional): The minimum qualified cardinality of the property (defaults to 0)
+            max_cardinality (Optional[int], optional): The maximum qualified cardinality of the property (defaults to None meaning infinite)
+
+        Returns:
+            Type[ObjectProperty]: The new property class
+        """
+        # NOTE we inherit cardinality from the calling cls if not specified
+        return super().create_from_base(class_name, ontology, min_cardinality, max_cardinality)
+
 
 class TransitiveProperty(ObjectProperty):
     """
-    Base class for transitive object properties.
-    It inherits the ObjectProperty class.
+    Base class for transitive object properties. It inherits the ObjectProperty class.
+
+    Attributes:
+        rdfs_isDefinedBy: The ontology that defines the property
+        predicate_iri: The predicate IRI of the property
+        owl_minQualifiedCardinality: The minimum qualified cardinality of the property (default is 0)
+        owl_maxQualifiedCardinality: The maximum qualified cardinality of the property (default is None, meaning infinite)
     """
     rdfs_isDefinedBy = Owl
 
@@ -1567,10 +1614,15 @@ class TransitiveProperty(ObjectProperty):
         return transitive_objects
 
 
-class DatatypeProperty(_BaseProperty):
+class DatatypeProperty(BaseProperty):
     """
-    Base class for data properties.
-    It inherits the _BaseProperty class.
+    Base class for data properties. It inherits the BaseProperty class.
+
+    Attributes:
+        rdfs_isDefinedBy: The ontology that defines the property
+        predicate_iri: The predicate IRI of the property
+        owl_minQualifiedCardinality: The minimum qualified cardinality of the property (default is 0)
+        owl_maxQualifiedCardinality: The maximum qualified cardinality of the property (default is None, meaning infinite)
     """
 
     @classmethod
@@ -1589,15 +1641,15 @@ class DatatypeProperty(_BaseProperty):
 
         # set the predicate_iri
         cls.predicate_iri = construct_rdf_type(
-            cls.rdfs_isDefinedBy.get_namespace_iri(),
+            cls.rdfs_isDefinedBy.namespace_iri,
             cls.__name__[:1].lower() + cls.__name__[1:]
         )
 
         # register the class to the ontology
-        cls.rdfs_isDefinedBy.register_data_property(cls)
+        cls.rdfs_isDefinedBy._register_data_property(cls)
 
     @classmethod
-    def export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
+    def _export_to_owl(cls, g: Graph, rdfs_domain: set, rdfs_range: set) -> Graph:
         """
         This function exports the triples of the data property to an OWL ontology.
         It calls the super class function with the flag 'is_object_property' set to False.
@@ -1608,10 +1660,10 @@ class DatatypeProperty(_BaseProperty):
         Returns:
             Graph: The rdflib.Graph object with the added triples
         """
-        return super().export_to_owl(g, rdfs_domain, rdfs_range, False)
+        return super()._export_to_owl(g, rdfs_domain, rdfs_range, False)
 
     @classmethod
-    def add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
+    def _add_to_graph(cls, g: Graph, s: str, o: Any) -> Graph:
         """
         This function adds the triples to the graph for the object property.
         The triple to be added is in the format of (s, predicate_iri, o).
@@ -1632,3 +1684,37 @@ class DatatypeProperty(_BaseProperty):
         except Exception as e:
             raise TypeError(f'Type of {o} ({type(o)}) is not supported by rdflib as a data property for {cls.predicate_iri}.', e)
         return g
+
+    @classmethod
+    def retrieve_cardinality(cls) -> Tuple[int, int]:
+        """
+        This method is used to retrieve the cardinality of the property.
+
+        Returns:
+            Tuple[int, int]: The minimum and maximum cardinality of the property
+        """
+        return super().retrieve_cardinality()
+
+    @classmethod
+    def create_from_base(
+        cls,
+        class_name: str,
+        ontology: Type[BaseOntology],
+        min_cardinality: Optional[int] = 0,
+        max_cardinality: Optional[int] = None,
+    ) -> Type[DatatypeProperty]:
+        """
+        This method is used to create a new property class from the calling property class.
+        The new property class will inherit the min and max cardinality from the calling class if not specified.
+
+        Args:
+            class_name (str): The name of the new property class
+            ontology (Type[BaseOntology]): The ontology that defines the property
+            min_cardinality (Optional[int], optional): The minimum qualified cardinality of the property (defaults to 0)
+            max_cardinality (Optional[int], optional): The maximum qualified cardinality of the property (defaults to None meaning infinite)
+
+        Returns:
+            Type[DatatypeProperty]: The new property class
+        """
+        # NOTE we inherit cardinality from the calling cls if not specified
+        return super().create_from_base(class_name, ontology, min_cardinality, max_cardinality)

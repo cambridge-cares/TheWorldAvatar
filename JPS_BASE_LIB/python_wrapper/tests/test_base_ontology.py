@@ -77,8 +77,7 @@ class E(D):
     pass
 
 
-class HasPart(TransitiveProperty):
-    rdfs_isDefinedBy = ExampleOntology
+HasPart = TransitiveProperty.create_from_base('HasPart', ExampleOntology)
 
 
 class Component(BaseClass):
@@ -238,7 +237,7 @@ def test_collect_diff_to_graph_fresh():
     a1, a2, a3, b, c, d = init()
     g_to_remove = Graph()
     g_to_add = Graph()
-    g_to_remove, g_to_add = b.collect_diff_to_graph(g_to_remove, g_to_add, -1)
+    g_to_remove, g_to_add = b._collect_diff_to_graph(g_to_remove, g_to_add, -1)
     # b instance rdf:type
     assert g_to_add.query(f'ASK {{<{b.instance_iri}> <{RDF.type.toPython()}> <{b.rdf_type}>}}').askAnswer
     # data property
@@ -416,7 +415,7 @@ def test_push_to_kg_update(initialise_sparql_client):
     assert b._latest_cache['object_property_b_a'] == set([a1, a2])
     g_to_remove = Graph()
     g_to_add = Graph()
-    g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
+    g_to_remove, g_to_add = d._collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
     print("g_to_remove:")
     print(g_to_remove.serialize(format='turtle'))
     print("g_to_add:")
@@ -460,7 +459,7 @@ def test_push_to_kg_update(initialise_sparql_client):
     # print the diff
     g_to_remove = Graph()
     g_to_add = Graph()
-    g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
+    g_to_remove, g_to_add = d._collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
     print("g_to_remove:")
     print(g_to_remove.serialize(format='turtle'))
     print("g_to_add:")
@@ -505,7 +504,7 @@ def test_push_to_kg_update(initialise_sparql_client):
     # print the diff
     g_to_remove = Graph()
     g_to_add = Graph()
-    g_to_remove, g_to_add = d.collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
+    g_to_remove, g_to_add = d._collect_diff_to_graph(g_to_remove, g_to_add, -1) # recursive push -1
     print("g_to_remove:")
     print(g_to_remove.serialize(format='turtle'))
     print("g_to_add:")
@@ -793,7 +792,7 @@ def test_export_to_graph(recwarn):
     assert (URIRef(C1C2.predicate_iri), RDF.type, OWL.ObjectProperty) in g
     assert (URIRef(C1C2.predicate_iri), RDFS.domain, URIRef(Circ1.rdf_type)) in g
     assert (URIRef(C1C2.predicate_iri), RDFS.range, URIRef(Circ2.rdf_type)) in g
-    assert (URIRef(C1C2.predicate_iri), RDFS.isDefinedBy, URIRef(ExampleOntology.get_namespace_iri())) in g
+    assert (URIRef(C1C2.predicate_iri), RDFS.isDefinedBy, URIRef(ExampleOntology.namespace_iri)) in g
 
     # data property Data_Property_D, testing for triples:
     # <https://example.org/example/data_Property_D> a owl:DatatypeProperty ;
@@ -803,7 +802,7 @@ def test_export_to_graph(recwarn):
     #     rdfs:range xsd:string .
     assert (URIRef(Data_Property_D.predicate_iri), RDF.type, OWL.DatatypeProperty) in g
     assert (URIRef(Data_Property_D.predicate_iri), RDFS.range, XSD.string) in g
-    assert (URIRef(Data_Property_D.predicate_iri), RDFS.isDefinedBy, URIRef(ExampleOntology.get_namespace_iri())) in g
+    assert (URIRef(Data_Property_D.predicate_iri), RDFS.isDefinedBy, URIRef(ExampleOntology.namespace_iri)) in g
     assert sum(1 for _ in g.triples((URIRef(Data_Property_D.predicate_iri), RDFS.domain, None))) == 1
     domain_bnode = g.value(URIRef(Data_Property_D.predicate_iri), RDFS.domain)
     assert isinstance(domain_bnode, BNode)
@@ -835,7 +834,7 @@ def test_export_to_graph(recwarn):
     #             owl:onProperty <https://example.org/example/data_Property_C> ] .
     # test for C being a class and its properties
     assert (URIRef(C.rdf_type), RDF.type, OWL.Class) in g
-    assert (URIRef(C.rdf_type), RDFS.isDefinedBy, URIRef(ExampleOntology.get_namespace_iri())) in g
+    assert (URIRef(C.rdf_type), RDFS.isDefinedBy, URIRef(ExampleOntology.namespace_iri)) in g
     assert sum(1 for _ in g.triples((URIRef(C.rdf_type), RDFS.subClassOf, None))) == 3
     # check each subclass restriction
     for restriction in g.objects(URIRef(C.rdf_type), RDFS.subClassOf):
