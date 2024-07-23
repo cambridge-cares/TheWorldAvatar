@@ -17,9 +17,9 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked m
 
 #==================================================================================================
 
-# Second stage: copy the downloaded dependency into a new image and build into an app
+# production image stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:9.0 as agent
+FROM tomcat:9.0.68-jre11-temurin as agent
 
 WORKDIR /app
 
@@ -27,4 +27,20 @@ COPY --from=builder /root/PIPSRequestAgent/output/pips-request-agent##1.0.0.war 
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
+#==================================================================================================
+
+#==================================================================================================
+
+# test image stage: create an image for unit testing based on common build stage
+#==================================================================================================
+FROM builder as test
+
+RUN mkdir -p /root/.m2/repository
+
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
+
+COPY /PIPSRequestAgent/src/test ./src/test
+
+# Execute test
+CMD mvn test
 #==================================================================================================
