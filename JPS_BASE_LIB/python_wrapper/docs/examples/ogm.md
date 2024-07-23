@@ -12,7 +12,7 @@ To begin with, you can define the ontology that hosts all concepts and relations
 ```python
 # Import relevant packages
 from __future__ import annotations
-from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty, as_range
+from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
 from twa.data_model.iris import TWA_BASE_URL
 from typing import ClassVar
 from pydantic import Field
@@ -24,6 +24,14 @@ class YourOntology(BaseOntology):
     namespace: ClassVar[str] = 'yourontology'
     owl_versionInfo: ClassVar[str] = '0.0.1'
     rdfs_comment: ClassVar[str] = 'Your ontology'
+    # Since they are already defined as a ClassVar[str], one can just assign value to it
+    # i.e., simplified version:
+    # ```
+    # base_url = TWA_BASE_URL
+    # namespace = 'yourontology'
+    # owl_versionInfo = '0.0.1'
+    # rdfs_comment = 'Your ontology'
+    # ```
 ```
 
 which is equivalent to the below triples in OWL:
@@ -45,7 +53,7 @@ For simplicity, `<https://www.theworldavatar.com/kg/yourontology/>` (**Note the 
 
 ### Define a property (relationship)
 
-To define custom object and data properties, the two base classes `ObjectProperty` and `DatatypeProperty` should be used respectively. It should be noted that the user is only required to specify the `range` of these properties, as their `domain` will be automatically handled by the class that utilises the defined properties.
+To define custom object and data properties, the two base classes `ObjectProperty` and `DatatypeProperty` should be used respectively. It should be noted that the user is only required to specify the cardinality of these properties at the class defination, as their `rdfs:domain` and `rdfs:range` will be automatically handled by the class that utilises the defined properties.
 
 
 #### Object property
@@ -53,13 +61,27 @@ To define custom object and data properties, the two base classes `ObjectPropert
 To define a custom object property:
 
 ```python
+PointsToAnotherConcept = ObjectProperty.create_from_base(
+    class_name = 'PointsToAnotherConcept', # The name of the class that will be created and can be directly accessed in code
+    ontology = YourOntology, # The user MUST provide the ontology for which the concept `rdfs_isDefinedBy`
+    min_cardinality = 0, # 0 is the default value, indicates no cardinality restriction (this arg can be omitted)
+    max_cardinality = None, # None is the default value, indicates no cardinality restriction (this arg can be omitted)
+)
+```
+
+The above definition is equivalent to the below if one would like to follow the typical way of defining a class:
+
+```python
 class PointsToAnotherConcept(ObjectProperty):
-    # The user MUST provide the ontology for which the concept `is_defined_by_ontology`
-    # Since `is_defined_by_ontology` is already defined as a ClassVar, the user can just assign a value here
-    is_defined_by_ontology = YourOntology
-    # 0 and None for field `range` indicates no cardinality restriction (which is also the default value)
-    # Therefore, the below line is equivalent to `range: as_range(AnotherConcept)`
-    range: as_range(AnotherConcept, 0, None)
+    rdfs_isDefinedBy = YourOntology # `rdfs_isDefinedBy` can be directly assigned a value here
+
+    # 0 and None in the previous cell indicate no cardinality restriction
+    # They are also the default value so you can omitted them here
+    # However, if you do want to provide such value then follow the below two lines:
+    # ```
+    # owl_minQualifiedCardinality = 0
+    # owl_maxQualifiedCardinality = None
+    # ```
 ```
 
 which is equivalent to the below triples in OWL:
@@ -71,7 +93,26 @@ yo:PointsToAnotherConcept a owl:ObjectProperty ;
     rdfs:range yo:AnotherConcept .
 ```
 
-> NOTE that the statement about `rdfs:domain` will be automatically added when defining concept that uses this object property, e.g. assume `OneConcept` uses this object property: ```yo:PointsToAnotherConcept rdfs:domain yo:OneConcept .```
+To access the IRI of the defined objective property:
+
+```python
+PointsToAnotherConcept.predicate_iri
+```
+
+To define a property that is subproperty of another property:
+
+```python
+AnExampleOfSubProperty = PointsToAnotherConcept.create_from_base(
+    class_name = 'AnExampleOfSubProperty',
+    ontology = YourOntology,
+    min_cardinality = 3, # if this value is provided then it overwrites the value from the calling class `PointsToAnotherConcept`
+    max_cardinality = 5, # if this value is provided then it overwrites the value from the calling class `PointsToAnotherConcept`
+)
+```
+
+Further subclassing by calling `AnExampleOfSubProperty.create_from_base(...)` is also possible.
+
+> NOTE that the statements about `rdfs:domain` and `rdfs:range` will be automatically added when defining concept that uses this object property, e.g. assume `OneConcept` uses this object property on `AnotherConcept`, then we have triples: ```yo:PointsToAnotherConcept rdfs:domain yo:OneConcept ; rdfs:range yo:AnotherConcept .```
 >
 > NOTE for multiple concepts as domain of the same object property, e.g. assume both `OneConcept` and `SubConcept` are the domain, then a [Blank Node](https://www.w3.org/TR/turtle/#BNodes) of `owl:Class` will be added: ```yo:pointsToAnotherConcept rdfs:domain [ a owl:Class ; owl:unionOf ( yo:OneConcept yo:SubConcept ) ] ;```
 
@@ -80,23 +121,34 @@ yo:PointsToAnotherConcept a owl:ObjectProperty ;
 Transitive property is a specific type of object property, it can be very useful for representing [part-whole relations](https://www.w3.org/2001/sw/BestPractices/OEP/SimplePartWhole/). To define a custom transitive property:
 
 ```python
-class OneTransitiveProperty(TransitiveProperty):
-    is_defined_by_ontology = YourOntology
-    range: as_range(OneClassWithTransitive)
+
+OneTransitiveProperty = TransitiveProperty.create_from_base('OneTransitiveProperty', YourOntology)
+# Equivalent to:
+# ```
+# class OneTransitiveProperty(TransitiveProperty):
+#     rdfs_isDefinedBy = YourOntology
+# ```
 
 # Here we also provide the class definition for the concept that makes use of `OneTransitiveProperty`
 # Please refer to later part of this documentation for more examples on how to define a class
 class OneClassWithTransitive(BaseClass):
-    is_defined_by_ontology = YourOntology
+    rdfs_isDefinedBy = YourOntology
     # Note that here the range and domain of `OneTransitiveProperty` are both `OneClassWithTransitive`
-    oneTransitiveProperty: OneTransitiveProperty
+    oneTransitiveProperty: OneTransitiveProperty[OneClassWithTransitive]
+```
+
+To access the IRI of the defined transitive property:
+
+```python
+OneClassWithTransitive.predicate_iri
 ```
 
 A convenient member function is provided to retrieve all transitive objects as a [`set`](https://docs.python.org/3/tutorial/datastructures.html#sets):
 
 ```python
-# Assume we have instantiated an object `one_transitive_property` of class `OneTransitiveProperty`
-set_of_transitive_objects = one_transitive_property.obtain_transitive_objects()
+# Assume we have instantiated an object `one_class_with_transitive` of class `OneClassWithTransitive`
+# As it uses transitive property `OneTransitiveProperty`, we can retrieve a set of transtive objects by:
+set_of_transitive_objects = OneTransitiveProperty.obtain_transitive_objects()
 ```
 
 
@@ -105,15 +157,14 @@ set_of_transitive_objects = one_transitive_property.obtain_transitive_objects()
 To define a custom data property:
 
 ```python
-class OneDatatypeProperty(DatatypeProperty):
-    # Same as ObjectProperty, `is_defined_by_ontology` is a compulsory field
-    is_defined_by_ontology = YourOntology
-    range: as_range(str)
+OneDatatypeProperty = DatatypeProperty.create_from_base(
+    'OneDatatypeProperty', YourOntology
+)
 
-class AnotherDatatypeProperty(DatatypeProperty):
-    is_defined_by_ontology = YourOntology
+AnotherDatatypeProperty = DatatypeProperty.create_from_base(
+    'AnotherDatatypeProperty', YourOntology, 0, 1
     # The cardinality means maximum 1
-    range: as_range(int, 0, 1)
+)
 ```
 
 which is equivalent to the below triples in OWL:
@@ -136,6 +187,12 @@ yo:AnotherConcept rdfs:subClassOf [
     owl:onProperty yo:AnotherDatatypeProperty ] .
 ```
 
+To access the IRI of the defined datatype property:
+
+```python
+OneDatatypeProperty.predicate_iri
+```
+
 > NOTE that the cardinality for `AnotherDatatypeProperty` will be added as a [Blank Node](https://www.w3.org/TR/turtle/#BNodes) of `owl:Restriction` automatically to `AnotherConcept` when the class is defined.
 
 
@@ -144,15 +201,22 @@ yo:AnotherConcept rdfs:subClassOf [
 The classes can be defined in the normal way as defining Python native classes, with the field being the object/data properties previously defined:
 
 ```python
-class AnotherConcept(BaseClass):
-    # Like object/data properties, `is_defined_by_ontology` is a compulsory field
-    is_defined_by_ontology = YourOntology
-    anotherDatatypeProperty: AnotherDatatypeProperty
-
 class OneConcept(BaseClass):
-    is_defined_by_ontology = YourOntology
-    oneDatatypeProperty: OneDatatypeProperty
-    pointsToAnotherConcept: PointsToAnotherConcept
+    # Like object/data properties, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy = YourOntology
+    # Follow format `myDatatypeProperty: MyDatatypeProperty[str]`
+    oneDatatypeProperty: OneDatatypeProperty[str]
+    # Follow format `myObjectProperty: MyObjectProperty[MyOtherClass]`
+    pointsToAnotherConcept: PointsToAnotherConcept[AnotherConcept]
+
+class AnotherConcept(BaseClass):
+    rdfs_isDefinedBy = YourOntology
+    anotherDatatypeProperty: AnotherDatatypeProperty[int]
+```
+
+To access the `rdf:type` of the defined class:
+```python
+OneConcept.rdf_type
 ```
 
 > NOTE that the name of field **CAN NOT** be the same as the name of the corresponding Pydantic class it is referring to, i.e. `AnotherDatatypeProperty: AnotherDatatypeProperty` would be invalid.
@@ -163,13 +227,13 @@ class OneConcept(BaseClass):
 The subclass relationship `rdfs:subClassOf` can also be defined following the standard practice, e.g. we define a concept `SubConcept` `rdfs:subClassOf` `OneConcept`:
 
 ```python
-class AdditionalDatatypeProperty(DatatypeProperty):
-    is_defined_by_ontology = YourOntology
-    range: as_range(int, 0, 1)
+AdditionalDatatypeProperty = DatatypeProperty.create_from_base(
+    'AdditionalDatatypeProperty', YourOntology, 0, 1
+)
 
 class SubConcept(OneConcept):
     # As it inherits `OneConcept`, only additional object/data properties are required
-    additionalDatatypeProperty: AdditionalDatatypeProperty
+    additionalDatatypeProperty: AdditionalDatatypeProperty[int]
 ```
 
 
@@ -178,13 +242,13 @@ class SubConcept(OneConcept):
 Multiple inheritance is also possible:
 
 ```python
-class YetAnotherDatatypeProperty(DatatypeProperty):
-    is_defined_by_ontology = YourOntology
-    range: as_range(int, 0, 1)
+YetAnotherDatatypeProperty = DatatypeProperty.create_from_base(
+    'YetAnotherDatatypeProperty', YourOntology, 0, 1
+)
 
 class YetAnotherConcept(BaseClass):
-    is_defined_by_ontology = YourOntology
-    yetAnotherDatatypeProperty: YetAnotherDatatypeProperty
+    rdfs_isDefinedBy = YourOntology
+    yetAnotherDatatypeProperty: YetAnotherDatatypeProperty[int]
 
 class MultipleInheritanceConcept(SubConcept, YetAnotherConcept):
     pass
@@ -199,7 +263,7 @@ One of the benefits of using OGM is that it is easy to relate the data processin
 
 ```python
 class YourConcept(BaseClass):
-    is_defined_by_ontology = YourOntology
+    rdfs_isDefinedBy = YourOntology
 
     # Member functions
     def your_custom_function(self):
@@ -290,15 +354,15 @@ To make changes to the local objects and update it in the triple store:
 ```python
 # Examples changes:
 # Adding a new data property
-one_concept.oneDatatypeProperty.range.add('this is a new data property')
+one_concept.oneDatatypeProperty.add('this is a new data property')
 # Removing the object property
-one_concept.pointsToAnotherConcept.range.remove(another_concept)
+one_concept.pointsToAnotherConcept.remove(another_concept)
 
 # Push the changes to the triple store
 one_concept.push_to_kg(sparql_client, recursive_depth=-1)
 ```
 
-> NOTE both object/data property use `set` to store the range of the property.
+> NOTE the range of both object/data property are stored as `set`, which can be processed using built-in set operations.
 
 > NOTE make sure the `recursive_depth` is specified correctly that all intended changes are pushed to the knowledge graph.
 
@@ -313,3 +377,4 @@ one_concept.revert_local_changes()
 ## Notes for future development
 
 - How to generate Python script given an OWL file
+- Add support for many-to-many cardinality constraints?
