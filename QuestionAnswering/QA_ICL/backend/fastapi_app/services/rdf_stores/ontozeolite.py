@@ -54,13 +54,13 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
                     )
                 ),
             ]
-            if req.xrd_peak
+            if req.crystal_info.xrd_peak
             else []
         )
 
         unit_cell_length_patterns = [
             pattern
-            for key, conds in req.unit_cell.items()
+            for key, conds in req.crystal_info.unit_cell.items()
             if isinstance(key, UnitCellLengthKey) and conds
             for pattern in (
                 f'?Lengths ocr:hasVectorComponent [ ocr:hasComponentLabel "{key.value}" ; ocr:hasComponentValue ?{key.value} ] .',
@@ -74,7 +74,7 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
         ]
         unit_cell_angle_patterns = [
             pattern
-            for key, conds in req.unit_cell.items()
+            for key, conds in req.crystal_info.unit_cell.items()
             if isinstance(key, UnitCellAngleKey) and conds
             for pattern in (
                 f'?Angles ocr:hasVectorComponent [ ocr:hasComponentLable "{key.value}" ; ocr:hasComponentValue ?{key.value} ] .',
@@ -112,7 +112,7 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
 
         scalar_topo_prop_patterns = [
             pattern
-            for key, conds in req.scalar_topological_properties.items()
+            for key, conds in req.topo_props.scalars.items()
             if conds
             for pattern in (
                 f"?TopoProps zeo:has{key}/om:hasNumericalValue ?{key}Value .",
@@ -127,10 +127,11 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
 
         composite_bu_patterns = [
             f'?TopoProps zeo:hasCompositeBU/(zeo:hasCage|zeo:hasTCage|zeo:hasChain) "{cbu}" .'
-            for cbu in req.composite_bu
+            for cbu in req.topo_props.composite_bu
         ]
         secondary_bu_patterns = [
-            f'?TopoProps zeo:hasSecondaryBU "{sbu}" .' for sbu in req.secondary_bu
+            f'?TopoProps zeo:hasSecondaryBU "{sbu}" .'
+            for sbu in req.topo_props.secondary_bu
         ]
 
         patterns = [

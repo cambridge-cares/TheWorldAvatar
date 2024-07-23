@@ -8,7 +8,9 @@ from model.kg.ontozeolite import (
     OntozeoliteZeoliteFrameworkBase,
 )
 from model.web.ontozeolite import (
+    CrystalInfoRequest,
     ScalarTopologicalPropertyKey,
+    TopoPropsRequest,
     UnitCellKey,
     XRDPeakRequest,
     ZeoliteFrameworkRequest,
@@ -20,7 +22,6 @@ from services.rdf_stores.ontozeolite import (
     get_ontozeolite_rdfStore,
 )
 from routers.utils import parse_rhs_colon
-from utils.str import CAMEL_CASE_PATTERN
 
 
 logger = logging.getLogger(__name__)
@@ -30,11 +31,6 @@ router = APIRouter()
 
 UNIT_CELL_QUERY_KEYS = {
     f"unit-cell-{key.value}": key for cls in get_args(UnitCellKey) for key in cls
-}
-
-SCALAR_TOPOLOGY_PROPERTY_QUERY_KEYS = {
-    CAMEL_CASE_PATTERN.sub("-", key.value).lower(): key
-    for key in get_args(ScalarTopologicalPropertyKey)
 }
 
 
@@ -52,21 +48,28 @@ async def parse_zeolite_frameworks_request(
     secondary_bu: Annotated[list[str], Query(..., alias="secondary-bu")] = [],
 ):
     return ZeoliteFrameworkRequest(
-        xrd_peak=[XRDPeakRequest.model_validate_json(x) for x in xrd_peak],
-        unit_cell={
-            py_key: [
-                parse_rhs_colon(val) for val in req.query_params.getlist(query_key)
-            ]
-            for query_key, py_key in UNIT_CELL_QUERY_KEYS.items()
-        },
-        scalar_topological_properties={
-            py_key: [
-                parse_rhs_colon(val) for val in req.query_params.getlist(query_key)
-            ]
-            for query_key, py_key in SCALAR_TOPOLOGY_PROPERTY_QUERY_KEYS.items()
-        },
-        composite_bu=composite_bu,
-        secondary_bu=secondary_bu,
+        crystal_info=CrystalInfoRequest(
+            xrd_peak=[XRDPeakRequest.model_validate_json(x) for x in xrd_peak],
+            unit_cell={
+                py_key: [
+                    parse_rhs_colon(val) for val in req.query_params.getlist(query_key)
+                ]
+                for query_key, py_key in UNIT_CELL_QUERY_KEYS.items()
+                if query_key in req.query_params
+            },
+        ),
+        topo_props=TopoPropsRequest(
+            scalars={
+                key: [
+                    parse_rhs_colon(val) for val in req.query_params.getlist(key.value)
+                ]
+                for key in get_args(ScalarTopologicalPropertyKey)
+                if key.value in req.query_params
+            },
+            composite_bu=composite_bu,
+            secondary_bu=secondary_bu,
+        ),
+        return_fields=None,
     )
 
 
@@ -88,11 +91,11 @@ async def parse_zeolite_frameworks_request(
             *(
                 {
                     "in": "query",
-                    "name": name,
+                    "name": key.value,
                     "schema": {"type": "array", "items": {"type": "string"}},
                     "description": "RHS colon filters e.g. `eq:100`, `lte:200`",
                 }
-                for name in SCALAR_TOPOLOGY_PROPERTY_QUERY_KEYS.keys()
+                for key in get_args(ScalarTopologicalPropertyKey)
             ),
         ]
     },
@@ -106,6 +109,7 @@ async def getZeoliteFrameworks(
         OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
     ],
 ):
+    print(framework_req)
     return ontozeolite_store.get_zeolite_frameworks(framework_req)
 
 

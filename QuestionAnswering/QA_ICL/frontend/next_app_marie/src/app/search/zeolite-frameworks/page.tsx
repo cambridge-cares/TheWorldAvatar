@@ -10,7 +10,7 @@ export default async function ZeoliteFrameworksPage() {
 
   return (
     <Main className='flex flex-col items-center'>
-      <div className='w-full mt-8 px-4 md:max-w-screen-md lg:max-w-screen-lg'>
+      <div className='w-full mt-8 px-4 mb-12 md:max-w-screen-md lg:max-w-screen-lg'>
         <h1 className='mb-4'>Zeolite framework search</h1>
         <React.Suspense>
           <ZeoliteFrameworkForm
