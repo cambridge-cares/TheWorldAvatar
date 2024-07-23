@@ -27,7 +27,7 @@ const COLS = [
     },
   }),
   COL_HELPER.accessor('label', { header: 'Label' }),
-  COL_HELPER.accessor('IUPAC_name', { header: 'IUPAC name' }),
+  COL_HELPER.accessor('IUPACName', { header: 'IUPAC name' }),
   COL_HELPER.accessor('InChI', { header: 'InChI' }),
 ]
 

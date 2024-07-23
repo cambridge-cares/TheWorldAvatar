@@ -142,11 +142,11 @@ WHERE {{
                 (
                     OntospeciesSpecies(
                         **base_model.model_dump(),
-                        alt_labels=list(),
-                        chemical_classes=list(),
-                        uses=list(),
-                        properties=dict(),
-                        identifiers=dict(),
+                        altLabel=list(),
+                        ChemicalClass=list(),
+                        Use=list(),
+                        Property=dict(),
+                        Identifier=dict(),
                     )
                     if base_model
                     else None
@@ -270,11 +270,11 @@ WHERE {{
             (
                 OntospeciesSpecies(
                     **base_model.model_dump(),
-                    alt_labels=field2iri2values["altLabel"][iri],
-                    chemical_classes=iri2chemclass.get(iri, list()),
-                    uses=iri2use.get(iri, list()),
-                    identifiers=iri2identifiers[iri],
-                    properties=iri2properties[iri],
+                    altLabel=field2iri2values["altLabel"][iri],
+                    ChemicalClass=iri2chemclass.get(iri, list()),
+                    Use=iri2use.get(iri, list()),
+                    Identifier=iri2identifiers[iri],
+                    Property=iri2properties[iri],
                 )
                 if base_model
                 else None

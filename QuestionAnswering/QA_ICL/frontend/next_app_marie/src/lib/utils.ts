@@ -34,11 +34,11 @@ export function capitalize(text: string) {
 
 export function extractLowerUpperParams(
   searchParams: ReadonlyURLSearchParams,
-  keyEnum: { [key: string]: string },
+  keys: string[],
   keyPrefix: string = ''
 ) {
   return Object.fromEntries(
-    Object.values(keyEnum).map(key => {
+    keys.map(key => {
       const vals = searchParams.getAll(`${keyPrefix}${key}`)
       const lower =
         vals.find(val => val.startsWith('gte:'))?.substring('gte:'.length) || ''

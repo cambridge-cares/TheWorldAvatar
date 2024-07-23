@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 
 from model.kg.ontospecies import (
     OntospeciesSpecies,
-    OntospeciesSpeciesBase,
+    SpeciesAttrKey,
     SpeciesIdentifierKey,
     SpeciesPropertyKey,
 )
@@ -23,8 +23,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-SPECIES_CHEMCLASS_QUERY_KEY = "ChemicalClass"
-SPECIES_USE_QUERY_KEY = "Use"
 RETURN_FIELD_QUERY_KEY = "ReturnField"
 
 SPECIES_IDENTIFIER_KEY_TO_LABEL = {
@@ -62,9 +60,9 @@ async def parse_return_fields(
 
     return_fields_set = set(return_field)
     return SpeciesReqReturnFields(
-        alt_label="alt-label" in return_fields_set,
-        chemical_class=SPECIES_CHEMCLASS_QUERY_KEY in return_fields_set,
-        use=SPECIES_USE_QUERY_KEY in return_fields_set,
+        alt_label=SpeciesAttrKey.ALT_LABEL in return_fields_set,
+        chemical_class=SpeciesAttrKey.CHEMICAL_CLASS in return_fields_set,
+        use=SpeciesAttrKey.USE in return_fields_set,
         identifier=[
             key for key in SpeciesIdentifierKey if key.value in return_fields_set
         ],
@@ -84,9 +82,9 @@ async def parse_species_request(
         SpeciesReqReturnFields | None, Depends(parse_return_fields)
     ],
     chemical_class: Annotated[
-        list[str], Query(..., alias=SPECIES_CHEMCLASS_QUERY_KEY)
+        list[str], Query(..., alias=SpeciesAttrKey.CHEMICAL_CLASS)
     ] = [],
-    use: Annotated[list[str], Query(..., alias=SPECIES_USE_QUERY_KEY)] = [],
+    use: Annotated[list[str], Query(..., alias=SpeciesAttrKey.USE)] = [],
 ):
     return SpeciesRequest(
         chemical_class=chemical_class,

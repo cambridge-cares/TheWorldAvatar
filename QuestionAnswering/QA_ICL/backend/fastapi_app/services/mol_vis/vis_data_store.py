@@ -55,8 +55,8 @@ class VisualisationDataStore:
             models = self.ontospecies_store.get_species_base_many(iris)
             labels = [
                 (
-                    "{} ({})".format(model.label, model.IUPAC_name)
-                    if model.IUPAC_name
+                    "{} ({})".format(model.label, model.IUPACName)
+                    if model.IUPACName
                     else model.label if model else ""
                 )
                 for model in models
@@ -77,7 +77,7 @@ class VisualisationDataStore:
                 labels = [model.code if model else "" for model in models]
             else:
                 models = self.ontozeolite_store.get_zeolitic_materials_many(iris)
-                labels = [model.chemical_formula if model else "" for model in models]
+                labels = [model.ChemicalFormula if model else "" for model in models]
         else:
             type = None
             vis_data = [None for _ in iris]

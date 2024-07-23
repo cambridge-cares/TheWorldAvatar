@@ -18,8 +18,8 @@ export const XRDSpectrumPlot = ({ data }: { data: XRDPeak[] }) => {
           {
             barThickness: 1,
             data: data.map(datum => ({
-              x: datum.two_theta_position,
-              y: datum.relative_intensity,
+              x: datum.TwoThetaPosition,
+              y: datum.RelativeIntensity,
             })),
           },
         ],

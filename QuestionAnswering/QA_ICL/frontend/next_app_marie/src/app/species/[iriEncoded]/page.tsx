@@ -18,7 +18,7 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
 
   const identifiers = [
     ...[['The World Avatar IRI', [data.IRI]] as [string, string[]]],
-    ...Object.entries(data.identifiers)
+    ...Object.entries(data.Identifier)
       .filter(([_, lst]) => lst.length > 0)
       .map(
         ([key, lst]) =>
@@ -34,7 +34,7 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
   return (
     <Main className='flex flex-col items-center'>
       <div className='w-full mt-8 px-4 flex flex-col space-y-4 md:max-w-screen-md lg:max-w-screen-lg'>
-        <h1>{data.IUPAC_name ? capitalize(data.IUPAC_name) : data.InChI}</h1>
+        <h1>{data.IUPACName ? capitalize(data.IUPACName) : data.InChI}</h1>
         <section>
           <MolViewer type='xyz' data={xyz} />
         </section>
@@ -62,11 +62,11 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
             </a>
           </h2>
           <ul className='list-disc list-inside grid md:grid-cols-2 md:grid-flow-row-dense'>
-            {data.chemical_classes.map((node, i) => (
+            {data.ChemicalClass.map((node, i) => (
               <li
                 key={i}
                 className={
-                  i <= (data.chemical_classes.length - 1) / 2
+                  i <= (data.ChemicalClass.length - 1) / 2
                     ? 'md:col-start-1'
                     : 'md:col-start-2'
                 }
@@ -83,11 +83,11 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
             </a>
           </h2>
           <ul className='list-disc list-inside grid grid-cols-2 grid-flow-row-dense'>
-            {data.uses.map((node, i) => (
+            {data.Use.map((node, i) => (
               <li
                 key={i}
                 className={
-                  i <= (data.uses.length - 1) / 2
+                  i <= (data.Use.length - 1) / 2
                     ? 'md:col-start-1'
                     : 'md:col-start-2'
                 }
@@ -103,7 +103,7 @@ export default async function SpeciesPage({ params }: SpeciesPageInterface) {
               Properties
             </a>
           </h2>
-          {Object.entries(data.properties)
+          {Object.entries(data.Property)
             .filter(([_, lst]) => lst.length > 0)
             .map(([key, lst], i) => (
               <div key={i} className='mb-2'>
