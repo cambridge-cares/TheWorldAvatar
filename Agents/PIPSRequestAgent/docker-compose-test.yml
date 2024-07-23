@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  test_pips_request_agent:
+    build:
+      context: .
+      target: test
+      dockerfile: Dockerfile
+    image: test_pips_request_agent:1.0.0
+    container_name: test_pips_request_agent
+
+  mockserver:
+    image: mockserver/mockserver
+    ports:
+      - "1111:1080"
+    environment:
+      MOCKSERVER_LOG_LEVEL: INFO
+    restart: always
