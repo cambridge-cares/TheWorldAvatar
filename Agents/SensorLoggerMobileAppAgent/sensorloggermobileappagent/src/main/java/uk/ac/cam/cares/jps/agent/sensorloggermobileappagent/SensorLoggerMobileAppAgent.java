@@ -49,10 +49,23 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             @Override
             public void run() {
                 synchronized (smartphoneHashmap) {
-                    for (SmartphoneRecordingTask task : smartphoneHashmap.values()) {
-                        if (task.shouldProcessData()) {
+                    List<String> inactiveTask = new ArrayList<>();
+                    for (Map.Entry<String, SmartphoneRecordingTask> entry : smartphoneHashmap.entrySet()) {
+                        SmartphoneRecordingTask task = entry.getValue();
+                        String deviceId = entry.getKey();
+
+                        if (task.shouldTerminateTask()) {
+                            LOGGER.info(deviceId + ": flush all data out");
+                            sendDataExecutor.submit(task::processAndSendData);
+                            inactiveTask.add(deviceId);
+                        } else if (task.shouldProcessData()) {
                             sendDataExecutor.submit(task::processAndSendData);
                         }
+                    }
+
+                    if (!inactiveTask.isEmpty()) {
+                        LOGGER.info(String.format("tasks: %s are inactive and has been removed from the hashmap", String.join(",", inactiveTask)));
+                        inactiveTask.forEach(smartphoneHashmap::remove);
                     }
                 }
             }

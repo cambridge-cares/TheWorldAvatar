@@ -109,9 +109,8 @@ public class SmartphoneRecordingTask {
         isProcessing = false;
     }
 
-    public synchronized boolean checkTaskTermination() {
-        if (System.currentTimeMillis() - lastActiveTime > 600 * 1000L) {
-            processAndSendData();
+    public synchronized boolean shouldTerminateTask() {
+        if (System.currentTimeMillis() - lastActiveTime > config.getTaskInactiveTime() * 1000L) {
             return true;
         }
 

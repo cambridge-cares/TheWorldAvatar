@@ -26,6 +26,8 @@ public class DownSampleConfig {
     private final int timerDelay;
     private final int timerFrequency;
 
+    private final int taskInactiveTime;
+
     public DownSampleConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
 
@@ -49,6 +51,8 @@ public class DownSampleConfig {
 
         timerDelay = Integer.valueOf(config.getString("timerDelay"));
         timerFrequency = Integer.valueOf(config.getString("timerFrequency"));
+
+        taskInactiveTime = Integer.valueOf(config.getString("taskInactiveTime"));
     }
 
     public Long getAccelDSResolution() {
@@ -105,5 +109,9 @@ public class DownSampleConfig {
 
     public int getTimerFrequency() {
         return timerFrequency;
+    }
+
+    public int getTaskInactiveTime() {
+        return taskInactiveTime;
     }
 }
