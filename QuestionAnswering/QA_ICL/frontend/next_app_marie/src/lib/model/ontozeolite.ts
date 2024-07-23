@@ -42,21 +42,23 @@ export const OTopoPropKey = {
 } as const
 export type TopoPropKey = (typeof OTopoPropKey)[keyof typeof OTopoPropKey]
 
-export type ScalarTopoPropKey =
-  | typeof OTopoPropKey.ACCESSIBLE_AREA_PER_CELL
-  | typeof OTopoPropKey.ACCESSIBLE_AREA_PER_GRAM
-  | typeof OTopoPropKey.ACCESSIBLE_VOLUME
-  | typeof OTopoPropKey.ACCESSIBLE_VOLUME_PER_CELL
-  | typeof OTopoPropKey.OCCUPIABLE_AREA_PER_CELL
-  | typeof OTopoPropKey.OCCUPIABLE_AREA_PER_GRAM
-  | typeof OTopoPropKey.OCCUPIABLE_VOLUME
-  | typeof OTopoPropKey.OCCUPIABLE_VOLUME_PER_CELL
-  | typeof OTopoPropKey.SPECIFIC_ACCESSIBLE_AREA
-  | typeof OTopoPropKey.SPECIFIC_OCCUPIABLE_AREA
-  | typeof OTopoPropKey.DENSITY
-  | typeof OTopoPropKey.FRAMEWORK_DENSITY
+export const SCALAR_TOPO_PROP_KEYS = [
+  OTopoPropKey.ACCESSIBLE_AREA_PER_CELL,
+  OTopoPropKey.ACCESSIBLE_AREA_PER_GRAM,
+  OTopoPropKey.ACCESSIBLE_VOLUME,
+  OTopoPropKey.ACCESSIBLE_VOLUME_PER_CELL,
+  OTopoPropKey.OCCUPIABLE_AREA_PER_CELL,
+  OTopoPropKey.OCCUPIABLE_AREA_PER_GRAM,
+  OTopoPropKey.OCCUPIABLE_VOLUME,
+  OTopoPropKey.OCCUPIABLE_VOLUME_PER_CELL,
+  OTopoPropKey.SPECIFIC_ACCESSIBLE_AREA,
+  OTopoPropKey.SPECIFIC_OCCUPIABLE_AREA,
+  OTopoPropKey.DENSITY,
+  OTopoPropKey.FRAMEWORK_DENSITY,
+] as const
+export type ScalarTopoPropKey = (typeof SCALAR_TOPO_PROP_KEYS)[number]
 
-export const SCALAR_TOPO_PROP_UNITS = {
+export const TOPO_PROP_UNITS = {
   [OTopoPropKey.ACCESSIBLE_AREA_PER_CELL]: 'Å²',
   [OTopoPropKey.ACCESSIBLE_AREA_PER_GRAM]: 'm²/g',
   [OTopoPropKey.ACCESSIBLE_VOLUME]: '%',
@@ -69,7 +71,7 @@ export const SCALAR_TOPO_PROP_UNITS = {
   [OTopoPropKey.OCCUPIABLE_VOLUME_PER_CELL]: 'Å³',
   [OTopoPropKey.SPECIFIC_ACCESSIBLE_AREA]: 'm²/cm³',
   [OTopoPropKey.SPECIFIC_OCCUPIABLE_AREA]: 'm²/cm³',
-} as const
+}
 
 export interface ZeoliteFrameworkBase extends RDFEntity {
   code: string
@@ -171,6 +173,17 @@ export interface CrystalInfo {
   }
 }
 
+export interface TAtom {
+  index: number
+  name: string
+  CooridnateSequence?: MeasureVector
+  VertexSymbol: {
+    RingCount?: number
+    RingSize: number
+    SymbolPosition: number
+  }[]
+}
+
 export interface TopologicalProperties {
   AccessibleAreaPerCell: Quantity
   AccessibleAreaPerGram: Quantity
@@ -188,7 +201,7 @@ export interface TopologicalProperties {
   Density: Quantity
   FrameworkDensity: Quantity
   TopologicalDensity: {
-    TD: number
+    TD?: number
     TD10: number
   }
 
@@ -196,19 +209,11 @@ export interface TopologicalProperties {
   RingSizes: MeasureVector
 
   RDLS?: number
-  TAtom: {
-    index: number
-    name: string
-    CooridnateSequence?: MeasureVector
-    VertexSymbol: {
-      ring_size: string
-      symbol_position: number
-    }[]
-  }[]
+  TAtom: TAtom[]
   SecondaryBU: string[]
   CompositeBU?: {
-    cage: string[]
-    T_cage: string[]
+    Cage: string[]
+    TCage: string[]
   }
   ABCSequence?: string
 }
@@ -218,7 +223,3 @@ export interface ZeoliteFramework extends ZeoliteFrameworkBase {
   TopologicalProperties: TopologicalProperties
   ZeoliticMaterial: ZeoliticMaterialBase[]
 }
-
-export const OTopoPropsKey = {}
-
-export const OCrystalInfoKey = {}

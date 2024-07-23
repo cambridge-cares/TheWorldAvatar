@@ -183,7 +183,7 @@ class OntozeoliteTAtom(RDFEntity):
 
 
 class OntozeoliteTopoDensity(RDFEntity):
-    TD: float = RDFField(path=ONTOZEOLITE.hasValueTD)
+    TD: float | None = RDFField(path=ONTOZEOLITE.hasValueTD)
     TD10: float = RDFField(path=ONTOZEOLITE.hasValueTD10)
 
 
