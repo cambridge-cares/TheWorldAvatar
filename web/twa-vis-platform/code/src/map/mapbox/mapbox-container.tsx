@@ -4,17 +4,18 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './mapbox.css';
 
 import mapboxgl, { Map } from 'mapbox-gl';
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
+import MapEventManager from 'map/map-event-manager';
 import { MapSettings } from 'types/settings';
-import { getCurrentImageryOption, getDefaultCameraPosition } from '../map-helper';
-import { formatAppUrl } from 'utils/client-utils';
+import { getCurrentImageryOption, getDefaultCameraPosition } from 'map/map-helper';
 
 // Type definition of incoming properties
 interface MapProperties {
   settings: MapSettings;
   currentMap: Map;
   setMap: React.Dispatch<React.SetStateAction<Map>>;
+  setMapEventManager: React.Dispatch<React.SetStateAction<MapEventManager>>;
 }
 
 /**
@@ -43,7 +44,7 @@ export default function MapboxMapComponent(props: MapProperties) {
   const initialiseMap = async () => {
     props.currentMap?.remove();
 
-    const response = await fetch(formatAppUrl("/api/map/settings"), {
+    const response = await fetch(("./api/map/settings"), {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -64,7 +65,7 @@ export default function MapboxMapComponent(props: MapProperties) {
       pitch: defaultPosition["pitch"],
     });
 
-    map.addControl(new mapboxgl.ScaleControl(), "bottom-right");
+    map.addControl(new mapboxgl.ScaleControl() as mapboxgl.IControl, "bottom-right");
     map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
 
     console.info("Initialised a new Mapbox map object.");
@@ -81,7 +82,8 @@ export default function MapboxMapComponent(props: MapProperties) {
         );
       }
       // Map is only settable after the styles have loaded
-      props.setMap(map)
+      props.setMap(map);
+      props.setMapEventManager(new MapEventManager(map));
     });
   };
 

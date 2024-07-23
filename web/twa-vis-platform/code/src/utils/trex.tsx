@@ -17,7 +17,7 @@ type Props = {
 export default class Trex extends PureComponent<Props> {
 
     // Audio player
-    audio = new Audio("/images/utils/trex.wav");
+    audio = new Audio("./images/utils/trex.wav");
 
     // Runs once component is added
     componentDidMount() {

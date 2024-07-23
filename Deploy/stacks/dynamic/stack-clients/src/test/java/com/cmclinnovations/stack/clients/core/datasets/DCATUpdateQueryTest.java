@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,32 +28,29 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.testcontainers.junit.jupiter.Container;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.core.datasets.DatasetBuilder.Service;
-import com.cmclinnovations.stack.clients.docker.DockerClient;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.BlazegraphContainer;
 import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 class DCATUpdateQueryTest {
 
     @Container
-    private final BlazegraphContainer blazegraph = new BlazegraphContainer();
+    private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
-    private final RemoteStoreClient remoteStoreClient;
-
-    DCATUpdateQueryTest() {
-        blazegraph.start();
-        remoteStoreClient = blazegraph.getRemoteStoreClient();
-    }
+    private static final RemoteStoreClient remoteStoreClient = blazegraph.getRemoteStoreClient();
 
     private String testName;
     private Map<String, Integer> fileIndecies = new HashMap<>();
@@ -188,7 +186,7 @@ class DCATUpdateQueryTest {
 
     @SuppressWarnings("null")
     @Test
-    void testAddDataSubset() throws JsonMappingException, JsonProcessingException {
+    void testAddDataSubset() {
         writeBlazegraphConfig();
         ObjectMapper mapper = JsonHelper.getMapper();
         Assertions.assertAll(() -> {
@@ -223,7 +221,7 @@ class DCATUpdateQueryTest {
 
     @SuppressWarnings("null")
     @Test
-    void testAddDataSubsetSkipping() throws JsonMappingException, JsonProcessingException {
+    void testAddDataSubsetSkipping() {
         writeBlazegraphConfig();
         ObjectMapper mapper = JsonHelper.getMapper();
         Assertions.assertAll(() -> {
@@ -257,6 +255,97 @@ class DCATUpdateQueryTest {
     }
 
     @Test
+    void testAddMetadataSimple() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of(), Optional.of("<http://p/a> <http://q/b> <http://r/c>")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataPrefixOnly() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of("p", "http://p/"), Optional.empty()))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataPrefix() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of("p", "http://p/"), Optional.of("p:a <http://q/b> <http://r/c>")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataMissingPrefixes() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of(),
+                        Optional.of("<http://p/a> rdf:type <http://p/A>; rdfs:label \"Hello\"")))
+                .build();
+        Assertions.assertThrows(JPSRuntimeException.class, () -> buildAndRunQuery(dataset));
+    }
+
+    @Test
+    void testAddMetadataUseBuiltinPrefix() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
+                        Optional.of("<http://p/a> rdfs:label \"Hello\"")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataOverrideBuiltinPrefixes() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(
+                        Map.of("rdf", "http://cmcl.io/rdf#", "rdfs", "http://cmcl.io/rdfs#", "dcat",
+                                "http://purl.org/dc/terms/", "xsd", "http://cmcl.io/xsd#"),
+                        Optional.of("<http://p/a> rdf:type <http://p/A>; rdfs:label \"Hello\"^^xsd:string")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
+    void testAddMetadataFromFile() {
+        writeBlazegraphConfig();
+
+        Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                .withDatasetDirectory("test1")
+                .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                .withMetadataRDF(new Metadata(Map.of(),
+                        Optional.of(
+                                "@src/test/resources/com/cmclinnovations/stack/clients/core/datasets/datasetMetadata.ttl")))
+                .build();
+        buildAndRunQuery(dataset);
+    }
+
+    @Test
     void testCatalogingTrivial() {
         Assertions.assertAll(() -> {
             Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
@@ -273,34 +362,83 @@ class DCATUpdateQueryTest {
         });
     }
 
+    @SuppressWarnings("null")
+    @Test
+    void testRemovingDataset() {
+        writeBlazegraphConfig();
+        ObjectMapper mapper = JsonHelper.getMapper();
+
+        Dataset dataset1;
+        Dataset dataset2;
+        try {
+            dataset1 = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                    .withDatasetDirectory("test1")
+                    .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                    .withDataSubsets(List.of(mapper.readValue(
+                            "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy nice TBox.\",\"subdirectory\":\"tbox\"}",
+                            TBoxCSV.class)))
+                    .build();
+
+            dataset2 = new DatasetBuilder("testDataset2").withDescription("Dataset for testing2")
+                    .withDatasetDirectory("test2")
+                    .withRdfType("http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox")
+                    .withDataSubsets(List.of(mapper.readValue(
+                            "{\"type\": \"tboxcsv\",\"name\":\"Tbox1\",\"description\":\"A realy bad TBox.\",\"subdirectory\":\"tbox\"}",
+                            TBoxCSV.class)))
+                    .build();
+
+            Assertions.assertAll(() -> {
+                buildAndRunDelete(dataset1);
+            }, () -> {
+                buildAndRunQuery(dataset1);
+            }, () -> {
+                buildAndRunDelete(dataset1);
+            }, () -> {
+                buildAndRunQuery(dataset1);
+            }, () -> {
+                buildAndRunQuery(dataset2);
+            }, () -> {
+                buildAndRunDelete(dataset1);
+            });
+
+        } catch (JsonProcessingException e) {
+            Assertions.fail(e);
+        }
+    }
+
     private void writeBlazegraphConfig() {
-        DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.writeEndpointConfig(
+        BlazegraphClient.getInstance().writeEndpointConfig(
                 new BlazegraphEndpointConfig("blazegraph", "blazegraph",
                         "8080",
                         BlazegraphContainer.USERNAME, BlazegraphContainer.PASSWORD));
     }
 
     private void writePostGISConfig() {
-        DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.writeEndpointConfig(
+        PostGISClient.getInstance().writeEndpointConfig(
                 new PostGISEndpointConfig("postgis", "test-postgis", "1234",
                         "user", "passwordFile"));
     }
 
     private void writeOntopConfig(String name) {
-        DockerClient dockerClient = DockerClient.getInstance();
-        dockerClient.writeEndpointConfig(
+        OntopClient.getInstance().writeEndpointConfig(
                 new OntopEndpointConfig(name, StackClient.prependStackName(name).replace('_', '-'), "5678"));
     }
 
     private void buildAndRunQuery(Dataset dataset) {
 
-        DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
-        String query = dcatUpdateQuery.getQueryStringForCataloging(dataset);
+        runUpdate(dataset);
 
-        remoteStoreClient.executeUpdate(query);
+        checkResults();
+    }
 
+    private void buildAndRunDelete(Dataset dataset) {
+
+        runDelete(dataset);
+
+        checkResults();
+    }
+
+    private void checkResults() {
         Model results = remoteStoreClient.executeConstruct(BlazegraphContainer.CONSTRUCT_ALL_QUERY);
 
         checkExpectedFile(results);
@@ -312,7 +450,20 @@ class DCATUpdateQueryTest {
             writeTurtleToFile(results);
             return getMessage("has different statements.", expectedResults, actualResults);
         });
+    }
 
+    private void runUpdate(Dataset dataset) {
+        DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
+        String query = dcatUpdateQuery.getUpdateQuery(dataset);
+
+        remoteStoreClient.executeUpdate(query);
+    }
+
+    private void runDelete(Dataset dataset) {
+        DCATUpdateQuery dcatUpdateQuery = new DCATUpdateQuery();
+        String query = dcatUpdateQuery.getDeleteQuery(dataset);
+
+        remoteStoreClient.executeUpdate(query);
     }
 
     private String getMessage(String message, Model expected, Model actual) {

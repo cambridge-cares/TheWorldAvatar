@@ -2,68 +2,76 @@
 
 import styles from './scenario.module.css';
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import { Button } from "@mui/material";
 import Dialog from '@mui/material/Dialog';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { setScenario } from 'state/map-feature-slice';
+import { getScenarioDefinitions, setScenarioID, setScenarioName, setScenarioType, setScenarioDefinitions } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import IconComponent from 'ui/graphic/icon/icon';
+import { getScenarios } from '../../../utils/getScenarios';
 
 interface ScenarioModalProperties {
+  scenarioURL: string,
   scenarios: ScenarioDefinition[],
   show: boolean,
   setShowState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+export function scenarioTypeIcon(scenarioType: string) {
+  return scenarioType ? `images/credo-misc/${scenarioType}.svg` : "images/defaults/icons/about.svg";
+}
 /**
  * A modal component for users to select their scenario
  * 
  * @returns JSX for landing page.
  */
 export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) {
-  const [view, setView] = React.useState(null);
+  const scenarioDefinitions = useSelector(getScenarioDefinitions);
+  const scenarioUrl = JSON.parse(props.scenarioURL).resources.scenario.url;
   const dispatch = useDispatch();
-  const handleChange = (event: React.MouseEvent<HTMLElement>, nextView: string) => {
-    dispatch(setScenario(nextView));
+
+  const handleChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const scenarioID = event.currentTarget.value;
+    const selectedScenario: ScenarioDefinition = (scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).find(scenario => scenario.id === scenarioID);
+    dispatch(setScenarioID(scenarioID));
+    dispatch(setScenarioName(selectedScenario.name))
+    dispatch(setScenarioType(selectedScenario.type))
     props.setShowState(false);
-    setView(nextView);
   };
+
+  const onClick = async () => {
+    const data = await getScenarios(scenarioUrl)
+    dispatch(setScenarioDefinitions(data)); // can't do this in getsScenarios code bc server
+
+    console.log("Refreshed")
+  };
+
 
   return (
     <Dialog
-      sx={{ '& .MuiDialog-paper': { width: "80vw", maxWidth: "80vw", height: "70vh", maxHeight: "70vh" } }}
+      sx={{ '& .MuiDialog-paper': { maxWidth: "80vw", maxHeight: "70vh" } }}
       open={props.show}
     >
-      <div className={styles.header}><h1>Select a scenario:</h1></div>
-      <ToggleButtonGroup
-        value={view}
-        exclusive
-        orientation="vertical"
-        onChange={handleChange}
-      >
-        {props.scenarios.map((scenario, index) => (
-          <ToggleButton
-            value={scenario.id}
-            aria-label={scenario.name}
-            color="standard"
-            sx={{ textAlign: "left", textTransform: "none" }}
-            key={scenario.name}
-          >
-            <div className={styles["option-container"]}>
-              <div className={styles["icon-container"]}>
-                <IconComponent icon="/images/defaults/icons/about.svg" classes={styles.icon} />
-              </div>
-              <div className={styles.content}>
-                <span className={styles.title}><b>({index + 1}) {scenario.name}</b></span>
-                <span className={styles.description}>{scenario.description}</span>
-              </div>
+
+      <div className={styles.globalContainer}>
+        <div className={styles.header}><h1>Select a scenario:</h1>
+          <Button style={{ marginLeft: 'auto', textTransform: 'none' }} className={styles.refreshButton} onClick={onClick}>Refresh</Button>
+        </div>
+        {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
+          <button key={scenario.name + index} value={scenario.id} className={styles["option-container"]} onClick={handleChange}>
+            <div className={styles["icon-container"]}>
+              <IconComponent icon={scenarioTypeIcon(scenario.type)} classes={styles.icon} />
             </div>
-          </ToggleButton>
+            <div className={styles.content}>
+              <span className={styles.title}><b>{scenario.name}</b></span>
+              <span className={styles.description}>{scenario.description}</span>
+            </div>
+          </button>
         ))}
-      </ToggleButtonGroup>
+      </div>
+
     </Dialog>
   )
 }

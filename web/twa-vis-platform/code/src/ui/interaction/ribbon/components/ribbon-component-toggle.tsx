@@ -9,35 +9,37 @@ import { getOption, setOption } from 'state/ribbon-component-slice';
 import IconComponent from 'ui/graphic/icon/icon';
 
 interface RibbonComponentToggleProps {
-    icon: string,
-    text: string,
+    id: string,
+    icon?: string,
+    text?: string,
     tooltip: string,
     initialState: boolean,
+    children?: React.ReactNode,
     action: (state: boolean) => void
 }
 
 export default function RibbonComponentToggle(props: Readonly<RibbonComponentToggleProps>) {
-    const toggled = useSelector(getOption(props.text));
+    const toggled = useSelector(getOption(props.id));
     const dispatch = useDispatch();
 
     const classNames = [styles.ribbonComponentInner];
-    if(toggled?.selection != null && toggled.selection === true) {
+    if (props.icon && toggled?.selection != null && toggled.selection === true) {
         classNames.push(styles.toggled);
-    } else if(toggled?.selection == null && props.initialState) {
+    } else if (toggled?.selection == null && props.initialState) {
         classNames.push(styles.toggled);
     }
 
-    const clickAction = () => {
+    const handleClick = () => {
         const selected = (toggled?.selection == null) ? !props.initialState : !toggled.selection;
         dispatch(setOption({
-            name: props.text,
+            id: props.id,
             selection: selected
         }));
         props.action(selected);
     }
 
     return (
-        <div className={styles.ribbonComponent} onClick={clickAction}>
+        <div className={styles.ribbonComponent} onClick={handleClick}>
             <Tooltip
                 title={props.tooltip}
                 enterDelay={1000}
@@ -46,14 +48,17 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
 
                 <>
                     <div className={classNames.join(" ")}>
-                        <div className={styles.ribbonComponentIcon}>
-                            <IconComponent icon={props.icon} />
-                        </div>
-                        <div className={styles.ribbonComponentText}>
-                            {props.text}
-                        </div>
+                        {props.icon &&
+                            <div className={styles.ribbonComponentIcon}>
+                                <IconComponent icon={props.icon} />
+                            </div>
+                        }
+                        {props.children}
+                        {props.text &&
+                            <div className={styles.ribbonComponentText}>
+                                {props.text}
+                            </div>}
                     </div>
-                    <div style={{height: "10px"}}/>
                 </>
             </Tooltip>
         </div>

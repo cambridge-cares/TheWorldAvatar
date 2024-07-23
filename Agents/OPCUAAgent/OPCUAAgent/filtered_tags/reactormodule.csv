@@ -1,0 +1,7 @@
+﻿Tag Name,Data Type,Sub Identifier
+Temperature_A,Float,ns=2;s=PLC-Network.PLC
+Temperature_B,Float,ns=2;s=PLC-Network.PLC
+Temperature_C,Float,ns=2;s=PLC-Network.PLC
+Temperature_D,Float,ns=2;s=PLC-Network.PLC
+Test_Float,Float,ns=2;s=PLC-Network.PLC
+Test_Boolean,Boolean,ns=2;s=PLC-Network.PLC

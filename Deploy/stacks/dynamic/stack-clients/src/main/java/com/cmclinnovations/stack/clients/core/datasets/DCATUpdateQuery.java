@@ -2,7 +2,6 @@ package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.vocabulary.DCAT;
@@ -79,6 +78,19 @@ final class DCATUpdateQuery {
                 // If an issued triple already exists then keep that value otherwise use the
                 // current time.
                 Expressions.bind(Expressions.coalesce(existingIssuedVar, currentTime), issuedVar));
+    }
+
+    private void removeDataset(Dataset dataset) {
+        Variable existingPVar = createVar(datasetVar, "_p");
+        Variable existingOVar = createVar(datasetVar, "_o");
+
+        query.delete(datasetVar.has(existingPVar, existingOVar));
+        query.where(GraphPatterns.and(
+                // "rdfType" and "name" define the dataset
+                datasetVar.isA(dataset.getRdfType())
+                        .andHas(DCTERMS.TITLE, dataset.getName())
+                        .andHas(existingPVar, existingOVar)
+                        .optional()));
     }
 
     private int externalDatasetCount = 0;
@@ -165,10 +177,22 @@ final class DCATUpdateQuery {
         query.where(datasetVar.has(DCAT.DATASET, oldDataSubsetVar).optional());
     }
 
+    private void removeExistingDataSubsets() {
+        Variable existingDataSubsetVar = SparqlBuilder.var("dataSubset_existing");
+        Variable existingPVar = createVar(existingDataSubsetVar, "p");
+        Variable existingOVar = createVar(existingDataSubsetVar, "o");
+
+        query.delete(existingDataSubsetVar.has(existingPVar, existingOVar));
+        query.where(existingDataSubsetVar.isA(DCAT.DATASET)
+                .andHas(existingPVar, existingOVar)
+                .and(datasetVar.has(DCAT.HAS_DATASET, existingDataSubsetVar))
+                .optional());
+    }
+
     private void addBlazegraphServer(Dataset dataset) {
         boolean used = dataset.usesBlazegraph();
         String namespace = dataset.getNamespace();
-        String url = used ? BlazegraphClient.getInstance().getEndpoint().getUrl(namespace) : null;
+        String url = used ? BlazegraphClient.getInstance().getEndpointConfig().getUrl(namespace) : null;
 
         addService(blazegraphServiceVar, namespace, SparqlConstants.BLAZEGRAPH_SERVICE, url, null, used);
     }
@@ -176,7 +200,7 @@ final class DCATUpdateQuery {
     private void addPostGISServer(Dataset dataset) {
         boolean used = dataset.usesPostGIS();
         String database = dataset.getDatabase();
-        String url = used ? PostGISClient.getInstance().getEndpoint().getJdbcURL(database) : null;
+        String url = used ? PostGISClient.getInstance().getEndpointConfig().getJdbcURL(database) : null;
 
         addService(postgisServiceVar, database, SparqlConstants.POSTGIS_SERVICE, url, null, used);
     }
@@ -190,7 +214,7 @@ final class DCATUpdateQuery {
     private void addOntopServer(Dataset dataset) {
         boolean used = dataset.usesOntop();
         String ontopName = dataset.getOntopName();
-        String url = used ? OntopClient.getInstance(ontopName).getEndpoint().getUrl() : null;
+        String url = used ? OntopClient.getInstance(ontopName).getEndpointConfig().getUrl() : null;
         addService(ontopServiceVar, StackClient.prependStackName(ontopName),
                 SparqlConstants.ONTOP_SERVICE, url, DCTERMS.REQUIRES, used);
     }
@@ -203,9 +227,9 @@ final class DCATUpdateQuery {
 
             // Remove all existing triples that have this service as the subject
             Variable existingServiceVar = createVar(serviceVar, "existing");
-            query.delete(existingServiceVar
-                    .has(createVar(serviceVar, "p"),
-                            createVar(serviceVar, "o")));
+            Variable existingPVar = createVar(existingServiceVar, "p");
+            Variable existingOVar = createVar(existingServiceVar, "o");
+            query.delete(existingServiceVar.has(existingPVar, existingOVar));
 
             // Insert common triples
             TriplePattern serviceTriples = serviceVar.isA(type)
@@ -229,8 +253,7 @@ final class DCATUpdateQuery {
                     existingServiceVar.isA(type)
                             .andHas(DCTERMS.TITLE, title)
                             .andHas(DCAT.SERVES_DATASET, datasetVar)
-                            .andHas(createVar(serviceVar, "p"),
-                                    createVar(serviceVar, "o")))
+                            .andHas(existingPVar, existingOVar))
                     .optional());
 
             // Create new IRI for this service if not already present
@@ -262,7 +285,28 @@ final class DCATUpdateQuery {
         query.where(oldServiceVar.has(DCAT.SERVES_DATASET, datasetVar).optional());
     }
 
-    public String getQueryStringForCataloging(Dataset dataset) {
+    private void removeExistingServices() {
+        Variable existingServiceVar = SparqlBuilder.var("service_existing");
+        Variable existingPVar = createVar(existingServiceVar, "p");
+        Variable existingOVar = createVar(existingServiceVar, "o");
+
+        query.delete(existingServiceVar.has(existingPVar, existingOVar));
+        query.where(
+                // Look for existing instance of services
+                existingServiceVar.has(DCAT.SERVES_DATASET, datasetVar)
+                        .andHas(existingPVar, existingOVar)
+                        .optional());
+    }
+
+    private void addMetadata(Dataset dataset) {
+        Metadata metadataRDF = dataset.getAdditionalMetadata();
+        metadataRDF.getTriplePatterns().ifPresent(tps -> {
+            metadataRDF.getPrefixes().forEach(query::prefix);
+            query.insert(tps);
+        });
+    }
+
+    public String getUpdateQuery(Dataset dataset) {
 
         addDataset(dataset);
 
@@ -282,6 +326,21 @@ final class DCATUpdateQuery {
         addGeoServerServer(dataset);
 
         addOntopServer(dataset);
+
+        addMetadata(dataset);
+
+        return getQuery();
+    }
+
+    public String getDeleteQuery(Dataset dataset) {
+
+        removeDataset(dataset);
+
+        removeExistingExternalDatasetLinks();
+
+        removeExistingDataSubsets();
+
+        removeExistingServices();
 
         return getQuery();
     }

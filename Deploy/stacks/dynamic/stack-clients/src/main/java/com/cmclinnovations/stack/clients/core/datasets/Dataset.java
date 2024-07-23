@@ -64,6 +64,9 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty
     private final Optional<String> baseIRI;
 
+    @JsonProperty
+    private final Optional<Metadata> additionalMetadata;
+
     @JsonCreator
     Dataset() {
         this.name = null;
@@ -78,8 +81,12 @@ public class Dataset extends AbstractDataObject {
         this.ontopMappings = Optional.empty();
         this.rdfType = Optional.empty();
         this.baseIRI = Optional.empty();
+        this.additionalMetadata = Optional.empty();
     }
 
+    /**
+     * Intended to be used only for testing through the `DatasetBuilder`.
+     */
     Dataset(String name,
             Optional<String> description,
             Optional<Path> datasetDirectory,
@@ -93,7 +100,8 @@ public class Dataset extends AbstractDataObject {
             Optional<List<String>> ontopMappings,
             boolean skip,
             Optional<String> rdfType,
-            Optional<String> baseIRI) {
+            Optional<String> baseIRI,
+            Optional<Metadata> metadataRDF) {
         super(description, skip);
         this.name = name;
         this.datasetDirectory = datasetDirectory;
@@ -107,6 +115,7 @@ public class Dataset extends AbstractDataObject {
         this.ontopMappings = ontopMappings;
         this.rdfType = rdfType;
         this.baseIRI = baseIRI;
+        this.additionalMetadata = metadataRDF;
     }
 
     public String getName() {
@@ -187,6 +196,10 @@ public class Dataset extends AbstractDataObject {
 
     public List<Dataset> getExternalDatasets() {
         return externalDatasets;
+    }
+
+    public Metadata getAdditionalMetadata() {
+        return additionalMetadata.orElse(Metadata.EMPTY_METADATA);
     }
 
     boolean usesBlazegraph() {
