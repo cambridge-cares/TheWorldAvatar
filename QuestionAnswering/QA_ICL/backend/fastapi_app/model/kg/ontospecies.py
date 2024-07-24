@@ -119,13 +119,26 @@ class SpeciesAttrKey(str, Enum):
     IDENTIFIER = "Identifier"
     PROPERTY = "Property"
 
+
 class OntospeciesSpecies(OntospeciesSpeciesBase):
     altLabel: list[str] = RDFField(path=SKOS.altLabel, alias=SpeciesAttrKey.ALT_LABEL)
 
     ChemicalClass: list[OntospeciesChemicalClass] = RDFField(
         path=ONTOSPECIES.hasChemicalClass, alias=SpeciesAttrKey.CHEMICAL_CLASS
     )
-    Use: list[OntospeciesUse] = RDFField(path=ONTOSPECIES.hasUse, alias=SpeciesAttrKey.USE)
+    Use: list[OntospeciesUse] = RDFField(
+        path=ONTOSPECIES.hasUse, alias=SpeciesAttrKey.USE
+    )
 
     Identifier: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]]
     Property: dict[SpeciesPropertyKey, list[OntospeciesProperty]]
+
+
+class OntospeciesSpeciesPartial(OntospeciesSpecies):
+    altLabel: list[str] | None = None
+
+    ChemicalClass: list[OntospeciesChemicalClass] | None = None
+    Use: list[OntospeciesUse] | None = None
+
+    Identifier: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]] | None = None
+    Property: dict[SpeciesPropertyKey, list[OntospeciesProperty]] | None = None

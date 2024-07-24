@@ -12,6 +12,7 @@ from services.rdf_stores.ontospecies import (
     get_ontospecies_rdfStore,
 )
 from .species import router as species_router
+from .species_partial import router as species_partial_router
 
 
 logger = logging.getLogger(__name__)
@@ -42,3 +43,4 @@ async def getUses(
 
 
 router.include_router(species_router, prefix="/species")
+router.include_router(species_partial_router, prefix="/species-partial")
