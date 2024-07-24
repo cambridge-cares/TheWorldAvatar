@@ -52,6 +52,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.5s ease;
 }
 
 .expandButton {
@@ -62,6 +63,7 @@
     background-color: var(--background-tertiary);
     border: 0;
     border-left: 1px solid var(--border-tertiary);
+    transition: background-color 0.5s ease;
 }
 
 .expandButton:hover {

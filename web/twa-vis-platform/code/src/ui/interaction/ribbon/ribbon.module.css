@@ -25,6 +25,7 @@
     font-size: var(--font-size-secondary-text);
     font-weight: bold;
     color: var(--text-color-primary);
+    transition: background-color 0.5s ease;
 }
 
 .ribbonTab:hover {
