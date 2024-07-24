@@ -14,12 +14,13 @@ from model.kg.ontospecies import (
     OntospeciesProperty,
     OntospeciesSpecies,
     OntospeciesSpeciesBase,
+    OntospeciesSpeciesPartial,
     OntospeciesUse,
     PeriodictableElement,
     SpeciesIdentifierKey,
     SpeciesPropertyKey,
 )
-from model.web.ontospecies import SpeciesReqReturnFields, SpeciesRequest
+from model.web.ontospecies import SpeciesReturnFields, SpeciesRequest
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
 from services.sparql import get_ontospecies_endpoint
@@ -93,46 +94,40 @@ WHERE {{
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Species"] for binding in bindings]
 
-    def get_species_fields(
-        self, iris: list[str], return_fields: SpeciesReqReturnFields | None = None
+    def get_species_many(
+        self, iris: list[str] | tuple[str]
+    ) -> list[OntospeciesSpecies]:
+        return self.get_species_partial_many(
+            iris=iris,
+            return_fields=SpeciesReturnFields(
+                alt_label=True,
+                chemical_class=True,
+                use=True,
+                identifier=[key for key in SpeciesIdentifierKey],
+                property=[key for key in SpeciesPropertyKey],
+            ),
+        )
+
+    def get_species_partial_many(
+        self, iris: list[str], return_fields: SpeciesReturnFields
     ):
         species_base = self.get_species_base_many(iris=iris)
 
         field_pred_pairs: list[tuple[str, str]] = [
             pair
             for pair in [
-                (
-                    ("altLabel", "skos:altLabel")
-                    if return_fields is None or return_fields.alt_label
-                    else None
-                ),
+                (("altLabel", "skos:altLabel") if return_fields.alt_label else None),
                 (
                     (
                         "chemicalClass",
                         "os:hasChemicalClass",
                     )  # no traversal of chemical class graphs
-                    if return_fields is None or return_fields.chemical_class
+                    if return_fields.chemical_class
                     else None
                 ),
-                (
-                    ("use", "os:hasUse")
-                    if return_fields is None or return_fields.use
-                    else None
-                ),
-                *(
-                    (key.value, f"os:has{key}")
-                    for key in (
-                        return_fields.identifier
-                        if return_fields
-                        else SpeciesIdentifierKey
-                    )
-                ),
-                *(
-                    (key.value, f"os:has{key}")
-                    for key in (
-                        return_fields.property if return_fields else SpeciesPropertyKey
-                    )
-                ),
+                (("use", "os:hasUse") if return_fields.use else None),
+                *((key.value, f"os:has{key}") for key in (return_fields.identifier)),
+                *((key.value, f"os:has{key}") for key in (return_fields.property)),
             ]
             if pair
         ]
@@ -140,13 +135,8 @@ WHERE {{
         if not field_pred_pairs:
             return [
                 (
-                    OntospeciesSpecies(
+                    OntospeciesSpeciesPartial(
                         **base_model.model_dump(),
-                        altLabel=list(),
-                        ChemicalClass=list(),
-                        Use=list(),
-                        Property=dict(),
-                        Identifier=dict(),
                     )
                     if base_model
                     else None
@@ -205,7 +195,9 @@ WHERE {{
         }
 
         identifier_speciesIRI_to_nodeIRIs = {
-            key: field2iri2values[key.value] for key in SpeciesIdentifierKey
+            key: field2iri2values[key.value]
+            for key in SpeciesIdentifierKey
+            if key.value in field2iri2values
         }
         identifiers = (
             x
@@ -268,13 +260,13 @@ WHERE {{
 
         return [
             (
-                OntospeciesSpecies(
+                OntospeciesSpeciesPartial(
                     **base_model.model_dump(),
-                    altLabel=field2iri2values["altLabel"][iri],
-                    ChemicalClass=iri2chemclass.get(iri, list()),
-                    Use=iri2use.get(iri, list()),
-                    Identifier=iri2identifiers[iri],
-                    Property=iri2properties[iri],
+                    altLabel=field2iri2values["altLabel"].get(iri),
+                    ChemicalClass=iri2chemclass.get(iri),
+                    Use=iri2use.get(iri),
+                    Identifier=iri2identifiers.get(iri),
+                    Property=iri2properties.get(iri),
                 )
                 if base_model
                 else None
