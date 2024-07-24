@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.pips;
 import org.apache.http.HttpHeaders;
 import org.json.JSONObject;
 import org.junit.*;
-import org.junit.rules.TemporaryFolder;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.Parameters;
 import java.util.ArrayList;
@@ -20,17 +19,6 @@ public class PIPSTSAgentAPIConnectorTest {
 
     private static final String MOCKSERVER_HOST = "test_pips_request_agent-mockserver-1";
     private static final int MOCKSERVER_PORT = 1080;
-
-    //public static final DockerImageName MOCKSERVER_IMAGE = DockerImageName
-            //.parse("mockserver/mockserver")
-            //.withTag("mockserver-" + MockServerClient.class.getPackage().getImplementationVersion());
-
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
-    //public static MockServerContainer mockWacnetServer = new MockServerContainer(MOCKSERVER_IMAGE);
-    private static PIPSTSAgentAPIConnector pipsTsAgentAPIConnector;
-
-
 
     private void setupMockPIPSTSAgent(MockServerClient agent) {
         Map<String, List<String>> entries = new HashMap<>();
@@ -67,7 +55,7 @@ public class PIPSTSAgentAPIConnectorTest {
             withEnvironmentVariable("PIPS_AGENT_TIMESERIES_PATH", "http://" + MOCKSERVER_HOST + ":" + String.valueOf(MOCKSERVER_PORT) + "/pips-timeseries-agent/timeseries")
             .execute(() -> {
                 JSONObject result = new JSONObject();
-                pipsTsAgentAPIConnector = new PIPSTSAgentAPIConnector();
+                PIPSTSAgentAPIConnector pipsTsAgentAPIConnector = new PIPSTSAgentAPIConnector();
                 result = pipsTsAgentAPIConnector.getTimeSeries("test_token", "test", 1, false);
                 Assert.assertEquals("2024-07-09T16:41:53+08:00", result.getJSONArray("test_module").getJSONObject(0).get("timestamp"));
             }
@@ -83,7 +71,7 @@ public class PIPSTSAgentAPIConnectorTest {
             withEnvironmentVariable("PIPS_AGENT_TIMESERIES_PATH", "http://" + MOCKSERVER_HOST + ":" + String.valueOf(MOCKSERVER_PORT) + "/pips-timeseries-agent/timeseries")
             .execute(() -> {
                 JSONObject result = new JSONObject();
-                pipsTsAgentAPIConnector = new PIPSTSAgentAPIConnector();
+                PIPSTSAgentAPIConnector pipsTsAgentAPIConnector = new PIPSTSAgentAPIConnector();
                 result = pipsTsAgentAPIConnector.getTimeSeries("test_token", "wrong_source", 1, false);
                 Assert.assertEquals("No data retrieved...", result.getString("Result"));
             }
