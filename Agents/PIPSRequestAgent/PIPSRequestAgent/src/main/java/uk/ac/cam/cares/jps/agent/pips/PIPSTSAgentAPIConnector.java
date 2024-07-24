@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.pips;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -12,9 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.gson.JsonObject;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;
