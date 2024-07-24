@@ -94,19 +94,34 @@ WHERE {{
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Species"] for binding in bindings]
 
-    def get_species_many(
-        self, iris: list[str] | tuple[str]
-    ) -> list[OntospeciesSpecies]:
-        return self.get_species_partial_many(
-            iris=iris,
-            return_fields=SpeciesReturnFields(
-                alt_label=True,
-                chemical_class=True,
-                use=True,
-                identifier=[key for key in SpeciesIdentifierKey],
-                property=[key for key in SpeciesPropertyKey],
-            ),
-        )
+    def get_species_many(self, iris: list[str] | tuple[str]):
+        return [
+            (
+                OntospeciesSpecies(
+                    IRI=species.IRI,
+                    label=species.label,
+                    IUPACName=species.IUPACName,
+                    InChI=species.InChI,
+                    altLabel=species.altLabel or list(),
+                    ChemicalClass=species.ChemicalClass or list(),
+                    Use=species.Use or list(),
+                    Identifier=species.Identifier or dict(),
+                    Property=species.Property or dict(),
+                )
+                if species
+                else None
+            )
+            for species in self.get_species_partial_many(
+                iris=iris,
+                return_fields=SpeciesReturnFields(
+                    alt_label=True,
+                    chemical_class=True,
+                    use=True,
+                    identifier=[key for key in SpeciesIdentifierKey],
+                    property=[key for key in SpeciesPropertyKey],
+                ),
+            )
+        ]
 
     def get_species_partial_many(
         self, iris: list[str], return_fields: SpeciesReturnFields
