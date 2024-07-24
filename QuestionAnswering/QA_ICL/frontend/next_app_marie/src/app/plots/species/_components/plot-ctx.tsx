@@ -11,7 +11,7 @@ import {
   Species,
   SpeciesPropertyKey,
 } from '@/lib/model/ontospecies'
-import { getSpeciesMany } from '@/lib/api/ontospecies'
+import { getSpeciesPartialMany } from '@/lib/api/ontospecies'
 import { Combobox } from '@/components/ui/combobox'
 import { ScatterPlot, ScatterPlotDataPoint } from '@/components/ui/plot'
 
@@ -19,11 +19,11 @@ function selectSpeciesPropertyNode(nodes: OntospeciesProperty[]) {
   return nodes.find(node => node.Provenance === 'PubChem agent') || nodes[0]
 }
 
-function deriveUnitOptions(data: Species[], key: SpeciesPropertyKey) {
+function deriveUnitOptions(data: Partial<Species>[], key: SpeciesPropertyKey) {
   return Object.entries(
     data
-      .map(datum => datum.Property[key])
-      .filter(x => x)
+      .map(datum => (datum.Property ? datum.Property[key] : undefined))
+      .filter((x): x is OntospeciesProperty[] => x !== undefined)
       .flatMap(nodes => nodes.map(node => node.unit))
       .filter((x): x is string => typeof x === 'string')
       .reduce(
@@ -64,7 +64,9 @@ export const SpeciesPropertiesPlotCtx = ({
       chemicalClassOptions[0]
     ).IRI
   )
-  const [data, setData] = React.useState<Species[] | undefined>(undefined)
+  const [data, setData] = React.useState<Partial<Species>[] | undefined>(
+    undefined
+  )
   const [plotData, setPlotData] = React.useState<
     ScatterPlotDataPoint[] | undefined
   >(undefined)
@@ -80,7 +82,7 @@ export const SpeciesPropertiesPlotCtx = ({
           [RETURN_FIELD_KEY, xProp],
           [RETURN_FIELD_KEY, yProp],
         ])
-        const res = await getSpeciesMany(params)
+        const res = await getSpeciesPartialMany(params)
         setData(res)
         setXUnitOptions(deriveUnitOptions(res, xProp))
         setYUnitOptions(deriveUnitOptions(res, yProp))
@@ -103,17 +105,19 @@ export const SpeciesPropertiesPlotCtx = ({
   }, [yUnitOptions])
 
   React.useEffect(() => {
-    if (data === undefined || xUnit === undefined || yUnit === undefined) return
+    if (data === undefined) return
 
     setPlotData(
       data
         .map(({ Property, IUPACName, InChI }) => ({
-          x: Property[xProp]
-            ? Property[xProp].filter(node => node.unit === xUnit)
-            : undefined,
-          y: Property[yProp]
-            ? Property[yProp].filter(node => node.unit === yUnit)
-            : undefined,
+          x:
+            Property && Property[xProp]
+              ? Property[xProp].filter(node => xUnit === undefined || node.unit === xUnit)
+              : undefined,
+          y:
+            Property && Property[yProp]
+              ? Property[yProp].filter(node => yUnit === undefined || node.unit === yUnit)
+              : undefined,
           label: IUPACName || InChI,
         }))
         .filter(
