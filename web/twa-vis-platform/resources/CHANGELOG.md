@@ -10,6 +10,7 @@
 * Fix bug where sidepanel info did not show the correctly time indexed data
 * Side panel now re-queries when dimension is changed
 * Minor styling changes on scenario selector to fix weird icon scaling
+* Better layer tree and ribbon display on mobile
 
 ## 5.3.1
 

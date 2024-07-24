@@ -4,8 +4,6 @@
     min-width: 100px;
     min-height: 100px;
 
-    background-color: --var(--background-inverse-primary);
-
     position: relative;
     top: 20px;
     left: 20px;
@@ -13,6 +11,15 @@
     display: flex;
     flex-direction: column;
     pointer-events: all;
+}
+
+@media (max-width: 430px) {
+    .floatingPanelContainer {
+        width: 90vw;
+        top: unset;
+        left: unset;
+        margin: auto;
+    }
 }
 
 .floatingPanelHead {

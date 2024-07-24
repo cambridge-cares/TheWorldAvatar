@@ -51,3 +51,9 @@
     height: 30px;
     margin: 0 0.5rem;
 }
+
+@media (max-width: 430px) {
+    .scenarioDisplayText {
+        display: none;
+    }
+}
