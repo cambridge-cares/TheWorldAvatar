@@ -1,6 +1,10 @@
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { BACKEND_ENDPOINT, getJson, getReq } from '.'
-import { ZeoliteFramework, ZeoliteFrameworkBase } from '../model/ontozeolite'
+import {
+  ZeoliteFramework,
+  ZeoliteFrameworkBase,
+  ZeoliteFrameworkPartial,
+} from '@/lib/model/ontozeolite'
 
 const GET_CBUS_ENDPOINT = new URL(
   './ontozeolite/composite-building-units',
@@ -26,7 +30,7 @@ const GET_ZEOLITE_FRAMEWORKS_ENDPOINT = new URL(
   './ontozeolite/zeolite-frameworks',
   BACKEND_ENDPOINT
 )
-export function getZeoliteFrameworks(searchParams: ReadonlyURLSearchParams) {
+export function getZeoliteFrameworksMany(searchParams: URLSearchParams) {
   return getJson<ZeoliteFrameworkBase[]>(
     `${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}?${searchParams}`
   )
@@ -41,5 +45,15 @@ export function getZeoliteFrameworkOne(iriEncoded: string) {
 export function getZeoliteFrameworkCIF(iriEncoded: string) {
   return getReq(`${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}/cif`).then(
     res => res.text()
+  )
+}
+
+const GET_ZEOLITE_FRAMEWORKS_PARTIAL_ENDPOINT = new URL(
+  './ontozeolite/zeolite-frameworks-partial',
+  BACKEND_ENDPOINT
+)
+export function getZeoliteFrameworksPartialMany(searchParams: URLSearchParams) {
+  return getJson<ZeoliteFrameworkPartial[]>(
+    `${GET_ZEOLITE_FRAMEWORKS_PARTIAL_ENDPOINT}?${searchParams}`
   )
 }

@@ -72,6 +72,10 @@ const UPPER_SIDEBAR_ITEMS = [
         href: '/plots/species',
         label: 'SpeciesExplorer',
       },
+      {
+        href: '/plots/zeolite-frameworks',
+        label: 'ZeoliteExplorer',
+      },
     ],
   },
 ]

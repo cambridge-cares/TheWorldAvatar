@@ -1,4 +1,3 @@
-import { DataTable } from '@/components/ui/data-table'
 import {
   SCALAR_TOPO_PROP_KEYS,
   TOPO_PROP_UNITS,
@@ -18,22 +17,45 @@ export const TopoPropsDiv = ({ data, ...props }: TopoPropsDivProps) => (
       {[
         ...SCALAR_TOPO_PROP_KEYS.map(
           key =>
-            [capitalize(key.split(/(?=[A-Z])/).join(' ').toLowerCase()), `${data[key].value} ${TOPO_PROP_UNITS[key]}`] as [
-              string,
-              string,
-            ]
+            [
+              capitalize(
+                key
+                  .split(/(?=[A-Z])/)
+                  .join(' ')
+                  .toLowerCase()
+              ),
+              `${data[key].value} ${TOPO_PROP_UNITS[key]}`,
+            ] as [string, string]
         ),
-        ...[
+        ...([
           ['Topological density (TD)', data.TopologicalDensity.TD],
           ['Topological density (TD10)', data.TopologicalDensity.TD10],
-          ['Diameter of largest included sphere', `${data.SphereDiameter.component.find(x => x.label === 'included')?.value} Å`],
-          ['Sphere diameter', `(${['a', 'b', 'c'].map(label => data.SphereDiameter.component.find(x => x.label === label)?.value).join(', ')}) Å`],
-          ['Ring sizes', `(${[1, 2, 3].map(idx => data.RingSizes.component.find(x => x.index === idx)?.value).join(', ')})`],
+          [
+            'Diameter of largest included sphere',
+            `${data.SphereDiameter.component.find(x => x.label === 'included')?.value} Å`,
+          ],
+          [
+            'Sphere diameter',
+            `(${['a', 'b', 'c'].map(label => data.SphereDiameter.component.find(x => x.label === label)?.value).join(', ')}) Å`,
+          ],
+          [
+            'Ring sizes',
+            `(${[1, 2, 3].map(idx => data.RingSizes.component.find(x => x.index === idx)?.value).join(', ')})`,
+          ],
           ['RDLS', data.RDLS],
-          ['Secondary building unit', data.SecondaryBU.length > 0 ? data.SecondaryBU.join(', ') : undefined],
-          ['Composite building unit', data.CompositeBU && [...data.CompositeBU.Cage, ...data.CompositeBU.TCage].join(', ')],
-          ['ABC sequence', data.ABCSequence]
-        ] as [string, string | number | undefined][],
+          [
+            'Secondary building unit',
+            data.SecondaryBU.length > 0
+              ? data.SecondaryBU.join(', ')
+              : undefined,
+          ],
+          [
+            'Composite building unit',
+            data.CompositeBU &&
+              [...data.CompositeBU.Cage, ...data.CompositeBU.TCage].join(', '),
+          ],
+          ['ABC sequence', data.ABCSequence],
+        ] as [string, string | number | undefined][]),
       ]
         .filter((arr): arr is [string, number | string] => arr[1] !== undefined)
         .map(([header, value], i) => (
@@ -42,7 +64,7 @@ export const TopoPropsDiv = ({ data, ...props }: TopoPropsDivProps) => (
             <div className='whitespace-pre-wrap'>{value}</div>
           </div>
         ))}
-        {/* TODO: Display T atoms */}
+      {/* TODO: Display T atoms */}
     </div>
   </div>
 )

@@ -8,7 +8,11 @@ import {
 } from '@/lib/api/ontozeolite'
 import { CrystalInfoAccordion } from './_components/crystal-info-accordion'
 import { TopoPropsDiv } from './_components/topo-props-div'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { CaretSortIcon } from '@radix-ui/react-icons'
 
