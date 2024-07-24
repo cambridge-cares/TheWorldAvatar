@@ -61,7 +61,7 @@ This route will also check the token's validity and interact with Keycloak to re
 
 The request has the following format:
 ```
-curl -X GET http://localhost:1080/pips-request-agent/retrieve?source=<source>&num=<number of readings to retrieve>&client_cert_auth=<true or false>
+curl -X GET "http://localhost:1080/pips-request-agent/retrieve?source=<source>&num=<number of readings to retrieve>&client_cert_auth=<true or false>"
 ```
 - `<source>` The source from which to retrieve the data from, Refer to [PIPSTimeSeriesAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PIPSTimeSeriesAgent) for more information. Replace `<schema>` with the appropriate value.
 - `<number of readings to retrieve>` The number of latest readings to retrieve. Replace `<number of readings to retrieve>` with the desired number.
@@ -75,5 +75,5 @@ docker compose -p test_pips_request_agent -f "docker-compose-test.yml" up -d
 
 This will spin up the following containers:
 1. a container containing the tests
-2. a Keycloak container with testrealm and a test user, refer to `exported-realm.json` located at `./PIPSRequestAgent/src/test/resouces`.
+2. a Keycloak container with testrealm and a test user, refer to `exported-realm.json` located at `./PIPSRequestAgent/src/test/resources`.
 3. a MockServer container
