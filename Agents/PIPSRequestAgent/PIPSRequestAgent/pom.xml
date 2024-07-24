@@ -137,26 +137,6 @@
         </dependency>
 
         <!-- Testing -->
-        <!-- For mocking static methods -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>3.11.2</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- For creating docker containers in tests -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>1.17.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>1.17.6</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -173,12 +153,6 @@
             <groupId>uk.org.webcompere</groupId>
             <artifactId>system-stubs-core</artifactId>
             <version>2.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>mockserver</artifactId>
-            <version>1.18.0</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
