@@ -400,7 +400,7 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: ghcr.io/cambridge-cares/blazegraph:1.2.0-jsonld-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.2.0
     container_name: "blazegraph_test"
     ports:
       - 27149:8080

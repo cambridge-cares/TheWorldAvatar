@@ -271,7 +271,7 @@ def initialise_clients_and_agents(get_service_url, get_service_auth):
 
 @pytest.fixture(scope="module")
 def initialise_triple_store():
-    blazegraph = DockerContainer('ghcr.io/cambridge-cares/blazegraph:1.2.0-jsonld-SNAPSHOT')
+    blazegraph = DockerContainer('ghcr.io/cambridge-cares/blazegraph:1.2.0')
     # the port is set as BLAZEGRAPH_DOCKER_INTERNAL_PORT to match with the value set in the docker image
     blazegraph.with_exposed_ports(BLAZEGRAPH_DOCKER_INTERNAL_PORT)
     yield blazegraph
