@@ -60,7 +60,7 @@
     align-items: center;
     color: var(--text-color-primary) !important;
     background-color: var(--background-tertiary);
-    border: 1px 1px 1px 1px solid var(--border-tertiary);
+    border: 0;
     border-left: 1px solid var(--border-tertiary);
 }
 
