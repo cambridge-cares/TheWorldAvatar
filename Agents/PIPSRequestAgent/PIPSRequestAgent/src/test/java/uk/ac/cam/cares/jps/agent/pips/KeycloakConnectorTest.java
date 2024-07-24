@@ -24,6 +24,10 @@ public class KeycloakConnectorTest {
     @ClassRule
     public static TemporaryFolder folder = new TemporaryFolder();
 
+    /**
+     * sleep to allow for keycloak container to finish setting up before beginning tests
+     * @throws InterruptedException
+     */
     @Before
     public void sleep() throws InterruptedException {
         TimeUnit.SECONDS.sleep(40);
@@ -44,6 +48,11 @@ public class KeycloakConnectorTest {
         writer.close();
     }
 
+    /**
+     * Set up temp files containing mock credentials
+     * @return a list containing the filepaths of each temp file
+     * @throws IOException
+     */
     private List<String> setUpTempFiles() throws IOException {
         String usernameTempFile = Paths.get(folder.getRoot().toString(), "username.txt").toString();
         writeToFile(usernameTempFile,MOCK_USERNAME);
@@ -57,8 +66,12 @@ public class KeycloakConnectorTest {
         list.add(clientSecretsTempFile);
         return list;
     }
-    
 
+    /**
+     * Successful test of KeycloakConnector.getEndpoints
+     * test retrieval of keycloak token and introspection endpoints
+     * @throws Exception
+     */
     @Test
     public void testKeycloakEndpoints() throws Exception {
         withEnvironmentVariable("KEYCLOAK_REALM_PATH", "http://" + KEYCLOAK_HOST + ":" + KEYCLOAK_PORT + "/realms/testrealm")
@@ -70,6 +83,11 @@ public class KeycloakConnectorTest {
         );
     }
 
+    /**
+     * Successful test of KeycloakConnector.getTokens
+     * test retrieval of token from keycloak
+     * @throws Exception
+     */
     @Test
     public void testGetToken() throws Exception {
         List<String> list = setUpTempFiles();
@@ -84,6 +102,11 @@ public class KeycloakConnectorTest {
         );
     }
 
+    /**
+     * Test of KeycloakConnector.checkTokenStatus
+     * test checkTokenStatus with invalid token and a real valid token
+     * @throws Exception
+     */
     @Test
     public void testCheckTokenStatus() throws Exception {
         List<String> list = setUpTempFiles();
@@ -100,6 +123,11 @@ public class KeycloakConnectorTest {
         );
     }
 
+    /**
+     * Successful test of KeycloakConnector.refreshToken
+     * test the refreshing of token
+     * @throws Exception
+     */
     @Test
     public void testRefreshToken() throws Exception {
         List<String> list = setUpTempFiles();

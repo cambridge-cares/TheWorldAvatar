@@ -20,6 +20,19 @@ public class PIPSTSAgentAPIConnectorTest {
     private static final String MOCKSERVER_HOST = "test_pips_request_agent-mockserver-1";
     private static final int MOCKSERVER_PORT = 1080;
 
+    /**
+     * sleep to allow for MockServer container to finish setting up before beginning tests
+     * @throws InterruptedException
+     */
+    @Before
+    public void sleep() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(10);
+    }
+
+    /**
+     * Set up mock PIPSTSAgent with expectations matching that of the actual PIPSTSAgent
+     * @param agent
+     */
     private void setupMockPIPSTSAgent(MockServerClient agent) {
         Map<String, List<String>> entries = new HashMap<>();
         ArrayList<String> source = new ArrayList<String>();
@@ -32,6 +45,10 @@ public class PIPSTSAgentAPIConnectorTest {
         .respond(response().withStatusCode(200).withBody("{\"test_module\":[{\"temperature_A\":10.0, \"timestamp\": \"2024-07-09T16:41:53+08:00\"}]}"));
     }
 
+    /**
+     * Set up mock PIPSTSAgent with expectations where a request containing incorrect parameters will return back a "No data retrieved..." error message
+     * @param agent
+     */
     private void setupMockPIPSTSAgentForFailed(MockServerClient agent) throws InterruptedException {
         Map<String, List<String>> incorrectEntries = new HashMap<>();
         ArrayList<String> incorrectSource = new ArrayList<String>();
@@ -46,10 +63,12 @@ public class PIPSTSAgentAPIConnectorTest {
         .respond(response().withStatusCode(200).withBody("{\"Result\":\"No data retrieved...\"}"));
     }
 
-
+    /**
+     * Successful test for PIPSTSAgentAPIConnector.getTimeSeries
+     * @throws Exception
+     */
     @Test
     public void testGetTimeSeriesSuccess() throws Exception {
-        TimeUnit.SECONDS.sleep(10);
         try (MockServerClient pipsTsAgent = new MockServerClient(MOCKSERVER_HOST, MOCKSERVER_PORT)) {
             setupMockPIPSTSAgent(pipsTsAgent);
             withEnvironmentVariable("PIPS_AGENT_TIMESERIES_PATH", "http://" + MOCKSERVER_HOST + ":" + String.valueOf(MOCKSERVER_PORT) + "/pips-timeseries-agent/timeseries")
@@ -63,9 +82,12 @@ public class PIPSTSAgentAPIConnectorTest {
         }
     }
 
+    /**
+     * Failed test for PIPSTSAgentAPIConnector.getTimeSeries
+     * @throws Exception
+     */
     @Test
     public void testGetTimeSeriesFail() throws Exception {
-        TimeUnit.SECONDS.sleep(10);
         try (MockServerClient pipsTsAgent = new MockServerClient(MOCKSERVER_HOST, MOCKSERVER_PORT)) {
             setupMockPIPSTSAgentForFailed(pipsTsAgent);
             withEnvironmentVariable("PIPS_AGENT_TIMESERIES_PATH", "http://" + MOCKSERVER_HOST + ":" + String.valueOf(MOCKSERVER_PORT) + "/pips-timeseries-agent/timeseries")

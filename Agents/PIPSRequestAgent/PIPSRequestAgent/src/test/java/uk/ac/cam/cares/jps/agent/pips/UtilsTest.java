@@ -29,7 +29,7 @@ public class UtilsTest {
     }
 
     /**
-     * Successful test for utils.readFromFile()
+     * Successful test for utils.readFromFile
      * @throws IOException
      */
     @Test
@@ -42,7 +42,7 @@ public class UtilsTest {
     }
 
     /**
-     * Failed test for utils.readFromFile()
+     * Failed test for utils.readFromFile
      * @throws IOException
      */
     @Test
