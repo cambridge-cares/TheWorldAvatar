@@ -8,7 +8,7 @@ from rdflib.paths import Path
 
 
 class RDFFieldMetadata(TypedDict):
-    path: URIRef | Path
+    path: URIRef | Path | None
 
 
 setattr(
@@ -46,7 +46,7 @@ class RDFEntity(BaseModel):
 
 
 def RDFField(
-    path: URIRef | Path,
+    path: URIRef | Path | None = None,
     **kwargs,
 ):
     field_info = Field(**kwargs)

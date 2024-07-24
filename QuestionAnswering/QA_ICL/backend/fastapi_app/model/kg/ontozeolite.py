@@ -1,6 +1,10 @@
 from enum import Enum
+import typing
+
+from pydantic import BaseModel, Field, create_model
 from constants.namespace import OM2, ONTOCRYSTAL, ONTOZEOLITE
 from model.rdf_orm import RDFEntity, RDFField
+from services.rdf_orm import unpack_optional_type
 
 
 class Om2Quantity(RDFEntity):
@@ -95,7 +99,7 @@ class OntocrystalUnitCell(RDFEntity):
     ReciprocalVectorSet: list[OntocrystalMeasureVector] = RDFField(
         path=ONTOCRYSTAL.hasUnitCellReciprocalVectorSet
     )
-    
+
     Volume: Om2Quantity = RDFField(path=ONTOCRYSTAL.hasUnitCellVolume)
 
 
@@ -149,20 +153,57 @@ class OntocrystalXRDSpectrum(RDFEntity):
     Peak: list[OntocrystalXRDPeak] = RDFField(path=ONTOCRYSTAL.hasCharacteristicPeak)
 
 
+class CrystalInfoKey(str, Enum):
+    ATOMIC_STRUCTURE = "AtomicStructure"
+    COORDINATE_TRANSFORMATION = "CoordinateTransformation"
+    UNIT_CELL = "UnitCell"
+    TILED_STRUCTURE = "TiledStructure"
+    XRD_SPECTRUM = "XRDSpectrum"
+
+
 class OntocrystalCrystalInfo(RDFEntity):
     AtomicStructure: OntocrystalAtomicStructure = RDFField(
-        path=ONTOCRYSTAL.hasAtomicStructure
+        path=ONTOCRYSTAL.hasAtomicStructure, alias=CrystalInfoKey.ATOMIC_STRUCTURE
     )
     CoordinateTransformation: OntocrystalCoordinateTransformation = RDFField(
-        path=ONTOCRYSTAL.hasCoordinateTransformation
+        path=ONTOCRYSTAL.hasCoordinateTransformation,
+        alias=CrystalInfoKey.COORDINATE_TRANSFORMATION,
     )
-    UnitCell: OntocrystalUnitCell = RDFField(path=ONTOCRYSTAL.hasUnitCell)
+    UnitCell: OntocrystalUnitCell = RDFField(
+        path=ONTOCRYSTAL.hasUnitCell, alias=CrystalInfoKey.UNIT_CELL
+    )
     TiledStructure: OntocrystalTiledStructure | None = RDFField(
-        path=ONTOCRYSTAL.hasTiledStructure
+        path=ONTOCRYSTAL.hasTiledStructure, alias=CrystalInfoKey.TILED_STRUCTURE
     )
     XRDSpectrum: OntocrystalXRDSpectrum | None = RDFField(
-        path=ONTOCRYSTAL.hasXRDSpectrum
+        path=ONTOCRYSTAL.hasXRDSpectrum, alias=CrystalInfoKey.XRD_SPECTRUM
     )
+
+
+_OntocrystalCrystalInfoPartial = create_model(
+    "OntocrystalCrystalInfoPartial",
+    **{
+        field: (
+            info.annotation | None,
+            RDFField(**(info.metadata[0] if info.metadata else {}), alias=info.alias),
+        )
+        for field, info in OntocrystalCrystalInfo.model_fields.items()
+    },
+    __base__=RDFEntity
+)
+if typing.TYPE_CHECKING:
+
+    class OntocrystalCrystalInfoPartial(BaseModel):
+        pass
+
+else:
+    OntocrystalCrystalInfoPartial = _OntocrystalCrystalInfoPartial
+
+
+CRYSTAL_INFO_KEY2CLS: dict[CrystalInfoKey, type[RDFField]] = {
+    field_info.alias: unpack_optional_type(field_info.annotation)
+    for field_info in OntocrystalCrystalInfo.model_fields.values()
+}
 
 
 class OntozeoliteVertexSymbol(RDFEntity):
@@ -297,6 +338,33 @@ class OntozeoliteTopoProps(RDFEntity):
     )
 
 
+_OntozeoliteTopoPropsPartial = create_model(
+    "OntozeoliteTopoPropsPartial",
+    **{
+        field: (
+            info.annotation | None,
+            RDFField(**(info.metadata[0] if info.metadata else {}), alias=info.alias),
+        )
+        for field, info in OntozeoliteTopoProps.model_fields.items()
+    },
+    __base__=RDFEntity
+)
+if typing.TYPE_CHECKING:
+
+    class OntozeoliteTopoPropsPartial(BaseModel):
+        pass
+
+else:
+    OntozeoliteTopoPropsPartial = _OntozeoliteTopoPropsPartial
+
+TOPO_PROPS_KEY2CLS = {
+    info.alias: unpack_optional_type(info.annotation)
+    for info in OntozeoliteTopoProps.model_fields.values()
+}
+
+ZEOLITIC_MATERIAL_KEY = "ZeoliticMaterial"
+
+
 class OntozeoliteZeoliteFramework(OntozeoliteZeoliteFrameworkBase):
     CrystalInformation: OntocrystalCrystalInfo = RDFField(
         path=ONTOCRYSTAL.hasCrystalInformation
@@ -305,5 +373,17 @@ class OntozeoliteZeoliteFramework(OntozeoliteZeoliteFrameworkBase):
         path=ONTOZEOLITE.hasTopologicalProperties
     )
     ZeoliticMaterial: list[OntozeoliteZeoliticMaterialBase] = RDFField(
-        path=ONTOZEOLITE.hasZeoliticMaterial
+        path=ONTOZEOLITE.hasZeoliticMaterial, alias=ZEOLITIC_MATERIAL_KEY
+    )
+
+
+class OntozeoliteZeoliteFrameworkPartial(OntozeoliteZeoliteFrameworkBase):
+    CrystalInformation: OntocrystalCrystalInfoPartial | None = RDFField(
+        path=ONTOCRYSTAL.hasCrystalInformation
+    )
+    TopologicalProperties: OntozeoliteTopoPropsPartial | None = RDFField(
+        path=ONTOZEOLITE.hasTopologicalProperties
+    )
+    ZeoliticMaterial: list[OntozeoliteZeoliticMaterialBase] | None = RDFField(
+        path=ONTOZEOLITE.hasZeoliticMaterial, alias=ZEOLITIC_MATERIAL_KEY
     )

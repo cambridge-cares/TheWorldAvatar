@@ -1,23 +1,34 @@
+from collections import defaultdict
 from functools import cache
+import itertools
 from typing import Annotated
 
 from fastapi import Depends
+from model.rdf_orm import RDFEntity
 from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
 from model.kg.ontozeolite import (
+    CRYSTAL_INFO_KEY2CLS,
+    ZEOLITIC_MATERIAL_KEY,
+    CrystalInfoKey,
     OntocrystalAtomicStructure,
     OntocrystalCoordinateTransformation,
+    OntocrystalCrystalInfoPartial,
     OntocrystalMeasureMatrix,
     OntocrystalMeasureVector,
     OntocrystalQuantity,
     OntocrystalTiledStructure,
     OntocrystalUnitCell,
+    OntozeoliteTopoPropsPartial,
     OntozeoliteZeoliteFramework,
     OntozeoliteZeoliteFrameworkBase,
+    OntozeoliteZeoliteFrameworkPartial,
     OntozeoliteZeoliticMaterialBase,
+    TopologicalPropertyKey,
 )
 from model.web.ontozeolite import (
     UnitCellAngleKey,
     UnitCellLengthKey,
+    ZeoliteFrameworkReturnFields,
     ZeoliteFrameworkRequest,
 )
 from services.rdf_orm import RDFStore
@@ -40,13 +51,13 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
             "ocr:TiledStructure": self.get_tiled_structures_many,
         }
 
-    def get_zeolite_frameworks(self, req: ZeoliteFrameworkRequest):
+    def get_zeolite_framework_IRIs(self, req: ZeoliteFrameworkRequest):
         xrd_patterns = (
             [
                 "?CrystalInfo ocr:hasXRDSpectrum ?Spectrum .",
                 *(
                     triple
-                    for i, peak in enumerate(req.xrd_peak)
+                    for i, peak in enumerate(req.crystal_info.xrd_peak)
                     for triple in (
                         f"?Spectrum ocr:hasCharacteristicPeak ?Peak{i} .",
                         f"?Peak{i} ocr:hasTwoThetaPosition ?TwoThetaPosition{i} ; ocr:hasRelativeIntensity ?Intensity{i} ."
@@ -170,10 +181,121 @@ WHERE {{
             "\n    ".join(patterns)
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
-        models = self.get_zeolite_frameworks_many(
-            [binding["Framework"] for binding in bindings]
-        )
-        return [model for model in models if model]
+        return [binding["Framework"] for binding in bindings]
+
+    def get_zeolite_frameworks_partial_many(
+        self, iris: list[str] | tuple[str], return_fields: ZeoliteFrameworkReturnFields
+    ):
+        frameworks_base = self.get_zeolite_frameworks_many(iris=iris)
+
+        if return_fields.crystal_info:
+            query = """PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+
+SELECT *
+WHERE {{
+    VALUES ?Framework {{ {IRIs} }}
+    ?Framework ocr:hasCrystalInformation ?CrystalInfo .
+}}""".format(
+                IRIs=" ".join(f"<{iri}>" for iri in iris)
+            )
+            _, bindings = self.sparql_client.querySelectThenFlatten(query)
+            frameworkIRI_to_crystalInfoIRI = {
+                binding["Framework"]: binding["CrystalInfo"] for binding in bindings
+            }
+            crystalInfo_returnFieldsSet = set(return_fields.crystal_info)
+            crystalInfo_returnFields = [
+                field
+                for field, info in OntocrystalCrystalInfoPartial.model_fields.items()
+                if info.alias in crystalInfo_returnFieldsSet
+            ]
+            crystalInfo_models = self.get_many(
+                OntocrystalCrystalInfoPartial,
+                iris=list(frameworkIRI_to_crystalInfoIRI.values()),
+                return_fields=crystalInfo_returnFields,
+            )
+            frameworkIRI_to_crystalInfo = {
+                iri: model
+                for iri, model in zip(
+                    frameworkIRI_to_crystalInfoIRI, crystalInfo_models
+                )
+            }
+        else:
+            frameworkIRI_to_crystalInfo = dict()
+
+        if return_fields.topo_props:
+            query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+
+SELECT *
+WHERE {{
+    VALUES ?Framework {{ {IRIs} }}
+    ?Framework zeo:hasTopologicalProperties ?TopoProps .
+}}""".format(
+                IRIs=" ".join(f"<{iri}>" for iri in iris)
+            )
+            _, bindings = self.sparql_client.querySelectThenFlatten(query)
+            frameworkIRI_to_topoPropsIRI = {
+                binding["Framework"]: binding["TopoProps"] for binding in bindings
+            }
+            topoProps_returnFieldsSet = set(return_fields.topo_props)
+            topoProps_returnFields = [
+                field
+                for field, info in OntozeoliteTopoPropsPartial.model_fields.items()
+                if info.alias in topoProps_returnFieldsSet
+            ]
+            topoProps_models = self.get_many(
+                OntozeoliteTopoPropsPartial,
+                iris=list(frameworkIRI_to_topoPropsIRI.values()),
+                return_fields=topoProps_returnFields,
+            )
+            frameworkIRI_to_topoProps = {
+                iri: model
+                for iri, model in zip(frameworkIRI_to_topoPropsIRI, topoProps_models)
+            }
+        else:
+            frameworkIRI_to_topoProps = dict()
+
+        if return_fields.material:
+            query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+
+SELECT *
+WHERE {{
+    VALUES ?Framework {{ {IRIs} }}
+    ?Framework zeo:hasZeoliticMaterial ?Material
+}}"""
+            _, bindings = self.sparql_client.querySelectThenFlatten(query)
+            frameworkIRI_to_materialIRIs: defaultdict[str, list[str]] = defaultdict(
+                list
+            )
+            for binding in bindings:
+                frameworkIRI_to_materialIRIs[binding["Framework"]].append(
+                    binding["Material"]
+                )
+            materials = (
+                x
+                for x in self.get_zeolitic_materials_many(
+                    iris=itertools.chain(*frameworkIRI_to_materialIRIs.values())
+                )
+            )
+            frameworkIRI_to_materials = {
+                frameworkIRI: [x for x in [next(materials) for _ in materialIRIs] if x]
+                for frameworkIRI, materialIRIs in frameworkIRI_to_materialIRIs.items()
+            }
+        else:
+            frameworkIRI_to_materials = dict()
+
+        return [
+            (
+                OntozeoliteZeoliteFrameworkPartial(
+                    **base_model.model_dump(),
+                    CrystalInformation=frameworkIRI_to_crystalInfo.get(base_model.IRI),
+                    TopologicalProperties=frameworkIRI_to_topoProps.get(base_model.IRI),
+                    ZeoliticMaterial=frameworkIRI_to_materials.get(base_model.IRI),
+                )
+                if base_model
+                else None
+            )
+            for base_model in frameworks_base
+        ]
 
     def get_zeolite_frameworks_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntozeoliteZeoliteFrameworkBase, iris)

@@ -277,16 +277,16 @@ WHERE {{
             (
                 OntospeciesSpeciesPartial(
                     **base_model.model_dump(),
-                    altLabel=field2iri2values["altLabel"].get(iri),
-                    ChemicalClass=iri2chemclass.get(iri),
-                    Use=iri2use.get(iri),
-                    Identifier=iri2identifiers.get(iri),
-                    Property=iri2properties.get(iri),
+                    altLabel=field2iri2values["altLabel"].get(base_model.IRI),
+                    ChemicalClass=iri2chemclass.get(base_model.IRI),
+                    Use=iri2use.get(base_model.IRI),
+                    Identifier=iri2identifiers.get(base_model.IRI),
+                    Property=iri2properties.get(base_model.IRI),
                 )
                 if base_model
                 else None
             )
-            for iri, base_model in zip(iris, species_base)
+            for base_model in species_base
         ]
 
     def get_properties_many(self, iris: list[str] | tuple[str]):
