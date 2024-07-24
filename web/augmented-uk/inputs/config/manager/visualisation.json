@@ -7,22 +7,22 @@
                 "Image": "ghcr.io/cambridge-cares/twa-vf:5",
                 "Mounts": [
                     {
-                        "Type": "bind",
+                        "Type": "volume",
                         "Source": "vis-files",
-                        "Target": "/var/www/html"
+                        "Target": "/twa/public"
                     }
                 ],
                 "Secrets": [
                     {
                         "SecretName": "mapbox_username",
                         "File": {
-                            "Name": "/var/www/html/mapbox_username"
+                            "Name": "/run/secrets/mapbox_username"
                         }
                     },
                     {
                         "SecretName": "mapbox_api_key",
                         "File": {
-                            "Name": "/var/www/html/mapbox_api_key"
+                            "Name": "/run/secrets/mapbox_api_key"
                         }
                     }
                 ]
@@ -31,7 +31,7 @@
     },
     "endpoints": {
         "ui": {
-            "url": "http://localhost/",
+            "url": "http://localhost:3000/",
             "externalPath": "/visualisation/"
         }
     }
