@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
 import moment from 'moment';
+import { useEffect, useState } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
 import { useFetchDataQuery, useFetchDimensionsQuery } from 'state/api/fia-api';
 import { getHasExistingData, setHasExistingData } from 'state/floating-panel-slice';
-import { JsonObject } from 'types/json';
 import { Attribute, AttributeGroup } from 'types/attribute';
-import { TimeSeriesGroup, TimeSeries, ScenarioDimensionsData } from 'types/timeseries';
-import { useDispatch, useSelector } from 'react-redux';
-import { ReduxState } from 'app/store';
+import { JsonObject } from 'types/json';
+import { ScenarioDimensionsData, TimeSeries, TimeSeriesGroup } from 'types/timeseries';
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
@@ -26,10 +25,14 @@ const stackKey: string = "stack";
  * @param {string} scenario The current scenario ID (if any).
 */
 export function generateFIAEndpoint(iri: string, stack: string, scenario: string, dimensionSliderValue?: number[] | number): string {
+  let url = `${stack}/feature-info-agent/get?iri=${encodeURIComponent(iri)}`;
   if (scenario && stack && iri) {
-    return `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}?time_index=${dimensionSliderValue.toString()}`;
+    url = `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}`;
+    if (dimensionSliderValue) {
+      url += `&time_index=${dimensionSliderValue.toString()}`;
+    }
   }
-  return `${stack}/feature-info-agent/get?iri=${encodeURIComponent(iri)}`;
+  return url;
 }
 
 export function ScenarioDimensionsEndpoint(stack: string, scenario: string): string {
