@@ -66,3 +66,14 @@ curl -X GET http://localhost:1080/pips-request-agent/retrieve?source=<source>&nu
 - `<source>` The source from which to retrieve the data from, Refer to [PIPSTimeSeriesAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PIPSTimeSeriesAgent) for more information. Replace `<schema>` with the appropriate value.
 - `<number of readings to retrieve>` The number of latest readings to retrieve. Replace `<number of readings to retrieve>` with the desired number.
 - `<true or false>` Whether client certificate authentication is required or not. Please make sure to set up the necessary directory and files as described under the section [Set up](#set-up).
+
+# Tests
+Unit and integration tests have been developed for this agent. To run the tests, open a terminal in the same directory as this README and run the following to spin up the containers:
+```
+docker compose -p test_pips_request_agent -f "docker-compose-test.yml" up -d
+```
+
+This will spin up the following containers:
+1. a container containing the tests
+2. a Keycloak container with testrealm and a test user, refer to `exported-realm.json` located at `./PIPSRequestAgent/src/test/resouces`.
+3. a MockServer container
