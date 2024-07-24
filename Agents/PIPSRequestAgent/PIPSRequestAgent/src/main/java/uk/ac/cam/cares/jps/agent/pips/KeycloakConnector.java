@@ -26,7 +26,6 @@ public class KeycloakConnector {
     private String keycloakRealmPath;
     private static final String TOKEN_ENDPOINT_KEY = "token_endpoint";
     private static final String INTROSPECTION_ENDPOINT_KEY = "introspection_endpoint";
-    private static final String client_id = System.getenv("CLIENT_ID");
 
     // error messages
     private static final String GET_ENDPOINTS_ERROR = "Unable to get keycloak endpoints!";
@@ -90,7 +89,7 @@ public class KeycloakConnector {
         String client_secrets = utils.readFromFile(System.getenv("CLIENT_SECRETS"));
         String username = utils.readFromFile(System.getenv("USERNAME"));
         String password = utils.readFromFile(System.getenv("PASSWORD"));
-        
+        String client_id = System.getenv("CLIENT_ID");
         // Construct the request body
         String requestBody = "grant_type=password"
                 + "&client_id=" + client_id
@@ -142,7 +141,7 @@ public class KeycloakConnector {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(tokenEndpoint);
         String client_secrets = utils.readFromFile(System.getenv("CLIENT_SECRETS"));
-        
+        String client_id = System.getenv("CLIENT_ID");
         // Construct the request body
         String requestBody = "grant_type=refresh_token"
                 + "&refresh_token=" + refreshToken
@@ -178,7 +177,7 @@ public class KeycloakConnector {
         HttpPost httpPost = new HttpPost(introspectionEndpoint);
 
         String client_secrets = utils.readFromFile(System.getenv("CLIENT_SECRETS"));
-        
+        String client_id = System.getenv("CLIENT_ID");
         // Construct the request body
         String requestBody = "token=" + token
                 + "&client_id=" + client_id
