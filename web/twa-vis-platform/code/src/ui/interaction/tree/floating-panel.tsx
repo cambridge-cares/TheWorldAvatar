@@ -6,16 +6,17 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { DataStore } from 'io/data/data-store';
+import { selectDimensionSliderValue } from 'state/dimension-slider-slice';
 import { getIndex, setIndex } from 'state/floating-panel-slice';
 import { getFeatures, getIri, getProperties, getScenarioID, getStack, MapFeaturePayload } from 'state/map-feature-slice';
 import { MapLayerGroup } from 'types/map-layer';
 import { IconSettings, LegendSettings } from 'types/settings';
-import { generateFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
+import { ScenarioDimensionsData } from 'types/timeseries';
 import DimensionSlider from 'ui/interaction/controls/slider';
+import { generateFIAEndpoint, useFeatureInfoAgentService } from 'utils/data-services';
 import InfoTree from './info/info-tree';
 import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
-import { ScenarioDimensionsData } from 'types/timeseries';
 
 // Incoming parameters for component.
 interface FloatingPanelContainerProps {
@@ -51,10 +52,15 @@ export default function FloatingPanelContainer(
   //TODO fetch from api
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
-  // Execute API call
-  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(generateFIAEndpoint(selectedIri, selectedStack, selectedScenario), selectedIri, selectedProperties)
-  // check if scenario dimensions passed down from parent component has multiple dimensions
+  const dimensionSliderValue = useSelector(selectDimensionSliderValue)
   const hasMultipleDimensions = Object.values(props.scenarioDimensions).some(array => array.length > 1);
+  // Execute API call
+  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(
+    generateFIAEndpoint(selectedIri, selectedStack, selectedScenario, ...(hasMultipleDimensions ? [dimensionSliderValue] : [])),
+    selectedIri,
+    selectedProperties
+  );
+  // check if scenario dimensions passed down from parent component has multiple dimensions
 
   useEffect(() => {
     parseIntoTreeStucture(props.dataStore, props.icons, setMapLayerGroups);

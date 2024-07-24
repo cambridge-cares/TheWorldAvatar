@@ -139,7 +139,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
             action={props.toggleScenarioSelection}
           >
             <div className={styles.selectedScenarioDisplay}>
-              <span>{currentScenarioName}</span>
+              <span className={styles.scenarioDisplayText}>{currentScenarioName}</span>
               <IconComponent icon={scenarioTypeIcon(currentScenarioType)} classes={styles.navbarScenarioIcon} />
             </div>
           </RibbonComponentToggle>
