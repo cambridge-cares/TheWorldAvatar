@@ -33,7 +33,11 @@ class RDFStore:
     def __init__(self, endpoint: str):
         self.sparql_client = SparqlClient(endpoint)
 
-    def _get_many(self, T: type[T], iris: list[str] | tuple[str]):
+    def _get_many(
+        self, T: type[T], iris: list[str] | tuple[str], return_fields: list[str] | None
+    ):
+        return_fields = None if return_fields is None else set(return_fields)
+
         if not iris:
             empty_lst: list[T | None] = []
             return empty_lst
@@ -53,6 +57,7 @@ WHERE {{
                     predicate=metadata["path"].n3(),
                 )
                 for field, metadata in T.get_rdf_fields().items()
+                if return_fields is None or field in return_fields
             ),
         )
 
@@ -97,6 +102,7 @@ WHERE {{
         field2iri2data = {
             field: resolve_field_value_batch(field, info)
             for field, info in T.model_fields.items()
+            if return_fields is None or field in return_fields
         }
 
         iri2field2data: defaultdict[
@@ -133,10 +139,10 @@ WHERE {{
         models = adapter.validate_python(
             [
                 {
-                    "IRI": iri,
                     **resolve_field_value(
                         model_fields=T.model_fields, field2data=field2data
                     ),
+                    "IRI": iri,
                 }
                 for iri, field2data in iri2field2data.items()
             ]
@@ -144,11 +150,19 @@ WHERE {{
         iri2model = {model.IRI: model for model in models}
         return [iri2model.get(iri) for iri in iris]
 
-    def get_many(self, T: type[T], iris: list[str] | tuple[str]):
+    def get_many(
+        self,
+        T: type[T],
+        iris: list[str] | tuple[str],
+        return_fields: list[str] | None = None,
+    ):
+        """
+        If `return_fields` is specified, all fields on `T` must be of `Optional` type.
+        """
         return [
             x
             for batch in batched(iris, self.BATCH_SIZE)
-            for x in self._get_many(T=T, iris=batch)
+            for x in self._get_many(T=T, iris=batch, return_fields=return_fields)
         ]
 
     def get_one(self, T: type[T], iri: str):

@@ -1,5 +1,6 @@
 from enum import Enum
 
+from pydantic import Field, create_model
 from rdflib import SKOS
 from rdflib.namespace import RDFS
 
@@ -120,17 +121,7 @@ class SpeciesAttrKey(str, Enum):
     PROPERTY = "Property"
 
 
-class OntospeciesSpeciesPartial(OntospeciesSpeciesBase):
-    altLabel: list[str] | None = None
-
-    ChemicalClass: list[OntospeciesChemicalClass] | None = None
-    Use: list[OntospeciesUse] | None = None
-
-    Identifier: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]] | None = None
-    Property: dict[SpeciesPropertyKey, list[OntospeciesProperty]] | None = None
-
-
-class OntospeciesSpecies(OntospeciesSpeciesPartial):
+class OntospeciesSpecies(OntospeciesSpeciesBase):
     altLabel: list[str] = RDFField(path=SKOS.altLabel, alias=SpeciesAttrKey.ALT_LABEL)
 
     ChemicalClass: list[OntospeciesChemicalClass] = RDFField(
@@ -142,3 +133,12 @@ class OntospeciesSpecies(OntospeciesSpeciesPartial):
 
     Identifier: dict[SpeciesIdentifierKey, list[OntospeciesIdentifier]]
     Property: dict[SpeciesPropertyKey, list[OntospeciesProperty]]
+
+
+OntospeciesSpeciesPartial = create_model(
+    "OntospeciesSpeciesPartial",
+    **{
+        field: (info.annotation | None, Field(..., alias=info.alias))
+        for field, info in OntospeciesSpecies.model_fields.items()
+    }
+)

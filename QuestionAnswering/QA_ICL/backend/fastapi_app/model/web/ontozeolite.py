@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Literal
 from pydantic import BaseModel
 
-from model.kg.ontozeolite import TopologicalPropertyKey
+from model.kg.ontozeolite import CrystalInfoKey, TopologicalPropertyKey
 from model.web.comp_op import ComparisonOperator
 
 
@@ -47,17 +47,19 @@ class CrystalInfoRequest(BaseModel):
     xrd_peak: list[XRDPeakRequest]
     unit_cell: dict[UnitCellKey, list[tuple[ComparisonOperator, float]]]
 
+
 class TopoPropsRequest(BaseModel):
-    scalars: dict[
-        ScalarTopologicalPropertyKey, list[tuple[ComparisonOperator, float]]
-    ]
+    scalars: dict[ScalarTopologicalPropertyKey, list[tuple[ComparisonOperator, float]]]
     composite_bu: list[str]
     secondary_bu: list[str]
 
-class ZeoliteFrameworkReqReturnFields(BaseModel):
-    pass
+
+class ZeoliteFrameworkReturnFields(BaseModel):
+    crystal_info: list[CrystalInfoKey]
+    topo_props: list[TopologicalPropertyKey]
+    material: bool
+
 
 class ZeoliteFrameworkRequest(BaseModel):
     crystal_info: CrystalInfoRequest
     topo_props: TopoPropsRequest
-    return_fields: ZeoliteFrameworkReqReturnFields | None
