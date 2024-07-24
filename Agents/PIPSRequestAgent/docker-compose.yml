@@ -3,7 +3,10 @@ version: "3.8"
 services:
   pips-request-agent:
     image: pips-request-agent:1.0.0
-    build: .
+    build:
+      context: .
+      target: agent
+      dockerfile: Dockerfile
     container_name: pips-request-agent
     pull_policy: if_not_present
     environment:
