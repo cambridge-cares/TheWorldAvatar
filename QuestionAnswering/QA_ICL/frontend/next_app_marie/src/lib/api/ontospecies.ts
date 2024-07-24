@@ -21,11 +21,28 @@ export function getUses() {
 
 const GET_SPECIES_ENDPOINT = new URL('./ontospecies/species', BACKEND_ENDPOINT)
 export function getSpeciesMany(searchParams: URLSearchParams) {
-  return getJson<Species[]>(`${GET_SPECIES_ENDPOINT}?${searchParams}`)
+  return getJson<Species[]>(`${GET_SPECIES_ENDPOINT}?${searchParams}`, {
+    next: { revalidate: 24 * 60 * 60 }, // revalidate every 24 hours
+  })
+}
+
+const GET_SPECIES_PARTIAL_ENDPOINT = new URL(
+  './ontospecies/species-partial',
+  BACKEND_ENDPOINT
+)
+export function getSpeciesPartialMany(searchParams: URLSearchParams) {
+  return getJson<Partial<Species>[]>(
+    `${GET_SPECIES_PARTIAL_ENDPOINT}?${searchParams}`,
+    {
+      next: { revalidate: 24 * 60 * 60 }, // revalidate every 24 hours
+    }
+  )
 }
 
 export function getSpeciesOne(iriEncoded: string) {
-  return getJson<Species>(`${GET_SPECIES_ENDPOINT}/${iriEncoded}`)
+  return getJson<Species>(`${GET_SPECIES_ENDPOINT}/${iriEncoded}`, {
+    next: { revalidate: 24 * 60 * 60 }, // revalidate every 24 hours
+  })
 }
 
 export function getSpeciesXYZ(iriEncoded: string) {
