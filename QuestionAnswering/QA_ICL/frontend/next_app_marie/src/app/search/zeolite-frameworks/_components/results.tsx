@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { createColumnHelper } from '@tanstack/react-table'
 
 import { ZeoliteFrameworkBase } from '@/lib/model/ontozeolite'
-import { getZeoliteFrameworks } from '@/lib/api/ontozeolite'
+import { getZeoliteFrameworksMany } from '@/lib/api/ontozeolite'
 import { DataTable } from '@/components/ui/data-table'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -41,7 +41,7 @@ export function ZeoliteFrameworkResults() {
     async function retreiveData() {
       setIsLoading(true)
       try {
-        setData(await getZeoliteFrameworks(searchParams))
+        setData(await getZeoliteFrameworksMany(searchParams))
       } catch {
       } finally {
         setIsLoading(false)

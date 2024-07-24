@@ -26,6 +26,18 @@ export function getSpeciesMany(searchParams: URLSearchParams) {
   })
 }
 
+export function getSpeciesOne(iriEncoded: string) {
+  return getJson<Species>(`${GET_SPECIES_ENDPOINT}/${iriEncoded}`, {
+    next: { revalidate: 24 * 60 * 60 }, // revalidate every 24 hours
+  })
+}
+
+export function getSpeciesXYZ(iriEncoded: string) {
+  return getReq(`${GET_SPECIES_ENDPOINT}/${iriEncoded}/xyz`).then(res =>
+    res.text()
+  )
+}
+
 const GET_SPECIES_PARTIAL_ENDPOINT = new URL(
   './ontospecies/species-partial',
   BACKEND_ENDPOINT
@@ -36,17 +48,5 @@ export function getSpeciesPartialMany(searchParams: URLSearchParams) {
     {
       next: { revalidate: 24 * 60 * 60 }, // revalidate every 24 hours
     }
-  )
-}
-
-export function getSpeciesOne(iriEncoded: string) {
-  return getJson<Species>(`${GET_SPECIES_ENDPOINT}/${iriEncoded}`, {
-    next: { revalidate: 24 * 60 * 60 }, // revalidate every 24 hours
-  })
-}
-
-export function getSpeciesXYZ(iriEncoded: string) {
-  return getReq(`${GET_SPECIES_ENDPOINT}/${iriEncoded}/xyz`).then(res =>
-    res.text()
   )
 }

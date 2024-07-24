@@ -304,7 +304,9 @@ class OntozeoliteTopoProps(RDFEntity):
         alias=TopologicalPropertyKey.SPECIFIC_OCCUPIABLE_AREA,
     )
 
-    Density: OntocrystalQuantity = RDFField(path=ONTOZEOLITE.hasDensity)
+    Density: OntocrystalQuantity = RDFField(
+        path=ONTOZEOLITE.hasDensity, alias=TopologicalPropertyKey.DENSITY
+    )
     FrameworkDensity: OntocrystalQuantity = RDFField(
         path=ONTOZEOLITE.hasFrameworkDensity,
         alias=TopologicalPropertyKey.FRAMEWORK_DENSITY,

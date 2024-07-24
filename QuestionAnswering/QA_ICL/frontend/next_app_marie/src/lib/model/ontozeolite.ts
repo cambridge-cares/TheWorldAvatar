@@ -134,11 +134,18 @@ export interface TileNum {
   }
 }
 
+export const XRD_PEAK_KEY = 'XRDPeak'
+
 export interface XRDPeak {
   RelativeIntensity: number
   TwoThetaPosition: number
   isSimulated: boolean
   MillerIndices: MeasureVector
+}
+
+export interface TiledStructure {
+  Signature: string
+  TileNumber: TileNum[]
 }
 
 export interface CrystalInfo {
@@ -164,10 +171,7 @@ export interface CrystalInfo {
 
     Volume: Quantity
   }
-  TiledStructure?: {
-    Signature: string
-    TileNumber: TileNum[]
-  }
+  TiledStructure?: TiledStructure
   XRDSpectrum?: {
     Peak: XRDPeak[]
   }
@@ -222,4 +226,10 @@ export interface ZeoliteFramework extends ZeoliteFrameworkBase {
   CrystalInformation: CrystalInfo
   TopologicalProperties: TopologicalProperties
   ZeoliticMaterial: ZeoliticMaterialBase[]
+}
+
+export interface ZeoliteFrameworkPartial extends ZeoliteFrameworkBase {
+  CrystalInformation?: Partial<CrystalInfo>
+  TopologicalProperties: Partial<TopologicalProperties>
+  ZeoliticMaterial?: ZeoliteFrameworkBase[]
 }

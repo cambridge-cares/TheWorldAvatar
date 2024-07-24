@@ -112,11 +112,15 @@ export const SpeciesPropertiesPlotCtx = ({
         .map(({ Property, IUPACName, InChI }) => ({
           x:
             Property && Property[xProp]
-              ? Property[xProp].filter(node => xUnit === undefined || node.unit === xUnit)
+              ? Property[xProp].filter(
+                  node => xUnit === undefined || node.unit === xUnit
+                )
               : undefined,
           y:
             Property && Property[yProp]
-              ? Property[yProp].filter(node => yUnit === undefined || node.unit === yUnit)
+              ? Property[yProp].filter(
+                  node => yUnit === undefined || node.unit === yUnit
+                )
               : undefined,
           label: IUPACName || InChI,
         }))
@@ -223,13 +227,15 @@ export const SpeciesPropertiesPlotCtx = ({
         </div>
       </div>
       {isProcessing && <div>Retrieving data...</div>}
-      {plotData && plotData.length > 0 && (
+      {plotData && plotData.length > 0 ? (
         <ScatterPlot
           data={plotData}
           xAxisLabel={`${xProp} (${xUnit})`}
           yAxisLabel={`${yProp} (${yUnit})`}
           className='w-full'
         />
+      ) : (
+        <></>
       )}
     </div>
   )

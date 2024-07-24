@@ -18,10 +18,12 @@ import { Input } from '@/components/ui/input'
 import { MinusCircledIcon, PlusCircledIcon } from '@radix-ui/react-icons'
 import { cn, extractLowerUpperParams, isObjectEmtpy } from '@/lib/utils'
 import {
+  OTopoPropKey,
   OUnitCellAngleKey,
   OUnitCellLengthKey,
   SCALAR_TOPO_PROP_KEYS,
   TOPO_PROP_UNITS,
+  XRD_PEAK_KEY,
 } from '@/lib/model/ontozeolite'
 import { MinMaxInput } from '@/components/ui/min-max-input'
 import { Combobox } from '@/components/ui/combobox'
@@ -160,7 +162,7 @@ export function ZeoliteFrameworkForm({
       )
       .filter(x => !isObjectEmtpy(x))
       .map(x => encodeURI(JSON.stringify(x)))
-      .map(peak => ['xrdPeak', peak] as [string, string])
+      .map(peak => [XRD_PEAK_KEY, peak] as [string, string])
     const unitCellParams = Object.values(values.unitCell).flatMap(params =>
       Object.entries(params).flatMap(([key, { lower, upper }]) =>
         [
@@ -183,9 +185,9 @@ export function ZeoliteFrameworkForm({
     )
     const CBUsParams = values.compositeBUs
       .filter(x => x)
-      .map(x => ['composite-bu', x] as [string, string])
+      .map(x => [OTopoPropKey.COMPOSITE_BU, x] as [string, string])
     const SBUParams = values.secondaryBU
-      ? [['secondary-bu', values.secondaryBU] as [string, string]]
+      ? [[OTopoPropKey.SECONDARY_BU, values.secondaryBU] as [string, string]]
       : []
 
     const queryParams = new URLSearchParams([

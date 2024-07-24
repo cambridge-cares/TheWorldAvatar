@@ -16,7 +16,7 @@ import {
 } from './command'
 
 export interface ComboboxProps extends React.HTMLAttributes<HTMLDivElement> {
-  itemCls: string
+  itemCls?: string
   items: { value: string; label: string }[]
   value: string | string[]
   onCmdItemSelect: (value: string) => void
@@ -63,10 +63,14 @@ export function Combobox({
             aria-expanded={open}
             className='w-full justify-between truncate'
           >
-            {value.length === 0 ? (
-              `Select ${itemCls}...`
-            ) : typeof value === 'string' ? (
+            {typeof value === 'string' ? (
               value2label[value]
+            ) : value.length === 0 ? (
+              itemCls ? (
+                `Select ${itemCls}...`
+              ) : (
+                'Select...'
+              )
             ) : (
               <div className='flex justify-start space-x-2'>
                 {value.map((x, i) => (
