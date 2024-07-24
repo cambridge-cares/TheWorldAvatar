@@ -7,6 +7,7 @@ import { JsonObject } from 'types/json';
 import { Attribute, AttributeGroup } from 'types/attribute';
 import { TimeSeriesGroup, TimeSeries, ScenarioDimensionsData } from 'types/timeseries';
 import { useDispatch, useSelector } from 'react-redux';
+import { ReduxState } from 'app/store';
 
 const rootKey: string = "meta";
 const displayOrderKey: string = "display_order";
@@ -16,16 +17,17 @@ const unitKey: string = "unit";
 const iriKey: string = "iri";
 const stackKey: string = "stack";
 
+
 /**
  * A utility function for generating the Feature Info Agent endpoint for a specific feature.
  * 
  * @param {string} iri The IRI of the target feature.
  * @param {string} stack The stack endpoint associated with the target feature.
  * @param {string} scenario The current scenario ID (if any).
- */
-export function generateFIAEndpoint(iri: string, stack: string, scenario: string): string {
+*/
+export function generateFIAEndpoint(iri: string, stack: string, scenario: string, dimensionSliderValue?: number[] | number): string {
   if (scenario && stack && iri) {
-    return `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}`;
+    return `${stack}/CReDoAccessAgent/getMetadataPrivate/${scenario}?iri=${encodeURIComponent(iri)}?time_index=${dimensionSliderValue.toString()}`;
   }
   return `${stack}/feature-info-agent/get?iri=${encodeURIComponent(iri)}`;
 }

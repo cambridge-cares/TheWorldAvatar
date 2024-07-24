@@ -16,6 +16,7 @@ import InfoTree from './info/info-tree';
 import LayerTree, { parseIntoTreeStucture } from './layer/layer-tree';
 import LegendTree from './legend/legend-tree';
 import { ScenarioDimensionsData } from 'types/timeseries';
+import { ReduxState } from 'app/store';
 
 // Incoming parameters for component.
 interface FloatingPanelContainerProps {
@@ -51,8 +52,9 @@ export default function FloatingPanelContainer(
   //TODO fetch from api
   const buttonClass = styles.headButton;
   const buttonClassActive = [styles.headButton, styles.active].join(" ");
+  const dimensionSliderValue = useSelector((state: ReduxState) => state.dimensionSlider.value);
   // Execute API call
-  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(generateFIAEndpoint(selectedIri, selectedStack, selectedScenario), selectedIri, selectedProperties)
+  const { attributes, timeSeries, isFetching, isUpdating } = useFeatureInfoAgentService(generateFIAEndpoint(selectedIri, selectedStack, selectedScenario, dimensionSliderValue), selectedIri, selectedProperties)
   // check if scenario dimensions passed down from parent component has multiple dimensions
   const hasMultipleDimensions = Object.values(props.scenarioDimensions).some(array => array.length > 1);
 
