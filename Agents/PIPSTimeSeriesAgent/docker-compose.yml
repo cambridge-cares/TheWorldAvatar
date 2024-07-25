@@ -3,7 +3,10 @@ version: "3.8"
 services:
   pips-timeseries-agent:
     image: pips-timeseries-agent:1.0.0
-    build: .
+    build:
+      context: .
+      target: agent
+      dockerfile: Dockerfile
     container_name: pips-timeseries-agent
     pull_policy: if_not_present
     environment:
