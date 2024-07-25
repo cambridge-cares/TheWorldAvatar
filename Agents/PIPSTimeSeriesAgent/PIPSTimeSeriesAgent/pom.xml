@@ -68,7 +68,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>2.22.2</version>
             </plugin>
 
             <!-- Maven plugin for packaging -->
@@ -83,9 +83,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.2.0</version>
-                <!-- Version, configuration, and executions should be pulled from the
-                parent POM unless overridden here. -->
-
             </plugin>
 
         </plugins>
@@ -94,59 +91,11 @@
     <!-- Dependencies -->
     <dependencies>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- JSON handling -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20180813</version>
-            <type>jar</type>
-        </dependency>
-
         <!-- JPS Base Library -->
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
             <version>${jps.base.version}</version>
-        </dependency>
-
-        <!-- for interacting with the stack -->
-        <dependency>
-            <groupId>com.cmclinnovations</groupId>
-            <artifactId>stack-clients</artifactId>
-            <version>1.22.0</version>
-        </dependency>
-
-        <!-- For sending HTTP request to the API -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.10</version>
-        </dependency>
-
-        <!-- used to parse geosparql wkt literal -->
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-geosparql</artifactId>
-            <version>4.7.0</version>
-        </dependency>
-
-        <!-- keycloak -->
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-authz-client</artifactId>
-            <version>21.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-core</artifactId>
-            <version>21.0.1</version>
         </dependency>
         
         <!-- Logging -->
@@ -168,50 +117,9 @@
 
         <!-- Testing -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- For mocking APIs -->
-        <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8-standalone</artifactId>
-            <version>2.29.1</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- For mocking static methods -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>3.11.2</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- For creating docker containers in tests -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>1.15.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>1.15.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>1.15.3</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Used to mock environment variables in testing -->
-        <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>1.2.0</version>
-            <scope>test</scope>
+            <groupId>uk.org.webcompere</groupId>
+            <artifactId>system-stubs-core</artifactId>
+            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
