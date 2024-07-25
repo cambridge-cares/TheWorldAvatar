@@ -43,7 +43,7 @@ The agent will be located at port 1080.
 ### Part of the stack
 Open up the command prompt in the same directory as this README, run the command below to build the docker image:
 ```
-docker build -t pips-timeseries-agent:1.0.0 .
+docker build --target agent -t pips-timeseries-agent:1.0.0 .
 ```
 Copy `stack-manager-input-config-service/pips-timeseries-agent.json` to the services folder under your stack-manager directory and start up the stack.
 
