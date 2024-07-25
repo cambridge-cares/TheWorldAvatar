@@ -28,8 +28,6 @@ public class KeycloakConnector {
 
     private static final String tokenEndpointKey = "token_endpoint";
     private static final String introspectionEndpointKey = "introspection_endpoint";
-    private static final String keycloakRealmPath = System.getenv("KEYCLOAK_REALM_PATH");
-    private static final String client_id = System.getenv("CLIENT_ID");
 
     // error messages
     private static final String GET_ENDPOINTS_ERROR = "Unable to get keycloak endpoints!";
@@ -54,6 +52,7 @@ public class KeycloakConnector {
      */
     private JSONObject getEndpoints() throws IOException {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            String keycloakRealmPath = System.getenv("KEYCLOAK_REALM_PATH");
             HttpGet readingRequest = new HttpGet(keycloakRealmPath + "/.well-known/uma2-configuration");
             try (CloseableHttpResponse response = httpclient.execute(readingRequest)) {
                 int status = response.getStatusLine().getStatusCode();
@@ -67,12 +66,23 @@ public class KeycloakConnector {
         }
     }
 
+    // Getter for tokenEndpoint
+    public String getTokenEndpoint() {
+        return tokenEndpoint;
+    }
+        
+    // Getter for introspectionEndpoint
+    public String getIntrospectionEndpoint() {
+        return introspectionEndpoint;
+    }
+
     /**
      * verify Authorization via UMA protocol by sending the token to the keycloak token endpoint
      * @return JSONObject containing results of request
      * @throws IOException
      */
     public JSONObject checkAuthorizationViaUMA(String token) throws IOException {
+        String client_id = System.getenv("CLIENT_ID");
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(tokenEndpoint);
         
