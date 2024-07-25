@@ -96,7 +96,8 @@ public class UsageShareCalculator {
                         "INNER JOIN citydb.surface_geometry AS sg ON b.lod0_footprint_id = sg.parent_id\n" +
                         "WHERE sg.geometry IS NOT NULL AND cga.attrname = \'uuid\'\n" +
                         "GROUP BY cga.strval)\n" +
-                        "SELECT u.building_iri, u.ontobuilt, u.usageshare, n.name, g.geometry, g.building_height\n" +
+                        "SELECT u.building_iri AS uuid, CONCAT('https://www.theworldavatar.com/kg/Building/', u.building_iri) AS iri, " +
+                        "u.ontobuilt, u.usageshare, n.name, g.geometry, g.building_height\n" +
                         "FROM %s AS u\n" +
                         "LEFT JOIN geometry AS g ON u.building_iri = g.uuid\n" +
                         "LEFT JOIN names AS n ON u.building_iri = n.building_iri;\n" +
