@@ -32,8 +32,8 @@ services:
       - "7443:7443"
     restart: always
 
-  postgres_test:
-    container_name: postgres_test
+  test_pips_timeseries_agent_postgres:
+    container_name: test_pips_timeseries_agent_postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
