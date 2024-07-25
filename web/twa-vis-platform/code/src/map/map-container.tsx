@@ -7,11 +7,11 @@ import { Map } from 'mapbox-gl';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { ReduxState } from 'app/store';
 import { DataStore } from 'io/data/data-store';
 import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
+import { selectDimensionSliderValue } from 'state/dimension-slider-slice';
 import { getScenarioID } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import { MapSettings } from 'types/settings';
@@ -42,7 +42,7 @@ export default function MapContainer(props: MapContainerProps) {
   const mapSettings: MapSettings = JSON.parse(props.settings);
   const selectedScenario = useSelector(getScenarioID);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
-  const dimensionSliderValue = useSelector((state: ReduxState) => state.dimensionSlider.value);
+  const dimensionSliderValue = useSelector(selectDimensionSliderValue);
 
 
   useEffect(() => {

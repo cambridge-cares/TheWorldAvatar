@@ -32,6 +32,6 @@ const dimensionSliderSlice = createSlice({
 
 export const { setValue } = dimensionSliderSlice.actions;
 
-export const selectCount = (state: ReduxState) => state.dimensionSlider.value
+export const selectDimensionSliderValue = (state: ReduxState) => state.dimensionSlider.value
 
 export default dimensionSliderSlice.reducer;

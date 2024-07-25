@@ -3,9 +3,18 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.3.2
+
+### Bug Fixes
+
+* Fix bug where sidepanel info did not show the correctly time indexed data
+* Side panel now re-queries when dimension is changed
+* Minor styling changes on scenario selector to fix weird icon scaling
+* Better layer tree and ribbon display on mobile
+
 ## 5.3.1
 
-### Features 
+### Features
 
 * Scenario selection button now displays current scenario
 

@@ -10,7 +10,8 @@
             "virtual-sensor-agent",
             "weather-agent",
             "visualisation",
-            "feature-info-agent"
+            "feature-info-agent",
+            "ship-data-agent"
         ],
         "excludes": [
             "citydbimpexp",
