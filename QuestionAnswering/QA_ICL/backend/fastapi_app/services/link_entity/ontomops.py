@@ -77,16 +77,18 @@ WHERE {{
 
         return iris
 
-    def linkGBU(self, text: str | None, **kwargs):
+    def linkGBU(self, text: str | None, **kwargs):       
+        logger.info(
+            f"Linking generic building unit with args: {kwargs}"
+        )
         try:
             args = GBULinkingArgs.model_validate(kwargs)
-        except:
+        except Exception as e:
+            logger.error(f"Invalid linking args for generic building unit with error: {e}")
             lst: list[str] = []
             return lst
 
-        logger.info(
-            f"Linking generic building unit with args: {args.model_dump_json()}"
-        )
+
 
         query = f"""PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
         
