@@ -4,6 +4,7 @@ from model.rdf_orm import RDFEntity, RDFField
 
 class OntomopsMOP(RDFEntity):
     formula: str = RDFField(path=ONTOMOPS.hasMOPFormula)
+    provenance: str = RDFField(path=ONTOMOPS.hasProvenance / ONTOMOPS.hasReferenceDOI)
 
 
 class OntomopsCBU(RDFEntity):
