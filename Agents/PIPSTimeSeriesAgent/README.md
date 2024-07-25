@@ -4,7 +4,9 @@ This agent is designed to receive an access token, carry out verification with K
 # Prerequisite
 1. It is necessary to have Keycloak set up properly. Refer to the official [Keycloak guides](https://www.keycloak.org/guides#getting-started) for how to get started. 
 
-2. The TWA (TheWorldAvatar) stack can also be used to set up the Keycloak service along with a variety of other services. Refer to [Stack Manager](https://github.com/PIPS-project-DT/Digital-Factory-CARES-I2R/tree/main/Ontology-team/Stack/Deploy/stacks/dynamic/stack-manager) for more information.
+2. The TWA (TheWorldAvatar) stack can also be used to set up the Keycloak service along with a variety of other services. Refer to [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for more information.
+
+3. It is necessary to have a PostgreSQL database set up properly. The tables and columns should have a structure similar to how the [OPCUAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OPCUAAgent) construct its tables and columns. This agent is originally designed to work with the [OPCUAAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OPCUAAgent) but it is possible to reuse the agent for other databases as long as they have a similar structure.
 
 # Building the Agent
 The Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central). You will need to provide your credentials in single-word text files located like this:
@@ -67,3 +69,14 @@ The following parameters will need to be provided:
 - A valid token obtained from Keycloak, replace `YOUR_TOKEN_HERE` with the valid token
 - The source from which to retrieve the data from, the source refers to the schema in which the tables are located under. Replace `<schema>` with the appropriate value.
 - The number of latest readings to retrieve from the database. Replace `<integer>` with the desired number.
+
+# Tests
+Unit and integration tests have been developed for this agent. To run the tests, open a terminal in the same directory as this README and run the following to spin up the containers:
+```
+docker compose -p test_pips_timeseries_agent -f "docker-compose-test.yml" up -d
+```
+
+This will spin up the following containers:
+1. a container containing the tests
+2. a Keycloak container with testrealm, authorization scopes, policies, resources, two users and two clients. Refer to `exported-realm.json` located at `./PIPSTimeSeriesAgent/src/test/resources`.
+3. a PostgreSQL container
