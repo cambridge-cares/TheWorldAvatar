@@ -1,0 +1,897 @@
+{
+    "dashboard": {
+        "editable": true,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 0,
+        "id": null,
+        "links": [],
+        "liveNow": false,
+        "panels": [
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "Total number of sites.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "yellow",
+                            "mode": "fixed"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 4,
+                    "x": 0,
+                    "y": 0
+                },
+                "id": 7,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "9.5.2",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "builder",
+                        "format": "table",
+                        "rawSql": "SELECT COUNT(ogc_fid) FROM dukes_2023 LIMIT 50 ",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "name": "COUNT",
+                                    "parameters": [
+                                        {
+                                            "name": "ogc_fid",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 50
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Number of sites",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "UK power generation sites aggregated by type.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "custom": {
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisGridShow": true,
+                            "axisLabel": "Number of sites",
+                            "axisPlacement": "auto",
+                            "fillOpacity": 80,
+                            "gradientMode": "hue",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "lineWidth": 1,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "#EAB839",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 14,
+                    "x": 4,
+                    "y": 0
+                },
+                "id": 2,
+                "options": {
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": false,
+                    "groupWidth": 0.7,
+                    "legend": {
+                        "calcs": [],
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": false
+                    },
+                    "orientation": "vertical",
+                    "showValue": "always",
+                    "stacking": "none",
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    },
+                    "xField": "Site Type",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "builder",
+                        "format": "table",
+                        "hide": false,
+                        "rawSql": "SELECT \"Site Type\", COUNT(\"Site Type\") AS \"Sites\" FROM dukes_2023 GROUP BY \"Site Type\" ORDER BY COUNT(\"Site Type\") DESC LIMIT 50 ",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Site Type\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "alias": "\"Sites\"",
+                                    "name": "COUNT",
+                                    "parameters": [
+                                        {
+                                            "name": "\"Site Type\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "name": "\"Site Type\"",
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 50,
+                            "orderBy": {
+                                "property": {
+                                    "name": "COUNT(\"Site Type\")",
+                                    "type": "string"
+                                },
+                                "type": "property"
+                            },
+                            "orderByDirection": "DESC"
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Sites by type",
+                "type": "barchart"
+            },
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "Breakdown of sites that offer Combined Heat & Power.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "#E02F44",
+                            "mode": "palette-classic"
+                        },
+                        "custom": {
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            }
+                        },
+                        "mappings": [
+                            {
+                                "options": {
+                                    "false": {
+                                        "index": 0,
+                                        "text": "No"
+                                    },
+                                    "true": {
+                                        "index": 1,
+                                        "text": "Yes"
+                                    }
+                                },
+                                "type": "value"
+                            }
+                        ]
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 3,
+                    "x": 18,
+                    "y": 0
+                },
+                "id": 4,
+                "options": {
+                    "displayLabels": [],
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true,
+                        "values": []
+                    },
+                    "pieType": "pie",
+                    "reduceOptions": {
+                        "calcs": [
+                            "distinctCount"
+                        ],
+                        "fields": "/^count$/",
+                        "values": true
+                    },
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT CAST(\"Combined Heat and Power\" AS VARCHAR(10)), COUNT(\"Combined Heat and Power\") FROM dukes_2023 GROUP BY \"Combined Heat and Power\" LIMIT 50 ",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Combined Heat and Power\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "name": "COUNT",
+                                    "parameters": [
+                                        {
+                                            "name": "\"Combined Heat and Power\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "name": "\"Combined Heat and Power\"",
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 50
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Combined Heat & Power",
+                "type": "piechart"
+            },
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "Breakdown of Grid Connection Types offered by sites.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "#E02F44",
+                            "mode": "palette-classic"
+                        },
+                        "custom": {
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            }
+                        },
+                        "mappings": [
+                            {
+                                "options": {
+                                    "HV": {
+                                        "index": 0,
+                                        "text": "High Voltage"
+                                    },
+                                    "LV": {
+                                        "index": 1,
+                                        "text": "Low Voltage"
+                                    }
+                                },
+                                "type": "value"
+                            }
+                        ]
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 3,
+                    "x": 21,
+                    "y": 0
+                },
+                "id": 5,
+                "options": {
+                    "displayLabels": [],
+                    "legend": {
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true,
+                        "values": []
+                    },
+                    "pieType": "pie",
+                    "reduceOptions": {
+                        "calcs": [
+                            "distinctCount"
+                        ],
+                        "fields": "/^count$/",
+                        "values": true
+                    },
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT \"Grid Connection Type\", COUNT(\"Grid Connection Type\") FROM dukes_2023 WHERE \"Grid Connection Type\" IS NOT NULL GROUP BY \"Grid Connection Type\"",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Grid Connection Type\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "name": "COUNT",
+                                    "parameters": [
+                                        {
+                                            "name": "\"Grid Connection Type\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "name": "\"Grid Connection Type\"",
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 50
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Grid Connection Type",
+                "type": "piechart"
+            },
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "Minimum and maximum Installed Capacity (MW) grouped by Site Type.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "custom": {
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "Installed Capacity (MW)",
+                            "axisPlacement": "auto",
+                            "fillOpacity": 80,
+                            "gradientMode": "hue",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "lineWidth": 1,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "#EAB839",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 8
+                },
+                "id": 3,
+                "options": {
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": false,
+                    "groupWidth": 0.7,
+                    "legend": {
+                        "calcs": [],
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": false
+                    },
+                    "orientation": "auto",
+                    "showValue": "auto",
+                    "stacking": "none",
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    },
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                },
+                "pluginVersion": "9.5.2",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "builder",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT \"Site Type\", MIN(\"Installed Capacity (MW)\") AS \"Minimum\", MAX(\"Installed Capacity (MW)\") AS \"Maximum\" FROM dukes_2023 GROUP BY \"Site Type\" LIMIT 50 ",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Site Type\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "alias": "\"Minimum\"",
+                                    "name": "MIN",
+                                    "parameters": [
+                                        {
+                                            "name": "\"Installed Capacity (MW)\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "alias": "\"Maximum\"",
+                                    "name": "MAX",
+                                    "parameters": [
+                                        {
+                                            "name": "\"Installed Capacity (MW)\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "name": "\"Site Type\"",
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 50
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Installed Capacity",
+                "type": "barchart"
+            },
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "The top 10 companies with the most sites.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "custom": {
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisGridShow": true,
+                            "axisLabel": "Number of Sites",
+                            "axisPlacement": "auto",
+                            "fillOpacity": 80,
+                            "gradientMode": "hue",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "lineWidth": 1,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "#EAB839",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 8
+                },
+                "id": 9,
+                "options": {
+                    "barRadius": 0,
+                    "barWidth": 0.97,
+                    "fullHighlight": false,
+                    "groupWidth": 0.7,
+                    "legend": {
+                        "calcs": [],
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": false
+                    },
+                    "orientation": "vertical",
+                    "showValue": "always",
+                    "stacking": "none",
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    },
+                    "xField": "Company Name",
+                    "xTickLabelRotation": 0,
+                    "xTickLabelSpacing": 0
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "builder",
+                        "format": "table",
+                        "hide": false,
+                        "rawSql": "SELECT \"Company Name\", COUNT(\"Company Name\") AS \"Sites\" FROM dukes_2023 GROUP BY \"Company Name\" ORDER BY COUNT(\"Company Name\") DESC LIMIT 10 ",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Company Name\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "alias": "\"Sites\"",
+                                    "name": "COUNT",
+                                    "parameters": [
+                                        {
+                                            "name": "\"Company Name\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "name": "\"Company Name\"",
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 10,
+                            "orderBy": {
+                                "property": {
+                                    "name": "COUNT(\"Company Name\")",
+                                    "type": "string"
+                                },
+                                "type": "property"
+                            },
+                            "orderByDirection": "DESC"
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Top 10 Companies",
+                "type": "barchart"
+            },
+            {
+                "datasource": {
+                    "type": "postgres",
+                    "uid": "SOURCEUID"
+                },
+                "description": "A breakdown of the number of sites commissioned by year.",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "custom": {
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "Number of Sites",
+                            "axisPlacement": "auto",
+                            "barAlignment": 0,
+                            "drawStyle": "line",
+                            "fillOpacity": 50,
+                            "gradientMode": "hue",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "lineInterpolation": "stepAfter",
+                            "lineWidth": 1,
+                            "pointSize": 5,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "showPoints": "auto",
+                            "spanNulls": false,
+                            "stacking": {
+                                "group": "A",
+                                "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "#EAB839",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 16
+                },
+                "id": 6,
+                "options": {
+                    "legend": {
+                        "calcs": [],
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": false
+                    },
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "postgres",
+                            "uid": "SOURCEUID"
+                        },
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT CAST(CONCAT(CAST(\"Year Commissioned\" as VARCHAR(4)), '0101') AS date), COUNT(\"Year Commissioned\") FROM dukes_2023 GROUP BY \"Year Commissioned\" ORDER BY \"Year Commissioned\" ASC ",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [
+                                        {
+                                            "name": "\"Year Commissioned\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "name": "COUNT",
+                                    "parameters": [
+                                        {
+                                            "name": "\"Year Commissioned\"",
+                                            "type": "functionParameter"
+                                        }
+                                    ],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "name": "\"Year Commissioned\"",
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "orderBy": {
+                                "property": {
+                                    "name": [
+                                        "\"Year Commissioned\""
+                                    ],
+                                    "type": "string"
+                                },
+                                "type": "property"
+                            },
+                            "orderByDirection": "ASC"
+                        },
+                        "table": "dukes_2023"
+                    }
+                ],
+                "title": "Sites commissioned by year",
+                "type": "timeseries"
+            }
+        ],
+        "refresh": "",
+        "schemaVersion": 38,
+        "style": "dark",
+        "tags": [],
+        "templating": {
+            "list": []
+        },
+        "time": {
+            "from": "1927-01-01T00:00:00.000Z",
+            "to": "2023-01-01T00:00:00.000Z"
+        },
+        "timepicker": {
+            "hidden": true
+        },
+        "timezone": "",
+        "title": "Overview",
+        "uid": "df91da7a-eebc-4cf5-8a8c-f80079bcd2f4",
+        "version": 12,
+        "weekStart": ""
+    },
+    "overwrite": true
+}

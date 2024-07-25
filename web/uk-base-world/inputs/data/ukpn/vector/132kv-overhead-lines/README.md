@@ -1,1 +1,0 @@
-Add 132kV overhead line ShapeFile or geojsonfiles here from https://ukpowernetworks.opendatasoft.com/explore/dataset/132kv-overhead-lines.

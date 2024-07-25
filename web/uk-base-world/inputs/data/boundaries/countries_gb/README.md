@@ -1,1 +1,0 @@
-Files for GB (not NI) country boundaries goes here, should be in EPSG:27700.
