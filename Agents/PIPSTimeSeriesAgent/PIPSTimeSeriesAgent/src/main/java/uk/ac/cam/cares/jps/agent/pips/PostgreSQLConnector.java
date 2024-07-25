@@ -28,7 +28,7 @@ public class PostgreSQLConnector {
     private String password = null;
     private static final String JSON_RESULT_KEY = "Result";
 
-    private static final String postgresPropertiesFileEnv = "POSTGRESQL_PROP";
+    private static final String POSTGRESQL_PROP = "POSTGRESQL_PROP";
 
     // error messages
     private static final String READ_PROPERTIES_ERROR = "Unable to get read PostgreSQL parameters from properties file!";
@@ -39,7 +39,7 @@ public class PostgreSQLConnector {
     public PostgreSQLConnector() {
         try {
             //read properties filepath from env
-            String filePath = System.getenv(postgresPropertiesFileEnv);
+            String filePath = System.getenv(POSTGRESQL_PROP);
             //read jdbc url, user, password from properties file
             loadConfigs(filePath);
         } catch (Exception e) {
