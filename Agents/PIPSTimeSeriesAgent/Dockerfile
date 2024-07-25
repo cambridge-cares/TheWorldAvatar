@@ -13,12 +13,10 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/PIPSTimeSeriesAgent
-RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package
-
-
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package -D skipTests
 #==================================================================================================
 
-# Second stage: copy the downloaded dependency into a new image and build into an app
+# production image stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
@@ -28,4 +26,18 @@ COPY --from=builder /root/PIPSTimeSeriesAgent/output/pips-timeseries-agent##1.0.
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
+#==================================================================================================
+
+# test image stage: create an image for unit testing based on common build stage
+#==================================================================================================
+FROM builder as test
+
+RUN mkdir -p /root/.m2/repository
+
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
+
+COPY /PIPSTimeSeriesAgent/src/test ./src/test
+
+# Execute test
+CMD mvn test
 #==================================================================================================
