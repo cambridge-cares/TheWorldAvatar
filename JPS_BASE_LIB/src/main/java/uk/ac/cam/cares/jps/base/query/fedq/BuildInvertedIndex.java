@@ -119,6 +119,7 @@ public class BuildInvertedIndex {
     /**
      * it loads stop-CPs: list of common classes & properties
      * 
+     * @param stop_cps_file
      * @return
      */
     public void loadStopCPs(String stop_cps_file) {
