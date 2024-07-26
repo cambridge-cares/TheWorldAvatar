@@ -16,6 +16,7 @@ const express = require("express");
 const next = require("next");
 
 // Configure the server port; default to 3000 if not specified in environment variables
+if (process.env.PORT) {console.log('port specified in .env: ', process.env.PORT);}
 const port = process.env.PORT || 3000;
 
 // Determine the deployment mode based on NODE_ENV; default to 'development' mode if not specified

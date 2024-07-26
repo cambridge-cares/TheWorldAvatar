@@ -1,4 +1,4 @@
-import { DataLayer } from '../data-layer';
+import { DataLayer } from 'io/data/data-layer';
 
 /**
  * Concrete class for mapbox specific data layer.

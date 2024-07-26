@@ -3,6 +3,48 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.3.2
+
+### Bug Fixes
+
+* Fix bug where sidepanel info did not show the correctly time indexed data
+* Side panel now re-queries when dimension is changed
+* Minor styling changes on scenario selector to fix weird icon scaling
+* Better layer tree and ribbon display on mobile
+
+## 5.3.1
+
+### Features
+
+* Scenario selection button now displays current scenario
+
+### Bug Fixes and Improvements
+
+* Several major updates in dependencies
+* Dev dependencies no longer shipped with production, reducing number of node packages installed inside the container by ~66%
+
+## 5.3.0
+
+### Features
+
+* Mostly CReDo focused features including:
+* Dimension slider displayed in scenario if dimensions are returned from central stack
+* Added order and clickable configuration and functionality from TWA-VF 4
+* Added ability to perform subqueries for feature information in parts
+* RTK query for central stack
+* Redesigned controls ribbon
+* Customisable landing page image
+* Customisable toolbar logo
+* Improvements to info and layer tree
+
+### Bug Fixes
+
+* Map events and data are now registered and removed when changing scenarios
+* Added a placeholder for the feature selector's dropdown options so that the first option can now be selected as well
+* Redirects correctly to the map page when landing page is disabled
+* Improved page routing with more robust relative paths in routes
+* Various issues and improvements listed in [#1246](https://github.com/cambridge-cares/TheWorldAvatar/issues/1246)
+
 ## 5.2.0
 
 ### Features

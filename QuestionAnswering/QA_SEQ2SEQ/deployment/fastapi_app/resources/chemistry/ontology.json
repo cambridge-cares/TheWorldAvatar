@@ -1,0 +1,79 @@
+[
+    {
+        "label": "OntoSpecies",
+        "description" : "OntoSpecies serves as core ontology within TWA chemistry domain. It is an ontology for the semantic representation of chemical species and their properties. It covers a diverse collection of identifiers, classifications and uses of chemical species, as well as spectral data. The data on chemical species is sourced from PubChem and ChEBI.",
+        "tbox":[
+            "<a href=\"https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies/OntoSpecies_v2.owl\">OntoSpecies_v2.owl</a>.",
+            "<a href=\"https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies/OntoSpecies.owl\">OntoSpecies.owl</a>."
+        ],
+        "access":[
+            "You can directly query OntoSpecies <a href=\"https://theworldavatar.io/chemistry/blazegraph/ui/#query\">here</a> (select \"ontospecies\" namespace).",
+            "SPARQL endpoint: <a href=\"https://theworldavatar.io/chemistry/blazegraph/namespace/ontospecies\"> https://theworldavatar.io/chemistry/blazegraph/namespace/ontospecies</a>."
+        ],
+        "publications": [
+            "[1] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, <a href=\"https://doi.org/10.1016/j.compchemeng.2020.106813\">\"Linking reaction mechanisms and quantum chemistry: An ontological approach\"</a>, Computers & Chemical Engineering, 137, 106813, (2020).",
+            "[2] L. Pascazio, S. D. Rihm, A. Naseri, S. Mosbach, J. Akroyd, and M. Kraft, <a href=\"https://doi.org/10.1021/acs.jcim.3c00820\">\"A chemical species ontology for data integration and knowledge discovery\"</a>, Journal of Chemical Information and Modeling, (2023)."
+        ],
+        "preprints": [
+            "[1] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, \"Linking reaction mechanisms and quantum chemistry: An ontological approach\", Technical Report 236, c4e-Preprint Series, Cambridge, 2019 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-236.pdf\">PDF</a>).",
+            "[2] L. Pascazio, S. D. Rihm, A. Naseri, S. Mosbach, J. Akroyd, and M. Kraft, \"A chemical species ontology for data integration and knowledge discovery\", Technical Report 306, c4e-Preprint Series, Cambridge, 2023 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-306.pdf\">PDF</a>).",
+            "[3] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, \"Question-answering system for combustion kinetics\", Technical Report 315, c4e-Preprint Series, Cambridge, 2023 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-315.pdf\">PDF</a>)."
+        ]
+    },
+    {
+        "label": "OntoKin",
+        "description" : "OntoKin is an ontology designed to represent reaction mechanisms. It details sets of stoichiometric reactions that define reaction mechanisms, characterizing each reaction through its reactants and products. These components are further described by their thermodynamic properties and transport behaviors. OntoKin supports various reaction types, including gas-phase and surface reactions, utilizing several kinetic models to accommodate different scenarios. This ontology facilitates the integration and comparison of kinetic, thermodynamic, and transport data across the literature.",
+        "tbox":[
+            "<a href=\"https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontokin/OntoKin.owl\">OntoKin.owl</a>."
+        ],
+        "access":[
+            "You can directly query OntoKin <a href=\"https://theworldavatar.io/chemistry/blazegraph/ui/#query\">here</a> (select \"ontokin\" namespace).",
+            "SPARQL endpoint: <a href=\"https://theworldavatar.io/chemistry/blazegraph/namespace/ontokin\"> https://theworldavatar.io/chemistry/blazegraph/namespace/ontokin</a>."
+        ],
+        "publications": [
+            "[1] F. Farazi, J. Akroyd, S. Mosbach, P. Buerger, D. Nurkowski, M. Salamanca, and M. Kraft, <a href=\"https://doi.org/10.1021/acs.jcim.9b00960\">\"OntoKin: An ontology for chemical kinetic reaction mechanisms\"</a>, Journal of Chemical Information and Modeling, 60, 1, 108-120, (2020).",
+            "[2] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, <a href=\"https://doi.org/10.1016/j.compchemeng.2020.106813\">\"Linking reaction mechanisms and quantum chemistry: An ontological approach\"</a>, Computers & Chemical Engineering, 137, 106813, (2020)."
+        ],
+        "preprints": [
+            "[1] F. Farazi, J. Akroyd, S. Mosbach, P. Buerger, D. Nurkowski, and M. Kraft, \"OntoKin: An ontology for chemical kinetic reaction mechanisms\", Technical Report 218, c4e-Preprint Series, Cambridge, 2019 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-218.pdf\">PDF</a>).",
+            "[2] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, \"Linking reaction mechanisms and quantum chemistry: An ontological approach\", Technical Report 236, c4e-Preprint Series, Cambridge, 2019 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-236.pdf\">PDF</a>).",
+            "[3] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, \"Question-answering system for combustion kinetics\", Technical Report 315, c4e-Preprint Series, Cambridge, 2023 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-315.pdf\">PDF</a>)."
+        ]
+    },
+    {
+        "label": "OntoCompChem",
+        "description" : "OntoCompChem is an ontology designed to represent the input and output processes of quantum mechanical (QM) calculations, with a primary focus on molecular systems. This ontology delineates calculations through various detailed parameters: the objective (e.g., single point calculation, geometry optimization, frequency calculation), the utilized software (e.g., Gaussian16), the theoretical level employed (e.g., B3LYP, 6-31G(d)), and additional details such as overall charge and spin polarization. Furthermore, OntoCompChem includes data on calculated frontier orbitals, the final converged self-consistent field (SCF) energy, optimized geometries for geometry optimizations, and for frequency calculations, it records the zero-point energy correction and a comprehensive list of computed vibrational frequencies, linking back to their corresponding stationary geometries and calculations.",
+        "tbox":[
+            "<a href=\"https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocompchem/OntoCompChem.owl\">OntoCompChem.owl</a>."
+        ],
+        "access":[
+            "You can directly query OntoCompChem <a href=\"https://theworldavatar.io/chemistry/blazegraph/ui/#query\">here</a> (select \"ontocompchem\" namespace).",
+            "SPARQL endpoint: <a href=\"https://theworldavatar.io/chemistry/blazegraph/namespace/ontocompchem\"> https://theworldavatar.io/chemistry/blazegraph/namespace/ontocompchem</a>."
+        ],
+        "publications": [ 
+            "[1] N. Krdzavac, S. Mosbach, D. Nurkowski, P. Buerger, J. Akroyd, J. W. Martin, A. Menon, and M. Kraft, <a href=\"https://doi.org/10.1021/acs.jcim.9b00227\">\"An ontology and semantic web service for quantum chemistry calculations\"</a>, Journal of Chemical Information and Modeling, 59(7), 3154-3165, (2019).",
+            "[2] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, <a href=\"https://doi.org/10.1016/j.compchemeng.2020.106813\">\"Linking reaction mechanisms and quantum chemistry: An ontological approach\"</a>, Computers & Chemical Engineering, 137, 106813, (2020)."
+        ],
+        "preprints": [ 
+            "[1] N. Krdzavac, S. Mosbach, D. Nurkowski, P. Buerger, J. Akroyd, J. W. Martin, A. Menon, and M. Kraft, \"An ontology and semantic web service for quantum chemistry calculations\", Technical Report 223, c4e-Preprint Series, Cambridge, 2019 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-Preprint-223.pdf\">PDF</a>).",
+            "[2] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, \"Linking reaction mechanisms and quantum chemistry: An ontological approach\", Technical Report 236, c4e-Preprint Series, Cambridge, 2019 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-236.pdf\">PDF</a>).",
+            "[3] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, \"Question-answering system for combustion kinetics\", Technical Report 315, c4e-Preprint Series, Cambridge, 2023 (<a href=\"https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-315.pdf\">PDF</a>)."
+        ]
+    },
+    {
+        "label": "OntoZeolite",
+        "description" : "",
+        "tbox":[ ],
+        "access":[
+            "You can directly query OntoZeolite <a href=\"https://theworldavatar.io/chemistry/blazegraph/ui/#query\">here</a> (select \"ontozeolite\" namespace).",
+            "SPARQL endpoint: <a href=\"https://theworldavatar.io/chemistry/blazegraph/namespace/ontozeolite\"> https://theworldavatar.io/chemistry/blazegraph/namespace/ontozeolite</a>."
+        ],
+        "publications": [ ],
+        "preprints": [ ]
+    }
+]
+
+
+
+
+

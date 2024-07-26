@@ -4,16 +4,16 @@
 
 "use client";
 
-import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
-import { Map } from 'mapbox-gl';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { reduxStore } from 'app/store';
 import { DataStore } from 'io/data/data-store';
-import { CameraSettings, CameraPosition, ImagerySettings, ImageryOption, MapSettings } from 'types/settings';
+import { Map } from 'mapbox-gl';
+import { CameraPosition, CameraSettings, ImageryOption, ImagerySettings, MapSettings } from 'types/settings';
 import { addIcons } from './mapbox/mapbox-icon-loader';
-import { addAllSources } from './mapbox/mapbox-source-utils';
 import { addAllLayers } from './mapbox/mapbox-layer-utils';
+import { addAllSources } from './mapbox/mapbox-source-utils';
 
 // Default imagery options if users do not include them in the "map-settings.json" file
 const DEFAULT_IMAGERY_OPTIONS: ImagerySettings = {
@@ -64,18 +64,45 @@ const PLACENAME_LAYERS: string[] = [
  * @param {MapSettings} mapSettings The user specified map settings.
  * @param {DataStore} data The data of interest to add to the map.
  */
-export function addData(map: Map, mapSettings: MapSettings, data: DataStore): void {
-   // Parse data configuration and load icons
-   const iconPromise = addIcons(map, mapSettings.icons);
+export async function addData(map: Map, mapSettings: MapSettings, data: DataStore): Promise<void> {
+  // Parse data configuration and load icons
+  await addIcons(map, mapSettings.icons)
+  resetMap(map);
+  addAllSources(map, data);
+  addAllLayers(map, data, mapSettings.imagery);
 
-   Promise.all([iconPromise]).then(() => {
-     // Once that is done and completed...
-     console.log("Data definitions fetched and parsed.");
+}
 
-     // Plot data
-     addAllSources(map, data);
-     addAllLayers(map, data, mapSettings.imagery);
-   });
+/**
+ * Resets the map to its initial blank state.
+ * 
+ * @param {Map} map The current Mapbox map instance.
+ */
+function resetMap(map: Map): void {
+  const layers: mapboxgl.LayerSpecification[] = map.getStyle().layers;
+  const sources: Set<string> = new Set();
+
+  layers.map(layer => {
+    const layerId: string = layer.id;
+    const sourceId: string = layer.source;
+    // Conditional check to protect background and default styles
+    if (layer.type != "background" && sourceId != "composite") {
+      // Remove the layer
+      if (map.getLayer(layerId)) {
+        map.removeLayer(layerId);
+      }
+
+      // Add the source to the set if any exists
+      if (map.getSource(sourceId)) {
+        sources.add(sourceId);
+      }
+    }
+  });
+
+  // Remove sources independently from layers to prevent errors when multiple layers uses the same source
+  sources.forEach(source => {
+    map.removeSource(source);
+  });
 }
 
 /**
@@ -121,7 +148,7 @@ export function getCameraPositions(cameraSettings: CameraSettings): string[] {
  */
 export function getDefaultImageryOption(imagerySettings: ImagerySettings): ImageryOption {
   // If users do not specify imagery settings, use the defaults
-  if (imagerySettings == null) {
+  if (!imagerySettings) {
     imagerySettings = DEFAULT_IMAGERY_OPTIONS;
   }
 
@@ -175,7 +202,7 @@ export function getCurrentImageryOption(imagerySettings: ImagerySettings): Image
   if (items == null || items.length == 0) {
     return getDefaultImageryOption(imagerySettings);
   } else {
-    const match = items.find(option => option.name === "Imagery");
+    const match = items.find(option => option.id === "map-style");
     if (match == null) {
       return getDefaultImageryOption(imagerySettings);
     } else {
@@ -220,7 +247,7 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): vo
   const items = reduxState.ribbonComponents.items;
   let shouldHide = true;
   if (items != null && items.length > 0) {
-    shouldHide = items.find(option => option.name === "Hide Labels")?.selection;
+    shouldHide = items.find(option => option.id === "placenames")?.selection;
   }
   const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
@@ -287,7 +314,7 @@ export function resetCamera(cameraSettings: CameraSettings, map: Map): void {
   if (items.length == 0) {
     position = getDefaultCameraPosition(cameraSettings);
   } else {
-    const positionName = items.find(position => position.name === "Reset Camera")?.selection;
+    const positionName = items.find(position => position.id === "reset")?.selection;
     position = getCameraPosition(positionName, cameraSettings);
   }
 
@@ -317,10 +344,10 @@ export function locateUser(map: Map): void {
       });
     },
     () => {
-      toast.warning(
-        "Cannot read user's location without browser authorisation.",
-        { position: toast.POSITION.BOTTOM_LEFT }
-      )
+      toast.warning("Cannot read user's location without browser authorisation.", {
+      })
+
     }
   );
 }
+
