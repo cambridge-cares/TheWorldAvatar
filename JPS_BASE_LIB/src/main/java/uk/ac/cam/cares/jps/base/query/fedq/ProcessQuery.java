@@ -35,7 +35,6 @@ import java.util.*;
 
 public class ProcessQuery {
 
-    private Op queryObject;
     private String classIndexFilePath = "";
     private String propertyIndexFilePath = "";
     private String cpIndexFilePath = "";
@@ -45,35 +44,15 @@ public class ProcessQuery {
     private Map<String, Set<String>> propertyIndex = new HashMap<>();
     private Map<String, Set<String>> cpIndex = new HashMap<>();
 
-    public ProcessQuery(String sparqlQuery) {
-        Query query = QueryFactory.create(sparqlQuery);
-        this.queryObject = org.apache.jena.sparql.algebra.Algebra.compile(query);
-    }
-
-    /**
-     * indexDir specify the root directory of the indices
-     * 
-     * @param indexDir
-     * @return
-     */
-    public void setIndexLocation(String indexDir) {
-        if (indexDir.trim().endsWith("/")) {
-            this.classIndexFilePath = indexDir.trim() + "cinv.indx";
-            this.propertyIndexFilePath = indexDir.trim() + "pinv.indx";
-            this.cpIndexFilePath = indexDir.trim() + "cpinv.indx";
-        } else {
-            this.classIndexFilePath = indexDir.trim() + "/cinv.indx";
-            this.propertyIndexFilePath = indexDir.trim() + "/pinv.indx";
-            this.cpIndexFilePath = indexDir.trim() + "/cpinv.indx";
-        }
-    }
-
     /**
      * It extracts classes and properties from the user query
      * 
      * @return
      */
-    public void extractClassesAndProperties() {
+    public void extractClassesAndProperties(String sparqlQuery) {
+        Query query = QueryFactory.create(sparqlQuery);
+        Op queryObject = org.apache.jena.sparql.algebra.Algebra.compile(query);
+
         OpWalker.walk(queryObject, new OpVisitorBase() {
             @Override
             public void visit(OpBGP opBGP) {
@@ -98,7 +77,17 @@ public class ProcessQuery {
      * 
      * @return
      */
-    public void loadIndices() throws IOException {
+    public void loadIndices(String indexDir) throws IOException {
+        if (indexDir.trim().endsWith("/")) {
+            this.classIndexFilePath = indexDir.trim() + "cinv.indx";
+            this.propertyIndexFilePath = indexDir.trim() + "pinv.indx";
+            this.cpIndexFilePath = indexDir.trim() + "cpinv.indx";
+        } else {
+            this.classIndexFilePath = indexDir.trim() + "/cinv.indx";
+            this.propertyIndexFilePath = indexDir.trim() + "/pinv.indx";
+            this.cpIndexFilePath = indexDir.trim() + "/cpinv.indx";
+        }
+
         this.classIndex = loadIndexFromFile(this.classIndexFilePath);
         this.propertyIndex = loadIndexFromFile(this.propertyIndexFilePath);
         // this.cpIndex = loadIndexFromFile(this.cpIndexFilePath);
@@ -131,23 +120,25 @@ public class ProcessQuery {
         for (Node classUriRef : classes) {
             String classUri = classUriRef.getURI();
             if (classIndex.containsKey(classUri)) {
-                System.out.println("Found class alignment: " + classUri);
+                // System.out.println("Found class alignment: " + classUri);
                 endpoints.addAll(classIndex.get(classUri));
-            } else {
-                System.out.println("Un-aligned class: " + classUri);
             }
+            // else {
+            // System.out.println("Un-aligned class: " + classUri);
+            // }
         }
         for (Node propertyUriRef : properties) {
             String propertyUri = propertyUriRef.getURI();
             if (propertyIndex.containsKey(propertyUri)) {
-                System.out.println("Found property alignment: " + propertyUri);
+                // System.out.println("Found property alignment: " + propertyUri);
                 endpoints.addAll(propertyIndex.get(propertyUri));
-            } else {
-                System.out.println("Un-aligned property: " + propertyUri);
             }
+            // else {
+            // System.out.println("Un-aligned property: " + propertyUri);
+            // }
         }
-        System.out.println("The Final Endpoints: ");
-        System.out.println(endpoints);
+        // System.out.println("The Final Endpoints: ");
+        // System.out.println(endpoints);
 
         return endpoints;
     }
@@ -160,7 +151,7 @@ public class ProcessQuery {
      * @param query
      * @return
      */
-    public Set<BindingSet> processQuery(Set<String> endpoint_set, String query) {
+    public Set<BindingSet> executeQuery(Set<String> endpoint_set, String sparqlQuery) {
         int counter = 0;
         List<Endpoint> endpoints = new ArrayList<>();
         Set<BindingSet> result = new HashSet<>();
@@ -172,7 +163,7 @@ public class ProcessQuery {
 
         try (RepositoryConnection conn = repository.getConnection()) {
 
-            TupleQuery tq = conn.prepareTupleQuery(query);
+            TupleQuery tq = conn.prepareTupleQuery(sparqlQuery);
             try (TupleQueryResult tqRes = tq.evaluate()) {
 
                 while (tqRes.hasNext()) {
@@ -187,51 +178,72 @@ public class ProcessQuery {
     }
 
     public static void main(String[] args) throws IOException {
-        String sparqlQuery = """
-                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-                    PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#>
-                    PREFIX OntoKin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
-                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        // String sparqlQuery = """
+        // PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        // PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        // PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 
-                    SELECT DISTINCT ?identifier ?atomicMass ?atomicMassUnits
-                    WHERE {
-                        ?element1 rdf:type pt:Element .
-                        BIND(STRAFTER(STR(?element1), \"#\") AS ?identifier)
-                        ?element2 rdf:type OntoKin:Element .
-                        ?element2 rdfs:label ?identifier1 .
-                        ?element2 OntoKin:hasAtomicMass ?atomicMass .
-                        ?element2 OntoKin:hasAtomicMassUnits ?atomicMassUnits .
-                        FILTER(?identifier = ?identifier1)
-                    }
+        // SELECT DISTINCT ?MechanismName
+        // WHERE {
+        // ?MechanismIRI rdf:type ontokin:ReactionMechanism .
+        // ?MechanismIRI rdfs:label ?MechanismName .
+        // }
+        // """;
+        String sparqlQuery = """
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX owl: <http://www.w3.org/2002/07/owl#>
+                PREFIX pt: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#>
+                PREFIX OntoKin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+                SELECT DISTINCT ?identifier ?atomicMass ?atomicMassUnits
+                WHERE {
+                ?element1 rdf:type pt:Element .
+                BIND(STRAFTER(STR(?element1), \"#\") AS ?identifier)
+                ?element2 rdf:type OntoKin:Element .
+                ?element2 rdfs:label ?identifier1 .
+                ?element2 OntoKin:hasAtomicMass ?atomicMass .
+                ?element2 OntoKin:hasAtomicMassUnits ?atomicMassUnits .
+                FILTER(?identifier = ?identifier1)
+                }
                 """;
 
-        Set<String> eps = new HashSet<>();
-
-        ProcessQuery ana = new ProcessQuery(sparqlQuery);
+        ProcessQuery ana = new ProcessQuery();
         String indexLocation = "C:/Users/printer_admin/Downloads/KGs/tests/";
-        ana.setIndexLocation(indexLocation);
-        ana.loadIndices();
+        ana.loadIndices(indexLocation);
 
-        long startTime = System.nanoTime();
+        long totatl_duration = 0;
+        int iteration = 100;
+        for (int i = 0; i < iteration; i++) {
+            long startTime = System.nanoTime();
 
-        ana.extractClassesAndProperties();
-        // run against manual endpoints
-        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_all/sparql");
-        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_compchem/sparql");
-        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_kin/sparql");
-        // eps.add("http://localhost:8080/blazegraph/namespace/namespace_uken/sparql");
+            Set<String> eps = new HashSet<>();
 
-        // run against extracted endpoints
-        eps = ana.getEndpoints();
-        Set<BindingSet> result = ana.processQuery(eps, sparqlQuery);
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime) / 1000000;
-        System.out
-                .println("Processing Time: " + duration + " millisecond\nQuery returns " + result.size() + " tuples:");
-        for (BindingSet element : result) {
-            System.out.println(element);
+            // run against extracted endpoints
+            // ana.extractClassesAndProperties(sparqlQuery);
+            // eps = ana.getEndpoints();
+
+            // run against manual endpoints
+            eps.add("http://localhost:8080/blazegraph/namespace/namespace_all/sparql");
+            eps.add("http://localhost:8080/blazegraph/namespace/namespace_uken/sparql");
+            eps.add("http://localhost:8080/blazegraph/namespace/namespace_kin/sparql");
+            eps.add("http://localhost:8080/blazegraph/namespace/namespace_compchem/sparql");
+            eps.add("http://localhost:8080/blazegraph/namespace/namespace_species/sparql");
+
+            Set<BindingSet> result = ana.executeQuery(eps, sparqlQuery);
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime) / 1000000;
+            if (i == 0) {
+                System.out.println("First execution time: " + duration + " millisecond.");
+                for (BindingSet element : result) {
+                    System.out.println(element);
+                }
+            }
+            totatl_duration += duration;
+
         }
+
+        System.out.println("Processing Time: " + totatl_duration / iteration + " millisecond");
 
     }
 }
