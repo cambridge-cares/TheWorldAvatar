@@ -22,8 +22,8 @@ code/ # The code to calculate, and generate the figures
 └── __init__.py
 Data/ # Data used in this project
 │   ├── pickles/
-│   │     └── geometry # Geometry shapes to describe the LSOA boundaries
-│   ├── properties_csv/ # Data with respect to each lsoa, separated by year
+│   │     └── geometry # Geometry boundaries (we used LSOAs)
+│   ├── properties_csv/ # Data with respect to each geometry (we used LSOAs), separated by year
 │   │        ├──2010 
 │   │        ├──2011
 │   │        └── ... 
