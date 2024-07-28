@@ -7,6 +7,7 @@ from typing_extensions import get_args
 from pydantic import BaseModel, Field, PrivateAttr
 from pydantic import GetCoreSchemaHandler, ValidationInfo
 from pydantic_core import CoreSchema, core_schema
+from pydantic.errors import PydanticUndefinedAnnotation
 import rdflib
 from rdflib import Graph, URIRef, Literal, BNode
 from rdflib.namespace import RDF, RDFS, OWL, XSD, DC
@@ -1065,7 +1066,10 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             Graph: The rdflib.Graph object with the added triples
         """
         # rebuild model to resovle any ForwardRef
-        cls.model_rebuild()
+        try:
+            cls.model_rebuild()
+        except PydanticUndefinedAnnotation as e:
+            raise Exception(f'Class {cls.__name__} not fully initialised: {cls.model_fields}') from e
         cls_iri = cls.rdf_type
         g.add((URIRef(cls_iri), RDF.type, OWL.Class))
         g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.namespace_iri)))
