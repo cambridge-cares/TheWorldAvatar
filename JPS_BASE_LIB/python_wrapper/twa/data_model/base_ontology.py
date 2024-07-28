@@ -663,7 +663,7 @@ class BaseProperty(set, Generic[T]):
         )
 
 
-class BaseClass(BaseModel, validate_assignment=True):
+class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
     """
     Base class for all the Python classes that are used to define the classes in ontology.
 
@@ -705,7 +705,7 @@ class BaseClass(BaseModel, validate_assignment=True):
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
     rdfs_comment: Optional[str] = Field(default=None)
     rdfs_label: Optional[str] = Field(default=None)
-    instance_iri: str = Field(default=None)
+    instance_iri: str = Field(default='')
     # format of the cache for all properties: {property_name: property_object}
     _latest_cache: Dict[str, Any] = PrivateAttr(default_factory=dict)
     _exist_in_kg: bool = PrivateAttr(default=False)
