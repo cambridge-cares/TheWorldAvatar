@@ -130,7 +130,7 @@ class YourAgent(DerivationAgent):
 
         # The instance IRIs of the interested class (rdf:type) can be accessed via derivation_inputs.getIris(clz)
         # e.g. assume we will take the first iri that has rdf:type YOUR_CONCEPT
-        instance_iri = derivation_inputs.getIris(YourConcept.get_rdf_type())[0]
+        instance_iri = derivation_inputs.getIris(YourConcept.rdf_type)[0]
 
         # You may want to create instance of YourSparqlClient for specific queries/updates not covered by OGM
         # YourSparqlClient should be defined in your_sparql.py that will be introduced later in this documentation page
@@ -214,7 +214,7 @@ from __future__ import annotations # imported to enable pydantic postponed annot
 # The update_forward_refs() required in pydantic (1.x.x) to enable forward reference is no longer required for pydantic (2.x.x)
 # Instead, `from __future__ import annotations` at the beginning of the script should already enable this
 # For more details, please see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
-from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty, as_range
+from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
 
 class YourOntology(BaseOntology):
     base_url = 'https://example/kg/'
@@ -222,21 +222,21 @@ class YourOntology(BaseOntology):
     owl_versionInfo = '0.0.1'
     rdfs_comment = 'ontology'
 
-class HasValue(DatatypeProperty):
-    is_defined_by_ontology = YourOntology
-    range: as_range(int, 1, 1)
+HasValue = DatatypeProperty.create_from_base(
+    'HasValue', YourOntology, 1, 1
+)
 
 class YourConcept(BaseClass):
-    is_defined_by_ontology = YourOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = YourOntology
+    hasValue: HasValue[int]
 
 class AnotherConcept(BaseClass):
-    is_defined_by_ontology = YourOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = YourOntology
+    hasValue: HasValue[int]
 
 class OutputConcept(BaseClass):
-    is_defined_by_ontology = YourOntology
-    hasValue: HasValue
+    rdfs_isDefinedBy = YourOntology
+    hasValue: HasValue[int]
 ```
 
 ### Custom SPARQL client
