@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.timeline;
 
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -64,7 +65,7 @@ public class TimelineFragment extends Fragment {
         mapView.getMapboxMap().addOnStyleLoadedListener(style -> {
             // todo
         });
-        mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
+        updateUIForThemeMode(isDarkModeEnabled());
 
         TrajectoryViewModel trajectoryViewModel = new ViewModelProvider(this).get(TrajectoryViewModel.class);
 
@@ -115,5 +116,28 @@ public class TimelineFragment extends Fragment {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
             }
         });
+    }
+
+    private boolean isDarkModeEnabled() {
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Check if dark mode has changed
+        if (newConfig.uiMode != getResources().getConfiguration().uiMode) {
+            updateUIForThemeMode(isDarkModeEnabled());
+        }
+    }
+
+    private void updateUIForThemeMode(boolean isDarkMode) {
+        if (isDarkMode) {
+            mapView.getMapboxMap().loadStyleUri(Style.DARK);
+        } else {
+            mapView.getMapboxMap().loadStyleUri(Style.LIGHT);
+        }
     }
 }
