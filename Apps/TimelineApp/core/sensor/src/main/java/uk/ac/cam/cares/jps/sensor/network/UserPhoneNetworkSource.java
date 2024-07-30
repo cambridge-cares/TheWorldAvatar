@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.sensor;
+package uk.ac.cam.cares.jps.sensor.network;
 
 import android.content.Context;
 

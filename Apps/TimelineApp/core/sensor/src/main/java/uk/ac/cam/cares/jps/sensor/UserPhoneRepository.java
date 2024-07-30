@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.sensor;
 
 import com.android.volley.Response;
 
+import uk.ac.cam.cares.jps.sensor.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 public class UserPhoneRepository {

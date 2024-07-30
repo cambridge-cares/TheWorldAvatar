@@ -1,7 +1,6 @@
-package uk.ac.cam.cares.jps.sensor;
+package uk.ac.cam.cares.jps.sensor.network;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -30,7 +29,7 @@ public class SensorNetworkSource {
         this.requestQueue = requestQueue;
     }
 
-    void sendPostRequest(String deviceId, JSONArray sensorData) {
+    public void sendPostRequest(String deviceId, JSONArray sensorData) {
         String url = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.sensorloggeragent_update))
                 .build().toString();

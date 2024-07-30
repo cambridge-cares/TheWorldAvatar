@@ -5,8 +5,8 @@ import android.content.Intent;
 
 import org.apache.log4j.Logger;
 
+import uk.ac.cam.cares.jps.sensor.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
-import uk.ac.cam.cares.jps.login.LoginRepository;
 
 public class SensorRepository {
     UserPhoneNetworkSource userPhoneNetworkSource;
@@ -41,8 +41,6 @@ public class SensorRepository {
                 callback.onFailure(error);
             }
         });
-
-
     }
 
     public void stopRecording() {
