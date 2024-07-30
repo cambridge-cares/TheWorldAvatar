@@ -94,7 +94,14 @@ public class TrajectoryNetworkSource {
         Response.Listener<String> onGetTrajectorySuccess = s1 -> {
             try {
                 JSONObject trajectoryResponse = new JSONObject(s1);
-                onSuccessUpper.onResponse(trajectoryResponse.toString());
+                if (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
+                        .getJSONArray("features")
+                        .getJSONObject(0)
+                        .getString("geometry").equals("null")) {
+                    onSuccessUpper.onResponse("");
+                } else {
+                    onSuccessUpper.onResponse(trajectoryResponse.toString());
+                }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
