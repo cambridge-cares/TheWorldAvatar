@@ -11,8 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -23,6 +21,7 @@ import org.apache.log4j.Logger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import uk.ac.cam.cares.jps.sensor.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;
+import uk.ac.cam.cares.jps.timeline.ui.datepicker.GreyOutDecorator;
 import uk.ac.cam.cares.jps.timeline.viewmodel.ConnectionViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.NormalBottomSheetViewModel;
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
@@ -51,18 +51,17 @@ public class BottomSheetManager {
 
     private Logger LOGGER = Logger.getLogger(BottomSheetManager.class);
 
-    private MaterialDatePicker<Long> datePicker;
     private FragmentManager fragmentManager;
     private final BottomSheetBehavior<LinearLayoutCompat> bottomSheetBehavior;
     private final LinearLayoutCompat bottomSheetContainer;
 
     private final LifecycleOwner lifecycleOwner;
     private final Context context;
-    private final NavController navController;
 
     private NormalBottomSheet normalBottomSheet;
     private ErrorBottomSheet errorBottomSheet;
     private final MaterialAlertDialogBuilder sessionExpiredDialog;
+    private Long currentSelectionDate = MaterialDatePicker.todayInUtcMilliseconds();
 
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
@@ -72,12 +71,6 @@ public class BottomSheetManager {
 
         lifecycleOwner = fragment.getViewLifecycleOwner();
         context = fragment.requireContext();
-        navController = NavHostFragment.findNavController(fragment);
-
-        datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText(R.string.select_date)
-                .build();
-        datePicker.addOnPositiveButtonClickListener(o -> normalBottomSheetViewModel.setDate(Instant.ofEpochMilli(o).atZone(ZoneId.of("UTC")).toLocalDate()));
 
         fragmentManager = fragment.getParentFragmentManager();
         sessionExpiredDialog = userPhoneViewModel.getSessionExpiredDialog(fragment);
@@ -110,7 +103,7 @@ public class BottomSheetManager {
 
         normalBottomSheet.getBottomSheet().findViewById(R.id.date_right_bt).setOnClickListener(view -> normalBottomSheetViewModel.setToNextDate());
 
-        normalBottomSheet.getBottomSheet().findViewById(R.id.date_picker_layout).setOnClickListener(view -> datePicker.show(fragmentManager, "date_picker"));
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_picker_layout).setOnClickListener(view -> getDatePicker().show(fragmentManager, "date_picker"));
 
         normalBottomSheetViewModel.selectedDate.observe(lifecycleOwner, selectedDate -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMMM dd, yyyy");
@@ -199,6 +192,17 @@ public class BottomSheetManager {
         return convertedDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSx"));
     }
 
+    private MaterialDatePicker<Long> getDatePicker() {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(R.string.select_date)
+                .setSelection(currentSelectionDate)
+                .setDayViewDecorator(new GreyOutDecorator())
+                .build();
+        datePicker.addOnPositiveButtonClickListener(o -> normalBottomSheetViewModel.setDate(Instant.ofEpochMilli(o).atZone(ZoneId.of("UTC")).toLocalDate()));
+
+        normalBottomSheetViewModel.selectedDate.observe(lifecycleOwner, d -> currentSelectionDate = d.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli());
+        return datePicker;
+    }
 
 //    private void setupBottomSheet() {
 //        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
