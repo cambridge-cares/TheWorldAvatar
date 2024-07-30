@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.sensor.di;
 import android.content.Context;
 
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 
 import javax.inject.Singleton;
 
@@ -16,10 +15,9 @@ import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.sensor.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.sensor.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.SensorManager;
-import uk.ac.cam.cares.jps.sensor.SensorNetworkSource;
+import uk.ac.cam.cares.jps.sensor.network.SensorNetworkSource;
 import uk.ac.cam.cares.jps.sensor.SensorRepository;
-import uk.ac.cam.cares.jps.sensor.SensorService;
-import uk.ac.cam.cares.jps.sensor.UserPhoneNetworkSource;
+import uk.ac.cam.cares.jps.sensor.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.sensor.UserPhoneRepository;
 import uk.ac.cam.cares.jps.sensor.database.SensorLocalSource;
 

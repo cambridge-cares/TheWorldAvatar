@@ -64,9 +64,9 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, 200, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2, this);
         } else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 200, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2, this);
         }
 
         if (pressureSensor != null) {
@@ -150,4 +150,8 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
         // Not needed to implement
     }
 
+    @Override
+    public String getSensorName() {
+        return "location";
+    }
 }

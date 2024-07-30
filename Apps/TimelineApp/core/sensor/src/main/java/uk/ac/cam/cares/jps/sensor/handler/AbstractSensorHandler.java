@@ -117,4 +117,9 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Not needed for implementation
     }
+
+    @Override
+    public String getSensorName() {
+        return sensorName;
+    }
 }

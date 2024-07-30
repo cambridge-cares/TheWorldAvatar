@@ -30,5 +30,7 @@ public interface SensorHandler {
      * Clears all data previously collected by the sensor handler.
      */
     void clearSensorData();
+
+    String getSensorName();
 }
 
