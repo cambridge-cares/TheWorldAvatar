@@ -3,7 +3,7 @@
 The code and data collected in this folder is dedicated to reproduce the figures in **[Preprint 323](https://como.ceb.cam.ac.uk/preprints/323/): Impact of heat pumps and future energy prices on regional inequalities.**
 
 ## Data
-Please download the data (there should be two folders called `Data` and `GB_shapefile` respectively) from the project folder in the the archive for preprint 323 (available on request from the corresponding author) and use it to replace the contents of the `./Data` and `./GB_shapefile` fiolders.
+Please download the data (there should be two folders called `Data` and `GB_shapefile` respectively) from the project folder in the archive for preprint 323 (available on request from the corresponding author) and use it to replace the contents of the `./Data` and `./GB_shapefile` folders.
 
 ## Project structure
 Once the data has been sorted, the project should be organised as follows:
@@ -40,9 +40,9 @@ setup.py
 ```
 The code to calculate, and generate the figures are mainly stored at `./code`, The source data are stored at `./Data`, `./GB_shapefile` stores the shape files of the UK boundaries to draw maps. The generated figures will be stored at `./figure_output`, which should be initially empty.
 
-`./code/datamodel/functionality.py` stores some utility functions, `./code/dataoutput/dataoutput` stores some calculation functions and core figure generation functions. `./code/dataretrieval/dataretrieval.py` stores functions to retrieve the data. All those three scripts are used to serve the main script `.\code\dataoutput\Figure_generation.py`, you will need to run this script to reproduce the figure. 
+`./code/datamodel/functionality.py` stores some utility functions, `./code/dataoutput/dataoutput.py` stores some calculation functions and core figure generation functions. `./code/dataretrieval/dataretrieval.py` stores functions to retrieve the data. All those three scripts are used to serve the main script `.\code\dataoutput\Figure_generation.py`, you will need to run this script to reproduce the figure. 
 
-`./Data/pickles/geometry` saves the geometry shapes of each LSOA, `./Data/properties_csv/` saves data for each lsoa or for the UK, separated by year, such as electricity and gas prices, consumption, temperature etc...
+`./Data/pickles/geometry` saves the geometry boundaries (we used LSOAs), `./Data/properties_csv/` saves data for each lsoa or for the UK, separated by year, such as electricity and gas prices, consumption, temperature etc...
 
 **Note** that for many reasons, much of the data has been saved (converted) as csv files. For example, the source data for temperature was raster files, which need days of calculation to get the vector data for temperature with respect to LSOA! Other source data will also need treatment to convert to the format that will be needed in this project. In these cases, using csv files will significantly save the cost.
 
