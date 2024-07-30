@@ -4,10 +4,10 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 
-import uk.ac.cam.cares.jps.sensor.database.model.entity.LocationData;
+import uk.ac.cam.cares.jps.sensor.database.model.entity.RelativeHumidity;
 
 @Dao
-public interface LocationDao {
+public interface RelativeHumidityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(LocationData... locationData);
+    void insertAll(RelativeHumidity... humidities);
 }

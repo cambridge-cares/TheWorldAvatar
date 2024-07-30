@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.sensor.database.model;
+package uk.ac.cam.cares.jps.sensor.database.model.entity;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

@@ -4,10 +4,10 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 
-import uk.ac.cam.cares.jps.sensor.database.model.entity.LocationData;
+import uk.ac.cam.cares.jps.sensor.database.model.entity.SoundLevel;
 
 @Dao
-public interface LocationDao {
+public interface SoundLevelDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(LocationData... locationData);
+    void insertAll(SoundLevel... soundLevels);
 }

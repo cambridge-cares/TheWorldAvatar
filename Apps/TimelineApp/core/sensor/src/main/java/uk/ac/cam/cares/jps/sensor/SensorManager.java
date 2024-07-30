@@ -8,6 +8,10 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import kotlin.Pair;
 import uk.ac.cam.cares.jps.sensor.handler.AccelerometerHandler;
 import uk.ac.cam.cares.jps.sensor.handler.GravitySensorHandler;
 import uk.ac.cam.cares.jps.sensor.handler.GyroscopeHandler;
@@ -74,8 +78,9 @@ public class SensorManager {
         LOGGER.info("sensors stopped");
     }
 
-    protected JSONArray collectSensorData() {
+    protected Pair<JSONArray, Map<String, JSONArray>> collectSensorData() {
         JSONArray allSensorData = new JSONArray();
+        Map<String, JSONArray> localStorageData = new HashMap<>();
         try {
             // Directly add all elements of each sensor's data to the single array
             addAllSensorData(allSensorData, accelerometerHandler.getSensorData());
@@ -88,12 +93,23 @@ public class SensorManager {
             addAllSensorData(allSensorData, locationTracker.getSensorData());
             addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
             // add other sensors similarly
+
+            localStorageData.put(accelerometerHandler.getSensorName(), accelerometerHandler.getSensorData());
+            localStorageData.put(gyroscopeHandler.getSensorName(), gyroscopeHandler.getSensorData());
+            localStorageData.put(lightSensorHandler.getSensorName(), lightSensorHandler.getSensorData());
+            localStorageData.put(humiditySensorHandler.getSensorName(), humiditySensorHandler.getSensorData());
+            localStorageData.put(pressureSensorHandler.getSensorName(), pressureSensorHandler.getSensorData());
+            localStorageData.put(gravitySensorHandler.getSensorName(), gravitySensorHandler.getSensorData());
+            localStorageData.put(magnetometerHandler.getSensorName(), magnetometerHandler.getSensorData());
+            localStorageData.put(locationTracker.getSensorName(), locationTracker.getSensorData());
+            localStorageData.put(soundLevelHandler.getSensorName(), soundLevelHandler.getSensorData());
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         clearAllSensorData();
-        return allSensorData;
+        return new Pair<>(allSensorData, localStorageData);
     }
 
     private void addAllSensorData(JSONArray allSensorData, JSONArray sensorData) throws JSONException {
@@ -115,6 +131,5 @@ public class SensorManager {
         gravitySensorHandler.clearSensorData();
         locationTracker.clearSensorData();
         soundLevelHandler.clearSensorData();
-
     }
 }

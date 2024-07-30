@@ -22,22 +22,27 @@ import androidx.core.app.ServiceCompat;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import kotlin.Pair;
 import uk.ac.cam.cares.jps.sensor.database.SensorLocalSource;
+import uk.ac.cam.cares.jps.sensor.network.SensorNetworkSource;
 
 @AndroidEntryPoint
 public class SensorService extends Service {
 
-    @Inject SensorNetworkSource sensorNetworkSource;
+    @Inject
+    SensorNetworkSource sensorNetworkSource;
     @Inject SensorManager sensorManager;
     @Inject SensorLocalSource sensorLocalSource;
 
     private final int FOREGROUND_ID = 100;
     private final String CHANNEL_ID = "Sensors";
     private final int SENSOR_FRAGMENT_REQUEST_CODE = 100;
-    private static final long SEND_INTERVAL = 20000;
+    private static final long SEND_INTERVAL = 5000;
     private final Logger LOGGER = Logger.getLogger(SensorService.class);
     private HandlerThread thread;
 
@@ -64,13 +69,15 @@ public class SensorService extends Service {
         Runnable sendData = new Runnable() {
             @Override
             public void run() {
-                JSONArray allSensorData = sensorManager.collectSensorData();
+                Pair<JSONArray, Map<String, JSONArray>> pair = sensorManager.collectSensorData();
+                JSONArray allSensorData = pair.getFirst();
                 sensorNetworkSource.sendPostRequest(deviceId, allSensorData);
-//                sensorLocalSource.writeToDatabase();
+
+                Map<String, JSONArray> localData = pair.getSecond();
+                sensorLocalSource.writeToDatabase(localData);
                 handler.postDelayed(this, SEND_INTERVAL);
             }
         };
-//        sensorNetworkSource.initForService(new Handler(thread.getLooper()), deviceId);
 
         Notification notification = getNotification();
         int type = 0;
@@ -87,7 +94,6 @@ public class SensorService extends Service {
                 type
         );
 
-//        sensorNetworkSource.startDataCollection();
         sensorManager.startSensors();
         handler.post(sendData);
 
@@ -128,7 +134,6 @@ public class SensorService extends Service {
         LOGGER.info("Stopping sensor service");
         try {
             sensorManager.stopSensors();
-//            sensorNetworkSource.stopDataCollection();
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
             thread.quit();
 
