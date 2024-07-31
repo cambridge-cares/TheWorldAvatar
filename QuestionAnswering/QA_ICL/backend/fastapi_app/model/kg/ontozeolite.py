@@ -2,6 +2,7 @@ from enum import Enum
 import typing
 
 from pydantic import BaseModel, Field, create_model
+from rdflib import DCTERMS, FOAF
 from constants.namespace import OM2, ONTOCRYSTAL, ONTOZEOLITE
 from model.rdf_orm import RDFEntity, RDFField
 from services.rdf_orm import unpack_optional_type
@@ -389,3 +390,6 @@ class OntozeoliteZeoliteFrameworkPartial(OntozeoliteZeoliteFrameworkBase):
     ZeoliticMaterial: list[OntozeoliteZeoliticMaterialBase] | None = RDFField(
         path=ONTOZEOLITE.hasZeoliticMaterial, alias=ZEOLITIC_MATERIAL_KEY
     )
+
+class BiboJournal(RDFEntity):
+    title: str = RDFField(path=DCTERMS.title)

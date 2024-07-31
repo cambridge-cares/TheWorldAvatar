@@ -5,7 +5,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from constants.namespace import ONTOSPECIES
+from constants.namespace import ONTOSPECIES, PERIODICTABLE
 from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
 from model.kg.ontospecies import (
     GcAtom,

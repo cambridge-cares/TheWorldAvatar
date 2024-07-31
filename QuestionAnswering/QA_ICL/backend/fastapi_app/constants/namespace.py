@@ -12,7 +12,7 @@ CITYGML_CITYOBJECTGROUP = Namespace(
     "http://www.opengis.net/citygml/cityobjectgroup/2.0/"
 )
 FUNCTION_GEOSPARQL = Namespace("http://www.opengis.net/def/function/geosparql/")
-
+BIBO = Namespace("http://purl.org/ontology/bibo/")
 
 # TWA chemistry namespaces
 ONTOPROVENANCE = Namespace(

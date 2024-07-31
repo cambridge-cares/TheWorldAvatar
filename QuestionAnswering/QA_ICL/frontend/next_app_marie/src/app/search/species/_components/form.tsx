@@ -160,60 +160,57 @@ export function SpeciesForm({
         className={cn('w-full flex flex-col space-y-4', className)}
         {...props}
       >
-        <div>
-          <div className='font-semibold text-lg'>Chemical class and use</div>
-          <div className='grid lg:grid-cols-2 gap-x-8'>
-            <FormField
-              control={form.control}
-              name='chemicalClass'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Chemical class</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      itemCls='chemical class'
-                      items={chemicalClassOptions.map(({ IRI, label }) => ({
-                        value: IRI,
-                        label,
-                      }))}
-                      value={field.value}
-                      onCmdItemSelect={value =>
-                        value === field.value
-                          ? field.onChange('')
-                          : field.onChange(value)
-                      }
-                      closePopoverOnCmdItemSelect
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='use'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Use</FormLabel>
-                  <FormControl>
-                    <Combobox
-                      itemCls='use'
-                      items={useOptions.map(({ IRI, label }) => ({
-                        value: IRI,
-                        label,
-                      }))}
-                      value={field.value}
-                      onCmdItemSelect={value =>
-                        value === field.value
-                          ? field.onChange('')
-                          : field.onChange(value)
-                      }
-                      closePopoverOnCmdItemSelect
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
+        <div className='grid lg:grid-cols-2 gap-x-8'>
+          <FormField
+            control={form.control}
+            name='chemicalClass'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='font-semibold text-lg'>
+                  Chemical class
+                </FormLabel>
+                <FormControl>
+                  <Combobox
+                    itemCls='chemical class'
+                    items={chemicalClassOptions.map(({ IRI, label }) => ({
+                      value: IRI,
+                      label,
+                    }))}
+                    value={field.value}
+                    onCmdItemSelect={value =>
+                      value === field.value
+                        ? field.onChange('')
+                        : field.onChange(value)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='use'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='font-semibold text-lg'>Use</FormLabel>
+                <FormControl>
+                  <Combobox
+                    itemCls='use'
+                    items={useOptions.map(({ IRI, label }) => ({
+                      value: IRI,
+                      label,
+                    }))}
+                    value={field.value}
+                    onCmdItemSelect={value =>
+                      value === field.value
+                        ? field.onChange('')
+                        : field.onChange(value)
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         </div>
         <Collapsible
           open={isIdentifiersPanelOpen}

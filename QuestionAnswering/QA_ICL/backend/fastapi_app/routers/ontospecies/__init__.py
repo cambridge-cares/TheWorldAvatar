@@ -3,10 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from model.kg.ontospecies import (
-    OntospeciesChemicalClass,
-    OntospeciesUse,
-)
+from model.kg.ontospecies import OntospeciesChemicalClass, OntospeciesUse
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
     get_ontospecies_rdfStore,
