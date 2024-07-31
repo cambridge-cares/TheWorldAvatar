@@ -207,7 +207,7 @@ export function ZeoliteFrameworkForm({
         className={cn('w-full', className)}
         {...props}
       >
-        <div className='w-full mb-4 flex flex-col space-y-8'>
+        <div className='w-full flex flex-col space-y-8'>
           <FormField
             control={form.control}
             name='xrdPeaks'
@@ -457,7 +457,6 @@ export function ZeoliteFrameworkForm({
                         onCmdItemSelect={value =>
                           field.onChange(field.value === value ? '' : value)
                         }
-                        closePopoverOnCmdItemSelect
                       />
                     </FormControl>
                   </FormItem>
@@ -470,7 +469,7 @@ export function ZeoliteFrameworkForm({
           type='button'
           variant='secondary'
           onClick={() => form.reset()}
-          className='w-full mb-2'
+          className='w-full mt-4 mb-2'
         >
           Reset fields
         </Button>

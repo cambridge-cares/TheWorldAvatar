@@ -100,3 +100,8 @@ export interface Species extends SpeciesBase {
   Identifier: { [key in SpeciesIdentifierKey]: OntospeciesIdentifier[] }
   Property: { [key in SpeciesPropertyKey]: OntospeciesProperty[] }
 }
+
+export interface PtElement extends RDFEntity {
+  symbol: string
+  name: string
+}

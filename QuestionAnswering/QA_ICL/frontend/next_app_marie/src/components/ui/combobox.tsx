@@ -20,7 +20,6 @@ export interface ComboboxProps extends React.HTMLAttributes<HTMLDivElement> {
   items: { value: string; label: string }[]
   value: string | string[]
   onCmdItemSelect: (value: string) => void
-  closePopoverOnCmdItemSelect?: boolean
 }
 
 export function Combobox({
@@ -28,15 +27,9 @@ export function Combobox({
   value,
   onCmdItemSelect,
   items,
-  closePopoverOnCmdItemSelect,
   className,
   ...props
 }: ComboboxProps) {
-  const resolvedClosePopoverOnCmdItemSelect =
-    typeof closePopoverOnCmdItemSelect === 'undefined'
-      ? false
-      : closePopoverOnCmdItemSelect
-
   const [open, setOpen] = React.useState(false)
   const value2label = React.useMemo(
     () => Object.fromEntries(items.map(({ value, label }) => [value, label])),
@@ -64,11 +57,7 @@ export function Combobox({
             className='w-full justify-between truncate'
           >
             {value.length === 0 ? (
-              itemCls ? (
-                `Select ${itemCls}...`
-              ) : (
-                'Select...'
-              )
+              'Select...'
             ) : typeof value === 'string' ? (
               value2label[value]
             ) : (
@@ -99,7 +88,7 @@ export function Combobox({
                     value={itemValue}
                     onSelect={val => {
                       onCmdItemSelect(val)
-                      if (resolvedClosePopoverOnCmdItemSelect) setOpen(false)
+                      if (typeof value === 'string') setOpen(false)
                     }}
                     className='hover:cursor-pointer'
                   >

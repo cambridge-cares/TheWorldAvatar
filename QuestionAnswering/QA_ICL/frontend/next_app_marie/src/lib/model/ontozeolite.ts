@@ -233,3 +233,7 @@ export interface ZeoliteFrameworkPartial extends ZeoliteFrameworkBase {
   TopologicalProperties: Partial<TopologicalProperties>
   ZeoliticMaterial?: ZeoliteFrameworkBase[]
 }
+
+export interface Journal extends RDFEntity {
+  title: string
+}

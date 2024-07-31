@@ -3,6 +3,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
+from constants.namespace import BIBO
+from model.kg.ontospecies import OntospeciesSpeciesBase, PeriodictableElement
+from model.kg.ontozeolite import BiboJournal
+from services.rdf_stores.ontospecies import (
+    OntospeciesRDFStore,
+    get_ontospecies_rdfStore,
+)
 from services.rdf_stores.ontozeolite import (
     OntozeoliteRDFStore,
     get_ontozeolite_rdfStore,
@@ -35,6 +42,59 @@ async def get_sbu_all(
     ontozeolite_store: Annotated[OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)]
 ):
     return ontozeolite_store.get_sbu_all()
+
+
+@router.get(
+    "/framework-components",
+    summary="Get all elements that serve as framework components",
+    response_model=list[PeriodictableElement],
+)
+async def get_framework_components_all(
+    ontozeolite_store: Annotated[
+        OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
+    ],
+    ontospecies_store: Annotated[
+        OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
+    ],
+):
+    query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+SELECT DISTINCT ?o
+WHERE {{
+    ?s zeo:hasFrameworkComponent ?o .
+}}"""
+    _, bindings = ontozeolite_store.sparql_client.querySelectThenFlatten(query)
+    iris = [binding["o"] for binding in bindings]
+    return [x for x in ontospecies_store.get_elements_many(iris) if x]
+
+
+@router.get(
+    "/guest-components",
+    summary="Get all species that serve as guest components",
+    response_model=list[OntospeciesSpeciesBase],
+)
+async def get_guest_components_all(
+    ontozeolite_store: Annotated[
+        OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
+    ],
+    ontospecies_store: Annotated[
+        OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
+    ],
+):
+    query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+SELECT DISTINCT ?o
+WHERE {{
+    ?s zeo:hasGuestComponent ?o .
+}}"""
+    _, bindings = ontozeolite_store.sparql_client.querySelectThenFlatten(query)
+    iris = [binding["o"] for binding in bindings]
+    return [x for x in ontospecies_store.get_species_base_many(iris) if x]
+
+
+@router.get("/journals", summary="Get all journals", response_model=list[BiboJournal])
+async def get_journals_all(
+    ontozeolite_store: Annotated[OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)]
+):
+    return ontozeolite_store.get_all(T=BiboJournal, type_iri=BIBO.Journal)
 
 
 router.include_router(zeolite_frameworks_router, prefix="/zeolite-frameworks")
