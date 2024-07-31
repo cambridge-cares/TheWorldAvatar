@@ -1,4 +1,3 @@
-import { url } from 'inspector'
 import { BACKEND_ENDPOINT, getJson } from '.'
 import {
   Journal,

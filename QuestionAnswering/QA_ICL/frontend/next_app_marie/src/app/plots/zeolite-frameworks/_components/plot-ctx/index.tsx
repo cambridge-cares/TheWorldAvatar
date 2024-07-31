@@ -4,12 +4,9 @@ import * as React from 'react'
 
 import { RETURN_FIELD_KEY } from '@/lib/model/ontospecies'
 import { Combobox } from '@/components/ui/combobox'
-import {
-  TiledStructure,
-  ZeoliteFrameworkPartial,
-} from '@/lib/model/ontozeolite'
+import { ZeoliteFrameworkPartial } from '@/lib/model/ontozeolite'
 import { ScatterPlot, ScatterPlotDataPoint } from '@/components/ui/plot'
-import { ZeoliteFrameworkPlotAttrKey } from './model'
+import { ZeoFrameworkPlotAttrKey } from './model'
 import {
   ZEOFRAMEWORK_PLOT_ATTR_LABELS,
   ZEOFRAMEWORK_PLOT_ATTR_QUERY_KEYS,
@@ -18,11 +15,11 @@ import { getZeoliteFrameworksPartialMany } from '@/lib/api/ontozeolite'
 import { getZeoliteFrameworkAttrValue } from './helpers'
 
 export const ZeolitePropertiesPlotCtx = () => {
-  const [xProp, setXProp] = React.useState<ZeoliteFrameworkPlotAttrKey>(
-    ZeoliteFrameworkPlotAttrKey.INCLUDED_SPHERE_DIAMETER
+  const [xProp, setXProp] = React.useState<ZeoFrameworkPlotAttrKey>(
+    ZeoFrameworkPlotAttrKey.INCLUDED_SPHERE_DIAMETER
   )
-  const [yProp, setYProp] = React.useState<ZeoliteFrameworkPlotAttrKey>(
-    ZeoliteFrameworkPlotAttrKey.TD10
+  const [yProp, setYProp] = React.useState<ZeoFrameworkPlotAttrKey>(
+    ZeoFrameworkPlotAttrKey.TD10
   )
 
   const [data, setData] = React.useState<ZeoliteFrameworkPartial[] | undefined>(
@@ -89,7 +86,6 @@ export const ZeolitePropertiesPlotCtx = () => {
             )}
             value={xProp.toString()}
             onCmdItemSelect={value => setXProp(Number(value))}
-            closePopoverOnCmdItemSelect
           />
         </div>
         <div>
@@ -104,7 +100,6 @@ export const ZeolitePropertiesPlotCtx = () => {
             )}
             value={yProp.toString()}
             onCmdItemSelect={value => setYProp(Number(value))}
-            closePopoverOnCmdItemSelect
             className='col-span-3'
           />
         </div>

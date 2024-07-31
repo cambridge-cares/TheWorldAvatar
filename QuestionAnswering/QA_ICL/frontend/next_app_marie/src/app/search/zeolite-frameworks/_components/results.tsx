@@ -24,6 +24,6 @@ const COLS = [
   COL_HELPER.accessor('code', { header: 'Code' }),
 ]
 
-export const ZeoliteFrameworkResults = () => (
+export const ZeoFrameworkResults = () => (
   <SearchResults dataGetter={getZeoliteFrameworksMany} columns={COLS} />
 )
