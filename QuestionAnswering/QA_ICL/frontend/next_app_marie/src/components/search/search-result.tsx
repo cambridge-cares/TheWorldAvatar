@@ -1,20 +1,22 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { useSearchParams } from "next/navigation"
+import * as React from 'react'
+import { useSearchParams } from 'next/navigation'
 
-import { DataTable } from "@/components/ui/data-table"
-import { ColumnDef } from "@tanstack/react-table"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-
+import { DataTable } from '@/components/ui/data-table'
+import { ColumnDef } from '@tanstack/react-table'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export interface LinkButtonToIRIPageProps {
   IRI: string
   prefixPath: string
 }
 
-export const LinkButtonToIRIPage = ({ IRI, prefixPath }: LinkButtonToIRIPageProps) => (
+export const LinkButtonToIRIPage = ({
+  IRI,
+  prefixPath,
+}: LinkButtonToIRIPageProps) => (
   <Link
     href={`${prefixPath}/${encodeURIComponent(IRI)}`}
     className='hover:underline'
@@ -23,19 +25,19 @@ export const LinkButtonToIRIPage = ({ IRI, prefixPath }: LinkButtonToIRIPageProp
   </Link>
 )
 
-
 export interface SearchResultProps<T> {
   dataGetter: (searchParams: URLSearchParams) => Promise<T[]>
   columns: ColumnDef<T, any>[]
 }
 
-export function SearchResults<T>({ dataGetter, columns }: SearchResultProps<T>) {
+export function SearchResults<T>({
+  dataGetter,
+  columns,
+}: SearchResultProps<T>) {
   const searchParams = useSearchParams()
 
   const [isLoading, setIsLoading] = React.useState(false)
-  const [data, setData] = React.useState<T[] | undefined>(
-    undefined
-  )
+  const [data, setData] = React.useState<T[] | undefined>(undefined)
 
   React.useEffect(() => {
     async function retrieveData() {

@@ -16,79 +16,22 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MinusCircledIcon, PlusCircledIcon } from '@radix-ui/react-icons'
-import { cn, extractLowerUpperParams, isObjectEmtpy } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import {
-  OTopoPropKey,
   OUnitCellAngleKey,
   OUnitCellLengthKey,
-  SCALAR_TOPO_PROP_KEYS,
   TOPO_PROP_UNITS,
-  UNIT_CELL_KEY_PREFIX,
-  XRD_PEAK_KEY,
 } from '@/lib/model/ontozeolite'
 import { MinMaxInput } from '@/components/ui/min-max-input'
 import { Combobox } from '@/components/ui/combobox'
-
-export const ZEOLITE_FRAMEWORK_FORM_SCHEMA = z.object({
-  xrdPeaks: z.array(
-    z.object({
-      position: z.string(),
-      width: z.string(),
-      threshold: z.string(),
-    })
-  ),
-  unitCell: z.object({
-    lengths: z.object(
-      Object.fromEntries(
-        Object.values(OUnitCellLengthKey).map(key => [
-          key,
-          z.object({ lower: z.string(), upper: z.string() }),
-        ])
-      )
-    ),
-    angles: z.object(
-      Object.fromEntries(
-        Object.values(OUnitCellAngleKey).map(key => [
-          key,
-          z.object({ lower: z.string(), upper: z.string() }),
-        ])
-      )
-    ),
-  }),
-  scalarTopoProps: z.object(
-    Object.fromEntries(
-      SCALAR_TOPO_PROP_KEYS.map(key => [
-        key,
-        z.object({ lower: z.string(), upper: z.string() }),
-      ])
-    )
-  ),
-  compositeBUs: z.array(z.string()),
-  secondaryBU: z.string(),
-})
-
-const FORM_INIT_VALUES = {
-  xrdPeaks: [{ position: '', width: '', threshold: '' }],
-  unitCell: {
-    lengths: Object.fromEntries(
-      Object.values(OUnitCellLengthKey).map(key => [
-        key,
-        { lower: '', upper: '' },
-      ])
-    ),
-    angles: Object.fromEntries(
-      Object.values(OUnitCellAngleKey).map(key => [
-        key,
-        { lower: '', upper: '' },
-      ])
-    ),
-  },
-  scalarTopoProps: Object.fromEntries(
-    SCALAR_TOPO_PROP_KEYS.map(key => [key, { lower: '', upper: '' }])
-  ),
-  compositeBUs: [''],
-  secondaryBU: '',
-}
+import {
+  ZEOFRAMEWORK_FORM_INIT_VALUES,
+  ZEOFRAMEWORK_FORM_SCHEMA,
+} from './model'
+import {
+  convertZeoFrameworkFormToSearchParams,
+  populateZeoFrameworkFormFields,
+} from './utils'
 
 export interface ZeoliteFrameworkFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
@@ -106,97 +49,17 @@ export function ZeoliteFrameworkForm({
   const pathname = usePathname()
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof ZEOLITE_FRAMEWORK_FORM_SCHEMA>>({
-    resolver: zodResolver(ZEOLITE_FRAMEWORK_FORM_SCHEMA),
-    defaultValues: FORM_INIT_VALUES,
+  const form = useForm<z.infer<typeof ZEOFRAMEWORK_FORM_SCHEMA>>({
+    resolver: zodResolver(ZEOFRAMEWORK_FORM_SCHEMA),
+    defaultValues: ZEOFRAMEWORK_FORM_INIT_VALUES,
   })
 
   React.useEffect(() => {
-    const xrdPeaks = searchParams
-      .getAll(XRD_PEAK_KEY)
-      .map(serialized => JSON.parse(decodeURI(serialized)))
-      .map(peak => ({
-        position: peak.position || '',
-        width: peak.width || '',
-        threshold: peak.threshold || '',
-      }))
-    if (xrdPeaks.length > 0) form.setValue('xrdPeaks', xrdPeaks)
-
-    const unitCellLengths = extractLowerUpperParams(
-      searchParams,
-      Object.values(OUnitCellLengthKey),
-      UNIT_CELL_KEY_PREFIX
-    )
-    const unitCellAngles = extractLowerUpperParams(
-      searchParams,
-      Object.values(OUnitCellAngleKey),
-      UNIT_CELL_KEY_PREFIX
-    )
-    form.setValue('unitCell', {
-      lengths: unitCellLengths,
-      angles: unitCellAngles,
-    })
-
-    const scalarTopoProps = extractLowerUpperParams(
-      searchParams,
-      SCALAR_TOPO_PROP_KEYS
-    )
-    form.setValue('scalarTopoProps', scalarTopoProps)
-
-    const compositeBUs = searchParams.getAll(OTopoPropKey.COMPOSITE_BU)
-    if (compositeBUs.length > 0) form.setValue('compositeBUs', compositeBUs)
-
-    const secondaryBU = searchParams.get(OTopoPropKey.SECONDARY_BU)
-    if (secondaryBU) form.setValue('secondaryBU', secondaryBU)
+    populateZeoFrameworkFormFields(form, searchParams)
   }, [form, searchParams])
 
-  function onSubmit(values: z.infer<typeof ZEOLITE_FRAMEWORK_FORM_SCHEMA>) {
-    const xrdPeakParams = values.xrdPeaks
-      .map(peak =>
-        Object.fromEntries(Object.entries(peak).filter(([_, v]) => v))
-      )
-      .filter(x => !isObjectEmtpy(x))
-      .map(x => encodeURI(JSON.stringify(x)))
-      .map(peak => [XRD_PEAK_KEY, peak] as [string, string])
-    const unitCellParams = Object.values(values.unitCell).flatMap(params =>
-      Object.entries(params).flatMap(([key, { lower, upper }]) =>
-        [
-          ['gte', lower],
-          ['lte', upper],
-        ]
-          .filter(([_, val]) => val.length > 0)
-          .map(
-            ([op, val]) =>
-              [UNIT_CELL_KEY_PREFIX + key, `${op}:${val}`] as [string, string]
-          )
-      )
-    )
-    const scalarTopoPropsParams = Object.entries(
-      values.scalarTopoProps
-    ).flatMap(([key, { lower, upper }]) =>
-      [
-        ['gte', lower],
-        ['lte', upper],
-      ]
-        .filter(([_, val]) => val.length > 0)
-        .map(([op, val]) => [key, `${op}:${val}`] as [string, string])
-    )
-    const CBUsParams = values.compositeBUs
-      .filter(x => x)
-      .map(x => [OTopoPropKey.COMPOSITE_BU, x] as [string, string])
-    const SBUParam = values.secondaryBU
-      ? ([OTopoPropKey.SECONDARY_BU, values.secondaryBU] as [string, string])
-      : undefined
-
-    const queryParams = new URLSearchParams(
-      [
-        ...xrdPeakParams,
-        ...unitCellParams,
-        ...scalarTopoPropsParams,
-        ...CBUsParams,
-        SBUParam,
-      ].filter(x => x !== undefined)
-    )
+  function onSubmit(values: z.infer<typeof ZEOFRAMEWORK_FORM_SCHEMA>) {
+    const queryParams = convertZeoFrameworkFormToSearchParams(values)
     router.push(`${pathname}?${queryParams}`)
   }
 
