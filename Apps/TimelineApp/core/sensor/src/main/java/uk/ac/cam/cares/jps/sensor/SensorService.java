@@ -28,15 +28,21 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import kotlin.Pair;
-import uk.ac.cam.cares.jps.sensor.database.SensorLocalSource;
-import uk.ac.cam.cares.jps.sensor.network.SensorNetworkSource;
+import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
+import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
 
+/**
+ * A foreground service that keeps sensor recording running even when the app is terminated by user or the system.
+ * Please refer {@link  <a href="https://developer.android.com/develop/background-work/services">Android Service Overview</a>} for more information
+ */
 @AndroidEntryPoint
 public class SensorService extends Service {
 
     @Inject
     SensorNetworkSource sensorNetworkSource;
-    @Inject SensorManager sensorManager;
+    @Inject
+    SensorManager sensorManager;
     @Inject SensorLocalSource sensorLocalSource;
 
     private final int FOREGROUND_ID = 100;
@@ -75,6 +81,8 @@ public class SensorService extends Service {
 
                 Map<String, JSONArray> localData = pair.getSecond();
                 sensorLocalSource.writeToDatabase(localData);
+
+                // delay the handler so request is sent and write every few seconds
                 handler.postDelayed(this, SEND_INTERVAL);
             }
         };
@@ -95,11 +103,16 @@ public class SensorService extends Service {
         );
 
         sensorManager.startSensors();
+        // run the sendData task on a separate thread
         handler.post(sendData);
 
         return START_STICKY;
     }
 
+    /**
+     * Create and configure notification to be shown when the service is running
+     * @return notification
+     */
     @NonNull
     private Notification getNotification() {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "SensorDataCollectionChannel", NotificationManager.IMPORTANCE_DEFAULT);
