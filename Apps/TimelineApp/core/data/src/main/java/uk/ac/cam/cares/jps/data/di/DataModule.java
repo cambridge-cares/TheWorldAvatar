@@ -9,8 +9,10 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import uk.ac.cam.cares.jps.data.DatesWithTrajectoryRepository;
 import uk.ac.cam.cares.jps.data.TrajectoryRepository;
 import uk.ac.cam.cares.jps.login.LoginRepository;
+import uk.ac.cam.cares.jps.network.DatesWithTrajectoryNetworkSource;
 import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
 
 @Module
@@ -22,5 +24,13 @@ public class DataModule {
                                                             LoginRepository loginRepository,
                                                             @ApplicationContext Context context) {
         return new TrajectoryRepository(trajectoryNetworkSource, loginRepository, context);
+    }
+
+    @Provides
+    @Singleton
+    public DatesWithTrajectoryRepository provideDatesWithTrajectoryRepository(DatesWithTrajectoryNetworkSource datesWithTrajectoryNetworkSource,
+                                                                              LoginRepository loginRepository,
+                                                                              @ApplicationContext Context context) {
+        return new DatesWithTrajectoryRepository(datesWithTrajectoryNetworkSource, loginRepository, context);
     }
 }

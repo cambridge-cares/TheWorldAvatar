@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.timeline.ui.datepicker;
+package uk.ac.cam.cares.jps.model;
 
 import java.util.Objects;
 

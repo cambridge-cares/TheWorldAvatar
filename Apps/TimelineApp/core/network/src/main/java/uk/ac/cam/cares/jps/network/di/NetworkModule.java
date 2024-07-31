@@ -11,6 +11,7 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import uk.ac.cam.cares.jps.network.DatesWithTrajectoryNetworkSource;
 import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
 
 @Module
@@ -20,5 +21,11 @@ public class NetworkModule {
     @Singleton
     public TrajectoryNetworkSource provideTrajectoryNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {
         return new TrajectoryNetworkSource(requestQueue, context);
+    }
+
+    @Provides
+    @Singleton
+    public DatesWithTrajectoryNetworkSource provideDatesWithTrajectoryNetworkSource(RequestQueue requestQueue, @ApplicationContext Context context) {
+        return new DatesWithTrajectoryNetworkSource(requestQueue, context);
     }
 }

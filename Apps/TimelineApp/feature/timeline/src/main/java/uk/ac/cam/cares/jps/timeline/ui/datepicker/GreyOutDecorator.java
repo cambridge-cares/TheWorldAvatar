@@ -15,10 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
+
 public class GreyOutDecorator extends DayViewDecorator {
     private ColorStateList greyColor;
     private ColorStateList normalColor;
-    private Map<YearMonthCompositeKey, List<Integer>> datesWithTrajectory;  // in local timezone
+    private Map<YearMonthCompositeKey, List<Integer>> datesWithTrajectory = new HashMap<>();  // in local timezone
 
     @Override
     public void initialize(@NonNull Context context) {
@@ -28,11 +30,6 @@ public class GreyOutDecorator extends DayViewDecorator {
 
         int normalTextColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnBackground, GreyOutDecorator.class.getSimpleName());
         normalColor = ColorStateList.valueOf(normalTextColor);
-
-        datesWithTrajectory = new HashMap<>();
-        datesWithTrajectory.put(new YearMonthCompositeKey(2024, 7), Arrays.asList(1, 5, 9, 10));
-        datesWithTrajectory.put(new YearMonthCompositeKey(2024, 1), Arrays.asList(2, 4, 9, 11));
-        datesWithTrajectory.put(new YearMonthCompositeKey(2024, 12), Arrays.asList(30, 11));
     }
 
     @Nullable
