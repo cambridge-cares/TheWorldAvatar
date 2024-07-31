@@ -28,8 +28,10 @@ from model.kg.ontozeolite import (
 from model.web.ontozeolite import (
     UnitCellAngleKey,
     UnitCellLengthKey,
+    UnitCellRequest,
     ZeoliteFrameworkReturnFields,
     ZeoliteFrameworkRequest,
+    ZeoliticMaterialRequest,
 )
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
@@ -51,27 +53,10 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
             "ocr:TiledStructure": self.get_tiled_structures_many,
         }
 
-    def get_zeolite_framework_IRIs(self, req: ZeoliteFrameworkRequest):
-        xrd_patterns = (
-            [
-                "?CrystalInfo ocr:hasXRDSpectrum ?Spectrum .",
-                *(
-                    triple
-                    for i, peak in enumerate(req.crystal_info.xrd_peak)
-                    for triple in (
-                        f"?Spectrum ocr:hasCharacteristicPeak ?Peak{i} .",
-                        f"?Peak{i} ocr:hasTwoThetaPosition ?TwoThetaPosition{i} ; ocr:hasRelativeIntensity ?Intensity{i} ."
-                        f"FILTER ( ?TwoThetaPosition{i} >= {peak.position - peak.width} && ?TwoThetaPosition{i} <= {peak.position + peak.width} && ?Intensity{i} > {peak.threshold} )",
-                    )
-                ),
-            ]
-            if req.crystal_info.xrd_peak
-            else []
-        )
-
+    def _make_unit_cell_patterns(self, req: UnitCellRequest):
         unit_cell_length_patterns = [
             pattern
-            for key, conds in req.crystal_info.unit_cell.items()
+            for key, conds in req.items()
             if isinstance(key, UnitCellLengthKey) and conds
             for pattern in (
                 f'?Lengths ocr:hasVectorComponent [ ocr:hasComponentLabel "{key.value}" ; ocr:hasComponentValue ?{key.value} ] .',
@@ -85,7 +70,7 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
         ]
         unit_cell_angle_patterns = [
             pattern
-            for key, conds in req.crystal_info.unit_cell.items()
+            for key, conds in req.items()
             if isinstance(key, UnitCellAngleKey) and conds
             for pattern in (
                 f'?Angles ocr:hasVectorComponent [ ocr:hasComponentLable "{key.value}" ; ocr:hasComponentValue ?{key.value} ] .',
@@ -97,7 +82,7 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
                 ),
             )
         ]
-        unit_cell_patterns = [
+        return [
             pattern
             for pattern in (
                 (
@@ -120,6 +105,26 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
             )
             if pattern
         ]
+
+    def get_zeolite_framework_IRIs(self, req: ZeoliteFrameworkRequest):
+        xrd_patterns = (
+            [
+                "?CrystalInfo ocr:hasXRDSpectrum ?Spectrum .",
+                *(
+                    triple
+                    for i, peak in enumerate(req.crystal_info.xrd_peak)
+                    for triple in (
+                        f"?Spectrum ocr:hasCharacteristicPeak ?Peak{i} .",
+                        f"?Peak{i} ocr:hasTwoThetaPosition ?TwoThetaPosition{i} ; ocr:hasRelativeIntensity ?Intensity{i} ."
+                        f"FILTER ( ?TwoThetaPosition{i} >= {peak.position - peak.width} && ?TwoThetaPosition{i} <= {peak.position + peak.width} && ?Intensity{i} > {peak.threshold} )",
+                    )
+                ),
+            ]
+            if req.crystal_info.xrd_peak
+            else []
+        )
+
+        unit_cell_patterns = self._make_unit_cell_patterns(req.crystal_info.unit_cell)
 
         scalar_topo_prop_patterns = [
             pattern
@@ -302,6 +307,74 @@ WHERE {{
 
     def get_zeolite_framework_one(self, iri: str):
         return self.get_one(OntozeoliteZeoliteFramework, iri)
+
+    def get_zeolitic_material_IRIs(self, req: ZeoliticMaterialRequest):
+        patterns: list[str] = [
+            x
+            for x in [
+                "?Material a zeo:ZeoliticMaterial .",
+                (
+                    f"?Material ^zeo:hasZeoliticMaterial <{req.framework}> ."
+                    if req.framework
+                    else None
+                ),
+                (f'?Material os:name "{req.name}" .' if req.name else None),
+                (
+                    f'?Material zeo:hasChemicalFormula "{req.formula}" .'
+                    if req.formula
+                    else None
+                ),
+                *(
+                    f"?Material zeo:hasFrameworkComponent <{iri}> ."
+                    for iri in req.framework_components
+                ),
+                *(
+                    f"?Material zeo:hasGuestComponent <{iri}> ."
+                    for iri in req.guest_components
+                ),
+                *(
+                    [
+                        "?Material ocr:hasCrystalInformation ?CrystalInfo .",
+                        *self._make_unit_cell_patterns(req.unit_cell),
+                    ]
+                    if req.unit_cell
+                    else []
+                ),
+                (
+                    f'?Material ocr:hasCitation/ocr:hasAuthor/foaf:family_name "{req.citation.author_family_name}" .'
+                    if req.citation.author_family_name
+                    else None
+                ),
+                (
+                    f"?Material ocr:hasCitation/dcterm:isPartOf/dcterm:issued {req.citation.year} ."
+                    if req.citation.year
+                    else None
+                ),
+                (
+                    f"?Material ocr:hasCitation/dcterm:isPartOf/dcterm:isPartOf <{req.citation.journal}> ."
+                    if req.citation.journal
+                    else None
+                ),
+                (
+                    f'?Material ocr:hasCitation/bibo:doi "{req.citation.doi}" .'
+                    if req.citation.doi
+                    else None
+                ),
+            ]
+            if x
+        ]
+        query = """PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+PREFIX bibo: <http://purl.org/ontology/bibo/>        
+
+SELECT ?Material
+WHERE {{
+    {patterns}
+}}""".format(
+            patterns="\n    ".join(patterns)
+        )
+        _, bindings = self.sparql_client.querySelectThenFlatten(query)
+        return [binding["Material"] for binding in bindings]
 
     def get_zeolitic_materials_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntozeoliteZeoliticMaterialBase, iris)

@@ -23,6 +23,7 @@ import {
   OUnitCellLengthKey,
   SCALAR_TOPO_PROP_KEYS,
   TOPO_PROP_UNITS,
+  UNIT_CELL_KEY_PREFIX,
   XRD_PEAK_KEY,
 } from '@/lib/model/ontozeolite'
 import { MinMaxInput } from '@/components/ui/min-max-input'
@@ -112,26 +113,24 @@ export function ZeoliteFrameworkForm({
 
   React.useEffect(() => {
     const xrdPeaks = searchParams
-      .getAll('xrdPeak')
+      .getAll(XRD_PEAK_KEY)
       .map(serialized => JSON.parse(decodeURI(serialized)))
       .map(peak => ({
         position: peak.position || '',
         width: peak.width || '',
         threshold: peak.threshold || '',
       }))
-    if (xrdPeaks.length > 0) {
-      form.setValue('xrdPeaks', xrdPeaks)
-    }
+    if (xrdPeaks.length > 0) form.setValue('xrdPeaks', xrdPeaks)
 
     const unitCellLengths = extractLowerUpperParams(
       searchParams,
       Object.values(OUnitCellLengthKey),
-      'unit-cell-'
+      UNIT_CELL_KEY_PREFIX
     )
     const unitCellAngles = extractLowerUpperParams(
       searchParams,
       Object.values(OUnitCellAngleKey),
-      'unit-cell-'
+      UNIT_CELL_KEY_PREFIX
     )
     form.setValue('unitCell', {
       lengths: unitCellLengths,
@@ -144,15 +143,11 @@ export function ZeoliteFrameworkForm({
     )
     form.setValue('scalarTopoProps', scalarTopoProps)
 
-    const compositeBUs = searchParams.getAll('composite-bu')
-    if (compositeBUs.length > 0) {
-      form.setValue('compositeBUs', compositeBUs)
-    }
+    const compositeBUs = searchParams.getAll(OTopoPropKey.COMPOSITE_BU)
+    if (compositeBUs.length > 0) form.setValue('compositeBUs', compositeBUs)
 
-    const secondaryBU = searchParams.get('secondary-bu')
-    if (secondaryBU) {
-      form.setValue('secondaryBU', secondaryBU)
-    }
+    const secondaryBU = searchParams.get(OTopoPropKey.SECONDARY_BU)
+    if (secondaryBU) form.setValue('secondaryBU', secondaryBU)
   }, [form, searchParams])
 
   function onSubmit(values: z.infer<typeof ZEOLITE_FRAMEWORK_FORM_SCHEMA>) {
@@ -170,7 +165,10 @@ export function ZeoliteFrameworkForm({
           ['lte', upper],
         ]
           .filter(([_, val]) => val.length > 0)
-          .map(([op, val]) => [key, `${op}:${val}`] as [string, string])
+          .map(
+            ([op, val]) =>
+              [UNIT_CELL_KEY_PREFIX + key, `${op}:${val}`] as [string, string]
+          )
       )
     )
     const scalarTopoPropsParams = Object.entries(
@@ -186,17 +184,19 @@ export function ZeoliteFrameworkForm({
     const CBUsParams = values.compositeBUs
       .filter(x => x)
       .map(x => [OTopoPropKey.COMPOSITE_BU, x] as [string, string])
-    const SBUParams = values.secondaryBU
-      ? [[OTopoPropKey.SECONDARY_BU, values.secondaryBU] as [string, string]]
-      : []
+    const SBUParam = values.secondaryBU
+      ? ([OTopoPropKey.SECONDARY_BU, values.secondaryBU] as [string, string])
+      : undefined
 
-    const queryParams = new URLSearchParams([
-      ...xrdPeakParams,
-      ...unitCellParams,
-      ...scalarTopoPropsParams,
-      ...CBUsParams,
-      ...SBUParams,
-    ])
+    const queryParams = new URLSearchParams(
+      [
+        ...xrdPeakParams,
+        ...unitCellParams,
+        ...scalarTopoPropsParams,
+        ...CBUsParams,
+        SBUParam,
+      ].filter(x => x !== undefined)
+    )
     router.push(`${pathname}?${queryParams}`)
   }
 

@@ -8,6 +8,7 @@ import {
 } from '@/lib/api/ontozeolite'
 import { Main } from '@/components/ui/main'
 import { ZeoliticMaterialForm } from './_components/form'
+import { ZeoliticMaterialResults } from './_components/results'
 
 export default async function ZeoliticMaterialsPage() {
   const [frameworks, framweorkComponents, guests, journals] = await Promise.all(
@@ -31,6 +32,9 @@ export default async function ZeoliticMaterialsPage() {
             guestOptions={guests}
             journalOptions={journals}
           />
+        </React.Suspense>
+        <React.Suspense>
+          <ZeoliticMaterialResults />
         </React.Suspense>
       </div>
     </Main>

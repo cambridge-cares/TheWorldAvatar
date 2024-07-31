@@ -1,5 +1,5 @@
 from typing import Annotated, get_args
-from fastapi import Query, Request
+from fastapi import Depends, Query, Request
 
 from model.kg.ontozeolite import (
     ZEOLITIC_MATERIAL_KEY,
@@ -11,6 +11,7 @@ from model.web.ontozeolite import (
     ScalarTopologicalPropertyKey,
     TopoPropsRequest,
     UnitCellKey,
+    UnitCellRequest,
     XRDPeakRequest,
     ZeoliteFrameworkRequest,
     ZeoliteFrameworkReturnFields,
@@ -25,8 +26,17 @@ UNIT_CELL_QUERY_KEYS = {
 XRD_PEAK_QUERY_KEY = "XRDPeak"
 
 
+async def parse_unit_cell_request(req: Request):
+    return {
+        py_key: [parse_rhs_colon(val) for val in req.query_params.getlist(query_key)]
+        for query_key, py_key in UNIT_CELL_QUERY_KEYS.items()
+        if query_key in req.query_params
+    }
+
+
 async def parse_zeolite_framework_request(
     req: Request,
+    unit_cell: Annotated[UnitCellRequest, Depends(parse_unit_cell_request)],
     xrd_peak: Annotated[
         list[str],
         Query(
@@ -45,13 +55,7 @@ async def parse_zeolite_framework_request(
     return ZeoliteFrameworkRequest(
         crystal_info=CrystalInfoRequest(
             xrd_peak=[XRDPeakRequest.model_validate_json(x) for x in xrd_peak],
-            unit_cell={
-                py_key: [
-                    parse_rhs_colon(val) for val in req.query_params.getlist(query_key)
-                ]
-                for query_key, py_key in UNIT_CELL_QUERY_KEYS.items()
-                if query_key in req.query_params
-            },
+            unit_cell=unit_cell,
         ),
         topo_props=TopoPropsRequest(
             scalars={

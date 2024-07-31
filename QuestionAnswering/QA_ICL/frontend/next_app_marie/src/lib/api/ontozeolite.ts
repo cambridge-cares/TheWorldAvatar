@@ -5,6 +5,7 @@ import {
   ZeoliteFramework,
   ZeoliteFrameworkBase,
   ZeoliteFrameworkPartial,
+  ZeoliticMaterialBase,
 } from '@/lib/model/ontozeolite'
 import { PtElement, SpeciesBase } from '../model/ontospecies'
 
@@ -72,6 +73,16 @@ export function getZeoliteFrameworksMany(searchParams?: URLSearchParams) {
 export function getZeoliteFrameworkOne(iriEncoded: string) {
   return getJson<ZeoliteFramework>(
     `${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}`
+  )
+}
+
+const GET_ZEOLITIC_MATERIALS_ENDPOINT = new URL(
+  './ontozeolite/zeolitic-materials',
+  BACKEND_ENDPOINT
+)
+export function getZeoliticMaterialsMany(searchParams: URLSearchParams) {
+  return getJson<ZeoliticMaterialBase[]>(
+    `${GET_ZEOLITIC_MATERIALS_ENDPOINT}?${searchParams}`
   )
 }
 
