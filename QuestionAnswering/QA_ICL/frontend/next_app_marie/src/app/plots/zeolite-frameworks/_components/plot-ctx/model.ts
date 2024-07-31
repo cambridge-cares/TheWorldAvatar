@@ -1,4 +1,4 @@
-export enum ZeoliteFrameworkPlotAttrKey {
+export enum ZeoFrameworkPlotAttrKey {
   TD,
   TD10,
   FRAMEWORK_DENSITY,

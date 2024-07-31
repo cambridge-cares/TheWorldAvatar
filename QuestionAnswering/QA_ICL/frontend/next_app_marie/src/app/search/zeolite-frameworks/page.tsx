@@ -2,10 +2,10 @@ import * as React from 'react'
 
 import { getCBUs, getSBUs } from '@/lib/api/ontozeolite'
 import { Main } from '@/components/ui/main'
-import { ZeoliteFrameworkForm } from './_components/form'
-import { ZeoliteFrameworkResults } from './_components/results'
+import { ZeoFrameworkForm } from './_components/form'
+import { ZeoFrameworkResults } from './_components/results'
 
-export default async function ZeoliteFrameworksPage() {
+export default async function ZeoFrameworkSearchPage() {
   const [allCBUs, allSBUs] = await Promise.all([getCBUs(), getSBUs()])
 
   return (
@@ -13,14 +13,14 @@ export default async function ZeoliteFrameworksPage() {
       <div className='w-full mt-8 px-4 mb-12 md:max-w-screen-md lg:max-w-screen-lg'>
         <h1 className='mb-4'>Zeolite framework search</h1>
         <React.Suspense>
-          <ZeoliteFrameworkForm
+          <ZeoFrameworkForm
             CBUOptions={allCBUs}
             SBUOptions={allSBUs}
             className='mb-12'
           />
         </React.Suspense>
         <React.Suspense>
-          <ZeoliteFrameworkResults />
+          <ZeoFrameworkResults />
         </React.Suspense>
       </div>
     </Main>

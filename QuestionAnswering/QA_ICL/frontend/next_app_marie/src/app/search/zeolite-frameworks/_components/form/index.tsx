@@ -33,18 +33,18 @@ import {
   populateZeoFrameworkFormFields,
 } from './utils'
 
-export interface ZeoliteFrameworkFormProps
+export interface ZeoFrameworkFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
   CBUOptions: string[]
   SBUOptions: string[]
 }
 
-export function ZeoliteFrameworkForm({
+export function ZeoFrameworkForm({
   CBUOptions,
   SBUOptions,
   className,
   ...props
-}: ZeoliteFrameworkFormProps) {
+}: ZeoFrameworkFormProps) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const router = useRouter()

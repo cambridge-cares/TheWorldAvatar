@@ -65,8 +65,8 @@ const UPPER_SIDEBAR_ITEMS = [
       },
       {
         href: '/search/zeolitic-materials',
-        label: 'Zeolitic material'
-      }
+        label: 'Zeolitic material',
+      },
     ],
   },
   {
