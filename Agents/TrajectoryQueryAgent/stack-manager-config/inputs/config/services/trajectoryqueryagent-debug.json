@@ -3,7 +3,7 @@
       "Name": "trajectoryqueryagent",
       "TaskTemplate": {
         "ContainerSpec": {
-          "Image": "trajectoryqueryagent:1.0.1",
+          "Image": "trajectoryqueryagent:1.0.2",
           "Env": [
             "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
           ],  

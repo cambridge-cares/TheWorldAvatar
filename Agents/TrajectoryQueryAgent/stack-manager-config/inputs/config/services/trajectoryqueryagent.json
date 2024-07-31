@@ -3,7 +3,7 @@
     "Name": "trajectoryqueryagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:1.0.1",
+        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:1.0.2",
         "Configs": [
           {
             "ConfigName": "blazegraph"
