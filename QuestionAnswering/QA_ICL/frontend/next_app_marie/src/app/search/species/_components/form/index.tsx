@@ -29,6 +29,11 @@ import { capitalize, cn, extractLowerUpperParams } from '@/lib/utils'
 import { Collapsible, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CollapsibleContent } from '@radix-ui/react-collapsible'
 import { MinMaxInput } from '@/components/ui/min-max-input'
+import { SPECIES_FORM_INIT_VALUES, SPECIES_FORM_SCHEMA } from './model'
+import {
+  convertSpeciesFormToSearchParams,
+  populateSpeciesFormFields,
+} from './utils'
 
 const SPECIES_IDENTIFIER_KEY_LABELS = {
   [OSpeciesIdentifierKey.CID]: 'CID',
@@ -38,38 +43,6 @@ const SPECIES_IDENTIFIER_KEY_LABELS = {
   [OSpeciesIdentifierKey.INCHI_KEY]: 'InChIKey',
   [OSpeciesIdentifierKey.MOLECULAR_FORMULA]: 'molecular formula',
   [OSpeciesIdentifierKey.SMILES]: 'SMILES string',
-}
-
-export const SPECIES_FORM_SCHEMA = z.object({
-  chemicalClass: z.string(),
-  use: z.string(),
-  property: z.object(
-    Object.fromEntries(
-      Object.values(OSpeciesPropertyKey).map(key => [
-        key,
-        z.object({ lower: z.string(), upper: z.string() }),
-      ])
-    )
-  ),
-  identifier: z.object(
-    Object.fromEntries(
-      Object.values(OSpeciesIdentifierKey).map(key => [key, z.string()])
-    )
-  ),
-})
-
-const FORM_INIT_VALUES = {
-  chemicalClass: '',
-  use: '',
-  property: Object.fromEntries(
-    Object.values(OSpeciesPropertyKey).map(key => [
-      key,
-      { lower: '', upper: '' },
-    ])
-  ),
-  identifier: Object.fromEntries(
-    Object.values(OSpeciesIdentifierKey).map(key => [key, ''])
-  ),
 }
 
 export interface SpeciesFormProps
@@ -95,59 +68,15 @@ export function SpeciesForm({
 
   const form = useForm<z.infer<typeof SPECIES_FORM_SCHEMA>>({
     resolver: zodResolver(SPECIES_FORM_SCHEMA),
-    defaultValues: FORM_INIT_VALUES,
+    defaultValues: SPECIES_FORM_INIT_VALUES,
   })
 
   React.useEffect(() => {
-    const chemicalClass = searchParams.get(CHEMICAL_CLASS_KEY)
-    if (chemicalClass) {
-      form.setValue('chemicalClass', chemicalClass)
-    }
-
-    const use = searchParams.get(USE_KEY)
-    if (use) {
-      form.setValue('use', use)
-    }
-
-    const identifier = Object.fromEntries(
-      Object.values(OSpeciesIdentifierKey).map(key => [
-        key,
-        searchParams.get(key) || '',
-      ])
-    )
-    form.setValue('identifier', identifier)
-
-    const property = extractLowerUpperParams(
-      searchParams,
-      Object.values(OSpeciesPropertyKey)
-    )
-    form.setValue('property', property)
+    populateSpeciesFormFields(form, searchParams)
   }, [form, searchParams])
 
   function onSubmit(values: z.infer<typeof SPECIES_FORM_SCHEMA>) {
-    const propertyParams = Object.entries(values.property).flatMap(
-      ([key, { lower, upper }]) =>
-        [
-          ['gte', lower],
-          ['lte', upper],
-        ]
-          .filter(([_, val]) => val.length > 0)
-          .map(([op, val]) => [key, `${op}:${val}`] as [string, string])
-    )
-    const identifierParams = Object.entries(values.identifier).filter(
-      ([_, value]) => value.length > 0
-    )
-
-    const queryParams = new URLSearchParams(
-      [
-        values.chemicalClass
-          ? [CHEMICAL_CLASS_KEY, encodeURI(values.chemicalClass)]
-          : undefined,
-        values.use ? [USE_KEY, encodeURI(values.use)] : undefined,
-        ...propertyParams,
-        ...identifierParams,
-      ].filter(x => x !== undefined)
-    )
+    const queryParams = convertSpeciesFormToSearchParams(values)
     router.push(`${pathname}?${queryParams}`)
   }
 

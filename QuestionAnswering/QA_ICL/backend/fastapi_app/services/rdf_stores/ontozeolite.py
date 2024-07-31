@@ -363,9 +363,10 @@ WHERE {{
             ]
             if x
         ]
-        query = """PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+        query = """PREFIX dcterm: <http://purl.org/dc/terms/>
+PREFIX bibo: <http://purl.org/ontology/bibo/>
+PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
 PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
-PREFIX bibo: <http://purl.org/ontology/bibo/>        
 
 SELECT ?Material
 WHERE {{

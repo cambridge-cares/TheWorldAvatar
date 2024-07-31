@@ -63,6 +63,10 @@ const UPPER_SIDEBAR_ITEMS = [
         href: '/search/zeolite-frameworks',
         label: 'Zeolite framework',
       },
+      {
+        href: '/search/zeolitic-materials',
+        label: 'Zeolitic material'
+      }
     ],
   },
   {
