@@ -1,11 +1,24 @@
-from fastapi import FastAPI
+import logging
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from routers import qa, html, chat, ontospecies, ontozeolite
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
 
+
+async def catch_exceptions_middleware(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as e:
+        logger.error(e)
+        return Response("Internal server error", status_code=500)
+
+
+app.middleware("http")(catch_exceptions_middleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

@@ -11,12 +11,15 @@ import {
   ExampleQuestionGroup,
 } from './example-question-tabs'
 import { QAResponseDiv } from './qa-response-div'
+import { InternalServerError } from '@/lib/api'
+import { useToast } from '@/components/ui/use-toast'
 
 export interface QAFragmentProps {
   exampleQuestionGroups: ExampleQuestionGroup[]
 }
 
 export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
+  const { toast } = useToast()
   const nlpFormRef = React.useRef<null | HTMLFormElement>(null)
 
   const [question, setQuestion] = React.useState('')
@@ -47,6 +50,16 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
       const textStream = await textStreamPromise
       setChatStream(textStream)
     } catch (err) {
+      if (err instanceof Error)
+        toast({
+          variant: 'destructive',
+          title: err.constructor.name,
+          description:
+            err instanceof InternalServerError
+              ? 'Please try again'
+              : err.message,
+        })
+      else console.log('Unexpected error: ', err)
     } finally {
       setIsProcessing(false)
     }
