@@ -16,6 +16,7 @@ from services.rdf_stores.ontozeolite import (
 )
 from .zeolite_frameworks import router as zeolite_frameworks_router
 from .zeolite_frameworks_partial import router as zeolite_frameworks_partial_router
+from .zeolitic_materials import router as zeolitic_materials_router
 
 logger = logging.getLogger(__name__)
 
@@ -101,3 +102,4 @@ router.include_router(zeolite_frameworks_router, prefix="/zeolite-frameworks")
 router.include_router(
     zeolite_frameworks_partial_router, prefix="/zeolite-frameworks-partial"
 )
+router.include_router(zeolitic_materials_router, prefix="/zeolitic-materials")

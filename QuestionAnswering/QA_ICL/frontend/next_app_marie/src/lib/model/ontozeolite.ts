@@ -135,6 +135,7 @@ export interface TileNum {
 }
 
 export const XRD_PEAK_KEY = 'XRDPeak'
+export const UNIT_CELL_KEY_PREFIX = 'UnitCell-'
 
 export interface XRDPeak {
   RelativeIntensity: number

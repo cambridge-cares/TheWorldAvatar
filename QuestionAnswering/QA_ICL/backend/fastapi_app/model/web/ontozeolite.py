@@ -42,10 +42,12 @@ ScalarTopologicalPropertyKey = Literal[
     TopologicalPropertyKey.FRAMEWORK_DENSITY,
 ]
 
+UnitCellRequest = dict[UnitCellKey, list[tuple[ComparisonOperator, float]]]
+
 
 class CrystalInfoRequest(BaseModel):
     xrd_peak: list[XRDPeakRequest]
-    unit_cell: dict[UnitCellKey, list[tuple[ComparisonOperator, float]]]
+    unit_cell: UnitCellRequest
 
 
 class TopoPropsRequest(BaseModel):
@@ -63,3 +65,20 @@ class ZeoliteFrameworkReturnFields(BaseModel):
 class ZeoliteFrameworkRequest(BaseModel):
     crystal_info: CrystalInfoRequest
     topo_props: TopoPropsRequest
+
+
+class CitationRequest(BaseModel):
+    author_family_name: str | None
+    year: int | None
+    journal: str | None
+    doi: str | None
+
+
+class ZeoliticMaterialRequest(BaseModel):
+    framework: str | None
+    name: str | None
+    formula: str | None
+    framework_components: list[str]
+    guest_components: list[str]
+    unit_cell: UnitCellRequest
+    citation: CitationRequest
