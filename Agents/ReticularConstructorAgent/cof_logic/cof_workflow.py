@@ -33,7 +33,7 @@ class COFProcessor:
         Reads in the filtered COFs and precursor data from CSV files and stores them for later use.
         """
         # Define paths to the CSV files containing COF and precursor data
-        filtered_cofs_path = os.path.join(self.script_location, 'Data', 'csv', '31052024_subset.csv')
+        filtered_cofs_path = os.path.join(self.script_location, 'Data', 'csv', '21072024.csv')
         precursors_inp_path = os.path.join(self.script_location, 'Data', 'csv', 'Precursors_inp.csv')
         linkage_inp_path = os.path.join(self.script_location, 'Data', 'csv', 'Linkages_inp.csv')
         dftb_cofs_path = os.path.join(self.script_location, 'Data', 'DFTB')
