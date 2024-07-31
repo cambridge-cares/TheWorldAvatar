@@ -15,6 +15,7 @@ import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.LayerPosition;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.Style;
+import com.mapbox.maps.StyleObjectInfo;
 import com.mapbox.maps.plugin.animation.MapAnimationOptions;
 
 import org.apache.log4j.Logger;
@@ -22,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
@@ -29,22 +32,21 @@ import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 public class TrajectoryManager {
     private TrajectoryViewModel trajectoryViewModel;
     private Logger LOGGER = Logger.getLogger(TrajectoryManager.class);
+    private final List<String> layerNames;
 
     public TrajectoryManager(Fragment fragment, MapView mapView) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
+        layerNames = new ArrayList<>();
 
         trajectoryViewModel.trajectory.observe(fragment.getViewLifecycleOwner(), trajectoryStr -> {
             mapView.getMapboxMap().getStyle(style -> {
-                Expected<String, None> removeLayerSuccess = style.removeStyleLayer("trajectory_layer");
-                Expected<String, None> removeSourceSuccess = style.removeStyleSource("trajectory");
-                LOGGER.debug("trajectory: layer and source removed result " + (removeSourceSuccess.isError() && removeLayerSuccess.isError() ? removeSourceSuccess.getError() + "\n" + removeLayerSuccess.getError() : "success"));
-
+                removeAllLayers(style);
                 if (trajectoryStr.isEmpty()) {
                     return;
                 }
 
                 String colorCode = String.format("#%06X", (0xFFFFFF & getColor(fragment.requireContext())));
-                paintTrajectory(style, trajectoryStr, colorCode, "trajectory_layer");
+                paintTrajectory(style, trajectoryStr, colorCode, "default");
 
             });
 
@@ -58,8 +60,8 @@ public class TrajectoryManager {
                     }
 
                     plugin.flyTo(new CameraOptions.Builder()
-                            .center(getBBoxCenter(bbox))
-                            .build(),
+                                    .center(getBBoxCenter(bbox))
+                                    .build(),
                             new MapAnimationOptions.Builder().duration(2000).build(),
                             null);
                     return null;
@@ -79,10 +81,6 @@ public class TrajectoryManager {
     }
 
     private void paintTrajectory(Style style, String trajectory, String colorCode, String mode) {
-        Expected<String, None> removeLayerSuccess = style.removeStyleLayer("trajectory_layer_" + mode);
-        Expected<String, None> removeSourceSuccess = style.removeStyleSource("trajectory_" + mode);
-        LOGGER.debug("trajectory: layer and source removed result " + (removeSourceSuccess.isError() && removeLayerSuccess.isError() ? removeSourceSuccess.getError() + "\n" + removeLayerSuccess.getError() : "success"));
-
         JSONObject sourceJson = new JSONObject();
         try {
             sourceJson.put("type", "geojson");
@@ -109,6 +107,8 @@ public class TrajectoryManager {
         }
         Expected<String, None> layerSuccess = style.addStyleLayer(Objects.requireNonNull(Value.fromJson(layerJson.toString()).getValue()), new LayerPosition(null, null, null));
         LOGGER.debug("trajectory: layer created " + (layerSuccess.isError() ? layerSuccess.getError() : "success"));
+
+        layerNames.add(mode);
     }
 
     private Point getBBoxCenter(JSONArray bbox) {
@@ -119,5 +119,28 @@ public class TrajectoryManager {
         } catch (JSONException e) {
             return null;
         }
+    }
+
+    private void removeAllLayers(Style style) {
+        List<String> failureLayers = new ArrayList<>();
+        List<String> failureSources = new ArrayList<>();
+        for (String name : layerNames) {
+            Expected<String, None> successLayer = style.removeStyleLayer("trajectory_layer_" + name);
+            Expected<String, None> successSource = style.removeStyleSource("trajectory_" + name);
+            if (successLayer.isError()) {
+                failureLayers.add("trajectory_layer_" + name);
+            }
+            if (successSource.isError()) {
+                failureSources.add("trajectory_" + name);
+            }
+        }
+
+        if (failureSources.isEmpty() && failureLayers.isEmpty()) {
+            return;
+        }
+        LOGGER.error("Failed to remove layers: " + String.join(", ", failureLayers));
+        LOGGER.error("Failed to remove sources: " + String.join(", ", failureSources));
+
+        layerNames.clear();
     }
 }
