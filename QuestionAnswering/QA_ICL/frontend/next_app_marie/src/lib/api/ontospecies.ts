@@ -1,5 +1,4 @@
-import { ReadonlyURLSearchParams } from 'next/navigation'
-import { getJson, BACKEND_ENDPOINT, getReq } from '.'
+import { getJson, BACKEND_ENDPOINT } from '.'
 import { ChemicalClass, Species, Use } from '../model/ontospecies'
 
 const GET_CHEMICAL_CLASSES_ENDPOINT = new URL(
@@ -33,9 +32,9 @@ export function getSpeciesOne(iriEncoded: string) {
 }
 
 export function getSpeciesXYZ(iriEncoded: string) {
-  return getReq(`${GET_SPECIES_ENDPOINT}/${iriEncoded}/xyz`).then(res =>
-    res.text()
-  )
+  return fetch(`${GET_SPECIES_ENDPOINT}/${iriEncoded}/xyz`, {
+    method: 'GET',
+  }).then(res => res.text())
 }
 
 const GET_SPECIES_PARTIAL_ENDPOINT = new URL(

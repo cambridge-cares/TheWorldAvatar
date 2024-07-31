@@ -1,5 +1,4 @@
-import { ReadonlyURLSearchParams } from 'next/navigation'
-import { BACKEND_ENDPOINT, getJson, getReq } from '.'
+import { BACKEND_ENDPOINT, getJson } from '.'
 import {
   ZeoliteFramework,
   ZeoliteFrameworkBase,
@@ -43,9 +42,9 @@ export function getZeoliteFrameworkOne(iriEncoded: string) {
 }
 
 export function getZeoliteFrameworkCIF(iriEncoded: string) {
-  return getReq(`${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}/cif`).then(
-    res => res.text()
-  )
+  return fetch(`${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}/cif`, {
+    method: 'GET',
+  }).then(res => res.text())
 }
 
 const GET_ZEOLITE_FRAMEWORKS_PARTIAL_ENDPOINT = new URL(
