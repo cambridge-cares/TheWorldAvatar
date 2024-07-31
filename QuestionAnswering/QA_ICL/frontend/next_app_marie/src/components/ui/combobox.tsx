@@ -63,14 +63,14 @@ export function Combobox({
             aria-expanded={open}
             className='w-full justify-between truncate'
           >
-            {typeof value === 'string' ? (
-              value2label[value]
-            ) : value.length === 0 ? (
+            {value.length === 0 ? (
               itemCls ? (
                 `Select ${itemCls}...`
               ) : (
                 'Select...'
               )
+            ) : typeof value === 'string' ? (
+              value2label[value]
             ) : (
               <div className='flex justify-start space-x-2'>
                 {value.map((x, i) => (
