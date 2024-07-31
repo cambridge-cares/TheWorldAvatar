@@ -14,8 +14,8 @@ export default async function ZeoliteFrameworksPage() {
         <h1 className='mb-4'>Zeolite framework search</h1>
         <React.Suspense>
           <ZeoliteFrameworkForm
-            allCBUs={allCBUs}
-            allSBUs={allSBUs}
+            CBUOptions={allCBUs}
+            SBUOptions={allSBUs}
             className='mb-12'
           />
         </React.Suspense>
