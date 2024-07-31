@@ -18,7 +18,7 @@ export default async function SpeciesPage() {
         <React.Suspense>
           <SpeciesForm
             chemicalClassOptions={chemicalClasses}
-            allUses={uses}
+            useOptions={uses}
             className='mb-12'
           />
         </React.Suspense>

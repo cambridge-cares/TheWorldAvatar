@@ -91,13 +91,13 @@ const FORM_INIT_VALUES = {
 
 export interface ZeoliteFrameworkFormProps
   extends React.HTMLAttributes<HTMLFormElement> {
-  allCBUs: string[]
-  allSBUs: string[]
+  CBUOptions: string[]
+  SBUOptions: string[]
 }
 
 export function ZeoliteFrameworkForm({
-  allCBUs,
-  allSBUs,
+  CBUOptions,
+  SBUOptions,
   className,
   ...props
 }: ZeoliteFrameworkFormProps) {
@@ -213,7 +213,9 @@ export function ZeoliteFrameworkForm({
             name='xrdPeaks'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>XRD peaks</FormLabel>
+                <FormLabel className='font-semibold text-lg'>
+                  XRD peaks
+                </FormLabel>
                 <FormControl>
                   <div className='grid md:grid-cols-2 gap-x-8 gap-y-4 place-items-center'>
                     {field.value.map(({ position, width, threshold }, i) => (
@@ -308,76 +310,80 @@ export function ZeoliteFrameworkForm({
             )}
           />
           <div>
-            <div>Unit cell parameters</div>
-            <div>Lengths</div>
-            <div className='grid md:grid-cols-3 lg:grid-cols-4 gap-4'>
-              {Object.values(OUnitCellLengthKey).map((key, i) => (
-                <FormField
-                  key={i}
-                  control={form.control}
-                  name={`unitCell.lengths.${key}`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{key} (Å)</FormLabel>
-                      <FormControl>
-                        <MinMaxInput
-                          minValue={field.value.lower}
-                          onMinChange={e =>
-                            field.onChange({
-                              ...field.value,
-                              lower: e.target.value,
-                            })
-                          }
-                          maxValue={field.value.upper}
-                          onMaxChange={e =>
-                            field.onChange({
-                              ...field.value,
-                              upper: e.target.value,
-                            })
-                          }
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              ))}
+            <div className='font-semibold text-lg'>Unit cell parameters</div>
+            <div className='mb-2'>
+              <div>Lengths</div>
+              <div className='grid md:grid-cols-3 lg:grid-cols-4 gap-4'>
+                {Object.values(OUnitCellLengthKey).map((key, i) => (
+                  <FormField
+                    key={i}
+                    control={form.control}
+                    name={`unitCell.lengths.${key}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{key} (Å)</FormLabel>
+                        <FormControl>
+                          <MinMaxInput
+                            minValue={field.value.lower}
+                            onMinChange={e =>
+                              field.onChange({
+                                ...field.value,
+                                lower: e.target.value,
+                              })
+                            }
+                            maxValue={field.value.upper}
+                            onMaxChange={e =>
+                              field.onChange({
+                                ...field.value,
+                                upper: e.target.value,
+                              })
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
-            <div>Angles</div>
-            <div className='grid md:grid-cols-3 lg:grid-cols-4 gap-4'>
-              {Object.values(OUnitCellAngleKey).map((key, i) => (
-                <FormField
-                  key={i}
-                  control={form.control}
-                  name={`unitCell.angles.${key}`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{key} (°)</FormLabel>
-                      <FormControl>
-                        <MinMaxInput
-                          minValue={field.value.lower}
-                          onMinChange={e =>
-                            field.onChange({
-                              ...field.value,
-                              lower: e.target.value,
-                            })
-                          }
-                          maxValue={field.value.upper}
-                          onMaxChange={e =>
-                            field.onChange({
-                              ...field.value,
-                              upper: e.target.value,
-                            })
-                          }
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              ))}
+            <div>
+              <div>Angles</div>
+              <div className='grid md:grid-cols-3 lg:grid-cols-4 gap-4'>
+                {Object.values(OUnitCellAngleKey).map((key, i) => (
+                  <FormField
+                    key={i}
+                    control={form.control}
+                    name={`unitCell.angles.${key}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{key} (°)</FormLabel>
+                        <FormControl>
+                          <MinMaxInput
+                            minValue={field.value.lower}
+                            onMinChange={e =>
+                              field.onChange({
+                                ...field.value,
+                                lower: e.target.value,
+                              })
+                            }
+                            maxValue={field.value.upper}
+                            onMaxChange={e =>
+                              field.onChange({
+                                ...field.value,
+                                upper: e.target.value,
+                              })
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
           </div>
           <div>
-            <div>Topological properties</div>
+            <div className='font-semibold text-lg'>Topological properties</div>
             <div className='grid md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-2'>
               {Object.entries(TOPO_PROP_UNITS).map(([key, unit], i) => (
                 <FormField
@@ -412,7 +418,7 @@ export function ZeoliteFrameworkForm({
             </div>
           </div>
           <div>
-            <div>Building units</div>
+            <div className='font-semibold text-lg'>Building units</div>
             <div className='grid md:grid-cols-5 gap-4'>
               <FormField
                 control={form.control}
@@ -423,7 +429,7 @@ export function ZeoliteFrameworkForm({
                     <FormControl>
                       <Combobox
                         itemCls='CBU'
-                        items={allCBUs.map(x => ({ value: x, label: x }))}
+                        items={CBUOptions.map(x => ({ value: x, label: x }))}
                         value={field.value}
                         onCmdItemSelect={value =>
                           field.value.includes(value)
@@ -446,7 +452,7 @@ export function ZeoliteFrameworkForm({
                     <FormControl>
                       <Combobox
                         itemCls='SBU'
-                        items={allSBUs.map(x => ({ value: x, label: x }))}
+                        items={SBUOptions.map(x => ({ value: x, label: x }))}
                         value={field.value}
                         onCmdItemSelect={value =>
                           field.onChange(field.value === value ? '' : value)
