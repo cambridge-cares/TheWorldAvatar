@@ -3,14 +3,14 @@ package com.cmclinnovations.stack.clients.geoserver;
 import java.util.Map;
 
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
-import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
 public class GeoServerVectorSettings implements GeoServerDimensionSettings {
 
     private UpdatedGSVirtualTableEncoder virtualTable;
     private final GSLayerEncoder layerSettings = new GSLayerEncoder();
+    private UpdatedGSFeatureTypeEncoder featureTypeSettings = new UpdatedGSFeatureTypeEncoder();
 
-    public GSVirtualTableEncoder getVirtualTable() {
+    public UpdatedGSVirtualTableEncoder getVirtualTable() {
         return virtualTable;
     }
 
@@ -32,6 +32,10 @@ public class GeoServerVectorSettings implements GeoServerDimensionSettings {
 
     public GSLayerEncoder getLayerSettings() {
         return layerSettings;
+    }
+
+    public UpdatedGSFeatureTypeEncoder getFeatureTypeSettings() {
+        return featureTypeSettings;
     }
 
     public void setDefaultStyle(String workspace, String defaultStyle) {

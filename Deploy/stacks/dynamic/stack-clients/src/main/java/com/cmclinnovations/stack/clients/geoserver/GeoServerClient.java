@@ -196,11 +196,19 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
-            fte.setProjectionPolicy(ProjectionPolicy.NONE);
+            createPostGISDataStore(workspaceName, layerName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
+
+            GSFeatureTypeEncoder fte = geoServerSettings.getFeatureTypeSettings();
+            if (fte.getName() == null) {
+                fte.setName(layerName);
+            }
+            if (Boolean.FALSE.equals(GeoServerElementUtils.nodeIsSet(fte, "projectionPolicy"))) {
+                fte.setProjectionPolicy(ProjectionPolicy.NONE);
+            }
+            if (Boolean.FALSE.equals(GeoServerElementUtils.nodeIsSet(fte, "title"))) {
+                fte.setTitle(layerName);
+            }
             fte.addKeyword("KEYWORD");
-            fte.setTitle(layerName);
-            fte.setName(layerName);
 
             GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
             if (null != virtualTable) {
