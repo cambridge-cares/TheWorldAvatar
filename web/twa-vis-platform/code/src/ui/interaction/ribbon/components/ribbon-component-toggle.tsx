@@ -46,7 +46,7 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
                 leaveDelay={100}
                 placement="bottom-start">
 
-                <>
+                <div>
                     <div className={classNames.join(" ")}>
                         {props.icon &&
                             <div className={styles.ribbonComponentIcon}>
@@ -59,7 +59,7 @@ export default function RibbonComponentToggle(props: Readonly<RibbonComponentTog
                                 {props.text}
                             </div>}
                     </div>
-                </>
+                </div>
             </Tooltip>
         </div>
     );
