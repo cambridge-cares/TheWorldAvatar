@@ -1,5 +1,9 @@
 import { getJson, BACKEND_ENDPOINT } from '.'
-import { ChemicalClass, Species, Use } from '../model/ontospecies'
+import {
+  ChemicalClass,
+  Species,
+  Use,
+} from '../model/ontospecies'
 
 const GET_CHEMICAL_CLASSES_ENDPOINT = new URL(
   './ontospecies/chemical-classes',

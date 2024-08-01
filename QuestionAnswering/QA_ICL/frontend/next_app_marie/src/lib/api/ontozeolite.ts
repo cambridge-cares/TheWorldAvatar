@@ -103,11 +103,13 @@ export function getZeoliticMaterialsMany(searchParams: URLSearchParams) {
 }
 
 export function getZeoliticMaterialOne(iriEncoded: string) {
-  return getJson<ZeoliticMaterial>(`${GET_ZEOLITIC_MATERIALS_ENDPOINT}/${iriEncoded}`)
+  return getJson<ZeoliticMaterial>(
+    `${GET_ZEOLITIC_MATERIALS_ENDPOINT}/${iriEncoded}`
+  )
 }
 
 export function getZeoliticMaterialCIF(iriEncoded: string) {
   return fetch(`${GET_ZEOLITIC_MATERIALS_ENDPOINT}/${iriEncoded}/cif`, {
-    method: 'GET'
+    method: 'GET',
   }).then(res => res.text())
 }

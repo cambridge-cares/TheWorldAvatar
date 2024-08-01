@@ -1,19 +1,18 @@
 import React from 'react'
 import Image from 'next/image'
 import Markdown from 'react-markdown'
+
 import { cn } from '@/lib/utils'
 
 export interface IntroSectionProps extends React.HTMLAttributes<HTMLElement> {
   imgSrc: string
   imgAlt: string
-  heading: string
   mdContent: string
 }
 
 export const IntroSection = async ({
   imgSrc,
   imgAlt,
-  heading,
   mdContent,
   className,
   ...props
@@ -29,7 +28,6 @@ export const IntroSection = async ({
       <Image src={imgSrc} alt={imgAlt} width={175} height={250} priority />
     </div>
     <div className='w-full content-center space-y-2 md:col-span-2 lg:col-span-3'>
-      <h1>{heading}</h1>
       <Markdown className='prose max-w-none prose-slate prose-p:leading-6 prose-li:leading-6'>
         {mdContent}
       </Markdown>

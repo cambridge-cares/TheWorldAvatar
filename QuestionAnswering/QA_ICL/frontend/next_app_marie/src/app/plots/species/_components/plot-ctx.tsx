@@ -158,7 +158,6 @@ export const SpeciesPropertiesPlotCtx = ({
             }))}
             value={chemClass}
             onCmdItemSelect={value => setChemClass(value)}
-            closePopoverOnCmdItemSelect
           />
         </div>
         <div>
@@ -178,7 +177,6 @@ export const SpeciesPropertiesPlotCtx = ({
               }))}
               value={xProp}
               onCmdItemSelect={value => setXProp(value as SpeciesPropertyKey)}
-              closePopoverOnCmdItemSelect
               className='col-span-3'
             />
             {xUnitOptions && xUnit !== undefined && (
@@ -187,7 +185,6 @@ export const SpeciesPropertiesPlotCtx = ({
                 items={xUnitOptions.map(val => ({ value: val, label: val }))}
                 value={xUnit}
                 onCmdItemSelect={value => setXUnit(value)}
-                closePopoverOnCmdItemSelect
                 className='col-span-2'
               />
             )}
@@ -210,7 +207,6 @@ export const SpeciesPropertiesPlotCtx = ({
               }))}
               value={yProp}
               onCmdItemSelect={value => setYProp(value as SpeciesPropertyKey)}
-              closePopoverOnCmdItemSelect
               className='col-span-3'
             />
             {yUnitOptions && yUnit !== undefined && (
@@ -219,7 +215,6 @@ export const SpeciesPropertiesPlotCtx = ({
                 items={yUnitOptions.map(val => ({ value: val, label: val }))}
                 value={yUnit}
                 onCmdItemSelect={value => setYUnit(value)}
-                closePopoverOnCmdItemSelect
                 className='col-span-2'
               />
             )}

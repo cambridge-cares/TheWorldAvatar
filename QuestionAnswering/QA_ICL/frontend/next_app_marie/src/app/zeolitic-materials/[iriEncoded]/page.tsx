@@ -8,7 +8,6 @@ import {
 } from '@/lib/api/ontozeolite'
 import { CrystalInfoAccordion } from '@/components/crystal-info-accordion'
 
-
 interface ZeoMaterialPageInterface {
   params: { iriEncoded: string }
 }
@@ -30,16 +29,21 @@ export default async function ZeoMaterialPage({
             <MolViewer type='cif' data={cif} />
           </section>
           <section>
-            <h2 id='general'><a href='#general' className='hover:underline'>General</a></h2>
+            <h2 id='general'>
+              <a href='#general' className='hover:underline'>
+                General
+              </a>
+            </h2>
             <div className='grid md:grid-cols-2 gap-2'>
-              {
-                [['Name', data.name], ['Framework code', data.framework.code]].map(
-                  ([heading, content], i) => <div key={i}>
-                    <h3 className='font-semibold'>{heading}</h3>
-                    <p>{content}</p>
-                  </div>
-                )
-              }
+              {[
+                ['Name', data.name],
+                ['Framework code', data.framework.code],
+              ].map(([heading, content], i) => (
+                <div key={i}>
+                  <h3 className='font-semibold'>{heading}</h3>
+                  <p>{content}</p>
+                </div>
+              ))}
             </div>
           </section>
           {data.CrystalInformation && (
@@ -60,18 +64,28 @@ export default async function ZeoMaterialPage({
                 </a>
               </h2>
               <div>
-                {
-                  data.Citation.title && <p className='font-semibold'>{data.Citation.title}</p>
-                }
-                <p>{data.Citation.AuthorIndex.sort((a, b) => a.value - b.value).map(
-                  ({ author: { firstName, family_name } }) => `${family_name}, ${firstName}`
-                ).join(', ')}</p>
-                {
-                  data.Citation.doi && <p>DOI: {data.Citation.doi}</p>
-                }
-                {
-                  data.Citation.Url && <a href={data.Citation.Url} target="_blank" rel="noopener noreferrer" className='hover:underline'>{data.Citation.Url}</a>
-                }
+                {data.Citation.title && (
+                  <p className='font-semibold'>{data.Citation.title}</p>
+                )}
+                <p>
+                  {data.Citation.AuthorIndex.sort((a, b) => a.value - b.value)
+                    .map(
+                      ({ author: { firstName, family_name } }) =>
+                        `${family_name}, ${firstName}`
+                    )
+                    .join(', ')}
+                </p>
+                {data.Citation.doi && <p>DOI: {data.Citation.doi}</p>}
+                {data.Citation.Url && (
+                  <a
+                    href={data.Citation.Url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='hover:underline'
+                  >
+                    {data.Citation.Url}
+                  </a>
+                )}
               </div>
             </section>
           )}
