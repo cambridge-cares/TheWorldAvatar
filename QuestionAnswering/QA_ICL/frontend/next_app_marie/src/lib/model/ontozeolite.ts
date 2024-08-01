@@ -82,7 +82,7 @@ export interface ZeoliticMaterialBase extends RDFEntity {
 }
 
 export interface Quantity {
-  unit: string
+  unit?: string
   value: number
 }
 
@@ -93,7 +93,7 @@ export interface VectorComponent {
 }
 
 export interface MeasureVector {
-  unit: string
+  unit?: string
   component: VectorComponent[]
 }
 
@@ -149,14 +149,16 @@ export interface TiledStructure {
   TileNumber: TileNum[]
 }
 
+export interface CoordinateTransformation {
+  TransformationMatrixToCartesian?: MeasureMatrix
+  TransformationMatrixToFractional?: MeasureMatrix
+  TransformationVectorToCartesian?: MeasureVector
+  TransformationVectorToFractional?: MeasureVector
+}
+
 export interface CrystalInfo {
   AtomicStructure: { AtomSite: AtomSite[] }
-  CoordinateTransformation: {
-    TransformationMatrixToCartesian: MeasureMatrix
-    TransformationMatrixToFractional: MeasureMatrix
-    TransformationVectorToCartesian: MeasureVector
-    TransformationVectorToFractional: MeasureVector
-  }
+  CoordinateTransformation: CoordinateTransformation
   UnitCell: {
     LatticeSystem?: string
     SpaceGroupSymbol?: string
@@ -237,4 +239,26 @@ export interface ZeoliteFrameworkPartial extends ZeoliteFrameworkBase {
 
 export interface Journal extends RDFEntity {
   title: string
+}
+
+export interface Person extends RDFEntity {
+  family_name: string
+  firstName: string
+}
+
+export interface AcademicArticle extends RDFEntity {
+  AuthorIndex: {
+    value: number
+    author: Person
+  }[]
+  title?: string
+  doi?: string
+  Url?: string
+}
+
+export interface ZeoliticMaterial extends ZeoliticMaterialBase {
+  name: string
+  framework: ZeoliteFrameworkBase
+  CrystalInformation?: CrystalInfo
+  Citation?: AcademicArticle
 }

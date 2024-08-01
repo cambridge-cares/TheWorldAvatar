@@ -3,7 +3,7 @@ import typing
 
 from pydantic import BaseModel, Field, create_model
 from rdflib import DCTERMS, FOAF
-from constants.namespace import BIBO, OM2, ONTOCRYSTAL, ONTOZEOLITE
+from constants.namespace import BIBO, OM2, ONTOCRYSTAL, ONTOSPECIES, ONTOZEOLITE
 from model.rdf_orm import RDFEntity, RDFField
 from services.rdf_orm import unpack_optional_type
 
@@ -418,6 +418,7 @@ class BiboAcademicArticle(RDFEntity):
 
 
 class OntozeoliteZeoliticMaterial(OntozeoliteZeoliticMaterialBase):
+    name: str = RDFField(path=ONTOSPECIES.name)
     Citation: BiboAcademicArticle | None = RDFField(path=ONTOCRYSTAL.hasCitation)
     CyrstalInformation: OntocrystalCrystalInfo | None = RDFField(
         path=ONTOCRYSTAL.hasCrystalInformation

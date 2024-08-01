@@ -6,7 +6,7 @@ import {
   getZeoliteFrameworkCIF,
   getZeoliteFrameworkOne,
 } from '@/lib/api/ontozeolite'
-import { CrystalInfoAccordion } from './_components/crystal-info-accordion'
+import { CrystalInfoAccordion } from '@/components/crystal-info-accordion'
 import { TopoPropsDiv } from './_components/topo-props-div'
 import {
   Collapsible,
