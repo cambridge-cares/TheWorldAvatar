@@ -13,6 +13,7 @@ from model.web.ontozeolite import (
 from routers.ontozeolite.common import (
     SCALAR_TOPO_PROP_QUERY_PARAMS,
     UNIT_CELL_QUERY_PARAMS,
+    CIFResponse,
     parse_zeolite_framework_request,
 )
 from services.mol_vis.cif import CIFManager, get_cif_manager
@@ -47,16 +48,12 @@ async def getZeoliteFrameworks(
     ],
 ):
     iris = ontozeolite_store.get_zeolite_framework_IRIs(framework_req)
-    return [x for x in ontozeolite_store.get_zeolite_frameworks_many(iris=iris) if x]
-
-
-class CIFResponse(Response):
-    media_type = "chemical/x-cif"
+    return [x for x in ontozeolite_store.get_zeolite_framework_base_many(iris=iris) if x]
 
 
 @router.get(
     "/{iri:path}/cif",
-    summary="Get zeolite's CIF geometry file",
+    summary="Get zeolite framework's CIF geometry file",
     response_class=CIFResponse,
 )
 async def getZeoliteFrameworkCIF(

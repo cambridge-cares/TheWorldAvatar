@@ -73,10 +73,10 @@ class VisualisationDataStore:
             type = "cif"
             vis_data = self.cif_manager.get(iris)
             if cls == "zeo:ZeoliteFramework":
-                models = self.ontozeolite_store.get_zeolite_frameworks_many(iris)
+                models = self.ontozeolite_store.get_zeolite_framework_base_many(iris)
                 labels = [model.code if model else "" for model in models]
             else:
-                models = self.ontozeolite_store.get_zeolitic_materials_many(iris)
+                models = self.ontozeolite_store.get_zeolitic_material_base_many(iris)
                 labels = [model.ChemicalFormula if model else "" for model in models]
         else:
             type = None

@@ -4,12 +4,8 @@ import itertools
 from typing import Annotated
 
 from fastapi import Depends
-from model.rdf_orm import RDFEntity
 from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
 from model.kg.ontozeolite import (
-    CRYSTAL_INFO_KEY2CLS,
-    ZEOLITIC_MATERIAL_KEY,
-    CrystalInfoKey,
     OntocrystalAtomicStructure,
     OntocrystalCoordinateTransformation,
     OntocrystalCrystalInfoPartial,
@@ -22,8 +18,8 @@ from model.kg.ontozeolite import (
     OntozeoliteZeoliteFramework,
     OntozeoliteZeoliteFrameworkBase,
     OntozeoliteZeoliteFrameworkPartial,
+    OntozeoliteZeoliticMaterial,
     OntozeoliteZeoliticMaterialBase,
-    TopologicalPropertyKey,
 )
 from model.web.ontozeolite import (
     UnitCellAngleKey,
@@ -42,8 +38,8 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
     @property
     def cls2getter(self):
         return {
-            "zeo:ZeoliteFramework": self.get_zeolite_frameworks_many,
-            "zeo:ZeoliticMaterial": self.get_zeolitic_materials_many,
+            "zeo:ZeoliteFramework": self.get_zeolite_framework_base_many,
+            "zeo:ZeoliticMaterial": self.get_zeolitic_material_base_many,
             "ocr:Quantity": self.get_quantities_many,
             "ocr:MeasureVector": self.get_vectors_many,
             "ocr:MeasureMatrix": self.get_matrices_many,
@@ -188,10 +184,10 @@ WHERE {{
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Framework"] for binding in bindings]
 
-    def get_zeolite_frameworks_partial_many(
+    def get_zeolite_framework_partial_many(
         self, iris: list[str] | tuple[str], return_fields: ZeoliteFrameworkReturnFields
     ):
-        frameworks_base = self.get_zeolite_frameworks_many(iris=iris)
+        frameworks_base = self.get_zeolite_framework_base_many(iris=iris)
 
         if return_fields.crystal_info:
             query = """PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
@@ -277,7 +273,7 @@ WHERE {{
                 )
             materials = (
                 x
-                for x in self.get_zeolitic_materials_many(
+                for x in self.get_zeolitic_material_base_many(
                     iris=itertools.chain(*frameworkIRI_to_materialIRIs.values())
                 )
             )
@@ -302,7 +298,7 @@ WHERE {{
             for base_model in frameworks_base
         ]
 
-    def get_zeolite_frameworks_many(self, iris: list[str] | tuple[str]):
+    def get_zeolite_framework_base_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntozeoliteZeoliteFrameworkBase, iris)
 
     def get_zeolite_framework_one(self, iri: str):
@@ -377,8 +373,11 @@ WHERE {{
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Material"] for binding in bindings]
 
-    def get_zeolitic_materials_many(self, iris: list[str] | tuple[str]):
+    def get_zeolitic_material_base_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntozeoliteZeoliticMaterialBase, iris)
+
+    def get_zeolitic_material_one(self, iri: str):
+        return self.get_one(OntozeoliteZeoliticMaterial, iri)
 
     def get_quantities_many(self, iris: list[str] | tuple[str]):
         return self.get_many(OntocrystalQuantity, iris)

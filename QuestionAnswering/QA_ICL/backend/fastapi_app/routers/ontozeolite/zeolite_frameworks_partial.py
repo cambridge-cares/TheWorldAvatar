@@ -52,6 +52,6 @@ async def getZeoliteFrameworksPartial(
     ],
 ):
     iris = ontozeolite_store.get_zeolite_framework_IRIs(req=framework_req)
-    return ontozeolite_store.get_zeolite_frameworks_partial_many(
+    return ontozeolite_store.get_zeolite_framework_partial_many(
         iris=iris, return_fields=return_fields
     )

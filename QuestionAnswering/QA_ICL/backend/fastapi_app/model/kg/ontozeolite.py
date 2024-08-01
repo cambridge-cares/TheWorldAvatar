@@ -3,13 +3,13 @@ import typing
 
 from pydantic import BaseModel, Field, create_model
 from rdflib import DCTERMS, FOAF
-from constants.namespace import OM2, ONTOCRYSTAL, ONTOZEOLITE
+from constants.namespace import BIBO, OM2, ONTOCRYSTAL, ONTOZEOLITE
 from model.rdf_orm import RDFEntity, RDFField
 from services.rdf_orm import unpack_optional_type
 
 
 class Om2Quantity(RDFEntity):
-    unit: str = RDFField(path=OM2.hasUnit)
+    unit: str | None = RDFField(path=OM2.hasUnit)
     value: float = RDFField(path=OM2.hasNumericalValue)
 
 
@@ -24,7 +24,7 @@ class OntocrystalVectorComponent(RDFEntity):
 
 
 class OntocrystalMeasureVector(RDFEntity):
-    unit: str = RDFField(path=OM2.hasUnit)
+    unit: str | None = RDFField(path=OM2.hasUnit)
     component: list[OntocrystalVectorComponent] = RDFField(
         path=ONTOCRYSTAL.hasVectorComponent
     )
@@ -66,16 +66,18 @@ class OntocrystalAtomicStructure(RDFEntity):
 
 
 class OntocrystalCoordinateTransformation(RDFEntity):
-    TransformationMatrixToCartesian: OntocrystalMeasureMatrix = RDFField(
+    # there are several instances of of ocr:CoordinateTransformation with only rdf:type
+    # property and nothing else
+    TransformationMatrixToCartesian: OntocrystalMeasureMatrix | None = RDFField(
         path=ONTOCRYSTAL.hasTransformationMatrixToCartesian
     )
-    TransformationMatrixToFractional: OntocrystalMeasureMatrix = RDFField(
+    TransformationMatrixToFractional: OntocrystalMeasureMatrix | None = RDFField(
         path=ONTOCRYSTAL.hasTransformationMatrixToFractional
     )
-    TransformationVectorToCartesian: OntocrystalMeasureVector = RDFField(
+    TransformationVectorToCartesian: OntocrystalMeasureVector | None = RDFField(
         path=ONTOCRYSTAL.hasTransformationVectorToCartesian
     )
-    TransformationVectorToFractional: OntocrystalMeasureVector = RDFField(
+    TransformationVectorToFractional: OntocrystalMeasureVector | None = RDFField(
         path=ONTOCRYSTAL.hasTransformationVectorToFractional
     )
 
@@ -391,5 +393,35 @@ class OntozeoliteZeoliteFrameworkPartial(OntozeoliteZeoliteFrameworkBase):
         path=ONTOZEOLITE.hasZeoliticMaterial, alias=ZEOLITIC_MATERIAL_KEY
     )
 
+
 class BiboJournal(RDFEntity):
     title: str = RDFField(path=DCTERMS.title)
+
+
+class FoafPerson(RDFEntity):
+    family_name: str = RDFField(path=FOAF.family_name)
+    firstName: str = RDFField(path=FOAF.firstName)
+
+
+class OntocrystalAuthorIndex(RDFEntity):
+    value: int = RDFField(path=ONTOCRYSTAL.hasIndexValue)
+    author: FoafPerson = RDFField(path=ONTOCRYSTAL.isAuthorIndexOf)
+
+
+class BiboAcademicArticle(RDFEntity):
+    doi: str | None = RDFField(path=BIBO.doi)
+    Url: str | None = RDFField(path=ONTOCRYSTAL.hasUrl)
+    title: str | None = RDFField(path=DCTERMS.title)
+    AuthorIndex: list[OntocrystalAuthorIndex] = RDFField(
+        path=ONTOCRYSTAL.hasAuthorIndex
+    )
+
+
+class OntozeoliteZeoliticMaterial(OntozeoliteZeoliticMaterialBase):
+    Citation: BiboAcademicArticle | None = RDFField(path=ONTOCRYSTAL.hasCitation)
+    CyrstalInformation: OntocrystalCrystalInfo | None = RDFField(
+        path=ONTOCRYSTAL.hasCrystalInformation
+    )
+    framework: OntozeoliteZeoliteFrameworkBase = RDFField(
+        path=~ONTOZEOLITE.hasZeoliticMaterial
+    )

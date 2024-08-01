@@ -102,7 +102,7 @@ WHERE {{
         field2iri2data = {
             field: resolve_field_value_batch(field, info)
             for field, info in T.model_fields.items()
-            if return_fields is None or field in return_fields
+            if field != "IRI" and (return_fields is None or field in return_fields)
         }
 
         iri2field2data: defaultdict[
@@ -116,12 +116,14 @@ WHERE {{
             model_fields: dict[str, FieldInfo],
             field2data: dict[str, RDFEntity | str | list[RDFEntity] | list[str]],
         ):
-            if all(field in field2data for field in model_fields.keys()):
+            if all(
+                field in field2data for field in model_fields.keys() if field != "IRI"
+            ):
                 return field2data
 
             data = dict(field2data)
             for field, info in model_fields.items():
-                if field in data:
+                if field == "IRI" or field in data:
                     continue
                 annotation = info.annotation
                 if annotation:
@@ -136,19 +138,18 @@ WHERE {{
             return data
 
         adapter = TypeAdapter(list[T])
-        models = adapter.validate_python(
+        return adapter.validate_python(
             [
                 {
                     **resolve_field_value(
-                        model_fields=T.model_fields, field2data=field2data
+                        model_fields=T.model_fields,
+                        field2data=iri2field2data[iri],
                     ),
                     "IRI": iri,
                 }
-                for iri, field2data in iri2field2data.items()
+                for iri in iris
             ]
         )
-        iri2model = {model.IRI: model for model in models}
-        return [iri2model.get(iri) for iri in iris]
 
     def get_many(
         self,
