@@ -289,9 +289,8 @@ public class TimeSeriesClient<T> {
 
         // if any of the dataIRI already exists in the kg, stop the process
         List<String> singleListDataIri = new ArrayList<>();
-        dataIRIs.stream().forEach(dataIRIList -> {
-            dataIRIList.stream().forEach(singleListDataIri::add);
-        });
+        dataIRIs.forEach(singleListDataIri::addAll);
+
         if (rdfClient.checkAnyTimeSeriesExists(singleListDataIri)) {
             throw new JPSRuntimeException(
                     exceptionPrefix + "One or more of the provided data IRI already has a time series attached. " +
@@ -311,6 +310,7 @@ public class TimeSeriesClient<T> {
             try {
                 rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
             } catch (JPSRuntimeException eRdbCreate) {
+                LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
                 // For exceptions thrown when initialising RDB elements in relational database,
                 // try to revert previous knowledge base instantiation
                 // TODO Ideally try to avoid throwing exceptions in a catch block - potential
