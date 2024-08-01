@@ -13,7 +13,6 @@ import org.jgrapht.graph.DirectedAcyclicGraph;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.core.StackClient;
-import com.cmclinnovations.stack.clients.core.visualisationsources.VisSource;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
@@ -127,9 +126,6 @@ public class DatasetLoader {
             }
 
             dataSubsets.forEach(subset -> subset.load(dataset));
-
-            List<VisSource> visSources = dataset.getVisualisationSources();
-            visSources.forEach(visSource -> visSource.load(dataset));
 
             OntopClient ontopClient = OntopClient.getInstance();
             dataset.getOntopMappings().forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
