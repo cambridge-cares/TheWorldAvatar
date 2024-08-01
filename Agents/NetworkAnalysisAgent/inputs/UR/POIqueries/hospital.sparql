@@ -1,0 +1,26 @@
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo:       <http://www.opengis.net/ont/geosparql#>
+PREFIX geof:      <http://www.opengis.net/def/function/geosparql/>
+PREFIX uom:       <http://www.opengis.net/def/uom/OGC/1.0/>
+
+SELECT DISTINCT ?poi_iri ?poi_type ?geometry
+WHERE {
+  ?building obe:hasWGS84LatitudeLongitude ?latlong. 
+  ?building obe:hasPropertyUsage ?propertyUsage.
+  ?propertyUsage a ?propertyType;
+                a obe:Hospital.
+  OPTIONAL {
+    ?propertyUsage obe:hasPropertyLabel ?label.
+  }
+
+  # Binding variable names as requested
+  BIND(?building AS ?poi_iri)
+  BIND(?propertyType AS ?poi_type)
+  BIND(CONCAT("POINT(", STRAFTER(STR(?latlong), '#'), " ", STRBEFORE(STR(?latlong), '#'), ")") AS ?geometry)
+  #EPSG 4326 long lat format
+
+  
+  FILTER (?geometry = "POINT(0.4449964774757034 52.756232805460925)")
+}
+LIMIT 10

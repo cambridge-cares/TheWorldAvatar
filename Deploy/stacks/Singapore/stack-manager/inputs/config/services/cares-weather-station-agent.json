@@ -1,0 +1,54 @@
+{
+    "ServiceSpec": {
+        "Name": "cares-weather-station-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/cares-weather-station-agent:1.6.0",
+                "Env": [
+                    "CARESWeatherStation_AGENTPROPERTIES=/usr/local/tomcat/config/agent.properties",
+                    "CARESWeatherStation_APIPROPERTIES=/usr/local/tomcat/config/api.properties",
+                    "CARESWeatherStation_CLIENTPROPERTIES=/usr/local/tomcat/config/client.properties",
+                    "CARESWeatherStation_AGENT_MAPPINGS=/usr/local/tomcat/config/mappings",
+                    "LAYERNAME=caresweather",
+                    "DATABASE=postgres",
+                    "GEOSERVER_WORKSPACE=twa"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../cares_weather_config",
+                        "Target": "/usr/local/tomcat/config"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "blazegraph_password"
+                    },
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080/cares-weather-station-agent/",
+            "externalPath": "/cares-weather-station-agent/"
+        }
+    }
+}

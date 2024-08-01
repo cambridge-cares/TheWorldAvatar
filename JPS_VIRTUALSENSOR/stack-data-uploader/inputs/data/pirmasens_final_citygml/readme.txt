@@ -1,0 +1,1 @@
+Place gml data in subdir, the srid in the config file is hardcoded to 32633, make sure to edit if source file is in different srid

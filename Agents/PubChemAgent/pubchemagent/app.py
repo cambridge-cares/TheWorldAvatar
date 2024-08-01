@@ -31,7 +31,7 @@ def species_instantiation(inchi):
         cid, props, identifiers = pug_access.get_props(data)
         cid = pug_access.check_preferred(cid)
         data_3d = pug_access.pug_request_prop_3d(cid)
-        if 'Record' in data_3d:
+        if 'PC_Compounds' in data_3d:
             geometry, bonds = pug_access.get_structure('3d', data_3d)
         else:
             geometry, bonds = pug_access.get_structure('2d', data)
@@ -83,6 +83,10 @@ def species_instantiation(inchi):
         insert_str = insert_str + temp_str
         insert_end(insert_str)
         print("--- Instantiation: %s seconds ---" % (time.time() - start_time))
+
+    IRI_species = ONTOSPECIES_KB_URL + '/Species_' + uuid
+
+    return IRI_species
 
 def element_instantiation(el):
     pug_access = pug_api()

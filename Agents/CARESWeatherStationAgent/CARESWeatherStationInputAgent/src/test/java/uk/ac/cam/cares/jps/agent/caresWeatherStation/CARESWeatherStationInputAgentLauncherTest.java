@@ -24,9 +24,6 @@ import java.nio.file.Paths;
 
 public class CARESWeatherStationInputAgentLauncherTest {
 
-
-    private static final Logger LOGGER = LogManager.getLogger(CARESWeatherStationInputAgentLauncherTest.class);
-
     // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -50,47 +47,7 @@ public class CARESWeatherStationInputAgentLauncherTest {
         args = new String[] {agentPropertiesFile, clientPropertiesFile, apiPropertiesFile};
 
     }
-
-    @Test
-    public void testProcessRequestParams() throws IOException {
-        CARESWeatherStationInputAgentLauncher testLauncher = new CARESWeatherStationInputAgentLauncher();
-        //test empty requestparams
-        JSONObject testRequestParams = new JSONObject();
-        JSONObject testMessage = testLauncher.processRequestParameters(testRequestParams);
-        Assert.assertEquals(testMessage.get("Result"), "Request parameters are not defined correctly.");
-        //test non-empty requestParams but with incorrect keys
-
-        testRequestParams.put("ageProperties", "TEST_AGENTPROPERTIES");
-        testRequestParams.put("apiProperties", "TEST_APIPROPERTIES");
-        testRequestParams.put("clientProperties", "TEST_CLIENTPROPERTIES");
-
-        testMessage = testLauncher.processRequestParameters(testRequestParams);
-        Assert.assertEquals(testMessage.get("Result"), "Request parameters are not defined correctly.");
-
-        //test invalid environment variables in requestParams
-        testRequestParams.remove("ageProperties");
-        testRequestParams.put("agentProperties", "TEST_AGENTPROPERTIE");
-        testRequestParams.put("apiProperties", "TEST_APIPROPERTIES");
-        testRequestParams.put("clientProperties", "TEST_CLIENTPROPERTIES");
-
-        String folderName = "mappings";
-        File mappingFolder = folder.newFolder(folderName);
-        // Create empty file in mappings folder
-        File mappingFile = new File(Paths.get(mappingFolder.getCanonicalPath(), "weather.properties").toString());
-        Assert.assertTrue(mappingFile.createNewFile());
-        //try and catch is required to use SystemLambda to mock environment variables
-        //invalid environment variables TEST_AGENTPROPERTIE should cause validateInput to return back false and processRequestParameters to
-        //return back the jsonMessage {"Result":"Request parameters are not defined correctly."}
-        try {
-            SystemLambda.withEnvironmentVariable("TEST_AGENTPROPERTIES", mappingFolder.getCanonicalPath()).execute((Statement) () -> {
-                JSONObject testMessage01 = testLauncher.processRequestParameters(testRequestParams);
-                Assert.assertEquals(testMessage01.get("Result"), "Request parameters are not defined correctly.");
-            });
-        } catch (Exception e) {
-            //no Exception should be thrown here
-        }
-    }
-
+    
     @Test
     public void testMainNoArgs() {
         String[] args = {};
@@ -114,30 +71,6 @@ public class CARESWeatherStationInputAgentLauncherTest {
         catch (JPSRuntimeException e) {
             Assert.assertEquals("The CARESWeatherStation input agent could not be constructed!", e.getMessage());
         }
-    }
-
-    @Test
-    public void testMainErrorWhenCreatingTSClient() throws IOException {
-        //create agent properties file
-        createProperAgentPropertiesFile();
-        //File testFile=new File(Paths.get(args[0],"agent.properties").toString());
-        //Assert.assertTrue(testFile.exists());
-        //Create folder with mapping file
-        String folderName = "mappings";
-        File mappingFolder = folder.newFolder(folderName);
-        // Create empty file in mappings folder
-        File mappingFile = new File(Paths.get(mappingFolder.getCanonicalPath(), "weather.properties").toString());
-        Assert.assertTrue(mappingFile.createNewFile());
-        // Empty properties file for time series client should result in exception
-        try {
-            SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                CARESWeatherStationInputAgentLauncher.initializeAgent(args);
-            });
-        }
-        catch (Exception e) {
-            Assert.assertEquals("Could not construct the time series client needed by the input agent!", e.getMessage());
-        }
-
     }
 
     @Test
@@ -209,14 +142,17 @@ public class CARESWeatherStationInputAgentLauncherTest {
 
         // Use a mock for the input agent
         try(MockedConstruction<CARESWeatherStationInputAgent> mockAgent = Mockito.mockConstruction(CARESWeatherStationInputAgent.class)) {
-            // Use a mock for the connector that returns the dummy readings
-            try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
-                    (mock, context) -> {
-                        Mockito.when(mock.getWeatherReadings()).thenReturn(readings);
-                    })) {
-                CARESWeatherStationInputAgentLauncher.initializeAgent(args);
-                // Ensure that the update of the agent was invoked
-                Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings);
+            // Use a mock for SparqlHandler
+            try(MockedConstruction<WeatherQueryClient> mockQueryClient = Mockito.mockConstruction(WeatherQueryClient.class)) {
+                // Use a mock for the connector that returns the dummy readings
+                try(MockedConstruction<CARESWeatherStationAPIConnector> ignored = Mockito.mockConstruction(CARESWeatherStationAPIConnector.class,
+                (mock, context) -> {
+                    Mockito.when(mock.getWeatherReadings()).thenReturn(readings);
+                })) {
+                    CARESWeatherStationInputAgentLauncher.initializeAgent(args);
+                    // Ensure that the update of the agent was invoked
+                    Mockito.verify(mockAgent.constructed().get(0), Mockito.times(1)).updateData(readings);
+                }
             }
         }
     }

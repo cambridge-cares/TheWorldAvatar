@@ -1,57 +1,70 @@
 package com.cmclinnovations.stack.clients.docker;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import javax.annotation.Nonnull;
+
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 abstract class BaseClient {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
+    private static final Path configsDir;
 
-    protected abstract <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig);
-
-    protected <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig,
-            DockerClient injectedDockerClient) {
-        String endpointName = endpointConfig.getName();
-        if (!StackClient.isInStack()) {
-            // Hack for when container is not in the swarm
+    static {
+        if (StackClient.isInTest()) {
             try {
-                objectMapper.writeValue(new File("/" + endpointName), endpointConfig);
+                configsDir = Files.createTempDirectory("configs");
             } catch (IOException ex) {
-                throw new RuntimeException("Failed to write to Docker config file with name '" + endpointName + "'.",
-                        ex);
-            }
-        }
-        if (!injectedDockerClient.configExists(endpointName)) {
-            try {
-                injectedDockerClient.addConfig(endpointName,
-                        objectMapper.writeValueAsBytes(endpointConfig));
-            } catch (JsonProcessingException ex) {
-                throw new RuntimeException("Failed to add Docker config file with name '" + endpointName + "'.",
-                        ex);
+                throw new RuntimeException("Failed to create directories for test Docker/Podman config files.", ex);
             }
         } else {
-            /**
-             * TODO Decide what to do if the config already exists.
-             * See https://docs.docker.com/engine/swarm/secrets/#example-rotate-a-secret
-             * for details on how to update a secret/config that is in use.
-             */
+            configsDir = Path.of("/");
         }
     }
 
-    protected abstract <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
-            Class<E> endpointConfigClass);
+    public <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
+        String endpointName = endpointConfig.getName();
+        Path configFilePath = configsDir.resolve(endpointName);
 
-    protected final <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
-            Class<E> endpointConfigClass,
-            DockerClient injectedDockerClient) {
-        if (injectedDockerClient.configExists(endpointName)) {
+        // Ensure this container can access the endpoint file.
+        try {
+            objectMapper.writeValue(configFilePath.toFile(), endpointConfig);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to write to Docker config file with name '" + endpointName + "'.",
+                    ex);
+        }
+
+        if (!StackClient.isInTest()) {
+            DockerClient dockerClient = DockerClient.getInstance();
+            if (!dockerClient.configExists(endpointName)) {
+                try {
+                    dockerClient.addConfig(endpointName, objectMapper.writeValueAsBytes(endpointConfig));
+                } catch (JsonProcessingException ex) {
+                    throw new RuntimeException("Failed to add Docker config file with name '" + endpointName + "'.",
+                            ex);
+                }
+            } else {
+                /**
+                 * TODO Decide what to do if the config already exists.
+                 * See https://docs.docker.com/engine/swarm/secrets/#example-rotate-a-secret
+                 * for details on how to update a secret/config that is in use.
+                 */
+            }
+        }
+    }
+
+    public final <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
+        Path configFilePath = configsDir.resolve(endpointName);
+        if (Files.exists(configFilePath)) {
             try {
-                return objectMapper.readValue(new File("/" + endpointName), endpointConfigClass);
+                return objectMapper.readValue(configFilePath.toFile(), endpointConfigClass);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to read Docker config file with name '" + endpointName + "'.", ex);
             }

@@ -1,0 +1,36 @@
+{
+  "ServiceSpec": {
+    "Name": "grafana",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/grafana-for-ntu:latest",
+        "Env": [
+          "GF_SECURITY_ADMIN_USER=admin",
+          "GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/analytics/",
+          "GF_SERVER_SERVE_FROM_SUB_PATH=false",
+          "GF_AUTH_ANONYMOUS_ENABLED=true",
+          "GF_SECURITY_ALLOW_EMBEDDING=true"
+        ],
+        "Secrets": [
+          {
+            "SecretName": "grafana_password"
+          }
+        ],
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "grafana",
+            "Target": "/var/lib/grafana",
+            "ReadOnly": false
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:3000/",
+      "externalPath": "/analytics"
+    }
+  }
+}

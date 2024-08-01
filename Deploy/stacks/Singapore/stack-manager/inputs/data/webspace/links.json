@@ -1,0 +1,21 @@
+{
+    "intro": "This list contains links to a number of resources designed to act as supplemental documentation for this visualisation.",
+    "links": [
+        {
+            "text": "Landplot data",
+            "url": "https://www.ura.gov.sg/"
+        },
+        {
+            "text": "Carpark data",
+            "url": "https://beta.data.gov.sg/"
+        },
+        {
+            "text": "Population data",
+            "url": "https://dataforgood.facebook.com/"
+        },
+        {
+            "text": "AERMOD - dispersion model",
+            "url": "https://www.epa.gov/scram/air-quality-dispersion-modeling-preferred-and-recommended-models#aermod"
+        }
+    ]
+}

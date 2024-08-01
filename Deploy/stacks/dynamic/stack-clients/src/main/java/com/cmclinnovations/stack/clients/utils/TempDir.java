@@ -2,11 +2,9 @@ package com.cmclinnovations.stack.clients.utils;
 
 import java.nio.file.Path;
 
-public abstract class TempDir extends TempPath {
+public interface TempDir extends TempPath {
 
-    protected TempDir(Path path) {
-        super(path);
-    }
+    void copyFrom(Path sourceDir);
+    void copyTo(Path targetDir);
 
-    public abstract void copyFrom(Path sourceDir);
 }

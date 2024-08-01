@@ -45,5 +45,5 @@ Afterwards the visualisation can be viewed via Docker Desktop. For more informat
 
 [properties file]: resources/properties.properties
 [CitiesKG Agents]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
-[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations
 [Minimum Working Example]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Agents/TimeSeriesExample

@@ -33,7 +33,7 @@ def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, 
     if noSurroundings == '0': # CEA to use surroundings.shp, which is created from surroundings data from knowledge graph
         data[0]['parameters']['surroundings'] = filepath+os.sep+"surroundings.shp"
     elif noSurroundings == '1': # if no surroundings data from knowledge graph, get CEA to query surroundings data from OpenStreetMap
-        dic = {'script':'surroundings-helper', 'parameters':{'scenario':'scenario_path', 'buffer':100.}}
+        dic = {'script':'surroundings-helper', 'parameters':{'scenario':'scenario_path', 'buffer':50.}}
         data.insert(2, dic)
 
     if noWeather == '0': # CEA to use weather.epw, which is created from weather data from knowledge graph
@@ -44,7 +44,7 @@ def write_workflow_file(workflow_file, workflow_name, filepath, noSurroundings, 
     if noTerrain == '0':
         data[0]['parameters']['terrain'] = filepath+os.sep+"terrain.tif"
     elif noTerrain == '1':
-        dic = {'script':'terrain-helper', 'parameters':{'scenario':'scenario_path'}}
+        dic = {'script':'terrain-helper', 'parameters':{'buffer': 75., 'scenario':'scenario_path'}}
         data.insert(3, dic)
 
     for i in data:

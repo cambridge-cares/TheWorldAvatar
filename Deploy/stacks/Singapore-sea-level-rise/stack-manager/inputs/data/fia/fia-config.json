@@ -1,0 +1,25 @@
+{
+    "entries": [
+        {
+            "id": "plots",
+            "class": "https://www.theworldavatar.com/kg/ontoplot/Plot",
+            "meta": {
+                "queryFile": "plot.sparql"
+            }
+        },
+        {
+            "id": "building",
+            "class": "http://www.opengis.net/citygml/building/2.0/Building",
+            "meta": {
+                "queryFile": "building.sparql"
+            }
+        },
+        {
+            "id": "Isochrone",
+            "class": "https://www.theworldavatar.com/kg/ontoisochrone/Isochrone",
+            "meta": {
+                "queryFile": "isochrone.sparql"
+            }
+        }
+    ]
+}

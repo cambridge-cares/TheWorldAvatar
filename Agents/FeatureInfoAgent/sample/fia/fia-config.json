@@ -1,0 +1,32 @@
+{
+    "entries": [
+        {
+            "id": "Castle",
+            "class": "https://theworldavatar.io/ontology/ontocastle/ontocastle.owl#Castle",
+            "meta" : {
+                "queryFile": "CastleMeta.sparql"
+            },
+            "time": {
+                "queryFile": "CastleTime.sparql",
+                "limit": 7,
+                "unit": "days",
+                "reference": "first",
+                "database": "postgres"
+            }
+        },
+        {
+            "id": "Structure",
+            "class": "https://theworldavatar.io/ontology/ontocastle/ontocastle.owl#Structure",
+            "meta" : {
+                "queryFile": "StructureMeta.sparql"
+            }
+        },
+        {
+            "id": "Feature",
+            "class": "http://www.opengis.net/ont/geosparql#Feature",
+            "meta" : {
+                "queryFile": "FeatureMeta.sparql"
+            }
+        }
+    ]
+}

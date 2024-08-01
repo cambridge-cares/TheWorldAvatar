@@ -99,7 +99,7 @@ In Docker Desktop:
 
 
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
-[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper
 [properties file]: resources/renewable_energy_agents.properties

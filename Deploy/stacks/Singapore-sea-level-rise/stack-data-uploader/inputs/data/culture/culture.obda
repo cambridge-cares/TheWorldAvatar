@@ -1,0 +1,105 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+rdfs:	http://www.w3.org/2000/01/rdf-schema#
+:       https://www.theworldavatar.com/kg/
+sea:    https://www.theworldavatar.com/kg/ontosealevel/
+be:     https://www.theworldavatar.com/kg/ontobuiltenv/
+ic:     http://ontology.eil.utoronto.ca/icontact.owl#
+sch:    https://schema.org/
+dbo:    https://dbpedia.org/ontology/
+
+[MappingDeclaration] @collection [[
+mappingId	Cultural - Heritage Tree
+target		:HeritageTree/{"uuid"} a sea:HeritageTree ;
+                dbo:scientificName {"scientificname"}^^xsd:string .
+source		SELECT "uuid", "scientificname"
+            FROM "public"."heritagetree"
+
+mappingId	Cultural - Heritage Tree Address
+target      :HeritageTree/{"uuid"} a sea:HeritageTree ;
+                be:hasAddress :Address_{"address_uuid"} .
+            :Address_{"address_uuid"} a ic:Address ;
+                ic:hasUnitNumber {"addressunitnumber"}^^xsd:string ;
+                ic:hasStreetNumber {"addressblockhousenumber"}^^xsd:string ;
+                ic:hasPostalCode {"addressstreetname"}^^xsd:string ;
+                ic:hasStreet {"addresspostalcode"}^^xsd:string .
+source		SELECT "uuid", "address_uuid", "addressunitnumber", "addressblockhousenumber", "addressstreetname", "addresspostalcode"
+            FROM "public"."heritagetree"
+            WHERE "address_uuid" IS NOT NULL
+
+mappingId	Cultural - Historic Site
+target		:HistoricSite/{"uuid"} a sea:HistoricSite ;
+                sch:name {"name"}^^xsd:string ;
+                rdfs:label {"description"}^^xsd:string .
+source		SELECT "uuid", "name", "description"
+            FROM "public"."historicsite"
+
+mappingId	Cultural - Historic Site Address
+target      :HistoricSite/{"uuid"} a sea:HistoricSite ;
+                be:hasAddress :Address_{"address_uuid"} .
+            :Address_{"address_uuid"} a ic:Address ;
+                ic:hasUnitNumber {"addressunitnumber"}^^xsd:string ;
+                ic:hasStreetNumber {"addressblockhousenumber"}^^xsd:string ;
+                ic:hasPostalCode {"addressstreetname"}^^xsd:string ;
+                ic:hasStreet {"addresspostalcode"}^^xsd:string .
+source		SELECT "uuid", "address_uuid", "addressunitnumber", "addressblockhousenumber", "addressstreetname", "addresspostalcode"
+            FROM "public"."historicsite"
+            WHERE "address_uuid" IS NOT NULL
+
+mappingId	Cultural - Monument
+target		:Monument/{"uuid"} a sea:Monument ;
+                sch:name {"name"}^^xsd:string ;
+                rdfs:label {"description"}^^xsd:string .
+source		SELECT "uuid", "name", "description"
+            FROM "public"."monument"
+
+mappingId	Cultural - Monument Address
+target      :Monument/{"uuid"} a sea:Monument ;
+                be:hasAddress :Address_{"address_uuid"} .
+            :Address_{"address_uuid"} a ic:Address ;
+                ic:hasUnitNumber {"addressunitnumber"}^^xsd:string ;
+                ic:hasStreetNumber {"addressblockhousenumber"}^^xsd:string ;
+                ic:hasPostalCode {"addressstreetname"}^^xsd:string ;
+                ic:hasStreet {"addresspostalcode"}^^xsd:string .
+source		SELECT "uuid", "address_uuid", "addressunitnumber", "addressblockhousenumber", "addressstreetname", "addresspostalcode"
+            FROM "public"."monument"
+            WHERE "address_uuid" IS NOT NULL
+
+mappingId	Cultural - Museum
+target		:Museum/{"uuid"} a sea:Museum ;
+                sch:name {"name"}^^xsd:string ;
+                rdfs:label {"description"}^^xsd:string .
+source		SELECT "uuid", "name", "description"
+            FROM "public"."museum"
+
+mappingId	Cultural - Museum Address
+target      :Museum/{"uuid"} a sea:Museum ;
+                be:hasAddress :Address_{"address_uuid"} .
+            :Address_{"address_uuid"} a ic:Address ;
+                ic:hasUnitNumber {"addressunitnumber"}^^xsd:string ;
+                ic:hasStreetNumber {"addressblockhousenumber"}^^xsd:string ;
+                ic:hasPostalCode {"addressstreetname"}^^xsd:string ;
+                ic:hasStreet {"addresspostalcode"}^^xsd:string .
+source		SELECT "uuid", "address_uuid", "addressunitnumber", "addressblockhousenumber", "addressstreetname", "addresspostalcode"
+            FROM "public"."museum"
+            WHERE "address_uuid" IS NOT NULL
+
+mappingId	Cultural - Tourist Attraction
+target		:TouristAttraction/{"uuid"} a sea:TouristAttraction ;
+                sch:name {"name"}^^xsd:string ;
+                rdfs:label {"overview"}^^xsd:string ;
+                rdfs:label {"description"}^^xsd:string .
+source		SELECT "uuid", "name", "overview", "description"
+            FROM "public"."touristattraction"
+
+mappingId	Cultural - Tourist Attraction Address
+target      :TouristAttraction/{"uuid"} a sea:TouristAttraction ;
+                be:hasAddress :Address_{"address_uuid"} .
+            :Address_{"address_uuid"} a ic:Address ;
+                ic:hasStreetNumber {"addressblockhousenumber"}^^xsd:string ;
+                ic:hasPostalCode {"addressstreetname"}^^xsd:string ;
+                ic:hasStreet {"addresspostalcode"}^^xsd:string .
+source		SELECT "uuid", "address_uuid", "addressblockhousenumber", "addressstreetname", "addresspostalcode"
+            FROM "public"."touristattraction"
+            WHERE "address_uuid" IS NOT NULL
+]]

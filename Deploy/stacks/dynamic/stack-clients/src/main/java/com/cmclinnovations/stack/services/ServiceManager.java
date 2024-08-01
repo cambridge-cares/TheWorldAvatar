@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class ServiceManager {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
 
     private static final URL BUILTIN_CONFIG_DIR = ServiceManager.class.getResource("built-ins");
     private static final Path USER_CONFIG_DIR = StackClient.STACK_CONFIG_DIR.resolve("services");
@@ -165,8 +166,10 @@ public final class ServiceManager {
 
             DockerService dockerService = getOrInitialiseService(stackName, StackClient.getContainerEngineName());
             dockerService.doPreStartUpConfiguration(newContainerService);
-            dockerService.startContainer(newContainerService);
-            dockerService.doPostStartUpConfiguration(newContainerService);
+            if (dockerService.startContainer(newContainerService)) {
+                dockerService.doPostStartUpConfiguration(newContainerService);
+            }
+            dockerService.writeEndpointConfigs(newContainerService);
 
             if (!NginxService.TYPE.equals(serviceName)) {
                 ReverseProxyService reverseProxyService = getOrInitialiseService(stackName, NginxService.TYPE);
@@ -192,6 +195,11 @@ public final class ServiceManager {
 
     public void initialiseAllUserServices(String stackName) {
         userServices.forEach(serviceName -> initialiseService(stackName, serviceName));
+    }
+
+    public void removeService(String stackName, String serviceName) {
+        DockerService dockerService = getOrInitialiseService(stackName, StackClient.getContainerEngineName());
+        dockerService.removeService(serviceName);
     }
 
 }

@@ -49,11 +49,23 @@ public class PrefixToUrlMap implements Prefixes {
 		mapPrefixToUrl.put(OCPSYST, "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#");
 		mapPrefixToUrl.put(OCPTECH, "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#");
 		mapPrefixToUrl.put(OCPTOPO, "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#");
-		
+		//########the following are added by @wx243
+		mapPrefixToUrl.put(OCPDSIU, "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#");
+		mapPrefixToUrl.put(OCPST, "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#");
+		mapPrefixToUrl.put(OCPNTSYS, "http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#");
+		mapPrefixToUrl.put(OCPPHYDMS, "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#");
+		mapPrefixToUrl.put(OCPCOORSYS, "http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#");
+		mapPrefixToUrl.put(OCPSIU, "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#");
+		mapPrefixToUrl.put(OCPMATHRLT, "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#");
+		mapPrefixToUrl.put(MATAMDLTOPO, "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#");
+				
 		// prefixes for OntoPowerSys
 		mapPrefixToUrl.put(OPSBEHA, "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#");
 		mapPrefixToUrl.put(OPSMODE, "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#");
 		mapPrefixToUrl.put(OPSREAL, "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#");
+		//########the following are added by @wx243
+		mapPrefixToUrl.put(OPSFUNC, "http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#");
+		mapPrefixToUrl.put(OPSPERFM, "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#");	
 		
 		// prefixes for other JPS ontologies
 		mapPrefixToUrl.put(JPSAGEN, "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#");
@@ -64,6 +76,17 @@ public class PrefixToUrlMap implements Prefixes {
 		// special prefixes
 		// Blazegraph Geo Service
 		mapPrefixToUrl.put(BLAZEGRAPH_GEO, "http://www.bigdata.com/rdf/geospatial#");
+		
+		// prefixes for OntoEIP
+		mapPrefixToUrl.put(OEIPSYSREAL, "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#");
+		mapPrefixToUrl.put(OEIPSYSFUNC, "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#");
+		mapPrefixToUrl.put(OEIPPOWPLANT, "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#");
+		mapPrefixToUrl.put(OEIPUPSV1, "http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#");
+		mapPrefixToUrl.put(OEISYSPERFM, "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#");
+		mapPrefixToUrl.put(OEISYSRQRM, "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#");
+		
+		
+		
 	}
 	
 	public static String getPrefixUrl(String prefix) {

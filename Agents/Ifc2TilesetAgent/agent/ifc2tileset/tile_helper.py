@@ -18,18 +18,42 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 from agent.ifc2tileset.schema import Tileset, Tile
+from agent.kgutils.const import IRI_VAR, NAME_VAR
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
 
-def make_root_tile(bbox: Optional[List[float]] = None, **kwargs):
-    """Generates a root tile with the provided arguments and default values.
+def append_content_metadata_schema(tileset: Tileset):
+    """Appends the schema of content metadata for building and asset to the tileset."""
+
+    tileset["schema"] = {"classes": {
+        "ContentMetaData": {
+            "name": "Content metadata",
+            "description": "A metadata class for all content including building and individual assets",
+            # Store all content and asset information here even if they are not used
+            "properties": {
+                NAME_VAR: {
+                    "description": "Name of the asset/building",
+                    "type": "STRING"
+                },
+                IRI_VAR: {
+                    "description": "Data IRI of the asset/building",
+                    "type": "STRING"
+                }
+            }
+        }
+    }}
+
+
+def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Optional[List[str]] = [], root_metadata: Optional[List[str]] = []):
+    """Generates a root tile with the provided arguments and default values. The root tile will only
+    include geometry content for non-asset elements like the building, furniture, and solar panels.
 
     Args:
         bbox (optional): A 12-element list that represents Next tileset's boundingVolume.box property. Defaults to None.
-        **kwargs: Keyword arguments to be added to the root tile.
-
+        geometry_file_paths (optional): A list of geometry file paths if available to be appended. Defaults to an empty list.
+        root_metadata (optional): A list containing the data IRI and name of the root contents in this order. Defaults to an empty list.
     Returns:
         A root tile.
     """
@@ -39,9 +63,36 @@ def make_root_tile(bbox: Optional[List[float]] = None, **kwargs):
         geometricError=512,
         refine="ADD",
     )
+    # If there is building data, generate a placeholder dictionary content
+    if len(root_metadata) > 0:
+        building_dict = {
+            "class": "ContentMetaData",
+            "properties": {
+                IRI_VAR: root_metadata[0]
+            }
+        }
+        # If there is a building name, add it to the tileset
+        if root_metadata[1]:
+            building_dict["properties"][NAME_VAR] = root_metadata[1]
 
-    for key, value in kwargs.items():
-        root_tile[key] = value
+    # If there are geometry contents available
+    if geometry_file_paths:
+        # And if there is only one item in the list, use the "content" nomenclature
+        if len(geometry_file_paths) == 1:
+            root_tile["content"] = {"uri": geometry_file_paths[0]}
+            # If there is building data, append the metadata
+            if len(root_metadata) > 0:
+                root_tile["content"]["metadata"] = building_dict
+        else:
+            # If there are more than one item, use the "contents" nomenclature with a list
+            # Sample format: {"contents": [{"uri":"path1"}, {"uri":"path2"}]}
+            root_tile["contents"] = []
+            for path in geometry_file_paths:
+                temp_dict = {"uri": path}
+                # If there is building data, append the metadata to all geometries
+                if len(root_metadata) > 0:
+                    temp_dict["metadata"] = building_dict
+                root_tile["contents"].append(temp_dict)
 
     return root_tile
 
@@ -55,11 +106,17 @@ def make_tileset(root_tile: Tile):
     Returns:
         A tileset.
     """
-    return Tileset(
+    tileset = Tileset(
         asset={"version": "1.1"},
         geometricError=1024,
         root=root_tile
     )
+    # If there is building data,
+    if ("content" in root_tile and "metadata" in root_tile["content"]) \
+            or ("contents" in root_tile and "metadata" in root_tile["contents"][0]):
+        # Attach the metadata schema
+        append_content_metadata_schema(tileset)
+    return tileset
 
 
 def y_up_to_z_up(x_min: float, y_min: float, z_min: float, x_max: float, y_max: float, z_max: float):
@@ -108,8 +165,11 @@ def compute_bbox(gltf: Union[PathLike, Iterable[PathLike]], offset: float = 0):
     ]
 
 
-def gen_solarpanel_tileset():
+def gen_solarpanel_tileset(solar_panel_data: list[str]):
     """Generates and write the tileset for solar panel into 3D Tiles Next format if it exists.
+
+    Args:
+        solar_panel_data: A list containing the data IRI and name of the solar panel in this order.
     """
     solarpanel_file_path = "./data/glb/solarpanel.glb"
     solarpath = Path(solarpanel_file_path)
@@ -118,14 +178,19 @@ def gen_solarpanel_tileset():
         return
 
     bbox = compute_bbox(solarpath)
-    root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "solarpanel.glb"})
+    # No building data should be created
+    root_tile = make_root_tile(
+        bbox=bbox, geometry_file_paths=[state.asset_url + "solarpanel.glb"], root_metadata=solar_panel_data)
     tileset = make_tileset(root_tile)
 
     jsonwriter(tileset, "tileset_solarpanel")
 
 
-def gen_sewagenetwork_tileset():
+def gen_sewagenetwork_tileset(sewage_data: list[str]):
     """Generates and writes the tileset for sewage network into 3D Tiles Next format if it exists.
+
+    Args:
+        sewage_data: A list containing the data IRI and name of the sewage network in this order.
     """
     sewage_file_path = "./data/glb/sewagenetwork.glb"
     sewagepath = Path(sewage_file_path)
@@ -134,7 +199,9 @@ def gen_sewagenetwork_tileset():
         return
 
     bbox = compute_bbox(sewagepath)
-    root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "sewagenetwork.glb"})
+    # No building data should be created
+    root_tile = make_root_tile(
+        bbox=bbox,  geometry_file_paths=[state.asset_url + "sewagenetwork.glb"], root_metadata=sewage_data)
     tileset = make_tileset(root_tile)
 
     jsonwriter(tileset, "tileset_sewage")

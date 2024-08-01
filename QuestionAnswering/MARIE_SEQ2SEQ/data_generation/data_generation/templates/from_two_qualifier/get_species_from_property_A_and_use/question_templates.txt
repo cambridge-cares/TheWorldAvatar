@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} around {value} and used as {Use}
+Provide a roster of chemical species exhibiting {PropertyName} approximately at {value} and employed for {Use}.
+Enumerate molecules with {PropertyName} near {value} utilized in the capacity of {Use}.
+List compounds manifesting {PropertyName} around {value} and put to use as {Use}.
+Offer a catalog of species demonstrating {PropertyName} at roughly {value} and applied for {Use}.
+Outline chemical species displaying {PropertyName} approximately {value} and harnessed for {Use}.
+Compile a record of molecules showcasing {PropertyName} close to {value} and employed for {Use}.
+Present a lineup of compounds featuring {PropertyName} around {value} and utilized as {Use}.
+Detail species exhibiting {PropertyName} at about {value} and adopted for {Use}.
+Tabulate chemical species with {PropertyName} near {value} and put to service as {Use}.
+Provide an inventory of molecules having {PropertyName} approximately {value} and used for {Use}.
+Enlist compounds demonstrating {PropertyName} around {value} and employed in {Use}.
+Give a rundown of species displaying {PropertyName} at roughly {value} and utilized for {Use}.
+Share a list of chemical species manifesting {PropertyName} near {value} and applied as {Use}.
+Enumerate molecules showcasing {PropertyName} approximately at {value} and harnessed for {Use}.
+Compile a catalogue of compounds with {PropertyName} around {value} and put to use as {Use}.
+Provide a summary of species exhibiting {PropertyName} close to {value} and employed for {Use}.
+Detail chemical species displaying {PropertyName} approximately {value} and utilized in {Use}.
+Tabulate molecules featuring {PropertyName} at about {value} and used as {Use}.
+Offer an index of compounds demonstrating {PropertyName} near {value} and put to service for {Use}.
+Present a collection of species with {PropertyName} around {value} and applied for {Use}.

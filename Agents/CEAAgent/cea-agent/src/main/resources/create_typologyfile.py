@@ -51,7 +51,7 @@ def dataframe_to_dbf(df, dbf_path, specs=None):
     dbf.close()
     return dbf_path
 
-def create_typologyfile(zone_geometry_path, usage, typologyfile):
+def create_typologyfile(zone_geometry_path, data, typologyfile):
     """
     Adapted from CityEnergyAnalyst
     
@@ -65,7 +65,7 @@ def create_typologyfile(zone_geometry_path, usage, typologyfile):
 
     """
 
-    zone = Gdf.from_file(zone_geometry_path).drop('geometry', axis=1)
+    zone = Gdf.from_file(zone_geometry_path).drop('geometry', axis = 1)
     
     zone['STANDARD'] = 'STANDARD1'
     zone['YEAR'] = 2020
@@ -75,14 +75,24 @@ def create_typologyfile(zone_geometry_path, usage, typologyfile):
     zone['2ND_USE_R'] = 0.0
     zone['3RD_USE'] = "NONE"
     zone['3RD_USE_R'] = 0.0
-    
-    for i in range(len(usage)):
-        j = 0
 
-        for use, weight in usage[i].items():
-            zone.at[i, COLUMNS_ZONE_TYPOLOGY[2*j+3]] = use
-            zone.at[i, COLUMNS_ZONE_TYPOLOGY[2*j+4]] = weight
-            j += 1
+    ind = 0
+
+    for building in data:
+        num = len(building["geometry"])
+        usage = building["usage"]
+
+        # assign the same usages and weights for the different geometries that belong to the same building
+        for i in range(num):
+            j = 0
+
+            # iterate through the different usages and their respective weighting
+            for use, weight in usage.items():
+                zone.at[i, COLUMNS_ZONE_TYPOLOGY[2*j+3]] = use
+                zone.at[i, COLUMNS_ZONE_TYPOLOGY[2*j+4]] = weight
+                j += 1
+
+            ind += 1
         
     dataframe_to_dbf(zone[COLUMNS_ZONE_TYPOLOGY], typologyfile)
     
@@ -91,16 +101,14 @@ def main(argv):
     typologyfile_file = "typology.dbf"
     typologyfile = argv.file_location + os.sep + typologyfile_file
     zone_geometry_path = argv.file_location + os.sep + "zone.shp"
-    with open(argv.data_file_location, "r") as f:
-        dataString = f.readlines()[0]
-    data_dictionary = json.loads(dataString)
-    usage = []
 
-    for data in data_dictionary:
-        usage.append(data['usage'])
+    with open(argv.data_file_location, "r") as f:
+        dataString = f.read()
+
+    data_list = json.loads(dataString)
 
     try:
-        create_typologyfile(zone_geometry_path, usage, typologyfile)
+        create_typologyfile(zone_geometry_path, data_list, typologyfile)
     except IOError:
         print('Error while processing file: ' + typologyfile)
 

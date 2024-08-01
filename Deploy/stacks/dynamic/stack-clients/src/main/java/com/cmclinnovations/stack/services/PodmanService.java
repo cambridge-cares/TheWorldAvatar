@@ -53,8 +53,6 @@ public class PodmanService extends DockerService {
 
     public PodmanService(String stackName, ServiceConfig config) {
         super(stackName, config);
-
-        addStackSecrets();
     }
 
     @Override
@@ -68,11 +66,9 @@ public class PodmanService extends DockerService {
     }
 
     @Override
-    protected void initialise(String stackName) {
+    public void initialise() {
 
-        // addStackConfigs();
-
-        createNetwork(stackName);
+        addStackSecrets();
     }
 
     @Override
@@ -148,14 +144,14 @@ public class PodmanService extends DockerService {
     @Override
     protected Optional<Container> configureContainerWrapper(ContainerService service) {
         Optional<Container> container;
-        removePod(service);
+        removeService(service);
 
         container = startPod(service);
         return container;
     }
 
-    private Optional<ListPodsReport> getPod(ContainerService service) {
-        String podName = getPodName(service.getContainerName());
+    private Optional<ListPodsReport> getPod(String containerName) {
+        String podName = getPodName(containerName);
         try {
             return new PodsApi(getClient().getPodmanClient()).podListLibpod(
                     URLEncoder.encode("{\"name\":[\"" + podName + "\"]}", StandardCharsets.UTF_8))
@@ -165,8 +161,9 @@ public class PodmanService extends DockerService {
         }
     }
 
-    private void removePod(ContainerService service) {
-        Optional<ListPodsReport> pod = getPod(service);
+    @Override
+    void removeService(String serviceName) {
+        Optional<ListPodsReport> pod = getPod(serviceName);
 
         if (pod.isPresent()) {
             try {
@@ -292,8 +289,11 @@ public class PodmanService extends DockerService {
             containerSpecGenerator.setLabels(containerSpec.getLabels());
 
             try {
-                ContainerCreateResponse containerCreateResponse = new ContainersApi(getClient().getPodmanClient())
+                ContainersApi containersApi = new ContainersApi(getClient().getPodmanClient());
+                ContainerCreateResponse containerCreateResponse = containersApi
                         .containerCreateLibpod(containerSpecGenerator);
+
+                containersApi.containerStartLibpod(containerName, null);
 
                 return getContainerIfCreated(service.getContainerName());
             } catch (ApiException ex) {

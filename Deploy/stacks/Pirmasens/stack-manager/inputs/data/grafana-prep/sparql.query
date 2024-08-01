@@ -1,0 +1,37 @@
+# SPARQL queries to retrieve relevant dataIRIs for Grafana dashboard
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ts:   <https://www.theworldavatar.com/kg/ontotimeseries/>
+PREFIX ohn:  <https://www.theworldavatar.com/kg/ontoheatnetwork/>
+
+SELECT DISTINCT ?name ?iri
+WHERE {
+   {
+   ?demand a ohn:HeatDemand ;
+           om:hasValue ?iri 
+   BIND ("demand_hist" as ?name)
+   } UNION {
+   ?demand a ohn:HeatDemand ;
+           ts:hasForecast ?iri
+   BIND ("demand_fc" as ?name)        
+   } UNION {
+   ?efw_sourcing a ohn:ProvidedHeatAmount ;
+                 ts:hasForecast ?iri .
+   BIND ("heat_sourcing" as ?name)  
+   } UNION {
+   ?own_generation a/rdfs:subClassOf ohn:HeatGenerator ;
+                   ohn:hasGeneratedHeatAmount/ts:hasForecast ?iri ;
+                   rdfs:label ?label .
+   BIND(concat("heat_generation_", str(?label)) as ?name)
+   } UNION {
+   ?own_generation a/rdfs:subClassOf ohn:HeatGenerator ;
+                   ohn:hasConsumedGasAmount/ts:hasForecast ?iri ;
+                   rdfs:label ?label .
+        BIND(concat("gas_consumption_", str(?label)) as ?name)
+   }UNION {
+   ?own_generation a ohn:GasTurbine ;
+                   ohn:hasCoGenElectricityAmount/ts:hasForecast ?iri .
+   BIND("elec_cogen" as ?name)
+   }
+}

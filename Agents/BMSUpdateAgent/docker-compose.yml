@@ -2,9 +2,12 @@ version: "3.8"
 
 services:
   bms-update-agent:
-    image: bms-update-agent:1.0.0
+    image: bms-update-agent:1.1.0
     build: .
     environment:
-      CLIENT_PROPERTIES: "/app/config/client.properties"
+      SET_CLIENT_PROPERTIES: "/app/config/setClient.properties"
+      WRITE_CLIENT_PROPERTIES: "/app/config/writeClient.properties"
+      UPDATETRIPLES_CLIENT_PROPERTIES: "/app/config/updateTriplesClient.properties"
+      WACNET_API_PROPERTIES: "/app/config/api.properties"
     volumes:
       - ./config:/app/config

@@ -1,0 +1,32 @@
+.legend-colorbar-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 3vh;
+}
+
+.legend-colorbar-container {
+    position: relative;
+    width: 90%;
+    margin: 2vh auto 0;
+    color: black;
+}
+
+.legend-colorbar {
+    display: flex;
+    justify-content: space-between;
+    height: 2vh;
+    font-size: 0.7rem;
+}
+
+.legend-color-label {
+    margin: 3vh -0.5vw 0;
+}
+
+.green-red-gradient {
+    background: linear-gradient(to right, #A7E8BD 0%, #FF4E00 100%);
+}
+
+.white-red-gradient {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 0, 0, 1) 50%);
+}

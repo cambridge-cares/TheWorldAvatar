@@ -1,4 +1,4 @@
-var stack = "http://137.132.22.165:3838/";
+var stack = jsObject.getHostAddr();
 
 function visualiseTimeSeriesData(rawJSON) {
     $("#loaderAnimationWrapper").hide();
@@ -42,9 +42,13 @@ function visualiseTimeSeriesData(rawJSON) {
             timeseriesHandler.update($("#time-series-select").val());
         });
 
+        console.info("chart is ready");
+
     } else {
+        $("#notAvailaleP").show();
         console.warn("No 'time' node found, skipping timeseries visualisation.");
     }
+    jsObject.notifyChartReady();
 }
 
 function timeZoneConversion(timeStamp) {
@@ -56,7 +60,7 @@ function timeZoneConversion(timeStamp) {
 
 function loadSelectedEquipment() {
 
-    var FIAUri = stack + "feature-info-agent/get";
+    var FIAUri = stack + '/' + jsObject.getFiaPath();
     var params = {
             "iri": jsObject.getEquipmentIri()
     };

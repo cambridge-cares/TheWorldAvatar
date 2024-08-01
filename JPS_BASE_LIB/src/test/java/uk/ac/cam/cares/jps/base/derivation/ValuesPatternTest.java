@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
@@ -147,4 +149,15 @@ public class ValuesPatternTest extends TestCase {
         Assert.assertTrue(e2.getMessage().contains(ValuesPattern.ILLEGAL_VALUEPAIR_ERROR_MSG));
     }
 
+    @Test
+    public void testGraphPatternsUnion() {
+        GraphPattern graphPattern = Rdf.iri("http://s").has(Rdf.iri("http://p"), Rdf.iri("http://o"));
+        valuesPattern = new ValuesPattern(var1, var1Value1, var1Value2);
+        Assert.assertEquals(
+            "VALUES ( ?var1 )   { (\"http://var1Value1\") (\"var1Value2\") }",
+            valuesPattern.getQueryString().trim());
+        Assert.assertEquals(
+            "{ <http://s> <http://p> <http://o> . } UNION {  VALUES ( ?var1 )   { (\"http://var1Value1\") (\"var1Value2\") }  }",
+            GraphPatterns.union(graphPattern, valuesPattern).getQueryString().trim());
+    }
 }

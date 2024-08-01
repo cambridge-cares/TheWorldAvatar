@@ -14,35 +14,10 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 from agent.ifc2tileset.schema import Tileset, Tile, Content
-from agent.ifc2tileset.tile_helper import compute_bbox
+from agent.ifc2tileset.tile_helper import append_content_metadata_schema, compute_bbox
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 logger = agentlogging.get_logger("dev")
-
-
-def append_asset_metadata_schema(tileset: Tileset):
-    """Appends the schema of asset metadata to the tileset."""
-
-    tileset["schema"]["classes"]["AssetMetaData"] = {
-        "name": "Asset metadata",
-        "description": "A metadata class for all individual assets",
-        # Store all asset information here even if they are not used for specific assets
-        "properties": {
-            NAME_VAR: {
-                "description": "Name of the asset",
-                "type": "STRING"
-            },
-            ID_VAR: {
-                "description": "Unique identifier generated in IFC",
-                "type": "STRING"
-            },
-            IRI_VAR: {
-                "description": "Data IRI of the asset",
-                "type": "STRING"
-            }
-        }
-    }
-
 
 def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
     """Appends a child node containing the given assets to the given tile.
@@ -57,20 +32,21 @@ def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
             "uri": state.asset_url + row["file"] + ".glb",
             # Add the asset name to establish a metadata skeleton
             "metadata": {
-                "class": "AssetMetaData",
+                "class": "ContentMetaData",
                 "properties": {
                     NAME_VAR: row[NAME_VAR].split(":")[0],
-                    ID_VAR: row[ID_VAR],
                     IRI_VAR: row[IRI_VAR]
                 }
             }
         }
 
-    contents: List[Content] = asset_df.apply(_asset_data_to_tileset_content, axis=1).tolist()
+    contents: List[Content] = asset_df.apply(
+        _asset_data_to_tileset_content, axis=1).tolist()
 
     # Add an offset of 5m in the x- and y-directions to ensure non-negligible bounding box volume in the case of
     # small-sized assets
-    bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_df["file"]], offset=5)
+    bbox = compute_bbox(
+        [f"./data/glb/{file}.glb" for file in asset_df["file"]], offset=5)
 
     tile["children"] = [{
         "boundingVolume": {"box": bbox},
@@ -95,7 +71,8 @@ def append_assets_to_tileset(tileset: Tileset, asset_df: pd.DataFrame):
     for i in range(0, len(asset_df), assets_num_per_node):
         # CAVEAT: Functionality for visualising tilesets with >10 child nodes in Cesium has yet to be tested.
         # If the code fails to work for more child nodes, perform early stopping when above the max limit of child nodes
-        append_assets_to_tile(tile_node, asset_df.iloc[i: i + assets_num_per_node])
+        append_assets_to_tile(
+            tile_node, asset_df.iloc[i: i + assets_num_per_node])
         tile_node = tile_node["children"][0]
 
 
@@ -111,7 +88,8 @@ def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):
     if tileset is None or asset_df.empty:
         return
 
-    logger.info("Individual assets detected. Attaching tileset with asset metadata...")
-
-    append_asset_metadata_schema(tileset)
+    logger.info(
+        "Individual assets detected. Attaching tileset with asset metadata...")
+    if "schema" not in tileset:
+        append_content_metadata_schema(tileset)
     append_assets_to_tileset(tileset, asset_df)
