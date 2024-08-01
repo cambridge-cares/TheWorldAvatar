@@ -1,0 +1,16 @@
+SELECT DISTINCT ?label ?IUPACNameValue ?{PropertyName}Value ?{PropertyName}UnitValue ?{PropertyName}ReferenceStateValue ?{PropertyName}ReferenceStateUnitValue
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .
+    ?IUPACNameIRI os:value ?IUPACNameValue .
+
+    ?SpeciesIRI os:has{PropertyName} ?{PropertyName}IRI .
+    ?{PropertyName}IRI os:value ?{PropertyName}Value ; os:unit ?{PropertyName}UnitIRI ; os:hasProvenance ?{PropertyName}ProvenanceIRI . 
+    ?{PropertyName}UnitIRI rdfs:label ?{PropertyName}UnitValue .
+    OPTIONAL{{?{PropertyName}IRI os:hasReferenceState ?{PropertyName}ReferenceStateIRI .
+    ?{PropertyName}ReferenceStateIRI os:value ?{PropertyName}ReferenceStateValue ; os:unit ?{PropertyName}ReferenceStateUnitIRI .
+    ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
+
+    FILTER(?{PropertyName}Value > {minvalue} && ?{PropertyName}Value < {maxvalue})
+}}

@@ -383,9 +383,17 @@ class MapboxUtils {
         features.forEach(feature => {
             let id = feature["id"];
 
-            let match = result.find(entry => entry["id"] === id);
-            if(match === null || match === undefined) {
-                result.push(feature);
+            if (feature["properties"].hasOwnProperty("iri")) {
+                let iri = feature["properties"]["iri"];
+                let iri_match = result.find(entry => entry["properties"].hasOwnProperty("iri") && entry["properties"]["iri"] === iri);
+                if(iri_match === null || iri_match === undefined) {
+                    result.push(feature);
+                }
+            } else {
+                let id_match = result.find(entry => entry["id"] === id);
+                if(id_match === null || id_match === undefined) {
+                    result.push(feature);
+                }
             }
         });
 

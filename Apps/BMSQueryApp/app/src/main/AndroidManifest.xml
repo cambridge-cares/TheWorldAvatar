@@ -8,29 +8,37 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_cares_launcher"
-        android:roundIcon="@mipmap/ic_cares_launcher_round"
+        android:icon="@mipmap/ic_bms_launcher"
+        android:roundIcon="@mipmap/ic_bms_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.BMSQueryApp"
         tools:targetApi="31"
-        android:usesCleartextTraffic="true">
-        <activity
-            android:name=".MainActivity"
+        android:usesCleartextTraffic="true"
+        android:screenOrientation="portrait">
+
+        <activity android:name=".LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.BMSQueryApp.NoActionBar"
-            android:screenOrientation="portrait">
+            android:theme="@style/LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar">
+        </activity>
+
         <activity android:name=".EquipmentInstanceActivity"
             android:exported="false"
-            android:theme="@style/Theme.BMSQueryApp.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar" />
+
+        <activity android:name=".UserProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar" />
     </application>
 
 

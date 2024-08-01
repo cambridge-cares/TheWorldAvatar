@@ -43,8 +43,13 @@ public class GetDispersionSimulations extends HttpServlet {
             LOGGER.error(errmsg);
         }
 
-        dispersionSimulations.forEach(
+        try {
+            dispersionSimulations.forEach(
                 dispersionSimulation -> results.put(dispersionSimulation.getLabel(), dispersionSimulation.toJson()));
+        } catch (JSONException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to create JSON object for HTTP response");
+        }
 
         try {
             resp.getWriter().print(results);

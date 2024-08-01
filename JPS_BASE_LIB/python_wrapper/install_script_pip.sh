@@ -4,10 +4,10 @@
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CREATE_VENV='n'
-VENV_NAME='py4jps_venv'
+VENV_NAME='twa_venv'
 VENV_DIR=$SPATH
 DEV_INSTALL=''
-PROJ_NAME='py4jps'
+PROJ_NAME='twa'
 
 function usage {
     echo "==============================================================================================================="
@@ -96,6 +96,12 @@ function install_project {
     $PIPPATH --disable-pip-version-check install $DEV_INSTALL $SPATH
     if [[ "${DEV_INSTALL}" == "-e" ]];
     then
+        # below two lines are added due to issue occurred when install pyyaml (dependency of pytest-docker-compose)
+        # see issue: https://github.com/yaml/pyyaml/issues/724
+        # see workaround: https://github.com/yaml/pyyaml/issues/724#issuecomment-2113652764
+        # pyyaml==6.0.1 was used here to meet requirement constraint of other packages
+        $PIPPATH --disable-pip-version-check install "cython<3.0.0"
+        $PIPPATH --disable-pip-version-check install --no-build-isolation pyyaml==6.0.1
         $PIPPATH --disable-pip-version-check install -r $SPATH"/"dev_requirements.txt
     fi
     if [ $? -eq 0 ]; then

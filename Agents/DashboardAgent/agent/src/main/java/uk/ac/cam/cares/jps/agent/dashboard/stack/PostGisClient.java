@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import java.sql.*;
 import java.text.MessageFormat;
@@ -16,8 +17,7 @@ import java.util.*;
  */
 public class PostGisClient {
     private final String stackJdbcUrl;
-    private final String stackPostgisUser;
-    private final String stackPostgisPassword;
+    private final RemoteRDBStoreClient stackRdbClient;
     private final List<String> databaseList = new ArrayList<>();
     private static final String WHEN_DATA_IRI = "WHEN \"dataIRI\" = '";
     private static final String AND_TIMESERIES_IRI = "' AND \"timeseriesIRI\"= '";
@@ -34,11 +34,10 @@ public class PostGisClient {
     protected PostGisClient(String jdbcUrl, String user, String pass) {
         // Set up the required information for further interactions
         this.stackJdbcUrl = jdbcUrl;
-        this.stackPostgisUser = user;
-        this.stackPostgisPassword = pass;
+        this.stackRdbClient = new RemoteRDBStoreClient(jdbcUrl, user, pass);
         // Retrieve all available custom database so that methods can perform federated query on each
         // Note that to retrieve all databases, this method must connect to any default database, which is postgres in this case
-        try (Connection conn = connect(this.getJdbc("postgres"), user, pass)) {
+        try (Connection conn = connect(this.getJdbc("postgres"))) {
             this.retrieveAllDatabaseNames(conn);
         } catch (SQLException e) {
             LOGGER.fatal("Error connecting to database: ", e);
@@ -57,14 +56,14 @@ public class PostGisClient {
      * Get the PostGIS username.
      */
     protected String getUsername() {
-        return this.stackPostgisUser;
+        return this.stackRdbClient.getUser();
     }
 
     /**
      * Get the PostGIS password.
      */
     protected String getPassword() {
-        return this.stackPostgisPassword;
+        return this.stackRdbClient.getPassword();
     }
 
     /**
@@ -122,7 +121,7 @@ public class PostGisClient {
         String[] measureIris = parseTimeSeriesMapForQuery(timeSeries);
         // Connect to all existing database and attempt to retrieve the required metadata
         for (String database : this.databaseList) {
-            try (Connection conn = connect(this.getJdbc(database), this.stackPostgisUser, this.stackPostgisPassword)) {
+            try (Connection conn = connect(this.getJdbc(database))) {
                 Queue<String[]> postGisData = this.retrieveAllColAndTableNames(conn, database, measureIris);
                 // If there are results, store them into the overall queue for further processing
                 // This step is required as data might be stored on different databases for different assets
@@ -140,12 +139,12 @@ public class PostGisClient {
      * Connect to the specified PostgreSQL database.
      *
      * @param jdbcUrl  The database JDBC url.
-     * @param user     The database's username.
-     * @param password The database's password.
      * @return the database Connection object.
      */
-    private Connection connect(String jdbcUrl, String user, String password) throws SQLException {
-        return DriverManager.getConnection(jdbcUrl, user, password);
+    private Connection connect(String jdbcUrl) throws SQLException {
+        // The remote client can only get connection based on the jdbc url set, so we set this parameter each time
+        this.stackRdbClient.setRdbURL(jdbcUrl);
+        return this.stackRdbClient.getConnection();
     }
 
     /**
