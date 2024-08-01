@@ -8,25 +8,39 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.postgis.Point;
 import org.postgis.Polygon;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class TimeSeriesPostGISIntegrationTest {
-    // Using special testcontainers URL that will spin up a Docker container when
-    // accessed by a driver
-    // (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires
-    // Docker to be installed!
-    // RemoteRDBStoreClient
-    private RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient("jdbc:tc:postgis:14-3.2:///timeseries",
-            "postgres", "postgres");
-
+    private static final String user = "postgres";
+    private static final String password = "postgres";
+    // Create Docker container with postgis image from Docker Hub
+    private static DockerImageName myImage = DockerImageName.parse("postgis/postgis:14-3.3")
+            .asCompatibleSubstituteFor("postgres");
+    @Container
+    private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage).withUsername(user)
+            .withPassword(password);
     // RDB client
     protected TimeSeriesRDBClientInterface<Integer> tsClient;
+    private static RemoteRDBStoreClient rdbStoreClient;
+
+    @BeforeClass
+    // Initialise RemoteRDBStoreClient before any test
+    public static void initialiseRDBStoreClient() {
+        postgres.start();
+        // RemoteRDBStoreClient
+        rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), user, password);
+    }
 
     @Before
     public void initialiseRDBClient() {
@@ -44,7 +58,6 @@ public class TimeSeriesPostGISIntegrationTest {
      */
     @Test
     public void testWrongSRID() throws SQLException {
-
         // a dummy point
         Point point = new Point();
         point.setX(1);
@@ -63,7 +76,6 @@ public class TimeSeriesPostGISIntegrationTest {
                     () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload), conn));
             Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
-
     }
 
     /**

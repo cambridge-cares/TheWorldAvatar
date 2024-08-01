@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
-import org.jooq.SQLDialect;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,9 +27,10 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
     // machine the test is run on
 
     // Create Docker container with postgis image from Docker Hub
-    DockerImageName myImage = DockerImageName.parse("postgis/postgis:14-3.3").asCompatibleSubstituteFor("postgres");
+    private static DockerImageName myImage = DockerImageName.parse("postgis/postgis:14-3.3")
+            .asCompatibleSubstituteFor("postgres");
     @Container
-    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
+    private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
 
     // RDB client
     protected TimeSeriesRDBClientInterface<Integer> tsClient;

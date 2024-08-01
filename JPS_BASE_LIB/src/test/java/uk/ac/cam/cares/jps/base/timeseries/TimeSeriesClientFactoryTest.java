@@ -11,19 +11,16 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.utility.DockerImageName;
 
+import uk.ac.cam.cares.jps.base.BlazegraphContainer;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class TimeSeriesClientFactoryTest {
     @Container
-    private static final GenericContainer<?> blazegraph = new GenericContainer<>(
-            DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
-            .withExposedPorts(9999);
+    private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
     RemoteStoreClient remoteStoreClient;
@@ -36,16 +33,7 @@ public class TimeSeriesClientFactoryTest {
         postgres.start();
 
         // Set up a kb client that points to the location of the triple store
-        // This can be a RemoteStoreClient or the FileBasedStoreClient
-        remoteStoreClient = new RemoteStoreClient();
-        // Set endpoint to the triple store. The host and port are read from the
-        // container
-        String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
-        // Default namespace in blazegraph is "kb", but in production a specific one
-        // should be created
-        endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
-        remoteStoreClient.setUpdateEndpoint(endpoint);
-        remoteStoreClient.setQueryEndpoint(endpoint);
+        remoteStoreClient = blazegraph.getRemoteStoreClient();
 
         remoteRDBStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
                 postgres.getPassword());
