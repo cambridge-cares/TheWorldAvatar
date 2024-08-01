@@ -1,0 +1,29 @@
+name: "translation"
+backend: "python"
+max_batch_size: 0
+
+input [
+  {
+    name: "text"
+    data_type: TYPE_STRING
+    dims: [-1]
+  }
+]
+output [
+  {
+    name: "output_compact"
+    data_type: TYPE_STRING
+    dims: [-1]
+  },
+  {
+    name: "output_verbose"
+    data_type: TYPE_STRING
+    dims: [-1]
+  }
+]
+
+instance_group [
+  {
+    kind: KIND_CPU
+  }
+]

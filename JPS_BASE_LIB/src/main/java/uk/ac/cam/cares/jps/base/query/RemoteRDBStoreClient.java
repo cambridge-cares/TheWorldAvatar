@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;

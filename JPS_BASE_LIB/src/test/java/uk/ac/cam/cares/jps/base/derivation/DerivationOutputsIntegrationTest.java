@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.base.derivation;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -11,61 +10,31 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.json.JSONArray;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
-import org.testcontainers.containers.GenericContainer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.BlazegraphContainer;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @Testcontainers
 public class DerivationOutputsIntegrationTest {
-    static RemoteStoreClient storeClient;
-    static String kgUrl;
-    ModifyQuery modify;
+    private static RemoteStoreClient storeClient;
+    private static ModifyQuery modify;
 
     @Container
-    private static GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
-            .withExposedPorts(8080); // the port is set as 8080 to match with the value set in the docker image
+    private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
 
-    @BeforeClass
-    public static void initialise()
-            throws NoSuchMethodException, SecurityException {
-        // create the container in a clean state
-        try {
-            blazegraph.start();
-        } catch (Exception e) {
-            throw new JPSRuntimeException("DerivationOutputsIntegrationTest: Docker container startup failed. Please try running tests again");
-        }
-
+    @BeforeAll
+    public static void initialise() {
         // initialise all variables to be used
-        kgUrl = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort() + "/blazegraph/namespace/kb/sparql";
-        System.out.println(kgUrl);
-        storeClient = new RemoteStoreClient(kgUrl, kgUrl);
-
-        try {
-            // wait for the blazegraph to be ready
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @AfterAll
-    public static void stopContainers() {
-        // close containers after all tests
-        if (blazegraph.isRunning()) {
-            blazegraph.stop();
-        }
+        storeClient = blazegraph.getRemoteStoreClient();
     }
 
     @Test
-    public void testSparqlUpdateNumberLiteral() {
+    void testSparqlUpdateNumberLiteral() {
         ////////////////////////
         // test SPARQL INSERT //
         ////////////////////////
@@ -79,7 +48,7 @@ public class DerivationOutputsIntegrationTest {
         storeClient.executeUpdate(modify.getQueryString());
 
         // check that the triples were inserted
-        Assert.assertTrue(allOutputTriplesExistInKG(outputTriples));
+        Assertions.assertTrue(allOutputTriplesExistInKG(outputTriples));
 
         //////////////////////////////
         // test SPARQL INSERT-WHERE //
@@ -99,7 +68,7 @@ public class DerivationOutputsIntegrationTest {
         storeClient.executeUpdate(modify.getQueryString());
 
         // check that the triples were inserted
-        Assert.assertTrue(allOutputTriplesExistInKG(outputTriples));
+        Assertions.assertTrue(allOutputTriplesExistInKG(outputTriples));
 
         /////////////////////////////////////
         // test SPARQL DELETE-INSERT-WHERE //
@@ -119,10 +88,10 @@ public class DerivationOutputsIntegrationTest {
         storeClient.executeUpdate(modify.getQueryString());
 
         // check that the triples were inserted
-        Assert.assertTrue(allOutputTriplesExistInKG(outputTriples));
+        Assertions.assertTrue(allOutputTriplesExistInKG(outputTriples));
     }
 
-    public List<TriplePattern> generateLiteralTriples() {
+    private List<TriplePattern> generateLiteralTriples() {
         DerivationOutputs derivationOutputs = new DerivationOutputs();
 
         String s1 = "http://" + UUID.randomUUID().toString();
@@ -149,9 +118,10 @@ public class DerivationOutputsIntegrationTest {
         return derivationOutputs.getOutputTriples();
     }
 
-    public boolean allOutputTriplesExistInKG(List<TriplePattern> outputTriples) {
+    private boolean allOutputTriplesExistInKG(List<TriplePattern> outputTriples) {
         // check if all outputTriples exist in the triple store
-        String queryString = "ASK { " + outputTriples.stream().map(t -> t.getQueryString()).collect(Collectors.joining("")) + " }";
+        String queryString = "ASK { "
+                + outputTriples.stream().map(t -> t.getQueryString()).collect(Collectors.joining("")) + " }";
         JSONArray queryResult = storeClient.executeQuery(queryString);
         System.out.println(queryResult);
         return queryResult.getJSONObject(0).getBoolean("ASK");

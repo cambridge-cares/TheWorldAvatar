@@ -43,15 +43,18 @@
     time:numericPosition 1677628800.0 .
 
 :ProvidedHeatAmount_1 rdf:type dh:ProvidedHeatAmount ;
-                      om:hasValue :Measure_1 .
+                      om:hasValue :Measure_1 ;
+                      ts:hasForecast :Forecast_1 .
 :Measure_1 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .
+:Forecast_1 rdf:type ts:Forecast ;
            om:hasUnit om:megawattHour .
 
 :ConsumedGasAmount_1 rdf:type dh:ConsumedGasAmount ;
-                     om:hasValue :Measure_2 .
-:Measure_2 rdf:type om:Measure ;
-           om:hasUnit om:megawattHour .
+                     ts:hasForecast :Forecast_2 .
+:Forecast_2 rdf:type ts:Forecast ;
+            om:hasUnit om:megawattHour .
 :ConsumedGasAmount_2 rdf:type dh:ConsumedGasAmount ;
-                     om:hasValue :Measure_3 .
-:Measure_3 rdf:type om:Measure ;
-           om:hasUnit om:megawattHour .
+                     ts:hasForecast :Forecast_3 .
+:Forecast_3 rdf:type ts:Forecast ;
+            om:hasUnit om:megawattHour .

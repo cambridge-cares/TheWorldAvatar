@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -10,119 +11,79 @@ import org.json.JSONObject;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.mockito.MockedStatic;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GeometryHandlerTest {
     @Test
-    public void testGetGroundGeometry() {
-        String geometry1 = "1.0#1.0#0.0#1.0#2.0#0.0#2.0#2.0#0.0#2.0#1.0#0.0#1.0#1.0#0.0";
-        String geometry2 = "1.0#1.0#0.0#1.0#1.0#2.0#2.0#1.0#2.0#2.0#1.0#0.0#1.0#1.0#0.0";
-        String geometry3 = "1.0#2.0#0.0#2.0#2.0#0.0#2.0#1.0#0.0#1.0#1.0#0.0#1.0#2.0#0.0";
-        String geometry4 = "1.0#2.0#1.0#2.0#2.0#1.0#2.0#1.0#0.0#1.0#1.0#1.0#1.0#2.0#1.0";
-
-        JSONArray testArray = new JSONArray();
-        testArray.put(new JSONObject().put("geometry", geometry1));
-        testArray.put(new JSONObject().put("geometry", geometry2));
-        testArray.put(new JSONObject().put("geometry", geometry3));
-        testArray.put(new JSONObject().put("geometry", geometry4));
-
-        JSONArray expected = new JSONArray();
-        expected.put(new JSONObject().put("geometry", geometry1));
-        expected.put(new JSONObject().put("geometry", geometry3));
-
-        JSONArray result = GeometryHandler.getGroundGeometry(testArray);
-
-        assertEquals(expected.length(), result.length());
-
-        for (int i = 0; i < expected.length(); i++){
-            assertEquals(expected.getJSONObject(i).get("geometry").toString(), result.getJSONObject(i).get("geometry").toString());
-        }
-    }
-
-    @Test
     public void testExtractFootprint() throws ParseException {
-        String geometry1 = "1.0#1.0#0.0#2.0#1.0#0.0#2.0#2.0#0.0#1.0#1.0#0.0";
-        String geometry2 = "1.0#1.0#0.0#1.0#2.0#0.0#2.0#2.0#0.0#1.0#1.0#0.0";
-        String polygonType = "http://localhost/blazegraph/literals/POLYGON-3-12";
+        String geometry1 = "POLYGON((0 0, 0 4, 4 4, 4 0, 0 0))";
+        String geometry2 = "POLYGON((4 0, 4 4, 8 4, 8 0, 4 0))";
+
+        String expectedWKT = "POLYGON((0 0, 0 4, 8 4, 8 0, 0 0))";
+
+        Geometry expectedPolygon = new WKTReader().read(expectedWKT);
+
+        String testCRS = "4326";
+        String testEPSG = "<http://www.opengis.net/def/crs/EPSG/0/" + testCRS + ">";
 
         JSONArray testArray = new JSONArray();
-        testArray.put(new JSONObject().put("geometry", geometry1).put("datatype", polygonType));
-        testArray.put(new JSONObject().put("geometry", geometry2).put("datatype", polygonType));
+        testArray.put(new JSONObject().put("wkt", testEPSG + " " + geometry1).put("crs", testEPSG));
+        testArray.put(new JSONObject().put("wkt", testEPSG + " " + geometry2).put("crs", testEPSG));
 
-        String result = GeometryHandler.extractFootprint(testArray);
+        List<Geometry> result = GeometryHandler.extractFootprint(testArray, testCRS, 10.0);
 
-        WKTReader wktReader = new WKTReader();
+        assertEquals(1, result.size());
 
-        Geometry geometry = wktReader.read(result);
+        Geometry geometry = result.get(0);
+        Geometry intersection = expectedPolygon.intersection(geometry);
 
-        Coordinate[] coordinates = geometry.getCoordinates();
-
-        assertEquals(5, coordinates.length);
+        assertEquals(expectedPolygon.getNumPoints(), geometry.getNumPoints());
+        assertTrue(expectedPolygon.distance(geometry) < 0.0001);
+        assertTrue((intersection.getArea() / expectedPolygon.getArea() >= 0.99) && (intersection.getArea() / geometry.getArea() >= 0.99));
     }
 
     @Test
-    public void testToPolygon() {
-        String points = "559267.200000246#313892.7999989044#0.0#559280.5400002463#313892.7999989044#0.0#559280.5400002463#313908.7499989033#0.0#559267.200000246#313908.7499989033#0.0#559267.200000246#313892.7999989044#0.0";
+    public void testBufferPolygon() {
+        Coordinate[] coordinates = new Coordinate[] {
+                new Coordinate(0, 0),
+                new Coordinate(0, 5),
+                new Coordinate(5, 5),
+                new Coordinate(5, 0),
+                new Coordinate(0, 0)
+        };
 
-        Polygon result = (Polygon) GeometryHandler.toPolygon(points);
+        GeometryFactory geometryFactory = new GeometryFactory();
 
-        String expected = "POLYGON ((559267.200000246 313892.7999989044, 559280.5400002463 313892.7999989044, 559280.5400002463 313908.7499989033, 559267.200000246 313908.7499989033, 559267.200000246 313892.7999989044))";
+        Polygon polygon = geometryFactory.createPolygon(coordinates);
 
-        assertEquals(expected, result.toString());
-    }
+        try (MockedStatic<GeometryHandler> geometryHandlerMock = mockStatic(GeometryHandler.class, CALLS_REAL_METHODS)) {
+            geometryHandlerMock.when(() -> GeometryHandler.isCRSUnitMeter(anyString())).thenReturn(true);
+            geometryHandlerMock.when(() -> GeometryHandler.transformGeometry(any(), anyString(), anyString())).thenReturn(polygon);
+            geometryHandlerMock.when(() -> GeometryHandler.buffer(any(), anyDouble())).thenReturn(polygon);
 
-    @Test
-    public void testStringToGeometries() {
-        String testGeometryString = "0.0#0.0#0.0#0.0#10.0#0.0#10.0#10.0#0.0#10.0#0.0#0.0#0.0#0.0#0.0#1.0#1.0#0.0#1.0#2.0#0.0#2.0#2.0#0.0#2.0#1.0#0.0#1.0#1.0#0.0";
-        String testPolygonType = "POLYGON-3-15-15";
+            // check when CRS is Cartesian
+            GeometryHandler.bufferPolygon(polygon, "123", 1.0);
 
-        List<Polygon> exteriors = new ArrayList<>();
-        List<LinearRing> holes = new ArrayList<>();
+            geometryHandlerMock.verify(times(2), () -> GeometryHandler.isCRSUnitMeter(anyString()));
+            geometryHandlerMock.verify(times(0), () -> GeometryHandler.transformGeometry(any(), anyString(), anyString()));
+            geometryHandlerMock.verify(times(1), () -> GeometryHandler.buffer(any(), anyDouble()));
 
-        GeometryHandler.stringToGeometries(testGeometryString, testPolygonType, exteriors, holes);
+            geometryHandlerMock.when(() -> GeometryHandler.isCRSUnitMeter(anyString())).thenReturn(false);
 
-        assertEquals(1, exteriors.size());
-        assertEquals(1, holes.size());
+            // check when CRS is non-Cartesian
+            GeometryHandler.bufferPolygon(polygon, "123", 1.0);
 
-        String[] coordinates = testGeometryString.split("#");
-
-        Coordinate[] exterior = exteriors.get(0).getCoordinates();
-        Coordinate[] hole = holes.get(0).getCoordinates();
-
-        int e = 0;
-        int h = 0;
-
-        for (int i = 0; i < coordinates.length; i += 3) {
-            if (i < 15) {
-                assertEquals(Double.valueOf(coordinates[i]), exterior[e].getX(), 0.0000001);
-                assertEquals(Double.valueOf(coordinates[i+1]), exterior[e].getY(), 0.0000001);
-                e++;
-            }
-            else {
-                assertEquals(Double.valueOf(coordinates[i]), hole[h].getX(), 0.0000001);
-                assertEquals(Double.valueOf(coordinates[i+1]), hole[h].getY(), 0.0000001);
-                h++;
-            }
+            geometryHandlerMock.verify(times(4), () -> GeometryHandler.isCRSUnitMeter(anyString()));
+            geometryHandlerMock.verify(times(2), () -> GeometryHandler.transformGeometry(any(), anyString(), anyString()));
+            geometryHandlerMock.verify(times(2), () -> GeometryHandler.buffer(any(), anyDouble()));
         }
     }
 
     @Test
-    public void testCoordinatesToString() {
-        Coordinate[] coordinates = new Coordinate[2];
-
-        coordinates[0] = new Coordinate(1.0, 2.0, 3.0);
-        coordinates[1] = new Coordinate(4.0, 5.0, 6.0);
-
-        String expected = "1.0#2.0#3.0#4.0#5.0#6.0";
-
-        assertEquals(expected, GeometryHandler.coordinatesToString(coordinates));
-    }
-
-    @Test
-    public void testInflatePolygon() {
-                GeometryFactory gF = new GeometryFactory();
+    public void testBuffer() {
+        GeometryFactory gF = new GeometryFactory();
         Coordinate[] testC = new Coordinate[5];
 
         testC[0] = new Coordinate(1.0, 1.0, 3.01);
@@ -143,35 +104,32 @@ public class GeometryHandlerTest {
 
         Polygon expectedPolygon = gF.createPolygon(expectedC);
 
-        Polygon resultPolygon = (Polygon) GeometryHandler.inflatePolygon(testPolygon, 0.1);
+        Polygon resultPolygon = (Polygon) GeometryHandler.buffer(testPolygon, 0.1);
         assertTrue(expectedPolygon.equals(resultPolygon));
     }
 
     @Test
-    public void testDeflatePolygon() {
-        GeometryFactory gF = new GeometryFactory();
-        Coordinate[] testC = new Coordinate[5];
+    public void testTransformGeometry() throws Exception {
+        Coordinate[] coordinates = new Coordinate[] {
+                new Coordinate(0, 0),
+                new Coordinate(0, 5),
+                new Coordinate(5, 5),
+                new Coordinate(5, 0),
+                new Coordinate(0, 0)
+        };
 
-        testC[0] = new Coordinate(1.0, 1.0, 3.01);
-        testC[1] = new Coordinate(2.0, 1.0, 3.02);
-        testC[2] = new Coordinate(2.0, 2.0, 3.03);
-        testC[3] = new Coordinate(1.0, 2.0, 3.03);
-        testC[4] = new Coordinate(1.0, 1.0, 3.01);
+        GeometryFactory geometryFactory = new GeometryFactory();
 
-        Polygon testPolygon = gF.createPolygon(testC);
+        Polygon polygon = geometryFactory.createPolygon(coordinates);
 
-        Coordinate[] expectedC = new Coordinate[5];
+        try (MockedStatic<GeometryHandler> geometryHandlerMock = mockStatic(GeometryHandler.class, CALLS_REAL_METHODS)) {
+            geometryHandlerMock.when(() -> GeometryHandler.transformCoordinate(any(), anyString(), anyString())).thenReturn(coordinates[0]);
 
-        expectedC[0] = new Coordinate(1.1, 1.1, 3.01);
-        expectedC[1] = new Coordinate(1.9, 1.1, 3.02);
-        expectedC[2] = new Coordinate(1.9, 1.9, 3.03);
-        expectedC[3] = new Coordinate(1.1, 1.9, 3.03);
-        expectedC[4] = new Coordinate(1.1, 1.1, 3.01);
+            // check when CRS is Cartesian
+            GeometryHandler.transformGeometry(polygon, "123", "321");
 
-        Polygon expectedPolygon = gF.createPolygon(expectedC);
-
-        Polygon resultPolygon = (Polygon) GeometryHandler.deflatePolygon(testPolygon, 0.1);
-        assertTrue(expectedPolygon.equals(resultPolygon));
+            geometryHandlerMock.verify(times(coordinates.length), () -> GeometryHandler.transformCoordinate(any(), anyString(), anyString()));
+        }
     }
 
     @Test

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,6 +49,8 @@ public final class GeoServerService extends ContainerService {
             geoserverEndpointConfig = new RESTEndpointConfig("geoserver",
                     new URL("http", getHostName(), 8080, "/geoserver/"),
                     ADMIN_USERNAME, passwordFile);
+
+            addEndpointConfig(geoserverEndpointConfig);
         } catch (MalformedURLException ex) {
             throw new RuntimeException("Failed to construct URL for GeoServer config file.", ex);
         }
@@ -55,9 +58,6 @@ public final class GeoServerService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-
-        writeEndpointConfig(geoserverEndpointConfig);
-
         Builder settingsRequestBuilder = createBaseSettingsRequestBuilder();
 
         Optional<JsonNode> settings = getExistingSettings(settingsRequestBuilder);
@@ -97,7 +97,7 @@ public final class GeoServerService extends ContainerService {
 
         HttpRequest settingsGetRequest = settingsRequestBuilder.build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JsonHelper.getMapper();
 
         boolean serverReady = false;
         do {

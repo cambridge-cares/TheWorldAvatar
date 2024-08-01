@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  pvlib_test:
+    build:
+      context: .
+      target: testing
+      dockerfile: Dockerfile
+    image: pv_lib_agent_test:1.1.0
+    container_name: pv_lib_agent_test
+    ports:
+      - 1021:5000
+
+  # Blazegraph
+  blazegraph_test:
+    image: ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0
+    container_name: blazegraph_test
+    restart: unless-stopped
+    ports:
+      - 27149:9999
+
+  # PostgreSQL
+  postgres_test:
+    container_name: postgres_test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    image: postgres:13.3
+    restart: unless-stopped
+    ports:
+      - 7432:5432

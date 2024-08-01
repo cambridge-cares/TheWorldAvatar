@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Fig 5</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+	mapboxgl.accessToken = "<MAPBOX_KEY>";
+    var map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/light-v11",
+        center: [-3, 55.5],
+        zoom: 5.04,
+        preserveDrawingBuffer: true
+    });
+
+    map.on("load", () => {
+        //----SOURCES----//
+        map.addSource("SMR", {
+            "type": "geojson",
+            "data": "<SMR_GEOJSON_FILE_NAME>"
+        });
+
+        
+        map.addSource("fossilFuel", {
+            "type": "geojson",
+            "data": "<FOSSIL_POWER_PLANT_GEOJSON_FILE_NAME>"
+        });
+
+
+        map.addSource("output", {
+            "type": "geojson",
+            "data": "<OUTPUT_POWER_PLANT_GEOJSON_FILE_NAME>"
+        });             
+    
+        //----LAYERS----//
+        // SMR
+        map.addLayer(
+            {
+                "id": "SMRs",
+                "type": "circle",
+                "source": "SMR",
+                "layout": {
+                    "visibility": "visible"
+                },
+                "paint": {
+                    "circle-radius":["*", 0.004, ["to-number", ["get","Capacity"]]],
+                    "circle-color":  "#1e8700",
+                    "circle-stroke-width": 0.6,
+                    "circle-stroke-color": "#000000",
+                    "circle-opacity": 0.8
+                }
+            });
+   
+        // Open fossil power plant 
+        map.addLayer(
+            {
+                "id": "fossil-plant",
+                "type": "circle",
+                "source": "fossilFuel",
+                "layout": {
+                    "visibility": "visible"
+                },
+                "paint": {
+                    "circle-radius": 6, 
+                    "circle-color": ["to-string", ["get", "marker-color"]],
+                    "circle-stroke-width": 0.4,
+                    "circle-stroke-color": "#000000",
+                    "circle-opacity": 0.8
+                }
+            });
+
+        // Output layer
+        map.addLayer({
+                'id': 'output_fill',
+                'type': 'fill',
+                'source': 'output',
+                'paint': {
+                    'fill-color': ["get", "color"],
+                    'fill-opacity': 1
+                }
+            });
+        });
+
+</script>
+
+</body>
+</html>

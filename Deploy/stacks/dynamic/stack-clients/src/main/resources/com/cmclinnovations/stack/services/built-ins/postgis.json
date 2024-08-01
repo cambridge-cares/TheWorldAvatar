@@ -25,6 +25,18 @@
                         "Type": "volume",
                         "Source": "geotiffs",
                         "Target": "/geotiffs"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "multidim_geospatial",
+                        "Target": "/multidim_geospatial"
+                    },
+                    {
+                        "Type": "tmpfs",
+                        "Target": "/dev/shm",
+                        "TmpfsOptions": {
+                            "SizeBytes": 1073741824
+                        }
                     }
                 ],
                 "Secrets": [

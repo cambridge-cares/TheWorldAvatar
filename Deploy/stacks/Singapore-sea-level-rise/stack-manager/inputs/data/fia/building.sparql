@@ -1,0 +1,43 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  # basic info
+  {
+    SERVICE [ONTOP] {
+      # height
+      {
+        [IRI] bldg:measuredHeight ?Value .
+        BIND ("Building height" AS ?Property)
+        BIND ("m" AS ?Unit)
+      }
+      UNION
+      # GFA
+      {
+        [IRI] ontobuiltenv:hasGFA ?Value .
+        BIND ("m²" AS ?Unit)
+        BIND ("GFA" AS ?Property)
+      }
+      UNION
+      # Cost
+      {
+        [IRI] ontobuiltenv:hasEstimatedConstructionCost/om:hasValue/om:hasNumericalValue ?Value .
+        BIND ("SGD" AS ?Unit)
+        BIND ("Estimated construction cost" AS ?Property)
+      }
+      UNION
+      # Usage
+      {
+        [IRI] ontobuiltenv:hasPropertyUsage ?usage .
+        ?usage rdf:type ?Value_ini .
+        OPTIONAL { ?usage ontobuiltenv:hasUsageShare ?Unit_ini . }
+        BIND (REPLACE(STR(?Value_ini), STR(ontobuiltenv:), '') AS ?usage_type)
+        BIND (CONCAT(STR(ROUND(?Unit_ini * 10000) / 100), ' %') AS ?Value)
+        BIND (CONCAT("Property Usage ", STR(?usage_type)) AS ?Property)
+      }
+    }
+  }
+}

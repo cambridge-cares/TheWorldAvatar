@@ -1,0 +1,61 @@
+{
+	"ServiceSpec": {
+		"Name": "dispersion-interactor",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.3.1-dev-add-parallelisation-option-SNAPSHOT",
+				"Env": [
+					"DATABASE=postgres",
+					"SCOPE_TABLE_NAME=scopes",
+					"AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent",
+					"AERMOD_AGENT_URL=http://dhstack-aermod-agent:8080/AermodAgent/",
+					"WEATHER_AGENT_URL=http://dhstack-weather-agent:8080/WeatherAgent/CreateStation",
+					"GEOSERVER_WORKSPACE=dispersion",
+					"STACK_URL=http://localhost:3838",
+					"SENSORS_TABLE_NAME=sensors",
+					"VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
+					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
+					"BUILDINGS_TABLE=buildings",
+					"STATIC_SOURCE_TABLE=static",
+					"VIRTUAL_SENSOR_AGENT_URL=http://dhstack-virtual-sensor-agent:8080/VirtualSensorAgent/",
+					"ELEVATION_CONTOURS_TABLE=elevation_contours"
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "geoserver"
+					},
+					{
+						"ConfigName": "ontop"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "geoserver_password"
+					}
+				],
+				"Mounts": [
+					{
+						"Type": "volume",
+						"Source": "logs",
+						"Target": "/root/.jps"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"dispersion-interactor": {
+			"url": "http://localhost:8080/DispersionInteractor/",
+			"externalPath": "/dispersion-interactor/"
+		}
+	}
+}

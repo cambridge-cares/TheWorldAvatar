@@ -1,0 +1,20 @@
+prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?class WHERE {
+    VALUES ?all_endpoints {
+        [ENDPOINTS-ALL]
+    }    
+    VALUES ?kg_endpoints {
+        [ENDPOINTS-BLAZEGRAPH]
+    }
+            
+    SERVICE ?all_endpoints {
+        [IRI] a ?type.
+    } 
+    SERVICE ?kg_endpoints {
+        ?type rdfs:subClassOf* ?class .
+    }
+            
+    FILTER (!isBlank(?class))
+} 

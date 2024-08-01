@@ -453,7 +453,7 @@ class DerivationAgent(ABC):
 
         url_pattern = urlparse(self.agentEndpoint).path
         url_pattern_name = url_pattern.strip('/').replace('/', '_') + '_handle_sync_derivations'
-        self.add_url_pattern(url_pattern, url_pattern_name, self.handle_sync_derivations, methods=['GET'])
+        self.add_url_pattern(url_pattern, url_pattern_name, self.handle_sync_derivations, methods=['POST'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def start_all_periodical_job(self):
@@ -465,7 +465,7 @@ class DerivationAgent(ABC):
     @send_email_when_exception(func_return_value=True)
     def handle_sync_derivations(self):
         self.logger.info("Received synchronous derivation request: %s." % (request.url))
-        requestParams = json.loads(unquote(urlparse(request.url).query)[len("query="):])
+        requestParams = request.json
         res = {}
         if self.validate_inputs(requestParams):
             # retrieve necessary information

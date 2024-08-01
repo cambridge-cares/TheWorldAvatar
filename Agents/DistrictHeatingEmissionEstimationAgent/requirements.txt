@@ -1,12 +1,13 @@
 #######################################
 ## The World Avatar related packages ##
 #######################################
-py4jps==1.0.37
-pyderivationagent==1.5.0
+py4jps==1.0.38
+pyderivationagent==1.6.0
 
 ##########################
 ## Third-party packages ##
 ##########################
+CoolProp==6.5.0
 Flask==2.1.0
 pandas==2.0.3
-CoolProp==6.5.0
+werkzeug==2.2.2

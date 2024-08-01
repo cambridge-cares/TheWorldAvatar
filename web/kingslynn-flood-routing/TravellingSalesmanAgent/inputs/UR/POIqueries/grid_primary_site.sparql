@@ -1,0 +1,21 @@
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ex:   <https://example.org/>
+PREFIX twa: <https://www.theworldavatar.com/kg/>
+
+SELECT DISTINCT ?poi_iri ?poi_type ?geometry
+WHERE {
+
+# OntopQuery to retrieve
+SERVICE <http://${STACK_NAME}-ontop:8080/sparql/> {
+SELECT ?poi_iri ?poi_type ?geometry WHERE {
+  ?building ?pred twa:Grid;
+  		geo:asWKT ?wkt.
+      # Binding variable names as requested
+    BIND(?building AS ?poi_iri)
+    BIND(twa:Grid AS ?poi_type)
+    BIND(REPLACE(STR(?wkt), "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> ", "") AS ?geometry)
+        }
+	}
+}

@@ -1,8 +1,0 @@
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX bot: <https://w3id.org/bot#>
-prefix owl: <http://www.w3.org/2002/07/owl#>
-
-INSERT DATA {
-	bot:Building rdf:type bot:Zone .
-  bot:Building rdf:type owl:Class .
-}

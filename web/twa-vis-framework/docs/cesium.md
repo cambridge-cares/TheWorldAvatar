@@ -131,7 +131,7 @@ You can find the visualisation, along with documentation of how it was put toget
 
 <br/>
 <p align="center">
- <img src="../example-cesium-vis/readme-styling.JPG" alt="Part of the example CesiumJS visualisation." width="75%"/>
+ <img src="../docs/img/readme-cesium.JPG" alt="Part of the example CesiumJS visualisation." width="75%"/>
 </p>
 <p align="center">
  <em>Part of the example CesiumJS visualisation.</em><br/><br/><br/>

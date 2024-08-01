@@ -1,66 +1,36 @@
 package uk.ac.cam.cares.jps.agent.heat;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.exception.DataAccessException;
+import org.jooq.impl.DSL;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.update.UpdateRequest;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-
-import com.jayway.jsonpath.JsonPath;
-
-/** 
- * ---------------------------------- Heat emission agent ------------------------------------------
- * 
- * This agent is to return the heat emission information of different buildings/objects presented
- * in a given area. Therefore, the heat emission data can be automatically assigned to corresponding
- * buildings within a specific area. This is of interest to the Cooling Singapore 2.0 Project. 
- * 
- * This class file demonstrates (1) the feasibility of a cross-domain query and (2) the evaluation of 
- * the heat emission data in terms of emission values and respective coordinates within a bounding 
- * box in Jurong Island. To achieve this, it consists of four parts. First, we obtain all the chemical 
- * plants, plant items, IRIs and CO2 emission via query in "jibusinessunits"; Second, for a particular
- * chemical plant, its fuel CEI and efficiency are queried; then, all the heat emission coordinates 
- * are evaluated via query in "jriEPSG24500"; finally, the heat emission values are calculated with
- * CO2 emission, CEI and efficiency and assigned to the emission coordinates, after a filter based on
- * a boundary area specified. 
- * 
- * @author Hansong Xue
- *
- *------------------------------------------------------------------------------------------------
- */
-
-/**
- * Servlet implementation class HeatEmissionAgent; URL pattern to execute the
- * agent: <http://
- * www.theworldavatar.com/Agents/HeatEmissionAgent/performheatquery>
- */
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import java.sql.*;
 
 @WebServlet(urlPatterns = { HeatEmissionAgent.URL_PATH })
 
-// Agent begins
 public class HeatEmissionAgent extends JPSAgent {
 
 	public static final String URL_PATH = "/performheatquery";
 	// Display messages
 	private static final String BAD_INPUT = "Error in input parameters, please check the" +
 			" input file";
+
+	private static final String HEAT_COLUMN = "heat_emissions";
+
+	// RDBStore client to query postgis
+	private RemoteRDBStoreClient rdbStoreClient;
+
+	private static final Logger LOGGER = LogManager.getLogger(HeatEmissionAgent.class);
 
 	// Receive input as JSON objects, execute the agent and return the results as
 	// JSON object as well
@@ -69,108 +39,38 @@ public class HeatEmissionAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (validateInput(requestParams)) {
 
-			JSONArray heatresult = new JSONArray();
-			JSONObject heatresult1 = new JSONObject();
-			JSONArray IRIandCO2QueryResult = IRIandCO2Query();
-			StringBuffer Combined = new StringBuffer("{\r\n" +
-					"\"type\": \"FeatureCollection\",\r\n" +
-					"\"features\": [\n");
+			// Properties of database containing buildings data.
+			String dbUrl = null;
+			String dbUser = null;
+			String dbPassword = null;
 
-			double heat_data = 0;
-
-			for (int i = 0; i < IRIandCO2QueryResult.length(); i++) {
-				String IRI = IRIandCO2QueryResult.getJSONObject(i).getString("IRI");
-				String CO2 = IRIandCO2QueryResult.getJSONObject(i).getString("CO2");
-				String Plant_item = IRIandCO2QueryResult.getJSONObject(i).getString("plant_item");
-				String ChemPlant = IRIandCO2QueryResult.getJSONObject(i).getString("chemical_plant");
-				String ChemPlantName = "<" + ChemPlant + ">";
-
-				JSONArray plantInfoQueryResult = FuelCEIEfficiency(ChemPlantName);
-				String CEI = plantInfoQueryResult.getJSONObject(0).getString("CEI");
-				String Efficiency = plantInfoQueryResult.getJSONObject(0).getString("efficiency");
-
-				JSONArray coordiSpatialQueryResult = CoordinateQuery(IRI);
-				String heatcoordi = HeatEmissionCoordinate(coordiSpatialQueryResult);
-				String[] heatcoordi_split = heatcoordi.split("#");
-				Double x_coordinate = Double.parseDouble(heatcoordi_split[0]);
-				Double y_coordinate = Double.parseDouble(heatcoordi_split[1]);
-
-				// Calculate the heat emission amount in the unit of MW within the indicated
-				// region boundary
-				double[] region_boundary = Boundary(requestParams);
-				if (region_boundary[0] < x_coordinate && region_boundary[2] > x_coordinate
-						&& region_boundary[1] < y_coordinate && region_boundary[3] > y_coordinate) {
-					double heatamount = Double.parseDouble(CO2) / Double.parseDouble(CEI) * 1e12 / 365 / 24 / 3600 / 1e6
-							* Double.parseDouble(Efficiency);
-					JSONObject row = new JSONObject();
-					row.put("Coordinate", heatcoordi);
-					row.put("Heat Emission", heatamount);
-					heatresult.put(row);
-					sparqlUpdate(Plant_item, Double.toString(heatamount));
-					heat_data = heatamount;
-				}
-
-				String inputCRS = "EPSG:24500";
-				String outputCRS = "EPSG:4326";
-				double[] xyOriginal = { x_coordinate, y_coordinate };
-				double[] xyTransformed = CRSTransformer.transform(inputCRS, outputCRS, xyOriginal);
-
-				String z_coordi = heatcoordi_split[2];
-				String x_coordi = Double.toString(xyTransformed[0]);
-				String y_coordi = Double.toString(xyTransformed[1]);
-
-				StringBuffer heatemission = new StringBuffer("{\n\"type\": \"Feature\",\n");
-				heatemission.append("\"properties\": {\n\"height:m\":").append(z_coordi + "," + "\n");
-				heatemission.append("\"AH_type\":").append("\"SH\",\n");
-				heatemission.append("\"AH_0:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_1:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_2:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_3:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_4:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_5:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_6:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_7:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_8:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_9:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_10:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_11:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_12:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_13:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_14:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_15:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_16:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_17:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_18:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_19:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_20:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_21:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_22:MW\":").append(heat_data).append(",\n");
-				heatemission.append("\"AH_23:MW\":").append(heat_data).append("\n").append("},\n");
-				heatemission.append("\"geometry\": {\n" + "\"type\": \"Point\",\n" + "\"coordinates\": [\n")
-						.append(x_coordi + ",\n").append(y_coordi + "\n]\n}\n},\n");
-				Combined.append(heatemission);
-
+			if (requestParams.has("dbUrl")) {
+				dbUrl = requestParams.getString("dbUrl");
+				dbUser = requestParams.getString("dbUser");
+				dbPassword = requestParams.getString("dbPassword");
+			} else {
+				String dbName = requestParams.getString("dbName");
+				EndpointConfig endpointConfig = new EndpointConfig();
+				dbUrl = endpointConfig.getDbUrl(dbName);
+				dbUser = endpointConfig.getDbUser();
+				dbPassword = endpointConfig.getDbPassword();
 			}
 
-			// Output heat emission data in GeoJSON format for DUCT
+			rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
 
-			String outputFP = Paths.get(System.getProperty("user.dir"), "output", "base.geojson").toString();
-			String output = Combined.substring(0, Combined.length() - 2) + "\n]\n}";
-			File file1 = new File(outputFP);
-			FileWriter fw;
-			try {
-				fw = new FileWriter(file1);
-				PrintWriter pw = new PrintWriter(fw);
-				pw.println(output);
-				pw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			updateCityFurnitureEmissions();
+			updateChemicalsEmissions();
+			updateSemiconductorsEmissions();
+			updateFoodEmissions();
+			updatePharmaceuticalsEmissions();
+			updatePrintingEmissions();
+			updatePrecisionEmissions();
+			updateDataCentreEmissions();
 
-			heatresult1.put("result", heatresult);
-			return heatresult1;
+			return new JSONObject().put("success", "true");
+
 		} else {
-			System.out.println("bad input.\n");
+			LOGGER.error("bad input");
 			throw new JPSRuntimeException(BAD_INPUT);
 		}
 	}
@@ -182,164 +82,183 @@ public class HeatEmissionAgent extends JPSAgent {
 		if (requestParams.isEmpty()) {
 			throw new BadRequestException();
 		}
-		String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.upper_bounds");
-		if (UPPER_LIMITS == null || UPPER_LIMITS.trim().isEmpty()) {
-			throw new BadRequestException("Upper limits for the bounding box are missing.\n");
+
+		if (!requestParams.has("dbName") && !requestParams.has("dbUrl")) {
+			throw new BadRequestException(
+					"Either a postgres database name or URL must be specified when running the heat emission agent.\n");
+
 		}
-		String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.lower_bounds");
-		if (LOWER_LIMITS == null || LOWER_LIMITS.trim().isEmpty()) {
-			throw new BadRequestException("Lower limits for the bounding box are missing.\n");
-		}
+
 		return true;
 	}
 
-	// Set up the region boundary
-	public static double[] Boundary(JSONObject inputBounds) {
-		String upper_limits = JsonPath.read(inputBounds.toString(), "$.job.upper_bounds");
-		String lower_limits = JsonPath.read(inputBounds.toString(), "$.job.lower_bounds");
-		String[] upper_split = upper_limits.split("#");
-		String[] lower_split = lower_limits.split("#");
-		double[] result = new double[4];
-		result[0] = Double.parseDouble(lower_split[0]);
-		result[1] = Double.parseDouble(lower_split[1]);
-		result[2] = Double.parseDouble(upper_split[0]);
-		result[3] = Double.parseDouble(upper_split[1]);
-		return result;
-	}
+	void updateCityFurnitureEmissions() {
+		String tableName = "jurong_island_city_furniture";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
 
-	// Query all the chemical plants, plant items and respective IRI as well as CO2
-	// emissions
-	public static JSONArray IRIandCO2Query() {
-		StringBuffer IRIandCO2Query = new StringBuffer(
-				"PREFIX ns2: <https://www.theworldavatar.com/kg/ontobuiltenv/>\n");
-		IRIandCO2Query.append("PREFIX geo: <http://www.opengis.net/ont/geosparql#>\n");
-		IRIandCO2Query.append("PREFIX ocp: <http://www.theworldavatar.com/kg/ontochemplant/>\n");
-		IRIandCO2Query.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
-		IRIandCO2Query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
-		IRIandCO2Query.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n");
-		IRIandCO2Query.append("SELECT ?chemical_plant ?plant_item ?IRI ?CO2 ?unit WHERE { \n");
-		IRIandCO2Query.append("?chemical_plant ocp:hasFuelType ?ft. \n");
-		IRIandCO2Query.append("?ft rdfs:label ?ftl. \n");
-		IRIandCO2Query.append("?chemical_plant geo:ehContains ?plant_item . \n");
-		IRIandCO2Query.append("?plant_item ns2:hasOntoCityGMLRepresentation ?IRI . \n");
-		IRIandCO2Query.append("?plant_item ocp:hasIndividualCO2Emission ?x .  \n");
-		IRIandCO2Query.append("?x om:hasNumericalValue ?CO2 . \n");
-		IRIandCO2Query.append("?x om:hasUnit ?a . \n");
-		IRIandCO2Query.append("?a om:symbol ?unit . \n");
-		IRIandCO2Query.append("FILTER regex(str(?ftl),\"Natural gas liquid\").");
-		IRIandCO2Query.append("FILTER regex(str(?plant_item), \"plantitem\").} \n");
-		JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits",
-				IRIandCO2Query.toString());
-		return IRIandCO2QueryResult;
-	}
-
-	// Chemical plant fuel, CEI and thermal efficiency query
-	public static JSONArray FuelCEIEfficiency(String ChemialPlant) {
-		StringBuffer FuelCEIEffiQuery = new StringBuffer(
-				"PREFIX kb: <http://www.theworldavatar.com/kb/ontochemplant/>\n");
-		FuelCEIEffiQuery.append("PREFIX ocp: <http://www.theworldavatar.com/kg/ontochemplant/>\n");
-		FuelCEIEffiQuery.append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>\n");
-		FuelCEIEffiQuery.append("SELECT ?fuel ?CEI ?unit ?efficiency WHERE {");
-		FuelCEIEffiQuery.append(ChemialPlant).append(" ocp:hasThermalEfficiency ?efficiency .");
-		FuelCEIEffiQuery.append(ChemialPlant).append(" ocp:hasFuelType ?fuel .");
-		FuelCEIEffiQuery.append("?fuel ocp:hasCarbonEmissionIndex ?cei .");
-		FuelCEIEffiQuery.append("?cei om:hasNumericalValue ?CEI .");
-		FuelCEIEffiQuery.append("?cei om:hasUnit ?a .");
-		FuelCEIEffiQuery.append("?a om:symbol ?unit .}");
-		JSONArray plantInfoQueryResult = AccessAgentCaller.queryStore("jibusinessunits",
-				FuelCEIEffiQuery.toString());
-		return plantInfoQueryResult;
-	}
-
-	// Geometric coordination query
-	public static JSONArray CoordinateQuery(String CityFurnitureIRI) {
-		StringBuffer coordinateQuery = new StringBuffer(
-				"PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
-		coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
-		coordinateQuery.append(
-				"GRAPH <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/> {?geometricIRI ocgml:GeometryType ?polygonData.\n");
-		coordinateQuery.append("?geometricIRI ocgml:cityObjectId <").append(CityFurnitureIRI).append(">.}}");
-		JSONArray coordiSpatialQueryResult = AccessAgentCaller.queryStore("jriEPSG24500", coordinateQuery.toString());
-		return coordiSpatialQueryResult;
-	}
-
-	// Calculate heat emission in xyz coordinate
-	public static String HeatEmissionCoordinate(JSONArray coordiSpatialQueryResult) {
-		String buildingX = "0";
-		String buildingY = "0";
-		String buildingZ = "0";
-
-		for (int i = 0; i < coordiSpatialQueryResult.length(); i++) {
-			JSONObject coordiS = coordiSpatialQueryResult.getJSONObject(i);
-			String coordiData = coordiS.getString("polygonData");
-			ArrayList<String> z_values = new ArrayList<>();
-			String[] split = coordiData.split("#");
-			double sum_x = 0;
-			double sum_y = 0;
-			double sum_z = 0;
-			double min_z = 0;
-
-			for (Integer j = 1; j <= split.length; j++) {
-				if (j % 3 == 0) {
-					z_values.add(split[j - 1]);
-					sum_x = sum_x + Double.parseDouble(split[j - 3]);
-					sum_y = sum_y + Double.parseDouble(split[j - 2]);
-					sum_z = sum_z + Double.parseDouble(split[j - 1]);
-					min_z = Math.min(min_z, Double.parseDouble(split[j - 1]));
-				}
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = co2_emissions*0.5*(1.0^12)/(63.0*365*24*60*60*(1.0^6)) ; ",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
 			}
-			if (min_z == sum_z / (split.length / 3) && !z_values.isEmpty()) {
-				buildingX = String.valueOf(sum_x / (split.length / 3));
-				buildingY = String.valueOf(sum_y / (split.length / 3));
-			}
-			if (!z_values.isEmpty() && Double.parseDouble(buildingZ) < Double.parseDouble(Collections.max(z_values))) {
-				buildingZ = Collections.max(z_values);
-			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
 		}
-		StringBuffer coordinate = new StringBuffer();
-		coordinate.append(buildingX).append("#").append(buildingY).append("#").append(buildingZ);
-		return coordinate.toString();
+
 	}
 
-	// Put the heat emssion data into the blazegraph via SPARQL update
-	public void sparqlUpdate(String Plant_item, String heatValue) {
-		String Heat_of_plantitem = Plant_item + "_Heat";
-		String heat_label = Heat_of_plantitem.substring(47);
-		String hasGeneratedHeat = "http://www.theworldavatar.com/kg/ontochemplant/hasGeneratedHeat";
-		String genHeat = "http://www.theworldavatar.com/kg/ontochemplant/GeneratedHeat";
-		String heatIri = genHeat + "_" + UUID.randomUUID();
-		String measure = "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure";
-		String measureIri = measure + "_" + UUID.randomUUID();
-		String measure_label = "Measure_" + heat_label;
+	void updateChemicalsEmissions() {
+		String tableName = "chemicals";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
 
-		UpdateBuilder ub = new UpdateBuilder()
-				.addPrefix("rdf", "https://www.w3.org/1999/02/22-rdf-syntax-ns")
-				.addPrefix("rdfs", "https://www.w3.org/2000/01/rdf-schema#")
-				.addInsert(NodeFactory.createURI(Plant_item),
-						NodeFactory.createURI(
-								"http://theworldavatar.com/kg/ontochemplant/hasGeneratedHeat"),
-						NodeFactory.createURI(heatIri))
-				.addInsert(NodeFactory.createURI(heatIri), "rdf:type",
-						NodeFactory.createURI(
-								genHeat))
-				.addInsert(NodeFactory.createURI(heatIri), "rdfs:label", heat_label)
-				.addInsert(NodeFactory.createURI(heatIri),
-						NodeFactory.createURI(
-								"http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"),
-						NodeFactory.createURI(measureIri))
-				.addInsert(NodeFactory.createURI(measureIri), "rdf:type", NodeFactory.createURI(measure))
-				.addInsert(NodeFactory.createURI(measureIri), "rdfs:label", measure_label)
-				.addInsert(NodeFactory.createURI(measureIri), NodeFactory.createURI(
-						"http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue"), heatValue)
-				.addInsert(NodeFactory.createURI(measureIri),
-						NodeFactory.createURI("http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"),
-						NodeFactory.createURI("http://www.theworldavatar.com/kg/ontochemplant/MegaWatt"));
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = case when specific_energy_consumption > 0.0 then " +
+						"production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) " +
+						"when specific_energy_consumption < 0.0 then -1.0*production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) end ; ",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
 
-		UpdateRequest ur = ub.buildRequest();
-		System.out.println(ur);
-		AccessAgentCaller.updateStore("http://localhost:48888/ontochemplant", ur.toString());
-		// This line below is for update the data in Claudius
-		// AccessAgentCaller.updateStore("jibusinessunits", ur.toString());
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updateSemiconductorsEmissions() {
+		String tableName = "semiconductors";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = production_volume*surface_area*specific_energy_consumption*(1.0 - thermal_efficiency) ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updateFoodEmissions() {
+		String tableName = "food_beverages";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = production_volume*specific_energy_consumption*(1.0 - thermal_efficiency) ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updatePharmaceuticalsEmissions() {
+		String tableName = "pharmaceuticals";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = revenue*energy_consumption_per_unit_revenue*(1.0 - thermal_efficiency)/number_facilities ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updatePrintingEmissions() {
+		String tableName = "printing";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = 6*heat_emissions_per_printer ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updatePrecisionEmissions() {
+		String tableName = "precision_engineering";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = floor_area*specific_energy_consumption*(1.0 - thermal_efficiency) ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	void updateDataCentreEmissions() {
+		String tableName = "data_centres";
+		try (Connection conn = rdbStoreClient.getConnection();
+				Statement stmt = conn.createStatement();) {
+
+			if (checkTableExists(tableName, conn)) {
+				String sqlString = String.format("alter table \"%s\" drop column if exists %s ;" +
+						" alter table \"%s\" add column %s double precision; " +
+						" update table \"%s\" set %s = (1.08*max_it_capacity*(1.0^6)*utilization_rate + 21.53*floor_area + 9400)/(1.0^6) ;",
+						tableName, HEAT_COLUMN, tableName, HEAT_COLUMN, tableName, HEAT_COLUMN);
+				stmt.executeUpdate(sqlString);
+			}
+
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+
+	}
+
+	boolean checkTableExists(String table, Connection conn) {
+		try {
+			String condition = String.format("table_name = '%s'", table);
+			return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0,
+					int.class) == 1;
+		} catch (DataAccessException e) {
+			LOGGER.error(e.getMessage());
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
+	DSLContext getContext(Connection conn) {
+		return DSL.using(conn, SQLDialect.POSTGRES);
 	}
 
 }

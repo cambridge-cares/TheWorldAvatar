@@ -1,0 +1,2 @@
+class SparqlParseError(ValueError):
+    pass
