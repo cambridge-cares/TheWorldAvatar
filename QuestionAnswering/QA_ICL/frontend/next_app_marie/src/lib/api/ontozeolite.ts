@@ -4,6 +4,7 @@ import {
   ZeoliteFramework,
   ZeoliteFrameworkBase,
   ZeoliteFrameworkPartial,
+  ZeoliticMaterial,
   ZeoliticMaterialBase,
 } from '@/lib/model/ontozeolite'
 import { PtElement, SpeciesBase } from '../model/ontospecies'
@@ -75,16 +76,6 @@ export function getZeoliteFrameworkOne(iriEncoded: string) {
   )
 }
 
-const GET_ZEOLITIC_MATERIALS_ENDPOINT = new URL(
-  './ontozeolite/zeolitic-materials',
-  BACKEND_ENDPOINT
-)
-export function getZeoliticMaterialsMany(searchParams: URLSearchParams) {
-  return getJson<ZeoliticMaterialBase[]>(
-    `${GET_ZEOLITIC_MATERIALS_ENDPOINT}?${searchParams}`
-  )
-}
-
 export function getZeoliteFrameworkCIF(iriEncoded: string) {
   return fetch(`${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}/cif`, {
     method: 'GET',
@@ -99,4 +90,24 @@ export function getZeoliteFrameworksPartialMany(searchParams: URLSearchParams) {
   return getJson<ZeoliteFrameworkPartial[]>(
     `${GET_ZEOLITE_FRAMEWORKS_PARTIAL_ENDPOINT}?${searchParams}`
   )
+}
+
+const GET_ZEOLITIC_MATERIALS_ENDPOINT = new URL(
+  './ontozeolite/zeolitic-materials',
+  BACKEND_ENDPOINT
+)
+export function getZeoliticMaterialsMany(searchParams: URLSearchParams) {
+  return getJson<ZeoliticMaterialBase[]>(
+    `${GET_ZEOLITIC_MATERIALS_ENDPOINT}?${searchParams}`
+  )
+}
+
+export function getZeoliticMaterialOne(iriEncoded: string) {
+  return getJson<ZeoliticMaterial>(`${GET_ZEOLITIC_MATERIALS_ENDPOINT}/${iriEncoded}`)
+}
+
+export function getZeoliticMaterialCIF(iriEncoded: string) {
+  return fetch(`${GET_ZEOLITIC_MATERIALS_ENDPOINT}/${iriEncoded}/cif`, {
+    method: 'GET'
+  }).then(res => res.text())
 }

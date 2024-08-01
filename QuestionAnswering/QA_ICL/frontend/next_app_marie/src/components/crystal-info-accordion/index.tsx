@@ -1,6 +1,10 @@
 import * as React from 'react'
 
-import { CrystalInfo, VectorComponent } from '@/lib/model/ontozeolite'
+import {
+  CrystalInfo,
+  MeasureMatrix,
+  MeasureVector,
+} from '@/lib/model/ontozeolite'
 import {
   Accordion,
   AccordionContent,
@@ -38,6 +42,43 @@ const UNIT_CELL_DIM_CONFIGS = [
   },
 ]
 
+interface MeasureMatrixDivProps extends React.HTMLAttributes<HTMLDivElement> {
+  heading: string
+  data: MeasureMatrix
+}
+
+const MeasureMatrixDiv = ({
+  heading,
+  data,
+  ...props
+}: MeasureMatrixDivProps) => (
+  <div {...props}>
+    <h4 className='font-medium'>{heading}</h4>
+    <MatrixTable data={data.component} />
+  </div>
+)
+
+interface MeasureVectorDivProps {
+  heading: string
+  data: MeasureVector
+  indices: number[]
+}
+const MeasureVectorDiv = ({
+  heading,
+  data,
+  indices,
+  ...props
+}: MeasureVectorDivProps) => (
+  <div {...props}>
+    <h4 className='font-medium'>{heading}</h4>(
+    {indices
+      .map(index => data.component.find(x => x.index === index))
+      .map(vector => (vector ? vector.value : ''))
+      .join(', ')}
+    )
+  </div>
+)
+
 export const CrystalInfoAccordion = ({
   AtomicStructure,
   CoordinateTransformation,
@@ -63,65 +104,43 @@ export const CrystalInfoAccordion = ({
           <AtomicStructureTable atomicStructure={AtomicStructure.AtomSite} />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value='coord-transform'>
-        <AccordionTrigger>
-          <h3>Coordinate transformation</h3>
-        </AccordionTrigger>
-        <AccordionContent className='px-6 grid gap-4 md:grid-cols-4'>
-          <div className='md:col-span-3'>
-            <h4 className='font-medium'>
-              Fractional to Cartesian transformation matrix
-            </h4>
-            <MatrixTable
-              data={
-                CoordinateTransformation.TransformationMatrixToCartesian
-                  .component
-              }
-            />
-          </div>
-          <div>
-            <h4 className='font-medium'>
-              Fractional to Cartesian transformation vector
-            </h4>
-            (
-            {[1, 2, 3]
-              .map(index =>
-                CoordinateTransformation.TransformationVectorToCartesian.component.find(
-                  x => x.index === index
-                )
-              )
-              .map(vector => (vector ? vector.value : ''))
-              .join(', ')}
-            )
-          </div>
-          <div className='md:col-span-3'>
-            <h4 className='font-medium'>
-              Cartesian to fractional transformation matrix
-            </h4>
-            <MatrixTable
-              data={
-                CoordinateTransformation.TransformationMatrixToFractional
-                  .component
-              }
-            />
-          </div>
-          <div>
-            <h4 className='font-medium'>
-              Cartesian to fractional transformation vector
-            </h4>
-            (
-            {[1, 2, 3]
-              .map(index =>
-                CoordinateTransformation.TransformationVectorToFractional.component.find(
-                  x => x.index === index
-                )
-              )
-              .map(vector => (vector ? vector.value : ''))
-              .join(', ')}
-            )
-          </div>
-        </AccordionContent>
-      </AccordionItem>
+      {Object.values(CoordinateTransformation).every(x => x) && (
+        <AccordionItem value='coord-transform'>
+          <AccordionTrigger>
+            <h3>Coordinate transformation</h3>
+          </AccordionTrigger>
+          <AccordionContent className='px-6 grid gap-4 md:grid-cols-4'>
+            {CoordinateTransformation.TransformationMatrixToCartesian && (
+              <MeasureMatrixDiv
+                heading='Fractional to Cartesian transformation matrix'
+                data={CoordinateTransformation.TransformationMatrixToCartesian}
+                className='md:col-span-3'
+              />
+            )}
+            {CoordinateTransformation.TransformationVectorToCartesian && (
+              <MeasureVectorDiv
+                heading='Fractional to Cartesian transformation vector'
+                data={CoordinateTransformation.TransformationVectorToCartesian}
+                indices={[1, 2, 3]}
+              />
+            )}
+            {CoordinateTransformation.TransformationMatrixToFractional && (
+              <MeasureMatrixDiv
+                heading='Cartesian to fractional transformation matrix'
+                data={CoordinateTransformation.TransformationMatrixToFractional}
+                className='md:col-span-3'
+              />
+            )}
+            {CoordinateTransformation.TransformationVectorToFractional && (
+              <MeasureVectorDiv
+                heading='Cartesian to fractional transformation vector'
+                data={CoordinateTransformation.TransformationVectorToFractional}
+                indices={[1, 2, 3]}
+              />
+            )}
+          </AccordionContent>
+        </AccordionItem>
+      )}
       <AccordionItem value='unit-cell'>
         <AccordionTrigger>
           <h3>Unit cell</h3>
