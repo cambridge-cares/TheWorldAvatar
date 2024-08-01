@@ -221,22 +221,6 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         }
     }
 
-    public void createVectorVisSource(String workspaceName, String layerName, String storeName,
-            UpdatedGSFeatureTypeEncoder featureTypeSettings, GSLayerEncoder21 layerSettings) {
-        if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
-            logger.info("GeoServer layer {} already exists.", storeName);
-        } else {
-            UpdatedGSVirtualTableEncoder virtualTable = featureTypeSettings.getMetadataVirtualTable();
-            featureTypeSettings.setProjectionPolicy(ProjectionPolicy.NONE);
-            featureTypeSettings.addKeyword("KEYWORD");
-            if (null != virtualTable) {
-                featureTypeSettings.setNativeName(virtualTable.getName());
-                featureTypeSettings.setMetadataVirtualTable(virtualTable);
-            }
-            manager.getPublisher().publishDBLayer(workspaceName, storeName, featureTypeSettings, layerSettings);
-        }
-    }
-
     public void createGeoTiffLayer(String workspaceName, String name, String database, String schema,
             GeoServerRasterSettings geoServerSettings, MultidimSettings mdimSettings) {
 
