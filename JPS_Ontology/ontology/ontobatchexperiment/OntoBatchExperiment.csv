@@ -1,0 +1,18 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoBatchExperiment,TBox,https://www.theworldavatar.com/kg/ontobatchexperiment/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoBatchExperiment,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoBatchExperiment,TBox,OntoBatchExperiment is an ontology to represent batch experiments and relevant information.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+Operator,Class,https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole,IS-A,,,,A role assigned to a person who will be responsible for managing and conducting batch processes in a controlled environment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,Operator
+BatchExperiment,Class,,,,,,A type of experiment or process in which a fixed quantity of materials is processed together in a single batch or lot.,https://www.theworldavatar.com/kg/ontobatchexperiment/,Batch experiment
+Reagent,Class,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,IS-A,,,,"A substance or compound that is used in a chemical reaction or analysis to detect, measure, or synthesize other substances.",https://www.theworldavatar.com/kg/ontobatchexperiment/,Reagent
+isOperatedBy,Object Property,,,BatchExperiment,Operator,,A relationship between a batch experiment and it's operator.,https://www.theworldavatar.com/kg/ontobatchexperiment/,is operated by
+hasStartTime,Object Property,,,BatchExperiment,www.w3.org/2006/time#Instant,,A relationship between a batch experiment and it's start time.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has start time
+hasEndTime,Object Property,,,BatchExperiment,www.w3.org/2006/time#Instant,,A relationship between a batch experiment and it's end time.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has end time
+hasReagent,Object Property,,,BatchExperiment,Reagent,,A relationship between a batch experiment and the reagent used in the experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has reagent
+hasAmountOfSubstanceConcentration,Object Property,,,BatchExperiment,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration,,A relationship between a reagent and it's amount of substance concentration.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has amount of substance concentration
+hasMassFraction,Object Property,,,BatchExperiment,http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction,,A relationship between a reagent and it's mass fraction.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has mass fraction
+hasID,Data Property,,,BatchExperiment,String,,A relationship that describes the ID allocated to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has ID
+hasWorkCode,Data Property,,,BatchExperiment,String,,A relationship that describes the work code allocated to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has work code
+hasBatchNumber,Data Property,,,BatchExperiment,Integer,,A relationship that describes the batch number allocated to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has batch number
+hasOperatorNotes,Data Property,,,BatchExperiment,String,,A relationship that describes notes taken by the operator for the batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has operator notes
+hasInitials,Data Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person,String,,A relationship that describes a person's initials.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has initials

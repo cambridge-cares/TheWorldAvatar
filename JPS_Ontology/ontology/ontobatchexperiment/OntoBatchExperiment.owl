@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontobatchexperiment/"
+     xml:base="https://www.theworldavatar.com/kg/ontobatchexperiment/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontobatchexperiment="https://www.theworldavatar.com/kg/ontobatchexperiment/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">01 August 2024</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBatchExperiment is an ontology to represent batch experiments and relevant information.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasAmountOfSubstanceConcentration -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasAmountOfSubstanceConcentration">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a reagent and it&apos;s amount of substance concentration.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has amount of substance concentration</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasEndTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasEndTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/www.w3.org/2006/time#Instant"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a batch experiment and it&apos;s end time.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has end time</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasMassFraction -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasMassFraction">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a reagent and it&apos;s mass fraction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has mass fraction</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasReagent -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasReagent">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a batch experiment and the reagent used in the experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has reagent</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasStartTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasStartTime">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/www.w3.org/2006/time#Instant"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a batch experiment and it&apos;s start time.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has start time</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/isOperatedBy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/isOperatedBy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/Operator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a batch experiment and it&apos;s operator.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is operated by</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchNumber -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchNumber">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the batch number allocated to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has batch number</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the ID allocated to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasInitials -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasInitials">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a person&apos;s initials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has initials</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasOperatorNotes -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasOperatorNotes">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes notes taken by the operator for the batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has operator notes</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasWorkCode -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasWorkCode">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the work code allocated to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has work code</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person"/>
+    
+
+
+    <!-- https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of experiment or process in which a fixed quantity of materials is processed together in a single batch or lot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Batch experiment</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/Operator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/Operator">
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A role assigned to a person who will be responsible for managing and conducting batch processes in a controlled environment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Operator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A substance or compound that is used in a chemical reaction or analysis to detect, measure, or synthesize other substances.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reagent</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/www.w3.org/2006/time#Instant -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/www.w3.org/2006/time#Instant"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
