@@ -1,5 +1,5 @@
 from typing import Annotated, get_args
-from fastapi import Depends, Query, Request
+from fastapi import Depends, Query, Request, Response
 
 from model.kg.ontozeolite import (
     ZEOLITIC_MATERIAL_KEY,
@@ -104,3 +104,7 @@ SCALAR_TOPO_PROP_QUERY_PARAMS = [
     }
     for key in get_args(ScalarTopologicalPropertyKey)
 ]
+
+
+class CIFResponse(Response):
+    media_type = "chemical/x-cif"

@@ -1,14 +1,19 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-from model.kg.ontozeolite import OntozeoliteZeoliticMaterialBase
+from model.kg.ontozeolite import OntozeoliteZeoliticMaterial, OntozeoliteZeoliticMaterialBase
 from model.web.ontozeolite import (
     CitationRequest,
     UnitCellRequest,
     ZeoliticMaterialRequest,
 )
-from routers.ontozeolite.common import UNIT_CELL_QUERY_PARAMS, parse_unit_cell_request
+from routers.ontozeolite.common import (
+    UNIT_CELL_QUERY_PARAMS,
+    CIFResponse,
+    parse_unit_cell_request,
+)
+from services.mol_vis.cif import CIFManager, get_cif_manager
 from services.rdf_stores.ontozeolite import (
     OntozeoliteRDFStore,
     get_ontozeolite_rdfStore,
@@ -70,4 +75,38 @@ async def getZeoliticMaterials(
     ],
 ):
     iris = ontozeolite_store.get_zeolitic_material_IRIs(req)
-    return [x for x in ontozeolite_store.get_zeolitic_materials_many(iris=iris) if x]
+    return [x for x in ontozeolite_store.get_zeolitic_material_base_many(iris=iris) if x]
+
+
+@router.get(
+    "/{iri:path}/cif",
+    summary="Get zeolitic material's CIF geometry file",
+    response_class=CIFResponse,
+)
+async def getZeoliteFrameworkCIF(
+    iri: str, cif_manager: Annotated[CIFManager, Depends(get_cif_manager)]
+):
+    cif = cif_manager.get([iri])[0]
+    if not cif:
+        raise HTTPException(
+            status_code=404, detail=f"CIF not found for zeolite `{iri}`"
+        )
+    return CIFResponse(
+        content=cif,
+        headers={"Content-Disposition": 'attachment; filename="zeolite.cif"'},
+    )
+
+
+@router.get(
+    "/{iri:path}",
+    summary="Get zeolitic material",
+    response_model=OntozeoliteZeoliticMaterial,
+    response_model_exclude_none=True,
+)
+async def getZeoliteFrameworkOne(
+    iri: str,
+    ontozeolite_store: Annotated[
+        OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
+    ],
+):
+    return ontozeolite_store.get_zeolitic_material_one(iri)
