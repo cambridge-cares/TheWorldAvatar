@@ -211,7 +211,8 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
 
             processDimensions(geoServerSettings, fte);
 
-            if (manager.getPublisher().publishDBLayer(workspaceName, storeName, fte, geoServerSettings)) {
+            if (manager.getPublisher().publishDBLayer(workspaceName, storeName, fte,
+                    geoServerSettings.getLayerSettings())) {
                 logger.info("GeoServer database layer '{}' created.", layerName);
             } else {
                 throw new RuntimeException(

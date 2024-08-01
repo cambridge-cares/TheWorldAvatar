@@ -5,9 +5,10 @@ import java.util.Map;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
-public class GeoServerVectorSettings extends GSLayerEncoder implements GeoServerDimensionSettings {
+public class GeoServerVectorSettings implements GeoServerDimensionSettings {
 
     private UpdatedGSVirtualTableEncoder virtualTable;
+    private final GSLayerEncoder layerSettings = new GSLayerEncoder();
 
     public GSVirtualTableEncoder getVirtualTable() {
         return virtualTable;
@@ -27,5 +28,17 @@ public class GeoServerVectorSettings extends GSLayerEncoder implements GeoServer
     @Override
     public void setDimensions(Map<String, UpdatedGSFeatureDimensionInfoEncoder> dimensions) {
         this.dimensions = dimensions;
+    }
+
+    public GSLayerEncoder getLayerSettings() {
+        return layerSettings;
+    }
+
+    public void setDefaultStyle(String workspace, String defaultStyle) {
+        layerSettings.setDefaultStyle(workspace, defaultStyle);
+    }
+
+    public void setDefaultStyle(String defaultStyle) {
+        layerSettings.setDefaultStyle(defaultStyle);
     }
 }
