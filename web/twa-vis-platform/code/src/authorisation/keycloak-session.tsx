@@ -5,15 +5,14 @@ import styles from './keycloak-session.module.css';
 import React, { useEffect, useState } from 'react';
 
 const KeycloakSession = () => {
-    const [username, setUsername] = useState(null);
+    const [displayName, setDisplayName] = useState(null);
 
     useEffect(() => {
-        // Fetch the username from your backend
         const fetchUsername = async () => {
             try {
                 const response = await fetch('/api/userinfo');
                 const userInfo = await response.json();
-                setUsername(userInfo.firstName);
+                setDisplayName(userInfo.fullName);
                 console.log(userInfo.firstName);
             } catch (error) {
                 console.error('Error fetching user Info', error);
@@ -24,12 +23,11 @@ const KeycloakSession = () => {
     }, []);
 
     return (
-        username && (
-            <div id="keycloakSession" className={`${styles.keycloakSession} ${styles.dropdown}`}>
-                <span id="userName" className={styles.dropbtn}>{username}</span>
+        displayName && (
+            <div id="keycloakSession" className={styles.keycloakSession}>
+                <span id="userName" className={styles.dropbtn}>{displayName}</span>
                 <div className={styles.dropdownContent}>
                     <Link href="/logout">Log Out</Link>
-                    <Link href="./protected">API</Link>
                 </div>
             </div>)
     );
