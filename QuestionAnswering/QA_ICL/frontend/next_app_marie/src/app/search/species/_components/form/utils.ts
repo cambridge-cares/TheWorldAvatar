@@ -59,11 +59,16 @@ export function convertSpeciesFormToSearchParams(
   return new URLSearchParams(
     [
       values.chemicalClass
-        ? [CHEMICAL_CLASS_KEY, encodeURI(values.chemicalClass)]
+        ? ([CHEMICAL_CLASS_KEY, encodeURI(values.chemicalClass)] as [
+            string,
+            string,
+          ])
         : undefined,
-      values.use ? [USE_KEY, encodeURI(values.use)] : undefined,
+      values.use
+        ? ([USE_KEY, encodeURI(values.use)] as [string, string])
+        : undefined,
       ...propertyParams,
       ...identifierParams,
-    ].filter(x => x !== undefined)
+    ].filter((x): x is [string, string] => x !== undefined)
   )
 }
