@@ -1,6 +1,6 @@
 {
   "realm": "twa-test",
-  "auth-server-url": "http://localhost:8081/",
+  "auth-server-url": "http://host.docker.internal:8081/",
   "ssl-required": "external",
   "resource": "viz",
   "public-client": true,
