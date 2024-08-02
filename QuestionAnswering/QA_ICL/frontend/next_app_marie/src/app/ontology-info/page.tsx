@@ -4,7 +4,7 @@ import { promises as fs } from 'fs'
 import matter from 'gray-matter'
 
 import { PATH_TO_RESOURCES } from '@/lib/fs'
-import { Main } from '@/components/ui/main'
+import { Main } from '@/components/layout'
 import { Prose } from '@/components/ui/prose'
 
 const PATH_TO_TBOX_INFO = path.join(PATH_TO_RESOURCES, 'tbox-info')
@@ -39,9 +39,9 @@ export default async function OntologyInfo() {
 
   return (
     <Main className='flex flex-col items-center'>
-      <div className='w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12 px-4'>
+      <div className='w-full md:max-w-screen-md lg:max-w-screen-lg pt-8 mb-12 px-4 [&_section]:mb-12 last:mb-0'>
         <h1 className='mb-8'>Information on Chemistry Ontologies</h1>
-        <section className='mb-8'>
+        <section>
           <h2 className='mb-2'>Table of Contents</h2>
           <ol className='list-decimal list-inside'>
             {data.map(({ id, heading }, i) => (
@@ -54,7 +54,7 @@ export default async function OntologyInfo() {
           </ol>
         </section>
         {data.map(({ id, heading, mdContent }, i) => (
-          <section key={i} className='mb-12'>
+          <section key={i}>
             <h2 id={id} className='mb-2'>
               <a href={`#${id}`} className='hover:underline'>
                 {heading}

@@ -8,7 +8,7 @@ import { QAFragment } from './_components/qa'
 import { IntroSection } from './_components/intro-section'
 import { ExampleQuestionGroup } from './_components/example-question-tabs'
 import { PATH_TO_RESOURCES } from '@/lib/fs'
-import { Main } from '@/components/ui/main'
+import { Main } from '@/components/layout'
 
 const PATH_TO_EXAMPLE_QUESTIONS = path.join(
   PATH_TO_RESOURCES,
@@ -28,7 +28,7 @@ export default async function Home() {
     .then(content => JSON.parse(content))
 
   return (
-    <Main className='p-4 min-h-screen flex flex-col justify-center items-center'>
+    <Main className='p-4 flex flex-col justify-center items-center'>
       <IntroSection
         imgSrc='/images/marie-thumbnail.jpg'
         imgAlt="Marie's thumbnail"

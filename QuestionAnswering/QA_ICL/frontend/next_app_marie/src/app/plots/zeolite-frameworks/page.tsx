@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Main } from '@/components/ui/main'
+import { Main } from '@/components/layout'
 import { ZeolitePropertiesPlotCtx } from './_components/plot-ctx'
 
 export default async function ZeolitePropertiesPlotPage() {

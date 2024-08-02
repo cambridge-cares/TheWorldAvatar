@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { getSpeciesOne, getSpeciesXYZ } from '@/lib/api/ontospecies'
 import { capitalize } from '@/lib/utils'
-import { Main } from '@/components/ui/main'
+import { Main } from '@/components/layout'
 import { MolViewer } from '@/components/ui/mol-viewer'
 import { PropertyTable } from './_components/property-table'
 import { NotFoundError } from '@/lib/api'

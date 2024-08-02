@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { getChemicalClasses } from '@/lib/api/ontospecies'
-import { Main } from '@/components/ui/main'
+import { Main } from '@/components/layout'
 import { SpeciesPropertiesPlotCtx } from './_components/plot-ctx'
 
 export default async function SpeciesPropertiesPlotPage() {
