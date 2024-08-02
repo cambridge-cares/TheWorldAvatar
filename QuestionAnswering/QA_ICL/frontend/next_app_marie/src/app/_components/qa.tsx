@@ -102,7 +102,7 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
           isProcessing={isProcessing}
         />
       </section>
-      <section className='w-full md:max-w-screen-md lg:max-w-screen-lg mb-12'>
+      <section className='w-full md:max-w-screen-md lg:max-w-screen-lg'>
         {(qaResponse || chatStream) && (
           <QAResponseDiv
             qaResponse={qaResponse}

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import React from 'react'
+import * as React from 'react'
 
 interface SidebarItem {
   href: string

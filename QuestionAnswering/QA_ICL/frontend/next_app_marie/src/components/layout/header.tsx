@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
 
@@ -35,9 +34,9 @@ export default function Header({
         </div>
         <div className='flex'>
           {URL_AND_LOGO_LST.map(({ url, imgSrc, imgAlt }, i) => (
-            <Link key={i} href={url} target='_blank'>
+            <a key={i} href={url} target='_blank'>
               <Image src={imgSrc} width={140} height={80} alt={imgAlt}></Image>
-            </Link>
+            </a>
           ))}
         </div>
       </div>

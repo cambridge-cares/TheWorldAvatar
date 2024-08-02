@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { getChemicalClasses, getUses } from '@/lib/api/ontospecies'
-import { Main } from '@/components/ui/main'
+import { Main } from '@/components/layout'
 import { SpeciesForm } from './_components/form'
 import { SpeciesSearchResults } from './_components/results'
 
@@ -19,7 +19,6 @@ export default async function SpeciesPage() {
           <SpeciesForm
             chemicalClassOptions={chemicalClasses}
             useOptions={uses}
-            className='mb-12'
           />
         </React.Suspense>
         <React.Suspense>

@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Main } from '@/components/ui/main'
+import { Main } from '@/components/layout'
 import { MolViewer } from '@/components/ui/mol-viewer'
 import {
   getZeoliticMaterialCIF,
