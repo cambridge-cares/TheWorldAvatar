@@ -1,6 +1,6 @@
 # Setting up the agent
-1. Copy `sg_landuse.csv` to the [resources folder](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OSMAgent/osmagent/src/main/resources) of OSM agent.
-2. Modify OSM agent's `landuse.csv` in [config.properties](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/OSMAgent/osmagent/src/main/resources/config.properties) to sg_landuse.csv
+1. Copy `sg_landuse.csv` to the [resources folder] of OSM agent.
+2. Replace the [config.properties](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/OSMAgent/osmagent/src/main/resources/config.properties) in OSM agent's [resource folder] with the `config.properties` in this folder.
 3. Spin up OSM agent by following its [README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/OSMAgent/README.md)
 
 # Running the agent
@@ -14,3 +14,5 @@ To run `run_agent.py` in the background, run the following command:
 where `csv` is the file path to the CSV file (e.g. `sg_partitions.csv`) containing the geometries to run. This will run the OSM agent in the background for the geometries inside the `csv`. The logs will be written to `nohup.out`.
 
 It is advised to split any large polygon one wishes to run into smaller polygons (such as the case for Singapore with `sg_partitions.csV`) to speed up running and preventing any timeout issues.
+
+[resources folder]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/OSMAgent/osmagent/src/main/resources
