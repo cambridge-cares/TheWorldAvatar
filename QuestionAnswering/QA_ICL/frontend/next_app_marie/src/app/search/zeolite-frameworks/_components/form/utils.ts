@@ -99,6 +99,6 @@ export function convertZeoFrameworkFormToSearchParams(
       ...scalarTopoPropsParams,
       ...CBUsParams,
       SBUParam,
-    ].filter(x => x !== undefined)
+    ].filter((x): x is [string, string] => x !== undefined)
   )
 }

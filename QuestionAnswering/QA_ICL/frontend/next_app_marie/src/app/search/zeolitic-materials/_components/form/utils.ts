@@ -83,24 +83,35 @@ export function convertZeoMaterialFormToSearchParams(
 
   return new URLSearchParams(
     [
-      values.framework ? [FRAMEWORK_KEY, values.framework] : undefined,
-      values.name ? [MATERIAL_NAME_KEY, values.name] : undefined,
-      values.formula ? [CHEMICAL_FORMULA_KEY, values.formula] : undefined,
+      values.framework
+        ? ([FRAMEWORK_KEY, values.framework] as [string, string])
+        : undefined,
+      values.name
+        ? ([MATERIAL_NAME_KEY, values.name] as [string, string])
+        : undefined,
+      values.formula
+        ? ([CHEMICAL_FORMULA_KEY, values.formula] as [string, string])
+        : undefined,
       ...values.elements.map(
         x => [FRAMEWORK_COMPONENT_KEY, x] as [string, string]
       ),
       ...values.guests.map(x => [GUEST_COMPONENT_KEY, x] as [string, string]),
       ...unitCellParams,
       values.citation.authorLastName
-        ? [AUTHOR_LAST_NAME_KEY, values.citation.authorLastName]
+        ? ([AUTHOR_LAST_NAME_KEY, values.citation.authorLastName] as [
+            string,
+            string,
+          ])
         : undefined,
       values.citation.year
-        ? [CITATION_YEAR_KEY, values.citation.year]
+        ? ([CITATION_YEAR_KEY, values.citation.year] as [string, string])
         : undefined,
       values.citation.journal
-        ? [JOURNAL_KEY, values.citation.journal]
+        ? ([JOURNAL_KEY, values.citation.journal] as [string, string])
         : undefined,
-      values.citation.doi ? [DOI_KEY, values.citation.doi] : undefined,
-    ].filter(x => x !== undefined)
+      values.citation.doi
+        ? ([DOI_KEY, values.citation.doi] as [string, string])
+        : undefined,
+    ].filter((x): x is [string, string] => x !== undefined)
   )
 }
