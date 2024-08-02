@@ -1,14 +1,24 @@
-from twa.kg_operations          import PySparqlClient
-from rdflib                     import Graph, URIRef, Literal
-from rdflib.namespace           import RDF
+# Import relevant packages
+from __future__                     import annotations
+from twa.data_model.base_ontology   import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
+from twa.data_model.iris            import TWA_BASE_URL
+from twa.kg_operations              import PySparqlClient
+from typing                         import ClassVar
+from pydantic                       import Field
+from twa.kg_operations              import PySparqlClient
+from rdflib                         import Graph, URIRef, Literal
+from rdflib.namespace               import RDF
+from typing import Optional
+import re
 import os
 import sys
-import uuid
 PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
 from rework_ontomops.update_kg  import config_a_box_updates
 import json
+import csv
+from io import StringIO
 import pandas as pd
 
 def read_json_file(file_path):
@@ -22,17 +32,369 @@ def read_json_file(file_path):
     dict: The data parsed from the JSON file.
     """
     with open(file_path, 'r') as file:
-        #data        = json.load(file)
-        data2           = pd.read_json(file)
+        data            = json.load(file)
+        #data2           = pd.read_json(file)
         # Set display options to show the full DataFrame
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_colwidth', None)
         pd.set_option('display.width', None)
-        data2           = data2.at[0, 'Synthesis']
-    return data2
+        #data2           = data2.at[0, 'Synthesis']
+    return data
 
 
+# Your ontology needs to inherit the BaseOntology class
+class OntoSyn(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = TWA_BASE_URL
+    namespace:          ClassVar[str]           = 'OntoSyn'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+    ###-----------------------------------------------------------------------------------------------
+    # Other Ontologies
+class OntoLab(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = TWA_BASE_URL
+    namespace:          ClassVar[str]           = 'OntoLab'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class OntoSpecies(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontospecies/"
+    namespace:          ClassVar[str]           = 'OntoSpecies.owl#'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class OntoMOPs(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = TWA_BASE_URL
+    namespace:          ClassVar[str]           = 'ontomops'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class OntoKin(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontokin/"
+    namespace:          ClassVar[str]           = 'OntoKin.owl'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class BIBO(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://purl.org/ontology/"
+    namespace:          ClassVar[str]           = 'bibo'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class OM2(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://www.ontology-of-units-of-measure.org/resource/"
+    namespace:          ClassVar[str]           = 'om-2'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class OntoReaction(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = TWA_BASE_URL
+    namespace:          ClassVar[str]           = 'ontoreaction'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+    
+class OntoCapeMaterial(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = TWA_BASE_URL
+    namespace:          ClassVar[str]           = ''
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class SKOS(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontocape/material/"
+    namespace:          ClassVar[str]           = 'material.owl#'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class RDFS(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://www.w3.org/2000/01/"
+    namespace:          ClassVar[str]           = 'rdf-schema'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+    ###-----------------------------------------------------------------------------------------------
+    # Classes:
+
+class ChemicalTransformation(BaseClass):
+    rdfs_isDefinedBy                    = OntoSyn
+    isDescribedBy                       : IsExecutedBy[ChemicalSynthesis]
+
+class ChemicalSynthesis(BaseClass):
+    rdfs_isDefinedBy                    = OntoSyn
+    hasSynthesisStep                    : HasSynthesisStep[SynthesisStep]
+    hasFirstStep                        : HasFirstStep[SynthesisStep]
+    hasEquipment                        : HasEquipment[LabEquipment]
+    retrievedFrom                       : RetrievedFrom[Document]
+
+class SynthesisStep(BaseClass):
+    rdfs_isDefinedBy                    = OntoSyn
+    hasContainerVessel                  : Optional[HasContainerVessel[Vessel]] = None
+
+class Product(BaseClass):
+    rdfs_isDefinedBy                    = OntoKin
+
+class ChemicalOutput(Product):
+    rdfs_isDefinedBy                    = OntoSyn
+    isRepresentedBy                     : IsRepresentedBy[MetalOrganicPolyhedron]
+    #hasSynthesisYield                   : HasSynthesisYield[SynthesisYield]
+
+class SynthesisYield(BaseClass):
+    rdfs_isDefinedBy                    = OntoSyn
+    hasYieldMass                        : HasYieldMass[Mass]
+
+class SynthesisReactant(BaseClass):
+    rdfs_isDefinedBy                    = OntoReaction
+
+class Add(SynthesisStep):       
+    rdfs_isDefinedBy                    = OntoSyn
+    hasAddedReactant                    : HasYieldMass[SynthesisReactant]
+    hasAddedSolvent                     : HasAddedSolvent[Solvent]
+    isAdded                             : IsAdded[MaterialAmount]
+
+class Filter(SynthesisStep):        
+    rdfs_isDefinedBy                    = OntoSyn
+    isWashedWith                        : IsWashedWith[MaterialAmount]
+    hasWashingSolvent                   : HasWashingSolvent[Solvent]
+    isRepeated                          : IsRepeated[int]
+
+class Dry(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class Stir(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+    hasStirringDuration                 : HasStirringDuration[Duration]
+
+class Sonication(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+    hasSonicationDuration               : HasSonicationDuration[Duration]
+
+class HeatChill(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+    hasHeatChillDuration                : HasHeatChillDuration[Duration]
+    hasReactionTemperature              : HasReactionTemperature[Temperature]
+    hasHeatChillRate                    : HasHeatChillRate[TemperatureRate]
+    #hasHeatChillDevice                  : HasHeatChillDevice[HeatChillDevice]
+    hasVacuum                           : HasVacuum[bool]
+    isSealed                            : Optional[IsSealed[bool]] = None
+
+class LabEquipment(BaseClass):
+    rdfs_isDefinedBy                    = OntoLab
+
+class VesselEnvironment(BaseClass):
+    rdfs_isDefinedBy                    = OntoSyn
+    label                               : str
+
+class Vessel(LabEquipment):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class Species(BaseClass):
+    rdfs_isDefinedBy                    = OntoSpecies
+    label                               : Label[str]
+    altLabel                            : AltLabel[str]
+
+class PhaseComponent(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+    representsOccurenceOf               : RepresentsOccurenceOf[Species]
+
+class SinglePhase(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+    isComposedOfSubsystem               : IsComposedOfSubsystem[PhaseComponent]
+
+class Material(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+    thermodynamicBehaviour              : ThermodynamicBehaviour[SinglePhase]
+
+class InputChemical(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+
+class MetalOrganicPolyhedron(BaseClass):
+    rdfs_isDefinedBy                    = OntoMOPs
+    hasCCDCNumber                       : Optional[HasCCDCNumber[int]] = None
+
+class Reactant(Species):
+    rdfs_isDefinedBy                    = OntoKin
+
+class Solvent(BaseClass):
+    rdfs_isDefinedBy                    = OntoKin
+
+class HeatChillDevice(LabEquipment):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class Document(BaseClass):
+    rdfs_isDefinedBy                    = BIBO
+    doi                                 : Doi
+
+class Duration(BaseClass):
+    rdfs_isDefinedBy                    = OM2
+    hasValue                            : HasValue[float]
+
+class Temperature(BaseClass):
+    rdfs_isDefinedBy                    = OM2
+    hasValue                            : HasValue[float]
+
+class Mass(BaseClass):
+    rdfs_isDefinedBy                    = OM2
+    hasValue                            : HasValue[float]
+
+class TemperatureRate(BaseClass):
+    rdfs_isDefinedBy                    = OM2
+    hasValue                            : HasValue[float]
+
+class Yield(BaseClass):
+    rdfs_isDefinedBy                    = OntoReaction
+
+class AmountOfSubstanceFraction(BaseClass):
+    rdfs_isDefinedBy                    = OM2
+
+class MaterialAmount(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+
+    ###-----------------------------------------------------------------------------------------------
+    # Datatype Properties:
+class HasNitrogenAthmosphere(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasVacuum(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+class IsSealed(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+class IsRepeated(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+class HasValue(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OM2
+
+class AltLabel(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = SKOS
+
+class Label(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = RDFS
+
+class HasCCDCNumber(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoMOPs
+
+
+    ###-----------------------------------------------------------------------------------------------
+    # Object Properties:
+
+class HasSynthesisStep(ObjectProperty):
+    # The user MUST provide the ontology for which the concept `rdfs_isDefinedBy`
+    # Since `rdfs_isDefinedBy` is already defined as a ClassVar, the user can just assign a value here
+    rdfs_isDefinedBy                    = OntoSyn
+    # 0 and None for field `range` indicates no cardinality restriction (which is also the default value)
+    # Therefore, the below line is equivalent to `range: as_range(AnotherConcept)`
+
+class HasFirstStep(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class RefersToMaterial(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+
+class ThermodynamicBehaviour(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+
+class IsComposedOfSubsystem(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+
+class RepresentsOccurenceOf(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoCapeMaterial
+
+class HasNextStep(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasContainerVessel(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasProduct(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class IsRepresentedBy(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasSynthesisYield(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasYieldMass(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasSonicationDuration(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class YieldLimitingSpecies(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasAddedReactant(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasAddedSolvent(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasReactantMaterialAmount(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasSolventMaterialAmount(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasEquipment(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasHeatChillDevice(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasReactionTemperature(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasHeatChillRate(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasHeatChillDuration(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasStirringDuration(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class IsAdded(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class IsWashedWith(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasWashingSolvent(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class RetrievedFrom(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class IsExecutedBy(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class HasSynthesisRole(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+class Doi(ObjectProperty):
+    rdfs_isDefinedBy                    = BIBO
+
+class Unit(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OM2
 
 
 class UploadKG:
@@ -41,19 +403,19 @@ class UploadKG:
     """
 
     def __init__(self, query_endpoint, update_endpoint, kg_user, kg_password):
-        self.prefix                 = """  PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
-                                           PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-                                           PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-                                           PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"""
-        a_box_updates_config        = config_a_box_updates("../OntoSynthesisConnection.env")
-        self.sparql_client          = PySparqlClient(
-        query_endpoint              = a_box_updates_config.SPARQL_QUERY_ENDPOINT    ,
-        update_endpoint             = a_box_updates_config.SPARQL_UPDATE_ENDPOINT   ,
-        kg_user                     = a_box_updates_config.KG_USERNAME              ,
-        kg_password                 = a_box_updates_config.KG_PASSWORD              ,
-        fs_url                      = ""                                            ,
-        fs_user                     = ""                                            ,
-        fs_pwd                      = ""
+        self.prefix                     = """  PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+                                               PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+                                               PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+                                               PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"""
+        a_box_updates_config            = config_a_box_updates("../OntoSynthesisConnection.env")
+        self.sparql_client              = PySparqlClient(
+        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT    ,
+        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT   ,
+        kg_user                         = a_box_updates_config.KG_USERNAME              ,
+        kg_password                     = a_box_updates_config.KG_PASSWORD              ,
+        fs_url                          = ""                                            ,
+        fs_user                         = ""                                            ,
+        fs_pwd                          = ""
         )
 
     def query_triple(self, triple, select_var):
@@ -109,11 +471,11 @@ class UploadKG:
         else:
             insert_string           = f"""<{tsubject}> <{tpredicate}> <{tobject}> ."""
         delete_query                = f"""
-        {self.prefix}
-        DELETE DATA {{
-        {insert_string}
-        }}
-        """
+                                            {self.prefix}
+                                            DELETE DATA {{
+                                            {insert_string}
+                                            }}
+                                            """
         print(f"deleted triple: <{tsubject}>, <{tpredicate}>, {tobject}")
         self.sparql_client.perform_update(delete_query)
 
@@ -132,66 +494,262 @@ class UploadKG:
         """
         self.sparql_client.perform_update(update_query)
         
-def upload_procedure():
+def upload_vessels(client):
+    vessel_ss_teflon                    = Vessel(label="Teflon-lined stainless-steel vessel")
+    glass_vial                          = Vessel(label="glass vial")
+    quartz_tube                         = Vessel(label="quartz tube")
+    round_bottom_flask                  = Vessel(label="round bottom flask")
+    glass_scintilation_vial             = Vessel(label="glass scintillation vial")
+    pyrex_tube                          = Vessel(label="pyrex tube")
+
+    vessel_ss_teflon.push_to_kg(client, recursive_depth=-1)
+    glass_vial.push_to_kg(client, recursive_depth=-1)
+    quartz_tube.push_to_kg(client, recursive_depth=-1)
+    round_bottom_flask.push_to_kg(client, recursive_depth=-1)
+    glass_scintilation_vial.push_to_kg(client, recursive_depth=-1)
+    pyrex_tube.push_to_kg(client, recursive_depth=-1)
+
+
+def extract_numbers_and_units_add(text):
+    # Regular expression to find numbers followed by units
+    pattern             = r'(\d*\.?\d+)\s*([a-zA-Z]+)'
+    # Find all matches in the text
+    matches             = re.findall(pattern, text)
+
+    # Separate numbers and units
+    numbers             = [float(match[0]) for match in matches]
+    units               = [match[1] for match in matches]
+
+    return numbers, units
+
+def extract_numbers_and_units_temp(text):
+    # Regular expression to find numbers followed by units
+    pattern             = r'(\d*\.?\d+)\s*([^\d\s]+)'
+
+    # Find all matches in the text
+    matches             = re.findall(pattern, text)
+
+    # Separate numbers and units
+    numbers             = [float(match[0]) for match in matches]
+    units               = [match[1] for match in matches]
+
+    return numbers, units
+
+def extract_numbers_and_units_rate(text):
+    # Regular expression to find numbers followed by units
+    pattern             = r'(\d*\.?\d+)\s*([°a-zA-Z/]+)'
+
+    # Find all matches in the text
+    matches             = re.findall(pattern, text)
+
+    # Separate numbers and units
+    numbers             = [float(match[0]) for match in matches]
+    units               = [match[1] for match in matches]
+
+    return numbers, units
+
+class TextToCSV:
+    def __init__(self, input_filename):
+        self.input_filename = input_filename
+
+    def read_and_clean_file(self):
+        with open(self.input_filename, 'r') as file:
+            lines = file.readlines()
+        
+        # Remove the "csv" line and any trailing newlines
+        clean_lines = [line.strip() for line in lines if line.strip() != "```csv" and line.strip() != "```"]
+
+        return clean_lines
+    def extract_csv_entries(self, clean_lines):
+        csv_content = '\n'.join(clean_lines)
+        entries = []
+        # Use StringIO to read the CSV content from a string
+        with StringIO(csv_content) as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                entries.append(row)
+        return entries
+    
+def species_querying(client, species_label, recursion_counter):
+    print(recursion_counter)
+    print(species_label)
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT ?Species WHERE {{
+        ?Species a os:Species .
+        VALUES ?Text {{"{species_label[recursion_counter]}"}}
+        ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES)/os:value)|rdfs:label|skos:altLabel) ?Text . 
+        }}"""
+
+    triple                  = client.perform_query(query)
+    print(species_label[recursion_counter])
+    if triple              != None or recursion_counter == 2:
+        return triple
+    else:
+        species_querying(client, species_label, recursion_counter=recursion_counter+1)
+    
+def mop_querying(client, CCDC_number):
+    query = f"""
+        PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        SELECT ?MOPIRI WHERE {{
+          ?MOPIRI om:hasMOPFormula 	?MOPFormula						;
+          om:hasCCDCNumber	{CCDC_number}							.
+        }}"""
+    return client.perform_query(query)
+
+def get_client(name):
+    a_box_updates_config                        = config_a_box_updates(f"../{name}.env")
+    return                                        PySparqlClient(
+        query_endpoint                          = a_box_updates_config.SPARQL_QUERY_ENDPOINT            ,
+        update_endpoint                         = a_box_updates_config.SPARQL_UPDATE_ENDPOINT           ,
+        kg_user                                 = a_box_updates_config.KG_USERNAME                      ,
+        kg_password                             = a_box_updates_config.KG_PASSWORD                      ,
+        fs_url                                  = ""                                                    ,
+        fs_user                                 = ""                                                    ,
+        fs_pwd                                  = ""        )
+
+def unit_upload(client):
+    duration_h                                  = "<http://www.ontology-of-units-of-measure.org/resource/om-2/hour>"
+    duration_day                                = "<http://www.ontology-of-units-of-measure.org/resource/om-2/day>"
+    duration_s                                  = "<http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time>"
+    temperature_K                               = "<http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin>"
+    temperature_C                               = "<http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius>"
+    temperature_rate_degh                       = "<http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerHour>"
+    temperature_rate_degmin                     = "<http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerMinute-Time>"
+    temperature_rate_degs                       = "<http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerSecond-Time>"
+    labels                                      = ["hour", "day", "second", "kelvin", "degree Celsius", "degree Celsius per hour", "degree Celsius per minute", "degree Celsius per second"]
+    subjects                                    = [duration_h, duration_day, duration_s, temperature_K, temperature_C, temperature_rate_degh, temperature_rate_degmin, temperature_rate_degs]
+    for i, label in enumerate(labels):
+        query                                   = insert_query_unit(subjects[i], label)
+        client.perform_update(query)
+
+
+
+def insert_query_unit(subject_syn, label_syn):
+    return                                   f"""
+                                                    PREFIX om:          <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+                                                    PREFIX os:          <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+                                                    PREFIX osyn:        <https://www.theworldavatar.com/kg/ontosyn/OntoSyn.owl#>
+                                                    PREFIX rdfs:        <http://www.w3.org/2000/01/rdf-schema#>
+                                                    PREFIX xsd: 	    <http://www.w3.org/2001/XMLSchema#>
+                                                    INSERT DATA {{
+                                                    {subject_syn} rdfs:label 	"{label_syn}"        .
+                                                    }}
+                                                """
+def heatchill_upload(client, heatchill_step):
+    temp, temp_unit                             = extract_numbers_and_units_temp(heatchill_step["Target temperature"])
+    heat_time, time_unit                        = extract_numbers_and_units_add(heatchill_step["Heat or cooling Time"])
+    heat_rate, rate_unit                        = extract_numbers_and_units_rate(heatchill_step["Heating or cooling rate"])
+    heatchill_device                            = heatchill_step["used Device"]
+    sealed                                      = heatchill_step["sealed Vessel"]
+    # Vessel:
+    match heatchill_step['used Vessel']:
+        case 'Teflon-lined stainless-steel vessel':
+            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_eb0f5942-d36b-47b1-86f0-725c1549fa2e"
+        case 'glass vial':  
+            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_90589d23-44e8-4698-acdf-bee3e44df96f"
+        case 'quartz tube': 
+            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_06304c23-7926-45d2-841d-690b5de16ed0"
+        case 'round bottom flask':  
+            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_5a7d7ec9-44d5-4280-8467-f9f624374a9d"
+        case 'glass scintillation vial':    
+            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_b67ea47b-7849-4aac-b0fd-e2715a4ac034"
+        case 'pyrex tube':  
+            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_080ad74b-950d-4651-a87c-5aa96d5ffb52"
+
+    vacuum                                      = heatchill_step["under Vacuum"]
+    print(heatchill_step)
+    print(heat_time[0], type(heat_time[0]))
+    duration                                    = Duration(hasValue=heat_time[0])
+    temperature                                 = Temperature(hasValue=temp)
+    temp_rate                                   = TemperatureRate(hasValue=heat_rate)
+    vessel                                      = Vessel.pull_from_kg(vessel_iri, client,recursive_depth=-1)[0]
+    vessel.isClosed                             = heatchill_step["sealed Vessel"]
+    heat_chill                                  = HeatChill(hasContainerVessel=vessel, hasHeatChillDuration=duration, hasReactionTemperature=temperature, hasHeatChillRate=temp_rate, hasVacuum=vacuum, isSealed=sealed)
+    g_to_remove, g_to_add                       = duration.push_to_kg(client, recursive_depth=-1)    
+    g_to_remove, g_to_add                       = heat_chill.push_to_kg(client, recursive_depth=-1)
+
+def chemicals_upload(client):
     return
 
-
-        
 def main():
-    a_box_updates_config        = config_a_box_updates("../OntoSynthesisConnection.env")
-    updater                     = UploadKG(
-        query_endpoint          = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
-        update_endpoint         = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
-        kg_user                 = a_box_updates_config.KG_USERNAME,
-        kg_password             = a_box_updates_config.KG_PASSWORD
-    )
-    triple                      = f"""  
-    ?MOPIRI     om:hasMOPFormula 	        ?MOPFormula						;
-                om:hasChemicalBuildingUnit	?CBUIRI				            ;
-                om:hasProvenance 	        ?Provenance 					;
-                om:hasCCDCNumber	        ?CCDC							.
-    ?Provenance om:hasReferenceDOI          "10.1002/chem.201700798" 	    ."""
-    select_stat                 = """?MOPFormula ?CCDC"""
-    print(updater.query_triple(triple=triple, select_var=select_stat))
-    data = read_json_file("../Data/first10_prompt5/10.1021_ja 0104352.json")
-    print(data)
+    sparql_client                               = get_client("OntoSynthesisConnection")
+    sparql_client_species                       = get_client("OntoSpeciesConnection") 
+    sparql_client_mop                           = get_client("OntoMOPConnection") 
+    #upload_vessels(sparql_client)
+    #unit_upload(sparql_client)
+    # read in CSV:
+    csv_class                                   = TextToCSV("../Data/first10_prompt2/10.1021_ja 0104352.txt" )
+    csv_lines                                   = csv_class.read_and_clean_file()
+    csv_out                                     = csv_class.extract_csv_entries(csv_lines)
+
+    
+    for nr, line in enumerate(csv_out):
+        print(line)
+        species_name                                            = [line["Chemical Name"], line["Alternative Names"], line["Chemical Formula"]]
+        triples                                                 = species_querying(sparql_client_species, species_name, 0)
+        print(triples)
+        if triples == None or triples == []:
+                    species                                     = Species(label=line["Chemical Formula"], altLabel={line["Alternative Names"], line["Chemical Name"]})
+        else:
+            print("success: ", triples[0]["Species"])
+            species                                             = Species.pull_from_kg(triples[0]["Species"], sparql_client_species,recursive_depth=-1)[0]
+            print(species, type(species))
+            print(species.instance_iri)
+        #g_to_remove, g_to_add                                   = species.push_to_kg(sparql_client, recursive_depth=-1)
+
+        if line['Synthesis Role'] == 'Product' and line['CCDC Number'] != "N/A":
+            mop_iri             = mop_querying(sparql_client_mop, line['CCDC Number'])
+            mop                 = MetalOrganicPolyhedron(hasCCDCNumber=line['CCDC Number'])
+            chemical_output     = ChemicalOutput(isRepresentedBy=mop)
+            #mop.push_to_kg(sparql_client, recursive_depth=-1)
+
+        elif line['Synthesis Role'] == 'Product' and line['CCDC Number'] == "N/A":
+            mop                 = MetalOrganicPolyhedron()
+            #mop.push_to_kg(sparql_client, recursive_depth=-1)
+
+        else:
+            chemcial_input              = ChemicalInput()
+
+    #another_object_of_one_concept = species.pull_from_kg('https://iri-of-the-object-of-interest', sparql_client, recursive_depth=-1)
+    # read in JSON:
+    SynthesisJson                               = read_json_file("../Data/first10_prompt52/10.1021_ja 0104352.json")["Synthesis"]
+    data2                                       = SynthesisJson[0]
+    mop_name                                    = data2["product name"]
+    mop_ccdc                                    = data2["product CCDC number"]
+    add_json                                    = data2["Add"]
+    add1                                        = add_json[0]
+    addedAmount                                 = add1["added chemical amount"]
+    number, units                               = extract_numbers_and_units_add(addedAmount)
+    heatchill_json                              = data2["HeatChill"]
+
+    for heatchill_step in heatchill_json:
+        # remove non numerical entries
+        if heatchill_step["Target temperature"] == "—" or heatchill_step["Target temperature"] == "room temperature":
+            continue
+        # target temperature
+
     # Convert main elements to a DataFrame
-    main_df         = pd.DataFrame({k: [v] for k, v in data.items() if not isinstance(v, list)})
-
+    #main_df         = pd.DataFrame({k: [v] for k, v in data.items() if not isinstance(v, list)})
     # Print main DataFrame
-    print(main_df)
-
+    #print(main_df)
     # Convert nested lists to DataFrames
-    add_df          = pd.DataFrame(data['Add'])
-    heatchill_df    = pd.DataFrame(data['HeatChill'])
-    filter_df       = pd.DataFrame(data['Filter'])
-    stirr_df        = pd.DataFrame(data['Stirr'])
-    sonicate_df     = pd.DataFrame(data['Sonicate'])
+    #add_df          = pd.DataFrame(data['Add'])
+    #heatchill_df    = pd.DataFrame(data['HeatChill'])
+    #filter_df       = pd.DataFrame(data['Filter'])
+    #stirr_df        = pd.DataFrame(data['Stirr'])
+    #sonicate_df     = pd.DataFrame(data['Sonicate'])
 
-    OntoSyn         = "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl"
+    #OntoSyn         = "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl"
 
-    # Print nested DataFrames
-    print("\nAdd DataFrame:")
-    print(add_df)
 
-    print("\nHeatChill DataFrame:")
-    print(heatchill_df)
 
-    print("\nFilter DataFrame:")
-    print(filter_df)
-
-    # Access subelements
-    # Example: Access the 'added chemical name' from the 'Add' DataFrame
-    added_chemical_names        = add_df['added chemical name']
-    print("\nAdded Chemical Names:")
-    print(added_chemical_names)
-    # instantiate rdflib.Graph object
-    g                           = Graph()
-    hash_id                     = str(uuid.uuid4())
-    insert_statement            = f"""  <https://www.theworldavatar.com/kg/ontosyn/OntoSyn.owl#ChemicalSynthesis_{hash_id}>       
-                                        <https://www.theworldavatar.com/kg/ontosyn/OntoSyn.owl#hasSynthesisStep>    	
-                                        <https://www.theworldavatar.com/kg/ontosyn/OntoSyn.owl#Add_{hash_id}>	            .  """
-    updater.query_update("", "", insert_statement)
 
 
 if __name__ == "__main__":
