@@ -16,12 +16,16 @@
 import express from "express";
 import next from "next";
 
-const session = require('express-session');
-const Keycloak = require('keycloak-connect');
+import session, { MemoryStore } from 'express-session';
+import Keycloak from 'keycloak-connect';
 
 // Configure the server port; default to 3000 if not specified in environment variables
 if (process.env.PORT) { console.log('port specified in .env file: ', process.env.PORT); }
 const port = process.env.PORT || 3000;
+console.log('keycloak authorisation required: ', process.env.KEYCLOAK)
+console.log(process.env.ROLE_PROTECTED_PAGES, 'require', process.env.ROLE, 'role')
+console.log(process.env.PROTECTED_PAGES, 'require keycloak authentication')
+const keycloakEnabled = process.env.KEYCLOAK === 'true';
 
 // Determine the deployment mode based on NODE_ENV; default to 'development' mode if not specified
 const dev = process.env.NODE_ENV !== "production";
@@ -33,56 +37,43 @@ const handle = app.getRequestHandler();
 // Prepare the Next.js application and then start the Express server
 app.prepare().then(() => {
   const server = express();
-  server.set('trust proxy', true);
 
-  // Configure the server to use session storage for keycloak authentication
-  const memoryStore = new session.MemoryStore();
-  server.use(
-    session({
-      secret: 'twa-login',
-      resave: false,
-      saveUninitialized: true,
-      store: memoryStore,
-    })
-  );
+  if (keycloakEnabled) { // do keycloak auth stuff if env var is set
+    server.set('trust proxy', true);
+    const memoryStore = new MemoryStore();
+    server.use(
+      session({
+        secret: 'login',
+        resave: false,
+        saveUninitialized: true,
+        store: memoryStore,
+      })
+    );
 
-  const keycloak = new Keycloak({ store: memoryStore });
-  server.use(keycloak.middleware());
+    const keycloak = new Keycloak({ store: memoryStore });
+    server.use(keycloak.middleware());
 
-  server.get('/api/userinfo', keycloak.protect(), (req, res) => {
-    const username = req.kauth.grant.access_token.content.preferred_username;
-    const firstName = req.kauth.grant.access_token.content.given_name;
-    const lastName = req.kauth.grant.access_token.content.family_name;
-    res.json({ username, firstName, lastName });
-  });
-
-  server.get('/protected', keycloak.protect('oisin:secured'), (req, res, next) => {
-    console.log(`Accessing ${req.path} by ${req.method}`);
-    console.log(`User details: ${JSON.stringify(req.kauth.grant.access_token.content)}`);
-
-    keycloak.protect('oisin:secured')(req, res, (err) => {
-      if (err) {
-        console.error("Error during Keycloak protection:", err);
-        return next(err);
-      }
-
-      // Proceed with the original handler logic if there's no error
-      const authorisation = "hello!";
-      res.json({ authorisation });
+    server.get('/api/userinfo', keycloak.protect(), (req, res) => {
+      const { preferred_username: userName, given_name: firstName, family_name: lastName, name: fullName, realm_access: { roles }, resource_access: clientRoles } = req.kauth.grant.access_token.content;
+      res.json({ userName, firstName, lastName, fullName, roles, clientRoles });
     });
-  });
 
-  server.get('/logout', (req, res) => {
-    req.logout(); // This tells Keycloak to logout
-    req.session.destroy(() => { // This destroys the session
-      res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
-      res.redirect('http://localhost:8081/realms/twa-test/protocol/openid-connect/logout?post_logout_redirect_uri=http%3A%2F%2Flocalhost%3A1997&client_id=oisin');
+    server.get('/logout', (req, res) => {
+      req.logout(); // Keycloak adapter logout
+      req.session.destroy(() => { // This destroys the session
+        res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
+      });
     });
-  });
 
-  server.get('/map', keycloak.protect());
-
-  server.get('/CentralStackAgent/*', keycloak.enforcer('user:CentralStackAgent'))
+    const protectedPages = process.env.PROTECTED_PAGES.split(',');
+    protectedPages.forEach(page => {
+      server.get(page, keycloak.protect());
+    });
+    const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
+    roleProtectedPages.forEach(page => {
+      server.get(page, keycloak.protect(process.env.ROLE));
+    });    
+  }
 
   // Serve static files from the 'uploads' directory, allowing for runtime configuration via the environment variable
   server.use(
@@ -98,6 +89,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log(`Running on port ${port}, development mode is: ${dev}`);
+    console.log(`Running at http://localhost:${port}, development mode is: ${dev}`);
   });
 });
