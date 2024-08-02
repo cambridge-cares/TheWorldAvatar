@@ -2,7 +2,7 @@
   "realm": "twa-test",
   "auth-server-url": "http://localhost:8081/",
   "ssl-required": "external",
-  "resource": "oisin",
+  "resource": "viz",
   "public-client": true,
   "confidential-port": 0
 }
