@@ -1,0 +1,1 @@
+Add files 'mapbox_api_key' and 'mapbox_username' with your credentials under 'webspace' folder. 

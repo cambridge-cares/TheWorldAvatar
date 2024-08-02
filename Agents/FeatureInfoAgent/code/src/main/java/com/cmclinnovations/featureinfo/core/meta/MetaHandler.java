@@ -2,6 +2,7 @@ package com.cmclinnovations.featureinfo.core.meta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,7 +36,7 @@ public class MetaHandler {
     /**
      * Optional enforced Blazegraph URL.
      */
-    private final String enforcedEndpoint;
+    private final Optional<String> enforcedEndpoint;
     
     /**
      * Configuration store.
@@ -54,7 +55,7 @@ public class MetaHandler {
      * @param enforcedEndpoint optional enforced Blazegraph URL.
      * @param configStore Store of class mappings and stack endpoints.
      */
-    public MetaHandler(String iri, String enforcedEndpoint, ConfigStore configStore) {
+    public MetaHandler(String iri, Optional<String> enforcedEndpoint, ConfigStore configStore) {
         this.iri = iri;
         this.enforcedEndpoint = enforcedEndpoint;
         this.configStore = configStore;

@@ -20,17 +20,34 @@ public class EndpointConfig {
         this.ontopUrl = ontopEndpointConfig.getUrl();
     }
 
+    /**
+     * Returns URL to dbName
+     * @param dbName name of PostgreSQL database
+     * @return URL to dbName
+     */
     public String getDbUrl(String dbName) {
         return this.postGISEndpointConfig.getJdbcURL(dbName);
     }
 
+    /**
+     * Returns PostgreSQL username
+     * @return PostgreSQL username
+     */
     public String getDbUser() {
         return this.dbUser;
     }
 
+    /**
+     * Returns PostgreSQL password
+     * @return PostgreSQL password
+     */
     public String getDbPassword() {
         return this.dbPassword;
     }
 
+    /**
+     * Returns Ontop endpoint URL
+     * @return Ontop endpoint URL
+     */
     public String getOntopUrl() {return this.ontopUrl;}
 }

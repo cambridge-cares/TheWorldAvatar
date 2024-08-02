@@ -1,0 +1,22 @@
+What are the {PropertyName1}, {PropertyName2} and {PropertyName3} of species classified as {ChemClass}?
+What are the {PropertyName1}, {PropertyName2} and {PropertyName3} of {ChemClass} species
+What are the {PropertyName1}, {PropertyName2}, and {PropertyName3} for chemical species grouped under {ChemClass}?
+Provide the {PropertyName1}, {PropertyName2}, and {PropertyName3} details for molecules categorized as {ChemClass}.
+What are the {PropertyName1}, {PropertyName2}, and {PropertyName3} attributes associated with compounds belonging to {ChemClass}?
+Share the {PropertyName1}, {PropertyName2}, and {PropertyName3} characteristics of species identified as {ChemClass}.
+Give insights into the {PropertyName1}, {PropertyName2}, and {PropertyName3} traits linked to chemical species falling under {ChemClass}.
+What do you know about the {PropertyName1}, {PropertyName2}, and {PropertyName3} features of molecules grouped as {ChemClass}?
+Can you list the {PropertyName1}, {PropertyName2}, and {PropertyName3} attributes of compounds that are part of {ChemClass}?
+Discuss the {PropertyName1}, {PropertyName2}, and {PropertyName3} properties of species classified under {ChemClass}.
+Elaborate on the {PropertyName1}, {PropertyName2}, and {PropertyName3} particulars of chemical species categorized as {ChemClass}.
+Highlight the {PropertyName1}, {PropertyName2}, and {PropertyName3} characteristics for molecules falling into the {ChemClass} group.
+What are the {PropertyName1}, {PropertyName2}, and {PropertyName3} traits associated with compounds classified within {ChemClass}?
+Explain the {PropertyName1}, {PropertyName2}, and {PropertyName3} attributes pertaining to species designated as {ChemClass}.
+Could you provide information on the {PropertyName1}, {PropertyName2}, and {PropertyName3} qualities of chemical species sorted under {ChemClass}?
+Please outline the {PropertyName1}, {PropertyName2}, and {PropertyName3} features of molecules labeled as {ChemClass}.
+Detail the {PropertyName1}, {PropertyName2}, and {PropertyName3} aspects of compounds categorized in the {ChemClass} class.
+What can you tell me about the {PropertyName1}, {PropertyName2}, and {PropertyName3} attributes of species recognized as {ChemClass}?
+I'm interested in learning about the {PropertyName1}, {PropertyName2}, and {PropertyName3} traits belonging to chemical species characterized under {ChemClass}.
+Provide insights into the {PropertyName1}, {PropertyName2}, and {PropertyName3} properties of molecules organized within the {ChemClass} category.
+What are the {PropertyName1}, {PropertyName2}, and {PropertyName3} specifics concerning compounds classified as {ChemClass} species?
+Discuss the {PropertyName1}, {PropertyName2}, and {PropertyName3} particulars of species belonging to the {ChemClass} classification.

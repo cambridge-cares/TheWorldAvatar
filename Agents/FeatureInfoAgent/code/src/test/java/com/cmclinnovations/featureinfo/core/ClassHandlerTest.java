@@ -25,6 +25,7 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.ConfigStoreTest;
 import com.cmclinnovations.featureinfo.config.StackEndpoint;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
+import com.cmclinnovations.featureinfo.objects.Request;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -122,8 +123,7 @@ public class ClassHandlerTest {
 
         // Run class determination logic
         List<ConfigEntry> matchingEntries = handler.determineClassMatches(
-            "https://test-stack/features/feature-one",
-            null
+            new Request("https://test-stack/features/feature-one",null)
         );
 
         Assertions.assertEquals(

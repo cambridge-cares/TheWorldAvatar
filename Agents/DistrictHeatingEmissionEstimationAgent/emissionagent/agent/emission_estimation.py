@@ -7,6 +7,7 @@
 # calculate emissions from consumed gas and provided heat
 
 import pandas as pd
+from datetime import datetime
 import CoolProp.CoolProp as CP
 
 from py4jps import agentlogging
@@ -46,6 +47,8 @@ DH_FACTORS = {
 
 # Default rounding behaviour
 ROUNDING = 6
+# Time format (for logging/console output)
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 #
 # ESTIMATION METHODS
@@ -87,8 +90,14 @@ def extract_relevant_gas_or_heat_amount(ts_client, kg_client, derivationIRI:str,
 
     # Extract time series value for SimulationTime
     unix_time = kg_client.get_unix_timestamps(simulation_time_iri)
-    try:
+    try:        
         amount = df[df['unix'] == unix_time]['sum'].values[0]
+        # Provide some console output
+        t = datetime.utcfromtimestamp(unix_time).strftime(TIME_FORMAT)
+        print(f'Emission estimation input values for current simulation time: {t}')
+        df_time_step = df[df['unix'] == unix_time]
+        for col in df_time_step:
+            print(f"{col}: {df_time_step[col].values}")
     except IndexError:
         msg = f'Derivation {derivationIRI}: SimulationTime unix value {unix_time} not found in time series data. '
         msg += f'Time series data unix range: [ {df["unix"].min()} , {df["unix"].max()} ]'
@@ -136,6 +145,7 @@ def calculate_emissions_for_consumed_gas(pollutant_iri:str, consumed_gas:float) 
         'density': round(rho, 6),
         'massflow': round(mass_flow, 6)
     }
+    logger.info(f'Estimated gas burning emissions: {emission}')
 
     return emission
 
@@ -176,5 +186,6 @@ def calculate_emissions_for_provided_heat(pollutant_iri:str, provided_heat:float
         'density': round(rho, 6),
         'massflow': round(mass_flow, 6)
     }
+    logger.info(f'Estimated EfW emissions: {emission}')
 
     return emission

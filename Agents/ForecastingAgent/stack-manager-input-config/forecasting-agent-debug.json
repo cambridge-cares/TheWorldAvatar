@@ -3,11 +3,11 @@
         "Name": "forecasting-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.1.1",
+                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.2.1",
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/ForecastingAgent/forecastingagent/fcmodels",
+                        "Source": "/<REPLACE_WITH_PATH_TO_TWA_DIRECTORY>/Agents/ForecastingAgent/forecastingagent/fcmodels",
                         "Target": "/app/forecastingagent/fcmodels"
                     }
                 ],

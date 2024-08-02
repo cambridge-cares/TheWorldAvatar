@@ -6,7 +6,6 @@ This Feature Info Agent (FIA) acts as a single access point for [TWA Visualisati
 
 Please see the [CHANGELOG](./CHANGELOG.md) file for details on recent changes; the latest available image of the FIA can be determined by viewing its [GitHub package page](https://github.com/cambridge-cares/TheWorldAvatar/pkgs/container/feature-info-agent).
 
-
 ## Overview
 
 The FIA is a relatively simple HTTP agent built using the TWA agent framework. Its goal is to take in the IRI of a single feature then use it to query the knowledge graphs for metadata, and the relational databases for time series data before formatting and returning it as a JSON object.
@@ -66,7 +65,7 @@ Before diving into the details on how to write the queries to retrieve the afore
   - As there's no ontological term for the entities representing dependent columns, the FIA (within the code and documentation) is going to referred to them as "Measurables".
   - Each of these "Measurable" instances will normally have some sort of `hasUnit` predicate/
   - A "Measurable" can be a series of values of any time (number, string, boolean etc.).
-  - Any existing entity in the KG can become a "Measurable", as such one cannot write a generic "show me all measurables" SPARQL query that works for all data sets. 
+  - Any existing entity in the KG can become a "Measurable", as such one cannot write a generic "show me all measurables" SPARQL query that works for all data sets.
 
 ## Requirements
 
@@ -81,18 +80,19 @@ Follow the below configuration steps within the `fia-queries` subdirectory of th
 The configuration file should be a JSON file named `fia-config.json`, contained within it should be:
 
 - `entries`: This is a **required** array of objects defining a mapping between (TBox) class IRIs and the names of files containing pre-written SPARQL queries. Each object needs to contain the following parameters:
-   - Required:
-     - `class`: Full IRI of the class.
-   - Optional:
-      - `meta`: Object containing configurations for meta data retrieval.
-      - `time`: Object containing configurations for time series retrieval.
-
+  - Required:
+    - `class`: Full IRI of the class.
+  - Optional:
+    - `meta`: Object containing configurations for meta data retrieval.
+    - `time`: Object containing configurations for time series retrieval.
 
 The `meta` object should contain the following parameters:
+
 - Required:
   - `queryFile`: Location of file with SPARQL query used to get meta data (relative to configuration file).
 
 The `time` object should contain the following parameters:
+
 - Required:
   - `queryFile`: Location of file with SPARQL query used to get measurable IRIs (relative to configuration file).
   - `database`: Name of PostGRES database containing values.
@@ -104,11 +104,13 @@ The `time` object should contain the following parameters:
     - "minutes"
     - "seconds"
     - "milliseconds"
-  - `reference`: Reference point for bounds calculation, defaults to "now". One of:
+  - `reference`: Reference point for bounds calculation.
+  Can be a string representing a time in ISO instant format, e.g. `"2011-12-03T10:15:30Z"` or one of:
     - "all" (limit parameter unused in this case)
     - "now" (server time at request)
     - "latest" (furthest forward time value in RDB)
     - "first" (furthest back time value in RDB)
+  Defaults to "now".
 
 For clarification, the `limit` value supports both positive and negative integers. For reference types of `now` and `latest` it is multiplied by **-1** then **added** to the reference time during the calculation of retrieval times. For references of `first` is is simply **added** to the reference time.
 
@@ -139,20 +141,19 @@ Queries that generate multiple rows with the same property name are supported, t
 | Catchment Name | Cotswolds | |
 | Up Time | 7 | Days |
 
-
 An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleMeta.sparql); note that this is for a sample data set defined in a simple ontology [here](./sample/sample-tboxes.csv).
 
 #### Queries for measurables (time series)
 
-Queries for measurable entities need to return the IRIs of the entities representing the dependent value columns (i.e. "Measurable" instances), rather than that of the time series instance itself. Those IRIs will be used to grab the actual values from the relational database as well as parameters associated with each measurement/forecast. 
+Queries for measurable entities need to return the IRIs of the entities representing the dependent value columns (i.e. "Measurable" instances), rather than that of the time series instance itself. Those IRIs will be used to grab the actual values from the relational database as well as parameters associated with each measurement/forecast.
 
 Required columns are `Measurable` (`Measurement` also supported for backwards compatibility) containing the entity IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank); any other columns are currently ignored
 
 | Measurement | Name | Unit |
 | --- | --- | --- |
-| https://theworldavatar.io/measurement-iri-one/ | Flow Rate | m^3/s |
-| https://theworldavatar.io/measurement-iri-two/ | Speed | m/s |
-| https://theworldavatar.io/measurement-iri-three/ | Ownership | |
+| <https://theworldavatar.io/measurement-iri-one/> | Flow Rate | m^3/s |
+| <https://theworldavatar.io/measurement-iri-two/> | Speed | m/s |
+| <https://theworldavatar.io/measurement-iri-three/> | Ownership | |
 
 An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleTime.sparql); note that this is for a sample data set defined in a simple ontology [here](./sample/sample-tboxes.csv).
 
@@ -185,7 +186,7 @@ The FIA is currently set up with two automated GitHub actions:
   - Only runs when files within the agent have changed AND on commits that are part of a non-draft PR to the main branch.
   - Tests the FIA by running its unit tests and compiling a Docker image (which is NOT pushed at this stage).
   
-- **Push the FeatureInfoAgent:**
+- **Release the FeatureInfoAgent:**
   - Only runs when files within the agent are changed AND on commits to the main branch (i.e. after a PR is approved and merged).
   - Builds the FIA's Docker image (inc. running the unit tests again) AND pushes it to the TWA GitHub image registry.
 
@@ -198,9 +199,7 @@ A number of different projects have made use of the FeatureInfoAgent, some good 
 
 Packaged within this directory is also a number of configuration and data files used to spin up a [small sample stack](./sample/) used to manually test the FIA. Whilst this has not been put together to act as a shining example of the FIA, one is free to look at the configuration files to determine proper syntax.
 
-## Tutorial
-
-A tutorial that walks through how to use the FIA can be found in the associated [FIA Tutorial document](./docs/tutorial.md).
+It should be noted that no specialist tutorial for the FeatureInfoAgent exists at the time of writing; however, the FeatureInfoAgent is a core component of the aforementioned examples. These examples (along with the documentation on this page) can be used as an introduction/tutorial to the FeatureInfoAgent.
 
 ## Troubleshooting
 

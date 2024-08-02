@@ -37,6 +37,5 @@ public class Main {
         } finally {
             tomcat.destroy();
         }
-
     }
 }

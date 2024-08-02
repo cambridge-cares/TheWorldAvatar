@@ -61,7 +61,7 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
 TBOX_TRIPLES = 7
-ABOX_TRIPLES = 71
+ABOX_TRIPLES = 73
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -107,6 +107,8 @@ DH_DATA = 'https://www.dropbox.com/s/qqosbkg38fv6s93/dh_timeseries_data_2020.csv
 
 IRI_TO_FORECAST_1 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_1'      #om:Quantity
 ASSOCIATED_DATAIRI_1 = TEST_TRIPLES_BASE_IRI + 'Measure_1'      #associated om:Measure
+# Not associated om:Measure, i.e., associated with same TimeSeries but not Quantity
+NOT_ASSOCIATED_DATAIRI_2 = TEST_TRIPLES_BASE_IRI + 'Measure_2'
 IRI_TO_FORECAST_2 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_2'      #om:Quantity
 IRI_TO_FORECAST_3 = TEST_TRIPLES_BASE_IRI + 'Availability_1'    #owl:Thing
 IRI_TO_FORECAST_4 = TEST_TRIPLES_BASE_IRI + 'Availability_2'    #owl:Thing
@@ -155,6 +157,9 @@ TEST_CASE_14 = 'Prophet_2_Covariates_OM_Quantity_with_scaling_without_Measure_wi
 TEST_CASE_15 = 'Prophet_1_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting'
 TEST_CASE_16 = 'Prophet_1_Covariates_OM_Quantity_with_scaling_without_Measure_without_Unit__overwriting'
 TEST_CASE_17 = 'Prophet_2_Covariates_OM_Quantity_without_scaling_without_Measure_without_Unit__overwriting_comparison'
+# Test cases for multiple dataIRIs being linked to same time series IRI (i.e., different columns)
+TEST_CASE_18 = 'Prophet_OM_Quantity_with_multiple_dataIRIs_associated_with_same_tsIRI'
+TEST_CASE_19 = 'Prophet_OWL_Thing_with_multiple_dataIRIs_associated_with_same_tsIRI'
 DERIVATION_INPUTS_5 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_2,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 DERIVATION_INPUTS_6 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_2,
@@ -215,15 +220,15 @@ ERRONEOUS_FORECAST_INPUTS_5 = {
 
 # Define skeleton for correct forecast error evaluation request
 ERROR_REQUEST = {'query': {
-        'tsIRI_target': None,
-        'tsIRI_fc' : None } }
+        'dataIRI_target': None,
+        'dataIRI_fc' : None } }
 # Define erroneous HTTP requests for forecast error evaluation
 ERRONEOUS_ERROR_REQUEST_1 = {'quer': {}}
 ERRONEOUS_ERROR_REQUEST_2 = {'query': {
-        'tsIRI_target': 'https://www.theworldavatar.com/kg/...' } }
+        'dataIRI_target': 'https://www.theworldavatar.com/kg/...' } }
 ERRONEOUS_ERROR_REQUEST_3 = {'query': {
-        'tsIRI_target': 'https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_1',
-        'tsIRI_fc' : 'https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_2' } }
+        'dataIRI_target': 'https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_1',
+        'dataIRI_fc' : 'https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_2' } }
 
 # Expected error messages
 ERRONEOUS_FORECAST_MSG_1 = "No 'ForecastingModel' IRI provided"
@@ -232,8 +237,8 @@ ERRONEOUS_FORECAST_MSG_3 = "Neither 'om:Quantity' nor 'owl:Thing' IRI provided t
 ERRONEOUS_FORECAST_MSG_4 = "More than one 'om:Quantity' IRI provided to forecast"
 ERRONEOUS_FORECAST_MSG_5 = "No unique 'owl:Thing' IRI provided to forecast"
 ERRONEOUS_ERROR_MSG_1 = "No 'query' node provided in HTTP request"
-ERRONEOUS_ERROR_MSG_2 = "Unable to extract time series IRIs to evaluate"
-ERRONEOUS_ERROR_MSG_3 = "No dataIRI found for tsIRI"
+ERRONEOUS_ERROR_MSG_2 = "Unable to extract time series data IRIs to evaluate"
+ERRONEOUS_ERROR_MSG_3 = "Unable to retrieve time series data"
 
 
 # ----------------------------------------------------------------------------------
@@ -372,8 +377,8 @@ def generate_bounded_random_walk(initial_value, num_values, step_size_mean,
     return random_walk
 
 
-def assess_forecast_error(data_iri, forecast_iri, kg_client, ts_client, 
-                          agent_url, name='test'):
+def assess_forecast_error(data_iri, forecast_iri, ts_client, agent_url, 
+                          name='test'):
     """
     Assess the error of a derived forecast and plot both time series
     NOTE: Plots are saved to the 'test_plots' folder in 'tests' volume as 
@@ -409,8 +414,8 @@ def assess_forecast_error(data_iri, forecast_iri, kg_client, ts_client,
 
     # 2) Calculate forecast errors
     http_request = ERROR_REQUEST.copy()
-    http_request['query']['tsIRI_target'] = kg_client.get_tsIRI(data_iri)
-    http_request['query']['tsIRI_fc'] = kg_client.get_tsIRI(forecast_iri)
+    http_request['query']['dataIRI_target'] = data_iri
+    http_request['query']['dataIRI_fc'] = forecast_iri
     # Create HTTP request to evaluate forecast errors
     headers = {'Content-Type': 'application/json'}
     agent_base_url = agent_url[:agent_url.rfind('/')+1]

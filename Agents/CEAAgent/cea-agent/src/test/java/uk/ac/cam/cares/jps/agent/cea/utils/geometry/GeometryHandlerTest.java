@@ -12,13 +12,10 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.mockito.MockedStatic;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAGeometryData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GeometryHandlerTest {
-
     @Test
     public void testExtractFootprint() throws ParseException {
         String geometry1 = "POLYGON((0 0, 0 4, 4 4, 4 0, 0 0))";

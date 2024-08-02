@@ -1,0 +1,152 @@
+[
+  { 
+    "group_label": "Species",
+    "domain": "ontospecies",
+    "sections": [ ]
+  },
+  { 
+  "group_label": "Zeolite Frameworks",
+  "domain": "ontozeolite_framework",
+  "sections": [
+    {
+      "section": "XRD Peaks Positions",
+      "input_rows": [
+        [
+          {"label": "Peak 1 Position (2\u03B8):", "entry": "peak1pos", "description": ""},
+          {"label": "Peak 1 Width (\u00B1\u0394\u03B8):", "entry": "peak1wid", "description": ""},
+          {"label": "Peak 1 Threshold (%):", "entry": "peak1int", "description": ""}
+        ],
+        [
+          {"label": "Peak 2 Position (2\u03B8):", "entry": "peak2pos", "description": ""},
+          {"label": "Peak 2 Width (\u00B1\u0394\u03B8):", "entry": "peak2wid", "description": ""},
+          {"label": "Peak 2 Threshold (%):", "entry": "peak2int", "description": ""}
+        ],
+        [
+          {"label": "Peak 3 Position (2\u03B8):", "entry": "peak3pos", "description": ""},
+          {"label": "Peak 3 Width (\u00B1\u0394\u03B8):", "entry": "peak3wid", "description": ""},
+          {"label": "Peak 3 Threshold (%):", "entry": "peak3int", "description": ""}
+        ]
+      ]
+    },
+    {
+      "section": "Unit Cell Parameters",
+      "input_rows": [
+        [
+          {"label": "a Min (\u212B):", "entry": "ucAmin", "description": ""},
+          {"label": "a Max (\u212B):", "entry": "ucAmax", "description": ""},
+          {"label": "b Min (\u212B):", "entry": "ucBmin", "description": ""},
+          {"label": "b Max (\u212B):", "entry": "ucBmax", "description": ""},
+          {"label": "c Min (\u212B):", "entry": "ucCmin", "description": ""},
+          {"label": "c Max (\u212B):", "entry": "ucCmax", "description": ""}
+        ],
+        [
+          {"label": "\u03B1 Min (\u00B0):", "entry": "ucALPHAmin", "description": ""},
+          {"label": "\u03B1 Max (\u00B0):", "entry": "ucALPHAmax", "description": ""},
+          {"label": "\u03B2 Min (\u00B0):", "entry": "ucBETAmin", "description": ""},
+          {"label": "\u03B2 Max (\u00B0):", "entry": "ucBETAmax", "description": ""},
+          {"label": "\u03B3 Min (\u00B0):", "entry": "ucGAMMAmin", "description": ""},
+          {"label": "\u03B3 Max (\u00B0):", "entry": "ucGAMMAmax", "description": ""}
+        ]
+      ]
+    },
+    {
+      "section": "Properties",
+      "input_rows": [
+        [
+          {"label": "Framework Density Min (T/1000 \u212B\u00B3):", "entry": "FWDmin", "description": ""},
+          {"label": "Framework Density Max (T/1000 \u212B\u00B3):", "entry": "FWDmax", "description": ""}
+        ],
+        [
+          {"label": "Topological Density Min:", "entry": "TPDmin", "description": ""},
+          {"label": "Topological Density Max:", "entry": "TPDmax", "description": ""}
+        ],
+        [
+          {"label": "Density Min (g/cm\u00B3):", "entry": "DENSmin", "description": ""},
+          {"label": "Density Max (g/cm\u00B3):", "entry": "DENSmax", "description": ""}
+        ]
+      ]
+    },
+    {
+      "section": "Properties",
+      "input_rows": [
+        [
+          {"label": "Composition BU 1:", "entry": "CBU1", "description": ""},
+          {"label": "Composition BU 2:", "entry": "CBU2", "description": ""},
+          {"label": "Composition BU 3:", "entry": "CBU3", "description": ""},
+          {"label": "Secondary BU:", "entry": "SBU", "description": ""}
+        ]
+      ]
+    }
+  ]
+  },
+  { 
+  "group_label": "Zeolite Materials",
+  "domain": "ontozeolite_material",
+  "sections": [
+    {
+      "section": "General",
+      "input_rows": [
+        [
+          {"label": "Framework:", "entry": "framework", "description": "example: ABW"},
+          {"label": "Material Label:", "entry": "label", "description": "example: AlPO-4"},
+          {"label": "Material Formula:", "entry": "formula", "description": "example: SiO2"}
+        ]
+      ]
+    },
+    {
+      "section": "Framework Composition",
+      "input_rows": [
+        [
+          {"label": "Element 1:", "entry": "el1", "description": "example: Al"},
+          {"label": "Element 2:", "entry": "el2", "description": "example: Si"},
+          {"label": "Element 3:", "entry": "el3", "description": "example: O"},
+          {"label": "Element 4:", "entry": "el4", "description": "example: P"},
+          {"label": "Element 5:", "entry": "el5", "description": "example: Ge"}
+        ]
+      ]
+    },
+    {
+      "section": "Guest Molecules",
+      "input_rows": [
+        [
+          {"label": "Species 1:", "entry": "guest1", "description": "example: H2O"},
+          {"label": "Species 2:", "entry": "guest2", "description": "example: CO"},
+          {"label": "Species 3:", "entry": "guest3", "description": "example: Na+"}
+        ]
+      ]
+    },
+    {
+      "section": "Unit Cell Parameters",
+      "input_rows": [
+        [
+          {"label": "a Min (\u212B):", "entry": "ucAmin", "description": ""},
+          {"label": "a Max (\u212B):", "entry": "ucAmax", "description": ""},
+          {"label": "b Min (\u212B):", "entry": "ucBmin", "description": ""},
+          {"label": "b Max (\u212B):", "entry": "ucBmax", "description": ""},
+          {"label": "c Min (\u212B):", "entry": "ucCmin", "description": ""},
+          {"label": "c Max (\u212B):", "entry": "ucCmax", "description": ""}
+        ],
+        [
+          {"label": "\u03B1 Min (\u00B0):", "entry": "ucALPHAmin", "description": ""},
+          {"label": "\u03B1 Max (\u00B0):", "entry": "ucALPHAmax", "description": ""},
+          {"label": "\u03B2 Min (\u00B0):", "entry": "ucBETAmin", "description": ""},
+          {"label": "\u03B2 Max (\u00B0):", "entry": "ucBETAmax", "description": ""},
+          {"label": "\u03B3 Min (\u00B0):", "entry": "ucGAMMAmin", "description": ""},
+          {"label": "\u03B3 Max (\u00B0):", "entry": "ucGAMMAmax", "description": ""}
+        ]
+      ]
+    },
+    {
+      "section": "Citation",
+      "input_rows": [
+        [
+          {"label": "Authors:", "entry": "author", "description": ""},
+          {"label": "Year:", "entry": "year", "description": ""},
+          {"label": "Journal:", "entry": "journal", "description": ""},
+          {"label": "DOI:", "entry": "doi", "description": ""}
+        ]
+      ]
+    }
+  ]
+  }
+]

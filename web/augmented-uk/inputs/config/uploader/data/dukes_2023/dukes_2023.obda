@@ -1,0 +1,314 @@
+[PrefixDeclaration]
+eip0:   http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#
+eip1:   http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#
+eip2:   http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#
+eip3:   http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#
+eip4:   http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#
+cape0:  http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#
+cape1:  http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#
+energy: http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#
+uom:    http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#
+geo:    http://www.opengis.net/ont/geosparql#
+rdf:    http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+owl:    http://www.w3.org/2002/07/owl#
+twa:    https://theworldavatar.io/demos/uk-power-system/
+
+
+
+[MappingDeclaration] @collection [[
+mappingId       power-plant
+target          twa:PowerPlant/{id} a eip1:PowerPlant ;
+                    eip0:hasName {name}^^xsd:string ;
+                    eip0:isOwnedBy twa:Owner/{id} ;
+                    eip1:hasYearBuilt twa:Year/{id} ;
+                    eip0:hasGridConnection {grid_connection_type}^^xsd:string ;
+                    eip0:isCombinedHeatPower {chp}^^xsd:string ;
+                    eip0:hasType {technology}^^xsd:string ;
+                    eip3:hasRealizationAspect twa:Generator/{id} ;
+                    eip3:hasFunctionalAspect twa:Generation/{id} ;
+                    eip3:hasRequirementsAspect twa:Capacity/{id} ;
+                    eip1:hasPopulationInRadius {pop}^^xsd:double ;
+                    energy:hasWGS84LatitudeLongitude "{longitude}#{latitude}"^^geo:lat-lon .
+                # PowerPlant -> hasRealizationAspect -> PowerGenerator
+                twa:Generator/{id} a eip0:PowerGenerator ;
+                    eip3:realizes twa:Generation/{id} .
+                # PowerPlant -> hasFunctionalAspect -> PowerGeneration
+                twa:Generation/{id} a eip0:PowerGeneration ;
+                    eip0:consumesPrimaryFuel twa:PrimaryFuel/{id} ;
+                    eip0:usesGenerationTechnology twa:Type/{id} .
+                # PowerPlant -> hasRequirementsAspect -> DesignCapacity
+                twa:Capacity/{id} a eip4:DesignCapacity ;
+                    cape0:hasValue twa:CapacityValue/{id} .
+                # PowerPlant -> hasYearBuild -> YearOfBuilt
+                twa:Year/{id} a eip0:YearOfBuilt ;
+                    cape0:hasValue twa:YearValue/{id} .
+                # DesignCapacity -> hasValue -> ScalarValue
+                twa:CapacityValue/{id} a cape0:ScalarValue ;
+                    cape0:numericalValue {installed_capacity}^^xsd:double ;
+                    cape0:hasUnitOfMeasure uom:MW .
+                # YearOfBuilt -> hasValue -> ScalarValue
+                twa:YearValue/{id} a cape0:ScalarValue ;
+                    cape0:numericalValue {year_commissioned}^^xsd:integer .
+                # PowerPlant -> isOwnedBy -> Organization
+                twa:Owner/{id} a eip0:Organization ;
+                    eip0:hasName {company}^^xsd:string .
+source          SELECT
+                    "uuid" as id,
+                    "Company Name" as company, 
+                    dukes_2023."Site Name" as name,
+                    "Site Technology" as technology,
+                    "Site Type" as type,
+                    "Combined Heat and Power" as chp,
+                    "Primary Fuel" as primary_fuel,
+                    "Secondary Fuel" as secondary_fuel,
+                    "Installed Capacity (MW)" as installed_capacity,
+                    "Grid Connection Type" as grid_connection_type,
+                    "Country" as country,
+                    "Region" as region,
+                    "Year Commissioned" as year_commissioned,
+                    "Latitude" as latitude,
+                    "Longitude" as longitude,
+                    "pop" as pop
+                FROM dukes_2023 LEFT JOIN dukes_2023_pop ON dukes_2023."Site Name" = dukes_2023_pop."Site Name"
+
+# Skip null secondary fuels
+mappingId       skip-empty-secondaries
+target          twa:Generation/{id} eip0:consumesSecondaryFuel twa:SecondaryFuel/{id} .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" IS NOT NULL  
+
+#
+# Mappings for different PRIMARY fuel classes
+#
+mappingId       primary-fuel-biomass
+target          twa:PrimaryFuel/{id} a eip1:Biomass ;
+                    rdfs:label "Biomass"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Biomass'
+
+mappingId       primary-fuel-coal
+target          twa:PrimaryFuel/{id} a eip1:Coal ;
+                    rdfs:label "Coal"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Coal'
+
+mappingId       primary-fuel-diesel
+target          twa:PrimaryFuel/{id} a eip1:Diesel ;
+                    rdfs:label "Diesel/Gas Oil"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Diesel/Gas Oil'
+
+mappingId       primary-fuel-hydro
+target          twa:PrimaryFuel/{id} a eip1:Hydro ;
+                    rdfs:label "Hydro (Water)"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Hydro'
+
+mappingId       primary-fuel-msw
+target          twa:PrimaryFuel/{id} a eip1:MSW ;
+                    rdfs:label "Municipal Solid Waste"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'MSW'
+
+mappingId       primary-fuel-natural
+target          twa:PrimaryFuel/{id} a eip1:NaturalGas ;
+                    rdfs:label "Gas (Natural)"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Natural Gas'
+
+mappingId       primary-fuel-nuclear
+target          twa:PrimaryFuel/{id} a eip1:Nuclear ;
+                    rdfs:label "Nuclear"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Nuclear'
+
+mappingId       primary-fuel-oil
+target          twa:PrimaryFuel/{id} a eip1:Oil ;
+                    rdfs:label "Oil"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Oil'
+
+mappingId       primary-fuel-solar
+target          twa:PrimaryFuel/{id} a eip1:Solar ;
+                    rdfs:label "Solar"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Solar'
+
+mappingId       primary-fuel-sour
+target          twa:PrimaryFuel/{id} a eip1:SourGas ;
+                    rdfs:label "Gas (Sour)"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Sour Gas'
+
+mappingId       primary-fuel-wind
+target          twa:PrimaryFuel/{id} a eip1:Wind ;
+                    rdfs:label "Wind"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Primary Fuel" = 'Wind'
+
+#
+# Mappings for different SECONDARY fuel classes
+#
+mappingId       secondary-fuel-biomass
+target          twa:SecondaryFuel/{id} a eip1:Biomass ;
+                    rdfs:label "Biomass"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Biomass'
+
+mappingId       secondary-fuel-coal
+target          twa:SecondaryFuel/{id} a eip1:Coal ;
+                    rdfs:label "Coal"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Coal'
+
+mappingId       secondary-fuel-diesel
+target          twa:SecondaryFuel/{id} a eip1:Diesel ;
+                    rdfs:label "Diesel/Gas Oil"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Diesel/Gas Oil'
+
+mappingId       secondary-fuel-hydro
+target          twa:SecondaryFuel/{id} a eip1:Hydro ;
+                    rdfs:label "Hydro (Water)"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Hydro'
+
+mappingId       secondary-fuel-msw
+target          twa:SecondaryFuel/{id} a eip1:MSW ;
+                    rdfs:label "Municipal Solid Waste"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'MSW'
+
+mappingId       secondary-fuel-natural
+target          twa:SecondaryFuel/{id} a eip1:NaturalGas ;
+                    rdfs:label "Gas (Natural)"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Natural Gas'
+
+mappingId       secondary-fuel-nuclear
+target          twa:SecondaryFuel/{id} a eip1:Nuclear ;
+                    rdfs:label "Nuclear"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Nuclear'
+
+mappingId       secondary-fuel-oil
+target          twa:SecondaryFuel/{id} a eip1:Oil ;
+                    rdfs:label "Oil"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Oil'
+
+mappingId       secondary-fuel-solar
+target          twa:SecondaryFuel/{id} a eip1:Solar ;
+                    rdfs:label "Solar"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Solar'
+
+mappingId       secondary-fuel-sour
+target          twa:SecondaryFuel/{id} a eip1:SourGas ;
+                    rdfs:label "Gas (Sour)"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Sour Gas'
+
+mappingId       secondary-fuel-wind
+target          twa:SecondaryFuel/{id} a eip1:Wind ;
+                    rdfs:label "Wind"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Secondary Fuel" = 'Wind'
+
+#
+# Mappings for power generation types
+#
+mappingId       type-agr
+target          twa:Type/{id} a eip1:AdvancedGasReactor ;
+                    rdfs:label "Advanced Gas-cooled Reactor"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'AGR'
+
+mappingId       type-bio
+target          twa:Type/{id} a eip1:Bioenergy ;
+                    rdfs:label "Bioenergy"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'Bioenergy'
+
+mappingId       type-combined
+target          twa:Type/{id} a eip1:CombinedCycleGasTurbine ;
+                    rdfs:label "Combined Cycle"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'CCGT'
+
+mappingId       type-steam
+target          twa:Type/{id} a eip1:Steam ;
+                    rdfs:label "Conventional Steam"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'Conventional Steam'
+
+mappingId       type-flow
+target          twa:Type/{id} a eip1:NaturalFlow ;
+                    rdfs:label "Natural Flow"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'Natural Flow'
+
+mappingId       type-offshore
+target          twa:Type/{id} a eip1:Offshore ;
+                    rdfs:label "Offshore"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'Offshore'
+
+mappingId       type-onshore
+target          twa:Type/{id} a eip1:Onshore ;
+                    rdfs:label "Onshore"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'Onshore'
+
+mappingId       type-pv
+target          twa:Type/{id} a eip1:PV ;
+                    rdfs:label "Photovoltaic"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'PV'
+
+mappingId       type-pwr
+target          twa:Type/{id} a eip1:PWR ;
+                    rdfs:label "Pressurized Water Reactor"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'PWR'
+
+mappingId       type-single
+target          twa:Type/{id} a eip1:SingleCycle ;
+                    rdfs:label "Single Cycle"^^xsd:string .
+source          SELECT "uuid" as id
+                FROM "dukes_2023"
+                WHERE "Site Type" = 'Single Cycle'
+]]
