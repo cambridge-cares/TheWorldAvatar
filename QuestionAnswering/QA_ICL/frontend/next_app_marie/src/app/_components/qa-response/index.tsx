@@ -4,26 +4,22 @@ import * as React from 'react'
 import Markdown from 'react-markdown'
 
 import { QAResponse } from '@/lib/model/qa'
-import { cn } from '@/lib/utils'
 
 import { StopIcon } from '@radix-ui/react-icons'
 import { QAResponseMetadataDiv } from './metadata'
 import { QAResponseVisualisationDiv } from './vis'
 import { QAResponseDataDiv } from './data'
 
-export interface QAResponseDivProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface QAResponseDivProps {
   qaResponse?: QAResponse
   chatAbortController?: AbortController
   chatStream?: ReadableStreamDefaultReader<string>
 }
 
-export function QAResponseDiv({
+export function QAResponseFragment({
   qaResponse,
   chatAbortController,
   chatStream,
-  className,
-  ...props
 }: QAResponseDivProps) {
   const chatRef = React.useRef<null | HTMLDivElement>(null)
   const [isGeneratingChat, setIsGeneratingChat] = React.useState<boolean>(false)
@@ -89,7 +85,7 @@ export function QAResponseDiv({
   }
 
   return (
-    <div className={cn('flex flex-col space-y-6', className)} {...props}>
+    <>
       {qaResponse && (
         <>
           <QAResponseMetadataDiv qaResponseMetadata={qaResponse.metadata} />
@@ -116,6 +112,6 @@ export function QAResponseDiv({
           )}
         </div>
       )}
-    </div>
+    </>
   )
 }

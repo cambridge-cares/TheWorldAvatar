@@ -10,7 +10,7 @@ import {
   ExampleQuestionTabs,
   ExampleQuestionGroup,
 } from './example-question-tabs'
-import { QAResponseDiv } from './qa-response-div'
+import { QAResponseFragment } from './qa-response'
 import { InternalServerError } from '@/lib/api'
 import { useToast } from '@/components/ui/use-toast'
 
@@ -93,7 +93,7 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
           questionOnClick={handleExampleQuestionClick}
         />
       </section>
-      <section className='w-full md:max-w-screen-sm lg:max-w-screen-md mb-12'>
+      <section className='w-full md:max-w-screen-sm lg:max-w-screen-md'>
         <NLPSearchForm
           ref={nlpFormRef}
           onSubmit={handleNLPSearchFormSubmit}
@@ -102,16 +102,15 @@ export function QAFragment({ exampleQuestionGroups }: QAFragmentProps) {
           isProcessing={isProcessing}
         />
       </section>
-      <section className='w-full md:max-w-screen-md lg:max-w-screen-lg'>
-        {(qaResponse || chatStream) && (
-          <QAResponseDiv
+      {(qaResponse || chatStream) && (
+        <section className='w-full md:max-w-screen-md lg:max-w-screen-lg mt-12 flex flex-col space-y-6'>
+          <QAResponseFragment
             qaResponse={qaResponse}
             chatAbortController={chatAbortController}
             chatStream={chatStream}
-            className='w-full'
           />
-        )}
-      </section>
+        </section>
+      )}
     </>
   )
 }
