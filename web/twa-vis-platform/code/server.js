@@ -13,9 +13,8 @@
  * This script extends that capability to allow serving files from a different directory after the build process.
  */
 
-/* eslint-disable */
-const express = require("express");
-const next = require("next");
+import express from "express";
+import next from "next";
 
 const session = require('express-session');
 const Keycloak = require('keycloak-connect');
