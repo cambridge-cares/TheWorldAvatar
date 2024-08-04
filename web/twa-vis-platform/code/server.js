@@ -19,13 +19,19 @@ import next from "next";
 import session, { MemoryStore } from 'express-session';
 import Keycloak from 'keycloak-connect';
 
+const colorReset = "\x1b[0m";
+const colorRed = "\x1b[31m";
+const colorGreen = "\x1b[32m";
+const colorYellow = "\x1b[33m";
+
+
 // Configure the server port; default to 3000 if not specified in environment variables
-if (process.env.PORT) { console.log('port specified in .env file: ', process.env.PORT); }
+if (process.env.PORT) { console.log('port specified in .env file: ', colorGreen, process.env.PORT, colorReset); }
 const port = process.env.PORT || 3000;
-console.log('keycloak authorisation required: ', process.env.KEYCLOAK)
-console.log(process.env.ROLE_PROTECTED_PAGES, 'require', process.env.ROLE, 'role')
-console.log(process.env.PROTECTED_PAGES, 'require keycloak authentication')
 const keycloakEnabled = process.env.KEYCLOAK === 'true';
+console.log('keycloak authorisation required: ', keycloakEnabled ? colorGreen : colorRed, process.env.KEYCLOAK, colorReset)
+console.log('the following pages require keycloak authentication', colorGreen, process.env.PROTECTED_PAGES, colorReset)
+console.log('the following pages require the', colorYellow, process.env.ROLE, colorReset, 'role: ', colorGreen, process.env.ROLE_PROTECTED_PAGES, colorReset)
 
 // Determine the deployment mode based on NODE_ENV; default to 'development' mode if not specified
 const dev = process.env.NODE_ENV !== "production";
@@ -89,6 +95,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log(`Running at http://localhost:${port}, development mode is: ${dev}`);
+    console.log('Running at', colorGreen, `http://localhost:${port}`, colorReset, `development mode is: ${dev}`);
   });
 });
