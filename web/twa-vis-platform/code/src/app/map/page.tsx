@@ -4,6 +4,7 @@ import MapContainer from 'map/map-container';
 import { ScenarioDefinition } from 'types/scenario';
 import { DefaultSettings } from 'types/settings';
 import { getScenarios } from '../../utils/getScenarios';
+import BottomPanel from 'ui/interaction/bottom-panel/bottom-panel';
 
 export const dynamic = 'force-dynamic'
 
@@ -35,11 +36,14 @@ export default async function VisualisationPage() {
   await SettingsStore.readMapDataSettings();
 
   return (
-    <MapContainer
-      scenarioURL={SettingsStore.getDefaultSettings()}
-      settings={SettingsStore.getMapSettings()}
-      data={SettingsStore.getMapDataSettings()}
-      scenarios={scenarios}
-    />
+    <>
+      <MapContainer
+        scenarioURL={SettingsStore.getDefaultSettings()}
+        settings={SettingsStore.getMapSettings()}
+        data={SettingsStore.getMapDataSettings()}
+        scenarios={scenarios}
+      />
+      <BottomPanel />
+    </>
   )
 }
