@@ -24,7 +24,7 @@ RUN npm install
 # Next.js collects completely anonymous telemetry data about general usage and should be disabled
 ENV NEXT_TELEMETRY_DISABLED 1
 
-CMD [ "/bin/bash", "-c", "npm run dev" ]
+CMD [ "/bin/bash", "-c", "npm run dev-docker" ]
 
 # ---- Production Image ----
 FROM node:22.4 AS prod
