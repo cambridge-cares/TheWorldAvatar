@@ -38,11 +38,23 @@ To secure your viz app with a keycloak authentication server, set the relevant e
 KEYCLOAK=true|false ## whether or not to use kc authentication on the server
 PROTECTED_PAGES=/page,/otherpage ## pages that a user must be logged in to see
 ROLE_PROTECTED_PAGES=/role,/protected,/pages ## pages that require a user to have a given REALM or CLIENT role
-ROLE=protected ## the role required for the above list
+ROLE=viz:protected ## the role required for the above list
+```
+
+alternatively, in the docker `docker-compose.yml` or `docker-compose.dev.yml`
+
+```yml
+      KEYCLOAK: true|false ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: page,/otherpage ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /role,/protected,/pages ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: viz:protected ## the role required for the above list
 ```
 
 The [`keycloak.json` file](./code/keycloak.json) must also be correctly configured with the realm name, its address, and the client used for this app. By default it is configured for the sample auth server committed in [auth](/auth/), but it should be edited if another auth server is in use.
 
+**NB:** The most important thing is that the keycloak server IP address is routable from inside the viz docker container, and outside. The safest way to do this is specify the IP directly. Sometimes `host.docker.internal` works, but it is often not set in the dns hosts file of the host machine.
+
+**NB:** Client roles work better for api protecting resources than the realm roles. As in the example above, use a role like `<client>:<role>`
 See the [documentation in the auth folder](./auth/README.md) to spin up a dev keycloak server for testing.
 
 ## 2. Production
