@@ -16,10 +16,11 @@ const initialEdges = [
 export default function Flow() {
     return (
         <div style={{ width: '100vw', height: '100vh' }}>
-            <ReactFlow nodes={initialNodes} edges={initialEdges} />
-            <MiniMap />
-            <Controls />
-            <Background />
+            <ReactFlow nodes={initialNodes} edges={initialEdges}>
+                <MiniMap />
+                <Controls />
+                <Background />
+            </ReactFlow>
         </div>
     );
 }
