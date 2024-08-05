@@ -13,7 +13,7 @@ services:
     build:
       context: .
       dockerfile: "Dockerfile"
-      target: prod
+      target: production
       labels:
         authors: "support@cmcl.io"
         description: "TWA Visualisation Platform image."
