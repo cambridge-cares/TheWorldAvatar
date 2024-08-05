@@ -29,7 +29,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(html.router)
-app.include_router(ontospecies.router, prefix="/ontospecies")
-app.include_router(ontozeolite.router, prefix="/ontozeolite")
+app.include_router(ontospecies.router, prefix="/ontospecies", tags=["ontospecies"])
+app.include_router(ontozeolite.router, prefix="/ontozeolite", tags=["ontozeolite"])
 app.include_router(chat.router, prefix="/chat")
 app.include_router(qa.router, prefix="/qa")

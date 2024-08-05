@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/", responses={200: {"content": {"text/event-stream": {}}}})
+@router.post("", responses={200: {"content": {"text/event-stream": {}}}})
 async def chat(
     req: ChatRequest,
     chatbot_client: Annotated[ChatController, Depends(get_chatbot_client)],

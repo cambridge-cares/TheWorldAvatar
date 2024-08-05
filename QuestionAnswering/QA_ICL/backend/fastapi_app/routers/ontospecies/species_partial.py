@@ -43,7 +43,7 @@ async def parse_species_return_fields(
 
 
 @router.get(
-    "/",
+    "",
     summary="Get species",
     openapi_extra={
         "parameters": [

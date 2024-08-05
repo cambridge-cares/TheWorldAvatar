@@ -29,7 +29,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/",
+    "",
     summary="Get zeolite frameworks",
     openapi_extra={
         "parameters": [
