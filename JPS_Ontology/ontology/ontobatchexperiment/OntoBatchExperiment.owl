@@ -9,7 +9,7 @@
      xmlns:ontobatchexperiment="https://www.theworldavatar.com/kg/ontobatchexperiment/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">02 August 2024</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 August 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBatchExperiment is an ontology to represent batch experiments and relevant information.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -33,11 +33,24 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasAmountOfSubstanceConcentration">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a reagent and it's amount of substance concentration.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has amount of substance concentration</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchExperimentCategory -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchExperimentCategory">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the category of a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has batch experiment category</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -64,6 +77,19 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a batch experiment and it's end time.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has end time</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasExpectedpHLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasExpectedpHLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/ReactorProduct"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/pHLevel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a reagent and it's expected pH level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has expected pH level</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -98,7 +124,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasMassFraction">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a reagent and it's mass fraction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
@@ -154,6 +180,7 @@
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchNumber"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/Initials"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/WorkCode"/>
@@ -231,6 +258,13 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/pHLevel -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/pHLevel"/>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
 
 
@@ -259,6 +293,17 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of experiment or process in which a fixed quantity of materials is processed together in a single batch or lot.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Batch experiment</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A classification or type of batch experiment based on specific criteria or characteristics.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Batch experiment category</rdfs:label>
     </owl:Class>
     
 
@@ -305,6 +350,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A role assigned to a person who will be responsible for managing and conducting batch processes in a controlled environment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Operator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/ReactorProduct -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/ReactorProduct">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The substance(s) formed as a result of a chemical reaction within a reactor.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reactor product</rdfs:label>
     </owl:Class>
     
 
