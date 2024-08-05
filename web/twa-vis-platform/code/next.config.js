@@ -13,4 +13,4 @@ const nextConfig = {
 	compiler: { removeConsole: false },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
