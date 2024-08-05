@@ -133,6 +133,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasReactorProduct -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasReactorProduct">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/ReactorProduct"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a batch experiment and the reactor product that is formed.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has reactor product</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasReagent -->
 
 
