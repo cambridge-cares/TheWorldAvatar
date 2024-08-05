@@ -32,7 +32,7 @@ Once the above steps have been completed, run the command `docker compose -f 'do
 
 ### 1.1 Authorisation
 
-To secure your viz app with a keycloak authentication server, set the relevant environment variables in the [local node environment file](.code/.env.local) or the relevant compose file in this directory. If running in a stack, the variables will be set in the service spec file. The relevant variables are:
+To secure your viz app with a Keycloak authentication server, set the relevant environment variables in the [local node environment file](.code/.env.local) or the relevant compose file in this directory. If running in a stack, the variables will be set in the service spec file. The relevant variables are:
 
 ```sh
 KEYCLOAK=true|false ## whether or not to use kc authentication on the server
@@ -50,12 +50,12 @@ alternatively, in the docker `docker-compose.yml` or `docker-compose.dev.yml`
       ROLE: viz:protected ## the role required for the above list
 ```
 
-The [`keycloak.json` file](./code/keycloak.json) must also be correctly configured with the realm name, its address, and the client used for this app. By default it is configured for the sample auth server committed in [auth](/auth/), but it should be edited if another auth server is in use.
+The [`keycloak.json` file](./code/keycloak.json) must also be correctly configured with the realm name, its address, and the client used for this app. By default, it is configured for the sample auth server committed in [auth](/auth/), but it should be edited if another auth server is in use.
 
-**NB:** The most important thing is that the keycloak server IP address is routable from inside the viz docker container, and outside. The safest way to do this is specify the IP directly. Sometimes `host.docker.internal` works, but it is often not set in the dns hosts file of the host machine.
+**NB:** The most important thing is that the Keycloak server IP address is routable from inside the viz docker container, and outside. The safest way to do this is to specify the IP directly. Sometimes `host.docker.internal` works, but it is often not set in the DNS hosts file of the host machine.
 
-**NB:** Client roles work better for api protecting resources than the realm roles. As in the example above, use a role like `<client>:<role>`
-See the [documentation in the auth folder](./auth/README.md) to spin up a dev keycloak server for testing.
+**NB:** Client roles work better for API-protecting resources than the realm roles. As in the example above, use a role like `<client>:<role>`
+See the [documentation in the auth folder](./auth/README.md) to spin up a dev Keycloak server for testing.
 
 ## 2. Production
 
