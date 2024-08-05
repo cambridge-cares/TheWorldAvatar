@@ -59,7 +59,7 @@ def parse_zeolitic_material_request(
 
 
 @router.get(
-    "/",
+    "",
     summary="Get zeolite frameworks",
     openapi_extra={
         "parameters": [

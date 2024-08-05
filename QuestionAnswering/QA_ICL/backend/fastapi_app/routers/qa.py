@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/", response_model=QAResponse)
+@router.post("", response_model=QAResponse)
 async def qa(
     req: QARequest,
     data_supporter: Annotated[DataSupporter, Depends(get_data_supporter)],

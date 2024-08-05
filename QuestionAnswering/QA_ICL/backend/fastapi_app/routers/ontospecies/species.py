@@ -26,7 +26,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/",
+    "",
     summary="Get species",
     openapi_extra={
         "parameters": [
