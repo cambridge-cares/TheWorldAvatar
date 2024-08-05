@@ -43,8 +43,11 @@ public class LocationDataProcessor extends SensorDataProcessor {
     public TimeSeries<OffsetDateTime> getProcessedTimeSeries() {
         // todo: do processing of location data
         List<String> dataIRIList = Arrays.asList(bearingIRI, speedIRI, altitudeIRI, pointIRI);
-        List<List<?>> valueList = Arrays.asList(bearingList, speedList, altitudeList, geomLocationList);
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
+        List<List<?>> valueList = Arrays.asList(new ArrayList<>(bearingList),
+                new ArrayList<>(speedList),
+                new ArrayList<>(altitudeList),
+                new ArrayList<>(geomLocationList));
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(new ArrayList<>(timeList), dataIRIList, valueList);
 
         clearData();
         return ts;
