@@ -137,9 +137,14 @@ WHERE {{
                             pass
             return data
 
-        adapter = TypeAdapter(list[T])
-        return adapter.validate_python(
-            [
+        def parse(data: dict):
+            try:
+                return T.model_validate(data)
+            except:
+                return None
+
+        return [
+            parse(
                 {
                     **resolve_field_value(
                         model_fields=T.model_fields,
@@ -147,9 +152,9 @@ WHERE {{
                     ),
                     "IRI": iri,
                 }
-                for iri in iris
-            ]
-        )
+            )
+            for iri in iris
+        ]
 
     def get_many(
         self,
