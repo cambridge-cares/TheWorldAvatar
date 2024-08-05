@@ -16,17 +16,14 @@ import uk.ac.cam.cares.jps.utils.RepositoryCallback;
  * @see SensorService SensorService
  */
 public class SensorRepository {
-    UserPhoneNetworkSource userPhoneNetworkSource;
     SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
     Logger LOGGER = Logger.getLogger(SensorRepository.class);
     Intent serviceIntent;
     Context context;
 
     public SensorRepository(Context applicationContext,
-                            UserPhoneNetworkSource userPhoneNetworkSource,
                             SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
         this.context = applicationContext;
-        this.userPhoneNetworkSource = userPhoneNetworkSource;
         this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
 
         serviceIntent = new Intent(context, SensorService.class);

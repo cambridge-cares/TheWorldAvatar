@@ -37,6 +37,7 @@ public class DatesWithTrajectoryNetworkSource {
         String getDatesWithTrajectory = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_getDatesWithData))
                 .addQueryParameter("userID", userId)
+                .addQueryParameter("timezone", timezone)
                 .build().toString();
         LOGGER.info(getDatesWithTrajectory);
 

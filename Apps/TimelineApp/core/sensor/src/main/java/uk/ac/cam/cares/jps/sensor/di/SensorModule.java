@@ -41,9 +41,8 @@ public class SensorModule {
     @Provides
     @Singleton
     public SensorRepository provideSensorRepository(@ApplicationContext Context applicationContext,
-                                                    UserPhoneNetworkSource userPhoneNetworkSource,
                                                     SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
-        return new SensorRepository(applicationContext, userPhoneNetworkSource, sensorCollectionStateManagerRepository);
+        return new SensorRepository(applicationContext, sensorCollectionStateManagerRepository);
     }
 
     @Provides

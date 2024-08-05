@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
-import uk.ac.cam.cares.jps.sensor.UserPhoneRepository;
+import uk.ac.cam.cares.jps.sensor.data.UserPhoneRepository;
 
 @HiltViewModel
 public class UserPhoneViewModel extends ViewModel {

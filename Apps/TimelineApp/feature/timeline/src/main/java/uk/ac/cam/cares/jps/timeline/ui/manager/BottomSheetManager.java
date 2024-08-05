@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.cam.cares.jps.login.AccountException;
-import uk.ac.cam.cares.jps.sensor.SensorCollectionStateException;
+import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.BottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.ErrorBottomSheet;
 import uk.ac.cam.cares.jps.timeline.ui.bottomsheet.NormalBottomSheet;

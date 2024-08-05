@@ -12,9 +12,9 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
-import uk.ac.cam.cares.jps.sensor.SensorCollectionStateManagerRepository;
-import uk.ac.cam.cares.jps.sensor.SensorRepository;
-import uk.ac.cam.cares.jps.sensor.UserPhoneRepository;
+import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
+import uk.ac.cam.cares.jps.sensor.data.SensorRepository;
+import uk.ac.cam.cares.jps.sensor.data.UserPhoneRepository;
 
 @HiltViewModel
 public class SensorViewModel extends ViewModel {
