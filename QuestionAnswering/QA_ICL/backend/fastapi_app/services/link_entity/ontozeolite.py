@@ -40,9 +40,6 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [row["Framework"] for row in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
     def linkMaterial(self, text: str | None, **kwargs):
@@ -61,9 +58,6 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [row["Material"] for row in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
 

@@ -94,9 +94,12 @@ WHERE {{
 
             if annotation:
                 unpacked_type = unpack_optional_type(annotation)
-                if issubclass(unpacked_type, RDFEntity):
-                    models = self.get_many(unpacked_type, iri2value.values())
-                    return {iri: model for iri, model in zip(iri2value.keys(), models)}
+                try:
+                    if issubclass(unpacked_type, RDFEntity):
+                        models = self.get_many(unpacked_type, iri2value.values())
+                        return {iri: model for iri, model in zip(iri2value.keys(), models)}
+                except:
+                    pass
             return iri2value
 
         field2iri2data = {

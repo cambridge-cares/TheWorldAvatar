@@ -51,7 +51,7 @@ class DataReqExecutor:
                     req_form=req_form,
                     vis_vars=vis_vars,
                 )
-            except TriplestoreNotFound | QueryBadFormed as err:
+            except (TriplestoreNotFound, QueryBadFormed) as err:
                 logger.error(err)
                 logger.info("Fall back to default executor")
         elif isinstance(req_form, FuncDataReqForm):
