@@ -21,6 +21,7 @@ import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
@@ -210,11 +211,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
             fte.addKeyword("KEYWORD");
 
             GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
-            if (null != virtualTable) {
-                virtualTable.setName(layerName + "_" + virtualTable.getName());
-                fte.setNativeName(virtualTable.getName());
-                fte.setMetadataVirtualTable(virtualTable);
-            }
+            configureVirtualTable(layerName, fte, virtualTable);
 
             processDimensions(geoServerSettings, fte);
 
@@ -225,6 +222,17 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
                 throw new RuntimeException(
                         "GeoServer database layer '" + layerName + "' does not exist and could not be created.");
             }
+        }
+    }
+
+    private void configureVirtualTable(String layerName, GSFeatureTypeEncoder fte, GSVirtualTableEncoder virtualTable) {
+        if (null != virtualTable) {
+            // Append the layer name to the table name
+            virtualTable.setName(layerName + "_" + virtualTable.getName());
+            // Handle sql stored in a separate file
+            virtualTable.setSql(JsonHelper.handleFileValues(virtualTable.getSql()));
+            fte.setNativeName(virtualTable.getName());
+            fte.setMetadataVirtualTable(virtualTable);
         }
     }
 

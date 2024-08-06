@@ -6,10 +6,7 @@ import com.cmclinnovations.stack.clients.core.Options;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.postgis.PGRoutingClient;
-import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
 public class OSMRouting extends GeoServerDataSubset {
     @JsonProperty
@@ -37,11 +34,6 @@ public class OSMRouting extends GeoServerDataSubset {
 
     private void createLayer(String workspaceName, String database, String layerName,
             GeoServerVectorSettings geoServerVectorSettings) {
-        GSVirtualTableEncoder virtualTable = geoServerVectorSettings.getVirtualTable();
-        if (null != virtualTable) {
-            virtualTable.setSql(JsonHelper.handleFileValues(virtualTable.getSql()));
-        }
-
         GeoServerClient.getInstance()
                 .createPostGISLayer(workspaceName, database, layerName, geoServerVectorSettings);
     }
