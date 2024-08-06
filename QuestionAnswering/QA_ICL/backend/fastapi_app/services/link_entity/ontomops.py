@@ -48,9 +48,6 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["MOP"] for binding in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
     def linkCBU(self, text: str | None, **kwargs):
@@ -72,23 +69,18 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["CBU"] for binding in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
-    def linkGBU(self, text: str | None, **kwargs):       
-        logger.info(
-            f"Linking generic building unit with args: {kwargs}"
-        )
+    def linkGBU(self, text: str | None, **kwargs):
+        logger.info(f"Linking generic building unit with args: {kwargs}")
         try:
             args = GBULinkingArgs.model_validate(kwargs)
         except Exception as e:
-            logger.error(f"Invalid linking args for generic building unit with error: {e}")
+            logger.error(
+                f"Invalid linking args for generic building unit with error: {e}"
+            )
             lst: list[str] = []
             return lst
-
-
 
         query = f"""PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
         
@@ -98,9 +90,6 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["GBU"] for binding in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
     def linkAM(self, text: str | None, **kwargs):
@@ -112,41 +101,51 @@ WHERE {{
 
         logger.info(f"Linking assembly model with args: {args.model_dump_json()}")
 
-        triples = [
-            triple
-            for i, gbu_args in enumerate(args.GBU)
-            for triple in [
-                f"?AM mops:hasGenericBuildingUnit ?GBU{i} ; mops:hasGenericBuildingUnitNumber ?GBUNum{i} .",
-                f'?GBU{i} mops:hasModularity {gbu_args.modularity} ; mops:hasPlanarity "{gbu_args.planarity}" .',
-                f'?GBUNum{i} mops:hasUnitNumberValue {gbu_args.num} .',
-                f"?GBUNum{i} mops:isNumberOf ?GBU{i} .",
-            ]
-        ]
-        exclusion_clauses = [
-            f"?AM mops:hasGenericBuildingUnit ?GBUExclude .",
-            "FILTER ( ?GBUExclude NOT IN ( {} ) )".format(
-                ", ".join(f"?GBU{i}" for i in range(len(args.GBU)))
+        clauses_GBU = [
+            *(
+                triple
+                for i, gbu_args in enumerate(args.GBU)
+                for triple in [
+                    f"?AM mops:hasGenericBuildingUnit ?GBU{i} ; mops:hasGenericBuildingUnitNumber ?GBUNum{i} .",
+                    f'?GBU{i} mops:hasModularity {gbu_args.modularity} ; mops:hasPlanarity "{gbu_args.planarity}" .',
+                    f"?GBUNum{i} mops:hasUnitNumberValue {gbu_args.num} .",
+                    f"?GBUNum{i} mops:isNumberOf ?GBU{i} .",
+                ]
+            ),
+            (
+                """FILTER NOT EXISTS {{
+        {}
+    }}""".format(
+                    "\n        ".join(
+                        [
+                            f"?AM mops:hasGenericBuildingUnit ?GBUExclude .",
+                            "FILTER ( ?GBUExclude NOT IN ( {} ) )".format(
+                                ", ".join(f"?GBU{i}" for i in range(len(args.GBU)))
+                            ),
+                        ]
+                    )
+                )
+                if args.GBU
+                else None
             ),
         ]
+        clause_sym_pt_grp = (
+            f'?AM mops:hasSymmetryPointGroup "{args.symmetry_point_group}" .'
+            if args.symmetry_point_group
+            else None
+        )
+        clauses = [x for x in [*clauses_GBU, clause_sym_pt_grp] if x]
 
         query = """PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 
 SELECT DISTINCT ?AM
 WHERE {{
-    {triples}
-    FILTER NOT EXISTS {{
-        {exclusion_clauses}
-    }}
+    {}
 }}""".format(
-            triples="\n    ".join(triples),
-            exclusion_clauses="\n        ".join(exclusion_clauses),
+            "\n    ".join(clauses)
         )
-        print(query)
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["AM"] for binding in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
 

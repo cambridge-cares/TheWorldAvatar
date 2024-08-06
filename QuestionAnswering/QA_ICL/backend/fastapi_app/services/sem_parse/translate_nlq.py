@@ -17,7 +17,10 @@ logger = logging.getLogger(__name__)
 
 class Nlq2DataReqLLMCaller:
     PROMPT_TEMPLATE = """### Instruction: 
-Your task is to translate the input question to an executable data request based on the provided properties and translation examples. If no reasonable translation can be performed, return "null". Please respond with a single JSON object exactly.
+- Your task is to translate the input question to an executable data request based on the provided properties and translation examples. 
+- Do not use FILTER clauses for literal matching in SPARQL queries.
+- If no reasonable translation can be performed, return "null". 
+- Please respond with a single JSON object exactly.
 
 ### Properties:
 {properties}

@@ -19,4 +19,5 @@ class GBUWithNumLinkingArgs(GBULinkingArgs):
 
 
 class AMLinkingArgs(BaseModel):
-    GBU: list[GBUWithNumLinkingArgs]
+    GBU: list[GBUWithNumLinkingArgs] = list()
+    symmetry_point_group: str | None = None

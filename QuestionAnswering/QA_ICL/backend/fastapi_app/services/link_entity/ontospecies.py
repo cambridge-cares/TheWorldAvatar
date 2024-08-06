@@ -71,9 +71,6 @@ SELECT ?Species WHERE {{
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [row["Species"] for row in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
     def linkElement(self, text: str | None, **kwargs):
@@ -93,9 +90,6 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["Element"] for binding in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
 

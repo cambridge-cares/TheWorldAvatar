@@ -188,9 +188,13 @@ class CentralEntityLinker:
 
         linker = self.cls2linker.get(cls)
         if linker:
+            logger.info(f"Custom entity linker is registered for class `{cls}`.")
             iris = linker(text=text, **identifier)
             if iris:
+                logger.info(f"Linked IRIs: {iris}")
                 return iris
+            else:
+                logger.info("Custom entity linker returns no IRIs, fall back to default entity linking logic.")
 
         config = (
             self.cls2elconfig[cls]

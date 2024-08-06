@@ -41,9 +41,6 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["Mechanism"] for binding in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
     def linkReaction(self, text: str | None, **kwargs) -> list[str]:
@@ -63,9 +60,6 @@ WHERE {{
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["Reaction"] for binding in bindings]
-
-        logger.info(f"Linked IRIs: {iris}")
-
         return iris
 
 
