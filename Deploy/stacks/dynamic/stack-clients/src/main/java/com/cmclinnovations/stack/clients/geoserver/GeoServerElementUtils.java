@@ -4,7 +4,7 @@ import it.geosolutions.geoserver.rest.encoder.utils.ElementUtils;
 import it.geosolutions.geoserver.rest.encoder.utils.XmlElement;
 
 abstract class GeoServerElementUtils extends ElementUtils {
-    public static Boolean nodeIsSet(XmlElement element, String nodeName) {
+    public static boolean nodeIsSet(XmlElement element, String nodeName) {
         return ElementUtils.contains(element.getRoot(), nodeName, 1) != null;
     }
 }

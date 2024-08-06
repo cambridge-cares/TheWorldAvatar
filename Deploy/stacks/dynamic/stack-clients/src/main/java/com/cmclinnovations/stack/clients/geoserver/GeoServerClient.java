@@ -202,10 +202,10 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
             if (fte.getName() == null) {
                 fte.setName(layerName);
             }
-            if (Boolean.FALSE.equals(GeoServerElementUtils.nodeIsSet(fte, "projectionPolicy"))) {
+            if (!GeoServerElementUtils.nodeIsSet(fte, "projectionPolicy")) {
                 fte.setProjectionPolicy(ProjectionPolicy.NONE);
             }
-            if (Boolean.FALSE.equals(GeoServerElementUtils.nodeIsSet(fte, "title"))) {
+            if (!GeoServerElementUtils.nodeIsSet(fte, "title")) {
                 fte.setTitle(layerName);
             }
             fte.addKeyword("KEYWORD");
