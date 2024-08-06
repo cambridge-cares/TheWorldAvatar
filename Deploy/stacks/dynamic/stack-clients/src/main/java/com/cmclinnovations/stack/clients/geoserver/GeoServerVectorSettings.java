@@ -3,11 +3,12 @@ package com.cmclinnovations.stack.clients.geoserver;
 import java.util.Map;
 
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder21;
 
 public class GeoServerVectorSettings implements GeoServerDimensionSettings {
 
     private UpdatedGSVirtualTableEncoder virtualTable;
-    private final GSLayerEncoder layerSettings = new GSLayerEncoder();
+    private final GSLayerEncoder21 layerSettings = new GSLayerEncoder21();
     private UpdatedGSFeatureTypeEncoder featureTypeSettings = new UpdatedGSFeatureTypeEncoder();
 
     public UpdatedGSVirtualTableEncoder getVirtualTable() {
