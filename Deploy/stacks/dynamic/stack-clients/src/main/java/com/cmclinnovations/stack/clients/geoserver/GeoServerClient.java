@@ -208,7 +208,6 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
             if (!GeoServerElementUtils.nodeIsSet(fte, "title")) {
                 fte.setTitle(layerName);
             }
-            fte.addKeyword("KEYWORD");
 
             GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
             configureVirtualTable(layerName, fte, virtualTable);
