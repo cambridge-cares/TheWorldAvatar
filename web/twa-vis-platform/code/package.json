@@ -48,7 +48,10 @@
     "react-router-dom": "^6.26.0",
     "react-toastify": "^10.0.5",
     "redux": "^5.0.1",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "typescript": "^5.5.4",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "8.0.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
@@ -58,16 +61,13 @@
     "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "8.0.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
     "eslint-plugin-react": "^7.35.0",
     "fs": "0.0.1-security",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.4",
-    "ts-typed-json": "^0.3.2",
-    "typescript": "^5.5.4"
+    "ts-typed-json": "^0.3.2"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
