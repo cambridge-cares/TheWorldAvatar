@@ -301,8 +301,8 @@ class DerivationAgent(ABC):
                     self.__class__.agentIRI, self.kgUrl, input_concepts, type(input_concepts), output_concepts, type(output_concepts)))
             if len(input_concepts) == 0 or len(output_concepts) == 0:
                 raise Exception("Failed to proceed with registering the agent <{}> to the KG <{}>. Error: No input or output concepts specified.".format(self.__class__.agentIRI, self.kgUrl))
-            input_concepts_iris = [o if isinstance(o, str) else o.get_rdf_type() for o in input_concepts]
-            output_concepts_iris = [o if isinstance(o, str) else o.get_rdf_type() for o in output_concepts]
+            input_concepts_iris = [o if isinstance(o, str) else o.rdf_type for o in input_concepts]
+            output_concepts_iris = [o if isinstance(o, str) else o.rdf_type for o in output_concepts]
             self.derivation_client.createOntoAgentInstance(self.__class__.agentIRI, self.syncDerivationEndpoint, input_concepts_iris, output_concepts_iris)
             self.logger.info("Agent <%s> is registered to the KG <%s> with input signature %s and output signature %s." % (
                 self.__class__.agentIRI, self.kgUrl, input_concepts, output_concepts))
