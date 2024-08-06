@@ -12,39 +12,23 @@
 
 # ---- Base Image ----
 FROM node:22.4-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /twa
-# Next.js collects completely anonymous telemetry data about general usage and should be disabled
 ENV NEXT_TELEMETRY_DISABLED 1
 COPY ./code/package.json ./code/pnpm-lock.yaml ./
 
-# ---- Production Dependencies ----
-FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
-
-# ---- Development Dependencies ----
-FROM base AS dev-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
 # ---- Development Image ----
 FROM base AS develop
-COPY --from=dev-deps /twa/node_modules ./node_modules
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 COPY ./code ./
 CMD [ "/bin/bash", "-c", "pnpm run dev-docker" ]
 
-# ---- Build ----
-FROM base AS build
-COPY --from=dev-deps /twa/node_modules ./node_modules
-COPY ./code ./
-RUN pnpm run build
-
 # ---- Production Image ----
 FROM base AS production
-COPY --from=prod-deps /twa/node_modules ./node_modules
-COPY --from=build /twa/.next ./.next
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 COPY ./code ./
+COPY check-build-start.sh /twa/check-build-start.sh
+RUN chmod +x /twa/check-build-start.sh
 EXPOSE 3000
 ENV HOSTNAME "0.0.0.0"
-CMD [ "pnpm", "start" ]
+CMD [ "/twa/check-build-start.sh" ]
