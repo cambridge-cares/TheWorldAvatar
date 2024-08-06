@@ -287,7 +287,6 @@ The Ontop OBDA file format is also described in detail in the [OBDA mapping file
 #### `"staticGeoServerData"`
 
 A description of static data to be loaded into and served by GeoServer.
-These are served with the base directory `GEOSERVER_URL/www/icons`.
 The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
 
 | Key            | Description                                                                                                                                                                                                                   |
@@ -301,21 +300,27 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
   "otherFiles": [
     {
       "source": "my_additional_data/index.html",
-      "target": "additional_data"
+      "target": "additional_data/index.html"
+    },
+    {
+      "source": "my_other_additional_data_directory",
+      "target": "other_additional_data"
     }
   ]
 }
 ```
 
-Note: If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
+Notes: 
+
+- If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
 
 ```html
 <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/www/icons/myicon.png" />
 ```
 
-Relative file-system paths containing `..` are not supported.
+- The behaviour is similar to the `cp -R` command.
 
-> :warning: **Warning:** If you upload any static data in this way, you *must* make sure that your `dataSubsets` are stored within their own `subdirectory`, even if you have only a single dataset. Otherwise, the data uploader will consider your static files as part of the dataset and not only upload them to GeoServer, but also attempt to upload them to PostGIS etc. and either fail or create unnecessary duplicate uploads.
+- Relative file-system paths containing `..` are not supported.
 
 ## Data Types
 
