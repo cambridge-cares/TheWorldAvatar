@@ -287,7 +287,6 @@ The Ontop OBDA file format is also described in detail in the [OBDA mapping file
 #### `"staticGeoServerData"`
 
 A description of static data to be loaded into and served by GeoServer.
-These are served with the base directory `GEOSERVER_URL/www/icons`.
 The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
 
 | Key            | Description                                                                                                                                                                                                                   |
