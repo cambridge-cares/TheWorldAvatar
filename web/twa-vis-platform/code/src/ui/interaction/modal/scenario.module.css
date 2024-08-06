@@ -2,17 +2,21 @@
   background-color: var(--background-primary);
   color: var(--text-color-primary);
   position: relative;
+  height: 70vh;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .headerContainer {
+  position: relative;
   top: 0;
   width: 100%;
 }
 
 .contentContainer {
-  overflow-y: auto;
-  height: calc(100vh - 60px);
+  overflow: auto;
+  flex: 1;
 }
 
 .header {
