@@ -10,11 +10,13 @@ import com.cmclinnovations.stack.clients.citydb.CityDBClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 public class CityDB extends GeoServerDataSubset {
 
@@ -108,7 +110,7 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     protected void augmentData(String database) {
-        
+
         logger.info("Setting tables to unlogged for better write performance...");
         CityDBClient.getInstance().unlogTable(database);
 
@@ -141,7 +143,7 @@ public class CityDB extends GeoServerDataSubset {
 
         GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
         if (null != virtualTable) {
-            virtualTable.setSql(handleFileValues(virtualTable.getSql()));
+            virtualTable.setSql(JsonHelper.handleFileValues(virtualTable.getSql()));
         }
 
         GeoServerClient.getInstance()
