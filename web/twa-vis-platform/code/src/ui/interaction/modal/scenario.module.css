@@ -2,7 +2,7 @@
   background-color: var(--background-primary);
   color: var(--text-color-primary);
   position: relative;
-  height: 70vh;
+  max-height: 70vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
