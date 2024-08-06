@@ -18,7 +18,7 @@ services:
         authors: "support@cmcl.io"
         description: "TWA Visualisation Platform image."
     volumes:
-      - ./uploads:/twa/public/
+      - ./code/public:/twa/public/
     ports:
       - "3000:3000" 
   

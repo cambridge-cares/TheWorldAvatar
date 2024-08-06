@@ -11,6 +11,8 @@ services:
     restart: "no"
     environment:
       WATCHPACK_POLLING: true
+      UUID: 1000 # or your user. Run `id` in bash to find out these two
+      GUID: 1000 # or your guid. This is so you own node modules that the container makes on your host machine
     secrets:
       - mapbox_username
       - mapbox_api_key
@@ -23,8 +25,6 @@ services:
         description: "Development environment for TWA Visualisation Platform image."
     volumes:
       - ./code:/twa/
-      - /twa/node_modules/
-      - ./uploads:/twa/public
     ports:
       - "3000:3000" 
 secrets:
