@@ -300,19 +300,27 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
   "otherFiles": [
     {
       "source": "my_additional_data/index.html",
-      "target": "additional_data"
+      "target": "additional_data/index.html"
+    },
+    {
+      "source": "my_other_additional_data_directory",
+      "target": "other_additional_data"
     }
   ]
 }
 ```
 
-Note: If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
+Notes: 
+
+- If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
 
 ```html
 <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/www/icons/myicon.png" />
 ```
 
-Relative file-system paths containing `..` are not supported.
+- The behaviour is similar to the `cp -R` command.
+
+- Relative file-system paths containing `..` are not supported.
 
 ## Data Types
 
