@@ -50,6 +50,8 @@
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "typescript": "^5.5.4",
+    "@types/node": "^22.1.0",
+    "@types/react": "^18.3.3",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "8.0.0"
   },
@@ -58,8 +60,6 @@
     "@types/jest": "^29.5.12",
     "@types/mapbox": "^1.6.45",
     "@types/mapbox-gl": "^3.4.0",
-    "@types/node": "^22.1.0",
-    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
