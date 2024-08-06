@@ -1,6 +1,18 @@
 .globalContainer {
   background-color: var(--background-primary);
   color: var(--text-color-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.headerContainer {
+  top: 0;
+  width: 100%;
+}
+
+.contentContainer {
+  overflow-y: auto;
+  height: calc(100vh - 60px);
 }
 
 .header {
@@ -11,7 +23,7 @@
   padding: 1rem;
 }
 
-.option-container {
+.optionContainer {
   width: 100%;
   padding: 0.75rem;
   display: grid;
@@ -25,7 +37,7 @@
   background: var(--background-secondary);
 }
 
-.option-container:hover {
+.optionContainer:hover {
   background: var(--background-tertiary);
 }
 
