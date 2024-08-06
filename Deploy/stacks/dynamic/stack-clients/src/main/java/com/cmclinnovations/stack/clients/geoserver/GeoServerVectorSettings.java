@@ -38,10 +38,6 @@ public class GeoServerVectorSettings implements GeoServerDimensionSettings {
         return featureTypeSettings;
     }
 
-    public void setDefaultStyle(String workspace, String defaultStyle) {
-        layerSettings.setDefaultStyle(workspace, defaultStyle);
-    }
-
     public void setDefaultStyle(String defaultStyle) {
         layerSettings.setDefaultStyle(defaultStyle);
     }
