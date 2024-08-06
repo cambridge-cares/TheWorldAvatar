@@ -26,6 +26,12 @@ importers:
       '@types/markdown-it':
         specifier: ^14.1.2
         version: 14.1.2
+      '@types/node':
+        specifier: ^22.1.0
+        version: 22.1.0
+      '@types/react':
+        specifier: ^18.3.3
+        version: 18.3.3
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.0.0
         version: 8.0.1(@typescript-eslint/parser@8.0.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
@@ -120,12 +126,6 @@ importers:
       '@types/mapbox-gl':
         specifier: ^3.4.0
         version: 3.4.0
-      '@types/node':
-        specifier: ^22.1.0
-        version: 22.1.0
-      '@types/react':
-        specifier: ^18.3.3
-        version: 18.3.3
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
