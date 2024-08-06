@@ -314,8 +314,6 @@ Note: If you want to reference icons uploaded in this way from a GeoServer `.sld
 
 Relative file-system paths containing `..` are not supported.
 
-> :warning: **Warning:** If you upload any static data in this way, you *must* make sure that your `dataSubsets` are stored within their own `subdirectory`, even if you have only a single dataset. Otherwise, the data uploader will consider your static files as part of the dataset and not only upload them to GeoServer, but also attempt to upload them to PostGIS etc. and either fail or create unnecessary duplicate uploads.
-
 ## Data Types
 
 The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data), [`tboxcsv`](#tbox-csv-data), [`citygml`](#citydb-data), [`xbuilding`](#x-building-data), and [`osmrouting`](#osm-data).
