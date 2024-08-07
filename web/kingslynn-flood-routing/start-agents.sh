@@ -6,7 +6,7 @@ if [ "$#" -ne 2 ] || [ "$1" != "start" ]; then
     exit 1
 fi
 
-STACK_PORT_NUMBER="$2"
+STACK_PORT_NUMBER="${2:-3838}"
 
 # Set the base URL
 BASE_URL="http://localhost:$STACK_PORT_NUMBER"
