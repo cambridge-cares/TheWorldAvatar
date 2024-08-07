@@ -21,6 +21,7 @@ import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
@@ -195,27 +196,42 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
-            fte.setProjectionPolicy(ProjectionPolicy.NONE);
-            fte.addKeyword("KEYWORD");
-            fte.setTitle(layerName);
-            fte.setName(layerName);
+            createPostGISDataStore(workspaceName, layerName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
+
+            GSFeatureTypeEncoder fte = geoServerSettings.getFeatureTypeSettings();
+            if (fte.getName() == null) {
+                fte.setName(layerName);
+            }
+            if (!GeoServerElementUtils.nodeIsSet(fte, "projectionPolicy")) {
+                fte.setProjectionPolicy(ProjectionPolicy.NONE);
+            }
+            if (!GeoServerElementUtils.nodeIsSet(fte, "title")) {
+                fte.setTitle(layerName);
+            }
 
             GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
-            if (null != virtualTable) {
-                virtualTable.setName(layerName + "_" + virtualTable.getName());
-                fte.setNativeName(virtualTable.getName());
-                fte.setMetadataVirtualTable(virtualTable);
-            }
+            configureVirtualTable(layerName, fte, virtualTable);
 
             processDimensions(geoServerSettings, fte);
 
-            if (manager.getPublisher().publishDBLayer(workspaceName, storeName, fte, geoServerSettings)) {
+            if (manager.getPublisher().publishDBLayer(workspaceName, storeName, fte,
+                    geoServerSettings.getLayerSettings())) {
                 logger.info("GeoServer database layer '{}' created.", layerName);
             } else {
                 throw new RuntimeException(
                         "GeoServer database layer '" + layerName + "' does not exist and could not be created.");
             }
+        }
+    }
+
+    private void configureVirtualTable(String layerName, GSFeatureTypeEncoder fte, GSVirtualTableEncoder virtualTable) {
+        if (null != virtualTable) {
+            // Append the layer name to the table name
+            virtualTable.setName(layerName + "_" + virtualTable.getName());
+            // Handle sql stored in a separate file
+            virtualTable.setSql(JsonHelper.handleFileValues(virtualTable.getSql()));
+            fte.setNativeName(virtualTable.getName());
+            fte.setMetadataVirtualTable(virtualTable);
         }
     }
 
