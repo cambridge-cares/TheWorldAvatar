@@ -1,1 +1,0 @@
-Find om file [here](https://github.com/HajoRijgersberg/OM/blob/master/om-2.0.rdf)
