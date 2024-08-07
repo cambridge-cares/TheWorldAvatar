@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoassetmanagement="https://www.theworldavatar.com/kg/ontoassetmanagement/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/">
-        <dc:date>04 August 2024</dc:date>
+        <dc:date>07 August 2024</dc:date>
         <rdfs:comment>OntoAssetManagement is an ontology that is designed to represent asset and its related information (e.g. purchase documents).</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -1073,7 +1073,6 @@
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -1893,13 +1892,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/"/>
         <rdfs:label>Workspace</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/Reagent"/>
     
 
 
