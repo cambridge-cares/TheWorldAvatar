@@ -1,0 +1,2253 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A knowledge-graph-based digital twin of the world.">
+      
+      
+      
+      
+        <link rel="prev" href="../res_manager/">
+      
+      
+        <link rel="next" href="../base_ontology/">
+      
+      
+      <link rel="icon" href="../../media/twa-logo-blue.svg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>JPS Gateway - The World Avatar</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#twa.JPSGateway" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The World Avatar" class="md-header__button md-logo" aria-label="The World Avatar" data-md-component="logo">
+      
+  <img src="../../media/twa-logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The World Avatar
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              JPS Gateway
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cambridge-cares/TheWorldAvatar
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../res_registry/" class="md-tabs__link">
+          
+  
+  API Documentation
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/python_java/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The World Avatar" class="md-nav__button md-logo" aria-label="The World Avatar" data-md-component="logo">
+      
+  <img src="../../media/twa-logo-white.svg" alt="logo">
+
+    </a>
+    The World Avatar
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    cambridge-cares/TheWorldAvatar
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Get Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Welcome to twa
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wishlist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bug reports/feature requests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            API Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Py4j-related
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Py4j-related
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../res_registry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resource Registry
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../res_manager/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resource Manager
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    JPS Gateway
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    JPS Gateway
+  </span>
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#twa.JPSGateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      JPSGateway
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twa.JPSGateway.JPSGatewaySingletonMeta" class="md-nav__link">
+    <span class="md-ellipsis">
+      JPSGatewaySingletonMeta
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twa.JPSGateway.JPSGateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      JPSGateway
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="JPSGateway">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#twa.JPSGateway.JPSGateway.launchGateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      launchGateway
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twa.JPSGateway.JPSGateway.shutdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      shutdown
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twa.JPSGateway.JPSGateway.createModuleView" class="md-nav__link">
+    <span class="md-ellipsis">
+      createModuleView
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twa.JPSGateway.JPSGateway.importPackages" class="md-nav__link">
+    <span class="md-ellipsis">
+      importPackages
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Data Model
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Data Model
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../base_ontology/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BaseOntology
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utilities/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Utilities
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    KG Operations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            KG Operations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Gateway
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sparql_client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SparqlClient
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Derived Information Framework
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            Derived Information Framework
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../derivation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Derivation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../derivation_client/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Derivation Client
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../derivation_agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Derivation Agent
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Logging and Configuration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            Logging and Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/python_java/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python-Java communications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/additional_java_lib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Use additional Java library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/logging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sparql/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Perform knowledge graph operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ogm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Object Graph Mapper (OGM)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/dif/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Derived Information Framework (DIF)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>JPS Gateway</h1>
+
+<blockquote>
+<p><strong><code>JPSGateway</code> is the parent class which should be instantiated by every resource gateway class</strong>.</p>
+<p>The resource gateway class is automatically created upon the resource installation, whose class name is the same as the name of the resource given during the installation.</p>
+<p>Therefore, <strong>one should ideally only work with the resource classes, e.g. <code>JpsBaseLib</code>, rather than with the parent <code>JPSGateway</code> class</strong>.</p>
+<p>The documentation here is provided for developers' information.</p>
+</blockquote>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="twa.JPSGateway"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="twa.JPSGateway.JPSGatewaySingletonMeta" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">JPSGatewaySingletonMeta</span>
+
+
+<a href="#twa.JPSGateway.JPSGatewaySingletonMeta" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#type">type</a></code></p>
+
+
+      <p>A Singleton metaclass that ensures only one instance of the class is created.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="twa.JPSGateway.JPSGateway" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">JPSGateway</span>
+
+
+<a href="#twa.JPSGateway.JPSGateway" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">JPSGateway</span><span class="p">(</span><span class="n">resName</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">jarPath</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">JGkwargs</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+      <p>Wrapper class of the py4j JavaGateway class for managing
+Python-Java communication.</p>
+<p>The class can be used in the following way:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">twa</span> <span class="kn">import</span> <span class="n">JPSGateway</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">yourGateway</span> <span class="o">=</span> <span class="n">JPSGateway</span><span class="p">(</span><span class="n">resName</span><span class="o">=</span><span class="n">yourResName</span><span class="p">,</span> <span class="n">jarPath</span><span class="o">=</span><span class="n">yourResJarPath</span><span class="p">,</span> <span class="o">**</span><span class="n">JGkwargs</span><span class="p">)</span>
+</code></pre></div>
+<blockquote>
+<p>Note that if you wish to access an already installed resource through
+the <code>JPSGateway</code> (not recommended), then the <code>jarPath</code> argument can be omitted
+as it can be looked up by the resource name in the resource registry. Also,
+note that some of the <code>py4j.java_gateway.JavaGateway</code> constructor arguments
+are not allowed or should be passed to the <code>py4j.java_gateway.launch_gateway</code>
+method instead. If that is the case, the code will print a warning message
+which shows how to set the desired argument correctly. Please also note that
+according to the <code>py4j</code> documentation, the <code>gateway_parameters</code> argument to the
+<code>py4j.java_gateway.JavaGateway</code> constructor must have the type of the
+<a href="https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.GatewayParameters">py4j GatewayParameters</a>
+object. However, to make it easy for the <code>twa</code> users, this argument can be passed
+as a dictionary which then is automatically converted into the <code>py4j GatewayParameters</code> object.</p>
+</blockquote>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="twa.JPSGateway.JPSGateway.resName">resName</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>name of the Java resource</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="twa.JPSGateway.JPSGateway.jarPath">jarPath</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>absolute path to the main jar file of the java resource</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="twa.JPSGateway.JPSGateway.gateway">gateway</span></code></td>
+            <td>
+                  <code><span title="py4j.java_gateway.JavaGateway">JavaGateway</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the gateway object handling Python-Java communication</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="twa.JPSGateway.JPSGateway._isStarted">_isStarted</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>flag indicating if the gateway was launched</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="twa.JPSGateway.JPSGateway._gatewayUserParams">_gatewayUserParams</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dictionary storing user provided JavaGateway parameters</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="twa.JPSGateway.JPSGateway._launchGatewayUserParams">_launchGatewayUserParams</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dictionary storing user provided launch_gateway parameters</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="twa.JPSGateway.JPSGateway._initialised">_initialised</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>flag inticating if the instance is already initialised</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>resName</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>name of the Java resource</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>jarPath</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>absolute path to the main jar file of the java resource</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>JGkwargs</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dictionary storing user provided JavaGateway parameters
+<code>argument: value</code> pairs one wishes to pass to the
+<a href="https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway">py4j JavaGateway</a> constructor</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+      <blockquote>
+<p>Note that the JGkwargs related to the 'gateway_parameters'
+argument should be passed as a dictionary which is then
+automatically converted into the 'GatewayParameters' object.
+Please refer to the
+<a href="https://www.py4j.org/py4j_java_gateway.html">py4j documentation</a>
+for the description of all the possible arguments.</p>
+<p>As an example, the following arguments:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">JGkwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;gateway_parameters&#39;</span><span class="p">:{</span><span class="s1">&#39;auto_convert&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">}}</span>
+</code></pre></div>
+<p>will be automatically converted to:</p>
+<div class="language-python highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">JGkwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;gateway_parameters&#39;</span><span class="p">:</span> <span class="n">GatewayParameters</span><span class="p">(</span><span class="n">auto_convert</span><span class="o">=</span><span class="kc">True</span><span class="p">)}}</span>
+</code></pre></div>
+<p>Note that the 'java_process' and 'auth_token' arguments
+will be skipped if present and they are automatically
+set by the py4j.java_gateway.launch_gateway method</p>
+<p>Note that the 'port' argument will skipped if present
+as it can only be passed to the py4j.java_gateway.launch_gateway call</p>
+<p>Note that setting the JavaGateway 'eager_load' and the
+py4j.java_gateway.launch_gateway 'enable_auth' arguments to
+True at the same time does NOT work. The arguments are mutually
+exclusive</p>
+<p>Note that the most important and useful settings are set by default
+in this constructor so a user hardly ever need to pass any arguments
+in that call. If required, however, the defaults of this constructor
+can be overwritten by simply passing their new values. Please also
+note that this constructor only instantiates the <code>JPSGateway</code> object,
+and it DOES NOT instantiate the <code>py4j.java_gateway.JavaGateway</code>, whose
+instantiation only happens in the <code>twa.JPSGateway.launchGateway</code> method
+explained in more details below.</p>
+</blockquote>
+
+                  <details class="quote">
+                    <summary>Source code in <code>JPS_BASE_LIB/python_wrapper/twa/JPSGateway.py</code></summary>
+                    <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-190">190</a></span>
+<span class="normal"><a href="#__codelineno-0-191">191</a></span>
+<span class="normal"><a href="#__codelineno-0-192">192</a></span>
+<span class="normal"><a href="#__codelineno-0-193">193</a></span>
+<span class="normal"><a href="#__codelineno-0-194">194</a></span>
+<span class="normal"><a href="#__codelineno-0-195">195</a></span>
+<span class="normal"><a href="#__codelineno-0-196">196</a></span>
+<span class="normal"><a href="#__codelineno-0-197">197</a></span>
+<span class="normal"><a href="#__codelineno-0-198">198</a></span>
+<span class="normal"><a href="#__codelineno-0-199">199</a></span>
+<span class="normal"><a href="#__codelineno-0-200">200</a></span>
+<span class="normal"><a href="#__codelineno-0-201">201</a></span>
+<span class="normal"><a href="#__codelineno-0-202">202</a></span>
+<span class="normal"><a href="#__codelineno-0-203">203</a></span>
+<span class="normal"><a href="#__codelineno-0-204">204</a></span>
+<span class="normal"><a href="#__codelineno-0-205">205</a></span>
+<span class="normal"><a href="#__codelineno-0-206">206</a></span>
+<span class="normal"><a href="#__codelineno-0-207">207</a></span>
+<span class="normal"><a href="#__codelineno-0-208">208</a></span>
+<span class="normal"><a href="#__codelineno-0-209">209</a></span>
+<span class="normal"><a href="#__codelineno-0-210">210</a></span>
+<span class="normal"><a href="#__codelineno-0-211">211</a></span>
+<span class="normal"><a href="#__codelineno-0-212">212</a></span>
+<span class="normal"><a href="#__codelineno-0-213">213</a></span>
+<span class="normal"><a href="#__codelineno-0-214">214</a></span>
+<span class="normal"><a href="#__codelineno-0-215">215</a></span>
+<span class="normal"><a href="#__codelineno-0-216">216</a></span>
+<span class="normal"><a href="#__codelineno-0-217">217</a></span>
+<span class="normal"><a href="#__codelineno-0-218">218</a></span>
+<span class="normal"><a href="#__codelineno-0-219">219</a></span>
+<span class="normal"><a href="#__codelineno-0-220">220</a></span>
+<span class="normal"><a href="#__codelineno-0-221">221</a></span>
+<span class="normal"><a href="#__codelineno-0-222">222</a></span>
+<span class="normal"><a href="#__codelineno-0-223">223</a></span>
+<span class="normal"><a href="#__codelineno-0-224">224</a></span>
+<span class="normal"><a href="#__codelineno-0-225">225</a></span>
+<span class="normal"><a href="#__codelineno-0-226">226</a></span>
+<span class="normal"><a href="#__codelineno-0-227">227</a></span>
+<span class="normal"><a href="#__codelineno-0-228">228</a></span>
+<span class="normal"><a href="#__codelineno-0-229">229</a></span>
+<span class="normal"><a href="#__codelineno-0-230">230</a></span>
+<span class="normal"><a href="#__codelineno-0-231">231</a></span>
+<span class="normal"><a href="#__codelineno-0-232">232</a></span>
+<span class="normal"><a href="#__codelineno-0-233">233</a></span>
+<span class="normal"><a href="#__codelineno-0-234">234</a></span>
+<span class="normal"><a href="#__codelineno-0-235">235</a></span>
+<span class="normal"><a href="#__codelineno-0-236">236</a></span>
+<span class="normal"><a href="#__codelineno-0-237">237</a></span>
+<span class="normal"><a href="#__codelineno-0-238">238</a></span>
+<span class="normal"><a href="#__codelineno-0-239">239</a></span>
+<span class="normal"><a href="#__codelineno-0-240">240</a></span>
+<span class="normal"><a href="#__codelineno-0-241">241</a></span>
+<span class="normal"><a href="#__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#__codelineno-0-243">243</a></span>
+<span class="normal"><a href="#__codelineno-0-244">244</a></span>
+<span class="normal"><a href="#__codelineno-0-245">245</a></span>
+<span class="normal"><a href="#__codelineno-0-246">246</a></span>
+<span class="normal"><a href="#__codelineno-0-247">247</a></span>
+<span class="normal"><a href="#__codelineno-0-248">248</a></span>
+<span class="normal"><a href="#__codelineno-0-249">249</a></span>
+<span class="normal"><a href="#__codelineno-0-250">250</a></span>
+<span class="normal"><a href="#__codelineno-0-251">251</a></span>
+<span class="normal"><a href="#__codelineno-0-252">252</a></span>
+<span class="normal"><a href="#__codelineno-0-253">253</a></span>
+<span class="normal"><a href="#__codelineno-0-254">254</a></span>
+<span class="normal"><a href="#__codelineno-0-255">255</a></span>
+<span class="normal"><a href="#__codelineno-0-256">256</a></span>
+<span class="normal"><a href="#__codelineno-0-257">257</a></span>
+<span class="normal"><a href="#__codelineno-0-258">258</a></span>
+<span class="normal"><a href="#__codelineno-0-259">259</a></span>
+<span class="normal"><a href="#__codelineno-0-260">260</a></span>
+<span class="normal"><a href="#__codelineno-0-261">261</a></span>
+<span class="normal"><a href="#__codelineno-0-262">262</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resName</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">jarPath</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">JGkwargs</span><span class="p">):</span>
+<a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-192" name="__codelineno-0-192"></a><span class="sd">    JPSGateway constructor class</span>
+<a id="__codelineno-0-193" name="__codelineno-0-193"></a>
+<a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-195" name="__codelineno-0-195"></a><span class="sd">        resName (str): name of the Java resource</span>
+<a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="sd">        jarPath (str): absolute path to the main jar file of the java resource</span>
+<a id="__codelineno-0-197" name="__codelineno-0-197"></a><span class="sd">        JGkwargs (dict): dictionary storing user provided JavaGateway parameters</span>
+<a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="sd">            `argument: value` pairs one wishes to pass to the</span>
+<a id="__codelineno-0-199" name="__codelineno-0-199"></a><span class="sd">            [py4j JavaGateway](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway) constructor</span>
+<a id="__codelineno-0-200" name="__codelineno-0-200"></a>
+<a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="sd">    &gt; Note that the JGkwargs related to the &#39;gateway_parameters&#39;</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202"></a><span class="sd">    argument should be passed as a dictionary which is then</span>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="sd">    automatically converted into the &#39;GatewayParameters&#39; object.</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="sd">    Please refer to the</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">    [py4j documentation](https://www.py4j.org/py4j_java_gateway.html)</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">    for the description of all the possible arguments.</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="sd">    &gt; As an example, the following arguments:</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209"></a>
+<a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="sd">    &gt; ```python</span>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">    &gt; JGkwargs = {&#39;gateway_parameters&#39;:{&#39;auto_convert&#39;:True}}</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">    &gt; ```</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a><span class="sd">    &gt; will be automatically converted to:</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a><span class="sd">    &gt; ```python</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a><span class="sd">    &gt; JGkwargs = {&#39;gateway_parameters&#39;: GatewayParameters(auto_convert=True)}}</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="sd">    &gt; ```</span>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">    &gt; Note that the &#39;java_process&#39; and &#39;auth_token&#39; arguments</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">    will be skipped if present and they are automatically</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">    set by the py4j.java_gateway.launch_gateway method</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">    &gt; Note that the &#39;port&#39; argument will skipped if present</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">    as it can only be passed to the py4j.java_gateway.launch_gateway call</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">    &gt; Note that setting the JavaGateway &#39;eager_load&#39; and the</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">    py4j.java_gateway.launch_gateway &#39;enable_auth&#39; arguments to</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">    True at the same time does NOT work. The arguments are mutually</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="sd">    exclusive</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">    &gt; Note that the most important and useful settings are set by default</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a><span class="sd">    in this constructor so a user hardly ever need to pass any arguments</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">    in that call. If required, however, the defaults of this constructor</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="sd">    can be overwritten by simply passing their new values. Please also</span>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="sd">    note that this constructor only instantiates the `JPSGateway` object,</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="sd">    and it DOES NOT instantiate the `py4j.java_gateway.JavaGateway`, whose</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a><span class="sd">    instantiation only happens in the `twa.JPSGateway.launchGateway` method</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a><span class="sd">    explained in more details below.</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_initialised&#39;</span><span class="p">):</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>        <span class="c1"># ensures __init__ runs only once</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialised</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">resName</span> <span class="o">=</span> <span class="n">resName</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">jarPath</span> <span class="o">=</span> <span class="n">jarPath</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">jarPath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-247" name="__codelineno-0-247"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">jarPath</span> <span class="o">=</span> <span class="n">resReg</span><span class="o">.</span><span class="n">getResMainFilePath</span><span class="p">(</span><span class="n">resName</span><span class="p">)</span>
+<a id="__codelineno-0-248" name="__codelineno-0-248"></a>
+<a id="__codelineno-0-249" name="__codelineno-0-249"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-250" name="__codelineno-0-250"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jarPath</span><span class="p">):</span>
+<a id="__codelineno-0-251" name="__codelineno-0-251"></a>                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error: Resource jarpath is invalid.&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-252" name="__codelineno-0-252"></a>                <span class="k">raise</span> <span class="ne">FileNotFoundError</span>
+<a id="__codelineno-0-253" name="__codelineno-0-253"></a>        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+<a id="__codelineno-0-254" name="__codelineno-0-254"></a>            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error: Resource jarpath is invalid.&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-255" name="__codelineno-0-255"></a>            <span class="k">raise</span> <span class="ne">FileNotFoundError</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-257" name="__codelineno-0-257"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_gatewayUserParams</span> <span class="o">=</span> <span class="n">_processJGkwargs</span><span class="p">(</span><span class="o">**</span><span class="n">JGkwargs</span><span class="p">)</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_launchGatewayUserParams</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-259" name="__codelineno-0-259"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_isStarted</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-0-260" name="__codelineno-0-260"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Info: Initializing JPSGateway with resName=</span><span class="si">{</span><span class="n">resName</span><span class="si">}</span><span class="s1">, jarPath=</span><span class="si">{</span><span class="n">jarPath</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-261" name="__codelineno-0-261"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Info: Gateway already initialised. Any JavaGateway created (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="si">}</span><span class="s1">) will be reused.&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="twa.JPSGateway.JPSGateway.launchGateway" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">launchGateway</span>
+
+
+<a href="#twa.JPSGateway.JPSGateway.launchGateway" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">launchGateway</span><span class="p">(</span><span class="o">**</span><span class="n">LGkwargs</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+      <p>Wrapper method for the py4j.java_gateway.launch_gateway
+method which launches the Gateway in a new Java process
+and creates a default JavaGateway to connect to it.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>LGkwargs</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>a dictionary containing the py4j.java_gateway.launch_gateway method arguments</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+      <blockquote>
+<p>Note that the 'jarpath' and 'return_proc' arguments cannot
+be changed and will be skipped if provided</p>
+<p>Note that <strong>this calls an internal py4j.java_gateway.launch_gateway function which is
+different from the launch_gateway function described in py4j web documentation.</strong>
+The py4j function described in py4j web documentation is a JavaGateway classmethod
+which in turn calls the function below. It is a bit confusing as the two functions have
+the same name. The difference between the two is that the launch_gateway classmethod
+launches the java process and then creates a JavaGateway object connected to it, the
+problem is that this function call does not accept any user JavaGateway constructor
+arguments. The non classmethod call on the other hand only launches the java process
+without creating the JavaGateway instance. The JavaGateway instance can be then created
+at a later stage with user defined parameters plus the parameters returned from the
+launch_gateway method call that connect the running java process and the JavaGateway.
+Therefore, the non classmethod py4j.java_gateway.launch_gateway is called herein and its
+outputs are passed to the JavaGateway constructor.</p>
+</blockquote>
+
+            <details class="quote">
+              <summary>Source code in <code>JPS_BASE_LIB/python_wrapper/twa/JPSGateway.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-264">264</a></span>
+<span class="normal"><a href="#__codelineno-0-265">265</a></span>
+<span class="normal"><a href="#__codelineno-0-266">266</a></span>
+<span class="normal"><a href="#__codelineno-0-267">267</a></span>
+<span class="normal"><a href="#__codelineno-0-268">268</a></span>
+<span class="normal"><a href="#__codelineno-0-269">269</a></span>
+<span class="normal"><a href="#__codelineno-0-270">270</a></span>
+<span class="normal"><a href="#__codelineno-0-271">271</a></span>
+<span class="normal"><a href="#__codelineno-0-272">272</a></span>
+<span class="normal"><a href="#__codelineno-0-273">273</a></span>
+<span class="normal"><a href="#__codelineno-0-274">274</a></span>
+<span class="normal"><a href="#__codelineno-0-275">275</a></span>
+<span class="normal"><a href="#__codelineno-0-276">276</a></span>
+<span class="normal"><a href="#__codelineno-0-277">277</a></span>
+<span class="normal"><a href="#__codelineno-0-278">278</a></span>
+<span class="normal"><a href="#__codelineno-0-279">279</a></span>
+<span class="normal"><a href="#__codelineno-0-280">280</a></span>
+<span class="normal"><a href="#__codelineno-0-281">281</a></span>
+<span class="normal"><a href="#__codelineno-0-282">282</a></span>
+<span class="normal"><a href="#__codelineno-0-283">283</a></span>
+<span class="normal"><a href="#__codelineno-0-284">284</a></span>
+<span class="normal"><a href="#__codelineno-0-285">285</a></span>
+<span class="normal"><a href="#__codelineno-0-286">286</a></span>
+<span class="normal"><a href="#__codelineno-0-287">287</a></span>
+<span class="normal"><a href="#__codelineno-0-288">288</a></span>
+<span class="normal"><a href="#__codelineno-0-289">289</a></span>
+<span class="normal"><a href="#__codelineno-0-290">290</a></span>
+<span class="normal"><a href="#__codelineno-0-291">291</a></span>
+<span class="normal"><a href="#__codelineno-0-292">292</a></span>
+<span class="normal"><a href="#__codelineno-0-293">293</a></span>
+<span class="normal"><a href="#__codelineno-0-294">294</a></span>
+<span class="normal"><a href="#__codelineno-0-295">295</a></span>
+<span class="normal"><a href="#__codelineno-0-296">296</a></span>
+<span class="normal"><a href="#__codelineno-0-297">297</a></span>
+<span class="normal"><a href="#__codelineno-0-298">298</a></span>
+<span class="normal"><a href="#__codelineno-0-299">299</a></span>
+<span class="normal"><a href="#__codelineno-0-300">300</a></span>
+<span class="normal"><a href="#__codelineno-0-301">301</a></span>
+<span class="normal"><a href="#__codelineno-0-302">302</a></span>
+<span class="normal"><a href="#__codelineno-0-303">303</a></span>
+<span class="normal"><a href="#__codelineno-0-304">304</a></span>
+<span class="normal"><a href="#__codelineno-0-305">305</a></span>
+<span class="normal"><a href="#__codelineno-0-306">306</a></span>
+<span class="normal"><a href="#__codelineno-0-307">307</a></span>
+<span class="normal"><a href="#__codelineno-0-308">308</a></span>
+<span class="normal"><a href="#__codelineno-0-309">309</a></span>
+<span class="normal"><a href="#__codelineno-0-310">310</a></span>
+<span class="normal"><a href="#__codelineno-0-311">311</a></span>
+<span class="normal"><a href="#__codelineno-0-312">312</a></span>
+<span class="normal"><a href="#__codelineno-0-313">313</a></span>
+<span class="normal"><a href="#__codelineno-0-314">314</a></span>
+<span class="normal"><a href="#__codelineno-0-315">315</a></span>
+<span class="normal"><a href="#__codelineno-0-316">316</a></span>
+<span class="normal"><a href="#__codelineno-0-317">317</a></span>
+<span class="normal"><a href="#__codelineno-0-318">318</a></span>
+<span class="normal"><a href="#__codelineno-0-319">319</a></span>
+<span class="normal"><a href="#__codelineno-0-320">320</a></span>
+<span class="normal"><a href="#__codelineno-0-321">321</a></span>
+<span class="normal"><a href="#__codelineno-0-322">322</a></span>
+<span class="normal"><a href="#__codelineno-0-323">323</a></span>
+<span class="normal"><a href="#__codelineno-0-324">324</a></span>
+<span class="normal"><a href="#__codelineno-0-325">325</a></span>
+<span class="normal"><a href="#__codelineno-0-326">326</a></span>
+<span class="normal"><a href="#__codelineno-0-327">327</a></span>
+<span class="normal"><a href="#__codelineno-0-328">328</a></span>
+<span class="normal"><a href="#__codelineno-0-329">329</a></span>
+<span class="normal"><a href="#__codelineno-0-330">330</a></span>
+<span class="normal"><a href="#__codelineno-0-331">331</a></span>
+<span class="normal"><a href="#__codelineno-0-332">332</a></span>
+<span class="normal"><a href="#__codelineno-0-333">333</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-264" name="__codelineno-0-264"></a><span class="k">def</span> <span class="nf">launchGateway</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">LGkwargs</span><span class="p">):</span>
+<a id="__codelineno-0-265" name="__codelineno-0-265"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a><span class="sd">    Wrapper method for the py4j.java_gateway.launch_gateway</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a><span class="sd">    method which launches the Gateway in a new Java process</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a><span class="sd">    and creates a default JavaGateway to connect to it.</span>
+<a id="__codelineno-0-269" name="__codelineno-0-269"></a>
+<a id="__codelineno-0-270" name="__codelineno-0-270"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a><span class="sd">        LGkwargs (dict): a dictionary containing the py4j.java_gateway.launch_gateway method arguments</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="sd">    &gt; Note that the &#39;jarpath&#39; and &#39;return_proc&#39; arguments cannot</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a><span class="sd">    be changed and will be skipped if provided</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a><span class="sd">    &gt; Note that **this calls an internal py4j.java_gateway.launch_gateway function which is</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a><span class="sd">    different from the launch_gateway function described in py4j web documentation.**</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a><span class="sd">    The py4j function described in py4j web documentation is a JavaGateway classmethod</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a><span class="sd">    which in turn calls the function below. It is a bit confusing as the two functions have</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a><span class="sd">    the same name. The difference between the two is that the launch_gateway classmethod</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a><span class="sd">    launches the java process and then creates a JavaGateway object connected to it, the</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a><span class="sd">    problem is that this function call does not accept any user JavaGateway constructor</span>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a><span class="sd">    arguments. The non classmethod call on the other hand only launches the java process</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284"></a><span class="sd">    without creating the JavaGateway instance. The JavaGateway instance can be then created</span>
+<a id="__codelineno-0-285" name="__codelineno-0-285"></a><span class="sd">    at a later stage with user defined parameters plus the parameters returned from the</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a><span class="sd">    launch_gateway method call that connect the running java process and the JavaGateway.</span>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a><span class="sd">    Therefore, the non classmethod py4j.java_gateway.launch_gateway is called herein and its</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288"></a><span class="sd">    outputs are passed to the JavaGateway constructor.</span>
+<a id="__codelineno-0-289" name="__codelineno-0-289"></a>
+<a id="__codelineno-0-290" name="__codelineno-0-290"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291"></a>
+<a id="__codelineno-0-292" name="__codelineno-0-292"></a>    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_launch_lock</span><span class="p">:</span>
+<a id="__codelineno-0-293" name="__codelineno-0-293"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isStarted</span><span class="p">:</span>
+<a id="__codelineno-0-294" name="__codelineno-0-294"></a>            <span class="n">LGkwargs</span> <span class="o">=</span> <span class="n">_processLGkwargs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="n">LGkwargs</span><span class="p">)</span>
+<a id="__codelineno-0-295" name="__codelineno-0-295"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_launchGatewayUserParams</span> <span class="o">=</span> <span class="n">LGkwargs</span>
+<a id="__codelineno-0-296" name="__codelineno-0-296"></a>
+<a id="__codelineno-0-297" name="__codelineno-0-297"></a>            <span class="c1"># this launches the java process</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298"></a>            <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a>                <span class="n">_ret</span> <span class="o">=</span> <span class="n">launch_gateway</span><span class="p">(</span><span class="n">jarpath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">jarPath</span><span class="p">,</span> <span class="o">**</span><span class="n">LGkwargs</span><span class="p">)</span>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a>            <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>                <span class="nb">print</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302"></a><span class="s2">                    Error: The launch_gateway method called with invalid argument(s).</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303"></a><span class="s2">                        Please see the py4j documentation at:</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304"></a><span class="s2">                            https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305"></a><span class="s2">                        to see the list of supported arguments.&quot;&quot;&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a>                <span class="k">raise</span> <span class="n">e</span>
+<a id="__codelineno-0-307" name="__codelineno-0-307"></a>            <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-0-308" name="__codelineno-0-308"></a>                <span class="nb">print</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="s2">                    Error: Could not launch the resource gateway. Make sure that:</span>
+<a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="s2">                            1 - the resource jarPath is correct</span>
+<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="s2">                            2 - java runtime environment 7+ is installed</span>
+<a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="s2">                            3 - java runtime environment 7+ is correctly added to the system path&quot;&quot;&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-313" name="__codelineno-0-313"></a>                <span class="k">raise</span> <span class="n">e</span>
+<a id="__codelineno-0-314" name="__codelineno-0-314"></a>
+<a id="__codelineno-0-315" name="__codelineno-0-315"></a>            <span class="k">if</span> <span class="n">LGkwargs</span><span class="p">[</span><span class="s1">&#39;enable_auth&#39;</span><span class="p">]:</span>
+<a id="__codelineno-0-316" name="__codelineno-0-316"></a>                <span class="n">_port</span><span class="p">,</span> <span class="n">_auth_token</span><span class="p">,</span> <span class="n">proc</span> <span class="o">=</span> <span class="n">_ret</span>
+<a id="__codelineno-0-317" name="__codelineno-0-317"></a>            <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-318" name="__codelineno-0-318"></a>                <span class="n">_port</span><span class="p">,</span> <span class="n">proc</span><span class="p">,</span> <span class="n">_auth_token</span> <span class="o">=</span> <span class="n">_ret</span> <span class="o">+</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">)</span>
+<a id="__codelineno-0-319" name="__codelineno-0-319"></a>
+<a id="__codelineno-0-320" name="__codelineno-0-320"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_gatewayUserParams</span> <span class="o">=</span> <span class="n">_addConJGParams</span><span class="p">(</span><span class="n">_port</span><span class="p">,</span> <span class="n">proc</span><span class="p">,</span> <span class="n">_auth_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gatewayUserParams</span><span class="p">)</span>
+<a id="__codelineno-0-321" name="__codelineno-0-321"></a>            <span class="c1"># this creates the JavaGateway object connected to the launched java process above</span>
+<a id="__codelineno-0-322" name="__codelineno-0-322"></a>            <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-323" name="__codelineno-0-323"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span> <span class="o">=</span> <span class="n">JavaGateway</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_gatewayUserParams</span><span class="p">)</span>
+<a id="__codelineno-0-324" name="__codelineno-0-324"></a>            <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-0-325" name="__codelineno-0-325"></a>                <span class="nb">print</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-326" name="__codelineno-0-326"></a><span class="s2">                    Error: The JavaGateway constructor method called with invalid argument(s).</span>
+<a id="__codelineno-0-327" name="__codelineno-0-327"></a><span class="s2">                        Please see the py4j documentation at:</span>
+<a id="__codelineno-0-328" name="__codelineno-0-328"></a><span class="s2">                            https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway</span>
+<a id="__codelineno-0-329" name="__codelineno-0-329"></a><span class="s2">                        to see the list of supported arguments.&quot;&quot;&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-330" name="__codelineno-0-330"></a>
+<a id="__codelineno-0-331" name="__codelineno-0-331"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_isStarted</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-332" name="__codelineno-0-332"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-333" name="__codelineno-0-333"></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Info: JavaGateway already started.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="twa.JPSGateway.JPSGateway.shutdown" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">shutdown</span>
+
+
+<a href="#twa.JPSGateway.JPSGateway.shutdown" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">shutdown</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+      <p>Wrapper method for the py4j shutdown method
+to stop the JavaGateway client.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>JPS_BASE_LIB/python_wrapper/twa/JPSGateway.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-335">335</a></span>
+<span class="normal"><a href="#__codelineno-0-336">336</a></span>
+<span class="normal"><a href="#__codelineno-0-337">337</a></span>
+<span class="normal"><a href="#__codelineno-0-338">338</a></span>
+<span class="normal"><a href="#__codelineno-0-339">339</a></span>
+<span class="normal"><a href="#__codelineno-0-340">340</a></span>
+<span class="normal"><a href="#__codelineno-0-341">341</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-335" name="__codelineno-0-335"></a><span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-336" name="__codelineno-0-336"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-337" name="__codelineno-0-337"></a><span class="sd">    Wrapper method for the py4j shutdown method</span>
+<a id="__codelineno-0-338" name="__codelineno-0-338"></a><span class="sd">    to stop the JavaGateway client.</span>
+<a id="__codelineno-0-339" name="__codelineno-0-339"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-340" name="__codelineno-0-340"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isStarted</span><span class="p">:</span>
+<a id="__codelineno-0-341" name="__codelineno-0-341"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="twa.JPSGateway.JPSGateway.createModuleView" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">createModuleView</span>
+
+
+<a href="#twa.JPSGateway.JPSGateway.createModuleView" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">createModuleView</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+      <p>Wrapper method for the py4j new_jvm_view method.
+Creates a new JVM view with its own imports.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>new_jvm_view</code></td>            <td>
+                  <code><span title="py4j.java_gateway.JavaGateway.JVM">JVM</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A new JVM view object</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>JPS_BASE_LIB/python_wrapper/twa/JPSGateway.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-343">343</a></span>
+<span class="normal"><a href="#__codelineno-0-344">344</a></span>
+<span class="normal"><a href="#__codelineno-0-345">345</a></span>
+<span class="normal"><a href="#__codelineno-0-346">346</a></span>
+<span class="normal"><a href="#__codelineno-0-347">347</a></span>
+<span class="normal"><a href="#__codelineno-0-348">348</a></span>
+<span class="normal"><a href="#__codelineno-0-349">349</a></span>
+<span class="normal"><a href="#__codelineno-0-350">350</a></span>
+<span class="normal"><a href="#__codelineno-0-351">351</a></span>
+<span class="normal"><a href="#__codelineno-0-352">352</a></span>
+<span class="normal"><a href="#__codelineno-0-353">353</a></span>
+<span class="normal"><a href="#__codelineno-0-354">354</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="k">def</span> <span class="nf">createModuleView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">    Wrapper method for the py4j new_jvm_view method.</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">    Creates a new JVM view with its own imports.</span>
+<a id="__codelineno-0-347" name="__codelineno-0-347"></a>
+<a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">        new_jvm_view (JavaGateway.JVM): A new JVM view object</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-351" name="__codelineno-0-351"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isStarted</span><span class="p">:</span>
+<a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">new_jvm_view</span><span class="p">()</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-354" name="__codelineno-0-354"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: Cannot create the module view. The JavaGateway is not started. Call the gateway start() method first.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="twa.JPSGateway.JPSGateway.importPackages" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">importPackages</span>
+
+
+<a href="#twa.JPSGateway.JPSGateway.importPackages" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">importPackages</span><span class="p">(</span><span class="n">moduleView</span><span class="p">,</span> <span class="n">importStatement</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+      <p>Wrapper method for the py4j java_import method.
+Imports a class / package into the specified JVM view</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>moduleView</code></td>
+            <td>
+                  <code><span title="py4j.java_gateway.JavaGateway.JVM">JVM</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A new JVM view object</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>importStatement</code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The class / package name to import</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>JPS_BASE_LIB/python_wrapper/twa/JPSGateway.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-356">356</a></span>
+<span class="normal"><a href="#__codelineno-0-357">357</a></span>
+<span class="normal"><a href="#__codelineno-0-358">358</a></span>
+<span class="normal"><a href="#__codelineno-0-359">359</a></span>
+<span class="normal"><a href="#__codelineno-0-360">360</a></span>
+<span class="normal"><a href="#__codelineno-0-361">361</a></span>
+<span class="normal"><a href="#__codelineno-0-362">362</a></span>
+<span class="normal"><a href="#__codelineno-0-363">363</a></span>
+<span class="normal"><a href="#__codelineno-0-364">364</a></span>
+<span class="normal"><a href="#__codelineno-0-365">365</a></span>
+<span class="normal"><a href="#__codelineno-0-366">366</a></span>
+<span class="normal"><a href="#__codelineno-0-367">367</a></span>
+<span class="normal"><a href="#__codelineno-0-368">368</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-356" name="__codelineno-0-356"></a><span class="k">def</span> <span class="nf">importPackages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moduleView</span><span class="p">,</span> <span class="n">importStatement</span><span class="p">):</span>
+<a id="__codelineno-0-357" name="__codelineno-0-357"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-358" name="__codelineno-0-358"></a><span class="sd">    Wrapper method for the py4j java_import method.</span>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a><span class="sd">    Imports a class / package into the specified JVM view</span>
+<a id="__codelineno-0-360" name="__codelineno-0-360"></a>
+<a id="__codelineno-0-361" name="__codelineno-0-361"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-362" name="__codelineno-0-362"></a><span class="sd">        moduleView (JavaGateway.JVM): A new JVM view object</span>
+<a id="__codelineno-0-363" name="__codelineno-0-363"></a><span class="sd">        importStatement (str): The class / package name to import</span>
+<a id="__codelineno-0-364" name="__codelineno-0-364"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-365" name="__codelineno-0-365"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isStarted</span><span class="p">:</span>
+<a id="__codelineno-0-366" name="__codelineno-0-366"></a>        <span class="n">java_import</span><span class="p">(</span><span class="n">moduleView</span><span class="p">,</span> <span class="n">importStatement</span><span class="p">)</span>
+<a id="__codelineno-0-367" name="__codelineno-0-367"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: Cannot import packages. The JavaGateway is not started. Call the gateway start() method first.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+    
+  </body>
+</html>
