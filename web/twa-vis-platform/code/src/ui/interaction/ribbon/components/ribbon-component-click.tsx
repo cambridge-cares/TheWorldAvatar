@@ -23,7 +23,7 @@ export default function RibbonComponentClick(props: Readonly<RibbonComponentClic
         enterDelay={1000}
         leaveDelay={100}
         placement="bottom-start">
-        <>
+        <div>
           <div className={styles.ribbonComponentInner}>
             <div className={styles.ribbonComponentIcon}>
               <IconComponent icon={props.icon} />
@@ -35,7 +35,7 @@ export default function RibbonComponentClick(props: Readonly<RibbonComponentClic
               </div>
             }
           </div>
-        </>
+        </div>
       </Tooltip>
     </div>
   );

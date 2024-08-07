@@ -7,9 +7,11 @@ The contents of this repository have been structured into Development and Produc
 A tutorial including a sample directory setup has been included in the [example](./example/) directory. Please have a look if you are looking to setup on this new platform.
 
 ## Table of Contents
+
 - [The World Avatar (TWA) Visualisation Platform](#the-world-avatar-twa-visualisation-platform)
   - [Table of Contents](#table-of-contents)
   - [1. Development](#1-development)
+    - [1.1 Authorisation](#11-authorisation)
   - [2. Production](#2-production)
     - [2.1 Docker Deployment](#21-docker-deployment)
     - [2.2 Stack Deployment](#22-stack-deployment)
@@ -27,6 +29,33 @@ On the other hand, Docker deployment is simplified and requires minimal setup. I
 2. Create files within this directory (containing the docker configurations) for `mapbox_username` and `mapbox_api_key` according to your [Mapbox](https://www.mapbox.com/) credentials. This will be passed as Docker secrets when the container is started.
 
 Once the above steps have been completed, run the command `docker compose -f 'docker-compose.dev.yml' up -d` in this directory. The development server will be set up at `port 3000` on your local machine at `localhost:3000`. Any code changes will be propagated, but may require a browser refresh from time to time.
+
+### 1.1 Authorisation
+
+To secure your viz app with a Keycloak authentication server, set the relevant environment variables in the [local node environment file](.code/.env.local) or the relevant compose file in this directory. If running in a stack, the variables will be set in the service spec file. The relevant variables are:
+
+```sh
+KEYCLOAK=true|false ## whether or not to use kc authentication on the server
+PROTECTED_PAGES=/page,/otherpage ## pages that a user must be logged in to see
+ROLE_PROTECTED_PAGES=/role,/protected,/pages ## pages that require a user to have a given REALM or CLIENT role
+ROLE=viz:protected ## the role required for the above list
+```
+
+alternatively, in the docker `docker-compose.yml` or `docker-compose.dev.yml`
+
+```yml
+      KEYCLOAK: true|false ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: page,/otherpage ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /role,/protected,/pages ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: viz:protected ## the role required for the above list
+```
+
+The [`keycloak.json` file](./code/keycloak.json) must also be correctly configured with the realm name, its address, and the client used for this app. By default, it is configured for the sample auth server committed in [auth](/auth/), but it should be edited if another auth server is in use.
+
+**NB:** The most important thing is that the Keycloak server IP address is routable from inside the viz docker container, and outside. The safest way to do this is to specify the IP directly. Sometimes `host.docker.internal` works, but it is often not set in the DNS hosts file of the host machine.
+
+**NB:** Client roles work better for API-protecting resources than the realm roles. As in the example above, use a role like `<client>:<role>`
+See the [documentation in the auth folder](./auth/README.md) to spin up a dev Keycloak server for testing.
 
 ## 2. Production
 
@@ -60,4 +89,4 @@ If you wish to use other subpaths, please note to update the `BASE_PATH` environ
 
 Github Actions has been configured to automatically compile, build, and release the platform when the pull request has been merged. However, before merging the pull request, update the `CHANGELOG.md` and `VERSION` accordingly. Look at the [Wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Versioning) for the versioning format.
 
-Once merged, a release email will be sent to the mailing list based on the `CHANGELOG.md`. 
+Once merged, a release email will be sent to the mailing list based on the `CHANGELOG.md`.
