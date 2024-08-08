@@ -3,6 +3,9 @@ import sys
 import shutil
 from urllib.parse import urlparse
 import uuid
+import csv
+import re
+import time
 from update_kg import UpdateKG
 from update_kg import config_a_box_updates
 
@@ -16,6 +19,45 @@ class MOPGeometryUpdater(UpdateKG):
         where_ccdc          = "?MOPIRI om:hasCBUFormula ?CCDCNum"
         select_ccdc         = "?MOPIRI ?CCDCNum"
         return self.query_triple(where_ccdc, select_ccdc)
+    
+    def query_mop_iri(self, mop_formula, symmetry):
+        print(mop_formula, symmetry)
+        where_ccdc          = f"""?MOPIRI om:hasMOPFormula            "{mop_formula}"      ;
+                                        om:hasAssemblyModel         ?AM                 .
+                                ?AM     om:hasSymmetryPointGroup    "{symmetry}"          .
+                                """
+        select_ccdc         = "?MOPIRI"
+        return self.query_triple(where_ccdc, select_ccdc)
+    
+    def read_mops_data(self, file_path):
+        failed_geometry_entries                 = []
+        
+        with open(file_path, mode='r', newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            
+            for row in reader:
+                # check if the current row is a mop with additional (statement 1) and new (statement 2) geometry.
+                if row['Mops_Geometry'] != "no_geometry" and contains_underscore(row['Mops_Geometry']) and row['MOP Formula'] != "[Co3]8[(CHC6HO3)4(C3H6OH)4]6":
+                    print("mop geom: ", row['Mops_Geometry'])
+                    mop_iri                     = self.query_mop_iri(row['MOP Formula'], row["Symmetry Point Group"])
+                    if mop_iri == []:
+                        reversed_mop            = reverse_mopformula(row['MOP Formula'])
+                        print("original mop: ", row['MOP Formula'],"reversed mop: ", reversed_mop)
+                        mop_iri                 = self.query_mop_iri(reversed_mop, row["Symmetry Point Group"])
+                        print("mop iri2: ", mop_iri)
+                    if mop_iri == []:
+                        failed_geometry_entries.append(row['MOP Formula'])
+                        print(f"failed for: {row['MOP Formula']}")
+                    
+                    elif mop_iri != []:
+                        geometry_file               = row['Mops_Geometry']
+                        print(mop_iri, geometry_file)
+                        iri                         = mop_iri[0]
+                        self.update_geometry(iri["MOPIRI"], geometry_file[:-4])
+
+            print("failed MOPs: ", failed_geometry_entries)
+        
+
 
     def update_geometry(self, subject_iri, unique_id):
         # set up string to be stored
@@ -100,14 +142,36 @@ class MOPGeometryUpdater(UpdateKG):
             print(file)
         return
     
+def reverse_mopformula(mopformula):
+    pattern = re.compile(r'(\[[^\]]+\])(\d+)(\[[^\]]+\])(\d+)')
+    
+    # Search for the pattern in the input string
+    match = pattern.search(mopformula)
+    
+    if match:
+        # Extract the matched groups
+        a = match.group(1)
+        x = match.group(2)
+        b = match.group(3)
+        y = match.group(4)
+        
+        # Form the new string [b]y[a]x
+        transformed_string = f'{b}{y}{a}{x}'
+        return transformed_string
+    else:
+        # If the input string does not match the pattern, return it unchanged
+        return mopformula
+    
+def contains_underscore(input_string):
+    return '_' in input_string
 
 def main():
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     #   make file path dependent on script location
-    a_box_updates_config_mop                = config_a_box_updates(os.path.join(script_dir, "../../OntoMOPConnection.env"))
+    a_box_updates_config_mop                = config_a_box_updates(os.path.join(script_dir, "../OntoMOPConnection.env"))
     #   instantiate class
-    file_directory                          = os.path.join(script_dir, "../../data/processed_cbu")
+    file_directory                          = os.path.join(script_dir, "../data/NEW_MOPS_Batch_1.csv")
     updater_mop                             = MOPGeometryUpdater(
         query_endpoint                      = a_box_updates_config_mop.SPARQL_QUERY_ENDPOINT,
         update_endpoint                     = a_box_updates_config_mop.SPARQL_UPDATE_ENDPOINT,
@@ -115,8 +179,8 @@ def main():
         kg_password                         = a_box_updates_config_mop.KG_PASSWORD
     )
     #response                                = updater_mop.query_ccdc_numbers()
-    response                                = updater_mop.query_cbu_iri()
-    updater_mop.process_results(response,file_directory)
+    response                                = updater_mop.read_mops_data(file_directory)
+    print(response)
 
     #updater_mop.write_xyz_file(os.path.abspath(os.path.join(script_dir, "../../data/CBU_geometry")))
 
