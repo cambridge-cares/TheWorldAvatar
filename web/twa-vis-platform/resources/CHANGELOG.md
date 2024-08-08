@@ -3,6 +3,17 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.4.0
+
+### Features
+
+* Viz app can now be secured behind a Keycloak authentication server by configuring some environment variables. See main documentation of the project 1.1
+* Dependency management and build process optimised by using pnpm over npm for the project.
+* Docker build optimised with multi stage building and module caching
+* Rebuild should only occur if a change in a config file is detected
+* Some dependency updating and trimming down
+* NB there no longer two places to mount config files and media. All config files should go in `web/twa-vis-platform/code/public` and NOT `web/twa-vis-platform/uploads`
+
 ## 5.3.3
 
 ### Bug Fixes
