@@ -4,7 +4,7 @@
 WATCH_DIR="/twa/public"
 
 # Hash file to store the previous state
-HASH_FILE="/twa/.public_hash"
+HASH_FILE="/twa/.public_hash/previous-state-of-public-folder"
 
 # Compute the current hash of the directory
 CURRENT_HASH=$(find "$WATCH_DIR" -type f -exec sha256sum {} + | sha256sum | awk '{ print $1 }')
