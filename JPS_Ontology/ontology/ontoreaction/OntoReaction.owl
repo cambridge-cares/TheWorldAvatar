@@ -404,7 +404,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isOperatedBy">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Operator"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Operator"/>
         <rdfs:comment>A relation between a reaction experiment and its operator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
     </owl:ObjectProperty>
@@ -428,7 +428,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isWrittenBy">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/OperatorNotes"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Operator"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Operator"/>
         <rdfs:comment>A relation between the notes for a reaction experiment and the operator that wrote it.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
     </owl:ObjectProperty>
@@ -674,10 +674,10 @@
     
 
 
-    <!-- https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole -->
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/Operator -->
 
 
-    <owl:Class rdf:about="https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Operator"/>
     
 
 
@@ -784,17 +784,6 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/InputChemical">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
         <rdfs:comment>An input chemical is a type of chemical used as the feed to a reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoreaction/Operator -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Operator">
-        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole"/>
-        <rdfs:comment>An operator is responsible for managing and controlling the reaction process of  a reaction experiment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
     </owl:Class>
     
