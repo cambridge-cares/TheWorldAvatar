@@ -55,6 +55,13 @@
     
 
 
+    <!-- https://www.omg.org/spec/Commons/Designators/hasName -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.omg.org/spec/Commons/Designators/hasName"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchExperimentCategory -->
 
 
@@ -98,6 +105,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasInitials">
+        <rdfs:subPropertyOf rdf:resource="https://www.omg.org/spec/Commons/Designators/hasName"/>
         <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/Initials"/>
         <rdfs:comment>A relationship that describes a person's initials.</rdfs:comment>
@@ -173,6 +181,13 @@
     
 
 
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/PersonName -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/PersonName"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment -->
 
 
@@ -222,6 +237,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/Initials">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/PersonName"/>
         <rdfs:comment>The initials of a person are the first letters of their first name and last name (and sometimes middle name).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label>Initials</rdfs:label>
