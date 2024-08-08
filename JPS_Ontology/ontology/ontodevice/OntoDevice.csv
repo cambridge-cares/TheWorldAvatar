@@ -85,6 +85,7 @@ ServerChassis,Class,ComputerComponent,IS-A,,,,A device where servers are mounted
 RecordingDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,"A device that store the video footage, allowing for playback and analysis.",https://www.theworldavatar.com/kg/ontodevice/,Recording device
 NetworkVideoRecorder,Class,RecordingDevice,IS-A,,,,A device that converts video recording in a camera network to a computer-storable format.,https://www.theworldavatar.com/kg/ontodevice/,Network video recorder
 Controller,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that controls a certain variable of its environment.,https://www.theworldavatar.com/kg/ontodevice/,Controller
+PIDController,Class,Controller,IS-A,,,,A device that utilizes a general-purpose feedback control algorithm to maintain a desired output by adjusting process variables. ,https://www.theworldavatar.com/kg/ontodevice/,PID controller
 FurnaceController,Class,Controller,IS-A,,,,A device that manages the operations of a furnace.,https://www.theworldavatar.com/kg/ontodevice/,Furnace controller
 IlluminationController,Class,Controller,IS-A,,,,A device that manages the level of light a device produces.,https://www.theworldavatar.com/kg/ontodevice/,Illuminance controller
 MotorController,Class,Controller,IS-A,,,,A device that manages the operation of motors.,https://www.theworldavatar.com/kg/ontodevice/,Motor controller
