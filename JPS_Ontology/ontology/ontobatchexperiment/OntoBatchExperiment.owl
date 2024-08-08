@@ -62,6 +62,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasAmountOfSubstanceConcentration -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasAmountOfSubstanceConcentration">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration"/>
+        <rdfs:comment>A relationship between a phase component and its amount of substance concentration.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has amount of substance concentration</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchExperimentCategory -->
 
 
@@ -84,6 +97,19 @@
         <rdfs:comment>A relationship that describes the batch number allocated to a batch experiment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label>has batch number</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasExpectedpHLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasExpectedpHLevel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/pHLevel"/>
+        <rdfs:comment>A relationship between a phase component and its expected pH level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has expected pH level</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -115,6 +141,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasMassFraction -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasMassFraction">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
+        <rdfs:comment>A relationship between a phase component and its mass fraction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has mass fraction</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasWorkCode -->
 
 
@@ -124,6 +163,19 @@
         <rdfs:comment>A relationship that describes the work code allocated to a batch experiment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label>has work code</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/haspHLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/haspHLevel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/pHLevel"/>
+        <rdfs:comment>A relationship between a phase component and its pH level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has pH level</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -171,6 +223,34 @@
      -->
 
 
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceConcentration"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/pHLevel -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/pHLevel"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
     
 
 
