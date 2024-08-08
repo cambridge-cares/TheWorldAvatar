@@ -6,6 +6,7 @@ from fastapi import Depends
 
 from services.rdf_stores import get_rdfStores
 from services.rdf_stores.base import Cls2NodeGetter
+from services.sparql import SparqlClient
 from utils.collections import FrozenDict, listofdict2dictoflist
 
 
@@ -20,6 +21,7 @@ class SparqlResponseTransformer:
 
     def transform(
         self,
+        sparql_client: SparqlClient,
         var2cls: dict[str, str],
         vars: list[str],
         bindings: list[dict[str, str | float]],
@@ -37,7 +39,8 @@ class SparqlResponseTransformer:
                 continue
 
             retrieved_data = data_getter(
-                iris=[binding.get(var) for binding in bindings]
+                iris=[binding.get(var) for binding in bindings],
+                sparql_client=sparql_client,
             )
             for binding, datum in zip(bindings, retrieved_data):
                 if not datum:

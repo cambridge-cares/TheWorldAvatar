@@ -73,7 +73,11 @@ class OntocompchemRDFStore(Cls2NodeGetter, RDFStore):
             "occ:CalculationResult": self.get_calculation_results,
         }
 
-    def get_optimized_geometries(self, iris: list[str] | tuple[str]):
+    def get_optimized_geometries(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 
 SELECT DISTINCT ?OptimizedGeometry ?Atom ?X ?Xvalue ?Xunit ?Y ?Yvalue ?Yunit ?Z ?Zvalue ?Zunit

@@ -31,7 +31,7 @@ from model.web.ontozeolite import (
 )
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
-from services.sparql import get_ontozeolite_endpoint
+from services.sparql import SparqlClient, get_ontozeolite_endpoint
 
 
 class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
@@ -298,7 +298,11 @@ WHERE {{
             for base_model in frameworks_base
         ]
 
-    def get_zeolite_framework_base_many(self, iris: list[str] | tuple[str]):
+    def get_zeolite_framework_base_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntozeoliteZeoliteFrameworkBase, iris)
 
     def get_zeolite_framework_one(self, iri: str):
@@ -373,31 +377,63 @@ WHERE {{
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Material"] for binding in bindings]
 
-    def get_zeolitic_material_base_many(self, iris: list[str] | tuple[str]):
+    def get_zeolitic_material_base_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntozeoliteZeoliticMaterialBase, iris)
 
     def get_zeolitic_material_one(self, iri: str):
         return self.get_one(OntozeoliteZeoliticMaterial, iri)
 
-    def get_quantities_many(self, iris: list[str] | tuple[str]):
+    def get_quantities_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntocrystalQuantity, iris)
 
-    def get_vectors_many(self, iris: list[str] | tuple[str]):
+    def get_vectors_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntocrystalMeasureVector, iris)
 
-    def get_matrices_many(self, iris: list[str] | tuple[str]):
+    def get_matrices_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntocrystalMeasureMatrix, iris)
 
-    def get_atomic_structures_many(self, iris: list[str] | tuple[str]):
+    def get_atomic_structures_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntocrystalAtomicStructure, iris)
 
-    def get_coordinate_transforms_many(self, iris: list[str] | tuple[str]):
+    def get_coordinate_transforms_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntocrystalCoordinateTransformation, iris)
 
-    def get_unit_cells_many(self, iris: list[str] | tuple[str]):
+    def get_unit_cells_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntocrystalUnitCell, iris)
 
-    def get_tiled_structures_many(self, iris: list[str] | tuple[str]):
+    def get_tiled_structures_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntocrystalTiledStructure, iris)
 
     def get_cbu_all(self):
