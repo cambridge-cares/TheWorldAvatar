@@ -1,3 +1,4 @@
+from rdflib import RDFS
 from constants.namespace import ONTOMOPS, ONTOSPECIES
 from model.rdf_orm import RDFEntity, RDFField
 
@@ -12,7 +13,8 @@ class OntomopsCBU(RDFEntity):
 
 
 class OntomopsAM(RDFEntity):
-    value: str = RDFField(path=ONTOSPECIES.value)
+    name: str | None = RDFField(path=RDFS.label)
+    polyhedral_shape: str = RDFField(path=ONTOMOPS.hasPolyhedralShape)
     symmetry_point_group: str = RDFField(path=ONTOMOPS.hasSymmetryPointGroup)
 
 
