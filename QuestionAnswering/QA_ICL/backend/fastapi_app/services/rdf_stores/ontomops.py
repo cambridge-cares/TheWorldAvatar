@@ -5,7 +5,7 @@ from fastapi import Depends
 from model.kg.ontomops import OntomopsAM, OntomopsCBU, OntomopsGBU, OntomopsMOP
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
-from services.sparql import get_ontomops_endpoint
+from services.sparql import SparqlClient, get_ontomops_endpoint
 
 
 class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
@@ -18,16 +18,32 @@ class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
             "mops:GenericBuildingUnit": self.get_GBUs,
         }
 
-    def get_MOPs(self, iris: list[str] | tuple[str]):
+    def get_MOPs(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntomopsMOP, iris)
 
-    def get_CBUs(self, iris: list[str] | tuple[str]):
+    def get_CBUs(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntomopsCBU, iris)
 
-    def get_AMs(self, iris: list[str] | tuple[str]):
+    def get_AMs(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntomopsAM, iris)
 
-    def get_GBUs(self, iris: list[str] | tuple[str]):
+    def get_GBUs(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntomopsGBU, iris)
 
 

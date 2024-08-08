@@ -97,7 +97,9 @@ WHERE {{
                 try:
                     if issubclass(unpacked_type, RDFEntity):
                         models = self.get_many(unpacked_type, iri2value.values())
-                        return {iri: model for iri, model in zip(iri2value.keys(), models)}
+                        return {
+                            iri: model for iri, model in zip(iri2value.keys(), models)
+                        }
                 except:
                     pass
             return iri2value
@@ -185,3 +187,10 @@ WHERE {{
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["IRI"] for binding in bindings]
         return [model for model in self.get_many(T, iris) if model]
+
+    def _resolve_sparql_client(self, sparql_client: str | SparqlClient | None):
+        if sparql_client is None:
+            return self.sparql_client
+        if isinstance(sparql_client, SparqlClient):
+            return sparql_client
+        return SparqlClient(sparql_client)

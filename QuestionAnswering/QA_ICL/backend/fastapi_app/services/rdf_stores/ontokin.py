@@ -20,7 +20,7 @@ from model.kg.ontokin import (
 )
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
-from services.sparql import get_ontokin_endpoint
+from services.sparql import SparqlClient, get_ontokin_endpoint
 
 
 class OntokinRDFStore(Cls2NodeGetter, RDFStore):
@@ -43,13 +43,25 @@ class OntokinRDFStore(Cls2NodeGetter, RDFStore):
             "okin:TransportModel": self.get_transport_models,
         }
 
-    def get_mechanisms(self, iris: list[str] | tuple[str]):
+    def get_mechanisms(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntokinMechanismBase, iris)
 
-    def get_reactions(self, iris: list[str] | tuple[str]):
+    def get_reactions(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntokinReactionBase, iris)
 
-    def get_kinetic_models(self, iris: list[str] | tuple[str]):
+    def get_kinetic_models(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         if not iris:
             lst: list[OntokinKineticModelBase | None] = []
             return lst
@@ -79,10 +91,18 @@ WHERE {{
 
         return [iri2model.get(iri) for iri in iris]
 
-    def get_thermo_models(self, iris: list[str] | tuple[str]):
+    def get_thermo_models(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntokinThermoModel, iris)
 
-    def get_transport_models(self, iris: list[str] | tuple[str]):
+    def get_transport_models(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntokinTransportModel, iris)
 
 

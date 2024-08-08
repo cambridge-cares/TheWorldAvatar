@@ -81,7 +81,11 @@ class SparqlDataReqExecutor:
 
         logger.info("Transforming SPARQL response to documents...")
         docs = self.response_processor.transform(
-            var2cls=var2cls, vars=vars, bindings=bindings, pkeys=req_form.pkeys
+            sparql_client=kg,
+            var2cls=var2cls,
+            vars=vars,
+            bindings=bindings,
+            pkeys=req_form.pkeys,
         )
         docs_collection = DocumentCollection(data=docs)
         logger.info("Done")

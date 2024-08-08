@@ -23,7 +23,7 @@ from model.kg.ontospecies import (
 from model.web.ontospecies import SpeciesReturnFields, SpeciesRequest
 from services.rdf_orm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
-from services.sparql import get_ontospecies_endpoint
+from services.sparql import SparqlClient, get_ontospecies_endpoint
 
 
 class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
@@ -39,13 +39,25 @@ class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
             "os:Use": self.get_uses_many,
         }
 
-    def get_elements_many(self, iris: list[str] | tuple[str]):
+    def get_elements_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(PeriodictableElement, iris)
 
-    def get_atoms_many(self, iris: list[str] | tuple[str]):
+    def get_atoms_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(GcAtom, iris)
 
-    def get_species_base_many(self, iris: list[str] | tuple[str]):
+    def get_species_base_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntospeciesSpeciesBase, iris)
 
     def get_species_IRIs(self, req: SpeciesRequest):
@@ -289,19 +301,50 @@ WHERE {{
             for base_model in species_base
         ]
 
-    def get_properties_many(self, iris: list[str] | tuple[str]):
-        return self.get_many(OntospeciesProperty, iris)
+    def get_properties_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
+        if (
+            sparql_client is None
+            or (
+                isinstance(sparql_client, SparqlClient)
+                and sparql_client.sparql.endpoint == self.sparql_client.sparql.endpoint
+            )
+            or self.sparql_client.sparql.endpoint == sparql_client
+        ):
+            store = self
+        else:
+            store = RDFStore(
+                sparql_client
+                if isinstance(sparql_client, str)
+                else sparql_client.sparql.endpoint
+            )
+        return store.get_many(OntospeciesProperty, iris)
 
-    def get_identifiers_many(self, iris: list[str] | tuple[str]):
+    def get_identifiers_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntospeciesIdentifier, iris)
 
-    def get_chemical_classes_many(self, iris: list[str] | tuple[str]):
+    def get_chemical_classes_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntospeciesChemicalClass, iris)
 
     def get_chemical_classes_all(self):
         return self.get_all(OntospeciesChemicalClass, ONTOSPECIES.ChemicalClass)
 
-    def get_uses_many(self, iris: list[str] | tuple[str]):
+    def get_uses_many(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         return self.get_many(OntospeciesUse, iris)
 
     def get_uses_all(self):
