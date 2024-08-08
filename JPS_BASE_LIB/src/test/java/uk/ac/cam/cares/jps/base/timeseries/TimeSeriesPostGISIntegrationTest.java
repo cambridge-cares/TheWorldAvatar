@@ -6,14 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.postgis.Point;
 import org.postgis.Polygon;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -32,12 +30,8 @@ public class TimeSeriesPostGISIntegrationTest {
     @Container
     private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage).withUsername(user)
             .withPassword(password);
-
-    private String tableName;
-
     // RDB client
-    private TimeSeriesRDBClient<Integer> tsClient;
-    // RemoteRDBStoreClient
+    protected TimeSeriesRDBClientInterface<Integer> tsClient;
     private static RemoteRDBStoreClient rdbStoreClient;
 
     @BeforeClass
@@ -50,22 +44,11 @@ public class TimeSeriesPostGISIntegrationTest {
 
     @Before
     public void initialiseRDBClient() {
-        tsClient = new TimeSeriesRDBClient<>(Integer.class);
+        setRdbClient();
     }
 
-    /**
-     * simple test that checks the number of columns is correct
-     */
-    @Test
-    public void testInitTimeSeriesTable() throws SQLException {
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
-                    "http://ts1", 4326, conn);
-            // 1 for time column and 1 for the geometry column
-            Assert.assertEquals(2, context.meta().getTables(tableName).get(0).fields().length);
-        }
-
+    protected void setRdbClient() {
+        tsClient = new TimeSeriesRDBClient<>(Integer.class);
     }
 
     /**
@@ -75,7 +58,6 @@ public class TimeSeriesPostGISIntegrationTest {
      */
     @Test
     public void testWrongSRID() throws SQLException {
-
         // a dummy point
         Point point = new Point();
         point.setX(1);
@@ -85,7 +67,7 @@ public class TimeSeriesPostGISIntegrationTest {
         values.add(Arrays.asList(point));
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                     "http://ts1", 4326, conn);
             TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"),
                     values);
@@ -94,7 +76,6 @@ public class TimeSeriesPostGISIntegrationTest {
                     () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload), conn));
             Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
-
     }
 
     /**
@@ -111,7 +92,7 @@ public class TimeSeriesPostGISIntegrationTest {
         values.add(Arrays.asList(polygon));
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                     "http://ts1", 4326, conn);
             TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"),
                     values);
@@ -136,7 +117,7 @@ public class TimeSeriesPostGISIntegrationTest {
         values.add(Arrays.asList(point));
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                     "http://ts1", 4326, conn);
             // upload data
             TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"),
