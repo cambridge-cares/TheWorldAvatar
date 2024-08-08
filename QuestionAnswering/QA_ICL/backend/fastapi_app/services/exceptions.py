@@ -1,0 +1,2 @@
+class QARequestArtifactNotFound(Exception):
+    pass
