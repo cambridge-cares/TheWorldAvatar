@@ -9,6 +9,8 @@ public class EndpointConfig {
     private String dbUser;
     private String dbPassword;
     private String kgurl;
+
+
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
         postGISEndpointConfig = containerClient.readEndpointConfig("postgis", PostGISEndpointConfig.class);
@@ -18,8 +20,6 @@ public class EndpointConfig {
         BlazegraphEndpointConfig blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
                 BlazegraphEndpointConfig.class);
         this.kgurl = blazegraphEndpointConfig.getUrl("kb");
-        blazegraphEndpointConfig.getUsername();
-        blazegraphEndpointConfig.getPassword();
     }
 
     public String getDbUrl(String dbName) {
