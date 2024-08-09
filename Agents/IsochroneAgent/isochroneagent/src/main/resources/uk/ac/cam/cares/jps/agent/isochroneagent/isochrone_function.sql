@@ -1,4 +1,4 @@
-DO $$DECLARE node bigint;
+DO $ $ DECLARE node bigint;
 
 -- Drop the existing tables
 BEGIN DROP TABLE IF EXISTS eventspace_etas;
@@ -45,7 +45,7 @@ FOR node IN (
     FROM
         poi_nearest_node
     WHERE
-        poi_type = ' poiType '
+        poi_type = '{poiType}'
 ) LOOP TRUNCATE TABLE eventspace_etas;
 
 TRUNCATE TABLE eventspace_isochrones;
@@ -61,7 +61,7 @@ SELECT
     ) AS the_geom
 FROM
     pgr_drivingDistance(
-        ' edgeTable ',
+        '{edgeTable}',
         -- Use the dynamically set SQL query here
         node,
         10000,
@@ -107,16 +107,16 @@ SELECT
     minute
 FROM
     eventspace_delaunay,
-    generate_series(0, upperTimeLimit, timeInterval) AS minute
+    generate_series(0, {upperTimeLimit}, {timeInterval}) AS minute
 GROUP BY
     minute;
 
 UPDATE
     eventspace_isochrones
 SET
-    transportmode = ' transportMode ',
-    roadcondition = ' roadCondition ',
-    poi_type = ' poiType ';
+    transportmode = '{transportMode}',
+    roadcondition = '{roadCondition}',
+    poi_type = '{poiType}';
 
 --Store all the isochrones that passed through each node 
 INSERT INTO
@@ -191,8 +191,8 @@ UPDATE
 SET
     iri = uv.iri,
     geometry_iri = uv.geometry_iri,
-    transportmode_iri = ' transportMode _' || uuid_generate_v4() :: text,
-    roadcondition_iri = ' roadCondition _' || uuid_generate_v4() :: text
+    transportmode_iri = '{transportMode}_' || uuid_generate_v4() :: text,
+    roadcondition_iri = '{roadCondition}_' || uuid_generate_v4() :: text
 FROM
     unique_values uv
 WHERE
@@ -235,4 +235,4 @@ FROM
 WHERE
     t1.transportmode = t2.transportmode;
 
-END$$;
+END $ $;
