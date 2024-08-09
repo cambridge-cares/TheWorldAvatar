@@ -12,23 +12,19 @@ import { IconSettings } from 'types/settings';
 import LayerTreeHeader from './layer-tree-content';
 
 // type definition for incoming properties
-type LayerTreeProps = {
+interface LayerTreeProps {
   map: Map;
   dataStore: DataStore;
   icons: IconSettings;
   mapGroups: MapLayerGroup[];
   setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>;
-};
+}
 
 /**
  * Dynamically load and reader controls to toggle groups and layers,
  * with optional icons, in a LayerTree component.
  */
-export default function LayerTree(props: LayerTreeProps) {
-  // Only parse the groups for the first render
-  if (props.mapGroups.length === 0) {
-    parseIntoTreeStucture(props.dataStore, props.icons, props.setMapGroups);
-  }
+export default function LayerTree(props: Readonly<LayerTreeProps>) {
   return <div className={styles.layerTreeContainer}>
     {props.mapGroups.map((mapLayerGroup) => {
       return (
@@ -53,7 +49,7 @@ export default function LayerTree(props: LayerTreeProps) {
  * @param dataStore DataStore containing groups.
  * @param icons The mappings for icon names to their corresponding url.
  */
-function parseIntoTreeStucture(
+export function parseIntoTreeStucture(
   dataStore: DataStore,
   icons: IconSettings,
   setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>
@@ -89,7 +85,8 @@ function recurseParseTreeStructure(
     icon: dataGroup.treeIcon,
     layers: [],
     subGroups: [],
-    showChildren: true,
+    showChildren: dataGroup.isExpanded,
+    groupings: dataGroup.layerGroupings,
   };
 
   // Group layers by user facing name
@@ -108,6 +105,7 @@ function recurseParseTreeStructure(
       address: dataGroup.name + "." + key,
       ids: collectIDs(layers),
       icon: getIcon(layers, icons),
+      grouping: layers.find(layer => layer.grouping !== undefined)?.grouping,
       isVisible: layers.find(layer => layer.cachedVisibility !== null)?.cachedVisibility,
     };
     mapLayerGroup.layers.push(mapLayer);
@@ -149,14 +147,26 @@ function getIcon(layers: DataLayer[], icons: IconSettings): string {
   const lineLayer: DataLayer = layers.find(layer => layer.definition?.type === 'line');
   if (lineLayer) {
     const paint: JsonObject = lineLayer?.definition?.paint as JsonObject;
-    return paint["line-color"] as string;
+    if (typeof paint["line-color"] === "string") {
+      return "l" + paint["line-color"];
+    }
+  }
+  // Retrieve the circle symbol layer and return its color if available
+  const circleLayer: DataLayer = layers.find(layer => layer.definition?.type === "circle");
+  if (circleLayer) {
+    const paint: JsonObject = circleLayer?.definition?.paint as JsonObject;
+    if (typeof paint["circle-color"] === "string") {
+      return "c" + paint["circle-color"];
+    }
   }
   // If no line is available, retrieve the icon image if available
   const layer: DataLayer = layers.find(layer => isJsonObject(layer.definition?.layout) && isString(layer.definition.layout["icon-image"]));
   if (layer) {
     const layout: JsonObject = layer?.definition?.layout as JsonObject;
-    const iconName: string = layout["icon-image"] as string;
-    return icons[iconName];
+    if (typeof layout["icon-image"] === "string") {
+      const iconName: string = layout["icon-image"];
+      return icons[iconName];
+    }
   }
   // Otherwise, defaults to null
   return null

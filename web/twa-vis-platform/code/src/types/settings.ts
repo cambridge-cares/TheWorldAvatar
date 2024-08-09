@@ -1,16 +1,21 @@
+import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
+
 /**
  * Interface of default settings for landing page.
  */
 export type DefaultSettings = {
   branding: {
-    [key: string]: string | number | boolean;
+    [key: string]: string;
   },
   modules: {
     [key: string]: boolean;
   },
-  scenario?: {
-    url: string;
-    data: string;
+  links?: DefaultPageThumbnailProps[],
+  resources?: {
+    [key: string]: {
+      url: string;
+      data?: string;
+    };
   }
 }
 
@@ -20,7 +25,7 @@ export type MapSettings = {
   camera: CameraSettings,
   imagery: ImagerySettings,
   legend?: LegendSettings,
-  icons: IconSettings,
+  icons?: IconSettings,
 }
 
 // Icon settings object

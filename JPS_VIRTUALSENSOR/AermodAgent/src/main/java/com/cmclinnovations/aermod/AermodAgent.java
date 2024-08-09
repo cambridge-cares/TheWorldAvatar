@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,14 +101,11 @@ public class AermodAgent extends DerivationAgent {
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
         // compute srid
-        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
-        int srid;
-        if (scope.getCentroid().getCoordinate().getY() < 0) {
-            srid = Integer.valueOf("327" + centreZoneNumber);
-
-        } else {
-            srid = Integer.valueOf("326" + centreZoneNumber);
-        }
+        double longitude = scope.getCentroid().getCoordinate().getX();
+        longitude = (longitude + 180) - Math.floor((longitude + 180) / 360) * 360 - 180; // ensure never exceeding 180
+        double latitude = scope.getCentroid().getCoordinate().getY();
+        int centreZoneNumber = (int) Math.floor((longitude + 180) / 6)+1;
+        int srid = (latitude < 0) ? 32700 + centreZoneNumber : 32600 + centreZoneNumber;
 
         Map<String, Building> allBuildings = new HashMap<>();
         if (!EnvConfig.IGNORE_BUILDINGS) {
@@ -119,13 +117,17 @@ public class AermodAgent extends DerivationAgent {
         staticPointSources.removeIf(s -> s.getLocation() == null);
 
         long timeBuffer = 1800; // 30 minutes
+
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
 
         // update ensure ship derivations use the right simulation time
+
         queryClient.attachSimTimeToShips(ships, simulationTimeIri);
 
         List<PointSource> allSources = new ArrayList<>();
+
         allSources.addAll(staticPointSources);
+
         allSources.addAll(ships);
 
         queryClient.setPointSourceLabel(allSources);
@@ -141,9 +143,9 @@ public class AermodAgent extends DerivationAgent {
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
         if (Boolean.parseBoolean(EnvConfig.PARALLELISE_EMISSIONS_UPDATE)) {
-            derivationsToUpdate.parallelStream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
+            devClient.updatePureSyncDerivationsInParallel(derivationsToUpdate);
         } else {
-            derivationsToUpdate.stream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
+            devClient.updatePureSyncDerivations(derivationsToUpdate);
         }
 
         // get emissions and set the values in the ships
@@ -221,14 +223,18 @@ public class AermodAgent extends DerivationAgent {
                 .forEach(pollutantType -> zIriList.parallelStream().forEach(zIri -> {
                     aermod.createSimulationSubDirectory(pollutantType, zMap.get(zIri));
 
-                    // create emissions input
-                    aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
-                    aermod.runAermod(pollutantType, zMap.get(zIri));
+                    if (aermod.validAermodInput(weatherData, sourcesWithEmissions)) {
+                        // create emissions input
+                        aermod.createPointsFile(sourcesWithEmissions, srid, pollutantType, zMap.get(zIri));
+                        aermod.runAermod(pollutantType, zMap.get(zIri));
+
+                    }
 
                     // Upload files used by scripts within Python Service to file server.
                     Path concFile = simulationDirectory.resolve(
                             Paths.get("aermod", Pollutant.getPollutantLabel(pollutantType),
                                     String.valueOf(zMap.get(zIri)), "averageConcentration.dat"));
+
                     String outputFileURL = aermod.uploadToFileServer(concFile);
                     zToOutputMap.get(zIri).addDispMatrix(pollutantType, outputFileURL);
 
@@ -282,7 +288,7 @@ public class AermodAgent extends DerivationAgent {
         aermod.uploadRasterToPostGIS(srid, append);
 
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), zToOutputMap, !ships.isEmpty(),
-                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation);
+                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation, srid);
     }
 
     /**

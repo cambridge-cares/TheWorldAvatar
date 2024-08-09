@@ -1,6 +1,5 @@
 import { Map } from 'mapbox-gl';
 import { IconSettings } from 'types/settings';
-import { formatAppUrl } from 'utils/client-utils';
 
 /**
  * Adds icons to the map
@@ -8,21 +7,17 @@ import { formatAppUrl } from 'utils/client-utils';
  * @param {Map} map the Mapbox map instance.
  * @param {IconSettings} iconSettings object listing icons for load.
  */
-export function addIcons(map: Map, iconSettings: IconSettings) {
-  const promises: Promise<void>[] = [];
+export async function addIcons(map: Map, iconSettings: IconSettings): Promise<void> {
+  if (!iconSettings) return;
 
-  for (const key of Object.keys(iconSettings)) {
-    const promise = new Promise<void>(function (resolve) {
-      loadIcon(map, key, iconSettings[key], function () {
-        resolve();
-      });
+  const promises = Object.keys(iconSettings).map(async (key) => {
+    return new Promise<void>((resolve) => {
+      loadIcon(map, key, iconSettings[key], () => resolve());
     });
-    promises.push(promise);
-  }
-
-  return Promise.all(promises).then(() => {
-    console.info("All custom image icons have been loaded and registered.");
   });
+
+  await Promise.all(promises);
+  console.info("All custom image icons have been loaded and registered.");
 }
 
 /**
@@ -34,19 +29,18 @@ export function addIcons(map: Map, iconSettings: IconSettings) {
  * @param callback callback function
  */
 function loadIcon(map: Map, imageName: string, imageURL: string, callback: () => void) {
-  const formattedImageUrl: string = formatAppUrl(imageURL);
   map?.loadImage(
-    formattedImageUrl,
+    imageURL,
     (error, image) => {
       if (error) {
-        console.log("ERROR: Could not load image at URL " + formattedImageUrl);
+        console.log("ERROR: Could not load image at URL " + imageURL);
       } else {
         if (!map?.hasImage(imageName)) {
           // If the imageURL contains ("-sdf"), load as an SDF image
           map?.addImage(
             imageName,
             image,
-            { "sdf": formattedImageUrl.includes("-sdf") }
+            { "sdf": imageURL.includes("-sdf") }
           );
         }
       }

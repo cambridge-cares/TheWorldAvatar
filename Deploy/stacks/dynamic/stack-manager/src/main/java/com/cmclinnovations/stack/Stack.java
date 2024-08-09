@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.stack.services.DockerService;
 import com.cmclinnovations.stack.services.ServiceManager;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
@@ -27,7 +28,7 @@ public class Stack {
 
     private static final String DEFAULT_SERVICES_FILE = "defaults.txt";
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
 
     private static final String VOLUME_POPULATOR_SERVICE_NAME = "volume-populator";
 

@@ -1,0 +1,12 @@
+services:
+  keycloak:
+    container_name: "keycloak-dev-server"
+    image: keycloak/keycloak:latest
+    ports:
+      - "8081:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin    
+      KEYCLOAK_ADMIN_PASSWORD: password
+      KC_LOG_LEVEL: info
+      
+    command: start-dev

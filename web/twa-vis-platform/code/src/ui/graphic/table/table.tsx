@@ -4,10 +4,10 @@ import React from 'react';
 
 import { TimeSeries, TimeSeriesGroup } from 'types/timeseries';
 
-type TableProps = {
+interface TableProps {
   group: TimeSeriesGroup;
   selectedIndex: number;
-};
+}
 
 /**
  * This component renders a table populated with the time series data.
@@ -15,7 +15,7 @@ type TableProps = {
  * @param {TimeSeriesGroup} group The group to render.
  * @param {number} selectedIndex The currently selected index.
  */
-export default function Table(props: TableProps) {
+export default function Table(props: Readonly<TableProps>) {
   const currentTimeSeries: TimeSeries = props.group.data[props.selectedIndex];
   return (
     <div className={styles["table"]}>

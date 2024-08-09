@@ -1,4 +1,6 @@
-import styles from './legend-tree.module.css'; // Assuming you have a CSS module for styling
+import styles from './legend-tree.module.css';
+import parentStyles from '../floating-panel.module.css';
+
 import React, { useState } from 'react';
 
 import { LegendSettings, LegendGroup } from 'types/settings';
@@ -7,19 +9,19 @@ import IconComponent from 'ui/graphic/icon/icon';
 import DecagonIconComponent from 'ui/graphic/icon/decagon';
 
 // Incoming parameters for component.
-type LegendTreeProps = {
-  readonly settings: LegendSettings;
-};
+interface LegendTreeProps {
+  settings: LegendSettings;
+}
 
-type LegendTreeNodeProps = {
-  readonly group: LegendGroup;
-  readonly groupName: string;
-};
+interface LegendTreeNodeProps {
+  group: LegendGroup;
+  groupName: string;
+}
 
 /**
  * Displays a legend component based on the user's input for legend settings.
  */
-export default function LegendTree(props: LegendTreeProps) {
+export default function LegendTree(props: Readonly<LegendTreeProps>) {
   return (
     <div className={styles.legendContainer}>
       <h2>Legend</h2>
@@ -30,17 +32,22 @@ export default function LegendTree(props: LegendTreeProps) {
   );
 }
 
-function LegendTreeNode(props: LegendTreeNodeProps) {
+function LegendTreeNode(props: Readonly<LegendTreeNodeProps>) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const collapsedIcon: string = isCollapsed ? "keyboard_arrow_right" : "keyboard_arrow_down";
   const toggleExpansion = () => {
     setIsCollapsed(!isCollapsed);
   };
+
   return (
     <div key={props.groupName} className={styles.legendGroup}>
       <HeaderField
         name={props.groupName}
+        icon={collapsedIcon}
+        containerStyle={parentStyles.treeHeader}
+        headerNameStyle={parentStyles.treeHeaderName}
+        isLoading = {false}
         spacing="0"
-        isCollapsed={isCollapsed}
         toggleExpansion={toggleExpansion}
       />
       {Object.entries(props.group).map(([item, legendSettings]) => {

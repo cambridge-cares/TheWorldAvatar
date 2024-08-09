@@ -1,0 +1,26 @@
+{
+    "name": "atlaswind10m5",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlaswind10m",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "atlaswind10m",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "atlaswind10m"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "atlaswind10m",
+            "file": "atlaswind10m.sld"
+        }
+    ]
+}

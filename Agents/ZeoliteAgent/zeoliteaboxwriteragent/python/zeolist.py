@@ -10,7 +10,9 @@ logging.basicConfig( level = logging.WARNING )
 import csv
 import os
 import uuid
+#import tools
 import tools
+
 
 rawString = " ABW     ACO     AEI     AEL     AEN     AET     AFG     AFI     AFN     "+\
     "AFO     AFR     AFS     AFT     AFV     AFX AFY     AHT     ANA     ANO     "+\
@@ -87,15 +89,23 @@ def getZeoList( arg="main" ):
 
     output = outString.split()
 
+    directory = os.path.dirname(FRAMEWORK_LIST)
+    try:
+        os.makedirs(directory)
+        #print(f"Created missing folders: {directory}")
+    except FileExistsError:
+        #print(f"Folders already exist: {directory}")
+        pass
+
     with open(FRAMEWORK_LIST, "w", encoding="utf-8") as fp:
         for fw in output:
             fp.write(fw + "\n")
-    print("Saved frameworks", output)
-    1/0
 
+    #print("Saved frameworks", output)
     #print( "Total ", len(output), " frameworks" )
+
     return output
-    pass # getZeoList()
+    # === end of getZeoList()
 
 def zeoCodeToCode3( code ):
   codeShort = code.strip()
@@ -110,7 +120,7 @@ def zeoCodeToCode3( code ):
     logging.error( "Code is not 3 letters long: '" + output + "'" )
 
   return output
-  pass # zeoCodeToCode3()
+  # === end of zeoCodeToCode3()
 
 def zeoCodeToExcel( code ):
   # Replace "-" to "_" character. ("-" is not displayed in excel/csv)
@@ -121,7 +131,7 @@ def zeoCodeToExcel( code ):
     output = codeShort
   
   return output
-  pass # zeoCodeToExcel()
+  # === end of zeoCodeToExcel()
 
 def zeoCodeToOrig( code ):
   # Replace back: "-" to "-" character. ("-" is not displayed in excel/csv)
@@ -132,8 +142,7 @@ def zeoCodeToOrig( code ):
     output = codeShort
   
   return output
-
-  pass # zeoCodeToOrig()
+  # === end of zeoCodeToOrig()
 
 
 if __name__ == "__main__":
@@ -147,18 +156,17 @@ if __name__ == "__main__":
    getZeoList( [ 'test', 'main' ] )
    #getZeoList( )
 
-   print( tools.getZeoUUID( "AWW" ) )
    print( zeoCodeToExcel( "AWW" ) )
    print( zeoCodeToExcel( "-CLO" ) )
    print( zeoCodeToOrig( "_CLO" ) )
    print( zeoCodeToOrig( "BEC" ) )
 
-   db = tools.loadUUID()
+   db = tools.UuidDB()
 
-   print( tools.getZeoUUID1( db, "ClassA", "a1" ) )
-   print( tools.getZeoUUID1( db, "ClassA", "a2" ) )
-   print( tools.getZeoUUID1( db, "ClassA", "a3" ) )
-   print( tools.getZeoUUID1( db, "ClassB", "b1" ) )
+   print( db.getUUID( "ClassA", "a1" ) )
+   print( db.getUUID( "ClassA", "a2" ) )
+   print( db.getUUID( "ClassA", "a3" ) )
+   print( db.getUUID( "ClassB", "b1" ) )
 
-   print( db )
-   tools.saveUUID( db )
+   #print( db )
+   db.saveDB()

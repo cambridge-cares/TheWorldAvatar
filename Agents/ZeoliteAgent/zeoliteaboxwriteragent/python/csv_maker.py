@@ -507,7 +507,7 @@ class CsvMaker:
 
     def arrTiles(self, subject, predicate, zeoname):
         """
-        subject   - Is the full hame of instance of class CrystalInformation,
+        subject   - Is the full name of instance of class CrystalInformation,
                     which contains this TiledStructure class.
         predicate - Is the Object Property linking the Subject and the current TiledStructure.
                     Typically is should be equal to "hasTiledStructure".
@@ -1326,13 +1326,15 @@ class CsvMaker:
             #arr += framework_cif.get_csv_arr_from_cif(cif_path, safe_name, safe_name)
 
             # uuuuuuu
-            path = os.path.join("CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
+            #path = os.path.join("CIF", zeolist.zeoCodeToCode3(z).upper() + ".cif")
+            path = os.path.join("ontozeolite", "crystal", "data", "cifdir", z + ".cif")
 
             #print(">>> zeoframe =", uuid_zeoframe, type(uuid_zeoframe))
             arr += framework_cif.get_csv_arr_from_cif(path, z, new_uuid=None, 
                                                       subject=zeoframe_iri,
                                                       predicate=self.crystOntoPrefix + "hasCrystalInformation")
-            #print("ddddddddddddd")
+            if not os.path.isfile(path):
+                print("Error! in csv_maker (framework) >> Missing CIF file:", path)
 
             uuid_cif = framework_cif.get_uuid()
             if uuid_cif is None:
@@ -1362,6 +1364,18 @@ class CsvMaker:
 
             #continue
             # To add Citation information, or is it loaded in get_csv_arr_from_cif ?
+
+            # Descibe topological priperties of selected zeolite
+            #uuid_zeolite
+            #arr += zeoData.get_csv_arr_topology(uuid_zeoframe, 
+            #       ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
+            #print("going to check the topological property")
+            #if zeolite.is_reference_material():
+            #print(">>>>>>>>>> reference, so using it")
+            arr += zeoDataBase.get_csv_arr_topology(zeoframe_iri,
+                   ontozeolite.zeoOntoPrefix + "hasTopologicalProperties", z)
+               #ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
+
 
             # Description of all the zeolites for this framework:
             #for cif_line, ext_line in zeoData.getMaterialIDs(z):
@@ -1419,6 +1433,8 @@ class CsvMaker:
                         logging.error("'cif_file' must be a string or list of str: %s",
                                       str(zeolite.data["cif_file"]))
 
+                if len(paths) == 0:
+                    print("  Not found CIF in zeolite", zeolite.data["safe_name"], zeolite.data["uuid"])
                 for cif_path in paths:
                     #print("-------------> starting CIF", cif_path, "for", zeolite.get_iri())
                     if True:
@@ -1446,8 +1462,6 @@ class CsvMaker:
 
                     #print( safe_name, uuid_zeolite)
                     #1/0
-                else:
-                    print("    Not found CIF in zeolite", zeolite.data["safe_name"], zeolite.data["uuid"])
 
                 # Description of the recipe for the given zeolite (if exists):
                 logging.warning(" FIXME: no recipe data")
@@ -1460,15 +1474,6 @@ class CsvMaker:
 
             #arr += zeoData.get_csv_material(uuid_zeoframe,
             #       ontozeolite.zeoOntoPrefix + "hasZeoliticMaterial", z)
-
-            # Descibe topological priperties of selected zeolite
-            #uuid_zeolite
-            #arr += zeoData.get_csv_arr_topology(uuid_zeoframe, 
-            #       ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
-                if zeolite.is_reference_material():
-                    arr += zeoDataBase.get_csv_arr_topology(zeoframe_iri,
-                           ontozeolite.zeoOntoPrefix + "hasTopologicalProperties", z)
-                   #ontozeolite.zeoOntoPrefix + "hasZeoliteTopology", z)
 
             #tmp = zeoData.getCsvArr(uuid_cif, self.crystOntoPrefix + "has???")
 

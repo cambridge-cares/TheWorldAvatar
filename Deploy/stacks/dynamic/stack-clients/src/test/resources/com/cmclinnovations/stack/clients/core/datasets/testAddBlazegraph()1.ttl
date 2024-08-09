@@ -1,0 +1,35 @@
+@prefix bd:     <http://www.bigdata.com/rdf#> .
+@prefix bds:    <http://www.bigdata.com/rdf/search#> .
+@prefix dc:     <http://purl.org/dc/elements/1.1/> .
+@prefix fn:     <http://www.w3.org/2005/xpath-functions#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix hint:   <http://www.bigdata.com/queryHints#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sesame: <http://www.openrdf.org/schema/sesame#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+<https://theworldavatar.io/kg/674f1848-32d4-42dc-914c-9ccb7919b7be>
+        rdf:type  <https://theworldavatar.io/kg/service#Blazegraph>;
+        <http://purl.org/dc/terms/identifier>
+                "https://theworldavatar.io/kg/674f1848-32d4-42dc-914c-9ccb7919b7be";
+        <http://purl.org/dc/terms/title>
+                "testDataset";
+        <http://www.w3.org/ns/dcat#endpointURL>
+                <http://blazegraph:8080/blazegraph/namespace/testDataset/sparql>;
+        <http://www.w3.org/ns/dcat#servesDataset>
+                <https://theworldavatar.io/kg/bb89c291-fac1-4382-b9ae-0d1e890e718c> .
+
+<https://theworldavatar.io/kg/bb89c291-fac1-4382-b9ae-0d1e890e718c>
+        rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
+        <http://purl.org/dc/terms/description>
+                "Dataset for testing";
+        <http://purl.org/dc/terms/issued>
+                "2024-05-30T17:12:56.625Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/modified>
+                "2024-05-30T17:12:56.625Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/title>
+                "testDataset";
+        <http://www.w3.org/ns/dcat#service>
+                <https://theworldavatar.io/kg/674f1848-32d4-42dc-914c-9ccb7919b7be> .

@@ -1,7 +1,5 @@
-import React from 'react';
-import { formatAppUrl } from 'utils/client-utils';
 
-type AppImageProps = {
+interface AppImageProps {
   readonly url: string;
   readonly height?: number;
   readonly width?: number;
@@ -21,19 +19,12 @@ type AppImageProps = {
 export default function AppImage(props: AppImageProps) {
   const height: number = props.height ?? 25;
   const width: number = props.width ?? 25;
-  let srcUrl: string;
-  // Only format the url if it is a relative path
-  if (props.url.startsWith("http")) {
-    srcUrl = props.url;
-  } else {
-    srcUrl = formatAppUrl(props.url);
-  }
   // Despite optimisation benefits, do not use Next images. 
   // They employ a different url format in production, which cannot work well with the reverse proxy in the stack.
   return (
     <div className={props.classes}>
       <img
-        src={srcUrl}
+        src={props.url}
         height={height}
         width={width}
         alt={props.alt}

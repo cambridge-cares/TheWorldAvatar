@@ -1,0 +1,15 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+env: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+twa:    https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+
+mappingId	building_floor
+target		twa:Building/{building_uuid} env:hasNumberOfFloors twa:NumberOfFloors/{building_uuid} .
+            twa:NumberOfFloors/{building_uuid} a env:FloorCat{floor_category} ;
+            env:hasValue {num_floors} .
+            
+source      SELECT * FROM gfa_floors.floors
+]]
