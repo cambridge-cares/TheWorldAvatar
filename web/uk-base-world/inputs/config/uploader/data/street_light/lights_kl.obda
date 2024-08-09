@@ -10,19 +10,17 @@ pow:    https://theworldavatar.io/kg/CReDo/OntoPower.owl#
 mappingId       street-lights-kingslynn
 target          :StreetLight/{id} a :StreetLight .
                 :StreetLight/{id}/defaultGeometry geo:asWKT "{wkt}"^^geo:wktLiteral .
-                :StreetLight/{id} :hasUnitno :Unitno/{no} .
-                :StreetLight/{id} :hasogc_fid :ogc_fid/{ogc_fid} . 
+                :StreetLight/{id} om:hasValue core:id .
                 :operator/{operator} a :opPara ;
                     om:hasValue :operator/{operator}/measure .
                 :operator/{operator}/measure om:hasNumericalValue {operator}^^xsd:string .
                 :StreetLight/{id} core:hasInternalState :StreetLight/{id}/internalPowerState/{state} .
                 :StreetLight/{id}/internalPowerState a pow:PowerState ;
                     om:hasValue :StreetLight/{id}/internalPowerState/measure/{state} .
-                :StreetLight/{id} om:hasValue :mpan/{mpan} .
+                :StreetLight/{id} om:hasValue pow:mpan/{mpan} .
 source          SELECT
                 "ogc_fid" as ogc_fid,
                 "OWNER" as operator,
-                "UNITNO" as no,
                 "wkb_geometry" as wkt,
                 "IDENTIFIER" as id,
                 "status" as state,
