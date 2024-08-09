@@ -676,6 +676,1509 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Power Network",
+      "stack": "https://theworldavatar.io/demos/credo-ofwat/power",
+      "sources": [
+        {
+          "id": "Secondary_Substation-source",
+          "type": "geojson",
+          "data": "https://theworldavatar.io/demos/credo-ofwat/power/geoserver/Zvoh7ZsC/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Zvoh7ZsC%3ASecondary_Substation&outputFormat=application%2Fjson",
+          "cluster": true,
+          "clusterRadius": 30,
+          "clusterMaxZoom": 11,
+          "clusterProperties": {
+            "highest_internal_failure_state": [
+              "max",
+              [
+                "-",
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "highest_internal_failure_state"
+                  ]
+                ],
+                [
+                  "case",
+                  [
+                    "==",
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "time"
+                      ]
+                    ],
+                    [
+                      "to-number",
+                      "1"
+                    ]
+                  ],
+                  0,
+                  1
+                ]
+              ]
+            ],
+            "lowest_output_state": [
+              "min",
+              [
+                "+",
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "lowest_output_state"
+                  ]
+                ],
+                [
+                  "case",
+                  [
+                    "==",
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "time"
+                      ]
+                    ],
+                    [
+                      "to-number",
+                      "1"
+                    ]
+                  ],
+                  0,
+                  1
+                ]
+              ]
+            ],
+            "lowest_input_state": [
+              "min",
+              [
+                "+",
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "lowest_input_state"
+                  ]
+                ],
+                [
+                  "case",
+                  [
+                    "==",
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "time"
+                      ]
+                    ],
+                    [
+                      "to-number",
+                      "1"
+                    ]
+                  ],
+                  0,
+                  1
+                ]
+              ]
+            ],
+            "time": [
+              "to-number",
+              "1"
+            ],
+            "cluster_count": [
+              "+",
+              [
+                "case",
+                [
+                  "==",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "time"
+                    ]
+                  ],
+                  [
+                    "to-number",
+                    "1"
+                  ]
+                ],
+                1,
+                0
+              ]
+            ],
+            "name": [
+              [
+                "case",
+                [
+                  "==",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "time"
+                    ]
+                  ],
+                  [
+                    "to-number",
+                    "1"
+                  ]
+                ],
+                [
+                  "case",
+                  [
+                    "!=",
+                    [
+                      "get",
+                      "name"
+                    ],
+                    [
+                      "accumulated"
+                    ]
+                  ],
+                  "Multiple locations",
+                  [
+                    "accumulated"
+                  ]
+                ],
+                [
+                  "get",
+                  "name"
+                ]
+              ],
+              [
+                "get",
+                "name"
+              ]
+            ],
+            "iri": [
+              [
+                "concat",
+                [
+                  "get",
+                  "iri"
+                ],
+                ",",
+                [
+                  "accumulated"
+                ]
+              ],
+              [
+                "get",
+                "iri"
+              ]
+            ],
+            "description": [
+              [
+                "case",
+                [
+                  "==",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "time"
+                    ]
+                  ],
+                  [
+                    "to-number",
+                    "1"
+                  ]
+                ],
+                [
+                  "case",
+                  [
+                    "!=",
+                    [
+                      "get",
+                      "description"
+                    ],
+                    [
+                      "accumulated"
+                    ]
+                  ],
+                  "This point represents a cluster of closely spaced secondary substations.",
+                  [
+                    "accumulated"
+                  ]
+                ],
+                [
+                  "get",
+                  "description"
+                ]
+              ],
+              [
+                "get",
+                "description"
+              ]
+            ]
+          }
+        }
+      ],
+      "layers": [
+        {
+          "id": "Secondary_Substation-layer-bottom",
+          "name": "Secondary Substations",
+          "source": "Secondary_Substation-source",
+          "type": "symbol",
+          "order": 10,
+          "clickable": false,
+          "filter": [
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "time"
+              ],
+              [
+                "to-number",
+                "1"
+              ]
+            ],
+            [
+              "any",
+              [
+                "!",
+                [
+                  "has",
+                  "cluster_count"
+                ]
+              ],
+              [
+                ">",
+                [
+                  "get",
+                  "cluster_count"
+                ],
+                0
+              ]
+            ]
+          ],
+          "layout": {
+            "symbol-z-order": "viewport-y",
+            "icon-allow-overlap": true,
+            "icon-image": [
+              "case",
+              [
+                "all",
+                [
+                  ">",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "highest_internal_failure_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                [
+                  "<",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_output_state"
+                    ]
+                  ],
+                  0.5
+                ]
+              ],
+              "circle",
+              [
+                "case",
+                [
+                  "<",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_output_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                "octagon",
+                [
+                  "case",
+                  [
+                    "any",
+                    [
+                      "<",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "lowest_input_state"
+                        ]
+                      ],
+                      0.5
+                    ],
+                    [
+                      ">",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "highest_internal_failure_state"
+                        ]
+                      ],
+                      0.5
+                    ]
+                  ],
+                  "square",
+                  "circle"
+                ]
+              ]
+            ],
+            "icon-size": [
+              "case",
+              [
+                "all",
+                [
+                  "<=",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "highest_internal_failure_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                [
+                  ">=",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_output_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                [
+                  ">=",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_input_state"
+                    ]
+                  ],
+                  0.5
+                ]
+              ],
+              0.55,
+              [
+                "interpolate",
+                [
+                  "linear"
+                ],
+                [
+                  "case",
+                  [
+                    ">",
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "highest_internal_failure_state"
+                      ]
+                    ],
+                    0.5
+                  ],
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "highest_internal_failure_state"
+                    ]
+                  ],
+                  [
+                    "case",
+                    [
+                      "<",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "lowest_input_state"
+                        ]
+                      ],
+                      0.5
+                    ],
+                    [
+                      "-",
+                      1.0,
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "lowest_output_state"
+                        ]
+                      ]
+                    ],
+                    [
+                      "-",
+                      1.0,
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "lowest_input_state"
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                0.0,
+                0.55,
+                1.0,
+                0.55
+              ]
+            ]
+          },
+          "paint": {
+            "icon-color": [
+              "case",
+              [
+                "all",
+                [
+                  ">",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "highest_internal_failure_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                [
+                  "<",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_output_state"
+                    ]
+                  ],
+                  0.5
+                ]
+              ],
+              [
+                "interpolate",
+                [
+                  "linear"
+                ],
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "highest_internal_failure_state"
+                  ]
+                ],
+                0.0,
+                "#F9D813",
+                0.001,
+                "#FF3333",
+                1.0,
+                "#FF3333"
+              ],
+              [
+                "case",
+                [
+                  "<",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_output_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                [
+                  "interpolate",
+                  [
+                    "linear"
+                  ],
+                  [
+                    "-",
+                    1.0,
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "lowest_output_state"
+                      ]
+                    ]
+                  ],
+                  0.0,
+                  "#F9D813",
+                  0.001,
+                  "#FFAB57",
+                  1.0,
+                  "#FFAB57"
+                ],
+                [
+                  "case",
+                  [
+                    "any",
+                    [
+                      ">",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "highest_internal_failure_state"
+                        ]
+                      ],
+                      0.5
+                    ],
+                    [
+                      "<",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "lowest_input_state"
+                        ]
+                      ],
+                      0.5
+                    ]
+                  ],
+                  [
+                    "interpolate",
+                    [
+                      "linear"
+                    ],
+                    [
+                      "-",
+                      1.0,
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "lowest_input_state"
+                        ]
+                      ]
+                    ],
+                    0.0,
+                    "#F9D813",
+                    0.001,
+                    "#A8A8A8",
+                    1.0,
+                    "#A8A8A8"
+                  ],
+                  "#F9D813"
+                ]
+              ]
+            ]
+          }
+        },
+        {
+          "id": "Secondary_Substation-layer-middle",
+          "name": "Secondary Substations",
+          "source": "Secondary_Substation-source",
+          "type": "symbol",
+          "order": 11,
+          "clickable": false,
+          "filter": [
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "time"
+              ],
+              [
+                "to-number",
+                "1"
+              ]
+            ],
+            [
+              "any",
+              [
+                "!",
+                [
+                  "has",
+                  "cluster_count"
+                ]
+              ],
+              [
+                ">",
+                [
+                  "get",
+                  "cluster_count"
+                ],
+                0
+              ]
+            ]
+          ],
+          "layout": {
+            "symbol-z-order": "viewport-y",
+            "icon-allow-overlap": true,
+            "icon-size": 0.45,
+            "icon-image": [
+              "case",
+              [
+                "all",
+                [
+                  ">",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "highest_internal_failure_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                [
+                  "<",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_output_state"
+                    ]
+                  ],
+                  0.5
+                ]
+              ],
+              "circle",
+              [
+                "case",
+                [
+                  "<",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "lowest_output_state"
+                    ]
+                  ],
+                  0.5
+                ],
+                "octagon",
+                [
+                  "case",
+                  [
+                    "any",
+                    [
+                      "<",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "lowest_input_state"
+                        ]
+                      ],
+                      0.5
+                    ],
+                    [
+                      ">",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "highest_internal_failure_state"
+                        ]
+                      ],
+                      0.5
+                    ]
+                  ],
+                  "square",
+                  "circle"
+                ]
+              ]
+            ]
+          },
+          "paint": {
+            "icon-color": "#FFFFFF"
+          }
+        },
+        {
+          "id": "Secondary_Substation-layer-top",
+          "name": "Secondary Substations",
+          "source": "Secondary_Substation-source",
+          "type": "symbol",
+          "order": 12,
+          "filter": [
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "time"
+              ],
+              [
+                "to-number",
+                "1"
+              ]
+            ],
+            [
+              "any",
+              [
+                "!",
+                [
+                  "has",
+                  "cluster_count"
+                ]
+              ],
+              [
+                ">",
+                [
+                  "get",
+                  "cluster_count"
+                ],
+                0
+              ]
+            ]
+          ],
+          "layout": {
+            "symbol-z-order": "viewport-y",
+            "icon-allow-overlap": true,
+            "icon-size": 0.5,
+            "icon-image": "power-secondary",
+            "text-anchor": "center",
+            "text-allow-overlap": true,
+            "text-ignore-placement": true,
+            "text-font": [
+              "Open Sans Bold"
+            ],
+            "text-size": 16,
+            "text-field": [
+              "to-string",
+              [
+                "get",
+                "cluster_count"
+              ]
+            ]
+          },
+          "paint": {
+            "icon-color": "#F9D813",
+            "icon-opacity": [
+              "case",
+              [
+                "all",
+                [
+                  "has",
+                  "cluster_count"
+                ],
+                [
+                  ">",
+                  [
+                    "get",
+                    "cluster_count"
+                  ],
+                  1
+                ]
+              ],
+              0.0,
+              1.0
+            ],
+            "text-color": "#F9D813",
+            "text-opacity": [
+              "case",
+              [
+                "any",
+                [
+                  "!",
+                  [
+                    "has",
+                    "cluster_count"
+                  ]
+                ],
+                [
+                  "<=",
+                  [
+                    "get",
+                    "cluster_count"
+                  ],
+                  1
+                ]
+              ],
+              0.0,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Street Lighting",
+      "stack": "http://localhost:3838",
+      "expanded": false,
+      "sources": [
+        {
+          "id": "street-lights-cambridge",
+          "type": "geojson",
+          "data": 
+          "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_cambridge_table&outputFormat=application%2Fjson",
+          "cluster": true,
+          "clusterRadius": 100,
+          "clusterMaxZoom": 15
+        },
+        {
+          "id": "street-lights-york",
+          "type": "geojson",
+          "data": 
+            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_york_table&outputFormat=application%2Fjson",
+          "cluster": true,
+          "clusterRadius": 100,
+          "clusterMaxZoom": 15
+        },
+        {
+          "id": "street-lights-pk",
+          "type": "geojson",
+          "data": 
+            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_pk_table&outputFormat=application%2Fjson",
+          "cluster": true,
+          "clusterRadius": 100,
+          "clusterMaxZoom": 15
+        },
+        {
+          "id": "street-lights-kl",
+          "type": "geojson",
+          "data": "http://nash:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_kl_table&outputFormat=application%2Fjson",
+          "cluster": true,
+          "clusterRadius": 100,
+          "clusterMaxZoom": 15
+      },
+        {
+          "id": "street-lights-camden",
+          "type": "geojson",
+          "data": 
+            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_camden_table&outputFormat=application%2Fjson",
+          "cluster": true,
+          "clusterRadius": 100,
+          "clusterMaxZoom": 15
+        },
+        {
+          "id": "street-lights-bradford",
+          "type": "geojson",
+          "data": 
+            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_bradford_table&outputFormat=application%2Fjson",
+          "cluster": true,
+          "clusterRadius": 100,
+          "clusterMaxZoom": 15
+        }
+      ],
+      "layers": [
+        {
+          "id": "street-lights-cambridge",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "street-lights-cambridge",
+          "filter":["!",["has","point_count"]],
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "street_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.04
+            ]
+          }
+        },
+        {
+          "id": "clusters_cambridge",
+          "name": "Lights",
+          "type": "circle",
+          "source": "street-lights-cambridge",
+          "filter": true,
+          "paint": {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#51bbd6",
+              100,
+              "#f1f075",
+              750,
+              "#f28cb1"
+          ],
+              "circle-radius": 
+              [
+                "step",
+                ["get", "point_count"],
+                12.5,
+                100,
+                15,
+                750,
+                17.5
+            ]
+          }
+      },
+      {
+          "id": "cluster-count_cambridge",
+          "name": "Lights",
+          "type": "symbol",
+          "source": "street-lights-cambridge",
+          "filter": [
+              "has",
+              "point_count"
+          ],
+          "layout": {
+              "text-field": [
+                  "get",
+                  "point_count_abbreviated"
+              ],
+              "text-font": [
+                  "DIN Offc Pro Medium",
+                  "Arial Unicode MS Bold"
+              ],
+              "text-size": 15
+          }
+      },
+        {
+          "id": "street-lights-york",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "street-lights-york",
+          "filter":["!",["has","point_count"]],
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "street_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.04
+            ]
+          }
+        },
+        {
+          "id": "clusters_york",
+          "name": "Lights",
+          "type": "circle",
+          "source": "street-lights-york",
+          "filter": true,
+          "paint": {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#51bbd6",
+              100,
+              "#f1f075",
+              750,
+              "#f28cb1"
+          ],
+              "circle-radius": 
+              [
+                "step",
+                ["get", "point_count"],
+                12.5,
+                100,
+                15,
+                750,
+                17.5
+            ]
+          }
+      },
+      {
+          "id": "cluster-count_york",
+          "name": "Lights",
+          "type": "symbol",
+          "source": "street-lights-york",
+          "filter": [
+              "has",
+              "point_count"
+          ],
+          "layout": {
+              "text-field": [
+                  "get",
+                  "point_count_abbreviated"
+              ],
+              "text-font": [
+                  "DIN Offc Pro Medium",
+                  "Arial Unicode MS Bold"
+              ],
+              "text-size": 15
+          }
+      },
+        {
+          "id": "street-lights-pk",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "street-lights-pk",
+          "filter":["!",["has","point_count"]],
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "street_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.04
+            ]
+          }
+        },
+        {
+          "id": "clusters_pk",
+          "name": "Lights",
+          "type": "circle",
+          "source": "street-lights-pk",
+          "filter": true,
+          "paint": {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#51bbd6",
+              100,
+              "#f1f075",
+              750,
+              "#f28cb1"
+          ],
+              "circle-radius": 
+              [
+                "step",
+                ["get", "point_count"],
+                12.5,
+                100,
+                15,
+                750,
+                17.5
+            ]
+          }
+      },
+      {
+          "id": "cluster-count_pk",
+          "name": "Lights",
+          "type": "symbol",
+          "source": "street-lights-pk",
+          "filter": [
+              "has",
+              "point_count"
+          ],
+          "layout": {
+              "text-field": [
+                  "get",
+                  "point_count_abbreviated"
+              ],
+              "text-font": [
+                  "DIN Offc Pro Medium",
+                  "Arial Unicode MS Bold"
+              ],
+              "text-size": 15
+          }
+      },
+      
+        {
+          "id": "street-lights-camden",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "street-lights-camden",
+          "filter":["!",["has","point_count"]],
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "street_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.04
+            ]
+          }
+        },
+        {
+          "id": "clusters_camden",
+          "name": "Lights",
+          "type": "circle",
+          "source": "street-lights-camden",
+          "filter": true,
+          "paint": {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#51bbd6",
+              100,
+              "#f1f075",
+              750,
+              "#f28cb1"
+          ],
+              "circle-radius": 
+              [
+                "step",
+                ["get", "point_count"],
+                12.5,
+                100,
+                15,
+                750,
+                17.5
+            ]
+          }
+      },
+      {
+          "id": "cluster-count_camden",
+          "name": "Lights",
+          "type": "symbol",
+          "source": "street-lights-camden",
+          "filter": [
+              "has",
+              "point_count"
+          ],
+          "layout": {
+              "text-field": [
+                  "get",
+                  "point_count_abbreviated"
+              ],
+              "text-font": [
+                  "DIN Offc Pro Medium",
+                  "Arial Unicode MS Bold"
+              ],
+              "text-size": 15
+          }
+      },
+        {
+          "id": "street-lights-kl",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "street-lights-kl",
+          "filter":["all",
+          
+          ["!",["has","point_count"]],
+          ["==",["get", "status"],0.0]
+        ],
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "street_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.04
+            ]
+          }
+        },
+        {
+          "id": "failed-street-lights-kl",
+          "type": "symbol",
+          "name": "Failed Lights",
+          "source": "street-lights-kl",
+          "filter":["all",
+          ["!",["has","point_count"]],
+          ["==",["get", "status"],1.0]
+          ],
+
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "street_light_failed",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.04
+            ]
+          }
+        },
+        {
+          "id": "clusters_kl",
+          "name": "Lights",
+          "type": "circle",
+          "source": "street-lights-kl",
+          "filter": true,
+          "paint": {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#51bbd6",
+              100,
+              "#f1f075",
+              750,
+              "#f28cb1"
+          ],
+              "circle-radius": 
+              [
+                "step",
+                ["get", "point_count"],
+                12.5,
+                100,
+                15,
+                750,
+                17.5
+            ]
+          }
+      },
+      {
+          "id": "cluster-count_kl",
+          "name": "Lights",
+          "type": "symbol",
+          "source": "street-lights-kl",
+          "filter": [
+              "has",
+              "point_count"
+          ],
+          "layout": {
+              "text-field": [
+                  "get",
+                  "point_count_abbreviated"
+              ],
+              "text-font": [
+                  "DIN Offc Pro Medium",
+                  "Arial Unicode MS Bold"
+              ],
+              "text-size": 15
+          }
+      },
+        {
+          "id": "street-lights-bradford",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "street-lights-bradford",
+          "filter":["!",["has","point_count"]],
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "street_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.04
+            ]
+          }
+        },
+        {
+          "id": "clusters_bradford",
+          "name": "Lights",
+          "type": "circle",
+          "source": "street-lights-bradford",
+          "filter": true,
+          "paint": {
+            "circle-color": [
+              "step",
+              ["get", "point_count"],
+              "#51bbd6",
+              100,
+              "#f1f075",
+              750,
+              "#f28cb1"
+          ],
+              "circle-radius": 
+              [
+                "step",
+                ["get", "point_count"],
+                12.5,
+                100,
+                15,
+                750,
+                17.5
+            ]
+          }
+      },
+      {
+          "id": "cluster-count_bradford",
+          "name": "Lights",
+          "type": "symbol",
+          "source": "street-lights-bradford",
+          "filter": [
+              "has",
+              "point_count"
+          ],
+          "layout": {
+              "text-field": [
+                  "get",
+                  "point_count_abbreviated"
+              ],
+              "text-font": [
+                  "DIN Offc Pro Medium",
+                  "Arial Unicode MS Bold"
+              ],
+              "text-size": 15
+          }
+      }
+      ]
+    },
+    {
+      "name": "Traffic Lighting",
+      "stack": "http://localhost:3838",
+      "expanded": false,
+      "sources": [
+        {
+          "id": "traffic-lights-leeds",
+          "type": "vector",
+          "tiles": [
+            "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:traffic_lighting_leeds_table&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+          ]
+        },
+        {
+          "id": "traffic-lights-york_traffic",
+          "type": "vector",
+          "tiles": [
+            "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:traffic_lighting_york_traffic_table&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+          ]
+        }
+      ],
+      "layers": [
+        {
+          "id": "traffic-lights-leeds",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "traffic-lights-leeds",
+          "source-layer": "traffic_lighting_leeds_table",
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "traffic_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.025
+            ]
+          }
+        },
+        {
+          "id": "traffic-lights-york_traffic",
+          "type": "symbol",
+          "name": "Lights",
+          "source": "traffic-lights-york_traffic",
+          "source-layer": "traffic_lighting_york_traffic_table",
+          "layout": {
+            "visibility": "visible",
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": true,
+            "icon-image": "traffic_light",
+            "icon-size": [
+              "interpolate",
+              [
+                "linear"
+              ],
+              [
+                "zoom"
+              ],
+              5,
+              0.0000015,
+              12,
+              0.01,
+              16,
+              0.025
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "England Highway",
+      "stack": "https://localhost:3838",
+      "expanded": false,
+      "sources": [
+        {
+          "id": "highway",
+          "type": "vector",
+          "tiles": [
+            "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:england_highway_table&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+          ]
+        }
+      ],
+      "layers": [
+        {
+          "id": "highway",
+          "type": "line",
+          "name": "Highway",
+          "source": "highway",
+          "source-layer": "england_highway_table",
+          "paint": {
+            "line-color": "#9E151A",
+            "line-width": 1
+          }
+        }
+      ]
     }
   ]
 }

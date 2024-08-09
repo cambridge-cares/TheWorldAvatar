@@ -1,0 +1,21 @@
+[PrefixDeclaration]
+: http://theworldavatar.com/ontology/ontocredo/ontostreetasset.owl#
+om: http://www.ontology-of-units-of-measure.org/resource/om-2/
+geo: http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId       street-lights-kingslynn
+target          :StreetLight/{id} a :StreetLight .
+                :StreetLight/{id} :hasogc_fid :ogc_fid/{ogc_fid} . 
+                :StreetLight/{id} :hasUnitno :Unitno/{no} .
+                :operator/{operator} a :opPara ;
+                    om:hasValue :operator/{operator}/measure .
+                :operator/{operator}/measure om:hasNumericalValue {operator}^^xsd:string .
+source          SELECT
+                "ogc_fid" as ogc_fid,
+                "OWNER" as operator,
+                "UNITNO" as no,
+                "wkb_geometry" as wkt,
+                "IDENTIFIER" as id
+            FROM street_lighting_kl_table
+]]
