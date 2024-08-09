@@ -1,0 +1,28 @@
+[PrefixDeclaration]
+: http://theworldavatar.com/ontology/ontocredo/ontostreetasset.owl#
+om: http://www.ontology-of-units-of-measure.org/resource/om-2/
+geo: http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId       street-lights-cambridge
+target          :StreetLight/{id} a :StreetLight .
+                :StreetLight/{id} :hasLocation :Location/{location} .
+                :StreetLight/{id} :isInTown :Town{town} .
+                :StreetLight/{id} :hasUnitid :unitid/{unitid} .  
+                :StreetLight/{id} :hasogc_fid :ogc_fid/{ogc_fid} .
+                :StreetLight/{id} :isOnStreet :street/{street} .   
+                :StreetLight/{id}/defaultGeometry geo:asWKT "{wkt}"^^geo:wktLiteral .
+                :operator/{operator} a :opPara ;
+                    om:hasValue :operator/{operator}/measure .
+                :operator/{operator}/measure om:hasNumericalValue {operator}^^xsd:string .
+source          SELECT
+                    "ogc_fid" as ogc_fid,
+                    "unitno" as id,
+                    "location" as location,
+                    "owner" as operator,
+                    "fullstreet" as street,
+                    "town" as town,
+                    "wkb_geometry" as wkt,
+                    "unitid" as unitid
+                FROM street_lighting_cambridge_table
+]]
