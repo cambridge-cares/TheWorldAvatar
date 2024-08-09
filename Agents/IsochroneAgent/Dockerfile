@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-11-slim as builder
+FROM maven:3.6-openjdk-11-slim AS builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 ADD . /root
@@ -17,17 +17,16 @@ WORKDIR /root/isochroneagent
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 #==================================================================================================
-
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:9.0 as agent
+FROM tomcat:9.0 AS agent
 
 WORKDIR /root/isochroneagent
 
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/isochroneagent/output/isochroneagent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/isochroneagent/output/isochroneagent##*.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 EXPOSE 5005
