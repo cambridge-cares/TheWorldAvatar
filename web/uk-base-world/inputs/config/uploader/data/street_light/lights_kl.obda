@@ -19,7 +19,6 @@ target          :StreetLight/{id} a :StreetLight .
                     om:hasValue :StreetLight/{id}/internalPowerState/measure/{state} .
                 :StreetLight/{id} om:hasValue pow:mpan/{mpan} .
 source          SELECT
-                "ogc_fid" as ogc_fid,
                 "OWNER" as operator,
                 "wkb_geometry" as wkt,
                 "IDENTIFIER" as id,
