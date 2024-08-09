@@ -17,7 +17,6 @@ WORKDIR /root/isochroneagent
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 #==================================================================================================
-
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0 AS agent
