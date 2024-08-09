@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
     <artifactId>ShipInputAgent</artifactId>
-    <version>1.6</version>
+    <version>1.8-ship-timeseries-SNAPSHOT</version>
     <packaging>war</packaging>
     
     <!-- Parent POM -->
@@ -82,7 +82,7 @@
         <dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.43.2</version>
+			<version>1.44.0-904-reduce-number-of-time-series-tables-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
