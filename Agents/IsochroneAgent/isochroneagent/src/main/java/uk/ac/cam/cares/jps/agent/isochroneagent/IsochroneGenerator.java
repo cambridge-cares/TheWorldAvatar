@@ -26,27 +26,26 @@ public class IsochroneGenerator {
      * @param remoteRDBStoreClient
      * @param upperTimeLimit       Maximum time limit of the multiple isochrones.
      * @param timeInterval         Time increments between each isochrone
-     * @param EdgesTableSQLMap     The transport mode and road conditions to be used
+     * @param edgesTableSQLMap     The transport mode and road conditions to be used
      *                             for isochrone calculations
      */
     public void generateIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval,
-            Map<String, String> EdgesTableSQLMap) {
+            Map<String, String> edgesTableSQLMap) {
 
         generateTable(remoteRDBStoreClient);
 
         List<String> poiTypes;
         try {
-            // Initilize poiTypes and get distinct poiType;
+            // Initialise poiTypes and get distinct poiType
             poiTypes = getPoiTypes(remoteRDBStoreClient);
 
             // Outer loop: Run createIsochrone method for each poiType
             for (String poiType : poiTypes) {
                 // Inner Loop: Run createIsochrone method for each transport mode
 
-                for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
+                for (Map.Entry<String, String> entry : edgesTableSQLMap.entrySet()) {
                     // Get transport mode and replace the .sql with empty spaces
                     String strippedFileExtension = entry.getKey().replaceAll("\\.sql$", "");
-                    ;
 
                     String[] parts = strippedFileExtension.split("_");
                     if (parts.length == 2) {
@@ -110,7 +109,17 @@ public class IsochroneGenerator {
         try (Connection connection = remoteRDBStoreClient.getConnection();
                 InputStream isCreate = getClass().getResourceAsStream("isochrone_function.sql");
                 InputStream isDrop = getClass().getResourceAsStream("drop_intermediary_tables.sql");) {
-            String createQuery = new String(isCreate.readAllBytes(), StandardCharsets.UTF_8);
+            String createQuery = new String(isCreate.readAllBytes(), StandardCharsets.UTF_8); // replace {edgeTable}, {poitype}, {upperTimeLimit}, {timeInterval}, {transportMode}, {roadCondition}
+
+            // Replace placeholders with actual values
+            createQuery = createQuery.replace("{edgeTable}", edgeTable)
+                    .replace("{poiType}", poiType)
+                    .replace("{upperTimeLimit}", String.valueOf(upperTimeLimit))
+                    .replace("{timeInterval}", String.valueOf(timeInterval))
+                    .replace("{transportMode}", transportMode)
+                    .replace("{roadCondition}", roadCondition);
+
+                    
             String dropQuery = new String(isDrop.readAllBytes(), StandardCharsets.UTF_8);
 
             executeSql(connection, createQuery);
@@ -130,29 +139,30 @@ public class IsochroneGenerator {
      * @throws SQLException
      */
     public List<String> getPoiTypes(RemoteRDBStoreClient remoteRDBStoreClient) throws SQLException {
-
-        try (InputStream is = getClass().getResourceAsStream("get_nearest_node.sql");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));) {
-
-            String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            List<String> poiTypes = new ArrayList<>();
-
-            try (Connection connection = remoteRDBStoreClient.getConnection();
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(query)) {
-
-                while (resultSet.next()) {
-                    poiTypes.add(resultSet.getString("poi_type"));
-                }
-            } catch (SQLException e) {
-                throw new JPSRuntimeException(e);
-            }
-
-            return poiTypes;
-        } catch (IOException e) {
-            throw new JPSRuntimeException("Failed to read get_nearest_node.sql", e);
+    try (InputStream is = getClass().getResourceAsStream("get_nearest_node.sql")) {
+        if (is == null) {
+            throw new JPSRuntimeException("Failed to find get_nearest_node.sql");
         }
+
+        String query = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        List<String> poiTypes = new ArrayList<>();
+
+        try (Connection connection = remoteRDBStoreClient.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                poiTypes.add(resultSet.getString("poi_type"));
+            }
+        } catch (SQLException e) {
+            throw new JPSRuntimeException(e);
+        }
+
+        return poiTypes;
+    } catch (IOException e) {
+        throw new JPSRuntimeException("Failed to read get_nearest_node.sql", e);
     }
+}
 
     /**
      * Create connection to remoteStoreClient and execute SQL statement
