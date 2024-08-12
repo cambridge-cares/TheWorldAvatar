@@ -6,17 +6,27 @@
  * It primarily adds support for serving static files from a directory that's specified at deploy time,
  * facilitating the use of Docker volumes or similar deployment strategies.
  *
+ * server side session storage (cookies) for keycloak authentication are configured here
+ * 
  * Note:
  * Next.js, by default, serves static files from the 'public' directory, which requires contents to be present at build time.
  * This script extends that capability to allow serving files from a different directory after the build process.
  */
 
-/* eslint-disable */
-const express = require("express");
-const next = require("next");
+import express from "express";
+import next from "next";
+
+import session, { MemoryStore } from 'express-session';
+import Keycloak from 'keycloak-connect';
+
+const colorReset = "\x1b[0m";
+const colorRed = "\x1b[31m";
+const colorGreen = "\x1b[32m";
+const colorYellow = "\x1b[33m";
+
 
 // Configure the server port; default to 3000 if not specified in environment variables
-if (process.env.PORT) {console.log('port specified in .env: ', process.env.PORT);}
+if (process.env.PORT) { console.log('port specified in .env file: ', colorGreen, process.env.PORT, colorReset); }
 const port = process.env.PORT || 3000;
 const keycloakEnabled = process.env.KEYCLOAK === 'true';
 console.log('keycloak authorisation required: ', keycloakEnabled ? colorYellow : colorGreen, process.env.KEYCLOAK, colorReset)
@@ -85,6 +95,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log(`Running on port ${port}, development mode is: ${dev}`);
+    console.log('Running at', colorGreen, `http://localhost:${port}`, colorReset, `development mode is: ${dev}`);
   });
 });

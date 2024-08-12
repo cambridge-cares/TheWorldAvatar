@@ -2,6 +2,7 @@
   "name": "twa-visualisation-platform",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "eslintConfig": {
     "extends": "next/core-web-vitals"
   },
