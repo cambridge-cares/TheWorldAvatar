@@ -53,6 +53,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
@@ -83,6 +84,7 @@ public class QueryClient {
     private RemoteRDBStoreClient rdbStoreClient;
     private TimeSeriesClient<Instant> tsClientInstant;
     private TimeSeriesClient<Long> tsClientLong;
+    private TimeSeriesClient<Instant> tsClientReduceTableInstant;
     private String citiesNamespace;
     private String namespaceCRS;
     private ServiceEndpoint ontopService;
@@ -193,6 +195,8 @@ public class QueryClient {
         this.storeClient = storeClient;
         this.tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
         this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesRDBClientWithReducedTables<Instant> timeSeriesRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Instant.class);
+        tsClientReduceTableInstant = new TimeSeriesClient<>(storeClient, timeSeriesRdbClient);
         this.rdbStoreClient = rdbStoreClient;
         ontopService = new ServiceEndpoint(ontopEndpoint);
     }
@@ -447,7 +451,7 @@ public class QueryClient {
             measures.stream().forEach(measure -> {
                 TimeSeries<Instant> ts;
                 try {
-                    ts = tsClientInstant.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
+                    ts = tsClientReduceTableInstant.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
                             simTimeUpperBound, conn);
                     if (ts.getValuesAsPoint(measure).isEmpty()) {
                         return;
