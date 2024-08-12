@@ -192,7 +192,7 @@ final class DCATUpdateQuery {
     private void addBlazegraphServer(Dataset dataset) {
         boolean used = dataset.usesBlazegraph();
         String namespace = dataset.getNamespace();
-        String url = used ? BlazegraphClient.getInstance().getEndpointConfig().getUrl(namespace) : null;
+        String url = used ? BlazegraphClient.getInstance().readEndpointConfig().getUrl(namespace) : null;
 
         addService(blazegraphServiceVar, namespace, SparqlConstants.BLAZEGRAPH_SERVICE, url, null, used);
     }
@@ -200,7 +200,7 @@ final class DCATUpdateQuery {
     private void addPostGISServer(Dataset dataset) {
         boolean used = dataset.usesPostGIS();
         String database = dataset.getDatabase();
-        String url = used ? PostGISClient.getInstance().getEndpointConfig().getJdbcURL(database) : null;
+        String url = used ? PostGISClient.getInstance().readEndpointConfig().getJdbcURL(database) : null;
 
         addService(postgisServiceVar, database, SparqlConstants.POSTGIS_SERVICE, url, null, used);
     }
@@ -214,7 +214,7 @@ final class DCATUpdateQuery {
     private void addOntopServer(Dataset dataset) {
         boolean used = dataset.usesOntop();
         String ontopName = dataset.getOntopName();
-        String url = used ? OntopClient.getInstance(ontopName).getEndpointConfig().getUrl() : null;
+        String url = used ? OntopClient.getInstance(ontopName).readEndpointConfig().getUrl() : null;
         addService(ontopServiceVar, StackClient.prependStackName(ontopName),
                 SparqlConstants.ONTOP_SERVICE, url, DCTERMS.REQUIRES, used);
     }

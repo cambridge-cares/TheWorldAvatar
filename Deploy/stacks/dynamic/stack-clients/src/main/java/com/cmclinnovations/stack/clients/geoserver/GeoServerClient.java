@@ -61,7 +61,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
     public GeoServerClient(URL restURL, String username, String password) {
         super(EndpointNames.GEOSERVER, RESTEndpointConfig.class);
         if (null == restURL || null == username || null == password) {
-            RESTEndpointConfig geoserverEndpointConfig = getEndpointConfig();
+            RESTEndpointConfig geoserverEndpointConfig = readEndpointConfig();
             if (null == restURL) {
                 restURL = geoserverEndpointConfig.getUrl();
             }
