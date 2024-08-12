@@ -39,7 +39,7 @@ export function ScenarioDimensionsEndpoint(stack: string, scenario: string): str
   return `${stack}/getScenarioTimes/${scenario}`;
 }
 
-export const useScenarioDimensionsService = (stack: string, scenario: string): { scenarioDimensions: ScenarioDimensionsData; isDimensionsFetching: boolean} => {
+export const useScenarioDimensionsService = (stack: string, scenario: string): { scenarioDimensions: ScenarioDimensionsData; isDimensionsFetching: boolean } => {
   const { data, isFetching } = useFetchDimensionsQuery(ScenarioDimensionsEndpoint(stack, scenario));
 
   const [scenarioDimensions, setScenarioDimensions] = useState<ScenarioDimensionsData>({});
@@ -199,9 +199,10 @@ function recurseParseAttributeGroup(data: JsonObject, currentNode: string): Attr
       const unit: string = currentValue[unitKey] ? currentValue[unitKey].toString() : "";
       attributes.push(parseAttribute(currentVal, currentValue[valueKey].toString(), unit))
     } else {
-      typeof currentValue === "string" || typeof currentValue === "number" ?
-        attributes.push(parseAttribute(currentVal, currentValue)) : // Simplified attribute parsing
+      if (typeof currentValue === "string" || typeof currentValue === "number") { attributes.push(parseAttribute(currentVal, currentValue)) }
+      else {
         subGroups.push(recurseParseAttributeGroup(currentDataObject, currentVal));
+      }
     }
   });
 

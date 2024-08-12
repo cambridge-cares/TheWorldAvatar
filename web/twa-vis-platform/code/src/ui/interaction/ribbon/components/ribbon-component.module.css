@@ -1,8 +1,10 @@
 .ribbonComponent {
     padding: 4px;
+    height: 100%;
 
     display: flex;
     flex-direction: column;
+    justify-content: center;
 
     position: relative;
     transition: background-color 0.5s ease;
