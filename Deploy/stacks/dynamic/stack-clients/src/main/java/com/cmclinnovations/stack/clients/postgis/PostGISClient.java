@@ -106,9 +106,12 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
         }
     }
 
-    public void addProjectionsToPostgis(String postGISContainerId, String databaseName, String proj4String,
+    public void addProjectionsToPostgis(String databaseName, String proj4String,
             String wktString, String authName, String srid) {
         String execId;
+
+        String postGISContainerId = getContainerId("postgis");
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         execId = createComplexCommand(postGISContainerId,

@@ -48,8 +48,6 @@ public class GDALClient extends ContainerClient {
 
     private static final String GDAL = "gdal";
 
-    private static final String GEOSERVER = "geoserver";
-
     private static final String POSTGIS = "postgis";
 
     private static final String GDALSRSINFO = "gdalsrsinfo";
@@ -223,8 +221,7 @@ public class GDALClient extends ContainerClient {
                         Multimap::putAll);
     }
 
-    private void addCustomCRStoPostGis(String geoserverContainerID, String postGISContainerId, String gdalContainerId,
-            String filePath, String databaseName, String newSrid) {
+    private void addCustomCRStoPostGis(String gdalContainerId, String filePath, String databaseName, String newSrid) {
 
         String detectedSrid = getDetectedSrid(gdalContainerId, filePath);
 
@@ -239,10 +236,10 @@ public class GDALClient extends ContainerClient {
                 sridAuthNameArray = newSrid.split(":");
                 String authName = sridAuthNameArray[0];
                 String srid = sridAuthNameArray[1];
-                PostGISClient.getInstance().addProjectionsToPostgis(postGISContainerId, databaseName, proj4String,
+                PostGISClient.getInstance().addProjectionsToPostgis(databaseName, proj4String,
                         wktString,
                         authName, srid);
-                GeoServerClient.getInstance().addProjectionsToGeoserver(geoserverContainerID, wktString, srid);
+                GeoServerClient.getInstance().addProjectionsToGeoserver(wktString, srid);
             } catch (NullPointerException ex) {
                 throw new RuntimeException(
                         "Custom CRS not specified, add \"sridOut\": \"<AUTH>:<123456>\" to GDAL...Options node.", ex);
@@ -436,16 +433,12 @@ public class GDALClient extends ContainerClient {
         Set<Path> createdDirectories = new HashSet<>();
         List<String> postgresFiles = new ArrayList<>();
 
-        String geoserverContainerId = getContainerId(GEOSERVER);
-        String postGISContainerId = getContainerId(POSTGIS);
-
         for (Map.Entry<String, Collection<String>> fileTypeEntry : foundRasterFiles.asMap().entrySet()) {
             String inputFormat = fileTypeEntry.getKey();
             for (String filePath : fileTypeEntry.getValue()) {
 
                 if (null == options.getSridIn()) {
-                    addCustomCRStoPostGis(geoserverContainerId, postGISContainerId, gdalContainerId, filePath,
-                            databaseName, options.getSridOut());
+                    addCustomCRStoPostGis(gdalContainerId, filePath, databaseName, options.getSridOut());
                 }
 
                 postgresFiles.addAll(processFile(gdalContainerId, inputFormat, filePath, databaseName, schemaName,
