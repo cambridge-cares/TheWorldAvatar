@@ -10,39 +10,39 @@
 @prefix sesame: <http://www.openrdf.org/schema/sesame#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
-<https://theworldavatar.io/kg/01769b7a-1f83-4ab7-9130-26d487c04950>
-        rdf:type  <https://theworldavatar.io/kg/service#Ontop>;
-        <http://purl.org/dc/terms/identifier>
-                "https://theworldavatar.io/kg/01769b7a-1f83-4ab7-9130-26d487c04950";
-        <http://purl.org/dc/terms/requires>
-                <https://theworldavatar.io/kg/c8e50a62-a0fe-4cb9-9813-992e2c0525ef>;
-        <http://purl.org/dc/terms/title>
-                "Test_Stack_ontop-testDataset";
-        <http://www.w3.org/ns/dcat#endpointURL>
-                <http://Test-Stack-ontop-testDataset:5678/sparql>;
-        <http://www.w3.org/ns/dcat#servesDataset>
-                <https://theworldavatar.io/kg/8760b1e8-5041-40e1-adc2-f6fef11cfc63> .
-
-<https://theworldavatar.io/kg/8760b1e8-5041-40e1-adc2-f6fef11cfc63>
+<https://theworldavatar.io/kg/c96f5363-0933-4b4d-80a7-0dafb1e9599e>
         rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "Dataset for testing";
         <http://purl.org/dc/terms/issued>
-                "2024-05-30T14:09:38.411Z"^^xsd:dateTime;
+                "2024-08-09T09:36:58.066Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/modified>
-                "2024-05-30T14:09:38.411Z"^^xsd:dateTime;
+                "2024-08-09T09:36:58.066Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
                 "testDataset";
         <http://www.w3.org/ns/dcat#service>
-                <https://theworldavatar.io/kg/c8e50a62-a0fe-4cb9-9813-992e2c0525ef> , <https://theworldavatar.io/kg/01769b7a-1f83-4ab7-9130-26d487c04950> .
+                <https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d> , <https://theworldavatar.io/kg/1c1c3934-cd98-4048-bfc8-b6e8e9a2d881> .
 
-<https://theworldavatar.io/kg/c8e50a62-a0fe-4cb9-9813-992e2c0525ef>
+<https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d>
         rdf:type  <https://theworldavatar.io/kg/service#PostGIS>;
         <http://purl.org/dc/terms/identifier>
-                "https://theworldavatar.io/kg/c8e50a62-a0fe-4cb9-9813-992e2c0525ef";
+                "https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d";
         <http://purl.org/dc/terms/title>
                 "testDataset";
         <http://www.w3.org/ns/dcat#endpointURL>
                 <jdbc:postgresql://test-postgis:1234/testDataset>;
         <http://www.w3.org/ns/dcat#servesDataset>
-                <https://theworldavatar.io/kg/8760b1e8-5041-40e1-adc2-f6fef11cfc63> .
+                <https://theworldavatar.io/kg/c96f5363-0933-4b4d-80a7-0dafb1e9599e> .
+
+<https://theworldavatar.io/kg/1c1c3934-cd98-4048-bfc8-b6e8e9a2d881>
+        rdf:type  <https://theworldavatar.io/kg/service#Ontop>;
+        <http://purl.org/dc/terms/identifier>
+                "https://theworldavatar.io/kg/1c1c3934-cd98-4048-bfc8-b6e8e9a2d881";
+        <http://purl.org/dc/terms/requires>
+                <https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d>;
+        <http://purl.org/dc/terms/title>
+                "Test-Stack_ontop-testDataset";
+        <http://www.w3.org/ns/dcat#endpointURL>
+                <http://Test-Stack-ontop-testDataset:5678/sparql>;
+        <http://www.w3.org/ns/dcat#servesDataset>
+                <https://theworldavatar.io/kg/c96f5363-0933-4b4d-80a7-0dafb1e9599e> .
