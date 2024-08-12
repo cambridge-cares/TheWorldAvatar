@@ -15,7 +15,7 @@ const initialEdges = [
 
 export default function Flow() {
     return (
-        <div style={{ width: '100vw', height: '100vh' }}>
+        <div style={{ padding: '1em', height: '60vh' }}>
             <ReactFlow nodes={initialNodes} edges={initialEdges}>
                 <MiniMap />
                 <Controls />

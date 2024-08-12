@@ -2,7 +2,7 @@
 import React from 'react';
 import { Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import styles from './bottom-Panel.module.css'
+import styles from './bottom-panel.module.css'
 import Flow from './graph/Flow';
 
 const BottomPanel = () => {
