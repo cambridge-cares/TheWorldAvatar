@@ -3,9 +3,10 @@ package com.cmclinnovations.vehiclerouting.objects;
 import java.util.Arrays;
 import java.util.List;
 
-import com.cmclinnovations.vehiclerouting.objects.Customer.CustomerState;
+import org.apache.commons.math3.exception.DimensionMismatchException;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
 
-public class Distance {
+public class Distance implements DistanceMeasure {
     static List<List<Integer>> distanceMatrix = Arrays.asList(
             Arrays.asList(0, 548, 776, 696, 582, 274, 502, 194, 308, 194, 536, 502, 388, 354, 468, 776, 662),
             Arrays.asList(548, 0, 684, 308, 194, 502, 730, 354, 696, 742, 1084, 594, 480, 674, 1016, 868, 1210),
@@ -25,6 +26,26 @@ public class Distance {
             Arrays.asList(776, 868, 1552, 560, 674, 1050, 1278, 742, 1084, 810, 1152, 274, 388, 422, 764, 0, 798),
             Arrays.asList(662, 1210, 754, 1358, 1244, 708, 480, 856, 514, 468, 354, 844, 730, 536, 194, 798, 0));
 
+    public static final int[][] LOCATIONS = {
+            { 456, 320 }, // location 0 - the depot
+            { 228, 0 }, // location 1
+            { 912, 0 }, // location 2
+            { 0, 80 }, // location 3
+            { 114, 80 }, // location 4
+            { 570, 160 }, // location 5
+            { 798, 160 }, // location 6
+            { 342, 240 }, // location 7
+            { 684, 240 }, // location 8
+            { 570, 400 }, // location 9
+            { 912, 400 }, // location 10
+            { 114, 480 }, // location 11
+            { 228, 480 }, // location 12
+            { 342, 560 }, // location 13
+            { 684, 560 }, // location 14
+            { 0, 640 }, // location 15
+            { 798, 640 } // location 16
+    };
+
     public static Customer getNearestCustomer(Truck truck, List<Customer> customers) {
         int truckLocation = truck.getLocation();
 
@@ -43,5 +64,14 @@ public class Distance {
 
     public static int getDistance(int start, int end) {
         return distanceMatrix.get(start).get(end);
+    }
+
+    @Override
+    public double compute(double[] a, double[] b) throws DimensionMismatchException {
+        if (a.length != 1 || b.length != 1) {
+            throw new RuntimeException("Incorrect argument size");
+        }
+
+        return distanceMatrix.get((int) Math.round(a[0])).get((int) Math.round(b[0]));
     }
 }

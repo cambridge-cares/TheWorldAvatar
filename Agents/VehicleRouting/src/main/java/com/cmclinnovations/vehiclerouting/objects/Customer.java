@@ -2,15 +2,17 @@ package com.cmclinnovations.vehiclerouting.objects;
 
 import java.time.ZonedDateTime;
 
-public class Customer {
+import org.apache.commons.math3.ml.clustering.Clusterable;
+
+public class Customer implements Clusterable {
     private CustomerState customerState;
-    private int location;
+    private int locationIndex;
     private ZonedDateTime timeAtRequest;
     private ZonedDateTime timeAtIncomingTruck;
     private ZonedDateTime timeAtOrderCompletion;
 
-    public Customer(int location) {
-        this.location = location;
+    public Customer(int locationIndex) {
+        this.locationIndex = locationIndex;
     }
 
     public void setState(CustomerState customerState, ZonedDateTime time) {
@@ -28,7 +30,7 @@ public class Customer {
     }
 
     public int getLocation() {
-        return location;
+        return locationIndex;
     }
 
     public CustomerState getCustomerState() {
@@ -39,5 +41,12 @@ public class Customer {
         REQUESTED_TRUCK,
         HAS_INCOMING_TRUCK,
         ORDER_COMPLETE;
+    }
+
+    @Override
+    public double[] getPoint() {
+        double[] doubleArray = { (double) Distance.LOCATIONS[locationIndex][0],
+                (double) Distance.LOCATIONS[locationIndex][1] };
+        return doubleArray;
     }
 }

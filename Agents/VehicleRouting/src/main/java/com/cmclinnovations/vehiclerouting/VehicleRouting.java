@@ -39,6 +39,7 @@ public class VehicleRouting extends HttpServlet {
         List<Customer> customers = initCustomers(currentTime);
 
         SimpleOptimiser optimiser = new SimpleOptimiser(customers, trucks);
+        Optimiser realOptimiser = new Optimiser(customers, trucks);
 
         while (!customers.stream().allMatch(c -> c.getCustomerState() == CustomerState.ORDER_COMPLETE)) {
             // find new customers for trucks that don't have a customer
