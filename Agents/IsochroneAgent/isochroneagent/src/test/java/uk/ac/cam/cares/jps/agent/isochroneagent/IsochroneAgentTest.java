@@ -65,15 +65,16 @@ public class IsochroneAgentTest {
     }
 
     @Test
-    public void testReadConfig() {
+    public void testReadConfig(){
 
-        final String PROPERTIES_PATH = "/resources/configTest.properties";
 
-        try (InputStream input = FileReader.getStream(PROPERTIES_PATH)) {
+        String PROPETIES_PATH ="/resources/configTest.properties";
+
+        try(InputStream input = FileReader.getStream(PROPETIES_PATH)){
             Properties prop = new Properties();
             prop.load(input);
-            assertEquals("test", prop.getProperty("db.name"));
-            assertEquals(0.0002, prop.getProperty("segmentization_length"));
+        assertEquals("test",prop.getProperty("db.name"));
+        assertEquals(0.0002,prop.getProperty("segmentization_length"));
             assertEquals("", prop.getProperty("kgEndpoint"));
         }
     }
@@ -83,18 +84,21 @@ public class IsochroneAgentTest {
         agent = new IsochroneAgent();
         String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women";
 
-        // Create Mockclasses
+        //Create Mockclasses
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());
         MockedStatic<FileReader> fileReaderMock = mockStatic(FileReader.class);
         fileReaderMock.when(() -> FileReader.getStream(anyString())).thenReturn(mockInputStream);
         MockedConstruction<RouteSegmentization> routeSegmentizationMock = mockConstruction(RouteSegmentization.class,
-                (mock, context) ->
-                // Table does not exists
-                doReturn(false).when(mock).doesTableExist(any(RemoteRDBStoreClient.class)));
+                (mock, context) -> {
+                    //Table does not exists
+                    doReturn(false).when(mock).doesTableExist(any(RemoteRDBStoreClient.class));
+                });
         MockedConstruction<IsochroneGenerator> isochroneGeneratorMock = mockConstruction(IsochroneGenerator.class);
         MockedConstruction<PopulationMapper> populationMapperMock = mockConstruction(PopulationMapper.class);
         MockedConstruction<GeoServerClient> geoserverClientMock = mockConstruction(GeoServerClient.class);
         MockedConstruction<OntopClient> ontopClientMock = mockConstruction(OntopClient.class);
+
+
 
         try (fileReaderMock;
                 endpointConfigMock;
