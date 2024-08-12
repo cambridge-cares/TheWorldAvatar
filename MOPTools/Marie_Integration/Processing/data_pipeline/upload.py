@@ -104,15 +104,29 @@ class OntoReaction(BaseOntology):
     
 class OntoCapeMaterial(BaseOntology):
     # Below fields can be set up to provide metadata for your ontology
-    base_url:           ClassVar[str]           = TWA_BASE_URL
-    namespace:          ClassVar[str]           = ''
+    base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontocape/material/"
+    namespace:          ClassVar[str]           = 'material.owl#'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class OntoCapePhaseSystem(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontocape/material/phase_system/"
+    namespace:          ClassVar[str]           = 'phase_system.owl#'
+    owl_versionInfo:    ClassVar[str]           = '0.0.1'
+    rdfs_comment:       ClassVar[str]           = 'Your ontology'
+
+class OntoCapeSystem(BaseOntology):
+    # Below fields can be set up to provide metadata for your ontology
+    base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontocape/upper_level/"
+    namespace:          ClassVar[str]           = 'system.owl#'
     owl_versionInfo:    ClassVar[str]           = '0.0.1'
     rdfs_comment:       ClassVar[str]           = 'Your ontology'
 
 class SKOS(BaseOntology):
     # Below fields can be set up to provide metadata for your ontology
-    base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontocape/material/"
-    namespace:          ClassVar[str]           = 'material.owl#'
+    base_url:           ClassVar[str]           = "http://www.w3.org/2004/02/skos/"
+    namespace:          ClassVar[str]           = 'core#'
     owl_versionInfo:    ClassVar[str]           = '0.0.1'
     rdfs_comment:       ClassVar[str]           = 'Your ontology'
 
@@ -139,32 +153,32 @@ class ChemicalSynthesis(BaseClass):
 
 class SynthesisStep(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    hasContainerVessel                  : Optional[HasContainerVessel[Vessel]] = None
+    hasContainerVessel                  : Optional[HasContainerVessel[Vessel]]                          = None
 
 class Product(BaseClass):
     rdfs_isDefinedBy                    = OntoKin
 
 class ChemicalOutput(Product):
     rdfs_isDefinedBy                    = OntoSyn
-    isRepresentedBy                     : IsRepresentedBy[MetalOrganicPolyhedron]
+    isRepresentedBy                     : Optional[IsRepresentedBy[MetalOrganicPolyhedron]]             = None
     #hasSynthesisYield                   : HasSynthesisYield[SynthesisYield]
 
 class SynthesisYield(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    hasYieldMass                        : HasYieldMass[Mass]
+    hasYieldMass                        : Optional[HasYieldMass[Mass]]                                  = None
 
 class SynthesisReactant(BaseClass):
     rdfs_isDefinedBy                    = OntoReaction
 
 class Add(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
-    hasAddedReactant                    : HasYieldMass[SynthesisReactant]
+    hasAddedReactant                    : Optional[HasYieldMass[SynthesisReactant]]                     = None
     hasAddedSolvent                     : HasAddedSolvent[Solvent]
-    isAdded                             : IsAdded[MaterialAmount]
+    isAdded                             : IsAdded[Material]
 
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
-    isWashedWith                        : IsWashedWith[MaterialAmount]
+    isWashedWith                        : IsWashedWith[Material]
     hasWashingSolvent                   : HasWashingSolvent[Solvent]
     isRepeated                          : IsRepeated[int]
 
@@ -186,7 +200,7 @@ class HeatChill(SynthesisStep):
     hasHeatChillRate                    : HasHeatChillRate[TemperatureRate]
     #hasHeatChillDevice                  : HasHeatChillDevice[HeatChillDevice]
     hasVacuum                           : HasVacuum[bool]
-    isSealed                            : Optional[IsSealed[bool]] = None
+    isSealed                            : Optional[IsSealed[bool]]                                      = None
 
 class LabEquipment(BaseClass):
     rdfs_isDefinedBy                    = OntoLab
@@ -204,23 +218,38 @@ class Species(BaseClass):
     altLabel                            : AltLabel[str]
 
 class PhaseComponent(BaseClass):
-    rdfs_isDefinedBy                    = OntoCapeMaterial
-    representsOccurenceOf               : RepresentsOccurenceOf[Species]
+    rdfs_isDefinedBy                    = OntoCapePhaseSystem
+    representsOccurenceOf               : Optional[RepresentsOccurenceOf[Species]]                      = None
+
+class ScalarValue(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapeSystem
+    hasUnitOfMeasure                    : Optional[HasUnitOfMeasure[AmountOfSubstanceConcentration]]    = None
+    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = None
+
+class PhaseComponentConcentration(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapePhaseSystem
+    hasValue                            : Optional[HasValue[ScalarValue]]                               = None
+
+class Composition(BaseClass):
+    rdfs_isDefinedBy                    = OntoCapePhaseSystem
+    comprisesDirectly                   : Optional[ComprisesDirectly[PhaseComponentConcentration]]      = None
 
 class SinglePhase(BaseClass):
-    rdfs_isDefinedBy                    = OntoCapeMaterial
-    isComposedOfSubsystem               : IsComposedOfSubsystem[PhaseComponent]
+    rdfs_isDefinedBy                    = OntoCapePhaseSystem
+    isComposedOfSubsystem               : Optional[IsComposedOfSubsystem[PhaseComponent]]               = None
+    hasComposition                      : Optional[HasComposition[Composition]]                         = None
 
 class Material(BaseClass):
     rdfs_isDefinedBy                    = OntoCapeMaterial
-    thermodynamicBehaviour              : ThermodynamicBehaviour[SinglePhase]
+    thermodynamicBehaviour              : Optional[ThermodynamicBehaviour[SinglePhase]]                 = None
 
-class InputChemical(BaseClass):
-    rdfs_isDefinedBy                    = OntoCapeMaterial
+class ChemicalInput(BaseClass):
+    rdfs_isDefinedBy                    = OntoSyn
+    referencesMaterial                  : Optional[ReferencesMaterial[Material]]                        = None
 
 class MetalOrganicPolyhedron(BaseClass):
     rdfs_isDefinedBy                    = OntoMOPs
-    hasCCDCNumber                       : Optional[HasCCDCNumber[int]] = None
+    hasCCDCNumber                       : Optional[HasCCDCNumber[int]]                                  = None
 
 class Reactant(Species):
     rdfs_isDefinedBy                    = OntoKin
@@ -257,8 +286,8 @@ class Yield(BaseClass):
 class AmountOfSubstanceFraction(BaseClass):
     rdfs_isDefinedBy                    = OM2
 
-class MaterialAmount(BaseClass):
-    rdfs_isDefinedBy                    = OntoCapeMaterial
+class AmountOfSubstanceConcentration(BaseClass):
+    rdfs_isDefinedBy                    = OM2
 
     ###-----------------------------------------------------------------------------------------------
     # Datatype Properties:
@@ -291,6 +320,9 @@ class HasCCDCNumber(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoMOPs
 
+class HasNumericalValue(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OM2
 
     ###-----------------------------------------------------------------------------------------------
     # Object Properties:
@@ -305,17 +337,23 @@ class HasSynthesisStep(ObjectProperty):
 class HasFirstStep(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 
-class RefersToMaterial(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoCapeMaterial
+class ReferencesMaterial(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
 
 class ThermodynamicBehaviour(ObjectProperty):
     rdfs_isDefinedBy                    = OntoCapeMaterial
 
 class IsComposedOfSubsystem(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoCapeMaterial
+    rdfs_isDefinedBy                    = OntoCapeSystem
+
+class HasComposition(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoCapePhaseSystem
+
+class ComprisesDirectly(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoCapeSystem
 
 class RepresentsOccurenceOf(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoCapeMaterial
+    rdfs_isDefinedBy                    = OntoCapePhaseSystem
 
 class HasNextStep(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
@@ -396,6 +434,9 @@ class Unit(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OM2
 
+class HasUnitOfMeasure(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoCapeSystem
 
 class UploadKG:
     """Parent class for the folder. Provides the following methods:
@@ -508,7 +549,6 @@ def upload_vessels(client):
     round_bottom_flask.push_to_kg(client, recursive_depth=-1)
     glass_scintilation_vial.push_to_kg(client, recursive_depth=-1)
     pyrex_tube.push_to_kg(client, recursive_depth=-1)
-
 
 def extract_numbers_and_units_add(text):
     # Regular expression to find numbers followed by units
@@ -623,8 +663,9 @@ def unit_upload(client):
     temperature_rate_degh                       = "<http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerHour>"
     temperature_rate_degmin                     = "<http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerMinute-Time>"
     temperature_rate_degs                       = "<http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerSecond-Time>"
-    labels                                      = ["hour", "day", "second", "kelvin", "degree Celsius", "degree Celsius per hour", "degree Celsius per minute", "degree Celsius per second"]
-    subjects                                    = [duration_h, duration_day, duration_s, temperature_K, temperature_C, temperature_rate_degh, temperature_rate_degmin, temperature_rate_degs]
+    mole_per_litre                              = "<http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre>"
+    labels                                      = ["hour", "day", "second", "kelvin", "degree Celsius", "degree Celsius per hour", "degree Celsius per minute", "degree Celsius per second", "mole per litre"]
+    subjects                                    = [duration_h, duration_day, duration_s, temperature_K, temperature_C, temperature_rate_degh, temperature_rate_degmin, temperature_rate_degs, mole_per_litre]
     for i, label in enumerate(labels):
         query                                   = insert_query_unit(subjects[i], label)
         client.perform_update(query)
@@ -675,47 +716,61 @@ def heatchill_upload(client, heatchill_step):
     g_to_remove, g_to_add                       = duration.push_to_kg(client, recursive_depth=-1)    
     g_to_remove, g_to_add                       = heat_chill.push_to_kg(client, recursive_depth=-1)
 
-def chemicals_upload(client):
-    return
-
-def main():
-    sparql_client                               = get_client("OntoSynthesisConnection")
-    sparql_client_species                       = get_client("OntoSpeciesConnection") 
-    sparql_client_mop                           = get_client("OntoMOPConnection") 
-    #upload_vessels(sparql_client)
-    #unit_upload(sparql_client)
-    # read in CSV:
-    csv_class                                   = TextToCSV("../Data/first10_prompt2/10.1021_ja 0104352.txt" )
-    csv_lines                                   = csv_class.read_and_clean_file()
-    csv_out                                     = csv_class.extract_csv_entries(csv_lines)
-
-    
-    for nr, line in enumerate(csv_out):
+def chemicals_upload(client_mop, client_species, client_synthesis, csv):
+    for nr, line in enumerate(csv):
         print(line)
-        species_name                                            = [line["Chemical Name"], line["Alternative Names"], line["Chemical Formula"]]
-        triples                                                 = species_querying(sparql_client_species, species_name, 0)
-        print(triples)
-        if triples == None or triples == []:
-                    species                                     = Species(label=line["Chemical Formula"], altLabel={line["Alternative Names"], line["Chemical Name"]})
-        else:
-            print("success: ", triples[0]["Species"])
-            species                                             = Species.pull_from_kg(triples[0]["Species"], sparql_client_species,recursive_depth=-1)[0]
-            print(species, type(species))
-            print(species.instance_iri)
-        #g_to_remove, g_to_add                                   = species.push_to_kg(sparql_client, recursive_depth=-1)
 
         if line['Synthesis Role'] == 'Product' and line['CCDC Number'] != "N/A":
-            mop_iri             = mop_querying(sparql_client_mop, line['CCDC Number'])
-            mop                 = MetalOrganicPolyhedron(hasCCDCNumber=line['CCDC Number'])
+            mop_iri             = mop_querying(client_mop, line['CCDC Number'])
+            try:
+                mop                 = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"])
+            except:
+                mop                 = MetalOrganicPolyhedron(hasCCDCNumber=line['CCDC Number'])
             chemical_output     = ChemicalOutput(isRepresentedBy=mop)
             #mop.push_to_kg(sparql_client, recursive_depth=-1)
 
         elif line['Synthesis Role'] == 'Product' and line['CCDC Number'] == "N/A":
             mop                 = MetalOrganicPolyhedron()
-            #mop.push_to_kg(sparql_client, recursive_depth=-1)
+            chemical_output     = ChemicalOutput(isRepresentedBy=mop)
 
         else:
-            chemcial_input              = ChemicalInput()
+            species_name                                            = [line["Chemical Name"], line["Alternative Names"], line["Chemical Formula"]]
+            triples                                                 = species_querying(client_species, species_name, 0)
+            print(triples)
+            if triples == None or triples == []:
+                        species                                     = Species(label=line["Chemical Formula"], altLabel={line["Alternative Names"], line["Chemical Name"]})
+            else:
+                print("success: ", triples[0]["Species"])
+                species                                             = Species.pull_from_kg(triples[0]["Species"], client_species,recursive_depth=-1)[0]
+                print(species, type(species))
+                print(species.instance_iri)
+            phase_component                                         = PhaseComponent(representsOccurenceOf=species)
+            single_phase                                            = SinglePhase(isComposedOfSubsystem=phase_component)     
+            material                                                = Material(thermodynamicBehaviour=single_phase)
+            chemical_input                                          = ChemicalInput(referencesMaterial=material)
+            components = [phase_component, single_phase, material, chemical_input, species, chemical_output, mop]
+
+            # Loop through each component and call the function
+            for component in components:
+                push_component_to_kg(component, client_synthesis)
+
+
+def push_component_to_kg(component, client, recursive_depth=-1):
+    g_to_remove, g_to_add = component.push_to_kg(client, recursive_depth)
+# uploaded: 10.1021_ja 0104352.txt
+def main():
+    sparql_client_synthesis                     = get_client("OntoSynthesisConnection")
+    sparql_client_species                       = get_client("OntoSpeciesConnection") 
+    sparql_client_mop                           = get_client("OntoMOPConnection") 
+    #upload_vessels(sparql_client)
+    #unit_upload(sparql_client)
+    # read in CSV:
+    csv_class                                   = TextToCSV("../Data/first10_prompt2/10.1021_ic402428m.txt" )
+    csv_lines                                   = csv_class.read_and_clean_file()
+    csv_out                                     = csv_class.extract_csv_entries(csv_lines)
+
+    chemicals_upload(sparql_client_mop, sparql_client_species, sparql_client_synthesis, csv_out)
+    
 
     #another_object_of_one_concept = species.pull_from_kg('https://iri-of-the-object-of-interest', sparql_client, recursive_depth=-1)
     # read in JSON:
