@@ -398,4 +398,28 @@ public class TimeSeriesClientIntegrationWithoutConnTest {
             Assertions.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
+
+    @Test
+    void testBulkInitTimeSeries() {
+        List<List<String>> dataIRIs = new ArrayList<>();
+        dataIRIs.add(dataIRI_1);
+        dataIRIs.add(dataIRI_2);
+
+        List<List<Class<?>>> classes = new ArrayList<>();
+        classes.add(dataClass_1);
+        classes.add(dataClass_2);
+
+        List<String> units = new ArrayList<>();
+        units.add(timeUnit);
+        units.add(timeUnit);
+
+        tsClient.bulkInitTimeSeries(dataIRIs, classes, units);
+
+        // Verify correct instantiation in both kb and database
+        Assertions.assertEquals(2, tsClient.countTimeSeries());
+        TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI_1);
+        Assertions.assertEquals(dataIRI_1.size(), ts1.getDataIRIs().size());
+        TimeSeries<Instant> ts2 = tsClient.getTimeSeries(dataIRI_2);
+        Assertions.assertEquals(dataIRI_2.size(), ts2.getDataIRIs().size());
+    }
 }

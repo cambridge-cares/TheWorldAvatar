@@ -243,6 +243,7 @@ public class TimeSeriesClient<T> {
 
         for (int i = 0; i < dataIRIs.size(); i++) {
             String tsIRI = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Timeseries_" + UUID.randomUUID();
+            tsIRIs.add(tsIRI);
             TimeSeriesKgMetadata timeSeriesKgMetadata = new TimeSeriesKgMetadata(tsIRI);
             timeSeriesKgMetadata.setTimeSeriesType(type.get(i));
             timeSeriesKgMetadata.setDataIriList(dataIRIs.get(i));
