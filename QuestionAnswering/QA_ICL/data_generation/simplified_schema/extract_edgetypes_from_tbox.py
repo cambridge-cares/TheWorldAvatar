@@ -3,7 +3,6 @@ import json
 import os
 
 import rdflib
-from rdflib.term import URIRef
 
 
 if __name__ == "__main__":
