@@ -271,9 +271,8 @@ public class QueryClient {
                         double concentration = result.getDouble("val");
                         concentrations.add(concentration);
                     } else {
-                        String errmsg = "Could not obtain raster value";
-                        LOGGER.error(errmsg);
-                        throw new RuntimeException(errmsg);
+                        LOGGER.warn("Could not obtain raster value for {}", rasterFileName);
+                        concentrations.add(null);
                     }
                 } catch (SQLException e) {
                     String errmsg = "Possible error at reading sql query result";

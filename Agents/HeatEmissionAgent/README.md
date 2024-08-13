@@ -34,7 +34,10 @@ The data needed to estimate the heat emissions of various types of industrial fa
 - Data Centres: Maximum IT capacity in units of megawatts, utilization rate, which is a dimensionless parameter between 0 and 1 and floor area in units of square meters. Their values must be stored in columns called 'maximum_it_capacity', 'utilization_rate' and 'floor_area'. The table must be called 'data_centres'.
 - Precision Engineering Plants: Floor area in units of square meters, energy consumption per unit of gross floor area in units of megaJoules per square meters and thermal efficiency, which is a dimensionless quantity between 0 and 1. Their values must be stored in columns called 'floor_area', 'specific_energy_consumption' and 'thermal_efficiency'. The table must be called 'precision_engineering'.
 - Printing Plants: Average heat output per printer in units of megawatts. These values must be stored in a column called 'heat_emissions_per_printer'. The table must be called 'printing'.
-- Factories in industries other than precision engineering and printing: Specific energy consumption in units of MegaJoules per kilogram, production capacity in units of kilogram per second and thermal efficiency. Units other than kilograms can be used for the production volume as long as it is consistent between the specific energy consumption and production capacity. These values must be stored in columns called 'production_volume', 'specific_energy_consumption' and 'thermal_efficiency'. The table must be called 'factories'.
+- Chemical Plants: Production volume of main product produced by the plant in units of kilograms per second, specific energy consumption in units of megajoules per kilogram and the thermal efficiency. Their values must be stored in columns called 'production_volume', 'specific_energy_consumption' and 'thermal_efficiency'. The table must be called 'chemicals'.
+- Semiconductor Plants: Production volume in units of number of wafers per second, surface area of wafers produced in units of square meters, specific energy consumption in units of megajoules per square meter of wafer produced and thermal efficiency. Their values must be stored in columns called 'production_volume', 'surface_area', 'specific_energy_consumption' and 'thermal_efficiency'. The table must be called 'semiconductors'. 
+- Pharmaceutical Plants: Global production volume of the company operating the plant as measured by the value of the products produced in units of US dollars per second, specific energy consumption in units of megajoules per US dollar, thermal efficiency and number of manufacturing facilities operated by the company owning the plant. Their values must be stored in columns called 'revenue', 'energy_consumption_per_unit_revenue', 'thermal_efficiency' and 'number_facilities'. The production volume specified is assumed to be the total production volume of all manufacturing facilities operated by the company. The table must be called 'pharmaceuticals'.
+- Food and Beverage Plants: Production volume in units of kilograms per second, specific energy consumption in units of megajoules per kilogram and thermal efficiency. Their values must be stored in columns called 'production_volume', 'specific_energy_consumption' and 'thermal_efficiency'. The table must be called 'food_beverages'. 
 - Individual Heat Sources in Chemical Plants and Petroleum Refineries: Carbon dioxide emissions in units of tons per year. These values must be stored in a column called 'co2_emissions'. The table name must be called 'jurong_island_city_furniture'.   
 
 
@@ -96,7 +99,7 @@ The meanings of the symbols in the equation above are as follows:
    - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
 
 
-#### Printing:
+#### Printing
 
 $$ Q = N_pH_p $$
 
@@ -106,19 +109,55 @@ The meanings of the symbols in the equation above are as follows:
   - $N_p$ : Number of printers operated by the printing plant.
   - $H_p$ : Heat emissions rate per printer in units of megawatts.
  
-#### Factories not in the precision engineering and printing industries:
+#### Chemicals
 
 $$ Q = \begin{cases}
-    -VS & \text{if } S < 0  \\
+    -VS(1 - \eta) & \text{if } S < 0  \\
     VS(1 - \eta) & \text{otherwise.}
 \end{cases} $$
 
 The meanings of the symbols in the equation above are as follows:
 
   - $Q$ : Heat emissions rate in megawatts
-  - $V$ : Production rate. This quantity has units of kilograms per second for chemicals and food manufacturing factories. The units are square meters of wafer per second for semiconductor plants and US dollars per second for pharmaceuticals.
+  - $V$ : Production rate in units of kilograms per second. 
   - $S$ : Specific energy consumption in units of megajoules per unit of product. The precise unit depends on the units of $V$.
   - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
+
+#### Food and Beverages
+
+$$ Q = VS(1 - \eta) $$
+
+The meanings of the symbols in the equation above are as follows:
+
+  - $Q$ : Heat emissions rate in megawatts
+  - $V$ : Production rate in units of kilograms per second.
+  - $S$ : Specific energy consumption in units of megajoules per unit of product. The precise unit depends on the units of $V$.
+  - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
+
+#### Pharmaceuticals
+
+$$ Q = \frac{R_gS_r}{N_f}(1 - \eta) $$
+
+The meanings of the symbols in the equation above are as follows:
+
+  - $Q$ : Heat emissions rate in megawatts
+  - $R_g$ : Global revenue earned from sales in units of US dollars per second. 
+  - $S_r$ : Specific energy consumption in units of megajoules per US dollar of revenue.
+  - $N_f$ : Number of manufacturing facilities operated by the company owning the pharmaceutical plant.
+  - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
+
+#### Semiconductors
+
+$$ Q = N_wA_wS_a(1 - \eta) $$
+
+The meanings of the symbols in the equation above are as follows:
+
+  - $Q$ : Heat emissions rate in megawatts
+  - $N_w$ : Number of wafers produced by the factory per second. 
+  - $A_w$ : Surface area of a single wafer in units of square meters.
+  - $S_a$ : Specific energy consumption in units of megajoules per square meter of wafer produced.
+  - $\eta$ : Thermal efficiency. This is a dimensionless parameter whose value ranges between 0 and 1.
+
 
 #### Individual Heat Sources in Chemical Plants and Petroleum Refineries:
 
