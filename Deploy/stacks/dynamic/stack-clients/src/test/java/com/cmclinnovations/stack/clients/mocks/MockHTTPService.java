@@ -18,7 +18,7 @@ public class MockHTTPService extends ClientAndServer {
     protected final URL url;
 
     protected MockHTTPService() throws MalformedURLException {
-        super(ThreadLocalRandom.current().nextInt(50000, 55000));
+        super(ThreadLocalRandom.current().nextInt(5000, 5500));
 
         Assertions.assertTrue(hasStarted(10, 2, TimeUnit.SECONDS));
 
@@ -26,19 +26,23 @@ public class MockHTTPService extends ClientAndServer {
     }
 
     public void verifyCalls(RequestDefinition... expectations) throws AssertionError {
-    
+
         HttpRequest[] recordedRequests = retrieveRecordedRequests(null);
-    
-        Assertions.assertAll(Stream.concat(
-                Stream.of(() -> Assertions.assertEquals(expectations.length, recordedRequests.length,
-                        "Wrong number of calls.")),
-                Stream.of(expectations)
-                        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                        .entrySet().stream()
-                        .map(entry -> () -> Assertions.assertEquals(entry.getValue(),
-                                retrieveRecordedRequests(entry.getKey()).length,
-                                "Wrong number of calls with the following definition: '"
-                                        + entry.getKey().toString()))));
-    
+        String recordedPaths = Stream.of(recordedRequests).map(req ->req.getMethod() +": "+ req.getPath().getValue())
+                .collect(Collectors.joining("\n", "\n", "\n"));
+        Assertions.assertEquals(expectations.length, recordedRequests.length,
+                "Wrong number of calls.\n"
+                        + Stream.of(expectations).map(exp -> exp.toString())
+                                .collect(Collectors.joining("\n", "\n", "\n"))
+                        + "vs"
+                        + recordedPaths);
+        Assertions.assertAll(Stream.of(expectations)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream()
+                .map(entry -> () -> Assertions.assertEquals(entry.getValue(),
+                        retrieveRecordedRequests(entry.getKey()).length,
+                        "Wrong number of calls with the following definition: '"
+                                + entry.getKey().toString() + "\nthe following were run:"+ recordedPaths)));
+
     }
 }
