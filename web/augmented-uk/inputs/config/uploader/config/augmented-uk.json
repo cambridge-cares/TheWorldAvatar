@@ -8,6 +8,11 @@
         "street-light",
         "traffic-light",
         "credo",
-        "highway"
+        "highway",
+        "street-light",
+        "traffic-light",
+        "credo",
+        "highway",
+        "charging-point"   
     ]
 }
