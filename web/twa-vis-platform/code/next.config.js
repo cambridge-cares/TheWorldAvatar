@@ -8,11 +8,10 @@
 **/
 
 const nextConfig = {
-	basePath: "",
-	assetPrefix: process.env.BASE_PATH ?? "",
-	env: {
-		BASE_PATH: process.env.BASE_PATH ?? "",
-	}
+	reactStrictMode: true,
+	basePath: "", //default 
+	assetPrefix: ".",
+	compiler: { removeConsole: true },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

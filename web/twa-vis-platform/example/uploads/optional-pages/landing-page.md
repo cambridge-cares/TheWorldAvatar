@@ -3,7 +3,7 @@ title: Sample Visualisation
 slug: landing
 ---
 
-<img src="/images/cmcl-logo.svg" style="max-width:200px; max-height:100px" />
+<img src="./images/cmcl-logo.svg" style="max-width:200px; max-height:100px" />
 
 ---
 

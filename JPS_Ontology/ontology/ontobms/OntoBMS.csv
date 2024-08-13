@@ -2,7 +2,7 @@ Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoBMS,TBox,https://www.theworldavatar.com/kg/ontobms/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoBMS,TBox,1.5,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoBMS,TBox,OntoBMS is an ontology for Building Management Systems.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
-OntoBMS,TBox,https://saref.etsi.org/saref4bldg/,http://www.w3.org/2002/07/owl#imports,,,,,,
+OntoBMS,TBox,https://saref.etsi.org/saref4bldg/v1.1.2/saref4bldg.rdf,http://www.w3.org/2002/07/owl#imports,,,,,,
 MakeupAirUnit,Class,https://saref.etsi.org/core/HVAC,IS-A,,,,A device that provide a consistent and controlled solution to replacing the air within a space.,https://www.theworldavatar.com/kg/ontobms/,Makeup air unit
 AirHandlingUnit,Class,https://saref.etsi.org/core/HVAC,IS-A,,,,A device that condition and distribute air within a building. ,https://www.theworldavatar.com/kg/ontobms/,Air handling unit
 FanCoilUnit,Class,https://saref.etsi.org/core/HVAC,IS-A,,,,"A device that consists of a fan, a coil, and other components, that are used to cool or heat the air recirculating within a room.",https://www.theworldavatar.com/kg/ontobms/,Fan coil unit
@@ -19,6 +19,7 @@ ElectricalCoil,Class,https://saref.etsi.org/saref4bldg/Coil,IS-A,,,,A coil that 
 Duct,Class,https://saref.etsi.org/saref4bldg/FlowMovingDevice,IS-A,,,,"A duct is a conduit or passage used in heating, ventilation, and air conditioning to deliver and remove air.",https://www.theworldavatar.com/kg/ontobms/,Duct
 Pipe,Class,https://saref.etsi.org/saref4bldg/FlowMovingDevice,IS-A,,,,"A pipe is a tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey fluids.",https://www.theworldavatar.com/kg/ontobms/,Pipe
 Tee,Class,https://saref.etsi.org/saref4bldg/FlowMovingDevice,IS-A,,,,A Tee is a connector between pipes to separate or combine some streams.,https://www.theworldavatar.com/kg/ontobms/,Tee
+PipeManifold,Class,https://saref.etsi.org/saref4bldg/FlowMovingDevice,IS-A,,,,"A device that channels multiple fluid streams into a single pipe, or vice versa.",https://www.theworldavatar.com/kg/ontobms/,Pipe manifold
 ExhaustFan,Class,https://saref.etsi.org/saref4bldg/Fan,IS-A,,,,"An exhaust fan pull odors, fumes, and moisture from an area and vent them outdoors for removal.",https://www.theworldavatar.com/kg/ontobms/,Exhaust fan
 HighPlumeFan,Class,ExhaustFan,IS-A,,,,A type of exhaust fan that dilute and disperse potentially hazardous exhaust or fumes quickly and safely.,https://www.theworldavatar.com/kg/ontobms/,High plume fan
 DamperState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,The current state of a damper.,https://www.theworldavatar.com/kg/ontobms/,Damper state

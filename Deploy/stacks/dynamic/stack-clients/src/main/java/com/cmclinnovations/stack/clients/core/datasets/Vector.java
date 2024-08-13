@@ -32,7 +32,7 @@ public class Vector extends GeoServerDataSubset {
         }
 
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
+                .createPostGISLayer(workspaceName, database, getTable(), geoServerSettings);
     }
 
 }

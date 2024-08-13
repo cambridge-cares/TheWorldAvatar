@@ -1,0 +1,26 @@
+{
+    "name": "calc1atlas_capacity_iec1",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlas_capacity_iec1",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "calc1atlas_capacity_iec1",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "calc1atlas_capacity_factorN"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "calc1atlas_capacity_factorN",
+            "file": "calc1atlas_capacity_factorN.sld"
+        }
+    ]
+}
