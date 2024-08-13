@@ -93,8 +93,10 @@ The operation of this agent is streamlined into two key steps: **Preprocess** an
 
 Importantly, the preprocessing step must be completed before moving on to the instantiation step. This sequence is crucial as it ensures that all data is properly formatted and organized, making it ready for use in the knowledge graph and the relational database.
 
+In addition to the core functionality, this agent offers a route task called layer_generator that creates GeoServer layers from PostGIS tables for visualisation. Given a table name (formed by UUID) and latitude/longitude column names, the agent deploys the [SQL commands for virtual-table generation], creates vector objects, and communicates with the GeoServer REST API to publish the layer. Please note that this functionality is specialized and typically requires manual examination of SQL commands and layer metadata (such as EPSG) to ensure compatibility with specific requirements. This functionality will be further updated and refined after the AI for Public Health (Fenland) project's visualisation is switched to [TWA-VF] 5.4.0.
+
 ## Example HTTP Requests
-Example HTTP requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file and the [instantiate] file.
+Example HTTP requests for preprocessing and instantiating data are available in detailed HTTP files. You can access these examples at the [preprocess] file, the [instantiate] file, and the [layer_generator] file. 
 
 Additionally, services above can be triggered using Client URL (CURL) from a bash terminal. An example CURL command used to load the GPS trajectory files is displayed in [CURL commands folder]. 
 
@@ -137,7 +139,7 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 [ISO 8601]: https://www.iso.org/iso-8601-date-and-time-format.html
 [knowledge graph operations guidance]: https://cambridge-cares.github.io/TheWorldAvatar/examples/sparql/
-
+[TWA-VF]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework
 
 <!-- files -->
 [Dockerfile]: ./Dockerfile
@@ -152,4 +154,6 @@ Jiying Chen (jc2341@cam.ac.uk), May 2024
 [SendHTTP]: ./example-requests/SendHTTP
 [preprocess]: ./example-requests/SendHTTP/gps_preprocess.http
 [instantiate]: ./example-requests/SendHTTP/gps_instantiate.http
+[layer_generator]: ./example-requests/SendHTTP/layer_generator.http
 [KGClient]: ./agent/kgutils/kgclient.py
+[SQL commands for virtual-table generation]: ./agent/layergenerator/virtual_table.sql

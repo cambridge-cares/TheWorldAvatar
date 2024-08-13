@@ -51,20 +51,9 @@ def create_functions():
     $$ LANGUAGE plpgsql;
     """
 
-    get_location_table_function = """
-    CREATE OR REPLACE FUNCTION getLocationTable(pointiri VARCHAR, speediri VARCHAR, altitudeiri VARCHAR, bearingiri VARCHAR)
-    RETURNS TABLE (time timestamptz, geom geometry, speed double precision, altitude double precision, bearing double precision)
-    AS $$
-    DECLARE
-        tableName TEXT;
-    BEGIN
-        tableName := getTableName(pointiri);
-        RETURN QUERY EXECUTE 
-            format('SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing FROM %I', 
-                   getColumnName(pointiri), getColumnName(speediri), getColumnName(altitudeiri), getColumnName(bearingiri), tableName);
-    END
-    $$ LANGUAGE plpgsql;
-    """
+    # Read the SQL query from the virtual_table.sql file
+    with open('virtual_table.sql', 'r') as file:
+        get_location_table_function = file.read()
 
     try:
         execute_sql(connection, get_column_name_function)
