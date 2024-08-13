@@ -370,12 +370,12 @@ public class QueryClient {
         ValuesPattern<Iri> derivationValues = new ValuesPattern<>(derivation,
                 Collections.singletonList(iri(derivationIRI)), Iri.class);
 
-        GraphPattern gp = GraphPatterns.and(derivation.has(isDerivedFrom,scope),scope.isA(P_DISP.iri("Scope")));
+        GraphPattern gp = GraphPatterns.and(derivation.has(isDerivedFrom, scope), scope.isA(P_DISP.iri("Scope")));
 
-        query.prefix(P_DISP,prefixDerivation).where(gp, derivationValues).select(scope);
+        query.prefix(P_DISP, prefixDerivation).where(gp, derivationValues).select(scope);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        if (queryResult.length()==1) {
+        if (queryResult.length() == 1) {
             return queryResult.getJSONObject(0).getString(scope.getQueryString().substring(1));
         } else {
             throw new Exception("Error looking up the scope for a derivation.");
@@ -476,7 +476,7 @@ public class QueryClient {
         derivationClient.updateTimestamps(ships.stream().map(Ship::getIri).collect(Collectors.toList()));
     }
 
-    void bulkUpdateTimeSeriesData(List<Ship> ships) {
+    void bulkUpdateTimeSeriesData(List<Ship> ships, JSONArray tmpTsData) {
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             for (Ship ship : ships) {
                 List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(),
@@ -488,7 +488,10 @@ public class QueryClient {
                                 +
                                 "\"LAT\", \"LON\", \"SOG\", \"COG\" FROM \"ship\" WHERE \"MMSI\" = %s",
                         ship.getMmsi());
-                JSONArray tsData = remoteRDBStoreClient.executeQuery(sqlQuery);
+                if (tmpTsData == null) {
+                    tmpTsData = remoteRDBStoreClient.executeQuery(sqlQuery);
+                }
+                final JSONArray tsData = tmpTsData;
                 List<Instant> time = IntStream
                         .range(0, tsData.length()).mapToObj(i -> LocalDateTime
                                 .parse(tsData.getJSONObject(i).getString("DATE")).toInstant(ZoneOffset.UTC))
