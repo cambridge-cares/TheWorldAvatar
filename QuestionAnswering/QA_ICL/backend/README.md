@@ -1,21 +1,27 @@
-# Deployment for Question-Answering Applications
+# Marie Backend
 
-## Deployment with Docker Compose (recommended)
+## Architecture
 
-### Prerequisites:
+- [`fastapi_app`](./fastapi_app/) exposes APIs for:
+  - querying chemistry data via natural language
+  - searching for chemical species and zeolites based on some filtering criteria
+- [`triton_inference_server`](./triton_inference_server/) serves Sentence-BERT model.
+
+## Deployment with Docker (recommended)
+
+### Prerequisites
 
 - Docker
 
 ### Steps
 
-1. Fill in the environment variable values in [fastapi-variables.env](fastapi-variables.env). Their descriptions can be found in [fastapi_app/README.md](fastapi_app/README.md#steps).
-2. Populate the required data for the application as per the [Required data section](fastapi_app/README.md#required-data).
-3. Execute the deployment script.
+1. Populate the required data and config parameters for the `fastapi_app` according to its README sections ['Required resources'](./fastapi_app/README.md#required-resources) and ['Configurable parameters'](./fastapi_app/README.md#configurable-parameters).
+2. Execute the deployment script.
    ```{bash}
    sh deploy.sh
    ```
 
-Zaha frontend can then be accessed at `localhost:5000` in the browser. For the specifications of backend APIs, visit `localhost:5000/docs`.
+The app will be available at `localhost:5000`. See `fastapi_app`'s section [Usage](./fastapi_app/README.md#usage) for how to interact with the app.
 
 ## Manual setup
 
