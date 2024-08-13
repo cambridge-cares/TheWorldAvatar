@@ -4,7 +4,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockserver.model.HttpResponse.response;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -203,8 +207,70 @@ public class GeoServerClientTest {
     }
 
     @Test
-    @Disabled("Needs to be implemented.")
-    void testRemoveWorkspace() {
+    void testRemoveNonExistingWorkspace() {
+        HttpRequest workspaceCheck = HttpRequest.request("/rest/workspaces/" + NEW_WORKSPACE + ".xml")
+                .withMethod("GET");
+        mockGeoServer.when(workspaceCheck).respond(response().withStatusCode(404));
 
+        geoServerClient.removeWorkspace(NEW_WORKSPACE);
+
+        mockGeoServer.verifyCalls(workspaceCheck);
+    }
+
+    @Test
+    void testRemoveExistingWorkspace() {
+        HttpRequest workspaceCheck = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE + ".xml")
+                .withMethod("GET");
+        mockGeoServer.when(workspaceCheck).respond(response().withStatusCode(200));
+
+        HttpRequest stylesDelete = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE + "/styles.xml")
+                .withMethod("GET");
+        mockGeoServer.when(stylesDelete).respond(response().withStatusCode(200));
+
+        HttpRequest workspaceDelete = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE)
+                .withMethod("DELETE");
+        mockGeoServer.when(workspaceDelete).respond(response().withStatusCode(200));
+
+        geoServerClient.removeWorkspace(EXISTING_WORKSPACE);
+
+        mockGeoServer.verifyCalls(workspaceCheck, stylesDelete, workspaceDelete);
+    }
+
+    @Test
+    void testRemoveExistingWorkspaceWithStyles() {
+        HttpRequest workspaceCheck = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE + ".xml")
+                .withMethod("GET");
+        mockGeoServer.when(workspaceCheck).respond(response().withStatusCode(200));
+
+        HttpRequest stylesDelete = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE + "/styles.xml")
+                .withMethod("GET");
+        Assertions.assertDoesNotThrow(() -> {
+            try (InputStream stylesFile = GeoServerClientTest.class.getResourceAsStream("styles.xml");
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(stylesFile))) {
+                String styles = reader.lines().collect(Collectors.joining("\n"));
+                mockGeoServer.when(stylesDelete).respond(response().withStatusCode(200).withBody(styles));
+            }
+        });
+
+        HttpRequest style1Delete = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE + "/styles/pophatch")
+                .withMethod("DELETE");
+        mockGeoServer.when(style1Delete).respond(response().withStatusCode(200));
+
+        HttpRequest style2Delete = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE + "/styles/point")
+                .withMethod("DELETE");
+        mockGeoServer.when(style2Delete).respond(response().withStatusCode(200));
+
+        HttpRequest style3Delete = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE + "/styles/population")
+                .withMethod("DELETE");
+        mockGeoServer.when(style3Delete).respond(response().withStatusCode(200));
+
+        HttpRequest workspaceDelete = HttpRequest.request("/rest/workspaces/" + EXISTING_WORKSPACE)
+                .withMethod("DELETE");
+        mockGeoServer.when(workspaceDelete).respond(response().withStatusCode(200));
+
+        geoServerClient.removeWorkspace(EXISTING_WORKSPACE);
+
+        mockGeoServer.verifyCalls(workspaceCheck, stylesDelete, style1Delete, style2Delete, style3Delete,
+                workspaceDelete);
     }
 }
