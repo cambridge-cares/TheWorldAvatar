@@ -88,10 +88,7 @@ WHERE {{
 
     os.makedirs(args.out, exist_ok=True)
 
-    annotations = [
-        {"iri": row["iri"], "annotation": {k: v for k, v in row.items() if k != "iri"}}
-        for row in node_types + edge_types
-    ]
+    annotations = node_types + edge_types
     with open(os.path.join(args.out, "annotations.json"), "w") as f:
         json.dump(annotations, f, indent=4)
 

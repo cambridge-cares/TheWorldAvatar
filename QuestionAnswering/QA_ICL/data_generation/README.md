@@ -15,18 +15,18 @@ In the main application, lexicons are used to perform:
 
 See [JSON schema for lexicons](#data-schema-of-lexicons).
 
-### Simplified graph schema
+### KG schema extracts
 
-This project adopts the terminology used for heterogenous graphs `G=(V, E, τ, φ)`:
+This directory adopts the terminology used for heterogenous graphs `G=(V, E, τ, φ)`:
 
 - For each node `v ∈ V`, its node type is `τ(v)`.
 - For each edge `(u, v) ∈ E`,
-  - its edge type is `φ(u, v)`;
+  - its edge type is `φ(u, v)`, which is equivalent to 'predicate' or 'property' in RDF terms;
   - its relation type is tuple `(τ(u), φ(u, v), τ(v))`.
 
 The simplified data schema captures only node types, edge types, and relation types, and disregard other schema information such as RDFS class hierarchy. 
 
-See [JSON schema for simplified graph schema](#data-schema-of-simplified-graph-schema).
+See [JSON schema for KG schema extracts](#data-schema-of-kg-schema-extracts).
 
 ### Examples of data request generation from natural language questions
 
@@ -69,10 +69,11 @@ For all scripts in this directory, run `python <path_to_script> -h` to view the 
   - Entities of `purl:Element` type: [lexicon/Element_lexicon.py](lexicon/Element_lexicon.py).
   - Entities of `disp:Ship` type: [lexicon/Ship_lexicon.py](lexicon/Ship_lexicon.py).
 
-### Generation of simplified graph schema
+### Generation of KG schema extracts
 
-- Generate simplified graph schema from OWL files: [simplified_schema/extract_schema_from_tbox.py](simplified_schema/extract_schema_from_tbox.py).
-- Generate simplified grpah schema from a SPARQL endpoint: [simplified_schema/extract_schema_from_abox.py](simplified_schema/extract_schema_from_abox.py)
+- Generate an extract of edge types from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_edgetypes_from_tbox.py](simplified_schema/extract_edgetypes_from_abox.py).
+- Generate an extract of relation types from OWL files: [simplified_schema/extract_relations_from_tbox.py](simplified_schema/extract_schema_from_tbox.py).
+- Generate an extract of relation types from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_relations_from_abox.py](simplified_schema/extract_schema_from_abox.py)
 
 ### Augmentation of data request examples
 
@@ -115,7 +116,7 @@ Augmentation refers to the process of artificially synthesising new data from ex
 }
 ```
 
-### Data schema of simplified graph schema
+### Data schema of KG schema extracts
 
 Schema definition for node type and edge type data:
 
@@ -129,9 +130,13 @@ Schema definition for node type and edge type data:
       "description": "IRI (Internationalized Resource Identifier) within an RDF graph",
       "type": "string"
    },
-   "annotations": {
-      "description": "Information such as `rdfs:label` and `rdfs:comment`",
-      "type": "object"
+   "label": {
+      "description": "`rdfs:label` attribute",
+      "type": "string"
+   },
+   "comment": {
+    "description": "`rdfs:comment` attribute",
+      "type": "string"
    }
   },
   "required": ["iri"]
