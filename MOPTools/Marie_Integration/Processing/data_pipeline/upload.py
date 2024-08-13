@@ -245,11 +245,12 @@ class Material(BaseClass):
 
 class ChemicalInput(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    referencesMaterial                  : Optional[ReferencesMaterial[Material]]                        = None
+    referencesMaterial                  : Optional[ReferencesMaterial[Material]]                        = set()
 
 class MetalOrganicPolyhedron(BaseClass):
     rdfs_isDefinedBy                    = OntoMOPs
-    hasCCDCNumber                       : Optional[HasCCDCNumber[int]]                                  = None
+    hasCCDCNumber                       : Optional[HasCCDCNumber[int]]                                  = set()
+    hasMOPFormula                       : Optional[HasMOPFormula[str]]                                  = set()
 
 class Reactant(Species):
     rdfs_isDefinedBy                    = OntoKin
@@ -324,6 +325,8 @@ class HasNumericalValue(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OM2
 
+class HasMOPFormula(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoMOPs
     ###-----------------------------------------------------------------------------------------------
     # Object Properties:
 
@@ -632,16 +635,20 @@ def species_querying(client, species_label, recursion_counter):
         species_querying(client, species_label, recursion_counter=recursion_counter+1)
     
 def mop_querying(client, CCDC_number):
-    query = f"""
-        PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
-        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
-        SELECT ?MOPIRI WHERE {{
-          ?MOPIRI om:hasMOPFormula 	?MOPFormula						;
-          om:hasCCDCNumber	{CCDC_number}							.
-        }}"""
-    return client.perform_query(query)
+    if CCDC_number != "N/A":
+        query = f"""
+            PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+            PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+            PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+            SELECT ?MOPIRI WHERE {{
+            ?MOPIRI om:hasMOPFormula 	?MOPFormula						;
+            om:hasCCDCNumber	{CCDC_number}							.
+            }}"""
+        out                     = client.perform_query(query)
+    else:
+        out = []
+    return out
 
 def get_client(name):
     a_box_updates_config                        = config_a_box_updates(f"../{name}.env")
@@ -713,65 +720,89 @@ def heatchill_upload(client, heatchill_step):
     vessel                                      = Vessel.pull_from_kg(vessel_iri, client,recursive_depth=-1)[0]
     vessel.isClosed                             = heatchill_step["sealed Vessel"]
     heat_chill                                  = HeatChill(hasContainerVessel=vessel, hasHeatChillDuration=duration, hasReactionTemperature=temperature, hasHeatChillRate=temp_rate, hasVacuum=vacuum, isSealed=sealed)
-    g_to_remove, g_to_add                       = duration.push_to_kg(client, recursive_depth=-1)    
-    g_to_remove, g_to_add                       = heat_chill.push_to_kg(client, recursive_depth=-1)
+    
+    components = [duration, temperature, temp_rate, vessel, heat_chill]
+    for component in components:
+        push_component_to_kg(component, client)
 
-def chemicals_upload(client_mop, client_species, client_synthesis, csv):
-    for nr, line in enumerate(csv):
+def chemicals_upload(input_path, output_path):
+    client_synthesis                     = get_client("OntoSynthesisConnection")
+    client_species                       = get_client("OntoSpeciesConnection") 
+    client_mop                           = get_client("OntoMOPConnection") 
+    print(input_path)
+    # read in CSV:
+    # path: "../Data/first10_prompt2/10.1021_ic402428m.txt" 
+    csv_class                                   = TextToCSV(input_path)
+    csv_lines                                   = csv_class.read_and_clean_file()
+    csv_out                                     = csv_class.extract_csv_entries(csv_lines)
+
+    for nr, line in enumerate(csv_out):
         print(line)
 
-        if line['Synthesis Role'] == 'Product' and line['CCDC Number'] != "N/A":
-            mop_iri             = mop_querying(client_mop, line['CCDC Number'])
-            try:
-                mop                 = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"])
-            except:
-                mop                 = MetalOrganicPolyhedron(hasCCDCNumber=line['CCDC Number'])
-            chemical_output     = ChemicalOutput(isRepresentedBy=mop)
+        if line['Synthesis Role'] == 'Product':
+            mop_iri                     = mop_querying(client_mop, line['CCDC Number'])
+            if mop_iri == [] or mop_iri == None:
+                mop_iri                 = mop_querying(client_synthesis, line['CCDC Number'])
+                try:
+                    mop                 = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis, recursive_depth=-1)
+                except:
+                    mop                 = MetalOrganicPolyhedron(hasMOPFormula=line['Chemical Name'])
             #mop.push_to_kg(sparql_client, recursive_depth=-1)
-
-        elif line['Synthesis Role'] == 'Product' and line['CCDC Number'] == "N/A":
-            mop                 = MetalOrganicPolyhedron()
-            chemical_output     = ChemicalOutput(isRepresentedBy=mop)
+            else: 
+                mop                     = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_mop, recursive_depth=-1)
+            chemical_output             = ChemicalOutput(isRepresentedBy=mop)
+            print("chemical output: ", chemical_output)
+            print("mop: ", mop)
+            components = [chemical_output, mop]
+            for component in components:
+                push_component_to_kg(component, client_synthesis)
 
         else:
+            # query both OntoSynthesis and OntoSpecies for existing instances and reuse IRI if one exists.
             species_name                                            = [line["Chemical Name"], line["Alternative Names"], line["Chemical Formula"]]
             triples                                                 = species_querying(client_species, species_name, 0)
             print(triples)
             if triples == None or triples == []:
+                triples                                             = species_querying(client_synthesis, species_name, 0)
+
+                if triples == None or triples == []:
+                    species                                         = Species(label=line["Chemical Formula"], altLabel={line["Alternative Names"], line["Chemical Name"]})
+                    
+
+                else:
+                    print("success: ", triples[0]["Species"])
+                    try:
+                        species                                     = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
+                    except:
+                        print("Could not find IRI.\n")
                         species                                     = Species(label=line["Chemical Formula"], altLabel={line["Alternative Names"], line["Chemical Name"]})
             else:
-                print("success: ", triples[0]["Species"])
-                species                                             = Species.pull_from_kg(triples[0]["Species"], client_species,recursive_depth=-1)[0]
-                print(species, type(species))
-                print(species.instance_iri)
+                species                                             = Species.pull_from_kg(triples[0]["Species"], client_species, recursive_depth=-1)[0]
+
             phase_component                                         = PhaseComponent(representsOccurenceOf=species)
             single_phase                                            = SinglePhase(isComposedOfSubsystem=phase_component)     
             material                                                = Material(thermodynamicBehaviour=single_phase)
             chemical_input                                          = ChemicalInput(referencesMaterial=material)
-            components = [phase_component, single_phase, material, chemical_input, species, chemical_output, mop]
-
+            components                                              = [phase_component, single_phase, material, chemical_input, species]
             # Loop through each component and call the function
             for component in components:
                 push_component_to_kg(component, client_synthesis)
+            
 
 
 def push_component_to_kg(component, client, recursive_depth=-1):
     g_to_remove, g_to_add = component.push_to_kg(client, recursive_depth)
 # uploaded: 10.1021_ja 0104352.txt
+
 def main():
     sparql_client_synthesis                     = get_client("OntoSynthesisConnection")
     sparql_client_species                       = get_client("OntoSpeciesConnection") 
     sparql_client_mop                           = get_client("OntoMOPConnection") 
     #upload_vessels(sparql_client)
     #unit_upload(sparql_client)
-    # read in CSV:
-    csv_class                                   = TextToCSV("../Data/first10_prompt2/10.1021_ic402428m.txt" )
-    csv_lines                                   = csv_class.read_and_clean_file()
-    csv_out                                     = csv_class.extract_csv_entries(csv_lines)
 
-    chemicals_upload(sparql_client_mop, sparql_client_species, sparql_client_synthesis, csv_out)
-    
 
+    #chemicals_upload(sparql_client_mop, sparql_client_species, sparql_client_synthesis, csv_out)
     #another_object_of_one_concept = species.pull_from_kg('https://iri-of-the-object-of-interest', sparql_client, recursive_depth=-1)
     # read in JSON:
     SynthesisJson                               = read_json_file("../Data/first10_prompt52/10.1021_ja 0104352.json")["Synthesis"]

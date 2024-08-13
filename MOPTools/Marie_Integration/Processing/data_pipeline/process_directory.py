@@ -3,19 +3,30 @@ import glob
 import fitz  # PyMuPDF
 import tiktoken
 from pipeline import get_literature, ChatGPTAPI
+from upload import chemicals_upload
 
 
     
-def delete_beginning(file_path):
+def delete_beginning(file_path: str, output_dir: str):
     """Processes a single .xyz file."""
+    # Read the input file
     with open(file_path, 'r') as file:
-        lines               = file.readlines()
-        # Remove atom count and comments if they exist
-        if lines and lines[0].strip().isdigit():
-            lines           = lines[2:]  # Remove the first two lines if the first line is an integer
-        line_count          = len(lines)
-        return line_count, lines
-
+        lines = file.readlines()
+        
+    # Check if the first line is an integer
+    if lines and lines[0].strip().isdigit():
+        # Remove the first two lines
+        lines = lines[2:]
+    
+    # Get the original filename from the file path
+    filename = os.path.basename(file_path)
+    
+    # Create the full output file path
+    output_file_path = os.path.join(output_dir, filename)
+    
+    # Write the processed lines to the output file
+    with open(output_file_path, 'w') as output_file:
+        output_file.writelines(lines)
 
 
 def process_files_in_directory(func, input_dir, output_dir):
@@ -147,21 +158,21 @@ def use_openai(file_path:str, output_dir:str):
     Extracts text from the PDF file.
     """
     # Extract the base name of the file (e.g., '10.1021_acs.inorgchem.8b01130.pdf')
-    base_name       = os.path.basename(file_path)
+    base_name                   = os.path.basename(file_path)
     # Split the base name into name and extension (e.g., ('10.1021_acs.inorgchem.8b01130', '.pdf'))
-    name, _         = os.path.splitext(base_name)            
+    name, _                     = os.path.splitext(base_name)            
     with open(file_path, "r", encoding="utf-8") as file:
-            content = file.read()
+            content             = file.read()
     if name.endswith('_si'):
-        doi         = name.rsplit('_si', 1)[0]
+        doi                     = name.rsplit('_si', 1)[0]
     else:   
-        doi         = name[:] 
+        doi                     = name[:] 
     doi                         = doi.replace("_", "/")
-    prompt                      = 10
+    prompt                      = 8
     match prompt:
         case 1:
-                extend        = ".txt"
-                prompt_syn    = """   Provide a word-for-word copy of each paragraph related to synthesis procedures.
+                extend          = ".txt"
+                prompt_syn      = """   Provide a word-for-word copy of each paragraph related to synthesis procedures.
                                         Please make sure to capture the synthesis related information in the experimental section.
                                         Answer the question as truthfully as possible using the provided context. 
                                         Only include the text from the input and do not add any additional information or commentary.
@@ -169,9 +180,9 @@ def use_openai(file_path:str, output_dir:str):
 
                                         Here is the text: """
         case 2:
-                mop_formula   = pipeline.get_literature(doi)
-                extend        = "_prompt_2.txt"
-                prompt_syn    = f"""  For the following MOP or MOPs: {mop_formula}, please rewrite the provided synthesis procedures into separate,
+                mop_formula     = pipeline.get_literature(doi)
+                extend          = "_prompt_2.txt"
+                prompt_syn      = f"""  For the following MOP or MOPs: {mop_formula}, please rewrite the provided synthesis procedures into separate,
                                 clear, and self-contained step-by-step instructions.  Ensure that each synthesis procedure is entirely
                                 independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
                                 Any information that appears implicit should be made explicit in the rewrite. Please make sure that 
@@ -183,9 +194,9 @@ def use_openai(file_path:str, output_dir:str):
                                 Here is the text:
                                 """
         case 3:
-                mop_formula   = pipeline.get_literature(doi)
-                extend        = ".txt"
-                prompt_syn    = f""" Objective: Extract and provide an exact word-for-word copy of each paragraph specifically related to synthesis procedures from the given text, focusing on the experimental section.
+                mop_formula     = pipeline.get_literature(doi)
+                extend          = ".txt"
+                prompt_syn      = f""" Objective: Extract and provide an exact word-for-word copy of each paragraph specifically related to synthesis procedures from the given text, focusing on the experimental section.
 
 Instructions:
 
@@ -277,9 +288,9 @@ Yield: 0.15g (76%)
 ...
 Provided Text: """ 
         case 5:
-            mop_formula   = pipeline.get_literature(doi)
-            extend        = ".txt"
-            prompt_syn    = f""" 
+            mop_formula         = pipeline.get_literature(doi)
+            extend              = ".txt"
+            prompt_syn          = f""" 
 Objective: 
 Extract and provide detailed, verbatim copies of all synthesis procedures, product characterizations,
 and experimental steps described in the provided text.
@@ -338,9 +349,9 @@ N, 3.13 Found: C, 45.11; H, 5.32; N, 3.31.)
 
 Provided Text: """
         case 6:
-            mop_formula   = pipeline
-            extend        = ".txt"
-            prompt_syn    = f""" 
+            mop_formula         = pipeline
+            extend              = ".txt"
+            prompt_syn          = f""" 
 Task Specification:
 "Summarize the given synthesis text into a CSV table. Each row in the CSV should represent a unique synthesis process."
 
@@ -376,10 +387,10 @@ Synthesis Text:"""
             
 
         case 7:
-            json_output   = False
-            mop_formula   = get_literature(doi)
-            extend        = ".txt"
-            prompt_syn    = f""" 
+            json_output         = False
+            mop_formula         = get_literature(doi)
+            extend              = ".txt"
+            prompt_syn          = f""" 
 Step-by-Step Instructions: Break down each synthesis procedure into precise and sequential steps. Each procedure should stand alone and not reference any other procedures or require shared understanding.
 Assign the steps in categories of Add, Heat chill, Filter, Stirr, and Sonicate. Category specification: Add is a step where material is added to a mixture or vessel.
 If more than one reagent or solvent is added group each of them in their own step. An Add step requires a vessel and the name of the chemical that is added.
@@ -413,10 +424,10 @@ Example:## MOP-14 Synthesis:
            
 
         case 9:
-            json_output   = False
-            mop_formula   = get_literature(doi)
-            extend        = ".txt"
-            prompt_syn    = f""" 
+            json_output         = False
+            mop_formula         = get_literature(doi)
+            extend              = ".txt"
+            prompt_syn          = f""" 
 Task Specification: "Summarize the given synthesis text into a CSV table. Each row in the CSV should represent a unique chemical species." 
 Column Headers: "Use the following column headers exactly as provided: Nr, Chemical Name, Chemical Formula, CCDC Number, Alternative Names, Synthesis Role" 
 Data Entry Guidelines: "For each synthesis described in the text, fill in the relevant details under these columns.
@@ -432,10 +443,10 @@ Extract the data from the following text:
 
             
         case 10:
-            json_output   = False
-            mop_formula   = get_literature(doi)
-            extend        = ".txt"
-            prompt_syn    = f""" 
+            json_output             = False
+            mop_formula             = get_literature(doi)
+            extend                  = ".txt"
+            prompt_syn              = f""" 
 Task Specification: "Summarize the given synthesis text into a CSV table.
 Each row in the CSV should represent a unique vessel used in the synthesis.
 " Column Headers: "Use the following column headers exactly as provided: Nr, Vessel Name, Vessel Volume, Vessel Dimensions,
@@ -451,15 +462,53 @@ product if applicable. " Example CSV Entry: "Nr", "Vessel Name", "Vessel Volume"
 "Synthesis Product Name", "Synthesis Product CCDC Number" "1", "Glass vial", "6 mL", "5 mm diameter and 100 mm length).",
 "glass", "[Zr3O(OH)3(C5H5)3]4[(C6H4)2(CO2)2]6", "950332" Extract the data from the following text:
 """
+        case 11:
+            json_output             = True
+            mop_formula             = get_literature(doi)
+            extend                  = ".json"
+            prompt_syn              = f""" 
+Task Description:
+Write a JSON file that extracts chemical product characterisation data. Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema. Make sure to make a new entry for each synthesised product and fill in the product name and CCDC number if possible. 
+Category Specifications:
+HNMR: HNMR data focus on extracting all shifts listed, the solvent that was used for the measurement and if listed the temperature at which the experiment was performed. 
+Elemental Analysis: Extract the weight percentage of for each element and if listed the chemical formula. 
+Infrared Spectroscopy: 
+Data Entry Guidelines: "For each synthesis described in the text, fill in the relevant details under these columns. If any information is missing or uncertain, fill the cell with N/A." 
+Return:
+Provide a single JSON document containing all the characterisation data for each of the synthesis products. 
+JSOUND schema that should be used as a basis for the output file: 
+{{
+    "Characterisation": 
+        [{{
+        "product name"          : "string",
+        "product CCDC number"   : "string",
+        "HNMR"                          : {{
+            "shifts"                        : "string"  ,
+            "solvent"                       : "string"  ,
+            "temperature"                   : "string"  
+        }},
+        "MassSpectrometrie"             : {{
+            "weight percentage"             : "string"  ,
+            "Chemical formula"              : "string" 
+        }},
+        "Infrared Spectroscopy"         : {{
+            "material"                      : "string",
+            "bands"                         : "string"
+        }}
+        }}]
+    }}
+    Synthesis Text: 
+"""
         case 8:
-            json_output   = True
-            mop_formula   = get_literature(doi)
-            extend        = ".json"
-            prompt_syn    = f""" 
+            json_output             = True
+            mop_formula             = get_literature(doi)
+            extend                  = ".json"
+            prompt_syn              = f""" 
 Task Description:
 Write a JSON file that organizes synthesis steps. Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema. Ensure that each step has an entry step number that represents the chronological order of the steps in the input steps.
+Try to assign the vessel to one of the following: Teflon-lined stainless-steel vessel, glass vial, quartz tube, round bottom flask, glass scintillation vial, pyrex tube. If it is impossible to assign a vessel insert N/A.
 Category Specifications:
-Add: Steps involving adding material to a mixture or vessel. If multiple reagents or solvents are added, group each separately.
+Add: Steps involving adding material to a mixture or vessel. If multiple reagents or solvents are added, group each separately. Try to assign the vessel to one of the following: Teflon-lined stainless-steel vessel, glass vial, quartz tube, round bottom flask, glass scintillation vial, pyrex tube. If it is impossible to assign a vessel insert N/A.
 HeatChill: Steps where a mixture or vessel is heated or cooled. If multiple temperature changes occur, separate each into distinct steps.
 Filter: Steps involving filtration or washing of a solid with a solvent.
 Stirr: Steps where a mixture is stirred without additional actions.
@@ -470,6 +519,7 @@ Assign Step Numbers: Retain the original step number from the input. If steps ar
 Return:
 Provide a single JSON document containing the categorized synthesis steps with assigned step numbers, ensuring it accurately represents the chronological order of the entire synthesis procedure.
 JSOUND schema that should be used as a basis for the output file: 
+
 {{
 "Synthesis": 
     [{{
@@ -487,6 +537,7 @@ JSOUND schema that should be used as a basis for the output file:
         "Target temperature"            : "string"  ,
         "Heating or cooling rate"       : "string"  ,
         "under Vacuum"                  : "boolean" ,
+        "used Vessel"                   : "string"  ,
         "sealed Vessel"                 : "boolean" ,
         "step Number"                   : "integer" 
     }},
@@ -494,14 +545,17 @@ JSOUND schema that should be used as a basis for the output file:
         "Name of the washing solvent"   : "string"  ,
         "Amount of washing solvent"     : "string"  ,
         "Repetitions"                   : "integer" ,
+        "used Vessel"                   : "string"  ,
         "step Number"                   : "integer"
     }}, 
     "Stirr"                 : {{
         "stirring Time"                 : "string"  ,
+        "used Vessel"                   : "string"  ,
         "step Number"                   : "integer"
     }},
     "Sonicate"              : {{
         "SonicationTime"                : "string"  ,
+        "used Vessel"                   : "string"  ,
         "step Number"                   : "integer" 
     }}
     }}]
@@ -509,9 +563,9 @@ JSOUND schema that should be used as a basis for the output file:
 
 Synthesis Text: 
 """
-    chatgpt_api                 = ChatGPTAPI()
-    model_name                  = "gpt-4o-2024-05-13"
-    response                    = chatgpt_api.send_request(content, prompt_syn, model_name, json_output)
+    chatgpt_api                         = ChatGPTAPI()
+    model_name                          = "gpt-4o-2024-05-13"
+    response                            = chatgpt_api.send_request(content, prompt_syn, model_name, json_output)
     with open(output_dir+"/"+name+extend, "w", encoding="utf-8") as txt_file:
         txt_file.write(response) 
     with open(output_dir+"/"+"_prompt.txt", "w", encoding="utf-8") as txt_file:
@@ -520,12 +574,16 @@ Synthesis Text:
 
 def main():
     """Main function to run the script."""
-    script_dir              = os.path.dirname(os.path.abspath(__file__))
-    in_directory            = os.path.join(script_dir, "../Data/first10_pdf")
-    out_directory           = os.path.join(script_dir, "../Data/first10_prompt3")
+    script_dir                          = os.path.dirname(os.path.abspath(__file__))
+#    in_directory                        = os.path.join(script_dir, "../Data/first10_prompt4")
+#    out_directory                       = os.path.join(script_dir, "../Data/first10_prompt52")
+    in_directory                        = os.path.join(script_dir, "../Data/first10_prompt2")
+    out_directory                       = os.path.join(script_dir, "../Data/NEW_MOPS_PROCESSED")
+    process_files_in_directory(chemicals_upload, in_directory, out_directory)
+    #process_files_in_directory(prepend_line_count, in_directory, out_directory)
     #processor.process_files_in_directory(processor.transform_xyz_string)
     #processor.process_files_in_directory(processor.extract_text_from_pdf)
-    process_files_in_directory(use_openai, in_directory, out_directory)
+    #process_files_in_directory(use_openai, in_directory, out_directory)
     #process_files_in_directory(count_tokens_and_calculate_cost, in_directory, out_directory)
     #main.append_si_to_paper(out_directory)
 
