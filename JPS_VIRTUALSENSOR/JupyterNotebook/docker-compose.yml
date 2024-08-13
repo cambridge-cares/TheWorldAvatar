@@ -9,3 +9,5 @@ services:
         condition: none
     ports:
       - "8866:8866"
+    volumes:
+      - ./notebook:/home/jovyan/work
