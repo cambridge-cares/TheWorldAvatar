@@ -1,6 +1,8 @@
 import requests
 from datetime import datetime
 import time
+import json
+import pandas as pd
 
 SLEEP_DURATION = 5
 LIST_Z = [0]
@@ -55,6 +57,29 @@ class JobSender:
             response = self.call_di(url_init, 'post')
             print(f"Created new simulation for {label}.")
             return response.json()['derivation']
+    
+    def add_ship_data(self,mmsi,df_ship):
+        
+        shipData = [{"MMSI":int(mmsi),
+                    "SPEED":0,
+                    "COURSE":0,
+                    "LAT": 0.0,
+                    "LON": 0.0,
+                    "SHIPTYPE": 99,
+                    "TIMESTAMP": '2024-01-01T12:00:00'}]
+        tsData = []
+        for index, row in df_ship.iterrows():
+            tsData.append({"DATE": pd.to_datetime(row.date).strftime('%Y-%m-%dT%H:%M:%S'),
+                    "LAT": row.lat,
+                    "LON": row.lon,
+                    "SOG": row.speed,
+                    "COG": row.course})
+
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(f'{self.base_url}ship-input-agent/parse',
+                                 data=json.dumps({"shipData": shipData, "tsData": tsData}), headers=headers)
+
+        return response
     
     def generate_data(self,derivation_iri,num_step):
         for i in range(num_step):

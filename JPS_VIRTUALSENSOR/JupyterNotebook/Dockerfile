@@ -4,7 +4,7 @@ FROM jupyter/base-notebook
 HEALTHCHECK NONE
 
 # Install Voilà
-RUN pip install voila==0.4.4
+RUN pip install voila
 
 COPY ./requirements.txt /home/.
 # Install the required Python libraries
