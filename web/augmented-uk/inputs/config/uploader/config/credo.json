@@ -3,24 +3,30 @@
     "workspace": "twa",
     "datasetDirectory": "secondary_substation",
     "dataSubsets": [
-
-{
-    "type": "Vector",
-    "skip": false,
-    "name": "Credo_SecondarySubstations_GIS",
-    "subdirectory": "substation",
-    "geoServerSettings": {
-        "virtualTable": {
-            "name": "power_extended",
-            "sql": "SELECT geom, 'secondary' as type, CONCAT('http://theworldavatar.com/ontology/ontocredo/ontoukpn/SecondarySubstation/', ogc_fid) as iri, CONCAT('Power Network: Secondary sub-station (', \"Substation Name\", ')') as name FROM \"Credo_SecondarySubstations_GIS\"",
-            "escapeSql": false,
-            "geometry": {
-                "name": "geom",
-                "type": "Point",
-                "srid": 4326
+        {
+            "type": "vector",
+            "skip": false,
+            "subdirectory": "secondary",  
+            "table": "substations_kings_lynn_table",
+            "name": "substations_kings_lynn_layer",            
+            "ogr2ogrOptions": {
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "X O Position British National Grid",
+                    "Y_POSSIBLE_NAMES": "Y O Position British National Grid"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "substations_kings_lynn_virtual_table",
+                    "sql": "@/inputs/config/sql/substation-kings-lynn.sql",
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Point",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "point"
             }
         }
-    }
-}
     ]
 }
