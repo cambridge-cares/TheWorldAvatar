@@ -754,8 +754,10 @@ def chemicals_upload(input_path, output_path):
     csv_out                                 = csv_class.extract_csv_entries(csv_lines)
 
     for nr, line in enumerate(csv_out):
+        # loop through the csv rows
         print("CSV row: ",line)
 
+        # change uplaod procedure depending if it is a product -> MOP or a reagent/solvent -> species
         if line['Synthesis Role'] == 'Product':
             mop_iri                     = mop_querying(client_mop, line['CCDC Number'])
             if mop_iri == [] or mop_iri == None:
@@ -795,13 +797,14 @@ def chemicals_upload(input_path, output_path):
                         species                                     = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-2)[0]
                         species.altLabel.update([line["Chemical Formula"], line["Alternative Names"], line["Chemical Name"]])
                     except:
-                        print("Could not find IRI.\n")
+                        # not found matching instance in either ontospecies or ontomops blazegraph => make a new entry!
+                        print("Could not find IRI. \n")
                         species                                     = Species(label=line["Chemical Formula"], altLabel={line["Alternative Names"], line["Chemical Name"]})
             else:
-                species                                             = Species.pull_from_kg(triples[0]["Species"], client_species, recursive_depth=-3)[0]
+                species                                             = Species.pull_from_kg(triples[0]["Species"], client_species, recursive_depth=-2)[0]
                 print("additional species names: ", [line["Chemical Formula"], line["Alternative Names"], line["Chemical Name"]])
                 print("old species names: ", species.altLabel)
-                print("species label: ", species.label)
+                print("species label: ", species.rdfs_label)
                 species.altLabel.update([line["Chemical Formula"], line["Alternative Names"], line["Chemical Name"]])                  
             print("species entry: ", species)
             phase_component                                         = PhaseComponent(representsOccurenceOf=species)
@@ -815,7 +818,7 @@ def chemicals_upload(input_path, output_path):
             
 
 
-def push_component_to_kg(component, client, recursive_depth=-2):
+def push_component_to_kg(component, client, recursive_depth=2):
     g_to_remove, g_to_add = component.push_to_kg(client, recursive_depth)
 # uploaded: 10.1021_ja 0104352.txt
 
