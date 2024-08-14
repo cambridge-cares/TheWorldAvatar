@@ -760,7 +760,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasHenrysLawConstant">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HenrysLawConstant"/>
-        <rdfs:comment>A relation between a species and its Henry&apos;s law constants.</rdfs:comment>
+        <rdfs:comment>A relation between a species and its Henry's law constants.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
     </owl:ObjectProperty>
     
@@ -2431,7 +2431,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ChemicalClass">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Classification"/>
-        <rdfs:comment>Chemical classes are groupings that relate chemicals by similar features. Chemicals can be classified by their structure (e.g., hydrocarbons), uses (e.g., pesticides), physical properties (e.g., volatile organic compounds [VOCs]), radiological properties (e.g., radioactive materials), or other factors. ChEBI Ontology tree. ChEBI is an acronym for Chemical Entities of Biological Interest, which is a freely available dictionary of molecular entities focused on &apos;small&apos; chemical compounds. ChEBI incorporates an ontological classification, whereby the relationships between molecular entities or classes of entities and their parents and/or children are specified.</rdfs:comment>
+        <rdfs:comment>Chemical classes are groupings that relate chemicals by similar features. Chemicals can be classified by their structure (e.g., hydrocarbons), uses (e.g., pesticides), physical properties (e.g., volatile organic compounds [VOCs]), radiological properties (e.g., radioactive materials), or other factors. ChEBI Ontology tree. ChEBI is an acronym for Chemical Entities of Biological Interest, which is a freely available dictionary of molecular entities focused on 'small' chemical compounds. ChEBI incorporates an ontological classification, whereby the relationships between molecular entities or classes of entities and their parents and/or children are specified.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
     </owl:Class>
     
@@ -2745,7 +2745,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HenrysLawConstant">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ThermoProperty"/>
-        <rdfs:comment>Henry&apos;s law states that the amount of dissolved gas (in liquid, such as water) is proportional to its partial pressure in the gas phase. The proportionality factor is called the Henry&apos;s law constant and defined as the ratio of a compound&apos;s partial pressure in air to the concentration of the compound in water at a given temperature.</rdfs:comment>
+        <rdfs:comment>Henry's law states that the amount of dissolved gas (in liquid, such as water) is proportional to its partial pressure in the gas phase. The proportionality factor is called the Henry's law constant and defined as the ratio of a compound's partial pressure in air to the concentration of the compound in water at a given temperature.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
     </owl:Class>
     
@@ -3062,7 +3062,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#OtherMS">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MassSpectrometry"/>
-        <rdfs:comment>Other compound&apos;s mass spectrometry (MS) information.</rdfs:comment>
+        <rdfs:comment>Other compound's mass spectrometry (MS) information.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
     </owl:Class>
     
@@ -3748,7 +3748,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Viscosity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ThermoProperty"/>
-        <rdfs:comment>Viscosity is a measure of a fluid&apos;s resistance to flow. It describes the internal friction of a moving fluid.</rdfs:comment>
+        <rdfs:comment>Viscosity is a measure of a fluid's resistance to flow. It describes the internal friction of a moving fluid.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
     </owl:Class>
     
