@@ -108,3 +108,5 @@ JPS_VIRTUALSENSOR/ShipInputAgent/data/*.json
 web/twa-vis-platform/code/public/config/*
 web/twa-vis-platform/code/public/images/*
 web/twa-vis-platform/code/public/optional-pages/*
+!web/twa-vis-platform/code/public/images/defaults/
+!web/twa-vis-platform/code/public/images/defaults/** */
