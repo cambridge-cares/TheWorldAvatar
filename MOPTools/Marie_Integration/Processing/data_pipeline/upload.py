@@ -155,10 +155,11 @@ class ChemicalSynthesis(BaseClass):
 
 class SynthesisStep(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    hasContainerVessel                  : Optional[HasContainerVessel[Vessel]]                          = None
+    hasContainerVessel                  : Optional[HasVessel[Vessel]]                          = None
     hasOrder                            : Optional[HasOrder[int]]                                       = None
     hasExecutionPoint                   : Optional[HasExecutionPoint[ExecutionPoint]]                   = None
     hasVesselEnvironment                : Optional[HasVesselEnvironment[VesselEnvironment]]             = None
+
 class Product(BaseClass):
     rdfs_isDefinedBy                    = OntoKin
 
@@ -200,12 +201,12 @@ class Sonication(SynthesisStep):
 
 class HeatChill(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasHeatChillDuration                : Optional[HasHeatChillDuration[Duration]]                      = None
-    hasReactionTemperature              : Optional[HasReactionTemperature[Temperature]]                 = None
+    hasReactionTemperature              : Optional[HasTargetTemperature[Temperature]]                   = None
     hasHeatChillRate                    : Optional[HasHeatChillRate[TemperatureRate]]                   = None
     #hasHeatChillDevice                  : HasHeatChillDevice[HeatChillDevice]
     hasVacuum                           : Optional[HasVacuum[bool]]                                     = None
     isSealed                            : Optional[IsSealed[bool]]                                      = None
+    hasStirringSpeed                    : Optional[HasStirringSpeed[float]]                                    = None
     
 class ExecutionPoint(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
@@ -303,50 +304,33 @@ class HasNitrogenAthmosphere(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 
 class HasVacuum(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
 class IsSealed(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+class HasStirringSpeed(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasOrder(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
 class HasExecutionPoint(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
 class HasVesselEnvironment(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
 class IsRepeated(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
 class HasValue(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OM2
-
 class AltLabel(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = SKOS
-
 class MopAltLabel(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoMOPs
-
 class Label(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = RDFS
-
 class HasCCDCNumber(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoMOPs
-
 class HasNumericalValue(DatatypeProperty):
-    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OM2
-
 class HasMOPFormula(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoMOPs
-
 class Doi(DatatypeProperty):
     rdfs_isDefinedBy                    = BIBO
     ###-----------------------------------------------------------------------------------------------
@@ -383,7 +367,7 @@ class RepresentsOccurenceOf(ObjectProperty):
 class HasNextStep(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 
-class HasContainerVessel(ObjectProperty):
+class HasVessel(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 
 class HasProduct(ObjectProperty):
@@ -422,13 +406,10 @@ class HasEquipment(ObjectProperty):
 class HasHeatChillDevice(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 
-class HasReactionTemperature(ObjectProperty):
+class HasTargetTemperature(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 
 class HasHeatChillRate(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoSyn
-
-class HasHeatChillDuration(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 
 class HasStirringDuration(ObjectProperty):
