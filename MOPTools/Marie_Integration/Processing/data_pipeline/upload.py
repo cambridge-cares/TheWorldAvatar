@@ -693,6 +693,7 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
     return out
 
 def transformation_querying(client, mop_name):
+    print("mop_name: ", mop_name)
     query = f"""
         PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
         PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -794,6 +795,7 @@ def remove_na(input_candidate):
     return input_candidate
 
 def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
+    # search the ontospecies and ontosynthesis blazegraphs for existing instances
     triples                                                 = species_querying(client_species, species_name, 0)
     print("OntoSpecies results: ", triples)
     if triples == None or triples == []:
@@ -817,13 +819,16 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
     return species
 
 def instantiate_output(ccdc_number, chemical_formula, mop_names, client_mop, client_synthesis):
+    # query for existing mops either in the onto mops ontology or if not in the onto synthesis ontology
     mop_iri                         = mop_querying(client_mop, ccdc_number, chemical_formula, mop_names)
     if mop_iri == [] or mop_iri == None:
         mop_iri                     = mop_querying(client_synthesis, ccdc_number, chemical_formula, mop_names)
+        # pull the mop instance with the iri and update the alt labels. If it fails isntantiate a new MOP instance.
         try:
             mop                     = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis, recursive_depth=-1)
             mop.altLabel.update(mop_names)
         except:
+            # ccdc_number is of type int and "N/A" a string -> causes an error
             if ccdc_number == "N/A":
                 mop                 = MetalOrganicPolyhedron(hasMOPFormula=chemical_formula, mopAltLabel=mop_names)
             else:
@@ -854,9 +859,8 @@ def chemicals_upload(input_path, output_path):
         mop_name                                = line["Chemical Name"]
         print("CSV row: ",line)
         mop, chemical_output                    = instantiate_output(line["CCDC Number"], line["Chemical Formula"], mop_name, client_mop, client_synthesis)
-        chemical_synthesis                      = ChemicalSynthesis()
-        chemical_transformation                 = ChemicalTransformation(hasChemicalOutput=chemical_output, isDescribedBy=chemical_synthesis)
-        components                              = [chemical_output, mop, chemical_synthesis, chemical_transformation]
+        chemical_transformation                 = ChemicalTransformation(hasChemicalOutput=chemical_output)
+        components                              = [chemical_output, mop, chemical_transformation]
         for component in components:
             push_component_to_kg(component, client_synthesis)
     last_prod                                               = ""
@@ -900,9 +904,20 @@ def main():
     # read in JSON:
     SynthesisJson                               = read_json_file("../Data/first10_prompt52/10.1021_ja 0104352.json")["Synthesis"]
     data2                                       = SynthesisJson[0]
+
     print("json file: ", data2)
     mop_name                                    = data2["product name"]
     mop_ccdc                                    = data2["product CCDC number"]
+    transformation_iri                          = transformation_querying(sparql_client_synthesis, mop_name=mop_name)
+    
+    if transformation_iri == []:
+        transformation_querying(sparql_client_synthesis, mop_name=mop_ccdc)
+    print("transformation iri", transformation_iri)
+    chemical_synthesis                          = ChemicalSynthesis()   
+    print("IRI: ", transformation_iri[0]["chemicalTrans"])
+    chemical_transformation                     = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
+    chemical_transformation.isDescribedBy.add(chemical_synthesis)
+    print("chemical transformation: ", chemical_transformation)
     add_json                                    = data2["Add"]
     add1                                        = add_json[0]
     addedAmount                                 = add1["added chemical amount"]
@@ -915,16 +930,7 @@ def main():
             continue
         # target temperature
 
-    # Convert main elements to a DataFrame
-    #main_df         = pd.DataFrame({k: [v] for k, v in data.items() if not isinstance(v, list)})
-    # Print main DataFrame
-    #print(main_df)
-    # Convert nested lists to DataFrames
-    #add_df          = pd.DataFrame(data['Add'])
-    #heatchill_df    = pd.DataFrame(data['HeatChill'])
-    #filter_df       = pd.DataFrame(data['Filter'])
-    #stirr_df        = pd.DataFrame(data['Stirr'])
-    #sonicate_df     = pd.DataFrame(data['Sonicate'])
+
 
     #OntoSyn         = "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl"
 
