@@ -21,7 +21,7 @@
                     "sql": "@/inputs/config/sql/street-light-cambridge.sql",
                     "escapeSql": false,
                     "geometry": {
-                        "name": "hello",
+                        "name": "geom",
                         "type": "Point",
                         "srid": 4326
                     }
