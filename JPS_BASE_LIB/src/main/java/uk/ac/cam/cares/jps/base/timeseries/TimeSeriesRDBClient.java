@@ -782,7 +782,14 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
             // Create 1 column for each value
             for (int i = 0; i < dataIRI.size(); i++) {
-                if (Geometry.class.isAssignableFrom(dataClass.get(i))) {
+                Class<?> dataClazz;
+                if (dataClass.get(i).isArray()) {
+                    dataClazz = dataClass.get(i).getComponentType();
+                } else {
+                    dataClazz = dataClass.get(i);
+                }
+
+                if (Geometry.class.isAssignableFrom(dataClazz)) {
                     // these columns will be added with their respective restrictions
                     additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(i)));
                     classForAdditionalGeomColumns.add(dataClass.get(i));
@@ -824,13 +831,25 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         sb.append(String.format("alter table %s ", getDSLTable(tsTable).toString()));
 
         for (int i = 0; i < columnNames.size(); i++) {
-            sb.append(String.format("add %s geometry(%s", columnNames.get(i), dataTypes.get(i).getSimpleName()));
+            String className;
+
+            if (dataTypes.get(i).isArray()) {
+                className = dataTypes.get(i).getComponentType().getSimpleName();
+            } else {
+                className = dataTypes.get(i).getSimpleName();
+            }
+
+            sb.append(String.format("add %s geometry(%s", columnNames.get(i), className));
 
             // add srid if given
             if (srid != null) {
                 sb.append(String.format(", %d)", srid));
             } else {
                 sb.append(")");
+            }
+
+            if (dataTypes.get(i).isArray()) {
+                sb.append("[]");
             }
 
             if (i != columnNames.size() - 1) {
