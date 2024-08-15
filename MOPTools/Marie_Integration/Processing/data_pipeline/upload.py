@@ -156,7 +156,9 @@ class ChemicalSynthesis(BaseClass):
 class SynthesisStep(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
     hasContainerVessel                  : Optional[HasContainerVessel[Vessel]]                          = None
-
+    hasOrder                            : Optional[HasOrder[int]]                                       = None
+    hasExecutionPoint                   : Optional[HasExecutionPoint[ExecutionPoint]]                   = None
+    hasVesselEnvironment                : Optional[HasVesselEnvironment[VesselEnvironment]]             = None
 class Product(BaseClass):
     rdfs_isDefinedBy                    = OntoKin
 
@@ -176,49 +178,52 @@ class SynthesisReactant(BaseClass):
 class Add(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
     hasAddedReactant                    : Optional[HasYieldMass[SynthesisReactant]]                     = None
-    hasAddedSolvent                     : HasAddedSolvent[Solvent]
-    isAdded                             : IsAdded[Material]
+    hasAddedSolvent                     : Optional[HasAddedSolvent[Solvent]]                            = None
+    isAdded                             : Optional[IsAdded[Material]]                                   = None
 
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
-    isWashedWith                        : IsWashedWith[Material]
-    hasWashingSolvent                   : HasWashingSolvent[Solvent]
-    isRepeated                          : IsRepeated[int]
+    isWashedWith                        : Optional[IsWashedWith[Material]]                              = None
+    hasWashingSolvent                   : Optional[HasWashingSolvent[Solvent]]                          = None
+    isRepeated                          : Optional[IsRepeated[int]]                                     = None
 
 class Dry(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
 
 class Stir(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasStirringDuration                 : HasStirringDuration[Duration]
+    hasStirringDuration                 : Optional[HasStirringDuration[Duration]]                       = None
 
 class Sonication(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasSonicationDuration               : HasSonicationDuration[Duration]
+    hasSonicationDuration               : Optional[HasSonicationDuration[Duration]]                     = None
 
 class HeatChill(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasHeatChillDuration                : HasHeatChillDuration[Duration]
-    hasReactionTemperature              : HasReactionTemperature[Temperature]
-    hasHeatChillRate                    : HasHeatChillRate[TemperatureRate]
+    hasHeatChillDuration                : Optional[HasHeatChillDuration[Duration]]                      = None
+    hasReactionTemperature              : Optional[HasReactionTemperature[Temperature]]                 = None
+    hasHeatChillRate                    : Optional[HasHeatChillRate[TemperatureRate]]                   = None
     #hasHeatChillDevice                  : HasHeatChillDevice[HeatChillDevice]
-    hasVacuum                           : HasVacuum[bool]
+    hasVacuum                           : Optional[HasVacuum[bool]]                                     = None
     isSealed                            : Optional[IsSealed[bool]]                                      = None
+    
+class ExecutionPoint(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
 
 class LabEquipment(BaseClass):
     rdfs_isDefinedBy                    = OntoLab
 
 class VesselEnvironment(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    label                               : str
+    label                               : Label[str]
 
 class Vessel(LabEquipment):
     rdfs_isDefinedBy                    = OntoSyn
 
 class Species(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
-    label                               : Label[str]
-    altLabel                            : AltLabel[str]
+    label                               : Optional[Label[str]]                                          = None
+    altLabel                            : Optional[AltLabel[str]]                                       = None
 
 class PhaseComponent(BaseClass):
     rdfs_isDefinedBy                    = OntoCapePhaseSystem
@@ -301,6 +306,15 @@ class HasVacuum(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
 class IsSealed(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+class HasOrder(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+class HasExecutionPoint(DatatypeProperty):
+    # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
+    rdfs_isDefinedBy                    = OntoSyn
+class HasVesselEnvironment(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
 class IsRepeated(DatatypeProperty):
@@ -452,102 +466,6 @@ class HasUnitOfMeasure(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoCapeSystem
 
-class UploadKG:
-    """Parent class for the folder. Provides the following methods:
-    - query_triple: Queries the KG based on provided triples in where clause (triple) and select statement(select_var). 
-    """
-
-    def __init__(self, query_endpoint, update_endpoint, kg_user, kg_password):
-        self.prefix                     = """  PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
-                                               PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-                                               PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-                                               PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"""
-        a_box_updates_config            = config_a_box_updates("../OntoSynthesisConnection.env")
-        self.sparql_client              = PySparqlClient(
-        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT    ,
-        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT   ,
-        kg_user                         = a_box_updates_config.KG_USERNAME              ,
-        kg_password                     = a_box_updates_config.KG_PASSWORD              ,
-        fs_url                          = ""                                            ,
-        fs_user                         = ""                                            ,
-        fs_pwd                          = ""
-        )
-
-    def query_triple(self, triple, select_var):
-        """Queries the KG based on provided triples in where clause (triple) and select statement(select_var).
-        Inputs: 
-            - triple:     String in where clause.
-            - select_var: String with return variables
-        Outputs:
-        """
-        query_triple                = f"""
-                                        {self.prefix}
-                                        SELECT {select_var}
-                                        WHERE {{
-                                        {triple}
-                                            }}
-                                        """
-        # query
-        return self.sparql_client.perform_query(query_triple)
-    
-    def query_update(self, where_stat:str, delete_stat: str, insert_stat:str):
-        """takes subject, predicate and object of a tripple as input and instantiates a new triple. Please specify if object is literal => literal=True or not literal=False (Default)."""
-        update_triple                = f"""
-                                        DELETE  {{ {delete_stat} }}
-                                        INSERT  {{ {insert_stat} }}
-                                        WHERE   {{ {where_stat} }}
-                                        """
-        print(update_triple)
-        self.sparql_client.perform_update(update_triple)
-        
-    
-    def delete_connections(self, iri):
-        "Delete all connections from and to the input IRI."
-        delete_incoming_query       = f"""
-        {self.prefix}
-        DELETE WHERE {{
-        ?incomingIRI ?incomingP <{iri}> .
-        }}
-        """
-        delete_outgoing_query       = f"""
-        {self.prefix}
-        DELETE WHERE {{
-        <{iri}> ?outgoingP ?outgoingIRI .
-        }}
-        """
-        self.sparql_client.perform_update(delete_incoming_query)
-        self.sparql_client.perform_update(delete_outgoing_query)
-        print(f"deleted outgoing: {delete_incoming_query}")
-
-    def delete_triple(self, tsubject, tpredicate, tobject, literal=False):
-        "Delete all connections to the input IRI."
-        if literal:
-            insert_string           = f"""<{tsubject}> <{tpredicate}> "{tobject}" ."""
-        else:
-            insert_string           = f"""<{tsubject}> <{tpredicate}> <{tobject}> ."""
-        delete_query                = f"""
-                                            {self.prefix}
-                                            DELETE DATA {{
-                                            {insert_string}
-                                            }}
-                                            """
-        print(f"deleted triple: <{tsubject}>, <{tpredicate}>, {tobject}")
-        self.sparql_client.perform_update(delete_query)
-
-    def generate_triple(self, tsubject, tpredicate, tobject, literal=False):
-        """takes subject, predicate and object of a tripple as input and instantiates a new triple. Please specify if object is literal => literal=True or not literal=False (Default)."""
-        if literal:
-            insert_string           = f"""<{tsubject}> <{tpredicate}> "{tobject}" ."""
-        else:
-            insert_string           = f"""<{tsubject}> <{tpredicate}> <{tobject}> ."""
-        print(f"generated tripple: {insert_string}.")
-        update_query                = f"""
-        {self.prefix}
-        INSERT DATA {{
-            {insert_string}
-        }}
-        """
-        self.sparql_client.perform_update(update_query)
         
 def upload_vessels(client):
     vessel_ss_teflon                    = Vessel(label="Teflon-lined stainless-steel vessel")
@@ -704,7 +622,7 @@ def transformation_querying(client, mop_name):
         WHERE {{
         ?chemicalTrans      osyn:hasChemicalOutput  ?chemicalOutput         .
         ?chemicalOutput     osyn:isRepresentedBy    ?mop                    .
-                    ?mop a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
+        ?mop a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
         VALUES ?Text {{"{mop_name}"}}
         ?mop (<https://www.theworldavatar.com/kg/ontomops/hasMOPFormula>|<https://www.theworldavatar.com/kg/ontomops/mopAltLabel>|<https://www.theworldavatar.com/kg/ontomops/hasCCDCNumber>) ?Text .  
         
