@@ -36,5 +36,8 @@
                 "defaultStyle": "point"
             }
         }
+    ],
+    "mappings": [
+        "ship.obda"
     ]
 }

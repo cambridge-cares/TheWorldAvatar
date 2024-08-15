@@ -1,0 +1,17 @@
+[PrefixDeclaration]
+twa:        https://www.theworldavatar.com/kg/
+www:		http://www.w3.org/2001/
+ship:       https://www.theworldavatar.com/ontology/ship#
+
+[MappingDeclaration] @collection [[
+mappingId	Record
+target		twa:record/{"id"} a ship:RECORD; ship:hasDate {"BaseDateTime"}^^www:XMLSchema#dateTime ; ship:hasLAT {"LAT"} ; ship:hasLON {"LON"} ; ship:hasSpeed {"SOG"} ; ship:hasCourse {"COG"} . 
+source		SELECT "id", "MMSI", "LAT", "LON", "SOG", "COG", "BaseDateTime"
+			FROM "public"."ship"
+
+mappingId	Ship
+target		twa:ship/{"MMSI"} a ship:SHIP; ship:hasMMSI {"MMSI"} ; ship:hasVesselType {"VesselType"} ; ship:hasRecord twa:record/{"id"} . 
+source		SELECT "id", "MMSI", "VesselType"
+			FROM "public"."ship"
+
+]]

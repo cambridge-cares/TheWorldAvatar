@@ -1,31 +1,31 @@
 -- remove ships with very sparse data and small time range
-WITH "STAT" AS (
-    SELECT
-        DISTINCT "MMSI",
-        COUNT(*) AS "COUNT",
-        EXTRACT(
-            EPOCH
-            FROM
-                (MAX("BaseDateTime") - MIN("BaseDateTime"))
-        ) / 3600.0 AS "TIMERANGE"
-    FROM
-        "rawship"
-    GROUP BY
-        "MMSI"
-),
-"SPARSE" AS (
-    SELECT
-        "MMSI"
-    FROM
-        "STAT"
-    WHERE
-        "COUNT" <= 100
-        AND "TIMERANGE" <= 23.0
-)
-DELETE FROM
-    "rawship" USING "SPARSE"
-WHERE
-    "rawship"."MMSI" = "SPARSE"."MMSI";
+-- WITH "STAT" AS (
+--     SELECT
+--         DISTINCT "MMSI",
+--         COUNT(*) AS "COUNT",
+--         EXTRACT(
+--             EPOCH
+--             FROM
+--                 (MAX("BaseDateTime") - MIN("BaseDateTime"))
+--         ) / 3600.0 AS "TIMERANGE"
+--     FROM
+--         "rawship"
+--     GROUP BY
+--         "MMSI"
+-- ),
+-- "SPARSE" AS (
+--     SELECT
+--         "MMSI"
+--     FROM
+--         "STAT"
+--     WHERE
+--         "COUNT" <= 100
+--         AND "TIMERANGE" <= 23.0
+-- )
+-- DELETE FROM
+--     "rawship" USING "SPARSE"
+-- WHERE
+--     "rawship"."MMSI" = "SPARSE"."MMSI";
 
 -- interpolate ship data
 CREATE TABLE "ship" AS WITH distinct_mmsi AS (
@@ -46,6 +46,7 @@ time_series AS (
         "rawship"
 )
 SELECT
+    ROW_NUMBER() OVER (ORDER BY dm."MMSI") AS "id",
     dm."MMSI",
     ts.interval_start AS "BaseDateTime",
     AVG(rs."LAT") AS "LAT",
