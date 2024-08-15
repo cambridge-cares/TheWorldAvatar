@@ -1,2 +1,2 @@
 #!/bin/bash
-voila /home/jovyan/work/tool_page.ipynb --port=8866 --Voila.ip=0.0.0.0 --show_tracebacks=True --no-browser --VoilaConfiguration.file_allowlist=['.*'] --Voila.base_url=/dome-interactor/ --Voila.tornado_settings="{'allow_origin': '*'}"
+voila "/home/jovyan/work/DOME Showcase 1 Job Submitter.ipynb" --port=8866 --Voila.ip=0.0.0.0 --show_tracebacks=True --no-browser --VoilaConfiguration.file_allowlist=['.*'] --Voila.base_url=/dome-interactor/ --Voila.tornado_settings="{'allow_origin': '*'}"
