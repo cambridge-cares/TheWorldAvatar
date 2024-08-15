@@ -89,26 +89,31 @@ class JobSender:
             pause()
             self.call_di(f'GenerateDataWithShips?derivation={derivation_iri}&numsteps=1', 'post', quiet = False)
     
-    def generate_data_without_ship(self,derivation_iri,label,list_timestep):
+    def generate_data_without_ship(self,derivation_iri,label,list_timestep,num_step):
         req = f'GenerateDataWithoutShips?derivation={derivation_iri}'
+        if num_step == 0: num_step = 1000000
+        count = 0
         for t in list_timestep:
-            metadata = self.get_metadata()
-            if (label not in metadata):
-                print(f'Simulating {label} at {t}')
-                self.call_di(req+f'&timestep={int(t.timestamp())}', 'post')
-            elif int(t.timestamp()) not in metadata[label]['time']:
-                print(f'Simulating {label} at {t}')
-                self.call_di(req+f'&timestep={int(t.timestamp())}', 'post')
-            else:
-                print(
-                    f'Skipping {t} for {label} because it has already been simulated.')
+            if count < num_step:
+                metadata = self.get_metadata()
+                if (label not in metadata):
+                    print(f'Simulating {label} at {t}')
+                    self.call_di(req+f'&timestep={int(t.timestamp())}', 'post')
+                    count = count + 1
+                elif int(t.timestamp()) not in metadata[label]['time']:
+                    print(f'Simulating {label} at {t}')
+                    self.call_di(req+f'&timestep={int(t.timestamp())}', 'post')
+                    count = count + 1
+                else:
+                    print(
+                        f'Skipping {t} for {label} because it has already been simulated.')
     
     def run_simulation(self,label,scope,num_step):
         derivation_iri = self.get_derivation_iri(label,scope)
         self.generate_data(derivation_iri,num_step)
         return "Complete."
     
-    def run_simulation_without_ship(self,label,scope,list_timestep):
+    def run_simulation_without_ship(self,label,scope,list_timestep,num_step):
         derivation_iri = self.get_derivation_iri(label,scope)
-        self.generate_data_without_ship(derivation_iri,label,list_timestep)
+        self.generate_data_without_ship(derivation_iri,label,list_timestep,num_step)
         return "Complete."
