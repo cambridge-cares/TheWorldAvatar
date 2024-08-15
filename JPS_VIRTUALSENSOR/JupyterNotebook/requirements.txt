@@ -1,7 +1,6 @@
-ipywidgets
+ipywidgets==8.0.2
 matplotlib
 pandas
 numpy
 scikit-learn
 folium
-plotly
