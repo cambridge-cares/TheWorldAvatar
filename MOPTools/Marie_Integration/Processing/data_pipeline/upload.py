@@ -178,9 +178,8 @@ class SynthesisReactant(BaseClass):
 
 class Add(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
-    hasAddedReactant                    : Optional[HasYieldMass[SynthesisReactant]]                     = None
-    hasAddedSolvent                     : Optional[HasAddedSolvent[Solvent]]                            = None
     isAdded                             : Optional[IsAdded[Material]]                                   = None
+    isDropwise                          : Optional[IsDropwise[bool]]                                    = None    
 
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
@@ -193,7 +192,7 @@ class Dry(SynthesisStep):
 
 class Stir(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasStirringDuration                 : Optional[HasStirringDuration[Duration]]                       = None
+    hasStirringRate                     : Optional[HasStirringRate[float]]                              = None
 
 class Sonication(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
@@ -203,10 +202,10 @@ class HeatChill(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
     hasReactionTemperature              : Optional[HasTargetTemperature[Temperature]]                   = None
     hasHeatChillRate                    : Optional[HasHeatChillRate[TemperatureRate]]                   = None
-    #hasHeatChillDevice                  : HasHeatChillDevice[HeatChillDevice]
+    hasHeatChillDevice                  : Optional[HasHeatChillDevice[HeatChillDevice]]                 = None
     hasVacuum                           : Optional[HasVacuum[bool]]                                     = None
     isSealed                            : Optional[IsSealed[bool]]                                      = None
-    hasStirringSpeed                    : Optional[HasStirringSpeed[float]]                                    = None
+    hasStirringSpeed                    : Optional[HasStirringSpeed[float]]                             = None
     
 class ExecutionPoint(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
@@ -302,7 +301,6 @@ class AmountOfSubstanceConcentration(BaseClass):
 class HasNitrogenAthmosphere(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasVacuum(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsSealed(DatatypeProperty):
@@ -314,6 +312,8 @@ class HasOrder(DatatypeProperty):
 class HasExecutionPoint(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasVesselEnvironment(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsDropwise(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsRepeated(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
@@ -342,112 +342,76 @@ class HasSynthesisStep(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
     # 0 and None for field `range` indicates no cardinality restriction (which is also the default value)
     # Therefore, the below line is equivalent to `range: as_range(AnotherConcept)`
-
 class HasFirstStep(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class ReferencesMaterial(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class ThermodynamicBehaviour(ObjectProperty):
     rdfs_isDefinedBy                    = OntoCapeMaterial
-
 class IsComposedOfSubsystem(ObjectProperty):
     rdfs_isDefinedBy                    = OntoCapeSystem
-
 class HasComposition(ObjectProperty):
     rdfs_isDefinedBy                    = OntoCapePhaseSystem
-
 class ComprisesDirectly(ObjectProperty):
     rdfs_isDefinedBy                    = OntoCapeSystem
-
 class RepresentsOccurenceOf(ObjectProperty):
     rdfs_isDefinedBy                    = OntoCapePhaseSystem
-
 class HasNextStep(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasVessel(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasProduct(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class IsRepresentedBy(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasSynthesisYield(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasYieldMass(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasSonicationDuration(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class YieldLimitingSpecies(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasAddedReactant(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasAddedSolvent(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasReactantMaterialAmount(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasSolventMaterialAmount(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasEquipment(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasHeatChillDevice(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasTargetTemperature(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasHeatChillRate(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
-class HasStirringDuration(ObjectProperty):
+class HasStirringRate(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class IsAdded(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class IsWashedWith(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasWashingSolvent(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class RetrievedFrom(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class IsDescribedBy(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasChemicalInput(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasChemicalOutput(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class HasSynthesisRole(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-
 class Unit(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OM2
-
 class HasUnitOfMeasure(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoCapeSystem
-
-        
 def upload_vessels(client):
     vessel_ss_teflon                    = Vessel(label="Teflon-lined stainless-steel vessel")
     glass_vial                          = Vessel(label="glass vial")
