@@ -1,13 +1,13 @@
 # Import relevant packages
-from __future__                     import annotations
-from twa.data_model.base_ontology   import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
-from twa.data_model.iris            import TWA_BASE_URL
-from twa.kg_operations              import PySparqlClient
-from typing                         import ClassVar
-from pydantic                       import Field
-from twa.kg_operations              import PySparqlClient
-from rdflib                         import Graph, URIRef, Literal
-from rdflib.namespace               import RDF
+from __future__ import annotations
+from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
+from twa.data_model.iris import TWA_BASE_URL
+from twa.kg_operations import PySparqlClient
+from typing import ClassVar
+from pydantic import Field
+from twa.kg_operations import PySparqlClient
+from rdflib import Graph, URIRef, Literal
+from rdflib.namespace import RDF
 from typing import Optional
 import re
 import os
@@ -155,10 +155,11 @@ class ChemicalSynthesis(BaseClass):
 
 class SynthesisStep(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    hasContainerVessel                  : Optional[HasVessel[Vessel]]                          = None
+    hasContainerVessel                  : Optional[HasVessel[Vessel]]                                   = None
     hasOrder                            : Optional[HasOrder[int]]                                       = None
     hasExecutionPoint                   : Optional[HasExecutionPoint[ExecutionPoint]]                   = None
     hasVesselEnvironment                : Optional[HasVesselEnvironment[VesselEnvironment]]             = None
+    hasDuration                         : Optional[HasDuration[Duration]]                               = None
 
 class Product(BaseClass):
     rdfs_isDefinedBy                    = OntoKin
@@ -179,7 +180,8 @@ class SynthesisReactant(BaseClass):
 class Add(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
     isAdded                             : Optional[IsAdded[Material]]                                   = None
-    isDropwise                          : Optional[IsDropwise[bool]]                                    = None    
+    isDropwise                          : Optional[IsDropwise[bool]]                                    = None  
+    addedAmount                         : Optional[AddedAmount[ScalarValue]]                                    = None   
 
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
@@ -196,7 +198,6 @@ class Stir(SynthesisStep):
 
 class Sonication(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasSonicationDuration               : Optional[HasSonicationDuration[Duration]]                     = None
 
 class HeatChill(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
@@ -257,9 +258,9 @@ class ChemicalInput(BaseClass):
 
 class MetalOrganicPolyhedron(BaseClass):
     rdfs_isDefinedBy                    = OntoMOPs
-    hasCCDCNumber                       : Optional[HasCCDCNumber[int]]                              = set()
-    hasMOPFormula                       : Optional[HasMOPFormula[str]]                              = set()
-    mopAltLabel                         : Optional[MopAltLabel[str]]                                = set()
+    hasCCDCNumber                       : Optional[HasCCDCNumber[int]]                                  = set()
+    hasMOPFormula                       : Optional[HasMOPFormula[str]]                                  = set()
+    mopAltLabel                         : Optional[MopAltLabel[str]]                                    = set()
 
 class Solvent(BaseClass):
     rdfs_isDefinedBy                    = OntoKin
@@ -269,7 +270,7 @@ class HeatChillDevice(LabEquipment):
 
 class Document(BaseClass):
     rdfs_isDefinedBy                    = BIBO
-    doi                                 : Optional[Doi[str]]                                        = set()
+    doi                                 : Optional[Doi[str]]                                            = set()
 
 class Duration(BaseClass):
     rdfs_isDefinedBy                    = OM2
@@ -368,7 +369,7 @@ class HasSynthesisYield(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasYieldMass(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-class HasSonicationDuration(ObjectProperty):
+class HasDuration(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class YieldLimitingSpecies(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
@@ -391,6 +392,8 @@ class HasHeatChillRate(ObjectProperty):
 class HasStirringRate(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsAdded(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class AddedAmount(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsWashedWith(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
