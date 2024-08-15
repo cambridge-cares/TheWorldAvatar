@@ -11,7 +11,7 @@ A central framework for The World Avatar (TWA) Visualisations (the TWA Visualisa
   - [3. Production](#3-production)
     - [3.1 Docker Deployment](#31-docker-deployment)
     - [3.2 Stack Deployment](#32-stack-deployment)
-  - [4. Authorisation](#4-authorisation)
+  - [4 Authorisation](#4-authorisation)
   - [5. Release](#5-release)
 
 ## 1. Precursor
@@ -50,9 +50,9 @@ In order to modify the uploaded documents or configurations, the container will 
 This deployment section is for a standalone Docker container:
 
 1. Create files within this directory (containing the docker configurations) for `mapbox_username` and `mapbox_api_key` according to your [Mapbox](https://www.mapbox.com/) credentials. This will be passed as Docker secrets when the container is started.
-2. Set up the custom [configuration files](./doc/config.md) in the `code/public` directory. Create the `public` directory if it is not there.If you wish to use other file paths, please update the `volumes` value in `docker-compose.yml` accordingly.
-3. Set up the [authorisation server](#4-authorisation) and update the relevant environment variables at `docker-compose.yml` if required.
-4. Start the container by running the command `docker compose up -d`. The container will be running on your local machine at `localhost:80`.
+2. Set up the custom [configuration files](./doc/config.md) in the `code/public` directory. If you wish to use other file paths, please update the `volumes` value in `docker-compose.yml` accordingly.
+3. Set up the [authorisation server](#4-authorisation) and update the relevant environment variables in `docker-compose.yml` if required.
+4. Start the container by running the command `docker compose up -d`. The container will be running on the host machine (whichever the command was run from) at port `80`.
 
 ### 3.2 Stack Deployment
 
@@ -70,7 +70,7 @@ For deployment on the [TWA stack](https://github.com/cambridge-cares/TheWorldAva
 
 At the moment, the `visualisation` service defaults to the [Visualisation Framework](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework). To deploy the TWA ViP, please set up a custom service. A minimal example is available in the [tutorial](./example/vip.json).
 
-### 4 Authorisation
+## 4 Authorisation
 
 To secure your viz app with a Keycloak authentication server, set the relevant environment variables in the [local node environment file](.code/.env.local) or the relevant compose file in this directory. If running in a stack, the variables will be set in the service spec file. The relevant variables are:
 
