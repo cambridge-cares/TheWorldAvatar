@@ -181,7 +181,7 @@ class Add(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
     isAdded                             : Optional[IsAdded[Material]]                                   = None
     isDropwise                          : Optional[IsDropwise[bool]]                                    = None  
-    addedAmount                         : Optional[AddedAmount[ScalarValue]]                                    = None   
+    addedAmount                         : Optional[AddedAmount[ScalarValue]]                            = None   
 
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
@@ -415,49 +415,46 @@ class Unit(DatatypeProperty):
 class HasUnitOfMeasure(DatatypeProperty):
     # Same as ObjectProperty, `rdfs_isDefinedBy` is a compulsory field
     rdfs_isDefinedBy                    = OntoCapeSystem
+
+def change_property(instance_var, property_var, value_var, client, push=False):
+    # Check if the attribute exists  
+    if hasattr(instance_var, property_var):
+        setattr(instance_var, property_var, value_var)
+    else:
+        raise AttributeError(f"'{type(instance_var).__name__}' object has no attribute '{property_var}'")
+    if push:
+        instance_var.push_to_kg(client, recursive_depth=-1)
+
 def upload_vessels(client):
-    vessel_ss_teflon                    = Vessel(label="Teflon-lined stainless-steel vessel")
-    glass_vial                          = Vessel(label="glass vial")
-    quartz_tube                         = Vessel(label="quartz tube")
-    round_bottom_flask                  = Vessel(label="round bottom flask")
-    glass_scintilation_vial             = Vessel(label="glass scintillation vial")
-    pyrex_tube                          = Vessel(label="pyrex tube")
+    vessel_ss_teflon                    = Vessel()
+    glass_vial                          = Vessel()
+    quartz_tube                         = Vessel()
+    round_bottom_flask                  = Vessel()
+    glass_scintilation_vial             = Vessel()
+    pyrex_tube                          = Vessel()
 
-    vessel_ss_teflon.push_to_kg(client, recursive_depth=-1)
-    glass_vial.push_to_kg(client, recursive_depth=-1)
-    quartz_tube.push_to_kg(client, recursive_depth=-1)
-    round_bottom_flask.push_to_kg(client, recursive_depth=-1)
-    glass_scintilation_vial.push_to_kg(client, recursive_depth=-1)
-    pyrex_tube.push_to_kg(client, recursive_depth=-1)
+    instances                               = [vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube]
+    labels                                  = ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube"]
+    iris                                    = ["https://www.theworldavatar.com/kg/OntoSyn/Vessel_eb0f5942-d36b-47b1-86f0-725c1549fa2e",
+                                               "https://www.theworldavatar.com/kg/OntoSyn/Vessel_90589d23-44e8-4698-acdf-bee3e44df96f",
+                                               "https://www.theworldavatar.com/kg/OntoSyn/Vessel_06304c23-7926-45d2-841d-690b5de16ed0",
+                                               "https://www.theworldavatar.com/kg/OntoSyn/Vessel_5a7d7ec9-44d5-4280-8467-f9f624374a9d",
+                                               "https://www.theworldavatar.com/kg/OntoSyn/Vessel_b67ea47b-7849-4aac-b0fd-e2715a4ac034",
+                                               "https://www.theworldavatar.com/kg/OntoSyn/Vessel_080ad74b-950d-4651-a87c-5aa96d5ffb52"]
+    for i, inst in enumerate(instances):
+        change_property(inst, "rdfs_label", labels[i], client)
+        change_property(inst, "instance_iri", iris[i], client, True)
 
-def extract_numbers_and_units_add(text):
-    # Regular expression to find numbers followed by units
-    pattern             = r'(\d*\.?\d+)\s*([a-zA-Z]+)'
-    # Find all matches in the text
-    matches             = re.findall(pattern, text)
-
-    # Separate numbers and units
-    numbers             = [float(match[0]) for match in matches]
-    units               = [match[1] for match in matches]
-
-    return numbers, units
-
-def extract_numbers_and_units_temp(text):
-    # Regular expression to find numbers followed by units
-    pattern             = r'(\d*\.?\d+)\s*([^\d\s]+)'
-
-    # Find all matches in the text
-    matches             = re.findall(pattern, text)
-
-    # Separate numbers and units
-    numbers             = [float(match[0]) for match in matches]
-    units               = [match[1] for match in matches]
-
-    return numbers, units
-
-def extract_numbers_and_units_rate(text):
-    # Regular expression to find numbers followed by units
-    pattern             = r'(\d*\.?\d+)\s*([°a-zA-Z/]+)'
+def extract_numbers_and_units(text, pattern_type):
+    """patterns:
+    add:        r'(\d*\.?\d+)\s*([a-zA-Z]+)'
+    temp:       r'(\d*\.?\d+)\s*([^\d\s]+)', also used for rate
+    """
+    match pattern_type:
+        case "add":
+            pattern              = r'(\d*\.?\d+)\s*([a-zA-Z]+)'
+        case "temp":
+            pattern              = r'(\d*\.?\d+)\s*([^\d\s]+)'
 
     # Find all matches in the text
     matches             = re.findall(pattern, text)
@@ -465,7 +462,6 @@ def extract_numbers_and_units_rate(text):
     # Separate numbers and units
     numbers             = [float(match[0]) for match in matches]
     units               = [match[1] for match in matches]
-
     return numbers, units
 
 class TextToCSV:
@@ -497,8 +493,8 @@ class TextToCSV:
                 entries.append(cleaned_row)
         return entries
     def filter_by_synthesis_role(self, entries):
-        product_entries = []
-        other_entries = []
+        product_entries     = []
+        other_entries       = []
 
         for entry in entries:
             if entry.get("Synthesis Role") == "Product":
@@ -621,11 +617,12 @@ def insert_query_unit(subject_syn, label_syn):
                                                     }}
                                                 """
 def heatchill_upload(client, heatchill_step):
-    temp, temp_unit                             = extract_numbers_and_units_temp(heatchill_step["Target temperature"])
-    heat_time, time_unit                        = extract_numbers_and_units_add(heatchill_step["Heat or cooling Time"])
-    heat_rate, rate_unit                        = extract_numbers_and_units_rate(heatchill_step["Heating or cooling rate"])
+    temp, temp_unit                             = extract_numbers_and_units(heatchill_step["Target temperature"],"temp")
+    heat_time, time_unit                        = extract_numbers_and_units(heatchill_step["Heat or cooling Time"], "add")
+    heat_rate, rate_unit                        = extract_numbers_and_units(heatchill_step["Heating or cooling rate"], "rate")
     heatchill_device                            = heatchill_step["used Device"]
     sealed                                      = heatchill_step["sealed Vessel"]
+    print("temp unit:", temp_unit)
     # Vessel:
     match heatchill_step['used Vessel']:
         case 'Teflon-lined stainless-steel vessel':
@@ -651,9 +648,9 @@ def heatchill_upload(client, heatchill_step):
     vessel.isClosed                             = heatchill_step["sealed Vessel"]
     heat_chill                                  = HeatChill(hasContainerVessel=vessel, hasHeatChillDuration=duration, hasReactionTemperature=temperature, hasHeatChillRate=temp_rate, hasVacuum=vacuum, isSealed=sealed)
     
-    components = [duration, temperature, temp_rate, vessel, heat_chill]
-    for component in components:
-        push_component_to_kg(component, client)
+    #components = [duration, temperature, temp_rate, vessel, heat_chill]
+    #for component in components:
+    #    push_component_to_kg(component, client)
 
 def remove_na(input_candidate):
     if input_candidate == "N/A":
@@ -763,7 +760,7 @@ def main():
     sparql_client_synthesis                                 = get_client("OntoSynthesisConnection")
     sparql_client_species                                   = get_client("OntoSpeciesConnection") 
     sparql_client_mop                                       = get_client("OntoMOPConnection") 
-    #upload_vessels(sparql_client)
+    upload_vessels(sparql_client_synthesis)
     #unit_upload(sparql_client)
     #chemicals_upload("../Data/first10_prompt22/10.1021_ja 0104352.txt", "")
     #another_object_of_one_concept = species.pull_from_kg('https://iri-of-the-object-of-interest', sparql_client, recursive_depth=-1)
@@ -781,20 +778,22 @@ def main():
     print("transformation iri", transformation_iri)
     chemical_synthesis                          = ChemicalSynthesis()   
     print("IRI: ", transformation_iri[0]["chemicalTrans"])
-    chemical_transformation                     = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
-    chemical_transformation.isDescribedBy.add(chemical_synthesis)
-    print("chemical transformation: ", chemical_transformation)
+    #chemical_transformation                     = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
+    #chemical_transformation.isDescribedBy.add(chemical_synthesis)
+    #print("chemical transformation: ", chemical_transformation)
+
     add_json                                    = data2["Add"]
     add1                                        = add_json[0]
     addedAmount                                 = add1["added chemical amount"]
-    number, units                               = extract_numbers_and_units_add(addedAmount)
+    number, units                               = extract_numbers_and_units(addedAmount, "add")
     heatchill_json                              = data2["HeatChill"]
 
     for heatchill_step in heatchill_json:
         # remove non numerical entries
-        if heatchill_step["Target temperature"] == "—" or heatchill_step["Target temperature"] == "room temperature":
+        if heatchill_step["Target temperature"] == "—" or heatchill_step["Target temperature"] == "room temperature" or heatchill_step["Target temperature"] == "N/A":
             continue
         # target temperature
+        heatchill_upload(sparql_client_synthesis, heatchill_step=heatchill_step)
 
 
 
