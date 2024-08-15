@@ -9,6 +9,19 @@ The uploaded content provided by the deploying developer should match the direct
 - [`optional-pages/`](#3-optional-pages): Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
 - [`style-overrides.css`](#4-styling-overrides): Optional CSS overrides.
 
+## Table of Contents
+
+- [1. Configuration](#1-configuration)
+  - [1.1 UI Settings](#11-ui-settings)
+  - [1.2 Map Settings](#12-map-settings)
+    - [1.2.1 General Settings](#121-general-settings)
+    - [1.2.2 Map Data Settings](#122-map-data-settings)
+- [2. Assets](#2-assets)
+- [3. Optional Pages](#3-optional-pages)
+  - [3.1 Fields](#31-fields)
+  - [3.2 Sample](#32-sample)
+- [4 Styling Overrides](#4-styling-overrides)
+
 ## 1. Configuration
 
 The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) configuration files:
@@ -87,6 +100,7 @@ Icons on the map are shown by default in the layer tree. Additional legend items
 
 > [!NOTE]  
 > The comments seen below are for explanation purposes only. They are not valid JSON and should be removed.
+
 ```json
 {
   "legend": {
@@ -290,7 +304,7 @@ Developers can insert landing pages alongside other supplementary pages such as 
 
 Do note that the supplementary pages will be inserted as thumbnails and accessed via the landing page. It is crucial to add numbers in the file name of supplementary pages to order the thumbnail display according to your preferences. Otherwise, file names are insignificant if the display order is not of utmost significance. For instance, `01.about.md` and `02.glossary.md` will be always be displayed in this sequence as 01 is smaller than 02.
 
-When linking the images in markdown, do note that any relative path should start from the `images` path (e.g. `/images/defaults/icons/acknowledgement.svg`). The platform will automatically transform this if required for a reverse proxy or subpath implementation through the `BASE_PATH` environment variable.
+When linking the images in markdown, do note that any relative path should start from the `./images` path (e.g. `./images/defaults/icons/acknowledgement.svg`).
 
 ### 3.1 Fields
 
@@ -316,4 +330,4 @@ Insert your content here
 
 ## 4. Styling Overrides
 
-Users can override existing styling to suit their requirements by adding a `style-overrides.css` to the `uploads` directory.
+Users can override existing styling to suit their requirements by adding a `style-overrides.css` to the root directory at `/twa/public`.
