@@ -338,7 +338,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                             // the value needs to be stored while the connection is open
                             return ((PgArray) row).getArray();
                         } catch (SQLException e) {
-                            throw new JPSRuntimeException("Error in casting PgArray", e);
+                            throw new JPSRuntimeException("Error in getting SQL array value", e);
                         }
                     }).collect(Collectors.toList());
                 }
