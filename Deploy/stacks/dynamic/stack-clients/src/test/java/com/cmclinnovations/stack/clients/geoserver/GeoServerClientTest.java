@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -32,7 +32,9 @@ public class GeoServerClientTest {
     private static final String EXISTING_COVERAGE_STORE = "existingCoverageStore";
     private static final String NEW_COVERAGE_STORE = "newCoverageStore";
 
+    @AutoClose("stop")
     public static MockGeoServer mockGeoServer;
+    @AutoClose
     public static MockPostGIS mockPostGIS;
 
     public static GeoServerClient geoServerClient;
@@ -52,12 +54,6 @@ public class GeoServerClientTest {
     @BeforeEach
     void reset() {
         mockGeoServer.clear("");
-    }
-
-    @AfterAll
-    public static void tidyUp() {
-        mockGeoServer.stop();
-        mockPostGIS.close();
     }
 
     @Test
