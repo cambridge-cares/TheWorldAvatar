@@ -1,18 +1,18 @@
 Source,Type,Target,Relation,Value,Data Type
-ABoxOntoMOPs,Ontology,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl,http://www.w3.org/2002/07/owl#imports,,
-ABoxOntoMOPs,Ontology,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl,base,,
-Tetrahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Cube,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Octahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Icosahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Dodecahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Cuboctahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Rhombicuboctahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-RhombicDodecahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Anticuboctahedron,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-TrigonalBipyramid,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-Triangular,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
-TrigonalPrism,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#PolyhedralShape,,,
+ABoxOntoMOPs,Ontology,https://www.theworldavatar.com/kg/ontomops/,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoMOPs,Ontology,https://www.theworldavatar.com/kg/ontomops/,base,,
+Tetrahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Cube,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Octahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Icosahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Dodecahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Cuboctahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Rhombicuboctahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+RhombicDodecahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Anticuboctahedron,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+TrigonalBipyramid,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+Triangular,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
+TrigonalPrism,Instance,https://www.theworldavatar.com/kg/ontomops/PolyhedralShape,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Tetrahedron,,A tetrahedron is a polyhedral shape defined by four triangular plane faces. ,String
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Cube,,A cube is a polyhedral shape defined by six square plane faces. ,String
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Octahedron,,An octahedron is a polyhedral shape defined by eight triangular plane faces.,String
@@ -25,15 +25,15 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Anticuboctahedron,,"A
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,TrigonalBipyramid,,A trigonal bipyramid is a polyhedral shape defined by five triangular faces.,String
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Triangular,,A triangular shape is a polygon defined by three edges and three vertices.,String
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,TrigonalPrism,,A trigonal prism is a polyhedral shape defined by two parallel triangular bases connected by three rectangular faces.,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Tetrahedron,,tet,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Cube,,cub,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Octahedron,,oct,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Icosahedron,,ico,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Dodecahedron,,dod,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Cuboctahedron,,cuo,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Rhombicuboctahedron,,rco,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,RhombicDodecahedron,,rdo,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Anticuboctahedron,,twc,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,TrigonalBipyramid,,tbp,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,Triangular,,tri,String
-http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#hasSymbol,Data Property,TrigonalPrism,,trp,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Tetrahedron,,tet,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Cube,,cub,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Octahedron,,oct,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Icosahedron,,ico,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Dodecahedron,,dod,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Cuboctahedron,,cuo,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Rhombicuboctahedron,,rco,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,RhombicDodecahedron,,rdo,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Anticuboctahedron,,twc,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,TrigonalBipyramid,,tbp,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,Triangular,,tri,String
+https://www.theworldavatar.com/kg/ontomops/hasSymbol,Data Property,TrigonalPrism,,trp,String
