@@ -1,8 +1,8 @@
 #!/bin/bash
 
 TEXT_TO_ADD="
-location /dome-interactor/api/kernels/ {
-  proxy_pass http://ship-stack-dome-interactor_ui/dome-interactor/api/kernels/;
+location /demos/ship-emission/dome-interactor/api/kernels/ {
+  proxy_pass http://ship-stack-dome-interactor_ui/demos/ship-emission/dome-interactor/api/kernels/;
 
 proxy_set_header X-Real-IP \$remote_addr;
 proxy_set_header Host \$host;

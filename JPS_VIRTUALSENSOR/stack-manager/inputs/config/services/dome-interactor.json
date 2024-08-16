@@ -16,8 +16,8 @@
     },
     "endpoints": {
         "ui": {
-            "url": "http://localhost:8866/dome-interactor/",
-            "externalPath": "/dome-interactor/"
+            "url": "http://localhost:8866/demos/ship-emission/dome-interactor/",
+            "externalPath": "/demos/ship-emission/dome-interactor/"
         }
     }
 }
