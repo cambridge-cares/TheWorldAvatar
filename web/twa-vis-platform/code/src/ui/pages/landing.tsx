@@ -53,8 +53,8 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
 
       <div className={`${styles.thumbnailContainer} hidden-scrollbar`}>
         {props.settings.branding.landing && (<LandingImage
-          lightUrl={props.settings.branding.landing}
-          darkUrl={props.settings.branding.landingDark}
+          lightUrl={props.settings.branding?.landing?.[0]}
+          darkUrl={props.settings.branding?.landingDark?.[0]}
         />)}
         {getThumbnails()}
         {props.settings.modules.map && (

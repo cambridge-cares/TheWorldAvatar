@@ -34,7 +34,10 @@ The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) c
 
 The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules, branding requirements, and setting scenarios. A brief explanation is as follows:
 
-- `branding`: key value pairs for various branding icons such as navigation bar and logo
+- `branding`: key value pairs for various branding icons such as navigation bar and logo. NB values should be an array.
+  - `navbar`: An array of logos to be placed on the left side of the navbar
+  - `landing`: One logo element (within an array) for the landing page on light mode
+  - `landingDark`: One logo element (within an array) for the landing page on dark mode
 - `modules`: key value pairs indicating if certain modules should be highlighted
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
@@ -52,8 +55,9 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 ```json
 {
   "branding": {
-    "logo": "./images/whatever.svg", // Custom branding logo
-    "navbarLogo": "./images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "navbar": ["./images/defaults/navbar-logo.svg"], // Optional custom logo for the navbar (should be 5:1 aspect ratio)
+    "landing": ["./images/defaults/icons/twa.svg"], // Optional custom logo for the landing page
+    "landingDark": ["./images/defaults/icons/twa.svg"], // Optional custom logo for the landing page in dark mode
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
