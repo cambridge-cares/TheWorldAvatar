@@ -1,11 +1,14 @@
 
+import { redirect } from 'next/navigation';
+
 import SettingsStore from 'io/config/settings';
+import { PathNames } from 'io/config/routes';
 import MapContainer from 'map/map-container';
 import { ScenarioDefinition } from 'types/scenario';
 import { DefaultSettings } from 'types/settings';
-import { getScenarios } from '../../utils/getScenarios';
+import { getScenarios } from 'utils/getScenarios';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 
 /**
@@ -13,33 +16,35 @@ export const dynamic = 'force-dynamic'
  * 
  */
 export default async function VisualisationPage() {
-
-
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
-  let scenarios: ScenarioDefinition[];
-  // When scenarios are available, retrieve their definitions on the server side
-  if (uiSettings.resources?.scenario) {
-    try {
-      scenarios = await getScenarios(uiSettings.resources?.scenario?.url);
-      scenarios = scenarios.map((scenario) => ({
-        ...scenario,
-        url: uiSettings.resources.scenario.url,
-        dataset: uiSettings.resources.scenario.data,
-      }))
-    } catch (error) {
-      console.error(`Error populating scenarios selector`, error)
+  if (uiSettings.modules.map) {
+    let scenarios: ScenarioDefinition[];
+    // When scenarios are available, retrieve their definitions on the server side
+    if (uiSettings.resources?.scenario) {
+      try {
+        scenarios = await getScenarios(uiSettings.resources?.scenario?.url);
+        scenarios = scenarios.map((scenario) => ({
+          ...scenario,
+          url: uiSettings.resources.scenario.url,
+          dataset: uiSettings.resources.scenario.data,
+        }))
+      } catch (error) {
+        console.error(`Error populating scenarios selector`, error)
+      }
     }
+
+    SettingsStore.readMapSettings();
+    await SettingsStore.readMapDataSettings();
+
+    return (
+      <MapContainer
+        scenarioURL={SettingsStore.getDefaultSettings()}
+        settings={SettingsStore.getMapSettings()}
+        data={SettingsStore.getMapDataSettings()}
+        scenarios={scenarios}
+      />
+    )
+  } else {
+    redirect(PathNames.HOME);
   }
-
-  SettingsStore.readMapSettings();
-  await SettingsStore.readMapDataSettings();
-
-  return (
-    <MapContainer
-      scenarioURL={SettingsStore.getDefaultSettings()}
-      settings={SettingsStore.getMapSettings()}
-      data={SettingsStore.getMapDataSettings()}
-      scenarios={scenarios}
-    />
-  )
 }
