@@ -11,7 +11,7 @@ import { parseWordsForLabels } from 'utils/client-utils';
 
 interface RegistryTableProps {
   fields: FieldValues[];
-  clickEventHandlers?: { [key: string]: (index: number) => void };
+  clickEventHandlers: { [key: string]: (index: number) => void };
   limit?: number;
 }
 
@@ -66,7 +66,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
       return props.fields.map((row, rowIndex) => (
         <tr key={row[headers[0]] + rowIndex}>
           <td>
-            {props.clickEventHandlers && <div className={styles["table-icon-cell"]}>
+            <div className={styles["table-icon-cell"]}>
               <MaterialIconButtonWithIndex
                 iconName="edit"
                 iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
@@ -86,7 +86,6 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
                 onButtonClick={props.clickEventHandlers["delete"]}
               />
             </div>
-            }
           </td>
           {headers.map((column, colIndex) => {
             const columnVal: string = column != "id" ? parseWordsForLabels(row[column]) : row[column];
