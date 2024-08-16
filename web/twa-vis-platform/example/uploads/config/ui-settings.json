@@ -7,6 +7,8 @@
     "modules": {
         "landing": true,
         "help": true,
-        "map": true
+        "map": true,
+        "dashboard": false,
+        "registry": false
     }
 }

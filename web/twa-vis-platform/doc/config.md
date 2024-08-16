@@ -41,9 +41,11 @@ The `config/ui-settings.json` file provides general settings for the platform. T
 - `modules`: key value pairs indicating if certain modules should be available
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
+  - `dashboard`: REQUIRED. Displays the dashboard page if enabled
   - `help`: REQUIRED. Displays help page if enabled
+  - `registry`: REQUIRED. Displays the registry page if enabled
 - `links`: optional configuration for adding or updating redirect links on the landing page. This configuration can overwrite the defaults for the map, dashboard, and help modules. It requires an `ARRAY` of the following JSON format:
-  - `url`: REQUIRED. The url is either targeted at either an external or internal link. For internal link usage, please input `map`, `dashboard`, and `help` accordingly.
+  - `url`: REQUIRED. The url is either targeted at either an external or internal link. For internal link usage, please input `map`, `dashboard`, `help`, and `registry` accordingly.
   - `title`: REQUIRED. Thumbnail title on landing page. Optional for only internal links, which defaults to the default if not set.
   - `caption`: REQUIRED. Thumbnail caption on landing page. Optional for only internal links, which defaults to the default if not set.
   - `icon`: REQUIRED. Thumbnail icon on landing page. Optional for only internal links, which defaults to the default if not set.
@@ -58,6 +60,7 @@ Note that resources are optional and their configuration options can differ from
 - Scenario: Enables scenario selection in the `map` page
   - `url`: This is a required field that specifies the URL from which the scenarios and their settings can be retrieved. In this example, the URL points to a stack deployed on theworldavatar.io platform.
   - `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
+- Registry: Activate the `registry` page based on the backend resource indicated in the `url` parameter.
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
@@ -74,11 +77,25 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
   "modules": {
     "landing": true, // Should the landing page be enabled
     "help": true, // Should the help page be enabled
-    "map": true // Should the map page be enabled
+    "dashboard": false, // Should the analytics page be enabled
+    "map": true, // Should the map page be enabled
+    "registry": false // Should the map page be enabled
   },
+  "links": [
+    {
+      "url": "map",
+      "title": "Explore",
+      "caption": "Describe your map here",
+      "icon": "./images/path/to/svg.svg"
+    }
+  ],
   "resources": {
     "dashboard": {
       "url": "" // Edit dashboard url here
+    },
+    "registry": {
+      "url": "type", // Specify only the type to reach the registry of interest
+      "data": "" // Edit registry agent's API here
     },
     "scenario": {
       "url": "https://theworldavatar.io/demos/credo-ofwat/central/CentralStackAgent", // Edit scenario url here
