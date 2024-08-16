@@ -1,9 +1,13 @@
 import React from 'react';
 
+import { Metadata } from 'next';
 import markdownIt from "markdown-it";
 
 import StaticContentPage from 'ui/pages/static-content-page';
+import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
+import SettingsStore from 'io/config/settings';
+import { DefaultSettings } from 'types/settings';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownIt({
@@ -12,6 +16,19 @@ const markdowner = markdownIt({
   breaks: true,
   linkify: true
 });
+
+/**
+ * Set page metadata.
+ * 
+ * @returns metadata promise.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === "help");
+  return {
+    title: metadata?.title ?? "Help",
+  }
+}
 
 /**
  * Renders the help page.

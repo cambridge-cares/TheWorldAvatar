@@ -1,4 +1,5 @@
 
+import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
@@ -7,9 +8,23 @@ import MapContainer from 'map/map-container';
 import { ScenarioDefinition } from 'types/scenario';
 import { DefaultSettings } from 'types/settings';
 import { getScenarios } from 'utils/getScenarios';
+import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 
 export const dynamic = 'force-dynamic';
 
+
+/**
+ * Set page metadata.
+ * 
+ * @returns metadata promise.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === "map");
+  return {
+    title: metadata?.title ?? "Explore",
+  }
+}
 
 /**
  * A server component that handles the explore  route (i.e. images/defaultsexplore") to display the map container and its components.
