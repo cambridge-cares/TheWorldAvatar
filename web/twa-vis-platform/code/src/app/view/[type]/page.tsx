@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
-import { PathNames } from 'io/config/routes';
+import { PathNames, PageTitles, Modules } from 'io/config/routes';
 import { DefaultSettings } from 'types/settings';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 import RegistryTableComponent from 'ui/graphic/table/registry/registry-table-component';
@@ -21,9 +21,9 @@ interface ViewRegistryPageProps {
  */
 export async function generateMetadata(): Promise<Metadata> {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
-  const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === "registry");
+  const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === Modules.REGISTRY);
   return {
-    title: metadata?.title ?? "Registry",
+    title: metadata?.title ?? PageTitles.REGISTRY,
   }
 }
 

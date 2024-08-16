@@ -1,3 +1,12 @@
+export const Modules: {
+  [key: string]: string;
+} = {
+  MAP: "map",
+  DASHBOARD: "dashboard",
+  REGISTRY: "registry",
+  HELP:"help",
+};
+
 export const PathNames: {
   [key: string]: string;
 } = {
@@ -17,4 +26,13 @@ export const Routes: {
   DASHBOARD: PathNames.DASHBOARD,
   REGISTRY: PathNames.REGISTRY,
   HELP: PathNames.HELP,
+};
+
+export const PageTitles: {
+  [key: string]: string;
+} = {
+  MAP: "Explore",
+  DASHBOARD: "Analytics",
+  REGISTRY: "Registry",
+  HELP:"Help",
 };

@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
-import { PathNames } from 'io/config/routes';
+import { PathNames, PageTitles, Modules } from 'io/config/routes';
 import MapContainer from 'map/map-container';
 import { ScenarioDefinition } from 'types/scenario';
 import { DefaultSettings } from 'types/settings';
@@ -20,9 +20,9 @@ export const dynamic = 'force-dynamic';
  */
 export async function generateMetadata(): Promise<Metadata> {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
-  const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === "map");
+  const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === Modules.MAP);
   return {
-    title: metadata?.title ?? "Explore",
+    title: metadata?.title ?? PageTitles.MAP,
   }
 }
 
