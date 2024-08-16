@@ -5,8 +5,8 @@
 
 import { FieldValues } from 'react-hook-form';
 
-import { Routes } from 'io/config/routes';
 import { getAfterDelimiter } from './client-utils';
+import { FormTemplate, OntologyConcept } from 'types/form';
 
 export interface HttpResponse {
   success: boolean;
@@ -48,4 +48,111 @@ export async function getData(agentApi: string, entityType: string, identifier?:
       id: getAfterDelimiter(item.id, "/"),
     }
   });
+}
+
+/**
+ * Retrieves all available ontology types for the associated entity type.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {string} entityType Type of the entity.
+ */
+export async function getAvailableTypes(agentApi: string, entityType: string): Promise<OntologyConcept[]> {
+  const res = await fetch(`${agentApi}/type/${entityType}`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+}
+
+/**
+ * Retrieves the form template for the associated entity type.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {string} entityType Type of the entity.
+ * @param {string} identifier Optional identifier of the parent entity.
+ */
+export async function getFormTemplate(agentApi: string, entityType: string, identifier?: string): Promise<FormTemplate> {
+  let url: string = `${agentApi}/form/${entityType}`;
+  if (identifier) {
+    url += `/${identifier}`;
+  }
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return await res.json();
+}
+
+/**
+ * Add the entity to the knowledge graph.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {FieldValues} form Form storing the input data.
+ * @param {string} entityType Target entity type.
+ */
+export async function addEntity(agentApi: string, form: FieldValues, entityType: string): Promise<HttpResponse> {
+  try {
+    const response = await fetch(`${agentApi}/${entityType}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...form,
+        entity: entityType,
+      })
+    });
+    const responseBody: string = await response.text();
+    return { success: response.ok, message: responseBody };
+  } catch (error) {
+    console.error("Error occurred while adding entity.", error);
+  }
+}
+
+/**
+ * Update the entity information within the knowledge graph.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {FieldValues} form Form storing the input data.
+ * @param {string} entityType Target entity type.
+ */
+export async function updateEntity(agentApi: string, form: FieldValues, entityType: string): Promise<HttpResponse> {
+  try {
+    const response = await fetch(`${agentApi}/${entityType}/${form.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...form,
+        entity: entityType,
+      })
+    });
+    const responseBody: string = await response.text();
+    return { success: response.ok, message: responseBody };
+  } catch (error) {
+    console.error("Error occurred while updating entity.", error);
+  }
+}
+
+/**
+ * Delete the entity associated with the id.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {string} id Target entity id.
+ * @param {string} entityType Target entity type.
+ */
+export async function deleteEntity(agentApi: string, id: string, entityType: string): Promise<HttpResponse> {
+  try {
+    const response = await fetch(`${agentApi}/${entityType}/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const responseBody: string = await response.text();
+    return { success: response.ok, message: responseBody };
+  } catch (error) {
+    console.error("Error occurred when deleting entity.", error);
+  }
 }

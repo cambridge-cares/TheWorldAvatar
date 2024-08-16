@@ -1,0 +1,153 @@
+.container {
+  width: 90vw;
+  padding: 1rem 2rem;
+  margin: 1rem;
+
+  background-color: var(--background-primary);
+  border: 1px solid var(--border-primary) !important;
+  border-radius: 20px;
+  flex-direction: column;
+}
+
+.form-title {
+  display: flex;
+  flex-direction: row;
+  text-wrap: nowrap;
+}
+
+.form-contents {
+  padding: 0.5rem;
+  margin: 1rem 0 0;
+  height: 55vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--background-secondary);
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  height: 10vh;
+  padding: 0.5rem 0;
+
+  border-style: solid;
+  border-color: var(--border-primary);
+  border-width: 1px 0 0 0;
+}
+
+.form-button {
+  flex-direction: row-reverse;
+  padding-left: 1rem;
+}
+
+.form-button-text {
+  font-size: var(--font-size-primary-text);
+  color: var(--text-color-links);
+}
+
+.form-button-text:hover {
+  color: var(--text-color-links-hover);
+}
+
+.form-fieldset {
+  border-width: 1px 0 0;
+}
+
+.form-fieldset-label {
+  margin: 0 0.25rem 0.5rem;
+  padding: 0.25rem;
+  font-weight: bold;
+  font-size: var(--font-size-secondary-text);
+}
+
+.form-fieldset-contents {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.form-dependent-field-container {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: 10vw;
+  margin: 0 0.75rem 1rem;
+  padding: 0.5rem 0.75rem 0;
+
+  outline: 0.5px solid var(--border-tertiary);
+}
+
+.form-dependent-field-line {
+  margin-bottom: 0.5rem;
+}
+
+.form-dependent-field-label {
+  font-size: var(--font-size-tertiary-text);
+  white-space: nowrap;
+}
+
+.form-dependent-field-value {
+  display: flex;
+  justify-content: flex-end;
+
+  font-size: var(--font-size-tertiary-text);
+  color: var(--text-color-secondary);
+}
+
+.schedule-occurrence-container {
+  width: 100%;
+  margin: 0 1rem 1rem;
+}
+
+.schedule-occurrence-input {
+  width: 2.25rem;
+  margin: 0 0.25rem;
+  padding: 0 0.25rem;
+  text-align: center;
+
+  background-color: var(--background-primary);
+  font-size: var(--font-size-tertiary-text);
+  color: var(--text-color-secondary);
+}
+
+.schedule-day-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  row-gap: 0.5rem;
+  width: 90%;
+}
+
+.loader-container {
+  margin-right: 0.5rem;
+}
+
+.button {
+  display: flex;
+  padding: 0.2rem 0.5rem;
+  border-radius: .25rem;
+
+  background-color: var(--background-primary);
+  color: var(--text-color-primary);
+}
+
+.button:hover {
+  background-color: var(--background-tertiary);
+}
+
+
+.button-text {
+  font-size: var(--font-size-tertiary-text);
+  margin-left: 0.25rem;
+}
+
+@media only screen and (max-width: 480px) {
+  .form-fieldset-contents {
+    flex-direction: column;
+  }
+
+  .schedule-day-container {
+    flex-direction: column;
+  }
+}

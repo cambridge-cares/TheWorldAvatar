@@ -125,6 +125,16 @@ img {
     background-color: white;
 }
 
+.formContainer {
+    display: flex;
+    align-self: center;
+    flex-direction: column;
+
+    width: 90%;
+    height: 90vh;
+    margin: 1rem;
+}
+
 .partner-button {
     width: 50%;
 
