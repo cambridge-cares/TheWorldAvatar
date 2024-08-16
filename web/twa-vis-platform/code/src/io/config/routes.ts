@@ -4,6 +4,7 @@ export const PathNames: {
   HOME: "./",
   MAP: "map",
   DASHBOARD: "analytics",
+  REGISTRY: "view",
   HELP: "help",
 };
 
@@ -14,5 +15,6 @@ export const Routes: {
   HOME: PathNames.HOME,
   MAP: PathNames.MAP,
   DASHBOARD: PathNames.DASHBOARD,
+  REGISTRY: PathNames.REGISTRY,
   HELP: PathNames.HELP,
 };
