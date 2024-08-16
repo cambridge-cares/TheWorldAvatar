@@ -42,9 +42,6 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         tsClient.setRdbURL(postgres.getJdbcUrl());
         tsClient.setRdbUser(postgres.getUsername());
         tsClient.setRdbPassword(postgres.getPassword());
-
-        tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
-                "http://ts1", 4326);
     }
 
     protected void setRdbClient() {
@@ -53,9 +50,7 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
 
     @After
     public void clearDatabase() throws SQLException {
-        try (Connection conn = tsClient.getConnection()) {
-            tsClient.deleteAll(conn);
-        }
+        tsClient.deleteAll();
     }
 
     /**
@@ -65,6 +60,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
      */
     @Test
     public void testWrongSRID() {
+        tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+                "http://ts1", 4326);
         // a dummy point
         Point point = new Point();
         point.setX(1);
@@ -88,6 +85,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
      */
     @Test
     public void testWrongGeometry() throws SQLException {
+        tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+                "http://ts1", 4326);
         Polygon polygon = new Polygon("POLYGON ((1 1, 2 1, 2 2, 1 2, 1 1))");
         polygon.setSrid(4326);
 
@@ -106,6 +105,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
      */
     @Test
     public void testAddTimeSeriesData() {
+        tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+                "http://ts1", 4326);
         Point point = new Point();
         point.setX(1);
         point.setY(1);
@@ -121,5 +122,47 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         Point queriedPoint = tsClient.getTimeSeries(Arrays.asList("http://data1")).getValuesAsPoint("http://data1")
                 .get(0);
         Assert.assertTrue(queriedPoint.equals(point));
+    }
+
+    @Test
+    public void testAddTimeSeriesDataWithArray() {
+        Point point1 = new Point();
+        point1.setX(1);
+        point1.setY(1);
+        point1.setSrid(4326);
+
+        Point point2 = new Point();
+        point2.setX(1);
+        point2.setY(1);
+        point2.setSrid(4326);
+
+        List<List<?>> values = new ArrayList<>();
+
+        List<Point[]> value = new ArrayList<>();
+        value.add(new Point[] { point1, point2 });
+        value.add(new Point[] { point2, point1 });
+
+        values.add(value);
+
+        tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point[].class), "http://ts1", 4326);
+        // upload data
+        TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1, 2), Arrays.asList("http://data1"),
+                values);
+        tsClient.addTimeSeriesData(Arrays.asList(tsUpload));
+
+        // query and check if it's the same
+        TimeSeries<Integer> queriedTimeSeries = tsClient.getTimeSeries(Arrays.asList("http://data1"));
+
+        List<Integer> times = queriedTimeSeries.getTimes();
+        List<Point[]> results = queriedTimeSeries.getValuesAsPointsArray("http://data1");
+
+        Assert.assertEquals(1, (int) times.get(0));
+        Assert.assertTrue(point1.equals(results.get(0)[0]));
+        Assert.assertTrue(point2.equals(results.get(0)[1]));
+
+        Assert.assertEquals(2, (int) times.get(1));
+        Assert.assertTrue(point2.equals(results.get(0)[0]));
+        Assert.assertTrue(point1.equals(results.get(0)[1]));
+
     }
 }

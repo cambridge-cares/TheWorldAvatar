@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +27,7 @@ import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
+import org.postgresql.jdbc.PgArray;
 
 import static org.jooq.impl.DSL.*;
 
@@ -349,6 +351,18 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             List<List<?>> dataValues = new ArrayList<>();
             for (String data : dataIRI) {
                 List<?> column = queryResult.getValues(dataColumnFields.get(data));
+
+                if (!column.isEmpty() && column.get(0).getClass() == PgArray.class) {
+                    column = column.stream().map(row -> {
+                        try {
+                            // the value needs to be stored while the connection is open
+                            return ((PgArray) row).getArray();
+                        } catch (SQLException e) {
+                            throw new JPSRuntimeException("Error in getting SQL array value", e);
+                        }
+                    }).collect(Collectors.toList());
+                }
+
                 dataValues.add(column);
             }
 
@@ -798,7 +812,14 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
             // Create 1 column for each value
             for (int i = 0; i < dataIRI.size(); i++) {
-                if (Geometry.class.isAssignableFrom(dataClass.get(i))) {
+                Class<?> dataClazz;
+                if (dataClass.get(i).isArray()) {
+                    dataClazz = dataClass.get(i).getComponentType();
+                } else {
+                    dataClazz = dataClass.get(i);
+                }
+
+                if (Geometry.class.isAssignableFrom(dataClazz)) {
                     // these columns will be added with their respective restrictions
                     additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(i)));
                     classForAdditionalGeomColumns.add(dataClass.get(i));
@@ -841,14 +862,25 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         sb.append(String.format("alter table %s ", getDSLTable(tsTableName).toString()));
 
         for (int i = 0; i < columnNames.size(); i++) {
-            sb.append(String.format("add %s geometry(%s", DSL.name(columnNames.get(i)),
-                    dataTypes.get(i).getSimpleName()));
+            String className;
+
+            if (dataTypes.get(i).isArray()) {
+                className = dataTypes.get(i).getComponentType().getSimpleName();
+            } else {
+                className = dataTypes.get(i).getSimpleName();
+            }
+
+            sb.append(String.format("add %s geometry(%s", columnNames.get(i), className));
 
             // add srid if given
             if (srid != null) {
                 sb.append(String.format(", %d)", srid));
             } else {
                 sb.append(")");
+            }
+
+            if (dataTypes.get(i).isArray()) {
+                sb.append("[]");
             }
 
             if (i != columnNames.size() - 1) {
@@ -903,17 +935,33 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             Object[] newValues = new Object[dataIRIs.size() + 2];
             newValues[0] = ts.getTimes().get(i);
             for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-                newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
+                Object value = ts.getValues(dataIRIs.get(j)).get(i);
+                if (value.getClass().isArray()
+                        && Geometry.class.isAssignableFrom(value.getClass().getComponentType())) {
+                    newValues[j + 1] = new GeometryArrayValue((Geometry[]) value);
+                } else {
+                    newValues[j + 1] = ts.getValues(dataIRIs.get(j)).get(i);
+                }
             }
             newValues[ts.getDataIRIs().size() + 1] = tsIri;
             insertValueStep = insertValueStep.values(newValues);
 
         }
         // open source jOOQ does not support postgis, hence not using execute() directly
-        // if this gets executed when it's 0, null values will be added
-        try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
+        String sql = fixGeometryArray(insertValueStep.toString());
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
         }
+    }
+
+    /**
+     * workaround to bypass jooq restrictions
+     * 
+     * @param sql
+     * @return
+     */
+    private String fixGeometryArray(String sql) {
+        return sql.replaceAll("'ARRAY\\[(.*?)\\]'", "ARRAY[$1]").replace("''", "'");
     }
 
     /**

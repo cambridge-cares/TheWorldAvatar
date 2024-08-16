@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Condition;
@@ -27,6 +29,7 @@ import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
+import org.postgresql.jdbc.PgArray;
 
 import static org.jooq.impl.DSL.*;
 
@@ -328,6 +331,18 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             List<List<?>> dataValues = new ArrayList<>();
             for (String data : dataIRI) {
                 List<?> column = queryResult.getValues(dataColumnFields.get(data));
+
+                if (!column.isEmpty() && column.get(0).getClass() == PgArray.class) {
+                    column = column.stream().map(row -> {
+                        try {
+                            // the value needs to be stored while the connection is open
+                            return ((PgArray) row).getArray();
+                        } catch (SQLException e) {
+                            throw new JPSRuntimeException("Error in casting PgArray", e);
+                        }
+                    }).collect(Collectors.toList());
+                }
+
                 dataValues.add(column);
             }
 
@@ -906,7 +921,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                 Object[] newValues = new Object[dataIRIs.size() + 1];
                 newValues[0] = ts.getTimes().get(i);
                 for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-                    newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
+                    Object value = ts.getValues(dataIRIs.get(j)).get(i);
+                    if (value.getClass().isArray()
+                            && Geometry.class.isAssignableFrom(value.getClass().getComponentType())) {
+                        newValues[j + 1] = new GeometryArrayValue((Geometry[]) value);
+                    } else {
+                        newValues[j + 1] = ts.getValues(dataIRIs.get(j)).get(i);
+                    }
                 }
                 insertValueStep = insertValueStep.values(newValues);
                 numRowsWithoutMatchingTime += 1;
@@ -916,8 +937,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         }
         // open source jOOQ does not support postgis, hence not using execute() directly
         if (numRowsWithoutMatchingTime != 0) {
+            String sql = fixGeometryArray(insertValueStep.toString());
             // if this gets executed when it's 0, null values will be added
-            try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
                 statement.executeUpdate();
             }
         }
@@ -931,13 +953,19 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                 String dataIRI = ts.getDataIRIs().get(i);
 
                 if (i == (ts.getDataIRIs().size() - 1)) {
+                    Object value = ts.getValues(dataIRI).get(rowIndex);
+                    if (value.getClass().isArray()
+                            && Geometry.class.isAssignableFrom(value.getClass().getComponentType())) {
+                        value = new GeometryArrayValue((Geometry[]) value);
+                    }
                     updateStep
-                            .set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
+                            .set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), value)
                             .where(timeColumn.eq(ts.getTimes().get(rowIndex)));
 
                     // open source jOOQ does not support postgis geometries, hence not using
                     // execute() directly
-                    try (PreparedStatement statement = conn.prepareStatement(updateStep.toString())) {
+                    String sql = fixGeometryArray(updateStep.toString());
+                    try (PreparedStatement statement = conn.prepareStatement(sql)) {
                         statement.executeUpdate();
                     }
                 } else {
@@ -946,6 +974,16 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                 }
             }
         }
+    }
+
+    /**
+     * workaround to bypass jooq restrictions
+     * 
+     * @param sql
+     * @return
+     */
+    private String fixGeometryArray(String sql) {
+        return sql.replaceAll("'ARRAY\\[(.*?)\\]'", "ARRAY[$1]").replace("''", "'");
     }
 
     /**
