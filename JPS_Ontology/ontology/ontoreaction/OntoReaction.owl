@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoreaction="https://www.theworldavatar.com/kg/ontoreaction/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoreaction/">
-        <dc:date>08 August 2024</dc:date>
+        <dc:date>16 August 2024</dc:date>
         <rdfs:comment>An ontology developed for describing reaction experiment.</rdfs:comment>
-        <owl:versionInfo>1.1</owl:versionInfo>
+        <owl:versionInfo>1.11</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -418,18 +418,6 @@
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:comment>A relation links a variation to its parent reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoreaction/isWrittenBy -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isWrittenBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/OperatorNotes"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Operator"/>
-        <rdfs:comment>A relation between the notes for a reaction experiment and the operator that wrote it.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
     </owl:ObjectProperty>
     
