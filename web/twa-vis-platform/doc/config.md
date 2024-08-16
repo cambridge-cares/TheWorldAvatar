@@ -2,7 +2,7 @@
 
 Given that the platform is designed to be generalisable, this directory exists to allow users to customise their web contents according to their needs. It acts as the target for a Docker volume or bind mount, and should be mounted to the `/twa/public` directory within the deployed container. Files within it can then be accessed using the `$HOST/...` URL route.
 
-The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions.
+The uploaded content provided by the deploying developer should match the directory structure below. Please read the respective sections for the specific instructions. Do note that the example configuration are intended to disseminate information and may not be functional (i.e. to set up the platform). If you require sample files of a working example, please have a look over at the [example](../example/) directory.
 
 - [`config/`](#1-configuration): Contains config/settings files.
 - [`images/`](#2-assets): Custom image files.
@@ -24,28 +24,40 @@ The uploaded content provided by the deploying developer should match the direct
 
 ## 1. Configuration
 
-The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) configuration files:
+The platform requires the following [JSON](https://en.wikipedia.org/wiki/JSON) configuration files
 
 - [`ui-settings.json`](#11-ui-settings): UI configuration settings; **[MANDATORY]**.
-- [`data.json`](#121-general-settings): Specifies data sources and layers to be mapped; **[OPTIONAL]**
+- [`data-settings.json`](#121-general-settings): Specifies the urls of datasets for mapping the data sources and layers; **[OPTIONAL]**
 - [`map-settings.json`](#122-map-data-settings): Non-data specific configuration for maps; **[OPTIONAL]**
 
 ### 1.1 UI Settings
 
-The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules, branding requirements, and setting scenarios. A brief explanation is as follows:
+The `config/ui-settings.json` file provides general settings for the platform. This includes settings for displaying modules, branding requirements, and additional resources. A brief explanation is as follows:
 
-- `branding`: key value pairs for various branding icons such as navigation bar and logo. NB values should be an array.
+- `branding`: key value pairs for various branding icons such as navigation bar and logo. It requires a string `ARRAY`.
   - `navbar`: An array of logos to be placed on the left side of the navbar
   - `landing`: One logo element (within an array) for the landing page on light mode
   - `landingDark`: One logo element (within an array) for the landing page on dark mode
-- `modules`: key value pairs indicating if certain modules should be highlighted
+- `modules`: key value pairs indicating if certain modules should be available
   - `landing`: REQUIRED. Displays landing page if enabled
   - `map`: REQUIRED. Displays map visualisation if enabled
-  - `dashboard`: REQUIRED. Displays dashboard if enabled
   - `help`: REQUIRED. Displays help page if enabled
-- `scenario`: optional key value pairs if you require scenario handling
-  - `url`: endpoint to retrieve the scenarios and settings
-  - `data`: target dataset that should be acccessible to the user
+- `links`: optional configuration for adding or updating redirect links on the landing page. This configuration can overwrite the defaults for the map, dashboard, and help modules. It requires an `ARRAY` of the following JSON format:
+  - `url`: REQUIRED. The url is either targeted at either an external or internal link. For internal link usage, please input `map`, `dashboard`, and `help` accordingly.
+  - `title`: REQUIRED. Thumbnail title on landing page. Optional for only internal links, which defaults to the default if not set.
+  - `caption`: REQUIRED. Thumbnail caption on landing page. Optional for only internal links, which defaults to the default if not set.
+  - `icon`: REQUIRED. Thumbnail icon on landing page. Optional for only internal links, which defaults to the default if not set.
+- `resources`: optional configuration for additional resources. They follow the following format
+  - `resourceName`: indicates the type of resource required - dashboard, scenario
+    - `url`: REQUIRED. url of the resource
+    - `data`: optional dataset indicator that is only used with scenario resources to target required dataset for scenarios
+
+Note that resources are optional and their configuration options can differ from each other. Please note the list of available resources and their possible options as follows:
+
+- Dashboard: Activate the `analytics` page with an dashboard embedded as an IFrame based on only the `url` parameter.
+- Scenario: Enables scenario selection in the `map` page
+  - `url`: This is a required field that specifies the URL from which the scenarios and their settings can be retrieved. In this example, the URL points to a stack deployed on theworldavatar.io platform.
+  - `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
@@ -56,35 +68,29 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 {
   "branding": {
     "navbar": ["./images/defaults/navbar-logo.svg"], // Optional custom logo for the navbar (should be 5:1 aspect ratio)
-    "landing": ["./images/defaults/icons/twa.svg"], // Optional custom logo for the landing page
-    "landingDark": ["./images/defaults/icons/twa.svg"], // Optional custom logo for the landing page in dark mode
+    "landing": "./images/path/to/svg/light.svg", // Landing page brand/company image for light mode
+    "landingDark": "./images/path/to/svg/dark.svg" // Optional landing page brand/company image for dark mode
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
     "help": true, // Should the help page be enabled
-    "map": true, // Should the map page be enabled
-    "dashboard": true // Should the dashboard page be enabled
+    "map": true // Should the map page be enabled
+  },
+  "resources": {
+    "dashboard": {
+      "url": "" // Edit dashboard url here
+    },
+    "scenario": {
+      "url": "https://theworldavatar.io/demos/credo-ofwat/central/CentralStackAgent", // Edit scenario url here
+      "data": "water" // Edit scenario target dataset here
+    }
   }
 }
 ```
 
-The `resources` section in the configuration file allows for the specification of data resources for a viz app. One such resource is `scenario` resource, which enables scenario selection in the map page of the platform. This has so far only been applied to CReDo and an example of a config is shown below.
-
-```json
-"resources": {
-    "scenario": {
-        "url": "https://theworldavatar.io/demos/credo-ofwat/central/CentralStackAgent",
-        "data": "water"
-    }
-}
-```
-
-- `url`: This is a required field that specifies the URL from which the scenarios and their settings can be retrieved. In this example, the URL points to a stack deployed on theworldavatar.io platform.
-- `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
-
 ### 1.2 Map Settings
 
-If the map module is enabled, developers will need to supply `data.json` and `map-settings.json` files.
+If the map module is enabled, developers will need to supply `data-settings.json` and `map-settings.json` files.
 
 #### 1.2.1 General Settings
 
@@ -219,13 +225,26 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
 
 #### 1.2.2 Map Data Settings
 
-The `config/data.json` file visualises data according to user requirements. Specifically, it is expected to specify the data sources (where and how the data is loaded) and data layers (how that data is visualised) within a hierarchal data group structure.
+The `config/data-settings.json` file specifies the datasets for visualisation according to user requirements. This file can ingest both local and remote datasets. Local datasets must start with a `/` to indicate a relative path from the `<root>` directory. Moreover, the display order of datasets will follow same sequence as specified in this file. A sample with explanation is provided below:
 
-##### Defining a group
+```json
+{
+  "dataSets": [
+    "/config/data.json", // Full url of local dataset is `<root>/uploads/config/data.json`
+    "https://example.org/data.json" // Remote dataset
+  ]
+}
+```
 
-The `data.json` requires at least one defined data group. Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy.
+Datasets must adhere to a specific format defined in the `config/data.json` file. Specifically, it is expected to specify the data sources (where and how the data is loaded) and data layers (how that data is visualised) within a hierarchal data group structure. Note that these datasets do not necessarily need to be named as `data.json` and can be modified as long as they are properly set in the `config/data-settings.json` file. It is also recommended to put them into the `config` directory to minimise any confusion for setting the relative path.
+
+##### Dataset: Defining a group
+
+The `data.json` requires at least one defined data group. Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy. For initial visibility settings, we recommend implementing the `expanded` parameter instead of using any native layer visibility options, such as Mapbox's `"layout": { "visibility": "none" }`, to prevent unexpected behaviors. We recommend to implement this parameter for the nested group with layers, rather than at the root to improve initial user experience.
 
 - `name` (required): This is the user facing name of the data group.
+- `expanded` (optional): A boolean indicating if the starting state of the data group should be expanded. False to collapse the group.
+- `tree-icon` (optional): An image that will be displayed on the layer tree.
 - `stack` (optional): This is the URL for the stack containing metadata on this group's data. Note that this should be the base URL of the stack (i.e. without "/geoserver"). If missing, dynamic metadata from a remote FeatureInfoAgent cannot be utilised. This parameter can also be set with different values for different subgroups.
 - `sources` (optional): This is an array of objects defining data sources (see below for info on sources).
 - `layers` (optional): This is an array of objects defining data layers (see below for info on layers).
@@ -245,6 +264,7 @@ Definitions of data sources and layers is optional within a data group so that g
     ],
     "groups": [
         "name": "My Example Sub Group",
+        "expanded": false,
         "stack": "https://my-example-website.com/subgroup/stack",
         "sources": [
             ...
@@ -259,7 +279,7 @@ Definitions of data sources and layers is optional within a data group so that g
 }
 ```
 
-##### Defining a source
+##### Dataset: Defining a source
 
 Each group can contain a number of sources, representing individual data files or endpoints that will be loaded into memory by the chosen mapping library. Sources can also be defined in top-level groups, then utilised by layers further down the hierarchy. For loading local data files, it is recommended to placed them in the `uploads/config/data` directory for a more organised approach. Please create the subdirectory if required.
 
@@ -278,7 +298,7 @@ A sample definition for Mapbox is as follows:
 }
 ```
 
-##### Defining a layer
+##### Dataset: Defining a layer
 
 Each group can also contain a number of layers, defining how the data is visualised on screen. Layers can utilise sources defined in groups higher in the hierarchy; additionally multiple layers can visualise data from the same source.
 
@@ -287,6 +307,10 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 - `id` (required): This is the internal ID of the layer. It needs to be unique within the current group, but is not required to be globally unique.
 - `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
 - `source` (required): This is the ID of the source used to populate the layer.
+- `order` (optional): A field that defines the layer hierarchy based on their order. Defaults to 0. Both positive and negative numbers are valid.
+- `grouping` (optional): A grouping field for displaying only a subset of layers within this group.
+- `clickable` (optional): Enables the layer to be clickable. Set to true by default.
+- `hovering` (optional): Creates a highlight effect when hovering over the layer's features. This parameter is an array of two numbers indicating the opacity for the highlighted and non-highlighted states respectively.
 
 ```json
 {
@@ -295,6 +319,19 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
   "source": "example-mapbox-source"
 }
 ```
+
+> Displaying subset of layers
+
+Users can choose to display a subset of the layers within the same group. For example, given a building dataset for the entire city, the user may wish to create the following three views. This can be set by creating at least one layer for each view and assign a `grouping` field to each. Then, a dropdown will be generated next to the building data group in the visualisation.
+
+- All buildings - `grouping`: "Default"
+- All buildings color coded by their use - `grouping`: "Building Use"
+- Buildings containing carparks or not - `grouping`: "Carpark"
+
+Instructions:
+
+1. All related layers must belong to the same data group and be assigned a `grouping` field
+2. The dropdown sequence is determined by the order the layers appear in the `data.json`; use the `Default` grouping to ensure that it is the first option
 
 ## 2. Assets
 
@@ -323,7 +360,7 @@ The following fields are supported, and must be added to the top of the file bef
 
 A sample markdown file for the landing page:
 
-```
+```markdown
 ---
 title: CReDo // Customisable
 slug: landing // This must always be set to landing for the landing page
