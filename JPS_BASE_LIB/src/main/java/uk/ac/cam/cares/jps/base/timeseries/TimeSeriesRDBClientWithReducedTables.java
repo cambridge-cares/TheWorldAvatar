@@ -955,7 +955,8 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     }
 
     /**
-     * workaround to bypass jooq restrictions
+     * workaround to bypass jooq restrictions, unnecessary quotes are added around
+     * ARRAY[] and the single quotes within ST_GeomFromEWKT('') are duplicated
      * 
      * @param sql
      * @return
