@@ -32,6 +32,9 @@ importers:
       '@types/react':
         specifier: ^18.3.3
         version: 18.3.3
+      '@types/react-modal':
+        specifier: ^3.16.3
+        version: 3.16.3
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.0.0
         version: 8.0.1(@typescript-eslint/parser@8.0.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
@@ -135,9 +138,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
-      '@types/react-modal':
-        specifier: ^3.16.3
-        version: 3.16.3
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
