@@ -8,7 +8,7 @@ import Image from 'next/image'
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      <Image alt={"TWA Logo"} src={"./images/defaults/icons/twa.svg"} width={30} height={30} style={{ paddingRight: 5 }} />
+      <Image alt={"TWA Logo"} src={"../../images/defaults/icons/twa.svg"} width={30} height={30} style={{ paddingRight: 5 }} />
       <span>Powered by&nbsp;
         <Link href="https://theworldavatar.io">The World Avatar</Link>
       </span>
