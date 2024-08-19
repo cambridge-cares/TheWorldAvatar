@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
  * An image component that sets the background image depending on the current theme.
   */
 export default function BackgroundImage() {
-  const lightBackgroundUrl: string = "./images/defaults/background-light.svg";
-  const darkBackgroundUrl: string = "./images/defaults/background-dark.svg";
+  const lightBackgroundUrl: string = "../../images/defaults/background-light.svg";
+  const darkBackgroundUrl: string = "../../images/defaults/background-dark.svg";
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(lightBackgroundUrl);
 
   useEffect(() => {
