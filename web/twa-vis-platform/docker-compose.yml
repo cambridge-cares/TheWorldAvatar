@@ -24,6 +24,8 @@ services:
         description: "TWA Visualisation Platform image."
     volumes:
       - ./code/public:/twa/public/
+      - /twa/public/images/defaults
+      - /twa/public/images/utils
     ports:
       - "3000:3000" 
   
