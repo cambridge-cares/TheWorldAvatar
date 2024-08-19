@@ -140,7 +140,7 @@ public class TimeSeriesPostGISIntegrationTest {
 
         Point point2 = new Point();
         point2.setX(1);
-        point2.setY(1);
+        point2.setY(2);
         point2.setSrid(4326);
 
         List<List<?>> values = new ArrayList<>();
@@ -170,8 +170,8 @@ public class TimeSeriesPostGISIntegrationTest {
             Assert.assertTrue(point2.equals(results.get(0)[1]));
 
             Assert.assertEquals(2, (int) times.get(1));
-            Assert.assertTrue(point2.equals(results.get(0)[0]));
-            Assert.assertTrue(point1.equals(results.get(0)[1]));
+            Assert.assertTrue(point2.equals(results.get(1)[0]));
+            Assert.assertTrue(point1.equals(results.get(1)[1]));
         }
     }
 
