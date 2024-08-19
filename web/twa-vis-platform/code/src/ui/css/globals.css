@@ -9,6 +9,7 @@
         --background-tertiary: #e5e5e5;
 
         --background-inverse-primary: #0d1117;
+        --background-inverse-primary-rgb: 13, 17, 23;
         --background-inverse-secondary: #30363d;
         --background-inverse-tertiary: #434c57;
 
@@ -36,6 +37,7 @@
         --background-tertiary: #434c57;
 
         --background-inverse-primary: #f9f9f9;
+        --background-inverse-primary-rgb: 249, 249, 249;
         --background-inverse-secondary: #efefef;
         --background-inverse-tertiary: #e5e5e5;
 
@@ -131,8 +133,7 @@ img {
     flex-direction: column;
 
     width: 90%;
-    height: 90vh;
-    margin: 1rem;
+    height: 75vh;
 }
 
 .partner-button {

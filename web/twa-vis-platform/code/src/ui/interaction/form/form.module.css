@@ -1,6 +1,6 @@
 .container {
   width: 90vw;
-  padding: 1rem 2rem;
+  padding: 1rem 2rem 0.5rem;
   margin: 1rem;
 
   background-color: var(--background-primary);
@@ -17,8 +17,8 @@
 
 .form-contents {
   padding: 0.5rem;
-  margin: 1rem 0 0;
-  height: 55vh;
+  margin: 0.5rem 0 0;
+  height: 70vh;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: var(--background-secondary);
@@ -27,7 +27,6 @@
 .form-footer {
   display: flex;
   justify-content: space-between;
-  height: 10vh;
   padding: 0.5rem 0;
 
   border-style: solid;
