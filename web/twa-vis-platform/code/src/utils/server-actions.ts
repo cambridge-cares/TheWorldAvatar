@@ -84,6 +84,21 @@ export async function getFormTemplate(agentApi: string, entityType: string, iden
 }
 
 /**
+ * Sends a GET request to the specified agent to execute its task. 
+ * Note that this method is only concerned with a successful GET request and will not return any parameter.
+ * 
+ * @param {string} agentApi API endpoint.
+ */
+export async function sendGetRequest(agentApi: string): Promise<void> {
+  console.log(agentApi)
+  const res = await fetch(agentApi);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+}
+
+
+/**
  * Add the entity to the knowledge graph.
  * 
  * @param {string} agentApi API endpoint.
