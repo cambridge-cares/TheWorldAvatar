@@ -19,6 +19,14 @@ import org.mockserver.model.RequestDefinition;
 
 public class MockHTTPService extends ClientAndServer {
 
+    public static enum Method{
+        GET,
+        HEAD,
+        POST,
+        PUT,
+        DELETE
+    }
+
     protected final URL url;
 
     private List<RequestDefinition> expectations = new ArrayList<>();
@@ -36,21 +44,21 @@ public class MockHTTPService extends ClientAndServer {
         return clear("");
     }
 
-    public void addExpectation(String path, String method, int returnCode) {
-        addExpectation(path, method, returnCode, HttpRequest.request(), HttpResponse.response());
+    public void addExpectation(Method method, String path, int returnCode) {
+        addExpectation(method, path, returnCode, HttpRequest.request(), HttpResponse.response());
     }
 
-    public void addExpectation(String path, String method, int returnCode, HttpRequest requestExtras) {
-        addExpectation(path, method, returnCode, requestExtras, HttpResponse.response());
+    public void addExpectation(Method method, String path, int returnCode, HttpRequest requestExtras) {
+        addExpectation(method, path, returnCode, requestExtras, HttpResponse.response());
     }
 
-    public void addExpectation(String path, String method, int returnCode, HttpResponse responseExtras) {
-        addExpectation(path, method, returnCode, HttpRequest.request(), responseExtras);
+    public void addExpectation(Method method, String path, int returnCode, HttpResponse responseExtras) {
+        addExpectation(method, path, returnCode, HttpRequest.request(), responseExtras);
     }
 
-    public void addExpectation(String path, String method, int returnCode,
+    public void addExpectation(Method method, String path, int returnCode,
             HttpRequest requestExtras, HttpResponse responseExtras) {
-        requestExtras.withPath(path).withMethod(method);
+        requestExtras.withPath(path).withMethod(method.toString());
         when(requestExtras).respond(responseExtras.withStatusCode(returnCode));
         expectations.add(requestExtras);
     }
