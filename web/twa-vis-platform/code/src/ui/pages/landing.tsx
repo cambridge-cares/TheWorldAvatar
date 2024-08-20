@@ -77,12 +77,20 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           />
         )}
         {props.settings.modules.registry && (
-          <DefaultPageThumbnail
-            title={registryLinkProps?.title ?? "Registry"}
-            caption={registryLinkProps?.caption ?? "Manage and view your records"}
-            icon={registryLinkProps?.icon ?? "./images/defaults/icons/glossary.svg"}
-            url={`${Routes.REGISTRY}/${props.settings.resources?.registry?.url}`}
-          />
+          <>
+            <DefaultPageThumbnail
+              title={registryLinkProps?.title ?? "Registry"}
+              caption={registryLinkProps?.caption ?? "Manage and view your records"}
+              icon={registryLinkProps?.icon ?? "./images/defaults/icons/glossary.svg"}
+              url={`${Routes.REGISTRY}/${props.settings.resources?.registry?.url}`}
+            />
+            <DefaultPageThumbnail
+              title={"Scheduler"}
+              caption={"Plan and organise upcoming tasks"}
+              icon={"./images/defaults/icons/glossary.svg"}
+              url={`${Routes.REGISTRY}/service`}
+            />
+          </>
         )}
 
         <DefaultPageThumbnail
