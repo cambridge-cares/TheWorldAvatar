@@ -150,6 +150,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasExpectedAcidity -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasExpectedAcidity">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity"/>
+        <rdfs:comment>A relation between a chemical and its expected acidity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoreaction/hasInputChemical -->
 
 

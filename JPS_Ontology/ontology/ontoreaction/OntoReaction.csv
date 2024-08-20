@@ -72,6 +72,7 @@ hasOperatorNotes,Object Property,,,ReactionExperiment,OperatorNotes,,A relation 
 hasStartTime,Object Property,,,ReactionExperiment,http://www.w3.org/2006/time#Instant,,A relation between a reaction experiment and its start time.,https://www.theworldavatar.com/kg/ontoreaction/,
 hasEndTime,Object Property,,,ReactionExperiment,http://www.w3.org/2006/time#Instant,,A relation between a reaction experiment and its end time.,https://www.theworldavatar.com/kg/ontoreaction/,
 hasAcidity,Object Property,,,Chemical,http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity,,A relation between a chemical and its acidity.,https://www.theworldavatar.com/kg/ontoreaction/,
+hasExpectedAcidity,Object Property,,,Chemical,http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity,,A relation between a chemical and its expected acidity.,https://www.theworldavatar.com/kg/ontoreaction/,
 hasRInChI,Data Property,,,ChemicalReaction,string,,,https://www.theworldavatar.com/kg/ontoreaction/,
 hasRDFILE,Data Property,,,ChemicalReaction,string,,,https://www.theworldavatar.com/kg/ontoreaction/,
 cdXML,Data Property,,,ChemicalReaction,string,,,https://www.theworldavatar.com/kg/ontoreaction/,
