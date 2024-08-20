@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoreaction="https://www.theworldavatar.com/kg/ontoreaction/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoreaction/">
-        <dc:date>16 August 2024</dc:date>
+        <dc:date>20 August 2024</dc:date>
         <rdfs:comment>An ontology developed for describing reaction experiment.</rdfs:comment>
         <owl:versionInfo>1.11</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -59,6 +59,18 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasCatalyst"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasAcidity -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasAcidity">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity"/>
+        <rdfs:comment>A relation between a chemical and its acidity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
+    </owl:ObjectProperty>
     
 
 
@@ -547,6 +559,13 @@
 
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/MOP_0000543"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Acidity"/>
     
 
 
