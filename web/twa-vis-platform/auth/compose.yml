@@ -1,5 +1,5 @@
 services:
-  keycloak:
+  keycloak-dev:
     container_name: "keycloak-dev-server"
     image: keycloak/keycloak:latest
     ports:
@@ -9,4 +9,4 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: password
       KC_LOG_LEVEL: info
       
-    command: start-dev
+    command: start-dev --import-realm
