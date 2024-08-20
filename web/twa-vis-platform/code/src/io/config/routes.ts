@@ -18,6 +18,8 @@ export const PathNames: {
   REGISTRY_EDIT: "edit",
   REGISTRY_DELETE: "delete",
   HELP: "help",
+  OPS_AGENT: "waste-ops-agent/",
+  SCHEDULE_AGENT: "scheduler-agent/"
 };
 
 // Default routes

@@ -26,7 +26,7 @@ interface FormContainerComponentProps {
  * 
  * @param {string} entityType The type of entity.
  * @param {string} formType The type of form such as add, update, delete, and view.
- * @param {string} agentApi The target endpoint for contacting the backend agent.
+ * @param {string} agentApi The target stack endpoint for contacting the backend agent.
  */
 export default function FormContainerComponent(props: Readonly<FormContainerComponentProps>) {
   const router = useRouter();
@@ -64,7 +64,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
           formRef={formRef}
           entityType={props.entityType}
           formType={props.formType}
-          agentApi={props.agentApi}
+          agentApi={props.agentApi + PathNames.OPS_AGENT}
           setResponse={setResponse}
           onSubmittingChange={handleFormSubmittingChange}
         />

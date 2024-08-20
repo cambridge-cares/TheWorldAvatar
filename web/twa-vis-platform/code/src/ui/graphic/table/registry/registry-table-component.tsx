@@ -12,6 +12,7 @@ import { parseWordsForLabels } from 'utils/client-utils';
 import { getData } from 'utils/server-actions';
 import RegistryTable from './registry-table';
 import TableRibbon from './table-ribbon';
+import { PathNames } from 'io/config/routes';
 
 interface RegistryTableComponentProps {
   entityType: string;
@@ -22,7 +23,7 @@ interface RegistryTableComponentProps {
  * This component renders a registry table for the specified entity.
  * 
  * @param {string} entityType Type of entity for rendering.
- * @param {string} agentApi The target endpoint for contacting the backend agent.
+ * @param {string} agentApi The target stack endpoint for contacting the backend agents.
  */
 export default function RegistryTableComponent(props: Readonly<RegistryTableComponentProps>) {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        const instances: FieldValues[] = await getData(props.agentApi, props.entityType);
+        const instances: FieldValues[] = await getData(props.agentApi + PathNames.OPS_AGENT, props.entityType);
         setCurrentInstances(instances);
       } catch (error) {
         console.error('Error fetching instances', error);
