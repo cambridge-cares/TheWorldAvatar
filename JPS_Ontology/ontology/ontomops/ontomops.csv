@@ -54,6 +54,4 @@ hasSymmetryPointGroup,Data Property,,,AssemblyModel,String,,A relation between c
 hasReferenceDOI,Data Property,,,Provenance,String,,DOI number provided as an identifier not as a link. ,https://www.theworldavatar.com/kg/ontomops/,
 hasSymbol,Data Property,,,PolyhedralShape,String,,A data property describing polyhedral shape through a letter code.,https://www.theworldavatar.com/kg/ontomops/,
 hasOuterCoordinationNumber,Data Property,,,BindingSite,Integer,,,https://www.theworldavatar.com/kg/ontomops/,
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,BindingSite,String,,,http://www.w3.org/2000/01/rdf-schema,
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,BindingDirection,String,,,http://www.w3.org/2000/01/rdf-schema,
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Float,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
