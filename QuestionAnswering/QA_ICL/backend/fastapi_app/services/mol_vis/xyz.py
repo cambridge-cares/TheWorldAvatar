@@ -207,7 +207,7 @@ WHERE {{
 
     def get_from_ontomops(self, iris: list[str]):
         query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
 
 SELECT DISTINCT * WHERE {{
     VALUES ?IRI {{ {values} }}

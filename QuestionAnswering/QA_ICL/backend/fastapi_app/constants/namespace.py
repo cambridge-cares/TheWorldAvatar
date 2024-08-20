@@ -31,7 +31,7 @@ ONTOCAPE = Namespace(
     "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#"
 )
 ONTOMOPS = Namespace(
-    "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#"
+    "https://www.theworldavatar.com/kg/ontomops/"
 )
 
 # TWA BIM & GIS namespaces

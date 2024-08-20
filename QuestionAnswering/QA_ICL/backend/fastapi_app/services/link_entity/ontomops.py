@@ -40,7 +40,7 @@ class OntomopsLinkerManager(LinkerManager):
             f"Linking metal organic polyhedra with args: {args.model_dump_json()}"
         )
 
-        query = f"""PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        query = f"""PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
         
 SELECT DISTINCT *
 WHERE {{
@@ -61,7 +61,7 @@ WHERE {{
             f"Linking chemical building unit with args: {args.model_dump_json()}"
         )
 
-        query = f"""PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        query = f"""PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
         
 SELECT DISTINCT *
 WHERE {{
@@ -82,7 +82,7 @@ WHERE {{
             lst: list[str] = []
             return lst
 
-        query = f"""PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        query = f"""PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
         
 SELECT DISTINCT *
 WHERE {{
@@ -136,7 +136,7 @@ WHERE {{
         )
         clauses = [x for x in [*clauses_GBU, clause_sym_pt_grp] if x]
 
-        query = """PREFIX mops: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        query = """PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
 
 SELECT DISTINCT ?AM
 WHERE {{
