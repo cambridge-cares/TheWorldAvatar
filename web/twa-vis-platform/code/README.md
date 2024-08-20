@@ -90,14 +90,11 @@ Next.js uses the `public` directory by default to house resources such as images
 
 The default Next.js configuration is designed to function seamlessly when the base URL starts directly from the domain with no page paths. However, in cases where page paths are utilised (e.g., `http://www.example.org/page/`), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. This includes specifying the `assetPrefix` option in the `next.config.js` file.
 
-To accommodate developers deploying applications to various subdomains and environments, developers of the visualisation platform should always utilise relative paths such as `./` for any routes or images within your Next.js application. For any subpath present in the deployed url, update your nginx configuration with the following lines nested within the `location` field:
+To accommodate developers deploying applications to various subdomains and environments, developers of the visualisation platform should always utilise relative paths such as `./` for any routes or images within your Next.js application. For any subpath present in the deployed url, update your nginx configuration with the following lines field:
 
 ```
-if ($uri ~* ^/path/.*/_next(/.*)?$) {
-  rewrite ^/path/[^/]+(/_next(/.*)?)$ /path$1 permanent;
-}
-if ($uri ~* ^/path/.*/images(/.*)?$) {
-  rewrite ^/path/[^/]+(/images(/.*)?)$ /path$1 permanent;
+location ~* ^/redirect/path/.*/(_next|images)(/.*)?$ {
+    return 301 /redirect/path/$1$2;
 }
 ```
 
