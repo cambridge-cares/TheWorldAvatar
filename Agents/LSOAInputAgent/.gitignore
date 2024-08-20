@@ -1,0 +1,25 @@
+__pycache__/
+.mypy_cache/
+.pytest_cache
+build/
+dist/
+*~*
+.idea/
+py4jps/
+coverage.xml
+.coverage
+*.gv
+*.png
+geckodriver.log
+assets
+
+## Directories
+tmp_base/
+tmp_stack/
+output/*
+data/*
+!.gitignore
+
+## User defined
+*.egg-info
+
