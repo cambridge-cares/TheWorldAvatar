@@ -24,6 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
@@ -65,10 +66,14 @@ public class GeoServerClientTest {
         geoServerClient = GeoServerClient.getInstance();
     }
 
+    @BeforeEach
+    void reset() {
+        mockGeoServer.reset();
+    }
+
     @AfterEach
     void verifyCalls() {
         mockGeoServer.verifyCalls();
-        mockGeoServer.reset();
     }
 
     @Test

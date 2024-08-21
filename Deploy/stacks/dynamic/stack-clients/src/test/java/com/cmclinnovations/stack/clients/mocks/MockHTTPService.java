@@ -43,7 +43,7 @@ public class MockHTTPService extends ClientAndServer {
 
     public MockServerClient reset() {
         expectations.clear();
-        return clear("");
+        return super.reset();
     }
 
     public void addExpectation(Method method, String path, int returnCode) {
