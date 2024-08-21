@@ -6,7 +6,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -30,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import kotlin.Pair;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
+import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
 
 /**
@@ -51,6 +54,8 @@ public class SensorService extends Service {
     private static final long SEND_INTERVAL = 5000;
     private final Logger LOGGER = Logger.getLogger(SensorService.class);
     private HandlerThread thread;
+    private NetworkChangeReceiver networkChangeReceiver;
+    private static final long THIRTY_DAYS_IN_MILLIS = 30L * 24 * 60 * 60 * 1000;
 
     @Override
     public void onCreate() {
@@ -59,6 +64,13 @@ public class SensorService extends Service {
         thread = new HandlerThread("ServiceStartArguments",
                 Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
+
+        // Register the NetworkChangeReceiver
+        if (networkChangeReceiver == null) {
+            networkChangeReceiver = new NetworkChangeReceiver(sensorLocalSource, sensorNetworkSource);
+            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(networkChangeReceiver, filter);
+        }
     }
 
     @Override
@@ -71,6 +83,8 @@ public class SensorService extends Service {
         }
 
         String deviceId = intent.getExtras().getString("deviceId");
+
+
         Handler handler = new Handler(thread.getLooper());
         Runnable sendData = new Runnable() {
             @Override
@@ -84,6 +98,12 @@ public class SensorService extends Service {
 
                 // delay the handler so request is sent and write every few seconds
                 handler.postDelayed(this, SEND_INTERVAL);
+
+                long currentTime = System.currentTimeMillis();
+                long cutoffTime = currentTime - THIRTY_DAYS_IN_MILLIS;
+
+                sensorLocalSource.deleteHistoricalData(cutoffTime);
+
             }
         };
 
@@ -144,6 +164,12 @@ public class SensorService extends Service {
 
     @Override
     public void onDestroy() {
+        // Unregister the NetworkChangeReceiver when the service is destroyed
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
+            networkChangeReceiver = null;
+        }
+
         LOGGER.info("Stopping sensor service");
         try {
             sensorManager.stopSensors();
