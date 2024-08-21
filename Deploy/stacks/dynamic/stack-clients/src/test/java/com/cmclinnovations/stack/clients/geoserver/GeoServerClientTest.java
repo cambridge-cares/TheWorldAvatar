@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -299,11 +300,10 @@ public class GeoServerClientTest {
         Path configDir = null;
         Path stylePath = null;
         try (InputStream styleIn = GeoServerClientTest.class.getResourceAsStream("point_simplepoint.sld")) {
-            configDir = Assertions
-                    .assertDoesNotThrow(() -> Files.createDirectories(Path.of("/inputs/config")));
+            configDir = Assertions.assertDoesNotThrow(() -> Files.createDirectories(Path.of("/inputs/config")));
 
             stylePath = configDir.resolve("styleFile.sld");
-            Files.copy(styleIn, stylePath);
+            Files.copy(styleIn, stylePath, StandardCopyOption.REPLACE_EXISTING);
 
             mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles", 200,
                     request().withBody(Files.readString(stylePath)));
