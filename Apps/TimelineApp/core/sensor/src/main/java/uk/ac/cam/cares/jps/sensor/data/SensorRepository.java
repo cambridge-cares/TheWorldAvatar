@@ -21,6 +21,10 @@ public class SensorRepository {
     Intent serviceIntent;
     Context context;
 
+    /**
+     * Constructor of the class. The instantiation is handled by dependency injection.
+     * @param sensorCollectionStateManagerRepository SensorCollectionStateManagerRepository object
+     */
     public SensorRepository(Context applicationContext,
                             SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
         this.context = applicationContext;
@@ -29,6 +33,10 @@ public class SensorRepository {
         serviceIntent = new Intent(context, SensorService.class);
     }
 
+    /**
+     * Start foreground task to record sensor data
+     * @param callback callback
+     */
     public void startRecording(RepositoryCallback<Boolean> callback) {
         LOGGER.info("start recording");
         sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<>() {
@@ -47,6 +55,9 @@ public class SensorRepository {
         });
     }
 
+    /**
+     * Stop the data collection foreground task
+     */
     public void stopRecording() {
         LOGGER.info("stop recording");
         context.stopService(serviceIntent);

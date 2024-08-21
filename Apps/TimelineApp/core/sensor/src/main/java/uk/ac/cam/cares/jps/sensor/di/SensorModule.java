@@ -21,6 +21,9 @@ import uk.ac.cam.cares.jps.sensor.source.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.sensor.data.UserPhoneRepository;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 
+/**
+ * Dependency injection specification for Sensor module
+ */
 @Module
 @InstallIn(SingletonComponent.class)
 public class SensorModule {

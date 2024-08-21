@@ -13,6 +13,9 @@ import org.json.JSONObject;
 
 import okhttp3.HttpUrl;
 
+/**
+ * A class that manages phone to user registration request
+ */
 public class UserPhoneNetworkSource {
     Context context;
     RequestQueue requestQueue;
@@ -23,6 +26,13 @@ public class UserPhoneNetworkSource {
         this.requestQueue = requestQueue;
     }
 
+    /**
+     * Register phone to user
+     * @param userId current logged in user
+     * @param deviceId current device id
+     * @param onSuccessListener operations to perform when success
+     * @param errorListener operations to perform when failure
+     */
     public void registerAppToUser(String userId, String deviceId, Response.Listener<Boolean> onSuccessListener, Response.ErrorListener errorListener) {
 
         try {
@@ -38,7 +48,6 @@ public class UserPhoneNetworkSource {
                 LOGGER.info(String.format("Phone id %s is register to user %s", deviceId, userId));
                 onSuccessListener.onResponse(true);
             }, volleyError -> {
-                // todo: how to handle registration failed case?
                 LOGGER.error(volleyError.getMessage());
             });
 
@@ -46,7 +55,6 @@ public class UserPhoneNetworkSource {
         } catch (JSONException e) {
             LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
-//            errorListener.onErrorResponse(new VolleyError(e.getMessage()));
         }
 
     }

@@ -20,6 +20,11 @@ public class SensorCollectionStateManagerRepository {
         E get() throws SensorCollectionStateException;
     }
 
+    /**
+     * Constructor of the class. The instantiation is handled by dependency injection.
+     * @param sensorCollectionStateManager SensorCollectionStateManager object
+     * @param loginRepository LoginRepository object
+     */
     public SensorCollectionStateManagerRepository(
             SensorCollectionStateManager sensorCollectionStateManager,
             LoginRepository loginRepository) {

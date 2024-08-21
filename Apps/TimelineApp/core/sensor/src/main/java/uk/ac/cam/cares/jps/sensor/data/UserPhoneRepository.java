@@ -14,6 +14,11 @@ public class UserPhoneRepository {
     UserPhoneNetworkSource userPhoneNetworkSource;
     SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
 
+    /**
+     * Constructor of the class
+     * @param userPhoneNetworkSource UserPhoneNetworkSource object
+     * @param sensorCollectionStateManagerRepository SensorCollectionStateManagerRepository object
+     */
     public UserPhoneRepository(
             UserPhoneNetworkSource userPhoneNetworkSource,
             SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
@@ -22,6 +27,13 @@ public class UserPhoneRepository {
             this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
     }
 
+    /**
+     * Register app to user. Involve the following steps:
+     * 1. Get user id from SensorCollectionStateManagerRepository
+     * 2. Get/generate device id from SensorCollectionStateManagerRepository
+     * 3. Call UserPhoneNetworkSource to link the user id and the device id in server
+     * @param callback Callback to UI level
+     */
     public void registerAppToUser(RepositoryCallback<Boolean> callback) {
         sensorCollectionStateManagerRepository.getUserId(new RepositoryCallback<>() {
             @Override
