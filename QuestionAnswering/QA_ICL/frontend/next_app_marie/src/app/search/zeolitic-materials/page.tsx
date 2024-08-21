@@ -10,7 +10,7 @@ import { Main } from '@/components/layout'
 import { ZeoliticMaterialForm } from './_components/form'
 import { ZeoliticMaterialResults } from './_components/results'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function ZeoliticMaterialsPage() {
   const [frameworks, framweorkComponents, guests, journals] = await Promise.all(

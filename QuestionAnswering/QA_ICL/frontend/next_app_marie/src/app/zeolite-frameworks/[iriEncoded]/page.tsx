@@ -1,20 +1,21 @@
 import * as React from 'react'
+import Link from 'next/link'
+import { CaretSortIcon } from '@radix-ui/react-icons'
 
-import { Main } from '@/components/layout'
-import { MolViewer } from '@/components/ui/mol-viewer'
 import {
   getZeoliteFrameworkCIF,
   getZeoliteFrameworkOne,
 } from '@/lib/api/ontozeolite'
+import { Main } from '@/components/layout'
+import { MolViewer } from '@/components/ui/mol-viewer'
 import { CrystalInfoAccordion } from '@/components/crystal-info-accordion'
-import { TopoPropsDiv } from './_components/topo-props-div'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
-import { CaretSortIcon } from '@radix-ui/react-icons'
+import { TopoPropsDiv } from './_components/topo-props-div'
 
 interface ZeoliteFrameworkPageInterface {
   params: { iriEncoded: string }
@@ -69,8 +70,15 @@ export default async function ZeoliteFrameworkPage({
               </a>
             </h2>
             <ul className='list-disc list-inside'>
-              {data.ZeoliticMaterial.map((node, i) => (
-                <li key={i}>{node.ChemicalFormula}</li>
+              {data.ZeoliticMaterial.map(({ ChemicalFormula, IRI }, i) => (
+                <li key={i}>
+                  <Link
+                    href={'/zeolitic-materials/' + encodeURIComponent(IRI)}
+                    className='hover:underline'
+                  >
+                    {ChemicalFormula}
+                  </Link>
+                </li>
               ))}
             </ul>
           </section>

@@ -5,7 +5,7 @@ import { Main } from '@/components/layout'
 import { ZeoFrameworkForm } from './_components/form'
 import { ZeoFrameworkResults } from './_components/results'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function ZeoFrameworkSearchPage() {
   const [allCBUs, allSBUs] = await Promise.all([getCBUs(), getSBUs()])

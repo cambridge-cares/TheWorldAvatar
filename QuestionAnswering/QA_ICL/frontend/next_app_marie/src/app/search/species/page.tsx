@@ -5,7 +5,7 @@ import { Main } from '@/components/layout'
 import { SpeciesForm } from './_components/form'
 import { SpeciesSearchResults } from './_components/results'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function SpeciesPage() {
   const [chemicalClasses, uses] = await Promise.all([

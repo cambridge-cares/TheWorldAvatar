@@ -1,11 +1,12 @@
 import * as React from 'react'
+import Link from 'next/link'
 
-import { Main } from '@/components/layout'
-import { MolViewer } from '@/components/ui/mol-viewer'
 import {
   getZeoliticMaterialCIF,
   getZeoliticMaterialOne,
 } from '@/lib/api/ontozeolite'
+import { Main } from '@/components/layout'
+import { MolViewer } from '@/components/ui/mol-viewer'
 import { CrystalInfoAccordion } from '@/components/crystal-info-accordion'
 
 interface ZeoMaterialPageInterface {
@@ -35,15 +36,24 @@ export default async function ZeoMaterialPage({
               </a>
             </h2>
             <div className='grid md:grid-cols-2 gap-2'>
-              {[
-                ['Name', data.name],
-                ['Framework code', data.framework.code],
-              ].map(([heading, content], i) => (
-                <div key={i}>
-                  <h3 className='font-semibold'>{heading}</h3>
-                  <p>{content}</p>
-                </div>
-              ))}
+              <div>
+                <h3 className='font-semibold'>Name</h3>
+                <p>{data.name}</p>
+              </div>
+              <div>
+                <h3 className='font-semibold'>Framework code</h3>
+                <p>
+                  <Link
+                    href={
+                      '/zeolite-frameworks/' +
+                      encodeURIComponent(data.framework.IRI)
+                    }
+                    className='hover:underline'
+                  >
+                    {data.framework.code}
+                  </Link>
+                </p>
+              </div>
             </div>
           </section>
           {data.CrystalInformation && (

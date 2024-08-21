@@ -4,7 +4,7 @@ import { getChemicalClasses } from '@/lib/api/ontospecies'
 import { Main } from '@/components/layout'
 import { SpeciesPropertiesPlotCtx } from './_components/plot-ctx'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function SpeciesPropertiesPlotPage() {
   const chemicalClasses = await getChemicalClasses()
