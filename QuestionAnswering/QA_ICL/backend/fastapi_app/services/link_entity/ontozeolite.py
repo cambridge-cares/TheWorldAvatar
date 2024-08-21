@@ -2,6 +2,7 @@ import logging
 from typing import Annotated
 
 from fastapi import Depends
+from constants.namespace import ONTOZEOLITE
 from model.entity_linking.ontozeolite import (
     ZeoliteFrameworkLinkingArgs,
     ZeoliticMaterialLinkingArgs,
@@ -33,7 +34,8 @@ class OntozeoliteLinkerManager(LinkerManager):
 
         logger.info(f"Linking zeolite framework with args: {args.model_dump_json()}")
 
-        query = f"""PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = f"""PREFIX zeo: <{ONTOZEOLITE}>
+
 SELECT ?Framework
 WHERE {{
     ?Framework zeo:hasFrameworkCode "{args.code}" .
@@ -51,7 +53,8 @@ WHERE {{
 
         logger.info(f"Linking zeolitic material with args: {args.model_dump_json()}")
 
-        query = f"""PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = f"""PREFIX zeo: <{ONTOZEOLITE}>
+
 SELECT ?Material
 WHERE {{
     ?Material zeo:hasChemicalFormula "{args.formula}" .

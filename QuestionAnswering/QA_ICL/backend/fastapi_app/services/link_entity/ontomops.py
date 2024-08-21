@@ -3,6 +3,7 @@ import logging
 from typing import Annotated
 
 from fastapi import Depends
+from constants.namespace import ONTOMOPS
 from model.entity_linking.ontomops import (
     AMLinkingArgs,
     CBULinkingArgs,
@@ -40,7 +41,7 @@ class OntomopsLinkerManager(LinkerManager):
             f"Linking metal organic polyhedra with args: {args.model_dump_json()}"
         )
 
-        query = f"""PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
+        query = f"""PREFIX mops: <{ONTOMOPS}>
         
 SELECT DISTINCT *
 WHERE {{
@@ -61,7 +62,7 @@ WHERE {{
             f"Linking chemical building unit with args: {args.model_dump_json()}"
         )
 
-        query = f"""PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
+        query = f"""PREFIX mops: <{ONTOMOPS}>
         
 SELECT DISTINCT *
 WHERE {{
@@ -82,7 +83,7 @@ WHERE {{
             lst: list[str] = []
             return lst
 
-        query = f"""PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
+        query = f"""PREFIX mops: <{ONTOMOPS}>
         
 SELECT DISTINCT *
 WHERE {{
@@ -136,13 +137,13 @@ WHERE {{
         )
         clauses = [x for x in [*clauses_GBU, clause_sym_pt_grp] if x]
 
-        query = """PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
+        query = """PREFIX mops: <{mops}>
 
 SELECT DISTINCT ?AM
 WHERE {{
-    {}
+    {clauses}
 }}""".format(
-            "\n    ".join(clauses)
+            mops=ONTOMOPS, clauses="\n    ".join(clauses)
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["AM"] for binding in bindings]

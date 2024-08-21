@@ -4,6 +4,8 @@ import itertools
 from typing import Annotated
 
 from fastapi import Depends
+from rdflib import DCTERMS
+from constants.namespace import BIBO, OM2, ONTOCRYSTAL, ONTOZEOLITE
 from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
 from model.kg.ontozeolite import (
     OntocrystalAtomicStructure,
@@ -87,13 +89,13 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
                     else None
                 ),
                 (
-                    "?UnitCell ?ocr:hasUnitCellLengths ?Lengths ."
+                    "?UnitCell ocr:hasUnitCellLengths ?Lengths ."
                     if unit_cell_length_patterns
                     else None
                 ),
                 *unit_cell_length_patterns,
                 (
-                    "?UnitCell ?ocr:hasUnitCellAngles ?Angles ."
+                    "?UnitCell ocr:hasUnitCellAngles ?Angles ."
                     if unit_cell_angle_patterns
                     else None
                 ),
@@ -170,16 +172,19 @@ class OntozeoliteRDFStore(Cls2NodeGetter, RDFStore):
             if pattern
         ]
 
-        query = """PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
-PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = """PREFIX om: <{om}>
+PREFIX ocr: <{ocr}>
+PREFIX zeo: <{zeo}>
 
 SELECT DISTINCT ?Framework
 WHERE {{
     ?Framework a zeo:ZeoliteFramework .
-    {}
+    {clauses}
 }}""".format(
-            "\n    ".join(patterns)
+            om=OM2,
+            ocr=ONTOCRYSTAL,
+            zeo=ONTOZEOLITE,
+            clauses="\n    ".join(patterns),
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Framework"] for binding in bindings]
@@ -190,15 +195,13 @@ WHERE {{
         frameworks_base = self.get_zeolite_framework_base_many(iris=iris)
 
         if return_fields.crystal_info:
-            query = """PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+            query = f"""PREFIX ocr: <{ONTOCRYSTAL}>
 
 SELECT *
 WHERE {{
-    VALUES ?Framework {{ {IRIs} }}
+    VALUES ?Framework {{ {" ".join(f"<{iri}>" for iri in iris)} }}
     ?Framework ocr:hasCrystalInformation ?CrystalInfo .
-}}""".format(
-                IRIs=" ".join(f"<{iri}>" for iri in iris)
-            )
+}}"""
             _, bindings = self.sparql_client.querySelectThenFlatten(query)
             frameworkIRI_to_crystalInfoIRI = {
                 binding["Framework"]: binding["CrystalInfo"] for binding in bindings
@@ -224,15 +227,13 @@ WHERE {{
             frameworkIRI_to_crystalInfo = dict()
 
         if return_fields.topo_props:
-            query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+            query = f"""PREFIX zeo: {ONTOZEOLITE}
 
 SELECT *
 WHERE {{
-    VALUES ?Framework {{ {IRIs} }}
+    VALUES ?Framework {{ {" ".join(f"<{iri}>" for iri in iris)} }}
     ?Framework zeo:hasTopologicalProperties ?TopoProps .
-}}""".format(
-                IRIs=" ".join(f"<{iri}>" for iri in iris)
-            )
+}}"""
             _, bindings = self.sparql_client.querySelectThenFlatten(query)
             frameworkIRI_to_topoPropsIRI = {
                 binding["Framework"]: binding["TopoProps"] for binding in bindings
@@ -256,11 +257,11 @@ WHERE {{
             frameworkIRI_to_topoProps = dict()
 
         if return_fields.material:
-            query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+            query = f"""PREFIX zeo: {ONTOZEOLITE}
 
 SELECT *
 WHERE {{
-    VALUES ?Framework {{ {IRIs} }}
+    VALUES ?Framework {{ {" ".join(f"<{iri}>" for iri in iris)} }}
     ?Framework zeo:hasZeoliticMaterial ?Material
 }}"""
             _, bindings = self.sparql_client.querySelectThenFlatten(query)
@@ -363,16 +364,20 @@ WHERE {{
             ]
             if x
         ]
-        query = """PREFIX dcterm: <http://purl.org/dc/terms/>
-PREFIX bibo: <http://purl.org/ontology/bibo/>
-PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
-PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = """PREFIX dcterm: <{dcterm}>
+PREFIX bibo: <{bibo}>
+PREFIX ocr: <{ocr}>
+PREFIX zeo: <{zeo}>
 
 SELECT ?Material
 WHERE {{
     {patterns}
 }}""".format(
-            patterns="\n    ".join(patterns)
+            dcterm=DCTERMS,
+            bibo=BIBO,
+            ocr=ONTOCRYSTAL,
+            zeo=ONTOZEOLITE,
+            patterns="\n    ".join(patterns),
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Material"] for binding in bindings]
@@ -437,7 +442,7 @@ WHERE {{
         return self.get_many(OntocrystalTiledStructure, iris)
 
     def get_cbu_all(self):
-        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = f"""PREFIX zeo: <{ONTOZEOLITE}>
 
 SELECT DISTINCT ?o
 WHERE {{
@@ -447,7 +452,7 @@ WHERE {{
         return [binding["o"] for binding in bindings]
 
     def get_sbu_all(self):
-        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+        query = f"""PREFIX zeo: <{ONTOZEOLITE}>
 
 SELECT DISTINCT ?o
 WHERE {{

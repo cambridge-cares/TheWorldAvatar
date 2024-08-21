@@ -30,9 +30,7 @@ ONTOZEOLITE = Namespace("http://www.theworldavatar.com/kg/ontozeolite/")
 ONTOCAPE = Namespace(
     "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#"
 )
-ONTOMOPS = Namespace(
-    "https://www.theworldavatar.com/kg/ontomops/"
-)
+ONTOMOPS = Namespace("https://www.theworldavatar.com/kg/ontomops/")
 
 # TWA BIM & GIS namespaces
 ONTOBUILDINGSTRUCTURE = Namespace(
@@ -50,7 +48,7 @@ ONTOPLANNINGREGULATION = Namespace(
 ONTOPLOT = Namespace("https://www.theworldavatar.com/kg/ontoplot/")
 ONTOZONING = Namespace("https://www.theworldavatar.com/kg/ontozoning/")
 ONTOUBEMMP = Namespace("https://www.theworldavatar.com/kg/ontoubemmp/")
-
+ONTODISPERSION = Namespace("https://www.theworldavatar.com/kg/ontodispersion/")
 
 PREFIX2NAMESPACE: dict[str, Namespace | type[DefinedNamespace]] = {
     "rdf": RDF,
@@ -82,6 +80,7 @@ PREFIX2NAMESPACE: dict[str, Namespace | type[DefinedNamespace]] = {
     "ontoplanreg": ONTOPLANNINGREGULATION,
     "ontoplot": ONTOPLOT,
     "ontozoning": ONTOZONING,
+    "disp": ONTODISPERSION
 }
 
 PREFIX2URI = {k: str(v) for k, v in PREFIX2NAMESPACE.items()}

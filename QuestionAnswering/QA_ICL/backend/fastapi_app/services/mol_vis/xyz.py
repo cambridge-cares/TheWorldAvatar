@@ -9,6 +9,7 @@ from requests import HTTPError
 import requests
 
 from config import AppSettings, OntomopsFileserverSettings, get_app_settings
+from constants.namespace import GC, ONTOMOPS, ONTOSPECIES
 from constants.periodictable import ATOMIC_NUMBER_TO_SYMBOL
 from model.pubchem import PubChemPUGResponse
 from services.requests import request_get_obj
@@ -64,15 +65,13 @@ class XYZManager:
         if not iris:
             return none_lst
 
-        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = f"""PREFIX os: <{ONTOSPECIES}>
 
 SELECT DISTINCT *
 WHERE {{
-    VALUES ?Species {{ {iris} }} 
+    VALUES ?Species {{ {" ".join(f"<{iri}>" for iri in set(iris))} }} 
     ?Species os:hasCID/os:value ?CID .
-}}""".format(
-            iris=" ".join(f"<{iri}>" for iri in set(iris))
-        )
+}}"""
         _, bindings = self.ontospecies_client.querySelectThenFlatten(query)
 
         iri2cid = {binding["Species"]: int(binding["CID"]) for binding in bindings}
@@ -168,21 +167,19 @@ WHERE {{
         return [cid2xyz.get(iri2cid.get(iri)) for iri in iris]
 
     def get_from_ontospecies(self, iris: list[str]):
-        query = """PREFIX gc: <http://purl.org/gc/> 
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = f"""PREFIX gc: <{GC}>
+PREFIX os: <{ONTOSPECIES}>
 
 SELECT DISTINCT *
 WHERE {{
-    VALUES ?Species {{ {iris} }}
+    VALUES ?Species {{ {" ".join(f"<{iri}>" for iri in set(iris))} }}
     ?Species gc:hasAtom [
         gc:isElement/os:hasElementSymbol/os:value ?symbol ;
         os:hasXCoordinate/os:value ?x ;
         os:hasYCoordinate/os:value ?y ;
         os:hasZCoordinate/os:value ?z
     ] .
-}}""".format(
-            iris=" ".join(f"<{iri}>" for iri in set(iris))
-        )
+}}"""
         _, bindings = self.ontospecies_client.querySelectThenFlatten(query)
 
         iri2binding = {binding["Species"]: binding for binding in bindings}
@@ -206,15 +203,13 @@ WHERE {{
         return response.text
 
     def get_from_ontomops(self, iris: list[str]):
-        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
+        query = f"""PREFIX os: <{ONTOSPECIES}>
+PREFIX mops: <{ONTOMOPS}>
 
 SELECT DISTINCT * WHERE {{
-    VALUES ?IRI {{ {values} }}
+    VALUES ?IRI {{ {" ".join(f"<{iri}>" for iri in iris)} }}
     ?IRI os:hasGeometry/mops:hasGeometryFile ?URL .
-}}""".format(
-            values=" ".join(f"<{iri}>" for iri in iris)
-        )
+}}"""
         _, bindings = self.ontomops_client.querySelectThenFlatten(query)
         iri2url = {binding["IRI"]: binding["URL"] for binding in bindings}
         iri2xyz = {iri: self._get_from_url(url) for iri, url in iri2url.items()}

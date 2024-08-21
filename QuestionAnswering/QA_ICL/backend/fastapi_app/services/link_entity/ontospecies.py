@@ -3,6 +3,8 @@ import logging
 from typing import Annotated
 
 from fastapi import Depends
+from rdflib import SKOS
+from constants.namespace import ONTOSPECIES
 from model.entity_linking.ontospecies import ElementLinkingArgs, SpeciesLinkingArgs
 from services.sparql import SparqlClient, get_ontospecies_endpoint
 from .base import LinkerManager
@@ -35,7 +37,7 @@ class OntospeciesLinkerManager(LinkerManager):
         try:
             key, val = next((k, v) for k, v in kvs if v)
             logger.info(f"Linking species with args: {key}={val}")
-            query = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+            query = f"""PREFIX os: <{ONTOSPECIES}>
 
 SELECT ?Species
 WHERE {{
@@ -59,15 +61,17 @@ WHERE {{
 
         logger.info(f"Linking species by matching with all identifiers: {texts}")
 
-        query = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = """PREFIX skos: <{skos}>
+PREFIX os: <{os}>
 
 SELECT ?Species WHERE {{
     ?Species a os:Species .
-    VALUES ?Text {{ {texts} }}
+    VALUES ?Text {{ {values} }}
     ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES)/os:value)|rdfs:label|skos:altLabel) ?Text .
 }}""".format(
-            texts=" ".join('"{val}"'.format(val=text) for text in texts)
+            skos=SKOS,
+            os=ONTOSPECIES,
+            values=" ".join('"{val}"'.format(val=text) for text in texts),
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [row["Species"] for row in bindings]
@@ -82,7 +86,7 @@ SELECT ?Species WHERE {{
 
         logger.info(f"Linking elements with args: {args.model_dump_json()}")
 
-        query = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = f"""PREFIX os: <{ONTOSPECIES}>
         
 SELECT DISTINCT *
 WHERE {{

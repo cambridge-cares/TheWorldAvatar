@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from constants.namespace import ONTOKIN, ONTOPROVENANCE
 from model.entity_linking.ontokin import MechanismLinkingArgs, ReactionLikingArgs
 from services.sparql import SparqlClient, get_ontokin_endpoint
 from .base import LinkerManager
@@ -32,8 +33,8 @@ class OntokinLinkerManager(LinkerManager):
 
         logger.info(f"Linking mechanism with args: {args.model_dump_json()}")
 
-        query = f"""PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
-PREFIX op: <http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#>
+        query = f"""PREFIX okin: <{ONTOKIN}>
+PREFIX op: <{ONTOPROVENANCE}>
 
 SELECT DISTINCT *
 WHERE {{
@@ -52,7 +53,7 @@ WHERE {{
 
         logger.info(f"Linking reaction with args: {args.model_dump_json()}")
 
-        query = f"""PREFIX okin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+        query = f"""PREFIX okin: <{ONTOKIN}>
         
 SELECT DISTINCT *
 WHERE {{

@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from constants.namespace import BIBO
+from constants.namespace import BIBO, ONTOZEOLITE
 from model.kg.ontospecies import OntospeciesSpeciesBase, PeriodictableElement
 from model.kg.ontozeolite import BiboJournal
 from services.rdf_stores.ontospecies import (
@@ -58,7 +58,7 @@ async def get_framework_components_all(
         OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
 ):
-    query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+    query = f"""PREFIX zeo: <{ONTOZEOLITE}>
 SELECT DISTINCT ?o
 WHERE {{
     ?s zeo:hasFrameworkComponent ?o .
@@ -81,7 +81,7 @@ async def get_guest_components_all(
         OntospeciesRDFStore, Depends(get_ontospecies_rdfStore)
     ],
 ):
-    query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
+    query = f"""PREFIX zeo: <{ONTOZEOLITE}>
 SELECT DISTINCT ?o
 WHERE {{
     ?s zeo:hasGuestComponent ?o .

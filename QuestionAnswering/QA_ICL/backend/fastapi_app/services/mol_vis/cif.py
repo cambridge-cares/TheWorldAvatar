@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 from pydantic import TypeAdapter
 
+from constants.namespace import ONTOCRYSTAL, ONTOZEOLITE
 from model.mol_vis import CIFAtomSite, CIF, CIFUnitCell
 from services.sparql import SparqlClient, get_ontozeolite_endpoint
 
@@ -27,12 +28,12 @@ class CIFManager:
 
         unique_iris = set(iris)
 
-        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
-PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+        query = f"""PREFIX zeo: <{ONTOZEOLITE}>
+PREFIX ocr: <{ONTOCRYSTAL}>
 
 SELECT ?zeo ?name ?a ?b ?c ?alpha ?beta ?gamma
 WHERE {{
-    VALUES ?zeo {{ {iris} }}
+    VALUES ?zeo {{ {" ".join(f"<{iri}>" for iri in unique_iris)} }}
     ?zeo zeo:hasFrameworkCode|zeo:hasChemicalFormula ?name .
     ?zeo ocr:hasCrystalInformation/ocr:hasUnitCell [
         ocr:hasUnitCellLengths/ocr:hasVectorComponent [
@@ -56,23 +57,20 @@ WHERE {{
             ocr:hasComponentValue ?gamma
         ]
     ] .
-}}""".format(
-            iris=" ".join(f"<{iri}>" for iri in unique_iris)
-        )
+}}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
 
         iri2name = {binding["zeo"]: binding["name"] for binding in bindings}
         iri2unitcell = {
-            binding["zeo"]: CIFUnitCell.model_validate(binding)
-            for binding in bindings
+            binding["zeo"]: CIFUnitCell.model_validate(binding) for binding in bindings
         }
 
-        query = """PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>
-PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>
+        query = f"""PREFIX zeo: <{ONTOZEOLITE}>
+PREFIX ocr: <{ONTOCRYSTAL}>
 
 SELECT ?zeo ?fract_x ?fract_y ?fract_z ?label
 WHERE {{
-    VALUES ?zeo {{ {iris} }}
+    VALUES ?zeo {{ {" ".join(f"<{iri}>" for iri in unique_iris)} }}
     ?zeo ocr:hasCrystalInformation/ocr:hasAtomicStructure/ocr:hasAtomSite ?AtomSite .
     ?AtomSite ocr:hasFractionalPosition/ocr:hasVectorComponent [
         ocr:hasComponentLabel "x" ; 
@@ -87,9 +85,7 @@ WHERE {{
     OPTIONAL {{
         ?AtomSite ocr:hasAtomSiteLabel ?label .
     }}
-}}""".format(
-            iris=" ".join(f"<{iri}>" for iri in unique_iris)
-        )
+}}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
 
         iri2atoms = defaultdict(list)

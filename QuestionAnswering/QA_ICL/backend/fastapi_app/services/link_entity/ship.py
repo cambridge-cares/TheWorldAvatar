@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from constants.namespace import OM2, ONTODISPERSION
 from services.sparql import get_sgDispersion_endpoint
 from services.sparql import SparqlClient
 from .base import LinkerManager
@@ -20,15 +21,13 @@ class ShipLinkerManager(LinkerManager):
         if "mmsi" not in kwargs:
             return []
 
-        query = """PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
-PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        query = f"""PREFIX disp: <{ONTODISPERSION}>
+PREFIX om: <{OM2}>
 
 SELECT ?IRI WHERE {{
   ?IRI a disp:Ship .
-  ?IRI disp:hasProperty [ a disp:MMSI ; om:hasValue/om:hasNumericalValue {MMSI} ]
-}}""".format(
-            MMSI=kwargs["mmsi"]
-        )
+  ?IRI disp:hasProperty [ a disp:MMSI ; om:hasValue/om:hasNumericalValue {kwargs["mmsi"]} ]
+}}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
 
         return [binding["IRI"] for binding in bindings]

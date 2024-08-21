@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import Depends
 from rdflib import URIRef
 
-from constants.namespace import ONTOCOMPCHEM
+from constants.namespace import GC, ONTOCOMPCHEM, ONTOSPECIES
 from model.kg.ontocompchem import (
     OntocompchemCalculationResult,
     OntocompchemFrequencies,
@@ -78,11 +78,11 @@ class OntocompchemRDFStore(Cls2NodeGetter, RDFStore):
         iris: list[str] | tuple[str],
         sparql_client: str | SparqlClient | None = None,
     ):
-        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = f"""PREFIX os: <{ONTOSPECIES}>
 
 SELECT DISTINCT ?OptimizedGeometry ?Atom ?X ?Xvalue ?Xunit ?Y ?Yvalue ?Yunit ?Z ?Zvalue ?Zunit
 WHERE {{
-VALUES ?OptimizedGeometry {{ {iris} }}
+VALUES ?OptimizedGeometry {{ {" ".join(f"<{iri}>" for iri in iris)} }}
     ?OptimizedGeometry ^os:fromGeometry ?X, ?Y, ?Z .
     ?Atom os:hasXCoordinate ?X ;
         os:hasYCoordinate ?Y ;
@@ -90,9 +90,7 @@ VALUES ?OptimizedGeometry {{ {iris} }}
     ?X os:value ?Xvalue ; os:unit ?Xunit .
     ?Y os:value ?Yvalue ; os:unit ?Yunit .
     ?Z os:value ?Zvalue ; os:unit ?Zunit .
-}}""".format(
-            iris=" ".join(f"<{iri}>" for iri in iris)
-        )
+}}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iri2atoms: defaultdict[
             str,
@@ -120,17 +118,15 @@ VALUES ?OptimizedGeometry {{ {iris} }}
                 )
             )
 
-        query = """PREFIX gc: <http://purl.org/gc/>
+        query = f"""PREFIX gc: <{GC}>
 
 SELECT *
 WHERE {{
-VALUES ?Atom {{ {iris} }}
-?Atom gc:isElement ?Element .
-}}""".format(
-            iris=" ".join(
+VALUES ?Atom {{ {" ".join(
                 f"<{iri}>" for atoms in iri2atoms.values() for iri, *_ in atoms
-            )
-        )
+            )} }}
+?Atom gc:isElement ?Element .
+}}"""
         _, bindings = self.ontospecies_client.querySelectThenFlatten(query)
         atom2element = {binding["Atom"]: binding["Element"] for binding in bindings}
 

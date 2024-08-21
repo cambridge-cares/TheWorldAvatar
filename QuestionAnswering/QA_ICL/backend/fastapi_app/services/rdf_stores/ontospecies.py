@@ -4,6 +4,7 @@ import itertools
 from typing import Annotated
 
 from fastapi import Depends
+from rdflib import SKOS
 
 from constants.namespace import ONTOSPECIES, PERIODICTABLE
 from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
@@ -87,21 +88,22 @@ class OntospeciesRDFStore(Cls2NodeGetter, RDFStore):
             )
         ]
 
-        query = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = """PREFIX os: <{os}>
 
 SELECT ?Species
 WHERE {{
     ?Species a os:Species .
-    {}
+    {clauses}
 }}""".format(
-            "\n    ".join(
+            os=ONTOSPECIES,
+            clauses="\n    ".join(
                 itertools.chain(
                     chemclass_patterns,
                     use_patterns,
                     identifier_patterns,
                     property_patterns,
                 )
-            )
+            ),
         )
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         return [binding["Species"] for binding in bindings]
@@ -171,14 +173,16 @@ WHERE {{
                 for base_model in species_base
             ]
 
-        query = """PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        query = """PREFIX skos: <{skos}>
+PREFIX os: <{os}>
 
 SELECT DISTINCT ?Species ?field ?value
 WHERE {{
     VALUES ?Species {{ {IRIs} }}
     {patterns}
 }}""".format(
+            skos=SKOS,
+            os=ONTOSPECIES,
             IRIs=" ".join(f"<{iri}>" for iri in iris),
             patterns=" UNION ".join(
                 f"""{{

@@ -4,9 +4,11 @@ import logging
 from typing import Annotated
 
 from fastapi import Depends
+from rdflib import RDF
 import shapely
 import shapely.wkt
 
+from constants.namespace import CITYGML_BUILDING, CITYGML_CITYOBJECTGROUP, ONT_GEOSPARQL, ONTOBIM
 from model.structured_answer import WKTGeometryData
 from services.funcs.base import Name2Func
 from services.sparql import SparqlClient, get_sgOntop_endpoint
@@ -26,20 +28,18 @@ class SGBuildingFuncExecutor(Name2Func):
         return {"visualise_building_footprint": self.visualise_building_footprint}
 
     def visualise_building_footprint(self, facility: list[str], **kwargs):
-        query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
-PREFIX grp: <http://www.opengis.net/citygml/cityobjectgroup/2.0/>
-PREFIX geo: <http://www.opengis.net/ont/geosparql#>
-PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+        query = f"""PREFIX rdf: <{RDF}>
+PREFIX bldg: <{CITYGML_BUILDING}>
+PREFIX grp: <{CITYGML_CITYOBJECTGROUP}>
+PREFIX geo: <{ONT_GEOSPARQL}>
+PREFIX ontobim: <{ONTOBIM}>
 
 SELECT * WHERE {{
-FILTER ( ?Facility IN ( {filter_values} ) )
-?Building rdf:type bldg:Building .
-?Building ontobim:hasFacility ?Facility .
-?Building bldg:lod0FootPrint/^grp:parent/geo:asWKT ?FootPrintWKT .
-}}""".format(
-            filter_values=", ".join("<{iri}>".format(iri=iri) for iri in facility)
-        )
+    FILTER ( ?Facility IN ( {", ".join("<{iri}>".format(iri=iri) for iri in facility)} ) )
+    ?Building rdf:type bldg:Building .
+    ?Building ontobim:hasFacility ?Facility .
+    ?Building bldg:lod0FootPrint/^grp:parent/geo:asWKT ?FootPrintWKT .
+}}"""
 
         _, bindings = self.ontop_client.querySelectThenFlatten(query)
 
