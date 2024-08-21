@@ -86,18 +86,19 @@ Figure 1: TBox representation for an organisation
 
 ### 2.1.2 Employer-Employee relationships
 
-The following figure depicts how an employee and employer relationship can be represented in an ontology. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation.
+The following figure depicts how an employee and employer relationship can be represented in an ontology. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation. Employees also have their associated work responsibilities that they must fulfil. These work responsibilities are intended to be instantiated as enums based on the corresponding Abox `OntoProfile_abox.ttl`.
 
 Figure 2: TBox representation for an employer-employee relationship
 
 ```mermaid
     erDiagram
-
     "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
 
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "fibo-fnd-aap-ppl:Person" : "cmns-col:hasMember"
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
+
+    "fibo-fnd-org-fm:Employee" ||--o{ "ontoprofile:WorkResponsibility" : "ontoprofile:hasResponsibility"
 ```
 
 ## 2.2 Person

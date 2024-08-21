@@ -161,6 +161,17 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
         <rdfs:label>Operator</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/WorkResponsibility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/WorkResponsibility">
+        <rdfs:comment>The specific duties and tasks that is expected of an individual to perform as part of their employee role. They are typically outlined in a job description and can include both routine tasks and broader objectives that contribute to the organization&apos;s overall success.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Work responsibility</rdfs:label>
+    </owl:Class>
 </rdf:RDF>
 
 
