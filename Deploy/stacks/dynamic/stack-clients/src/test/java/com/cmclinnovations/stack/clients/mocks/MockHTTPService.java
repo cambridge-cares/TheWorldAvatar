@@ -15,11 +15,13 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
+import org.mockserver.model.Not;
+import org.mockserver.model.RegexBody;
 import org.mockserver.model.RequestDefinition;
 
 public class MockHTTPService extends ClientAndServer {
 
-    public static enum Method{
+    public static enum Method {
         GET,
         HEAD,
         POST,
@@ -58,6 +60,9 @@ public class MockHTTPService extends ClientAndServer {
 
     public void addExpectation(Method method, String path, int returnCode,
             HttpRequest requestExtras, HttpResponse responseExtras) {
+        if (null == requestExtras.getBody()) {
+            requestExtras.withBody(Not.not(RegexBody.regex(".*")));
+        }
         requestExtras.withPath(path).withMethod(method.toString());
         when(requestExtras).respond(responseExtras.withStatusCode(returnCode));
         expectations.add(requestExtras);
@@ -70,7 +75,8 @@ public class MockHTTPService extends ClientAndServer {
     public void verifyCalls(RequestDefinition... expectations) throws AssertionError {
 
         HttpRequest[] recordedRequests = retrieveRecordedRequests(null);
-        String recordedPaths = Stream.of(recordedRequests).map(req -> req.getMethod() + ": " + req.getPath().getValue())
+        String recordedPaths = Stream.of(recordedRequests)
+                .map(req -> req.getMethod() + ": " + req.getPath().getValue() + ":\n" + req.getBodyAsString())
                 .collect(Collectors.joining("\n", "\n", "\n"));
         Assertions.assertEquals(expectations.length, recordedRequests.length,
                 "Wrong number of calls.\n"

@@ -1,12 +1,13 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockserver.model.HttpResponse.response;
+import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.DELETE;
 import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.GET;
 import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.POST;
 import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.PUT;
-import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.DELETE;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockserver.model.HttpRequest;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -104,14 +104,17 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/coveragestores/" + NEW_COVERAGE_STORE
                         + "/external.imagemosaic",
-                200, response().withBody("<coverageStore></coverageStore>"));
+                200, request().withBody(
+                        "file:/C:/geotiffs/postgres/public/newCoverageStore"),
+                response().withBody("<coverageStore></coverageStore>"));
 
         mockGeoServer.addExpectation(POST,
-                "/rest/workspaces/" + EXISTING_WORKSPACE + "/coveragestores/" + NEW_COVERAGE_STORE
-                        + "/coverages.xml",
-                200);
+                "/rest/workspaces/" + EXISTING_WORKSPACE + "/coveragestores/" + NEW_COVERAGE_STORE + "/coverages.xml",
+                200, request().withBody(
+                        "<coverage><enabled>true</enabled><metadata /><keywords /><metadataLinks /><supportedFormats /><parameters><entry><string>AllowMultithreading</string><string>true</string></entry></parameters><name>newCoverageStore</name></coverage>"));
 
-        mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + NEW_COVERAGE_STORE, 200);
+        mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + NEW_COVERAGE_STORE, 200,
+                request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
 
         try {
             geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE, DATABASE_NAME, SCHEMA_NAME,
@@ -136,7 +139,9 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(GET,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + NEW_POSTGIS_STORE + ".xml", 404);
 
-        mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores.xml", 200);
+        mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores.xml", 200,
+                request().withBody(
+                        "<dataStore><name>newPostgresStore</name><connectionParameters><entry key=\"dbtype\">postgis</entry><entry key=\"min connections\">1</entry><entry key=\"max connections\">10</entry><entry key=\"fetch size\">1000</entry><entry key=\"Connection timeout\">20</entry><entry key=\"Loose bbox\">true</entry><entry key=\"preparedStatements\">false</entry><entry key=\"Max open prepared statements\">50</entry><entry key=\"Estimated extends\">false</entry><entry key=\"host\">test-postgis</entry><entry key=\"port\">1234</entry><entry key=\"user\">user</entry><entry key=\"passwd\" /><entry key=\"database\">postgres</entry><entry key=\"schema\">public</entry><entry key=\"validate connections\">true</entry></connectionParameters><type>PostGIS</type></dataStore>"));
 
         geoServerClient.createPostGISDataStore(EXISTING_WORKSPACE, NEW_POSTGIS_STORE, DATABASE_NAME, SCHEMA_NAME);
     }
@@ -163,9 +168,11 @@ public class GeoServerClientTest {
 
         mockGeoServer.addExpectation(POST,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + "/featuretypes",
-                200);
+                200, request().withBody(
+                        "<featureType><enabled>true</enabled><metadata /><keywords><string>KEYWORD</string></keywords><metadataLinks /><attributes /><projectionPolicy>NONE</projectionPolicy><title>layerName</title><name>layerName</name></featureType>"));
 
-        mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200);
+        mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200,
+                request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
 
         geoServerClient.createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName,
                 new GeoServerVectorSettings());
@@ -176,16 +183,20 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(GET,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 404);
 
-        mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores.xml", 200);
+        mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores.xml", 200,
+                request().withBody(
+                        "<dataStore><name>postgres</name><connectionParameters><entry key=\"dbtype\">postgis</entry><entry key=\"min connections\">1</entry><entry key=\"max connections\">10</entry><entry key=\"fetch size\">1000</entry><entry key=\"Connection timeout\">20</entry><entry key=\"Loose bbox\">true</entry><entry key=\"preparedStatements\">false</entry><entry key=\"Max open prepared statements\">50</entry><entry key=\"Estimated extends\">false</entry><entry key=\"host\">test-postgis</entry><entry key=\"port\">1234</entry><entry key=\"user\">user</entry><entry key=\"passwd\" /><entry key=\"database\">postgres</entry><entry key=\"schema\">public</entry><entry key=\"validate connections\">true</entry></connectionParameters><type>PostGIS</type></dataStore>"));
 
         String layerName = "layerName";
         mockGeoServer.addExpectation(GET, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName + ".xml", 404);
 
         mockGeoServer.addExpectation(POST,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + "/featuretypes",
-                200);
+                200, request().withBody(
+                        "<featureType><enabled>true</enabled><metadata /><keywords><string>KEYWORD</string></keywords><metadataLinks /><attributes /><projectionPolicy>NONE</projectionPolicy><title>layerName</title><name>layerName</name></featureType>"));
 
-        mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200);
+        mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200,
+                request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
 
         geoServerClient.createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName,
                 new GeoServerVectorSettings());
@@ -202,7 +213,7 @@ public class GeoServerClientTest {
     void testCreateWorkspaceNew() {
         mockGeoServer.addExpectation(GET, "/rest/workspaces/" + NEW_WORKSPACE + ".xml", 404);
 
-        mockGeoServer.addExpectation(POST, "/rest/workspaces", 200, HttpRequest.request()
+        mockGeoServer.addExpectation(POST, "/rest/workspaces", 200, request()
                 .withBody("<workspace><name>" + NEW_WORKSPACE + "</name></workspace>"));
 
         geoServerClient.createWorkspace(NEW_WORKSPACE);
@@ -280,9 +291,6 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(GET, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles/" + styleName + ".xml",
                 404);
 
-        mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles", 200);
-        // .withPathParameter("name", styleName,POST,200);
-
         Path configDir = null;
         Path stylePath = null;
         try (InputStream styleIn = GeoServerClientTest.class.getResourceAsStream("point_simplepoint.sld")) {
@@ -291,6 +299,9 @@ public class GeoServerClientTest {
 
             stylePath = configDir.resolve("styleFile.sld");
             Files.copy(styleIn, stylePath);
+
+            mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles", 200,
+                    request().withBody(Files.readString(stylePath)));
 
             Path fileName = stylePath.getFileName();
             Assertions.assertDoesNotThrow(() -> geoServerClient
