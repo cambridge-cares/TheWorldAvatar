@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import Depends
 from model.kg.ontomops import OntomopsAM, OntomopsCBU, OntomopsGBU, OntomopsMOP
-from services.rdf_orm import RDFStore
+from services.rdf_ogm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
 from services.sparql import SparqlClient, get_ontomops_endpoint
 

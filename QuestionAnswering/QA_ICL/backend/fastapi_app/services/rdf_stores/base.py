@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from model.rdf_orm import RDFEntity
+from model.rdf_ogm import RDFEntity
 from services.sparql import SparqlClient
 
 

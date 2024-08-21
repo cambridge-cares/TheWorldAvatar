@@ -7,11 +7,10 @@ from typing import (
 )
 from collections import defaultdict
 
-from pydantic import TypeAdapter
 from pydantic.fields import FieldInfo
 from rdflib import URIRef
 
-from model.rdf_orm import RDFEntity
+from model.rdf_ogm import RDFEntity
 from services.sparql import SparqlClient
 from utils.itertools_recipes import batched
 

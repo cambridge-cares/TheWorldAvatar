@@ -6,7 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 from rdflib import SKOS
 
-from constants.namespace import ONTOSPECIES, PERIODICTABLE
+from constants.namespace import ONTOSPECIES
 from model.web.comp_op import COMP_OP_2_SPARQL_SYMBOL
 from model.kg.ontospecies import (
     GcAtom,
@@ -22,7 +22,7 @@ from model.kg.ontospecies import (
     SpeciesPropertyKey,
 )
 from model.web.ontospecies import SpeciesReturnFields, SpeciesRequest
-from services.rdf_orm import RDFStore
+from services.rdf_ogm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
 from services.sparql import SparqlClient, get_ontospecies_endpoint
 

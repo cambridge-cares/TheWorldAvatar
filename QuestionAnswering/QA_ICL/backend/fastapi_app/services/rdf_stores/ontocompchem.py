@@ -25,7 +25,7 @@ from model.kg.ontocompchem import (
     OntocompchemZeroPointEnergy,
 )
 from model.kg.ontospecies import GcAtom, OntospeciesHasValueHasUnit
-from services.rdf_orm import RDFStore
+from services.rdf_ogm import RDFStore
 from services.rdf_stores.base import Cls2NodeGetter
 from services.rdf_stores.ontospecies import (
     OntospeciesRDFStore,
@@ -162,7 +162,11 @@ VALUES ?Atom {{ {" ".join(
             for iri in iris
         ]
 
-    def get_calculation_results(self, iris: list[str] | tuple[str]):
+    def get_calculation_results(
+        self,
+        iris: list[str] | tuple[str],
+        sparql_client: str | SparqlClient | None = None,
+    ):
         if not iris:
             lst: list[OntocompchemCalculationResult | None] = []
             return lst

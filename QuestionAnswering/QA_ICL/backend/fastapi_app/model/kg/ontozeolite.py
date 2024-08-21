@@ -1,11 +1,11 @@
 from enum import Enum
 import typing
 
-from pydantic import BaseModel, Field, create_model
+from pydantic import BaseModel, create_model
 from rdflib import DCTERMS, FOAF
 from constants.namespace import BIBO, OM2, ONTOCRYSTAL, ONTOSPECIES, ONTOZEOLITE
-from model.rdf_orm import RDFEntity, RDFField
-from services.rdf_orm import unpack_optional_type
+from model.rdf_ogm import RDFEntity, RDFField
+from services.rdf_ogm import unpack_optional_type
 
 
 class Om2Quantity(RDFEntity):

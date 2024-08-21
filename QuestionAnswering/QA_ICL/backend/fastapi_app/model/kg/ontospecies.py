@@ -5,7 +5,7 @@ from rdflib import SKOS
 from rdflib.namespace import RDFS
 
 from constants.namespace import GC, ONTOSPECIES
-from model.rdf_orm import RDFEntity, RDFField
+from model.rdf_ogm import RDFEntity, RDFField
 
 
 class PeriodictableElement(RDFEntity):

@@ -1,6 +1,6 @@
 from rdflib import RDFS
-from constants.namespace import ONTOMOPS, ONTOSPECIES
-from model.rdf_orm import RDFEntity, RDFField
+from constants.namespace import ONTOMOPS
+from model.rdf_ogm import RDFEntity, RDFField
 
 
 class OntomopsMOP(RDFEntity):

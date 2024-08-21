@@ -3,7 +3,7 @@ from pydantic import Field
 from rdflib import RDFS
 
 from constants.namespace import ONTOKIN, ONTOPROVENANCE
-from model.rdf_orm import RDFEntity, RDFField
+from model.rdf_ogm import RDFEntity, RDFField
 
 
 class OntokinMechanismBase(RDFEntity):

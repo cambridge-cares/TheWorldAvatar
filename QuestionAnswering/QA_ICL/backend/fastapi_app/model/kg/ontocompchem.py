@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from pydantic import Field
 from constants.namespace import ONTOCOMPCHEM
 from model.kg.ontospecies import GcAtom
-from model.rdf_orm import RDFEntity, RDFField
+from model.rdf_ogm import RDFEntity, RDFField
 
 
 class OntocompchemOptimizedGeometry(RDFEntity):
