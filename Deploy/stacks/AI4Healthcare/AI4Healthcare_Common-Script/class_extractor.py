@@ -145,14 +145,25 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
     data = []
     for category, classes in category_dict.items():
         for cls in classes:
-            data.append([category, cls])
+            data.append([
+                cls,     # Source
+                "Class",      # Type
+                category,          # Target
+                "IS-A",       # Relation
+                "",           # Domain (empty)
+                "",           # Range (empty)
+                "",           # Quantifier (empty)
+                "",           # Comment (empty)
+                "",           # Defined By (empty)
+                ""            # Label (empty)
+            ])
 
-    df = pd.DataFrame(data, columns=["Category", "Class"])
-
+    columns = ["Source", "Type", "Target", "Relation", "Domain", "Range", "Quantifier", "Comment", "Defined By", "Label"]
+    df = pd.DataFrame(data, columns=columns)
     # Display the DataFrame
     print(df)
 
-    # Optionally, save the DataFrame to a CSV file
+    # Save the DataFrame to a CSV file
     df.to_csv(output_csv_path, index=False)
 
 if __name__ == "__main__":
