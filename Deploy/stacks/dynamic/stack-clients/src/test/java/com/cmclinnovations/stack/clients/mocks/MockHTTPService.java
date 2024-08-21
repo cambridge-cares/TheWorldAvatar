@@ -79,10 +79,10 @@ public class MockHTTPService extends ClientAndServer {
                 .map(req -> req.getMethod() + ": " + req.getPath().getValue() + ":\n" + req.getBodyAsString())
                 .collect(Collectors.joining("\n", "\n", "\n"));
         Assertions.assertEquals(expectations.length, recordedRequests.length,
-                "Wrong number of calls.\n"
+                "Wrong number of calls. Expected:\n"
                         + Stream.of(expectations).map(exp -> exp.toString())
                                 .collect(Collectors.joining("\n", "\n", "\n"))
-                        + "vs"
+                        + "Actual:"
                         + recordedPaths);
         Assertions.assertAll(Stream.of(expectations)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
