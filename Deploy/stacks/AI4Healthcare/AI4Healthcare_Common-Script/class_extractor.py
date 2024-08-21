@@ -10,7 +10,7 @@ def extract_text_from_pdf(pdf_path):
         for page_num in range(len(pdf_reader.pages)):
             page = pdf_reader.pages[page_num]
             page_text = page.extract_text()
-            # Remove common header and footer patterns (customize these patterns as needed)
+            # Remove common header and footer patterns (customise these patterns as needed)
             page_text = remove_headers_footers(page_text)
             text += page_text
     return text
@@ -20,6 +20,7 @@ def remove_headers_footers(page_text):
     # Example patterns to remove (customise as needed)
     header_footer_patterns = [
         r'POINTS OF INTEREST –  CLASSIFICATION SCHEME',  # header
+        r'POINTS OF INTEREST – CLASSIFICATION SCHEME',  # header
         r'December 2022',  # header
         r'OFFICIAL', # footer
         r'© Or dnance Survey Ltd 2022', # footer
@@ -33,6 +34,13 @@ def remove_headers_footers(page_text):
     cleaned_lines = page_text.split('\n')
     return '\n'.join(cleaned_lines)
 
+def is_category(line):
+    # Check if the line matches the pattern
+    if re.match(r'^\d{2} ', line):
+        return True
+    else:
+        return False
+
 # Improved function to extract categories and classes
 def extract_categories_classes(text):
     # Split text into lines
@@ -41,16 +49,30 @@ def extract_categories_classes(text):
     category_dict = {}
     current_category = None
     current_class = None
+    previous_line = None
+    top_level_category = None
 
     for line in lines:
+        if line.strip() == "":
+            continue
+        line = line.strip()
+        # Check if the previous line is a top level category
+        if is_category(str(line)) and is_category(str(previous_line)):
+            top_level_category = previous_line
+            category_dict[previous_line].append(line)
+            category_dict[line] = []
+            current_category = line
+            current_class = None
         # Check if the line matches a category pattern
-        if re.match(r'^\d{2} ', line):
-            current_category = line.strip()
+        elif re.match(r'^\d{2} ', line):
+            current_category = line
+            if current_category in category_dict:
+                continue
             category_dict[current_category] = []
             current_class = None
         # Check if the line matches a class pattern
         elif re.match(r'^\d{4} ', line):
-            current_class = line.strip()
+            current_class = line
             if current_category:
                 current_class = re.sub(r'\s+\d{2}\s+[A-Z].*$', '', current_class)
                 parts = re.split(r'(?<!^)(?=\d{4} )', current_class)
@@ -60,7 +82,7 @@ def extract_categories_classes(text):
         # Handle continuation lines (for split categories or classes)
         else:
             if current_class:
-                parts = re.split(r'(?=\d{4} )', line.strip())
+                parts = re.split(r'(?=\d{4} )', line)
                 count = 0
                 part_size = len(parts)
                 for part in parts:
@@ -77,7 +99,7 @@ def extract_categories_classes(text):
                 current_category += ' ' + line.strip()
                 # Update the category in the dict
                 category_dict[current_category] = category_dict.pop(list(category_dict.keys())[-1])
-
+        previous_line = line
     return category_dict
 
 # Extract text from the provided PDF
