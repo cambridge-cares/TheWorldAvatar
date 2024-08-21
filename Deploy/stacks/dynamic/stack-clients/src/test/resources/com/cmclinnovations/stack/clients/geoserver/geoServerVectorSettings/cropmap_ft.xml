@@ -1,0 +1,27 @@
+<featureType>
+    <enabled>true</enabled>
+    <metadata>
+        <entry key="JDBC_VIRTUAL_TABLE">
+            <virtualTable>
+                <name>layerName_cropmap_extended</name>
+                <sql>@/inputs/config/cropmap.sql</sql>
+                <escapeSql>false</escapeSql>
+                <keyColumn>label</keyColumn>
+                <geometry>
+                    <name>geom</name>
+                    <type>Polygon</type>
+                    <srid>27700</srid>
+                </geometry>
+            </virtualTable>
+        </entry>
+    </metadata>
+    <keywords>
+        <string>KEYWORD</string>
+    </keywords>
+    <metadataLinks />
+    <attributes />
+    <projectionPolicy>NONE</projectionPolicy>
+    <title>layerName</title>
+    <name>layerName</name>
+    <nativeName>layerName_cropmap_extended</nativeName>
+</featureType>
