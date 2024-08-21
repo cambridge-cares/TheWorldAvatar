@@ -122,13 +122,9 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + NEW_COVERAGE_STORE, 200,
                 request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
 
-        try {
-            geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE, DATABASE_NAME, SCHEMA_NAME,
-                    new GeoServerRasterSettings(), new MultidimSettings());
-        } catch (RuntimeException ex) {
-        }
-
-        mockGeoServer.verifyCalls();
+        Assertions.assertDoesNotThrow(() -> geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE,
+                DATABASE_NAME, SCHEMA_NAME,
+                new GeoServerRasterSettings(), new MultidimSettings()));
     }
 
     @Test
