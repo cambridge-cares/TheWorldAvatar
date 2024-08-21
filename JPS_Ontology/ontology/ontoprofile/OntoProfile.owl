@@ -172,6 +172,18 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
         <rdfs:label>Work responsibility</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/WorkResponsibilityEnum -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/WorkResponsibilityEnum">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/WorkResponsibility"/>
+        <rdfs:comment>The enumerated responsibilities available for the work responsibility.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Work responsibility enumerator</rdfs:label>
+    </owl:Class>
 </rdf:RDF>
 
 
