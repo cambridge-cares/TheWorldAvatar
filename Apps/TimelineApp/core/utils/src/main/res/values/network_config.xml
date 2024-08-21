@@ -3,6 +3,7 @@
     <string name="host_with_port"></string>
 
     <string name="trajectoryqueryagent_createlayer">trajectoryqueryagent/createlayer</string>
+    <string name="trajectoryqueryagent_getDatesWithData">trajectoryqueryagent/getDatesWithData</string>
     <string name="useragent_registerphone">user-agent/registerPhone</string>
     <string name="geoserver_twa_ows">geoserver/twa/ows</string>
     <string name="sensorloggeragent_update">sensorloggermobileappagent/update</string>
