@@ -5,8 +5,12 @@ import androidx.room.PrimaryKey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-public class BaseVector {
+/**
+ * A base class representing vector sensor data with x, y, and z components.
+ * This class is extended by specific sensor data entities like {@link Acceleration}.
+ * It provides common properties and methods for handling sensor data.
+ */
+public class BaseVector extends SensorData {
     @PrimaryKey
     public long time;
 
@@ -19,8 +23,17 @@ public class BaseVector {
     @Ignore
     public String sensorName;
 
-    public BaseVector() {}
+    public BaseVector() {
+    }
 
+    /**
+     * Constructs a BaseVector object with the specified time, x, y, and z values.
+     *
+     * @param time the timestamp for the sensor data record.
+     * @param x the x-component of the sensor data.
+     * @param y the y-component of the sensor data.
+     * @param z the z-component of the sensor data.
+     */
     public BaseVector(long time, double x, double y, double z) {
         this.time = time;
         this.x = x;
@@ -28,7 +41,16 @@ public class BaseVector {
         this.z = z;
     }
 
+
+    /**
+     * Constructs a BaseVector object from a JSON object.
+     * The JSON object should contain time and a nested object with x, y, and z values.
+     *
+     * @param jo the JSON object containing the vector data.
+     * @throws RuntimeException if there is an error parsing the JSON object.
+     */
     public BaseVector(JSONObject jo) {
+        super(jo);
         try {
             // Extract time from the JSONObject
             this.time = jo.getLong("time");
@@ -45,6 +67,10 @@ public class BaseVector {
         }
     }
 
+    /**
+     * Converts json object into a string
+     * @return a string representation of a BaseVector object
+     */
     public String toJSONString() {
         try {
             JSONObject values = new JSONObject();
