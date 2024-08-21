@@ -1,6 +1,8 @@
 import PyPDF2
 import re
 import pandas as pd
+import sys
+import os
 
 # Function to extract text from the PDF
 def extract_text_from_pdf(pdf_path):
@@ -105,23 +107,58 @@ def extract_categories_classes(text):
         previous_line = line
     return category_dict
 
-# Extract text from the provided PDF
-pdf_path = '../Data/input/points-of-interest-classification-schemes-v3.4.pdf'
-pdf_text = extract_text_from_pdf(pdf_path)
+def is_pdf_file(pdf_path):
+    # Check if the file has a .pdf extension
+    if not pdf_path.lower().endswith('.pdf'):
+        return False
+    
+    # Check if the file exists and is a file
+    if not os.path.isfile(pdf_path):
+        return False
+    
+    # Check the file signature (magic number)
+    with open(pdf_path, 'rb') as file:
+        # Read the first few bytes
+        file_signature = file.read(4)
+        
+        # Check if the file starts with the '%PDF-' signature
+        if file_signature == b'%PDF':
+            return True
+        else:
+            return False
 
-# Extract categories and classes
-category_dict = extract_categories_classes(pdf_text)
+# If you are calling from another Python script, call this function
+def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path):
+    # Check if the file exists and is a file
+    if not os.path.isfile(input_pdf_path):
+        raise FileNotFoundError(f"The file '{input_pdf_path}' does not exist or is not a valid file path.")
+    if not is_pdf_file(input_pdf_path):
+        raise FileNotFoundError(f"The file '{input_pdf_path}' is not a valid PDF file.")
+    # Extract text from the provided PDF
+    pdf_path = input_pdf_path
+    pdf_text = extract_text_from_pdf(pdf_path)
 
-# Convert the dictionary to a DataFrame for better visualization
-data = []
-for category, classes in category_dict.items():
-    for cls in classes:
-        data.append([category, cls])
+    # Extract categories and classes
+    category_dict = extract_categories_classes(pdf_text)
 
-df = pd.DataFrame(data, columns=["Category", "Class"])
+    # Convert the dictionary to a DataFrame for better visualization
+    data = []
+    for category, classes in category_dict.items():
+        for cls in classes:
+            data.append([category, cls])
 
-# Display the DataFrame
-print(df)
+    df = pd.DataFrame(data, columns=["Category", "Class"])
 
-# Optionally, save the DataFrame to a CSV file
-df.to_csv("categories_and_classes.csv", index=False)
+    # Display the DataFrame
+    print(df)
+
+    # Optionally, save the DataFrame to a CSV file
+    df.to_csv(output_csv_path, index=False)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python class_extractor.py <input_pdf_path> <output_csv_path>")
+    else:
+        input_pdf_path = sys.argv[1]
+        output_csv_path = sys.argv[2]
+        write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path)
