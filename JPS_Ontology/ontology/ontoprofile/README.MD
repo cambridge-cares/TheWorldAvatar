@@ -16,6 +16,7 @@ The namespace for the ontology is:
     - [2.1.2 Employer-Employee relationships](#212-employer-employee-relationships)
   - [2.2 Person](#22-person)
     - [2.2.1 Overview](#221-overview)
+  - [2.3 Relationships with facilities](#23-relationships-with-facilities)
 
 # 2. Data Model
 
@@ -23,6 +24,7 @@ The namespace for the ontology is:
 
 | Prefix            | Namespace                                                                                 |
 | ----------------- | ----------------------------------------------------------------------------------------- |
+| bot               | `https://w3id.org/bot#`                                                                   |
 | cmns-col          | `https://www.omg.org/spec/Commons/Collections/`                                           |
 | cmns-dt           | `https://www.omg.org/spec/Commons/DatesAndTimes/`                                         |
 | cmns-dsg          | `https://www.omg.org/spec/Commons/Designators/`                                           |
@@ -127,4 +129,26 @@ Figure 3: TBox representation for a person
     "vcard:Cell" {
         vcard-hasValue cell_no_string
     }
+```
+
+## 2.3 Relationships with facilities
+
+This section depicts how organisations and their employees can be linked to a facility. An organisation may have facilities operating in a building which is associated with a corresponding address and geolocation.
+
+Figure 4: TBox representation for relationships within facilities
+
+```mermaid
+    erDiagram
+    "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
+    "bot:Building" ||--o{ "geo:Feature" : "rdfs:subClassOf"
+    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-pty:hasMailingAddress"
+    "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
+    "fibo-fnd-plc-adr:PhysicalAddress" {
+        fibo-fnd-plc-loc-hasCityName string
+        fibo-fnd-plc-adr-hasAddressLine1 string
+        fibo-fnd-plc-adr-hasPostalCode string
+    }
+
+    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
+    "fibo-fnd-org-fm:Employee" ||--o{ "ontobim:Facility"  : "ontoprofile:worksAt"
 ```
