@@ -17,6 +17,8 @@ import express from "express";
 import next from "next";
 
 import session, { MemoryStore } from 'express-session';
+import { createClient } from "redis"
+import RedisStore from 'connect-redis';
 import Keycloak from 'keycloak-connect';
 
 const colorReset = "\x1b[0m";
@@ -39,24 +41,37 @@ const dev = process.env.NODE_ENV !== "production";
 // Initialise the Next.js application
 const app = next({ dev });
 const handle = app.getRequestHandler();
+let store;
 
 // Prepare the Next.js application and then start the Express server
 app.prepare().then(() => {
   const server = express();
 
   if (keycloakEnabled) { // do keycloak auth stuff if env var is set
-    server.set('trust proxy', true);
-    const memoryStore = new MemoryStore();
+    server.set('trust proxy', true); // the client’s IP address is understood as the left-most entry in the X-Forwarded-For header.
+
+    if (!dev) {
+      let redisClient = createClient() // assumes client is running on localhost:6379, expose this in docker-compose!
+      redisClient.connect().catch(console.error)
+      store = new RedisStore({
+        client: redisClient,
+        prefix: "redis",
+        ttl: undefined,
+      });
+    } else {
+      store = new MemoryStore(); // use in-memory store for session data in dev mode
+    }
+
     server.use(
       session({
         secret: 'login',
         resave: false,
         saveUninitialized: true,
-        store: memoryStore,
+        store: store,
       })
     );
 
-    const keycloak = new Keycloak({ store: memoryStore });
+    const keycloak = new Keycloak({ store: store });
     server.use(keycloak.middleware());
 
     server.get('/api/userinfo', keycloak.protect(), (req, res) => {
