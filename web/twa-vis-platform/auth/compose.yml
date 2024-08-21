@@ -8,5 +8,13 @@ services:
       KEYCLOAK_ADMIN: admin    
       KEYCLOAK_ADMIN_PASSWORD: password
       KC_LOG_LEVEL: info
-      
     command: start-dev --import-realm
+
+  redis:
+    container_name: "bnl-redis"
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
