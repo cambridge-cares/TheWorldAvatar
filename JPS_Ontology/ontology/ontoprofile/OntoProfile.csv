@@ -1,7 +1,7 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoProfile,TBox,https://www.theworldavatar.com/kg/ontoprofile/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoProfile,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
-OntoProfile,TBox,"OntoProfile is an ontology for representing people, organisation and roles they play.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoProfile,TBox,"OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoProfile,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Operator,Class,https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole,IS-A,,,,"An operator is responsible for managing, controlling, or operating equipment, machinery, or systems.",https://www.theworldavatar.com/kg/ontoprofile/,Operator
 Initials,Class,,,,,,The initials of a person are the first letters of their first name and last name (and sometimes middle name).,https://www.theworldavatar.com/kg/ontoprofile/,Initials
