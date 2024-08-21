@@ -4,6 +4,7 @@ import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.DEL
 import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.GET;
 import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.POST;
 import static com.cmclinnovations.stack.clients.mocks.MockHTTPService.Method.PUT;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockserver.model.HttpRequest.request;
@@ -20,6 +21,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +30,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockserver.model.XmlBody;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -36,6 +42,7 @@ import com.cmclinnovations.stack.clients.mocks.MockPostGIS;
 import com.cmclinnovations.stack.clients.mocks.MockServiceWithFileSystem;
 import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Testcontainers
 public class GeoServerClientTest {
@@ -54,6 +61,8 @@ public class GeoServerClientTest {
     public static MockPostGIS mockPostGIS;
 
     public static GeoServerClient geoServerClient;
+
+    static ObjectMapper jsonMapper = JsonHelper.getMapper();
 
     @Container
     static MockServiceWithFileSystem dummyGeoServerContainer = new MockServiceWithFileSystem("geoserver");
@@ -180,8 +189,36 @@ public class GeoServerClientTest {
                 new GeoServerVectorSettings());
     }
 
-    @Test
-    void testCreatePostGISLayerNew() {
+    private static Stream<Arguments> geoServerVectorSettingsProvider() throws IOException {
+        Path dirPath = Path.of(Assertions.assertDoesNotThrow(
+                () -> GeoServerClientTest.class.getResource("geoServerVectorSettings").toURI()));
+        try (Stream<Path> files = Files.list(dirPath)) {
+            List<Path> jsonFiles = files.filter(file -> file.getFileName().toString().endsWith(".json"))
+                    .collect(Collectors.toList());
+            return jsonFiles.stream().map(jsonFile -> arguments(
+                    jsonFile.getFileName().toString(),
+                    readGeoServerVectorSettings(jsonFile),
+                    getExpectedXmlBody(jsonFile, "ft"),
+                    getExpectedXmlBody(jsonFile, "cl")));
+        }
+
+    }
+
+    private static GeoServerVectorSettings readGeoServerVectorSettings(Path jsonFile) {
+        return Assertions
+                .assertDoesNotThrow(() -> jsonMapper.readValue(jsonFile.toFile(), GeoServerVectorSettings.class));
+    }
+
+    private static XmlBody getExpectedXmlBody(Path jsonFile, String suffix) {
+        return XmlBody.xml(Assertions.assertDoesNotThrow(() -> Files.readString(jsonFile.resolveSibling(
+                jsonFile.getFileName().toString().replace(".json", "_" + suffix + ".xml")))));
+    }
+
+    @ParameterizedTest(name = "{index} {0}")
+    @MethodSource("geoServerVectorSettingsProvider")
+    void testCreatePostGISLayerNew(String testName, GeoServerVectorSettings geoServerVectorSettings,
+            XmlBody featureTypesBody,
+            XmlBody createLayerBody) {
         mockGeoServer.addExpectation(GET,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 404);
 
@@ -194,14 +231,12 @@ public class GeoServerClientTest {
 
         mockGeoServer.addExpectation(POST,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + "/featuretypes",
-                200, request().withBody(
-                        "<featureType><enabled>true</enabled><metadata /><keywords><string>KEYWORD</string></keywords><metadataLinks /><attributes /><projectionPolicy>NONE</projectionPolicy><title>layerName</title><name>layerName</name></featureType>"));
+                200, request().withBody(featureTypesBody));
 
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200,
-                request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
+                request().withBody(createLayerBody));
 
-        geoServerClient.createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName,
-                new GeoServerVectorSettings());
+        geoServerClient.createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName, geoServerVectorSettings);
     }
 
     @Test
