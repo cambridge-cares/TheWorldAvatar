@@ -30,7 +30,6 @@ def remove_headers_footers(page_text):
     for pattern in header_footer_patterns:
         page_text = re.sub(pattern, '', page_text, flags=re.IGNORECASE)
     
-    # Optionally remove lines that are too short (likely to be headers/footers)
     cleaned_lines = page_text.split('\n')
     return '\n'.join(cleaned_lines)
 
@@ -58,10 +57,12 @@ def extract_categories_classes(text):
         line = line.strip()
         # Check if the previous line is a top level category
         if is_category(str(line)) and is_category(str(previous_line)):
+            if top_level_category:
+                category_dict[top_level_category].remove(previous_line)
             top_level_category = previous_line
-            category_dict[previous_line].append(line)
-            category_dict[line] = []
             current_category = line
+            category_dict[top_level_category].append(current_category)
+            category_dict[line] = []
             current_class = None
         # Check if the line matches a category pattern
         elif re.match(r'^\d{2} ', line):
@@ -70,6 +71,8 @@ def extract_categories_classes(text):
                 continue
             category_dict[current_category] = []
             current_class = None
+            if top_level_category:
+                category_dict[top_level_category].append(current_category)
         # Check if the line matches a class pattern
         elif re.match(r'^\d{4} ', line):
             current_class = line
