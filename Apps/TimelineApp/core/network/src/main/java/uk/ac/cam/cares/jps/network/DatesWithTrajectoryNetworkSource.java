@@ -23,16 +23,31 @@ import java.util.stream.Collectors;
 import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.model.YearMonthCompositeKey;
 
+/**
+ * Network source for trajectory dates related functions
+ */
 public class DatesWithTrajectoryNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(DatesWithTrajectoryNetworkSource.class);
-    private RequestQueue requestQueue;
-    private Context context;
+    private final RequestQueue requestQueue;
+    private final Context context;
 
+    /**
+     * Constructor of the class. The instantiation is handled by dependency injection.
+     * @param requestQueue Volley queue for network request.
+     * @param context App context
+     */
     public DatesWithTrajectoryNetworkSource(RequestQueue requestQueue, Context context) {
         this.requestQueue = requestQueue;
         this.context = context;
     }
 
+    /**
+     * Get all dates where there is trajectory data
+     * @param userId User id for the logged in user
+     * @param timezone Current timezone of the phone
+     * @param onSuccessUpper Success callback
+     * @param onFailureUpper Failure callback
+     */
     public void getDates(String userId, String timezone, Response.Listener<Map<YearMonthCompositeKey, List<Integer>>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String getDatesWithTrajectory = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_getDatesWithData))

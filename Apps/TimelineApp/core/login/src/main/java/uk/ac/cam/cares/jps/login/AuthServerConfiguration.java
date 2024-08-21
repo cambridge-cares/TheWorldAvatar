@@ -73,16 +73,6 @@ public final class AuthServerConfiguration {
     private Uri mDiscoveryUri;
     private boolean mHttpsRequired;
 
-//    public static AuthServerConfiguration getInstance(Context context) {
-//        AuthServerConfiguration config = sInstance.get();
-//        if (config == null) {
-//            config = new AuthServerConfiguration(context);
-//            sInstance = new WeakReference<>(config);
-//        }
-//
-//        return config;
-//    }
-
     @Inject
     public AuthServerConfiguration(Context context) {
         mContext = context;

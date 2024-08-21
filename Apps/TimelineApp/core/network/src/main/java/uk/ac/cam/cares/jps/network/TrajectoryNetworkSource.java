@@ -17,18 +17,34 @@ import java.util.Locale;
 
 import okhttp3.HttpUrl;
 
-
+/**
+ * Network source for constructing, sending and processing trajectory related requests to server
+ */
 public class TrajectoryNetworkSource {
 
     private static final Logger LOGGER = Logger.getLogger(TrajectoryNetworkSource.class);
-    private RequestQueue requestQueue;
-    private Context context;
+    private final RequestQueue requestQueue;
+    private final Context context;
 
+    /**
+     * Constructor of the class. The instantiation is handled by dependency injection.
+     * @param requestQueue Volley queue for network request.
+     * @param context App context
+     */
     public TrajectoryNetworkSource(RequestQueue requestQueue, Context context) {
         this.requestQueue = requestQueue;
         this.context = context;
     }
 
+    /**
+     * Get trajectory from server. It consists two steps:
+     * 1. create geoserver layers and Postgres SQL functions with TrajectoryQueryAgent
+     * 2. get geojson from geoserver for visualisation with iris
+     * @param userId User id for the logged in user.
+     * @param date Chosen date for visualisation
+     * @param onSuccessUpper Success callback
+     * @param onFailureUpper Failure callback
+     */
     public void getTrajectory(String userId, String date, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String createLayerUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_createlayer))

@@ -1,2 +1,2 @@
 # Network Module
-A module responsible for network calls.
+A module responsible for network requests.

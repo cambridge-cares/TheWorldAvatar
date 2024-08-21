@@ -20,6 +20,9 @@ import uk.ac.cam.cares.jps.user.databinding.FragmentAccountSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
+/**
+ * Account setting page
+ */
 @AndroidEntryPoint
 public class AccountSettingFragment extends Fragment {
 

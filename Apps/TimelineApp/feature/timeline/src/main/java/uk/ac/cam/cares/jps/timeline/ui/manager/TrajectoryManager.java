@@ -29,11 +29,19 @@ import java.util.Objects;
 
 import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 
+/**
+ * An UI manager that manages the drawing and removing of trajectories received from server
+ */
 public class TrajectoryManager {
     private TrajectoryViewModel trajectoryViewModel;
     private Logger LOGGER = Logger.getLogger(TrajectoryManager.class);
     private final List<String> layerNames;
 
+    /**
+     * Constructor of the class
+     * @param fragment Host fragment
+     * @param mapView  Mapbox map view
+     */
     public TrajectoryManager(Fragment fragment, MapView mapView) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
         layerNames = new ArrayList<>();

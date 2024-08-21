@@ -16,6 +16,9 @@ import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.data.SensorRepository;
 import uk.ac.cam.cares.jps.sensor.data.UserPhoneRepository;
 
+/**
+ * ViewModel that manages sensor recording related states and functions
+ */
 @HiltViewModel
 public class SensorViewModel extends ViewModel {
     private static final Logger LOGGER = LogManager.getLogger(SensorViewModel.class);
@@ -28,6 +31,12 @@ public class SensorViewModel extends ViewModel {
     private final MutableLiveData<Boolean> _hasAccountError = new MutableLiveData<>();
     private final LiveData<Boolean> hasAccountError = _hasAccountError;
 
+    /**
+     * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
+     * @param repository SensorRepository object
+     * @param sensorCollectionStateManagerRepository SensorCollectionStateManagerRepository object
+     * @param userPhoneRepository
+     */
     @Inject
     SensorViewModel(
             SensorRepository repository,
@@ -52,6 +61,9 @@ public class SensorViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Start recording
+     */
     public void startRecording() {
         sensorRepository.startRecording(new RepositoryCallback<>() {
             @Override
@@ -67,6 +79,9 @@ public class SensorViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Stop recording
+     */
     public void stopRecording() {
         sensorRepository.stopRecording();
         _isRecording.setValue(false);
@@ -84,6 +99,9 @@ public class SensorViewModel extends ViewModel {
         sensorCollectionStateManagerRepository.clearManager(userId);
     }
 
+    /**
+     * Register phone to user
+     */
     public void registerPhoneToUser() {
         userPhoneRepository.registerAppToUser(new RepositoryCallback<Boolean>() {
             @Override

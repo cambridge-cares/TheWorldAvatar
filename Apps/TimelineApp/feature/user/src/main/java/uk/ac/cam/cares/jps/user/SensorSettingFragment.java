@@ -30,6 +30,9 @@ import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
+/**
+ * Sensor setting page
+ */
 @AndroidEntryPoint
 public class SensorSettingFragment extends Fragment {
 

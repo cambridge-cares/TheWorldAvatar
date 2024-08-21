@@ -15,6 +15,9 @@ import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.network.DatesWithTrajectoryNetworkSource;
 import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
 
+/**
+ * Dependency injection specification for data module
+ */
 @Module
 @InstallIn(SingletonComponent.class)
 public class DataModule {

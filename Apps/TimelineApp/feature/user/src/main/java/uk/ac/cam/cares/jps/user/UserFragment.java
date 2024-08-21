@@ -18,6 +18,9 @@ import uk.ac.cam.cares.jps.ui.UiUtils;
 import uk.ac.cam.cares.jps.user.databinding.FragmentUserPageBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 
+/**
+ * User page
+ */
 @AndroidEntryPoint
 public class UserFragment extends Fragment {
     FragmentUserPageBinding binding;

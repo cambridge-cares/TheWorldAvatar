@@ -36,6 +36,9 @@ import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.LoginViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 
+/**
+ * Login page
+ */
 @AndroidEntryPoint
 public class LoginFragment extends Fragment {
     private static final Logger LOGGER = LogManager.getLogger(LoginFragment.class);

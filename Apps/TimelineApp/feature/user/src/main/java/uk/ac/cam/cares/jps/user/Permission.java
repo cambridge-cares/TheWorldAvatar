@@ -5,6 +5,9 @@ import android.os.Build;
 
 import androidx.activity.result.ActivityResultLauncher;
 
+/**
+ * Permission class
+ */
 public class Permission {
     public enum PermissionType {
         LOCATION_FINE,

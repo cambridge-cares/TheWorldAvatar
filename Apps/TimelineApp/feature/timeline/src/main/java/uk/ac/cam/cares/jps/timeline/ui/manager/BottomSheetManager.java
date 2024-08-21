@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.timeline.ui.manager;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -21,11 +20,8 @@ import org.apache.log4j.Logger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
 import uk.ac.cam.cares.jps.login.AccountException;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
@@ -40,7 +36,7 @@ import uk.ac.cam.cares.jps.timeline.viewmodel.UserPhoneViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
 
 /**
- * A class to determine what bottom sheet to show and switch in between different bottom sheet
+ * An UI manager that manages bottom sheets on screen and switches in between different bottom sheets
  * based on the state.
  */
 public class BottomSheetManager {
@@ -61,9 +57,13 @@ public class BottomSheetManager {
     private NormalBottomSheet normalBottomSheet;
     private ErrorBottomSheet errorBottomSheet;
     private final MaterialAlertDialogBuilder sessionExpiredDialog;
-    private Long currentSelectionDate = MaterialDatePicker.todayInUtcMilliseconds();
     private GreyOutDecorator greyOutDecorator;
 
+    /**
+     * Constructor of the class
+     * @param fragment Fragment that hosts the bottom sheet
+     * @param bottomSheetContainer Container of the bottom sheet
+     */
     public BottomSheetManager(Fragment fragment, LinearLayoutCompat bottomSheetContainer) {
         trajectoryViewModel = new ViewModelProvider(fragment).get(TrajectoryViewModel.class);
         connectionViewModel = new ViewModelProvider(fragment).get(ConnectionViewModel.class);
@@ -75,14 +75,14 @@ public class BottomSheetManager {
 
         fragmentManager = fragment.getParentFragmentManager();
         sessionExpiredDialog = userPhoneViewModel.getSessionExpiredDialog(fragment);
-        greyOutDecorator = new GreyOutDecorator();
 
         this.bottomSheetContainer = bottomSheetContainer;
         this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer);
+        greyOutDecorator = new GreyOutDecorator();
         initBottomSheet();
     }
 
-    public void initBottomSheet() {
+    private void initBottomSheet() {
         initNormalBottomSheet();
         initErrorBottomSheet();
 
@@ -91,7 +91,7 @@ public class BottomSheetManager {
                 setBottomSheet(normalBottomSheet);
                 trajectoryViewModel.getTrajectory(convertDateFormat(normalBottomSheetViewModel.selectedDate.getValue()));
             } else {
-                errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.CONNECTION_ERROR);
+                errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.CONNECTION_ERROR);
                 setAndExtendBottomSheet(errorBottomSheet);
             }
         });
@@ -100,59 +100,46 @@ public class BottomSheetManager {
 
     private void initNormalBottomSheet() {
         normalBottomSheet = new NormalBottomSheet(context);
+        configureTrajectoryRetrieval();
+        configureDateSelection();
+    }
 
-        normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view -> normalBottomSheetViewModel.setToLastDate());
+    private void configureTrajectoryRetrieval() {
+        trajectoryViewModel.isFetchingTrajecjtory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
+        trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheet::showTrajectoryInfo);
+    }
 
-        normalBottomSheet.getBottomSheet().findViewById(R.id.date_right_bt).setOnClickListener(view -> normalBottomSheetViewModel.setToNextDate());
+    private void configureDateSelection() {
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_left_bt).setOnClickListener(view ->
+                normalBottomSheetViewModel.setToLastDate());
 
-        normalBottomSheet.getBottomSheet().findViewById(R.id.date_picker_layout).setOnClickListener(view -> getDatePicker().show(fragmentManager, "date_picker"));
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_right_bt).setOnClickListener(view ->
+                normalBottomSheetViewModel.setToNextDate());
+
+        normalBottomSheet.getBottomSheet().findViewById(R.id.date_picker_layout).setOnClickListener(view ->
+                getDatePicker(normalBottomSheetViewModel).show(fragmentManager, "date_picker"));
 
         normalBottomSheetViewModel.selectedDate.observe(lifecycleOwner, selectedDate -> {
-            // for date picker date text coloring
-            currentSelectionDate = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
-
-            // for trajectory visualisation
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMMM dd, yyyy");
             ((TextView) normalBottomSheet.getBottomSheet().findViewById(R.id.date_tv)).setText(selectedDate.format(formatter));
             connectionViewModel.checkNetworkConnection();
         });
-
         normalBottomSheetViewModel.datesWithTrajectory.observe(lifecycleOwner, dates -> greyOutDecorator.setDatesWithTrajectory(dates));
         normalBottomSheetViewModel.getDatesWithTrajectory(ZonedDateTime.now(ZoneId.systemDefault()).toOffsetDateTime().getOffset().getId());
+    }
 
-        trajectoryViewModel.isFetchingTrajecjtory.observe(lifecycleOwner, isFetching -> {
-            if (isFetching) {
-                normalBottomSheet.getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.VISIBLE);
-                normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.GONE);
-            } else {
-                normalBottomSheet.getBottomSheet().findViewById(R.id.progress_linear).setVisibility(View.GONE);
-                normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv).setVisibility(View.VISIBLE);
-            }
-        });
-
-        trajectoryViewModel.trajectory.observe(lifecycleOwner, trajectory -> {
-            if (trajectory.isEmpty()) {
-                ((TextView) normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv)).setText(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_trajectory_found);
-                return;
-            }
-            ((TextView) normalBottomSheet.getBottomSheet().findViewById(R.id.trajectory_info_tv)).setText(R.string.more_information_about_the_trajectory_will_be_shown_here);
-        });
+    private MaterialDatePicker<Long> getDatePicker(NormalBottomSheetViewModel normalBottomSheetViewModel) {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(R.string.select_date)
+                .setSelection(normalBottomSheetViewModel.getSelectedDateLong())
+                .setDayViewDecorator(greyOutDecorator)
+                .build();
+        datePicker.addOnPositiveButtonClickListener(o -> normalBottomSheetViewModel.setDate(Instant.ofEpochMilli(o).atZone(ZoneId.of("UTC")).toLocalDate()));
+        return datePicker;
     }
 
     private void initErrorBottomSheet() {
-        View.OnClickListener retryConnectionAndRetrieveTrajectory = view -> {
-            connectionViewModel.checkNetworkConnection();
-        };
-        View.OnClickListener registerUserToPhone = view -> {
-            userPhoneViewModel.registerPhoneToUser();
-        };
-
-        Map<ErrorBottomSheet.ErrorType, View.OnClickListener> errorHandler = new HashMap<>();
-        errorHandler.put(ErrorBottomSheet.ErrorType.CONNECTION_ERROR, retryConnectionAndRetrieveTrajectory);
-        errorHandler.put(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR, registerUserToPhone);
-
-        errorBottomSheet = new ErrorBottomSheet(context, errorHandler);
-
+        errorBottomSheet = new ErrorBottomSheet(context, connectionViewModel, userPhoneViewModel);
         userPhoneViewModel.getError().observe(lifecycleOwner, error -> {
             if (error == null) {
                 return;
@@ -163,7 +150,7 @@ public class BottomSheetManager {
                 sessionExpiredDialog.show();
             } else if (error instanceof SensorCollectionStateException) {
                 // retry getting user id, device id and registration
-                errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
+                errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
             }
         });
 
@@ -174,9 +161,9 @@ public class BottomSheetManager {
 
             if (error instanceof AccountException) {
                 // retry register phone to user
-                errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
+                errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
             } else {
-                errorBottomSheet.setErrorMessage(ErrorBottomSheet.ErrorType.TRAJECTORY_ERROR);
+                errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.TRAJECTORY_ERROR);
             }
             setAndExtendBottomSheet(errorBottomSheet);
         });
@@ -200,45 +187,4 @@ public class BottomSheetManager {
         ZonedDateTime convertedDateStart = date.atStartOfDay(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
         return convertedDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSx"));
     }
-
-    private MaterialDatePicker<Long> getDatePicker() {
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText(R.string.select_date)
-                .setSelection(currentSelectionDate)
-                .setDayViewDecorator(greyOutDecorator)
-                .build();
-        datePicker.addOnPositiveButtonClickListener(o -> normalBottomSheetViewModel.setDate(Instant.ofEpochMilli(o).atZone(ZoneId.of("UTC")).toLocalDate()));
-        return datePicker;
-    }
-
-//    private void setupBottomSheet() {
-//        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View view, int i) {
-//                LOGGER.info("State is " + i);
-//                scaleBarPlugin.updateSettings(scaleBarSettings -> {
-//                    scaleBarSettings.setMarginTop(view.getTop() - MAP_BOTTOM_FLOATING_COMPONENT_MARGIN + binding.appBarLayout.getHeight());
-//                    return null;
-//                });
-//
-//                if (i == BottomSheetBehavior.STATE_EXPANDED) {
-//                    // todo: change the app bar style
-//                    TypedValue typedValue = new TypedValue();
-//                    requireContext().getTheme().resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true);
-//
-//                    binding.appBarLayout.setBackground(getResources().getDrawable(typedValue.resourceId, requireContext().getTheme()));
-//                } else {
-//                    binding.appBarLayout.setBackground(getResources().getDrawable(R.drawable.app_bar_background, requireContext().getTheme()));
-//                }
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View view, float v) {
-//                scaleBarPlugin.updateSettings(scaleBarSettings -> {
-//                    scaleBarSettings.setMarginTop(view.getTop() - MAP_BOTTOM_FLOATING_COMPONENT_MARGIN + binding.appBarLayout.getHeight());
-//                    return null;
-//                });
-//            }
-//        });
-//    }
 }

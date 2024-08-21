@@ -13,18 +13,27 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
-// todo: need to refactor this class to remove the framework dependent component
+/**
+ * ViewModel that checks the device network connection
+ */
 @HiltViewModel
 public class ConnectionViewModel extends ViewModel {
     private ConnectivityManager connectivityManager;
     private MutableLiveData<Boolean> _hasConnection = new MutableLiveData<>();
     private LiveData<Boolean> hasConnection = _hasConnection;
 
+    /**
+     * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
+     * @param context fragment context
+     */
     @Inject
     public ConnectionViewModel(@ApplicationContext Context context) {
         connectivityManager = context.getSystemService(ConnectivityManager.class);
     }
 
+    /**
+     * Check network connection
+     */
     public void checkNetworkConnection() {
         NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
         _hasConnection.setValue(networkCapabilities != null &&
@@ -36,10 +45,11 @@ public class ConnectionViewModel extends ViewModel {
                         networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)));
     }
 
+    /**
+     * Get hasConnection object
+     * @return hasConnection object
+     */
     public LiveData<Boolean> getHasConnection() {
         return hasConnection;
-    }
-    public void setHasConnection(Boolean hasConnection) {
-        _hasConnection.setValue(hasConnection);
     }
 }

@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.datepicker.DayViewDecorator;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

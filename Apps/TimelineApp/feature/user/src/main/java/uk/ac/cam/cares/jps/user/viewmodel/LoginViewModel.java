@@ -20,6 +20,9 @@ import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.user.R;
 
+/**
+ * ViewModel that manages login related state
+ */
 @HiltViewModel
 public class LoginViewModel extends ViewModel {
     private static final Logger LOGGER = LogManager.getLogger(LoginViewModel.class);
@@ -36,8 +39,11 @@ public class LoginViewModel extends ViewModel {
         this.repository = repository;
     }
 
+    /**
+     * Prepare for authentication
+     */
     public void initAuth() {
-        repository.initAuth(new RepositoryCallback<Boolean>() {
+        repository.initAuth(new RepositoryCallback<>() {
             @Override
             public void onSuccess(Boolean result) {
                 hasLogin.postValue(true);
@@ -50,8 +56,11 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Perform authentication
+     */
     public void doAuth() {
-        repository.doAuth(new RepositoryCallback<Intent>() {
+        repository.doAuth(new RepositoryCallback<>() {
             @Override
             public void onSuccess(Intent result) {
                 loginIntent.postValue(result);
@@ -64,8 +73,12 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Process authorization response
+     * @param data
+     */
     public void processAuthorizationResponse(Intent data) {
-        repository.processAuthorizationResponse(data, new RepositoryCallback<Boolean>() {
+        repository.processAuthorizationResponse(data, new RepositoryCallback<>() {
             @Override
             public void onSuccess(Boolean result) {
                 hasLogin.postValue(true);

@@ -14,6 +14,9 @@ import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.sensor.data.UserPhoneRepository;
 
+/**
+ * ViewModel manages the user to phone registration
+ */
 @HiltViewModel
 public class UserPhoneViewModel extends ViewModel {
     UserPhoneRepository userPhoneRepository;
@@ -27,6 +30,9 @@ public class UserPhoneViewModel extends ViewModel {
         this.loginRepository = loginRepository;
     }
 
+    /**
+     * Call repository to register phone to user
+     */
     public void registerPhoneToUser() {
         userPhoneRepository.registerAppToUser(new RepositoryCallback<>() {
             @Override
@@ -41,10 +47,19 @@ public class UserPhoneViewModel extends ViewModel {
         });
     }
 
+    /**
+     * get error of phone to user registration
+     * @return Error LiveData
+     */
     public LiveData<Throwable> getError() {
         return error;
     }
 
+    /**
+     * Get session expired dialog
+     * @param fragment Host fragment
+     * @return session expired dialog
+     */
     public MaterialAlertDialogBuilder getSessionExpiredDialog(Fragment fragment) {
         return loginRepository.getSessionExpiredDialog(fragment);
     }

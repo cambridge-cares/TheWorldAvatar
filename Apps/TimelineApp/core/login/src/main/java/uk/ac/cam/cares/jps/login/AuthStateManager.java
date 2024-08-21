@@ -52,9 +52,6 @@ import javax.crypto.spec.IvParameterSpec;
  */
 public class AuthStateManager {
 
-//    private static final AtomicReference<WeakReference<AuthStateManager>> INSTANCE_REF =
-//            new AtomicReference<>(new WeakReference<>(null));
-
     private static final Logger LOGGER = LogManager.getLogger(AuthStateManager.class);
     private static final String SHARED_PREF_NAME = "AuthState";
     private static final String KEY_STATE = "state";

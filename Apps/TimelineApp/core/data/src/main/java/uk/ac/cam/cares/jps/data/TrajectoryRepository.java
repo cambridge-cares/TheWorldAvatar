@@ -8,11 +8,20 @@ import uk.ac.cam.cares.jps.login.User;
 import uk.ac.cam.cares.jps.network.TrajectoryNetworkSource;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
+/**
+ * A repository class that gathers information for trajectory related requests and call the lower level network source.
+ */
 public class TrajectoryRepository {
     private TrajectoryNetworkSource trajectoryNetworkSource;
     private LoginRepository loginRepository;
     private Context context;
 
+    /**
+     * Constructor of the class. Instantiation of this class is done by dependency injection.
+     * @param trajectoryNetworkSource Network source managed by this class, which is responsible for trajectory related request.
+     * @param loginRepository Repository responsible for user login related functions.
+     * @param context Context of the app.
+     */
     public TrajectoryRepository(TrajectoryNetworkSource trajectoryNetworkSource,
                                 LoginRepository loginRepository,
                                 Context context) {
@@ -21,6 +30,11 @@ public class TrajectoryRepository {
         this.context = context;
     }
 
+    /**
+     * Get trajectory of the logged in user on the chosen date
+     * @param date Date chosen for which trajectory to show
+     * @param callback Callback to notify UI level components when responses are returned from server
+     */
     public void getTrajectory(String date, RepositoryCallback<String> callback) {
         loginRepository.getUserInfo(new RepositoryCallback<>() {
             @Override

@@ -10,6 +10,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.data.TrajectoryRepository;
 
+/**
+ *
+ */
 @HiltViewModel
 public class TrajectoryViewModel extends ViewModel {
 

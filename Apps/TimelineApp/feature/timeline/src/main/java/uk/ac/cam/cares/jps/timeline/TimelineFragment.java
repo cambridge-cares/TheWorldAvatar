@@ -35,6 +35,9 @@ import uk.ac.cam.cares.jps.timeline.viewmodel.TrajectoryViewModel;
 import uk.ac.cam.cares.jps.timelinemap.R;
 import uk.ac.cam.cares.jps.timelinemap.databinding.FragmentTimelineBinding;
 
+/**
+ * Main page of the app which shows trajectory
+ */
 @AndroidEntryPoint
 public class TimelineFragment extends Fragment {
     private FragmentTimelineBinding binding;
@@ -63,15 +66,11 @@ public class TimelineFragment extends Fragment {
 
         mapView = binding.mapView;
         mapView.getMapboxMap().addOnStyleLoadedListener(style -> {
-            // todo
         });
         updateUIForThemeMode(isDarkModeEnabled());
 
-        TrajectoryViewModel trajectoryViewModel = new ViewModelProvider(this).get(TrajectoryViewModel.class);
-
         TrajectoryManager trajectoryManager = new TrajectoryManager(this, mapView);
         BottomSheetManager bottomSheetManager = new BottomSheetManager(this, binding.bottomSheetContainer);
-//        trajectoryManager.getTrajectory();
 
         compassPlugin = mapView.getPlugin(Plugin.MAPBOX_COMPASS_PLUGIN_ID);
         compassPlugin.setEnabled(true);

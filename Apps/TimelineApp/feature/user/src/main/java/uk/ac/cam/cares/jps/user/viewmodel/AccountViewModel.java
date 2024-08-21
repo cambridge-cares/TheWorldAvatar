@@ -23,6 +23,9 @@ import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.User;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
+/**
+ * ViewModel that manages user account information for UI
+ */
 @HiltViewModel
 public class AccountViewModel extends ViewModel {
     private final LoginRepository loginRepository;
@@ -45,6 +48,9 @@ public class AccountViewModel extends ViewModel {
         this.loginRepository = loginRepository;
     }
 
+    /**
+     * Get user info from server by calling repository
+     */
     public void getUserInfo() {
         loginRepository.getUserInfo(new RepositoryCallback<>() {
             @Override
@@ -62,6 +68,10 @@ public class AccountViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Register the fragment for logout result and set up the logout launcher object
+     * @param fragment Host fragment
+     */
     public void registerForLogoutResult(Fragment fragment) {
         logoutLauncher = loginRepository.getLogoutLauncher(fragment, new RepositoryCallback<>() {
             @Override
@@ -76,10 +86,18 @@ public class AccountViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Logout the current user
+     */
     public void logout() {
         logoutLauncher.launch(loginRepository.getLogOutIntent());
     }
 
+    /**
+     * get session expired dialog
+     * @param fragment Host fragment
+     * @return session expired dialog
+     */
     public MaterialAlertDialogBuilder getSessionExpiredDialog(Fragment fragment) {
         return loginRepository.getSessionExpiredDialog(fragment);
     }

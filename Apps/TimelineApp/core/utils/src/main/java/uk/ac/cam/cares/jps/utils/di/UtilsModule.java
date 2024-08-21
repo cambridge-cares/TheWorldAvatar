@@ -13,7 +13,9 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
-
+/**
+ * Dependency injection specification for Utils module
+ */
 @Module
 @InstallIn(SingletonComponent.class)
 public class UtilsModule {
