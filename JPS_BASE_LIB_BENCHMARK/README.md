@@ -21,3 +21,14 @@ To save benchmark result to a JSON file, run
 ```
 java -jar target/benchmarks.jar -rf json -rff [FILENAME]
 ```
+
+To only run test with one of the benchmark class, run
+
+```
+java -jar target/benchmarks.jar org.openjdk.jmh.Main uk.ac.cam.cares.jps.[CLASS]
+```
+
+## Useful notes
+
+@Benchmark annotates an actual benchmarking test.
+@Setup annotates functions that are called before actual benchmarking. It takes _LEVEL_ as a parameter; Level.Trial indicates a function to be run once before benchmarking the entire class, whereas Level.Invocation indicates a function to be run before even benchmark call.
