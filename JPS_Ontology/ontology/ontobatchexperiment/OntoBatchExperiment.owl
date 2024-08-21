@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontobatchexperiment="https://www.theworldavatar.com/kg/ontobatchexperiment/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/">
-        <dc:date>20 August 2024</dc:date>
+        <dc:date>21 August 2024</dc:date>
         <rdfs:comment>OntoBatchExperiment is an ontology to represent batch experiments and relevant information.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -107,40 +107,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoderivation/belongsTo -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoderivation/belongsTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/Identifier"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoderivation/Derivation"/>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
-        <rdfs:label>belongs to</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoderivation/Derivation"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchNumber"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/WorkCode"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Initials"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:comment>A relationship to describe an identifier being derived from other types of information.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
-        <rdfs:label>is derived from</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -206,20 +172,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
         <rdfs:label>Work code</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoderivation/Derivation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoderivation/Derivation"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoprofile/Initials -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Initials"/>
     
 
 
