@@ -15,3 +15,9 @@ mvn clean verify
 ```
 java -jar target/benchmarks.jar
 ```
+
+To save benchmark result to a JSON file, run
+
+```
+java -jar target/benchmarks.jar -rf json -rff [FILENAME]
+```

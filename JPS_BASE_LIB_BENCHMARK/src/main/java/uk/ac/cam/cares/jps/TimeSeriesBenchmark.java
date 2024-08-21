@@ -37,6 +37,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Scope;
@@ -60,6 +61,10 @@ import org.postgis.Point;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class TimeSeriesBenchmark {
 
+    @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
+    private int size;
+    private boolean printToScreen;
+
     TimeSeries<Instant> ts;
     List<String> dataIRI = new ArrayList<>();
     List<Instant> timeList = new ArrayList<>();
@@ -77,7 +82,7 @@ public class TimeSeriesBenchmark {
         dataIRI.add("http://data3");
         dataIRI.add("http://data4");
         dataIRI.add("http://data5");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < size; i++) {
             timeList.add(Instant.now().plusSeconds(i));
             data1.add(Double.valueOf(i));
             data2.add(String.valueOf(i));
@@ -95,12 +100,18 @@ public class TimeSeriesBenchmark {
         dataToAdd.add(data3);
         dataToAdd.add(data4);
         dataToAdd.add(data5);
+
+        printToScreen = true;
     }
 
     @Benchmark
     public void testGetTimes() {
         ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
         List<Instant> tmpTimeList = ts.getTimes();
+        if (printToScreen) {
+            System.out.println("The length of the list is: " + tmpTimeList.size());
+            printToScreen = false;
+        }
     }
 
 }
