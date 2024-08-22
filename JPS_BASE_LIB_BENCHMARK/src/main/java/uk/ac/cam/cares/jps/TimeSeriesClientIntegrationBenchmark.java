@@ -48,6 +48,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -234,6 +235,30 @@ public class TimeSeriesClientIntegrationBenchmark {
                 tsClient.initTimeSeries(dataIRIs.get(i), classes.get(i), units.get(i), conn);                
             }
         }
+    }
+
+    @Benchmark
+    public void testBulkAddTimeSeriesData(Blackhole blackhole) throws SQLException {
+        unmeasuredBulkInitTimeSeries(blackhole); // this should initialise time series while being excluded in measurements
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            tsClient.bulkaddTimeSeriesData(tss, conn);
+        }
+    }
+
+    @Benchmark
+    public void testAddTimeSeriesData(Blackhole blackhole) throws SQLException {
+        unmeasuredBulkInitTimeSeries(blackhole); // this should initialise time series while being excluded in measurements
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            for (TimeSeries<Instant> ts : tss) {
+                tsClient.addTimeSeriesData(ts, conn);
+            }
+        }
+    }
+
+    private void unmeasuredBulkInitTimeSeries(Blackhole blackhole) throws SQLException {
+        // this should initialise time series while being excluded in measurements
+        testBulkInitTimeSeries();
+        blackhole.consume(true); // dummy function as Blackhole cannot consume void functions
     }
 
 }
