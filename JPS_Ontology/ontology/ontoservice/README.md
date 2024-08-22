@@ -166,6 +166,14 @@ Figure 4: TBox representation of a service event
     }
 ```
 
+Note that the service status are represented as enums in the corresponding ABox. The available statuses are as follows:
+
+- Awaiting scheduling
+- In review
+- In queue
+- In progress
+- Completed
+
 ## 2.3 Reporting
 
 This section focuses on reporting matters such as billing. The derived information framework is used in representing how the total price of a service is calculated and represented in the knowledge graph. The computation of the total price is as follows:
