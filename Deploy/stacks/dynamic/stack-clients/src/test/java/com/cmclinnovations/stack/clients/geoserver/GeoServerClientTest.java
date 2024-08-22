@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -286,7 +285,6 @@ public class GeoServerClientTest {
     }
 
     @Test
-    @Disabled("Disabled until fixed in PR #1300")
     void testLoadOtherFilesGood() throws IOException {
 
         try (InputStream is = GeoServerClientTest.class.getResourceAsStream("otherFiles.json")) {
