@@ -33,6 +33,7 @@ package uk.ac.cam.cares.jps;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.jena.base.Sys;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -48,7 +49,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
-
+import org.openjdk.jmh.infra.Blackhole;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 
@@ -82,7 +83,7 @@ public class TimeSeriesClientIntegrationBenchmark {
     private static List<List<String>> dataIRIs;
     private static List<List<Class<?>>> classes;
     static List<String> units;
-    List<TimeSeries<Instant>> tss;
+    static List<TimeSeries<Instant>> tss;
     Random random = new Random();
     String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -282,7 +283,6 @@ public class TimeSeriesClientIntegrationBenchmark {
             }
         }
     }
-
     @State(Scope.Benchmark)
     public static class EmptyTableState extends NoTableState {
 
@@ -317,5 +317,11 @@ public class TimeSeriesClientIntegrationBenchmark {
             }
         }
     }
+
+    @Benchmark
+    public void testgetAllTimeSeries(EmptyTableState state, Blackhole blackhole) {
+        blackhole.consume(EmptyTableState.tsClient.getAllTimeSeries());
+    }
+
 
 }
