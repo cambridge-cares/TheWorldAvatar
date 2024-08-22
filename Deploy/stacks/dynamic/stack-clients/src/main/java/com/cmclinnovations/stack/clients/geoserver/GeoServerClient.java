@@ -1,6 +1,5 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,6 +18,7 @@ import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.clients.utils.JsonHelper;
@@ -62,7 +62,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
     public GeoServerClient(URL restURL, String username, String password) {
         super(EndpointNames.GEOSERVER, RESTEndpointConfig.class);
         if (null == restURL || null == username || null == password) {
-            RESTEndpointConfig geoserverEndpointConfig = getEndpointConfig();
+            RESTEndpointConfig geoserverEndpointConfig = readEndpointConfig();
             if (null == restURL) {
                 restURL = geoserverEndpointConfig.getUrl();
             }
@@ -343,26 +343,18 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         }
     }
 
-    public void addProjectionsToGeoserver(String geoserverContainerID, String wktString, String srid) {
-        String execId;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        execId = createComplexCommand(geoserverContainerID, "mkdir", "-p",
-                "/opt/geoserver_data/user_projections")
-                .withErrorStream(errorStream)
-                .exec();
-        handleErrors(errorStream, execId, logger);
-        outputStream.reset();
-        errorStream.reset();
+    public void addProjectionsToGeoserver(String wktString, String srid) {
 
-        execId = createComplexCommand(geoserverContainerID, "bash", "-c",
-                "echo > /opt/geoserver_data/user_projections/epsg.properties <<EOF " + srid + "=" + wktString
-                        + "\nEOF")
-                .withErrorStream(errorStream)
-                .exec();
-        handleErrors(errorStream, execId, logger);
+        String geoserverContainerId = getContainerId("geoserver");
+        DockerClient dockerClient = DockerClient.getInstance();
+
+        dockerClient.makeDir(geoserverContainerId, "/opt/geoserver_data/user_projections");
+
+        dockerClient.sendFilesContent(geoserverContainerId,
+                Map.of("epsg.properties",
+                        (srid + "=" + wktString + "\n").getBytes()),
+                "/opt/geoserver_data/user_projections/");
 
         GeoServerClient.getInstance().reload();
-        handleErrors(errorStream, execId, logger);
     }
 }

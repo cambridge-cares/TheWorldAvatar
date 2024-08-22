@@ -58,7 +58,7 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
     }
 
     private void sendCommandToBlazegraph(String namespace, BaseCmd command) {
-        BlazegraphEndpointConfig endpointConfig = getEndpointConfig();
+        BlazegraphEndpointConfig endpointConfig = readEndpointConfig();
         String serviceUrl = endpointConfig.getServiceUrl();
 
         try (AutoCloseHttpClient httpClient = (AutoCloseHttpClient) HttpClientConfigurator.getInstance()
@@ -169,7 +169,7 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
     }
 
     public RemoteStoreClient getRemoteStoreClient(String namespace) {
-        BlazegraphEndpointConfig endpointConfig = getEndpointConfig();
+        BlazegraphEndpointConfig endpointConfig = readEndpointConfig();
         String url = endpointConfig.getUrl(namespace);
         return new RemoteStoreClient(url, url,
                 endpointConfig.getUsername(),
