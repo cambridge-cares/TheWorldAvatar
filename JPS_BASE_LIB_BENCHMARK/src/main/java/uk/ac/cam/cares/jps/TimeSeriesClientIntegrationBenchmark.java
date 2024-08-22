@@ -58,6 +58,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.time.Instant;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -82,6 +83,8 @@ public class TimeSeriesClientIntegrationBenchmark {
     private static List<List<Class<?>>> classes;
     static List<String> units;
     List<TimeSeries<Instant>> tss;
+    Random random = new Random();
+    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     // Will create two Docker containers for Blazegraph and postgreSQL
     @Container
@@ -91,9 +94,11 @@ public class TimeSeriesClientIntegrationBenchmark {
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
     @Param({ "1" })
-    private int n1;
+    private int n1; // number of time series that has three fields
     @Param({ "1" })
-    private int n2;
+    private int n2; // number of time series that has one field
+    @Param({ "1" })
+    private int nt; // number of row in time series data
 
     private List<String> getTimeSeriesIRI(int offset, int numDataSeries) {
         List<String> dataIRI = new ArrayList<>();
@@ -143,24 +148,61 @@ public class TimeSeriesClientIntegrationBenchmark {
 
         tss = new ArrayList<>();
 
-        for (int i=0; i < dataIRIs.size(); i++) {
-            List<Instant> time = Arrays.asList(Instant.now());
-            TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs.get(i), sampleTimeSeriesData(classes.get(i)));
+        List<Instant> time = new ArrayList<>();
+        Instant currentInstant = Instant.now();
+
+        for (int i = 0; i < nt; i++) {
+            time.add(currentInstant);
+            currentInstant = currentInstant.plusSeconds(1);
+        }
+
+        for (int i = 0; i < dataIRIs.size(); i++) {
+
+            TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs.get(i), sampleTimeSeriesData(classes.get(i), nt));
             tss.add(ts);
         }
 
     }
 
-    private List<List<?>> sampleTimeSeriesData (List<Class<?>> dataClass) {
+    private List<Double> sampleTimeSeriesDouble(int nt) {
+        List<Double> value = new ArrayList<>();
+        for (int i = 0; i < nt; i++) {
+            value.add(random.nextDouble());
+        }
+        return value;
+    }
+
+    private List<Integer> sampleTimeSeriesInteger(int nt) {
+        List<Integer> value = new ArrayList<>();
+        for (int i = 0; i < nt; i++) {
+            value.add(random.nextInt());
+        }
+        return value;
+    }
+
+    private List<String> sampleTimeSeriesString(int nt) {
+        List<String> value = new ArrayList<>();
+        int length = 10;
+        for (int i = 0; i < nt; i++) {
+            StringBuilder randomString = new StringBuilder(length);
+            for (int j = 0; j < length; j++) {
+                randomString.append(characters.charAt(random.nextInt(characters.length())));
+            }
+            value.add(randomString.toString());
+        }
+        return value;
+    }
+
+    private List<List<?>> sampleTimeSeriesData(List<Class<?>> dataClass, int nt) {
         List<List<?>> values = new ArrayList<>();
         for (Class<?> c : dataClass) {
             // cannot use switch for class
             if (c == Double.class) {
-                values.add(Arrays.asList(23.5));
+                values.add(sampleTimeSeriesDouble(nt));
             } else if (c == String.class) {
-                values.add(Arrays.asList("dmDcq"));
-            } else if (c== Integer.class) {
-                values.add(Arrays.asList(520));
+                values.add(sampleTimeSeriesString(nt));
+            } else if (c == Integer.class) {
+                values.add(sampleTimeSeriesInteger(nt));
             }
         }
         return values;
@@ -235,8 +277,8 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Benchmark
     public void testInitTimeSeries(NoTableState state) throws SQLException {
         try (Connection conn = NoTableState.rdbStoreClient.getConnection()) {
-            for (int i=0; i < dataIRIs.size(); i++) {
-                NoTableState.tsClient.initTimeSeries(dataIRIs.get(i), classes.get(i), units.get(i), conn);                
+            for (int i = 0; i < dataIRIs.size(); i++) {
+                NoTableState.tsClient.initTimeSeries(dataIRIs.get(i), classes.get(i), units.get(i), conn);
             }
         }
     }
