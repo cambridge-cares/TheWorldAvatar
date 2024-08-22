@@ -1,0 +1,14 @@
+{
+    "virtualTable": {
+        "name": "forestry",
+        "sql": "@/inputs/config/sql/forestry.sql",
+        "escapeSql": true,
+        "keyColumn": "ogc_fid",
+        "geometry": {
+            "name": "wkb_geometry",
+            "type": "Polygon",
+            "srid": 27700
+        }
+    },
+    "defaultStyle": "twa:forestry"
+}

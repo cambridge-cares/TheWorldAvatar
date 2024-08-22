@@ -50,7 +50,7 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
                 // Database already exists error
             } else {
                 throw new RuntimeException("Failed to create database '" + databaseName
-                        + "' on the server with JDBC URL '" + getEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
+                        + "' on the server with JDBC URL '" + readEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
                         + "'.", ex);
             }
         }
@@ -66,7 +66,7 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to create extensions in database '" + databaseName
-                    + "' on the server with JDBC URL '" + getEndpointConfig().getJdbcURL("postgres") + "'.", ex);
+                    + "' on the server with JDBC URL '" + readEndpointConfig().getJdbcURL("postgres") + "'.", ex);
         }
     }
 
@@ -80,7 +80,7 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
                 // Database doesn't exist error
             } else {
                 throw new RuntimeException("Failed to drop database '" + databaseName
-                        + "' on the server with JDBC URL '" + getEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
+                        + "' on the server with JDBC URL '" + readEndpointConfig().getJdbcURL(DEFAULT_DATABASE_NAME)
                         + "'.", ex);
             }
         }
@@ -91,7 +91,7 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
     }
 
     public RemoteRDBStoreClient getRemoteStoreClient(String database) {
-        PostGISEndpointConfig endpoint = getEndpointConfig();
+        PostGISEndpointConfig endpoint = readEndpointConfig();
         return new RemoteRDBStoreClient(endpoint.getJdbcURL(database),
                 endpoint.getUsername(),
                 endpoint.getPassword());
@@ -106,13 +106,16 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
         }
     }
 
-    public void addProjectionsToPostgis(String postGISContainerId, String databaseName, String proj4String,
+    public void addProjectionsToPostgis(String databaseName, String proj4String,
             String wktString, String authName, String srid) {
         String execId;
+
+        String postGISContainerId = getContainerId("postgis");
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         execId = createComplexCommand(postGISContainerId,
-                "psql", "-U", getEndpointConfig().getUsername(), "-d", databaseName, "-w")
+                "psql", "-U", readEndpointConfig().getUsername(), "-d", databaseName, "-w")
                 .withHereDocument(
                         "INSERT INTO spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) VALUES ("
                                 + srid + ",'"
