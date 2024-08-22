@@ -118,7 +118,7 @@ Figure 3: TBox representation of the contractual obligations for a service
         rdfs-comments remarks_string
         ontoservice-hasPreferredTime xsd_time
     }
-    "ontoservice:ServiceCommitment" ||--|| "ontobim:Facility" : "ontowm:services"
+    "ontoservice:ServiceCommitment" ||--|| "ontobim:Facility" : "ontoservice:services"
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
     "fibo-fnd-org-fm:Employee" ||--o{ "ontobim:Facility"  : "ontoprofile:worksAt"
     "fibo-fnd-org-fm:Employee" ||--o{ "ontoprofile:ServiceContact"  : "ontoprofile:hasResponsibility"
