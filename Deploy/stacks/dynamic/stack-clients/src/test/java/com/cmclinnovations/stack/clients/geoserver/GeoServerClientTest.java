@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockserver.model.MediaType;
 import org.mockserver.model.XmlBody;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -209,9 +211,14 @@ public class GeoServerClientTest {
                 .assertDoesNotThrow(() -> jsonMapper.readValue(jsonFile.toFile(), GeoServerVectorSettings.class));
     }
 
+    private static final Pattern flattenXmlRegex = Pattern.compile("\r?\n?^[ \t]*", Pattern.MULTILINE);
+
     private static XmlBody getExpectedXmlBody(Path jsonFile, String suffix) {
-        return XmlBody.xml(Assertions.assertDoesNotThrow(() -> Files.readString(jsonFile.resolveSibling(
-                jsonFile.getFileName().toString().replace(".json", "_" + suffix + ".xml")))));
+        return XmlBody.xml(Assertions.assertDoesNotThrow(() -> {
+            return flattenXmlRegex.matcher(Files.readString(jsonFile
+                    .resolveSibling(jsonFile.getFileName().toString().replace(".json", "_" + suffix + ".xml"))))
+                    .replaceAll("");
+        }), MediaType.TEXT_XML);
     }
 
     @ParameterizedTest(name = "{index} {0}")
