@@ -29,9 +29,9 @@ const colorYellow = "\x1b[33m";
 if (process.env.PORT) { console.log('port specified in .env file: ', colorGreen, process.env.PORT, colorReset); }
 const port = process.env.PORT || 3000;
 const keycloakEnabled = process.env.KEYCLOAK === 'true';
-console.log('keycloak authorisation required: ', keycloakEnabled ? colorGreen : colorRed, process.env.KEYCLOAK, colorReset)
-console.log('the following pages require keycloak authentication', colorGreen, process.env.PROTECTED_PAGES, colorReset)
-console.log('the following pages require the', colorYellow, process.env.ROLE, colorReset, 'role: ', colorGreen, process.env.ROLE_PROTECTED_PAGES, colorReset)
+console.log('keycloak authorisation required: ', keycloakEnabled ? colorYellow : colorGreen, process.env.KEYCLOAK, colorReset)
+console.log('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colorYellow : colorRed, process.env.PROTECTED_PAGES, colorReset)
+console.log('the following pages require the', process.env.ROLE ? colorYellow : colorRed, process.env.ROLE, colorReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colorYellow : colorRed, process.env.ROLE_PROTECTED_PAGES, colorReset)
 
 // Determine the deployment mode based on NODE_ENV; default to 'development' mode if not specified
 const dev = process.env.NODE_ENV !== "production";
@@ -78,7 +78,7 @@ app.prepare().then(() => {
     const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
     roleProtectedPages.forEach(page => {
       server.get(page, keycloak.protect(process.env.ROLE));
-    });    
+    });
   }
 
   // Serve static files from the 'uploads' directory, allowing for runtime configuration via the environment variable

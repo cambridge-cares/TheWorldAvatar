@@ -56,20 +56,25 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
     >
 
       <div className={styles.globalContainer}>
-        <div className={styles.header}><h1>Select a scenario:</h1>
-          <Button style={{ marginLeft: 'auto', textTransform: 'none' }} className={styles.refreshButton} onClick={onClick}>Refresh</Button>
+        <div className={styles.headerContainer}>
+          <div className={styles.header}>
+            <h1>Select a scenario:</h1>
+            <Button style={{ marginLeft: 'auto', textTransform: 'none' }} className={styles.refreshButton} onClick={onClick}>Refresh</Button>
+          </div>
         </div>
-        {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
-          <button key={scenario.name + index} value={scenario.id} className={styles["option-container"]} onClick={handleChange}>
-            <div className={styles["icon-container"]}>
-              <IconComponent icon={scenarioTypeIcon(scenario.type)} classes={styles.icon} />
-            </div>
-            <div className={styles.content}>
-              <span className={styles.title}><b>{scenario.name}</b></span>
-              <span className={styles.description}>{scenario.description}</span>
-            </div>
-          </button>
-        ))}
+        <div className={styles.contentContainer}>
+          {(scenarioDefinitions.length > 0 ? scenarioDefinitions : props.scenarios).map((scenario, index) => (
+            <button key={scenario.name + index} value={scenario.id} className={styles.optionContainer} onClick={handleChange}>
+              <div className={styles["icon-container"]}>
+                <IconComponent icon={scenarioTypeIcon(scenario.type)} classes={styles.icon} />
+              </div>
+              <div className={styles.content}>
+                <span className={styles.title}><b>{scenario.name}</b></span>
+                <span className={styles.description}>{scenario.description}</span>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
     </Dialog>
