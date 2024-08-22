@@ -2,9 +2,11 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.SQLDialect;
+import org.postgis.Geometry;
 
 interface TimeSeriesRDBClientInterface<T> {
     static final SQLDialect DIALECT = SQLDialect.POSTGRES;
@@ -14,6 +16,31 @@ interface TimeSeriesRDBClientInterface<T> {
     String getSchema();
 
     Class<T> getTimeClass();
+
+    /**
+     * workaround to bypass jooq's restrictions
+     */
+    class GeometryArrayValue {
+        private Geometry[] geometryArray;
+
+        GeometryArrayValue(Geometry[] geometryArray) {
+            this.geometryArray = geometryArray;
+        }
+
+        @Override
+        public String toString() {
+            String arrayTemplate = "ARRAY[%s]";
+
+            List<String> geometryList = new ArrayList<>();
+
+            String geomFromEwktTemplate = "ST_GeomFromEWKT('%s')";
+            for (int i = 0; i < geometryArray.length; i++) {
+                geometryList.add(String.format(geomFromEwktTemplate, geometryArray[i].toString()));
+            }
+
+            return String.format(arrayTemplate, String.join(",", geometryList));
+        }
+    }
 
     /**
      * Initialise a time series
