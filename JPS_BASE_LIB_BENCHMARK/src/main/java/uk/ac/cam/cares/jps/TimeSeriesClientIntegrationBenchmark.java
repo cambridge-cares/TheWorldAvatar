@@ -78,11 +78,6 @@ import org.jooq.Table;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class TimeSeriesClientIntegrationBenchmark {
 
-    // TimeSeries client (with RDB and Sparql client)
-    protected static TimeSeriesClient<Instant> tsClient;
-    private static RemoteRDBStoreClient rdbStoreClient;
-    private static RemoteStoreClient kbClient;
-
     // Time series test data
     private static List<List<String>> dataIRIs;
     private static List<List<Class<?>>> classes;
@@ -172,41 +167,8 @@ public class TimeSeriesClientIntegrationBenchmark {
         return values;
     }
 
-    @Setup(Level.Invocation)
-    public static void initialiseTimeSeriesClient() {
-        try {
-            if (!blazegraph.isRunning()) {
-                // Start Blazegraph container
-                blazegraph.start();
-            }
-
-            if (!postgres.isRunning()) {
-                // Start postgreSQL container
-                postgres.start();
-            }
-
-            // Set up a kb client that points to the location of the triple store
-            kbClient = blazegraph.getRemoteStoreClient();
-
-            // Initialise TimeSeriesClient client with pre-configured kb client
-            tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
-
-            // Configure database access
-            rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
-                    postgres.getPassword());
-
-            clearTriples();
-            clearDatabase();
-
-        } catch (Exception e) {
-            throw new JPSRuntimeException(
-                    "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again",
-                    e);
-        }
-    }
-
     // Clear all tables after each test to ensure clean slate
-    private static void clearDatabase() throws SQLException {
+    private static void clearDatabase(RemoteRDBStoreClient rdbStoreClient) throws SQLException {
         try (Connection conn = rdbStoreClient.getConnection()) {
             DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
             List<Table<?>> tables = context.meta().getTables();
@@ -217,18 +179,74 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     // Clear all tables after each test to ensure clean slate
-    private static void clearTriples() {
+    private static void clearTriples(RemoteStoreClient kbClient) {
         kbClient.executeUpdate(BlazegraphContainer.DELETE_ALL_QUERY);
     }
 
     @State(Scope.Benchmark)
-    public static class State1 {
-        protected static TimeSeriesClient<Instant> tsClient1;
-        private static RemoteRDBStoreClient rdbStoreClient1;
-        private static RemoteStoreClient kbClient1;
+    public static class NoTableState {
+        protected static TimeSeriesClient<Instant> tsClient;
+        private static RemoteRDBStoreClient rdbStoreClient;
 
         @Setup(Level.Invocation)
-        public void initialiseTimeSeriesClientWithData() {
+        public static void initialise() {
+            RemoteStoreClient kbClient;
+            try {
+                if (!blazegraph.isRunning()) {
+                    // Start Blazegraph container
+                    blazegraph.start();
+                }
+
+                if (!postgres.isRunning()) {
+                    // Start postgreSQL container
+                    postgres.start();
+                }
+
+                // Set up a kb client that points to the location of the triple store
+                kbClient = blazegraph.getRemoteStoreClient();
+
+                // Initialise TimeSeriesClient client with pre-configured kb client
+                tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
+
+                // Configure database access
+                rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
+                        postgres.getPassword());
+
+                clearTriples(kbClient);
+                clearDatabase(rdbStoreClient);
+
+            } catch (Exception e) {
+                throw new JPSRuntimeException(
+                        "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again",
+                        e);
+            }
+        }
+    }
+
+    @Benchmark
+    public void testBulkInitTimeSeries(NoTableState state) throws SQLException {
+        try (Connection conn = NoTableState.rdbStoreClient.getConnection()) {
+            NoTableState.tsClient.bulkInitTimeSeries(dataIRIs, classes, units, conn);
+        }
+    }
+
+    @Benchmark
+    public void testInitTimeSeries(NoTableState state) throws SQLException {
+        try (Connection conn = NoTableState.rdbStoreClient.getConnection()) {
+            for (int i=0; i < dataIRIs.size(); i++) {
+                NoTableState.tsClient.initTimeSeries(dataIRIs.get(i), classes.get(i), units.get(i), conn);                
+            }
+        }
+    }
+
+    @State(Scope.Benchmark)
+    public static class EmptyTableState {
+        protected static TimeSeriesClient<Instant> tsClient;
+        private static RemoteRDBStoreClient rdbStoreClient;
+
+        @Setup(Level.Invocation)
+        public static void initialise() {
+            RemoteStoreClient kbClient;
             try {
                 if (!blazegraph.isRunning()) {
                     // Start Blazegraph container
@@ -241,20 +259,20 @@ public class TimeSeriesClientIntegrationBenchmark {
                 }
     
                 // Set up a kb client that points to the location of the triple store
-                kbClient1 = blazegraph.getRemoteStoreClient();
+                kbClient = blazegraph.getRemoteStoreClient();
     
                 // Initialise TimeSeriesClient client with pre-configured kb client
-                tsClient1 = new TimeSeriesClient<>(kbClient1, Instant.class);
+                tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
     
                 // Configure database access
-                rdbStoreClient1 = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
+                rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
                         postgres.getPassword());
     
-                clearTriples();
-                clearDatabase();
+                clearTriples(kbClient);
+                clearDatabase(rdbStoreClient);
 
-                try (Connection conn = rdbStoreClient1.getConnection()) {
-                    tsClient1.bulkInitTimeSeries(dataIRIs, classes, units, conn);
+                try (Connection conn = rdbStoreClient.getConnection()) {
+                    tsClient.bulkInitTimeSeries(dataIRIs, classes, units, conn);
                 }
 
             } catch (Exception e) {
@@ -266,33 +284,17 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @Benchmark
-    public void testBulkInitTimeSeries() throws SQLException {
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            tsClient.bulkInitTimeSeries(dataIRIs, classes, units, conn);
+    public void testBulkAddTimeSeriesData(EmptyTableState state) throws SQLException {
+        try (Connection conn = EmptyTableState.rdbStoreClient.getConnection()) {
+            EmptyTableState.tsClient.bulkaddTimeSeriesData(tss, conn);
         }
     }
 
     @Benchmark
-    public void testInitTimeSeries() throws SQLException {
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            for (int i=0; i < dataIRIs.size(); i++) {
-                tsClient.initTimeSeries(dataIRIs.get(i), classes.get(i), units.get(i), conn);                
-            }
-        }
-    }
-
-    @Benchmark
-    public void testBulkAddTimeSeriesData(State1 state) throws SQLException {
-        try (Connection conn = State1.rdbStoreClient1.getConnection()) {
-            tsClient.bulkaddTimeSeriesData(tss, conn);
-        }
-    }
-
-    @Benchmark
-    public void testAddTimeSeriesData(State1 state) throws SQLException {
-        try (Connection conn = State1.rdbStoreClient1.getConnection()) {
+    public void testAddTimeSeriesData(EmptyTableState state) throws SQLException {
+        try (Connection conn = EmptyTableState.rdbStoreClient.getConnection()) {
             for (TimeSeries<Instant> ts : tss) {
-                tsClient.addTimeSeriesData(ts, conn);
+                EmptyTableState.tsClient.addTimeSeriesData(ts, conn);
             }
         }
     }
