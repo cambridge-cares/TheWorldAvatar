@@ -22,6 +22,8 @@ To save benchmark result to a JSON file, run
 java -jar target/benchmarks.jar -rf json -rff [FILENAME]
 ```
 
+Other available formats include text, csv, scsv, json, latex.
+
 To only run test with one of the benchmark class, run
 
 ```

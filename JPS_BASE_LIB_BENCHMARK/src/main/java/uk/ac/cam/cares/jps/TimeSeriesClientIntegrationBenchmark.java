@@ -57,11 +57,11 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.time.Instant;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.sql.Connection;
@@ -82,9 +82,9 @@ public class TimeSeriesClientIntegrationBenchmark {
     private static RemoteStoreClient kbClient;
 
     // Time series test data
-    private List<String> dataIRI_1, dataIRI_2;
-    private List<Class<?>> dataClass_1, dataClass_2;
-    private String timeUnit;
+    private List<List<String>> dataIRIs;
+    private List<List<Class<?>>> classes;
+    List<String> units;
 
     // Will create two Docker containers for Blazegraph and postgreSQL
     @Container
@@ -93,32 +93,52 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Container
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
+    @Param({ "1" })
+    private int n1;
+    @Param({ "1" })
+    private int n2;
+
+    private List<String> getTimeSeriesIRI(int offset, int numDataSeries) {
+        List<String> dataIRI = new ArrayList<>();
+        for (int i = 0; i < numDataSeries; i++) {
+            dataIRI.add(String.format("http://data%d", offset + i + 1));
+        }
+        return dataIRI;
+    }
+
+    private int addData(int offset, String timeUnit, List<Class<?>> dataClass, int n) {
+        int nClass = dataClass.size();
+        for (int i = 0; i < n; i++) {
+            List<String> dataIRI = getTimeSeriesIRI(offset, nClass);
+            dataIRIs.add(dataIRI);
+            classes.add(dataClass);
+            units.add(timeUnit);
+            offset += nClass;
+        }
+        return offset;
+    }
+
     @Setup(Level.Trial)
     public void initialiseData() {
+
+        dataIRIs = new ArrayList<>();
+        classes = new ArrayList<>();
+        units = new ArrayList<>();
+        int offset = 0; // need this to keep all dataIRI unique
+
         // Initialise time unit for all test data series
-        timeUnit = "http://s";
-        /*
-         * Initialise 1st time series with 3 associated data series
-         */
-        dataIRI_1 = new ArrayList<>();
-        dataIRI_1.add("http://data1");
-        dataIRI_1.add("http://data2");
-        dataIRI_1.add("http://data3");
+        String timeUnit = "http://s";
+        
+        // Initialise 1st time series with 3 associated data series
         // Specify type of data for each column (most data will be in doubles, but one
         // can specify different data types)
-        dataClass_1 = new ArrayList<>();
-        dataClass_1.add(Double.class);
-        dataClass_1.add(String.class);
-        dataClass_1.add(Integer.class);
-        /*
-         * Initialise 2nd time series with only one associated data series
-         */
-        dataIRI_2 = new ArrayList<>();
-        dataIRI_2.add("http://data4");
-        // Specify type of data for each column (most data will be in doubles, but one
-        // can specify different data types)
-        dataClass_2 = new ArrayList<>();
-        dataClass_2.add(Double.class);
+        List<Class<?>> dataClass1 = Arrays.asList(Double.class, String.class, Integer.class);
+        offset = addData(offset, timeUnit, dataClass1, n1);
+
+        // Initialise 2nd time series with 1 associated data series
+
+        List<Class<?>> dataClass2 = Arrays.asList(Double.class);
+        offset = addData(offset, timeUnit, dataClass2, n2);
 
     }
 
@@ -165,7 +185,7 @@ public class TimeSeriesClientIntegrationBenchmark {
             }
         }
     }
-    
+
     // Clear all tables after each test to ensure clean slate
     private static void clearTriples() {
         kbClient.executeUpdate(BlazegraphContainer.DELETE_ALL_QUERY);
@@ -174,20 +194,7 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Benchmark
     public void testBulkInitTimeSeries() throws SQLException {
         try (Connection conn = rdbStoreClient.getConnection()) {
-            List<List<String>> dataIRIs = new ArrayList<>();
-            dataIRIs.add(dataIRI_1);
-            dataIRIs.add(dataIRI_2);
-
-            List<List<Class<?>>> classes = new ArrayList<>();
-            classes.add(dataClass_1);
-            classes.add(dataClass_2);
-
-            List<String> units = new ArrayList<>();
-            units.add(timeUnit);
-            units.add(timeUnit);
-
             tsClient.bulkInitTimeSeries(dataIRIs, classes, units, conn);
-
         }
     }
 
