@@ -5,7 +5,7 @@
 
 op:WorkResponsibilityEnum a op:WorkResponsibility ;
   owl:oneOf (
-    op:Contact
+    op:ServiceContact
     op:Driver
     op:OperationManager
     op:OperationScheduler
