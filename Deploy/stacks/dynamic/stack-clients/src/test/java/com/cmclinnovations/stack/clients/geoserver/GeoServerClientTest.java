@@ -121,8 +121,7 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/coveragestores/" + NEW_COVERAGE_STORE
                         + "/external.imagemosaic",
-                200, request().withBody(
-                        "file:/C:/geotiffs/postgres/public/newCoverageStore"),
+                200, request().withBody("file:/C:/geotiffs/postgres/public/newCoverageStore"),
                 response().withBody("<coverageStore></coverageStore>"));
 
         mockGeoServer.addExpectation(POST,
@@ -133,9 +132,8 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + NEW_COVERAGE_STORE, 200,
                 request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
 
-        Assertions.assertDoesNotThrow(() -> geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE,
-                DATABASE_NAME, SCHEMA_NAME,
-                new GeoServerRasterSettings(), new MultidimSettings()));
+        geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE, DATABASE_NAME, SCHEMA_NAME,
+                new GeoServerRasterSettings(), new MultidimSettings());
     }
 
     @Test
