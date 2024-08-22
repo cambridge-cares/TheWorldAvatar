@@ -12,11 +12,8 @@ The namespace for the ontology is:
 - [2. Data Model](#2-data-model)
   - [Legend](#legend)
   - [2.1 Service Agreement](#21-service-agreement)
-    - [2.1.1 Overview](#211-overview)
-    - [2.1.2 Employer-Employee relationships](#212-employer-employee-relationships)
-  - [2.2 Person](#22-person)
-    - [2.2.1 Overview](#221-overview)
-  - [2.3 Relationships with facilities](#23-relationships-with-facilities)
+  - [2.2 Service Agreement](#22-service-events)
+  - [2.3 Reporting](#23-reporting)
 
 # 2. Data Model
 
