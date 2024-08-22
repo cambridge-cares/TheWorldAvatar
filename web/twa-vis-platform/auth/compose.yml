@@ -39,14 +39,13 @@ services:
     container_name: "postgres"
     image: postgres:latest
     environment:
-      POSTGRES_USER: postgres # default user
-      PGUSER: postgres # default user NEED BOTH 
+      POSTGRES_USER: postgres # default user for the container os
+      PGUSER: postgres # default user for psql
       POSTGRES_DB: keycloak
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
       # POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
     secrets:
       - postgres-password
-
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d keycloak -U postgres"]
       interval: 1s
