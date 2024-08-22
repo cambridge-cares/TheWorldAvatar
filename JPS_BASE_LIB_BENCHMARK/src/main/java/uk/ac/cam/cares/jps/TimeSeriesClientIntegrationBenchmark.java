@@ -198,4 +198,13 @@ public class TimeSeriesClientIntegrationBenchmark {
         }
     }
 
+    @Benchmark
+    public void testInitTimeSeries() throws SQLException {
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            for (int i=0; i < dataIRIs.size(); i++) {
+                tsClient.initTimeSeries(dataIRIs.get(i), classes.get(i), units.get(i), conn);                
+            }
+        }
+    }
+
 }
