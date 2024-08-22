@@ -94,12 +94,18 @@ Figure 2: TBox representation for an employer-employee relationship
     erDiagram
     "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
+    "fibo-fnd-org-fm:Employee" ||--o{ "ontoprofile:EmployeeStatus" : "ontoprofile:hasStatus"
 
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "fibo-fnd-aap-ppl:Person" : "cmns-col:hasMember"
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
 
     "fibo-fnd-org-fm:Employee" ||--o{ "ontoprofile:WorkResponsibility" : "ontoprofile:hasResponsibility"
 ```
+
+Note that the employee status are represented as enums in the corresponding ABox. The available statuses are as follows:
+
+- OnLeave
+- OnWork
 
 ## 2.2 Person
 

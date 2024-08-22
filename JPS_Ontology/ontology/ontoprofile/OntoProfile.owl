@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoprofile="https://www.theworldavatar.com/kg/ontoprofile/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoprofile/">
-        <dc:date>21 August 2024</dc:date>
+        <dc:date>22 August 2024</dc:date>
         <rdfs:comment>OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -81,6 +81,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/hasStatus -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoprofile/hasStatus">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus"/>
+        <rdfs:comment>A relationship describing the current status of an employee.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>has status</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoprofile/worksAt -->
 
 
@@ -138,6 +151,28 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus">
+        <rdfs:comment>The work availability of an employee.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Employee status</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatusEnum -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatusEnum">
+        <rdfs:comment>The enumerated states belonging to the employee status: on work, on leave</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Employee status enum</rdfs:label>
+    </owl:Class>
     
 
 

@@ -31,3 +31,17 @@ op:OperationScheduler a op:WorkResponsibilityEnum ;
 op:SalesAdmin a op:WorkResponsibilityEnum ;
   rdfs:label "sales admin";
   rdfs:comment "Primarily based at the front-desk to communicate with clients about the company's products and/or services.".
+
+op:EmployeeStatusEnum a op:EmployeeStatus ;
+owl:oneOf (
+  op:OnLeave
+  op:OnWork
+) .
+
+op:OnLeave a op:EmployeeStatusEnum ;
+  rdfs:label "On leave";
+  rdfs:comment "This status indicates that the employee is on leave.".
+
+op:OnWork a op:EmployeeStatusEnum ;
+  rdfs:label "On work";
+  rdfs:comment "This status indicates that the employee is working on another task.".
