@@ -30,6 +30,12 @@ To only run test with one of the benchmark class, run
 java -jar target/benchmarks.jar org.openjdk.jmh.Main uk.ac.cam.cares.jps.[CLASS]
 ```
 
+To overwrite values of parameters, run
+
+```
+java -jar target/benchmarks.jar -p [PARAM]=[VALUE1],[VALUE2],[VALUE3...]
+```
+
 ## Useful notes
 
 @Benchmark annotates an actual benchmarking test.

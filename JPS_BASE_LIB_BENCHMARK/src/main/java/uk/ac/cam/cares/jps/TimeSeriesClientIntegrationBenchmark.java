@@ -128,7 +128,7 @@ public class TimeSeriesClientIntegrationBenchmark {
 
         // Initialise time unit for all test data series
         String timeUnit = "http://s";
-        
+
         // Initialise 1st time series with 3 associated data series
         // Specify type of data for each column (most data will be in doubles, but one
         // can specify different data types)
