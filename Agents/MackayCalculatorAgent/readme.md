@@ -52,16 +52,17 @@ Note that for the update-from-TWA function to work, another agent - [MacKay Data
 ```shell
 pip install -r requirements.txt
 ```
-2. Download MacKay Calculator Excel model and mapping csvs (```controls.csv```, ```output.csv```,```single_values.csv```) into ```model/``` from [CARES Dropbox](https://www.dropbox.com/scl/fo/sktgvt6mxuxbffjo5lyfy/AHYhKQPPHdVIY2ChAGaWDIo?rlkey=di2o9os1rp0y6lghp6lthtbrv&dl=0).
-3. Run ```prepare_initial.py```, which generates a `initial_plotdata.json` and a `descriptions.json` in `/frontend/src/assets/json`.
-4. To build and use the React web interface, install [Node.js](https://nodejs.org/en/download/) and npm package manager following their official guide. Then use the following command to install dependencies and build the React frontend app. 
+2. Create a folder called `model` in the same directory as this README if it does not exist yet. Download MacKay Calculator Excel model (```Excel_MacKay_Carbon_Calculator_v209.xlsm```) and mapping csvs (```controls.csv```, ```output.csv```,```single_values.csv```) into ```model``` from [CARES Mackay Calculator model and mapping Dropbox](https://www.dropbox.com/scl/fo/sktgvt6mxuxbffjo5lyfy/AHYhKQPPHdVIY2ChAGaWDIo?rlkey=di2o9os1rp0y6lghp6lthtbrv&dl=0).
+3. Create a folder called `json` at `/frontend/src/assets/`. Run ```prepare_initial.py```, which generates a `initial_plotdata.json` and a `descriptions.json` in `/frontend/src/assets/json`.
+4. From [CARES Mackay Calculator fonts Dropbox](https://www.dropbox.com/scl/fo/imkyr5x0pjw387s1nkjoq/AKfiQ-rGBFEfMfX3wTjya3E?rlkey=c9sycvqaujswomhycr0rdtbri&st=fow8ivth&dl=0), Download the zip folder (```fonts-ttf.zip```). The zip folder contains a folder named as `fonts-ttf`, extract that folder to `/frontend/src/assets/`. All of the fonts ttf files should now be located at `/frontend/src/assets/fonts-ttf`.
+5. To build and use the React web interface, install [Node.js](https://nodejs.org/en/download/) and npm package manager following their official guide.
+6. Open a command terminal at `/frontend` and run the following commands:
 ```commandline
-cd frontend
-npm run install
+npm install
 npm run build
 ```
 
-5. Start backend.
+7. Start backend.
 ```
 flask run --host=X.X.X.X --port=XXXX
 ```
