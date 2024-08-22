@@ -42,6 +42,7 @@ The namespace for the ontology is:
 | ontoderivation    | `https://www.theworldavatar.com/kg/ontoderivation/`                                       |
 | ontoprofile       | `https://www.theworldavatar.com/kg/ontoprofile/`                                          |
 | ontoservice       | `https://www.theworldavatar.com/kg/ontoservice/`                                          |
+| vc                | `https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/`                               |
 
 ## 2.1. Service Agreement
 
@@ -157,6 +158,7 @@ Figure 4: TBox representation of a service event
     "fibo-fnd-pas-pas:Service" ||--o{ "ontoservice:ServiceEvent" : "ontoservice:hasEvent"
 
     "ontoservice:ServiceEvent" ||--|| "ontoservice:ServiceStatus" : "ontoservice:hasStatus"
+    "ontoservice:ServiceEvent" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
     "ontoservice:ServiceEvent" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
 
     "ontoservice:ServiceEvent" {

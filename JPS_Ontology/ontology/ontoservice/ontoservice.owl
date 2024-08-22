@@ -55,13 +55,26 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/assignTransport -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/assignTransport">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
+        <rdfs:comment>A relationship assigning a transport vehicle to a service event.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>assign transport</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/charges -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/charges">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/TotalPrice"/>
-        <rdfs:comment>A relationship describing the final charge of a service.</rdfs:comment>
+        <rdfs:comment>A relationship describing the final charge of a service event.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>charges</rdfs:label>
     </owl:ObjectProperty>
@@ -288,6 +301,13 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
     
 
 
