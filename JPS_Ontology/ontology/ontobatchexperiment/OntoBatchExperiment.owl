@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontobatchexperiment/"
+     xml:base="https://www.theworldavatar.com/kg/ontobatchexperiment/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontobatchexperiment="https://www.theworldavatar.com/kg/ontobatchexperiment/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/">
+        <dc:date>21 August 2024</dc:date>
+        <rdfs:comment>OntoBatchExperiment is an ontology to represent batch experiments and relevant information.</rdfs:comment>
+        <owl:versionInfo>1</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchExperimentCategory -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchExperimentCategory">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory"/>
+        <rdfs:comment>A relationship to describe the category of a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has batch experiment category</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchNumber -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasBatchNumber">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchNumber"/>
+        <rdfs:comment>A relationship that describes the batch number allocated to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has batch number</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasIdentifier -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasIdentifier">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/Identifier"/>
+        <rdfs:comment>A relationship that describes the identifier allocated to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has identifier</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/hasWorkCode -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/hasWorkCode">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/WorkCode"/>
+        <rdfs:comment>A relationship that describes the work code allocated to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>has work code</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperiment">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:comment>A type of experiment or process in which a fixed quantity of materials is processed together in a single batch or lot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>Batch experiment</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchExperimentCategory">
+        <rdfs:comment>A classification or type of batch experiment based on specific criteria or characteristics.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>Batch experiment category</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/BatchNumber -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/BatchNumber">
+        <rdfs:comment>A number assigned to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>Batch number</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/Identifier -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/Identifier">
+        <rdfs:comment>A unique identifier assigned to a batch experiment that is derived from other types of information (e.g. work code, batch number, initials, BatchExperimentCategory).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>Identifier</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobatchexperiment/WorkCode -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobatchexperiment/WorkCode">
+        <rdfs:comment>A confidential internal identifier assigned to a batch experiment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontobatchexperiment/"/>
+        <rdfs:label>Work code</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+
