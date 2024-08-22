@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockserver.model.MediaType;
 import org.mockserver.model.XmlBody;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -119,8 +121,7 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/coveragestores/" + NEW_COVERAGE_STORE
                         + "/external.imagemosaic",
-                200, request().withBody(
-                        "file:/C:/geotiffs/postgres/public/newCoverageStore"),
+                200, request().withBody("file:/C:/geotiffs/postgres/public/newCoverageStore"),
                 response().withBody("<coverageStore></coverageStore>"));
 
         mockGeoServer.addExpectation(POST,
@@ -131,9 +132,8 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + NEW_COVERAGE_STORE, 200,
                 request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
 
-        Assertions.assertDoesNotThrow(() -> geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE,
-                DATABASE_NAME, SCHEMA_NAME,
-                new GeoServerRasterSettings(), new MultidimSettings()));
+        geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE, DATABASE_NAME, SCHEMA_NAME,
+                new GeoServerRasterSettings(), new MultidimSettings());
     }
 
     @Test
@@ -209,9 +209,14 @@ public class GeoServerClientTest {
                 .assertDoesNotThrow(() -> jsonMapper.readValue(jsonFile.toFile(), GeoServerVectorSettings.class));
     }
 
+    private static final Pattern flattenXmlRegex = Pattern.compile("\r?\n?^[ \t]*", Pattern.MULTILINE);
+
     private static XmlBody getExpectedXmlBody(Path jsonFile, String suffix) {
-        return XmlBody.xml(Assertions.assertDoesNotThrow(() -> Files.readString(jsonFile.resolveSibling(
-                jsonFile.getFileName().toString().replace(".json", "_" + suffix + ".xml")))));
+        return XmlBody.xml(Assertions.assertDoesNotThrow(() -> {
+            return flattenXmlRegex.matcher(Files.readString(jsonFile
+                    .resolveSibling(jsonFile.getFileName().toString().replace(".json", "_" + suffix + ".xml"))))
+                    .replaceAll("");
+        }), MediaType.TEXT_XML);
     }
 
     @ParameterizedTest(name = "{index} {0}")
