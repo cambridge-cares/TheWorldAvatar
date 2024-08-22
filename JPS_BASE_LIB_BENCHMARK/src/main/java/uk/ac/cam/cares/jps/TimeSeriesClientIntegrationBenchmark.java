@@ -48,7 +48,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
-import org.openjdk.jmh.infra.Blackhole;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -185,11 +184,14 @@ public class TimeSeriesClientIntegrationBenchmark {
 
     @State(Scope.Benchmark)
     public static class NoTableState {
+
+        // This state will have no time series tables.
+
         protected static TimeSeriesClient<Instant> tsClient;
-        private static RemoteRDBStoreClient rdbStoreClient;
+        protected static RemoteRDBStoreClient rdbStoreClient;
 
         @Setup(Level.Invocation)
-        public static void initialise() {
+        public void initialise() {
             RemoteStoreClient kbClient;
             try {
                 if (!blazegraph.isRunning()) {
@@ -217,7 +219,7 @@ public class TimeSeriesClientIntegrationBenchmark {
 
             } catch (Exception e) {
                 throw new JPSRuntimeException(
-                        "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again",
+                        "Docker container startup failed. Please try running tests again",
                         e);
             }
         }
@@ -240,44 +242,19 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @State(Scope.Benchmark)
-    public static class EmptyTableState {
-        protected static TimeSeriesClient<Instant> tsClient;
-        private static RemoteRDBStoreClient rdbStoreClient;
+    public static class EmptyTableState extends NoTableState {
+
+        // This state will have time series table initialised without any data.
 
         @Setup(Level.Invocation)
-        public static void initialise() {
-            RemoteStoreClient kbClient;
-            try {
-                if (!blazegraph.isRunning()) {
-                    // Start Blazegraph container
-                    blazegraph.start();
-                }
-    
-                if (!postgres.isRunning()) {
-                    // Start postgreSQL container
-                    postgres.start();
-                }
-    
-                // Set up a kb client that points to the location of the triple store
-                kbClient = blazegraph.getRemoteStoreClient();
-    
-                // Initialise TimeSeriesClient client with pre-configured kb client
-                tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
-    
-                // Configure database access
-                rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
-                        postgres.getPassword());
-    
-                clearTriples(kbClient);
-                clearDatabase(rdbStoreClient);
-
-                try (Connection conn = rdbStoreClient.getConnection()) {
-                    tsClient.bulkInitTimeSeries(dataIRIs, classes, units, conn);
-                }
-
-            } catch (Exception e) {
+        @Override
+        public void initialise() {
+            super.initialise();
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                tsClient.bulkInitTimeSeries(dataIRIs, classes, units, conn);
+            } catch (SQLException e) {
                 throw new JPSRuntimeException(
-                        "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again",
+                        "SQLException when trying to initialise time series for benchmark.",
                         e);
             }
         }
