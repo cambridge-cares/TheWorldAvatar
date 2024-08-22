@@ -62,6 +62,7 @@ import java.time.Instant;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.sql.Connection;
@@ -85,6 +86,7 @@ public class TimeSeriesClientIntegrationBenchmark {
     private List<List<String>> dataIRIs;
     private List<List<Class<?>>> classes;
     List<String> units;
+    List<TimeSeries<Instant>> tss;
 
     // Will create two Docker containers for Blazegraph and postgreSQL
     @Container
@@ -121,6 +123,8 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Setup(Level.Trial)
     public void initialiseData() {
 
+        // Prepare for creation of time series
+
         dataIRIs = new ArrayList<>();
         classes = new ArrayList<>();
         units = new ArrayList<>();
@@ -140,6 +144,31 @@ public class TimeSeriesClientIntegrationBenchmark {
         List<Class<?>> dataClass2 = Arrays.asList(Double.class);
         offset = addData(offset, timeUnit, dataClass2, n2);
 
+        // Prepare sample data to be added
+
+        tss = new ArrayList<>();
+
+        for (int i=0; i < dataIRIs.size(); i++) {
+            List<Instant> time = Arrays.asList(Instant.now());
+            TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs.get(i), sampleTimeSeriesData(classes.get(i)));
+            tss.add(ts);
+        }
+
+    }
+
+    private List<List<?>> sampleTimeSeriesData (List<Class<?>> dataClass) {
+        List<List<?>> values = new ArrayList<>();
+        for (Class<?> c : dataClass) {
+            // cannot use switch for class
+            if (c == Double.class) {
+                values.add(Arrays.asList(23.5));
+            } else if (c == String.class) {
+                values.add(Arrays.asList("dmDcq"));
+            } else if (c== Integer.class) {
+                values.add(Arrays.asList(520));
+            }
+        }
+        return values;
     }
 
     @Setup(Level.Invocation)
