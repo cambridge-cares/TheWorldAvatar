@@ -225,7 +225,7 @@ public class GeoServerClientTest {
     @MethodSource("geoServerVectorSettingsProvider")
     void testCreatePostGISLayerNew(String testName, GeoServerVectorSettings geoServerVectorSettings,
             XmlBody featureTypesBody,
-            XmlBody createLayerBody) {
+            XmlBody createLayerBody) throws IOException {
 
         mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores.xml", 200,
                 request().withBody(
@@ -244,7 +244,16 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200,
                 request().withBody(createLayerBody));
 
-        geoServerClient.createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName, geoServerVectorSettings);
+        UpdatedGSVirtualTableEncoder virtualTable;
+        String sql;
+        if (null != (virtualTable = geoServerVectorSettings.getVirtualTable())
+                && null != (sql = virtualTable.getSql())
+                && sql.startsWith("@")) {
+            moveConfigFileAndRun(sql.replaceAll(".*/", ""), filePath -> geoServerClient
+                    .createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName, geoServerVectorSettings));
+        } else {
+            geoServerClient.createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName, geoServerVectorSettings);
+        }
     }
 
     @Test
@@ -344,11 +353,11 @@ public class GeoServerClientTest {
                 () -> mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles", 200,
                         request().withBody(Files.readString(stylePath))));
 
-            Path fileName = stylePath.getFileName();
-            Assertions.assertDoesNotThrow(() -> geoServerClient
-                    .loadStyle(JsonHelper.getMapper().readValue(
-                            "{\"name\":\"" + styleName + "\", \"file\":\"" + fileName + "\" }",
-                            GeoServerStyle.class), EXISTING_WORKSPACE));
+        Path fileName = stylePath.getFileName();
+        Assertions.assertDoesNotThrow(() -> geoServerClient
+                .loadStyle(JsonHelper.getMapper().readValue(
+                        "{\"name\":\"" + styleName + "\", \"file\":\"" + fileName + "\" }",
+                        GeoServerStyle.class), EXISTING_WORKSPACE));
     }
 
     private void moveConfigFileAndRun(String filename, Consumer<Path> function) throws IOException {
