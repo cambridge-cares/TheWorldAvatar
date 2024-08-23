@@ -201,7 +201,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, schema);
+            createPostGISDataStore(workspaceName, storeName, database, schema);
 
             GSFeatureTypeEncoder fte = geoServerSettings.getFeatureTypeSettings();
             if (fte.getName() == null) {

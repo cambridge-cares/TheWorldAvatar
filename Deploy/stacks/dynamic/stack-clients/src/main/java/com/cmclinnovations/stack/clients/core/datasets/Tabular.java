@@ -11,6 +11,10 @@ public class Tabular extends PostgresDataSubset {
     @JsonProperty
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
 
+    public Ogr2OgrOptions getOptions() {
+        return ogr2ogrOptions;
+    }
+
     @Override
     public void loadData(Path dirPath, String database, String baseIRI) {
         ogr2ogrOptions.setSchema(getSchema());
