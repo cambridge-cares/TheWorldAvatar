@@ -4,7 +4,7 @@
         <entry key="JDBC_VIRTUAL_TABLE">
             <virtualTable>
                 <name>layerName_cropmap_extended</name>
-                <sql>@/inputs/config/cropmap.sql</sql>
+                <sql>SELECT fid, prob, county, cromeid, cropmap.lucode, geom, label, colour FROM cropmap, cropmap_labels, cropmap_colours WHERE cropmap.lucode = cropmap_labels.lucode AND cropmap.lucode = cropmap_colours.lucode</sql>
                 <escapeSql>false</escapeSql>
                 <keyColumn>label</keyColumn>
                 <geometry>
@@ -15,13 +15,11 @@
             </virtualTable>
         </entry>
     </metadata>
-    <keywords>
-        <string>KEYWORD</string>
-    </keywords>
+    <keywords />
     <metadataLinks />
     <attributes />
+    <name>layerName</name>
     <projectionPolicy>NONE</projectionPolicy>
     <title>layerName</title>
-    <name>layerName</name>
     <nativeName>layerName_cropmap_extended</nativeName>
 </featureType>

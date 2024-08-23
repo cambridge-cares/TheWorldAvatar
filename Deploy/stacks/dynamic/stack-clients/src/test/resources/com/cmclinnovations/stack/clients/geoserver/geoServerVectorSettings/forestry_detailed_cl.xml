@@ -2,9 +2,10 @@
     <enabled>true</enabled>
     <styles />
     <authorityURLs />
+    <identifiers />
     <metadata>
         <entry key="advertised">true</entry>
     </metadata>
-    <identifiers />
     <defaultStyle>twa:forestry</defaultStyle>
+    <path>/geoserver/wms</path>
 </layer>

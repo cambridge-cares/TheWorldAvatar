@@ -4,22 +4,20 @@
         <entry key="JDBC_VIRTUAL_TABLE">
             <virtualTable>
                 <name>layerName_ng_towers</name>
-                <sql>@/inputs/config/sql/virtualTables/ng_towers_geoserver.sql</sql>
                 <geometry>
                     <name>wkb_geometry</name>
                     <type>Point</type>
                     <srid>27700</srid>
                 </geometry>
+                <sql />
             </virtualTable>
         </entry>
     </metadata>
-    <keywords>
-        <string>KEYWORD</string>
-    </keywords>
+    <keywords />
     <metadataLinks />
     <attributes />
+    <name>layerName</name>
     <projectionPolicy>NONE</projectionPolicy>
     <title>layerName</title>
-    <name>layerName</name>
     <nativeName>layerName_ng_towers</nativeName>
 </featureType>

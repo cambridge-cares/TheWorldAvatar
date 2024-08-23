@@ -18,8 +18,15 @@
     <keywords />
     <metadataLinks />
     <attributes />
+    <title>Feature Title!</title>
+    <latLonBoundingBox>
+        <minx>-15.0</minx>
+        <maxy>70.0</maxy>
+        <maxx>10.0</maxx>
+        <miny>-15.0</miny>
+        <crs>EPSG:4326</crs>
+    </latLonBoundingBox>
     <name>layerName</name>
     <projectionPolicy>NONE</projectionPolicy>
-    <title>layerName</title>
     <nativeName>layerName_forestry</nativeName>
 </featureType>

@@ -10,5 +10,18 @@
             "srid": 27700
         }
     },
-    "defaultStyle": "twa:forestry"
+    "layerSettings": {
+        "defaultStyle": "twa:forestry",
+        "wmsPath": "/geoserver/wms"
+    },
+    "featureTypeSettings": {
+        "title": "Feature Title!",
+        "latLonBoundingBox": {
+            "minx": -15.0,
+            "maxx": 10.0,
+            "miny": 60.0,
+            "maxy": 70.0,
+            "crs": "EPSG:4326"
+        }
+    }
 }
