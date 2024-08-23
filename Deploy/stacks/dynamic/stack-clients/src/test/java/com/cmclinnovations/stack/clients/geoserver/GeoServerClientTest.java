@@ -159,8 +159,6 @@ public class GeoServerClientTest {
 
     @Test
     void testCreatePostGISLayerExisting() {
-        mockGeoServer.addExpectation(GET,
-                "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 200);
 
         String layerName = "layerName";
         mockGeoServer.addExpectation(GET, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName + ".xml", 200);
@@ -171,11 +169,11 @@ public class GeoServerClientTest {
 
     @Test
     void testCreatePostGISLayerExistingStore() {
-        mockGeoServer.addExpectation(GET,
-                "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 200);
-
         String layerName = "layerName";
         mockGeoServer.addExpectation(GET, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName + ".xml", 404);
+
+        mockGeoServer.addExpectation(GET,
+                "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 200);
 
         mockGeoServer.addExpectation(POST,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + "/featuretypes",
@@ -224,12 +222,13 @@ public class GeoServerClientTest {
     void testCreatePostGISLayerNew(String testName, GeoServerVectorSettings geoServerVectorSettings,
             XmlBody featureTypesBody,
             XmlBody createLayerBody) {
-        mockGeoServer.addExpectation(GET,
-                "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 404);
 
         mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores.xml", 200,
                 request().withBody(
                         "<dataStore><name>postgres</name><connectionParameters><entry key=\"dbtype\">postgis</entry><entry key=\"min connections\">1</entry><entry key=\"max connections\">10</entry><entry key=\"fetch size\">1000</entry><entry key=\"Connection timeout\">20</entry><entry key=\"Loose bbox\">true</entry><entry key=\"preparedStatements\">false</entry><entry key=\"Max open prepared statements\">50</entry><entry key=\"Estimated extends\">false</entry><entry key=\"host\">test-postgis</entry><entry key=\"port\">1234</entry><entry key=\"user\">user</entry><entry key=\"passwd\" /><entry key=\"database\">postgres</entry><entry key=\"schema\">public</entry><entry key=\"validate connections\">true</entry></connectionParameters><type>PostGIS</type></dataStore>"));
+
+        mockGeoServer.addExpectation(GET,
+                "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 404);
 
         String layerName = "layerName";
         mockGeoServer.addExpectation(GET, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName + ".xml", 404);
