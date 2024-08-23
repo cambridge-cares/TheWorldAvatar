@@ -177,9 +177,10 @@ public class GeoServerClientTest {
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + ".xml", 200);
 
         mockGeoServer.addExpectation(POST,
-                "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + "/featuretypes",
-                200, request().withBody(
-                        "<featureType><enabled>true</enabled><metadata /><keywords><string>KEYWORD</string></keywords><metadataLinks /><attributes /><projectionPolicy>NONE</projectionPolicy><title>layerName</title><name>layerName</name></featureType>"));
+                "/rest/workspaces/" + EXISTING_WORKSPACE + "/datastores/" + DATABASE_NAME + "/featuretypes", 200,
+                request().withBody(XmlBody.xml(
+                        "<featureType><enabled>true</enabled><metadata /><keywords /><metadataLinks /><attributes /><projectionPolicy>NONE</projectionPolicy><title>layerName</title><name>layerName</name></featureType>",
+                        MediaType.TEXT_XML)));
 
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200,
                 request().withBody(

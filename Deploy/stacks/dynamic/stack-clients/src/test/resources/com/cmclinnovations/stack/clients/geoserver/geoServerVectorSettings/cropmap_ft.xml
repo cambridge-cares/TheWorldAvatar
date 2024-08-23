@@ -15,13 +15,11 @@
             </virtualTable>
         </entry>
     </metadata>
-    <keywords>
-        <string>KEYWORD</string>
-    </keywords>
+    <keywords />
     <metadataLinks />
     <attributes />
+    <name>layerName</name>
     <projectionPolicy>NONE</projectionPolicy>
     <title>layerName</title>
-    <name>layerName</name>
     <nativeName>layerName_cropmap_extended</nativeName>
 </featureType>
