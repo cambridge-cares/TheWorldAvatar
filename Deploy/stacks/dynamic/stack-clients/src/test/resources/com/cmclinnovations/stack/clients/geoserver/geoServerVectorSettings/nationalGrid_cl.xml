@@ -2,6 +2,9 @@
     <enabled>true</enabled>
     <styles />
     <authorityURLs />
+    <metadata>
+        <entry key="advertised">true</entry>
+    </metadata>
     <identifiers />
     <defaultStyle>point</defaultStyle>
 </layer>

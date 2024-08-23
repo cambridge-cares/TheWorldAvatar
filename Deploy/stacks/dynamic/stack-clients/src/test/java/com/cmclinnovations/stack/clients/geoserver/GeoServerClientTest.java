@@ -130,7 +130,8 @@ public class GeoServerClientTest {
                         "<coverage><enabled>true</enabled><metadata /><keywords /><metadataLinks /><supportedFormats /><parameters><entry><string>AllowMultithreading</string><string>true</string></entry></parameters><name>newCoverageStore</name></coverage>"));
 
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + NEW_COVERAGE_STORE, 200,
-                request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
+                request().withBody(
+                        "<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /><metadata><entry key=\"advertised\">true</entry></metadata></layer>"));
 
         geoServerClient.createGeoTiffLayer(EXISTING_WORKSPACE, NEW_COVERAGE_STORE, DATABASE_NAME, SCHEMA_NAME,
                 new GeoServerRasterSettings(), new MultidimSettings());
@@ -181,7 +182,8 @@ public class GeoServerClientTest {
                         "<featureType><enabled>true</enabled><metadata /><keywords><string>KEYWORD</string></keywords><metadataLinks /><attributes /><projectionPolicy>NONE</projectionPolicy><title>layerName</title><name>layerName</name></featureType>"));
 
         mockGeoServer.addExpectation(PUT, "/rest/layers/" + EXISTING_WORKSPACE + ":" + layerName, 200,
-                request().withBody("<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /></layer>"));
+                request().withBody(
+                        "<layer><enabled>true</enabled><styles /><authorityURLs /><identifiers /><metadata><entry key=\"advertised\">true</entry></metadata></layer>"));
 
         geoServerClient.createPostGISLayer(EXISTING_WORKSPACE, DATABASE_NAME, layerName,
                 new GeoServerVectorSettings());
