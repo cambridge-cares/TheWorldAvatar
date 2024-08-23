@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -335,25 +336,35 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(GET, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles/" + styleName + ".xml",
                 404);
 
-        Path configDir = null;
-        Path stylePath = null;
-        try (InputStream styleIn = GeoServerClientTest.class.getResourceAsStream("point_simplepoint.sld")) {
-            configDir = Assertions.assertDoesNotThrow(() -> Files.createDirectories(Path.of("/inputs/config")));
+        moveConfigFileAndRun("point_simplepoint.sld", stylePath -> finishLoadStyle(styleName, stylePath));
+    }
 
-            stylePath = configDir.resolve("styleFile.sld");
-            Files.copy(styleIn, stylePath, StandardCopyOption.REPLACE_EXISTING);
-
-            mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles", 200,
-                    request().withBody(Files.readString(stylePath)));
+    private void finishLoadStyle(String styleName, Path stylePath) {
+        Assertions.assertDoesNotThrow(
+                () -> mockGeoServer.addExpectation(POST, "/rest/workspaces/" + EXISTING_WORKSPACE + "/styles", 200,
+                        request().withBody(Files.readString(stylePath))));
 
             Path fileName = stylePath.getFileName();
             Assertions.assertDoesNotThrow(() -> geoServerClient
                     .loadStyle(JsonHelper.getMapper().readValue(
                             "{\"name\":\"" + styleName + "\", \"file\":\"" + fileName + "\" }",
                             GeoServerStyle.class), EXISTING_WORKSPACE));
+    }
+
+    private void moveConfigFileAndRun(String filename, Consumer<Path> function) throws IOException {
+        Path configDir = null;
+        Path filePath = null;
+        try (InputStream styleIn = GeoServerClientTest.class.getResourceAsStream(filename)) {
+            configDir = Assertions.assertDoesNotThrow(() -> Files.createDirectories(Path.of("/inputs/config")));
+
+            filePath = configDir.resolve(filename);
+            Files.copy(styleIn, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            function.accept(filePath);
+
         } finally {
-            if (null != stylePath) {
-                Files.deleteIfExists(stylePath);
+            if (null != filePath) {
+                Files.deleteIfExists(filePath);
             }
             if (null != configDir) {
                 Files.deleteIfExists(configDir);
