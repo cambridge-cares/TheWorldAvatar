@@ -188,15 +188,13 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
             GeoServerVectorSettings geoServerSettings) {
         String storeName = database;
 
-        createPostGISDataStore(workspaceName, storeName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
-
         // Need to include the "Util.DEFAULT_QUIET_ON_NOT_FOUND" argument because the
         // 2-arg version of "existsLayer" incorrectly calls the 3-arg version of the
         // "existsLayerGroup" method.
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
+            createPostGISDataStore(workspaceName, storeName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
 
             GSFeatureTypeEncoder fte = geoServerSettings.getFeatureTypeSettings();
             if (fte.getName() == null) {
