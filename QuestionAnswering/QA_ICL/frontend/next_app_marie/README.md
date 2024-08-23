@@ -29,7 +29,7 @@ docker run --name next-app-marie -p 3000:3000 next-app-marie
 
 The app will be available at `localhost:3000`. 
 
-## Runing Next app at a subpath behind NGINX reverse proxy
+## Runing Next app at a subpath behind an NGINX reverse proxy
 
 1. Set the environment variable `BASE_PATH` to prepend all Next routes with this value. Its default value is set in `.env.production`, which can be overriden by `.env.local`. Note that the `BASE_PATH` value must not have any trailing slash.
 1. Configure NGINX reverse proxy as follows, where `ROOT_URL` points to the public address where the Next app runs. 
@@ -46,3 +46,24 @@ The app will be available at `localhost:3000`.
    }
    ```
 1. Proceed with starting the app, [locally](#local-installation) or [via Docker](#deployment-via-docker)
+
+
+## Development
+
+### Overview of tech stack
+
+- State management: React's built-in functions
+- Styling: [tailwindcss](https://tailwindcss.com/)
+
+### UI components
+
+The approach for UI component development in this repository is customisation of UI primitives. This serves the following purposes:
+- Leverage well-tested implementations of common UI components.
+- Each React primitive can be installed separately, making it easier to keep the entire app as lean as possible.
+- React primitives are bare-bone and are thus very flexible for style customisation.
+
+This repository makes extensive use of boilerplates provided by [shadcn](https://ui.shadcn.com/docs), which makes use of React primitive libraries such as [Radix UI](https://www.radix-ui.com/primitives) and [TanStack](https://tanstack.com/). Shadcn boilerplates provide examples of style customisation with tailwindcss and internal state management for more complex components e.g. [DataTable](https://ui.shadcn.com/docs/components/data-table).
+
+### Image components
+
+For rendering images bundled together with the app, please use [static imports](https://nextjs.org/docs/app/building-your-application/optimizing/images#local-images) for the `src` attribute. This ensures that images are rendered properly even when the app is deployed behind an NGINX reverse proxy.
