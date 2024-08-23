@@ -75,7 +75,7 @@ public final class OntopService extends ContainerService {
             checkEnvironmentVariableNonNull(ONTOP_DB_PASSWORD_FILE);
         }
 
-        setEnvironmentVariableIfAbsent("ONTOP_LAZY_INIT", "false");
+        setEnvironmentVariableIfAbsent("ONTOP_LAZY_INIT", "true");
         setEnvironmentVariableIfAbsent("ONTOP_CORS_ALLOWED_ORIGINS", "*");
         setEnvironmentVariableIfAbsent("ONTOP_DEBUG", "false");
         checkEnvironmentVariableNonNull(OntopClient.ONTOP_MAPPING_FILE);
