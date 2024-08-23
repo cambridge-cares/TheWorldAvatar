@@ -23,12 +23,12 @@ public class SupersetClient extends ClientWithEndpoint<SupersetEndpointConfig> {
     private SupersetClient() {
         super(EndpointNames.SUPERSET, SupersetEndpointConfig.class);
         apiClient = new ApiClient();
-        apiClient.setBasePath(getEndpointConfig().getUrl());
+        apiClient.setBasePath(readEndpointConfig().getUrl());
         Configuration.setDefaultApiClient(apiClient);
     }
 
     public RemoteStoreClient getRemoteStoreClient() {
-        SupersetEndpointConfig endpoint = getEndpointConfig();
+        SupersetEndpointConfig endpoint = readEndpointConfig();
         String url = endpoint.getUrl();
         return new RemoteStoreClient(url, url,
                 endpoint.getUsername(),
@@ -36,7 +36,7 @@ public class SupersetClient extends ClientWithEndpoint<SupersetEndpointConfig> {
     }
 
     private void setAccessToken() {
-        apiClient.setAccessToken(getEndpointConfig().getAccessToken());
+        apiClient.setAccessToken(readEndpointConfig().getAccessToken());
     }
 
     public ApiClient getApiClient() {
@@ -44,7 +44,7 @@ public class SupersetClient extends ClientWithEndpoint<SupersetEndpointConfig> {
     }
 
     public void refreshAccessToken() {
-        apiClient.setAccessToken(getEndpointConfig().getAccessToken());
+        apiClient.setAccessToken(readEndpointConfig().getAccessToken());
     }
 
 }

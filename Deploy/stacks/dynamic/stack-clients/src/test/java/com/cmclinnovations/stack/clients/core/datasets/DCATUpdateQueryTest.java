@@ -407,20 +407,20 @@ class DCATUpdateQueryTest {
     }
 
     private void writeBlazegraphConfig() {
-        BlazegraphClient.getInstance().writeEndpointConfig(
+        BlazegraphClient.writeEndpointConfig(
                 new BlazegraphEndpointConfig("blazegraph", "blazegraph",
                         "8080",
                         BlazegraphContainer.USERNAME, BlazegraphContainer.PASSWORD));
     }
 
     private void writePostGISConfig() {
-        PostGISClient.getInstance().writeEndpointConfig(
+        PostGISClient.writeEndpointConfig(
                 new PostGISEndpointConfig("postgis", "test-postgis", "1234",
                         "user", "passwordFile"));
     }
 
     private void writeOntopConfig(String name) {
-        OntopClient.getInstance().writeEndpointConfig(
+        OntopClient.writeEndpointConfig(
                 new OntopEndpointConfig(name, StackClient.prependStackName(name).replace('_', '-'), "5678"));
     }
 

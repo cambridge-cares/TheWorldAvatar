@@ -1,0 +1,27 @@
+<featureType>
+    <enabled>true</enabled>
+    <metadata>
+        <entry key="JDBC_VIRTUAL_TABLE">
+            <virtualTable>
+                <name>layerName_forestry</name>
+                <sql>@/inputs/config/sql/forestry.sql</sql>
+                <escapeSql>true</escapeSql>
+                <keyColumn>ogc_fid</keyColumn>
+                <geometry>
+                    <name>wkb_geometry</name>
+                    <type>Polygon</type>
+                    <srid>27700</srid>
+                </geometry>
+            </virtualTable>
+        </entry>
+    </metadata>
+    <keywords>
+        <string>KEYWORD</string>
+    </keywords>
+    <metadataLinks />
+    <attributes />
+    <projectionPolicy>NONE</projectionPolicy>
+    <title>layerName</title>
+    <name>layerName</name>
+    <nativeName>layerName_forestry</nativeName>
+</featureType>

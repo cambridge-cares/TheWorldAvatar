@@ -35,7 +35,7 @@ public final class StackClient {
 
     static {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
-        stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
+        stackName = (null != envVarStackName) ? envVarStackName : "Test-Stack";
 
         stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName, PROJECT_NAME_LABEL, stackName);
     }
@@ -133,7 +133,7 @@ public final class StackClient {
 
         PostGISClient postgisClient = PostGISClient.getInstance();
         postgisClient.createDatabase(database);
-        PostGISEndpointConfig postgisConfig = postgisClient.getEndpointConfig();
+        PostGISEndpointConfig postgisConfig = postgisClient.readEndpointConfig();
 
         return new TimeSeriesClient<>(remoteStoreClient, timeClass,
                 postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());

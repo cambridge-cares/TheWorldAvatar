@@ -1,0 +1,12 @@
+{
+    "virtualTable": {
+        "name": "ng_towers",
+        "sql": "@/inputs/config/sql/virtualTables/ng_towers_geoserver.sql",
+        "geometry": {
+            "name": "wkb_geometry",
+            "type": "Point",
+            "srid": 27700
+        }
+    },
+    "defaultStyle": "point"
+}

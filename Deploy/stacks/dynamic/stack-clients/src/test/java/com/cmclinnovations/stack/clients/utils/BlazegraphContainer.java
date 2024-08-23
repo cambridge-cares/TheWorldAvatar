@@ -58,7 +58,7 @@ public class BlazegraphContainer extends GenericContainer<BlazegraphContainer> {
     }
 
     public void writeBlazegraphConfig() {
-        BlazegraphClient.getInstance().writeEndpointConfig(
+        BlazegraphClient.writeEndpointConfig(
                 new BlazegraphEndpointConfig("blazegraph",
                         getHost(), getFirstMappedPort().toString(),
                         authenticated ? BlazegraphContainer.USERNAME : null,
