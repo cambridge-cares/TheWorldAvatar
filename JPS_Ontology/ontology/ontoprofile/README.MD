@@ -148,7 +148,7 @@ Figure 4: TBox representation for relationships within facilities
     erDiagram
     "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
     "bot:Building" ||--o{ "geo:Feature" : "rdfs:subClassOf"
-    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-pty:hasMailingAddress"
+    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-adr:hasAddress"
     "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
     "fibo-fnd-plc-adr:PhysicalAddress" {
         fibo-fnd-plc-loc-hasCityName string
