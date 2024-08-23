@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoprofile="https://www.theworldavatar.com/kg/ontoprofile/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoprofile/">
-        <dc:date>22 August 2024</dc:date>
+        <dc:date>23 August 2024</dc:date>
         <rdfs:comment>OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -140,10 +140,10 @@
     
 
 
-    <!-- https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole -->
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember -->
 
 
-    <owl:Class rdf:about="https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole"/>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember"/>
     
 
 
@@ -187,14 +187,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoprofile/Operator -->
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/Student -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Operator">
-        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/PartiesAndSituations/PartyRole"/>
-        <rdfs:comment>An operator is responsible for managing, controlling, or operating equipment, machinery, or systems.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Student">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/OrganizationMember"/>
+        <rdfs:comment>A person who has a membership role within an educational institution, typically enrolled in a course of study or program, and is involved in learning or training activities under the supervision of educators.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
-        <rdfs:label>Operator</rdfs:label>
+        <rdfs:label>Student</rdfs:label>
     </owl:Class>
     
 
