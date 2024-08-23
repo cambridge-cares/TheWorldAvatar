@@ -45,6 +45,8 @@ The namespace for the ontology is:
 
 The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients. This section has been split into three figures to improve readability and understanding of the concepts - namely, (1) service agreement duration and parties, (2) payment obligations and (3) service commitment.
 
+The service agreement will first define the duration, parties involved, requested service and location. The representation of the service location enables the association of facility to a specific building with their own geolocation as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)).
+
 Figure 1: TBox representation for a Service Agreement following the FIBO ontology
 
 ```mermaid
@@ -56,6 +58,17 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
     "fibo-fnd-pas-pas:Service" {
         rdfs-label label_string
         rdfs-comments description_string
+    }
+    "fibo-fnd-pas-pas:Service" ||--|| "ontobim:Facility" : "ontoservice:services"
+    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
+
+    "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
+    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-adr:hasAddress"
+    "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
+    "fibo-fnd-plc-adr:PhysicalAddress" {
+        fibo-fnd-plc-loc-hasCityName string
+        fibo-fnd-plc-adr-hasAddressLine1 string
+        fibo-fnd-plc-adr-hasPostalCode string
     }
 
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
@@ -104,7 +117,6 @@ Figure 2: TBox representation of the payment obligations stated in the service a
 
 The service agreement will also mandate a service commitment, including the service time, schedule, facility (i.e. the location for service execution) and/or remarks.
 
-- The representation of the service location enables the association of facility to a specific building with their own geolocation as well as the contact person in charge at the location for the required service.
 - It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 3 to optimise and arrange services with executable details.
 
 Figure 3: TBox representation of the contractual obligations for a service
@@ -118,10 +130,6 @@ Figure 3: TBox representation of the contractual obligations for a service
         rdfs-comments remarks_string
         ontoservice-hasPreferredTime xsd_time
     }
-    "ontoservice:ServiceCommitment" ||--|| "ontobim:Facility" : "ontoservice:services"
-    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
-    "fibo-fnd-org-fm:Employee" ||--o{ "ontobim:Facility"  : "ontoprofile:worksAt"
-    "fibo-fnd-org-fm:Employee" ||--o{ "ontoprofile:ServiceContact"  : "ontoprofile:hasResponsibility"
 
     "ontoservice:ServiceCommitment" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
      "fibo-fnd-dt-fd:RegularSchedule" {
