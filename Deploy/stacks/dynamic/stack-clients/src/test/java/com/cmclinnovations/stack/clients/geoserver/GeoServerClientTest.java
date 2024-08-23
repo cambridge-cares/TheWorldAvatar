@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -121,7 +120,7 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/coveragestores/" + NEW_COVERAGE_STORE
                         + "/external.imagemosaic",
-                200, request().withBody("file:/C:/geotiffs/postgres/public/newCoverageStore"),
+                200, request().withBody(Path.of("/geotiffs/postgres/public/newCoverageStore").toFile().toURI().toString()),
                 response().withBody("<coverageStore></coverageStore>"));
 
         mockGeoServer.addExpectation(POST,
@@ -286,7 +285,6 @@ public class GeoServerClientTest {
     }
 
     @Test
-    @Disabled("Disabled until fixed in PR #1300")
     void testLoadOtherFilesGood() throws IOException {
 
         try (InputStream is = GeoServerClientTest.class.getResourceAsStream("otherFiles.json")) {

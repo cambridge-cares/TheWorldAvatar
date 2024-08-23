@@ -488,7 +488,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
             TarArchiveEntry tarArchiveEntry;
             while (null != (tarArchiveEntry = tarArchiveInputStream.getNextTarEntry())) {
                 if (!tarArchiveEntry.isDirectory()) {
-                    files.put(remoteDirPath + tarArchiveEntry.getName(),
+                    files.put(remoteDirPath + tarArchiveEntry.getName().replaceFirst("^[^/]*/", ""),
                             tarArchiveInputStream.readAllBytes());
                 }
             }

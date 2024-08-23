@@ -130,20 +130,27 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
     }
 
     private void loadStaticFile(Path baseDirectory, GeoserverOtherStaticFile file) {
-        Path filePath = baseDirectory.resolve(file.getSource());
-        Path sourceParentDir = filePath.getParent();
-        Path fileName = filePath.getFileName();
-        Path absTargetDir = STATIC_DATA_DIRECTORY.resolve(file.getTarget());
+        Path absSourcePath = baseDirectory.resolve(file.getSource());
+        Path absTargetPath = STATIC_DATA_DIRECTORY.resolve(file.getTarget());
 
         String containerId = getContainerId(EndpointNames.GEOSERVER);
 
-        if (!Files.exists(filePath)) {
+        if (!Files.exists(absSourcePath)) {
             throw new RuntimeException(
-                    "Static GeoServer data '" + filePath.toString() + "' does not exist and could not be loaded.");
-        } else if (Files.isDirectory(filePath)) {
-            sendFolder(containerId, filePath.toString(), absTargetDir.resolve(fileName).toString());
+                    "Static GeoServer data '" + absSourcePath.toString() + "' does not exist and could not be loaded.");
+        } else if (Files.isDirectory(absSourcePath)) {
+            sendFolder(containerId, absSourcePath.toString(), absTargetPath.toString());
         } else {
-            sendFiles(containerId, sourceParentDir.toString(), List.of(fileName.toString()), absTargetDir.toString());
+            try {
+                sendFilesContent(containerId,
+                        Map.of(file.getTarget(),
+                                Files.readAllBytes(baseDirectory.resolve(file.getSource()))),
+                        STATIC_DATA_DIRECTORY.toString());
+            } catch (IOException ex) {
+                throw new RuntimeException(
+                        "Failed to serialise file '" + absSourcePath.toString() + "'.");
+            }
+
         }
     }
 
