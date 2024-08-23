@@ -1,0 +1,19 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # Example DTVF implementation
+  example-mapbox-vis:
+    image: pylon-vis:latest
+    container_name: "pylon-vis"
+    restart: "no"
+    build:
+      context: "../"
+      dockerfile: "./docker/Dockerfile"
+      labels:
+        authors: "support@cmclinnovations"
+        description: "Example implementation of the Digital Twin Visualisation Framework (Mapbox)."
+    ports:
+      - "80:80"
+ 

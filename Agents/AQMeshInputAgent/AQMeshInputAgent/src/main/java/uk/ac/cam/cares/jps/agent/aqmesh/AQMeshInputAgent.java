@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class AQMeshInputAgent {
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "aqmesh";
     /**
      * The time unit used for all time series maintained by the AQMesh input agent
      */
@@ -69,7 +70,7 @@ public class AQMeshInputAgent {
             Properties prop = new Properties();
             prop.load(input);
             // Read the mappings folder from the properties file
-            String mappingFolder = prop.getProperty("aqmesh.mappingfolder");
+            String mappingFolder = System.getenv(prop.getProperty("aqmesh.mappingfolder"));
             if (mappingFolder == null) {
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key aqmesh.mappingfolder " +
                         "with a path to the folder containing the required JSON key to IRI mappings.");
@@ -136,13 +137,11 @@ public class AQMeshInputAgent {
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
                 try {
-                tsClient.initTimeSeries(iris, classes, timeUnit);
+                tsClient.initTimeSeries(iris, classes, timeUnit, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");
-            } finally {
-            	tsClient.disconnectRDB();
-            }
+            } 
             }
         }
     }
@@ -168,9 +167,7 @@ public class AQMeshInputAgent {
         		else {
         			throw e;
         		}        		
-        	} finally {
-        		tsClient.disconnectRDB();
-        	}
+        	} 
         }
         return true;
     }
@@ -185,6 +182,8 @@ public class AQMeshInputAgent {
         // will be empty if the JSON Array is empty
         Map<String, List<?>> particleReadingsMap = jsonArrayToMap(particleReadings);
         Map<String, List<?>> gasReadingsMap = jsonArrayToMap(gasReadings);
+        LOGGER.info("The particle map is this: " + particleReadingsMap);
+        LOGGER.info("The gas map is this " + gasReadingsMap);
         // Only do something if both readings contain data
         if(!particleReadingsMap.isEmpty() && !gasReadingsMap.isEmpty()) {
             List<TimeSeries<OffsetDateTime>> timeSeries;
@@ -203,9 +202,7 @@ public class AQMeshInputAgent {
             	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
                } catch (Exception e) {
             	   throw new JPSRuntimeException("Could not get max time!");
-               } finally {
-            	   tsClient.disconnectRDB();
-               }
+               } 
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
                 if (endDataTime != null) {
@@ -221,9 +218,7 @@ public class AQMeshInputAgent {
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not add timeseries data!");
-                } finally {
-                	tsClient.disconnectRDB();
-                }
+                } 
                 }
             }
         }
@@ -401,6 +396,49 @@ public class AQMeshInputAgent {
         return new TimeSeries<>(newTimes, timeSeries.getDataIRIs(), newValues);
     }
 
+    public JSONArray calculateAndAddScaledMeasurementsForParticle(JSONArray readings) {
+        List<String> list = Arrays.asList("pm1", "pm2_5", "pm4", "pm10", "pm_tpc", "pm_total");
+        for (int i = 0; i < readings.length(); i++) {
+            JSONObject currentEntry = readings.getJSONObject(i);
+            for (int j = 0; j < list.size(); j++) {
+                String key = list.get(j);
+                Object prescaled = currentEntry.get(key + "_prescale");
+                Object slope = currentEntry.get(key + "_slope");
+                Object offset = currentEntry.get(key + "_offset");
+                if (prescaled == JSONObject.NULL || slope == JSONObject.NULL || offset == JSONObject.NULL) {
+                    Object scaled = null;
+                    readings.getJSONObject(i).put(key + "_scaled", scaled);
+                } else {
+                    Double scaled = (Double.parseDouble(prescaled.toString()) * Double.parseDouble(slope.toString())) + Double.parseDouble(offset.toString());
+                    readings.getJSONObject(i).put(key + "_scaled", scaled);
+                }
+                
+            }
+        }
+        return readings;
+    }
+
+    public JSONArray calculateAndAddScaledMeasurementsForGas(JSONArray readings) {
+        List<String> list = Arrays.asList("co", "no", "so2", "no2", "o3", "h2s", "uart", "aux1", "aux2");
+        for (int i = 0; i < readings.length(); i++) {
+            JSONObject currentEntry = readings.getJSONObject(i);
+            for (int j = 0; j < list.size(); j++) {
+                String key = list.get(j);
+                Object prescaled = currentEntry.get(key + "_prescaled");
+                Object slope = currentEntry.get(key + "_slope");
+                Object offset = currentEntry.get(key + "_offset");
+                if (prescaled == JSONObject.NULL || slope == JSONObject.NULL || offset == JSONObject.NULL) {
+                    readings.getJSONObject(i).put(key + "_scaled", JSONObject.NULL);
+                } else {
+                    Double scaled = (Double.parseDouble(prescaled.toString()) * Double.parseDouble(slope.toString())) + Double.parseDouble(offset.toString());
+                    readings.getJSONObject(i).put(key + "_scaled", scaled);
+                }
+                
+            }
+        }
+        return readings;
+    }
+
     /**
      * Returns the class (datatype) corresponding to a JSON key. Note: rules for the mapping are hardcoded in the method.
      * @param jsonKey The JSON key as string.
@@ -426,7 +464,7 @@ public class AQMeshInputAgent {
             return Double.class;
         }
         // Sensor readings and corresponding offset and slope are floating point numbers
-        else if (jsonKey.contains("prescale") || jsonKey.contains("slope") || jsonKey.contains("offset")) {
+        else if (jsonKey.contains("prescale") || jsonKey.contains("prescaled") || jsonKey.contains("slope") || jsonKey.contains("offset") || jsonKey.contains("scaled")) {
             return Double.class;
         }
         // Battery low warning and particle modem overlap are boolean

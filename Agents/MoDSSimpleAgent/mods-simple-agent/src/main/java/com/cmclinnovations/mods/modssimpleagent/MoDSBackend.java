@@ -23,6 +23,7 @@ public final class MoDSBackend {
 
     private final long timeout;
     private final long killTimeout = 10;
+    public static final String DEFAULT_SURROGATE_ALGORITHM_NAME = "GenSurrogateAlg";
 
     private Process process;
 
@@ -53,7 +54,7 @@ public final class MoDSBackend {
     public void run() throws IOException {
         LOGGER.info("simDir = '{}'", simDir);
 
-        if (null != process && process.isAlive()) {
+        if (isAlive()) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Process with job ID '" + jobID + "' already running.");
@@ -90,6 +91,10 @@ public final class MoDSBackend {
         timoutEnforcer.start();
     }
 
+    public boolean isAlive() {
+        return null != process && process.isAlive();
+    }
+
     public void checkState() {
         if (null == process) {
             throw new ResponseStatusException(
@@ -112,6 +117,10 @@ public final class MoDSBackend {
 
     public Path getWorkingDir() {
         return workingDir;
+    }
+
+    public Path getSurrogateDirectory() {
+        return getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
 }

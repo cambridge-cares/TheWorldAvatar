@@ -1,12 +1,18 @@
-from oscml.kg.kgGateway import jpsBaseLibGW
 import json
-
-jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 def queryKG(sparqlEndPoint=None, queryStr=None):
-    StoreRouter = jpsBaseLib_view.StoreRouter
-    StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
-    response = StoreClient.executeQuery(queryStr)
-    response = json.loads(str(response))
-    return response
+
+    print(f"Namespace: ", sparqlEndPoint)
+    sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/" + sparqlEndPoint + "/sparql")
+    sparql.setQuery(queryStr)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    results = results['results']['bindings']
+
+    for res in results:
+        for key in res:
+            if(isinstance(res[key], dict)):
+                res[key] = res[key]['value']
+ 
+    return results

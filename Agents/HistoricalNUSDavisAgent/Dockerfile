@@ -54,7 +54,7 @@ COPY ./config/data.xlsx /root/data.xlsx
 # Set the required environment variable
 ENV READINGS="/root/data.xlsx"
 
-COPY --from=builder /root/HistoricalNUSDavisAgent/output/historical-nusdavis-agent##1.1.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/HistoricalNUSDavisAgent/output/historical-nusdavis-agent##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

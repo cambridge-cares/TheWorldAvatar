@@ -1,0 +1,8 @@
+// This is an example HTTP requests to instantiate / update mocked virtual
+// UK-AIR Sensor Observation Service station(s) and readings in King's Lynn
+
+// It instantiates mocked station(s) as specified in the "instantiate_mocked_kingslynn_stations"
+// function and connects it to display readings from a specified actual station
+
+GET http://localhost:5002/airqualityagent/instantiate/mocked
+Content-Type: application/json

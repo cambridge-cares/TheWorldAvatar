@@ -1,78 +1,107 @@
 package uk.ac.cam.cares.jps.base.email;
 
-import com.github.stefanbirkner.systemlambda.SystemLambda;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import org.junit.Ignore;
-import org.junit.Test;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the functionality of the EmailSender class.
+ * See the EmailAgent source code for details on how to test
  *
- * @author Michael Hillman
+ * @author Michael Hillman (mdhillman<@>cmclinnovations.com)
  */
 public class EmailSenderTest {
 
     /**
-     * Tests that an email can be submitted to the EmailSender and is passed on to the remote
-     * EmailAgent instance.
-     *
-     * Note: This test requires that you have set the EMAIL_AGENT_URL environment variable to point
-     * towards a running instance of the EmailAgent service.
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(EmailSenderTest.class);
+
+    /**
+     * Base URL of remote EmailAgent to use in test.
+     */
+    private static final String EMAIL_AGENT_URL = "http://localhost:8080/email_agent";
+
+    /**
+     * Tests that an email can be submitted to the EmailSender and is written to a
+     * local log file.
      */
     @Test
-    @Ignore("Will not pass unless EmailAgent is running and environment variables have been set.")
-    public void sendEmail() {
-        EmailSender sender = new EmailSender();
+    public void writeToFile() {
+        // Initialise new EmailSender
+        EmailSender sender = new EmailSender("http://fake-website/email-agent/");
 
+        // Use a junk environment variable so that the EmailSender cannot reach a remote
+        // EmailAgent instance and falls back to creating a log file.
         try {
+
             // Email contents
-            String subject = "Automated email from jps-base-lib unit tests.";
-            String body = "If the user has configured their local environment correctly, then this email "
-                    + "should be forwarded onto the EmailAgent instance for submission.";
+            String subject = "Test email from the EmailSender_Test.writeToFile() method.";
+            String body = "This test email should fail and get written to a local log file.";
 
             // Attempt to send an email
             Optional<Path> logFile = sender.sendEmail(subject, body);
 
-            // Should NOT return a log file
-            Assertions.assertTrue(!logFile.isPresent(), "Did not expect a log file to be returned!");
+            // Should return a log file
+            Assertions.assertTrue(logFile.isPresent(), "Expected an log file to be returned!");
+
+            // Should exist on disk
+            Assertions.assertTrue(Files.exists(logFile.get()), "Expected to find log file on disk!");
+
+            // Remove the generated log file
+            Assertions.assertTrue(Files.deleteIfExists(logFile.get()), "Could not delete the generated log file!");
+
         } catch (Exception exception) {
             Assertions.fail("Could not mock environment variables for unit test!", exception);
         }
     }
 
     /**
-     * Tests that an email can be submitted to the EmailSender and is written to a local log file.
+     * Attempts to contact a remote EmailAgent instance and submit a message.
      */
     @Test
-    public void writeToFile() {
-        // Initialise new EmailSender
-        EmailSender sender = new EmailSender();
+    @Disabled("See class documentation")
+    public void submitJob() {
+        // Configure a message
+        String subject = "Testing the EmailAgent";
+        String body = "This is a test of the EmailAgent's functionality to recieve job submissions "
+                + "and forward them to a remote SMTP server for delivery. If you're not the originator of "
+                + "this job, please ignore this message.";
 
-        // Use a junk environment variable so that the EmailSender cannot reach a remote
-        // EmailAgent instance and falls back to creating a log file.
+        // Use JPS base library code to submit job
+        EmailSender sender = new EmailSender(EMAIL_AGENT_URL);
+
         try {
-            SystemLambda.withEnvironmentVariable("EMAIL_AGENT_URL", "foobar").execute(() -> {
-                // Email contents
-                String subject = "Test email from the EmailSender_Test.writeToFile() method.";
-                String body = "This test email should fail and get written to a local log file.";
-
-                // Attempt to send an email
-                Optional<Path> logFile = sender.sendEmail(subject, body);
-
-                // Should return a log file
-                Assertions.assertTrue(logFile.isPresent(), "Expected an log file to be returned!");
-
-                // Should exist on disk
-                Assertions.assertTrue(Files.exists(logFile.get()), "Expected to find log file on disk!");
-
-                // Remove the generated log file
-                Assertions.assertTrue(Files.deleteIfExists(logFile.get()), "Could not delete the generated log file!");
-            });
+            Optional<Path> logFile = sender.sendEmail(subject, body);
+            LOGGER.info("Email sent successfully, please check recipient's mailbox.");
+            if (logFile.isPresent()) {
+                Files.deleteIfExists(logFile.get());
+            }
         } catch (Exception exception) {
-            Assertions.fail("Could not mock environment variables for unit test!", exception);
+            LOGGER.error("Could not contact remote EmailAgent!", exception);
+        }
+    }
+
+    /**
+     * Attempts to contact a remote EmailAgent instance and get the status
+     */
+    @Test
+    @Disabled("See class documentation")
+    public void submitPing() {
+        // Use JPS base library code to submit job
+        EmailSender sender = new EmailSender(EMAIL_AGENT_URL);
+
+        try {
+            boolean reachable = sender.isReachable();
+            LOGGER.info("Pinged the remote EmailAgent, status was {}", reachable);
+        } catch (Exception exception) {
+            LOGGER.error("Could not contact remote EmailAgent!", exception);
         }
     }
 }

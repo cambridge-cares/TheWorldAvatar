@@ -2,10 +2,11 @@
 
 The `Property Sales Instantiation` agent is an input agent which queries [HM Land Registry Open Data] and instantiates it according to the [OntoBuiltEnv] ontology in the [TheWorldAvatar] knowledge graph. More precisely, it queries the [Price Paid Linked Data] as well as the [UK House Price Index Linked Data] from the publicly available [HM Land Registry SPARQL endpoint].
 
-The agent is designed to be deployed with a Docker stack spun up by the stack manager. 
+After instantiating new property sales data, the agent also instantiates the relevant derivation mark-ups to allow for automatic assessment of the `Average Square Metre Price Per Postal Code` as well as the `Market Value Estimate per Property` (both implemented using the Derivation Framework).
 
-<span style="color:red">Tests are currently still excluded.</span>
+The agent is designed to be deployed to a Docker stack spun up by the stack manager. 
 
+&nbsp;
 # 1. Setup
 
 This section specifies the minimum requirements to build and deploy the Docker image of the agent. 
@@ -17,10 +18,31 @@ Before building and deploying the Docker image, several key properties need to b
 
 ### **1) The environment variables used by the agent container**
 
-1) STACK_NAME
-2) DATABASE (database name in PostGIS)
+```bash
+STACK_NAME            # Name of stack to which agent shall be deployed
+NAMESPACE             # Blazegraph namespace into which to instantiate data 
+                      # NOTE: This must match the namespace where EPC data got instantiated
+DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
+LAYERNAME             # Geoserver layer name, ALSO table name for actual building sales prices
+GEOSERVER_WORKSPACE
+BUILDINGS_TABLE       # PostGIS table containing all building footprints
+                      # NOTE: This must match the table where EPC data got uploaded to
+# Derivation Agent configurations
+# NOTE: values need to match their counterparts specified in the docker-compose.yml files of the respective agents)
+AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI
+PROPERTY_VALUE_ESTIMATION_AGENT_IRI
+AVERAGE_SQUARE_METRE_PRICE_AGENT_URL
+PROPERTY_VALUE_ESTIMATION_AGENT_URL
+```
 
-### **2) Accessing Github's Container registry**
+### **2) Derivation Framework**
+
+The agent updates the timestamps of pure derivation inputs as well as instantiates and updates the required markups for both the `Average Square Metre Price per Postal Code` and the `Market Value Estimate per Property` derivations. Both of these derivations are initialised as synchronous derivations to create new info immediately. As the `Property Value Estimate` depends on the `Average Square Metre Price`, the latter one is marked up first to ensure availability of the required derivation input.
+
+To ensure successful instantiation of the derivations, both derivation agents need to be successfully registered in the KG before requesting any update by the `Property Sales Instantiation` agent. The registered derivation agent IRIs need to match the values specified in the `docker-compose.yml` file. *Please note:* The values for the agent IRIs are always required, while the exact values for the agent URLs are only needed if derivations are initialised using `createSyncDerivationForNewInfoWithHttpUrl`. This is currently not the case as all agents are deployed to the same stack, with resolvable `host.docker.internal` URLs to communicate between containers.
+
+
+### **3) Accessing Github's Container registry**
 
 While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
 ```
@@ -28,7 +50,11 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
   $ <github_personal_access_token>
 ```
 
-### **3) VS Code specifics**
+### **4) Accessing CMCL docker registry**
+
+The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
+
+### **5) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -55,17 +81,17 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps >= 1.0.26`), the `StackClients` resource needs to be added to allow for access through `py4jps`. The required steps are detailed in the [py4jps] documentation and already included in the respective [Dockerfile]. Compiling those resources requires a [Java Runtime Environment version >=11].
+This agent requires the [JPS_BASE_LIB] and the [Stack-Clients] to be wrapped by [py4jps]. Please note that compiling requires a [Java Development Kit version >=11]. However, *updating the resources is ONLY required if pre-release versions are needed.* Otherwise, the resources are automatically installed when building the Docker image.
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Compiling latest Stack_Clients resource for py4jps
-bash build_py4jps_stackclients_resource.sh
 # Building the agent Docker image and pushing it
 bash ./stack.sh build
 # Deploying the agent (using pulled image)
 bash ./stack.sh start <STACK NAME>
 ```
+
+In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
 
 The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
@@ -74,8 +100,6 @@ The *debug version* will run when built and launched through the provided VS Cod
 
 > **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
-
-> **Update JPSRM and Build and Debug**: Updates py4jps resources and builds the Debug Docker image (incl. pushing to ghcr.io) and deploys it as new container (incl. creation of new `.vscode/port.txt` file) 
 
 
 &nbsp;
@@ -88,28 +112,12 @@ Once logged in, a remote copy of The World Avatar repository can be cloned using
 ```bash
 $ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
 $ cd <REPO NAME>
-$ git checkout dev-PropertySalesInstantiationAgent
+$ git checkout main
 $ git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
-Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the [Stack-Clients] `.jar` file to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotely by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], both `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
-
-```bash
-# Java >= 11
-# Test installation
-java -version
-javac -verison
-# Install in case it is missing
-sudo apt install openjdk-11-jdk-headless
-
-# MAVEN 
-# Test installation
-mvn -version
-# Install in case it is missing
-sudo apt install maven
-```
-To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
+Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
 
 ```bash
 # Check permissions
@@ -124,26 +132,26 @@ git config core.fileMode false
 &nbsp;
 # 2. Using the Agent
 
-Agent start-up will automatically register a recurring task to assimilate latest sales transaction and UK house price index data for all instantiated properties every 4 weeks (i.e. new data is published monthly). Besides this recurring background task, additional HTTP requests can be sent to the agent.
+Agent start-up will automatically register a recurring task to assimilate latest sales transactions and UK house price index data for all instantiated properties every 4 weeks (i.e. new data is published monthly). Besides this recurring background task, additional HTTP requests can be sent to the agent.
 
-The default SPARQL endpoint, i.e. namespace, used to assimilate the sales data is the same as used by the [EPC Agent] and is set by the [stack_configs] script. In case another endpoint is required, the `stack_configs` script needs to be updated accordingly (i.e. by adjusting the namespace name passed to `bg_conf.getUrl()`). Furthermore, it needs to be noted that the `Property Sales Instantiation` agent requires building instances instantiated according to `OntoBuiltEnv` to function properly.
-
+The default SPARQL endpoint, i.e. namespace, used to assimilate the sales data shall be the same as used by the [EPC Agent] and is set by the `docker-compose.yml` script. In case another endpoint is required, the `docker-compose.yml` script needs to be updated accordingly. Furthermore, it needs to be noted that the `Property Sales Instantiation` agent requires building instances instantiated according to `OntoBuiltEnv` to function properly.
 
 &nbsp;
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5002/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5008/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to update transaction record(s) for single property/list of properties:
-  > `/api/landregistry/update`
+  > `/landregistry/update`
 
 - POST request to update transaction records for all instantiated properties, incl. property price indices for instantiated local authorities (i.e. most granular geography for which UK House Price Index is published):
-  > `/api/landregistry/update_all`
+  > `/landregistry/update_all`
 
+Example requests are provided in the [resources] folder.
 
 &nbsp;
 # Authors #
-Markus Hofmeister (mh807@cam.ac.uk), October 2022
+Markus Hofmeister (mh807@cam.ac.uk), March 2023
 
 
 <!-- Links -->
@@ -151,10 +159,7 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Container registry on Github]: https://ghcr.io
-[Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[http://localhost:5000/]: http://localhost:5000/
-[Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
-[JDBC driver]: https://jdbc.postgresql.org/download/ 
+[Java Development Kit version >=11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [OntoBuiltEnv]: http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
@@ -167,16 +172,14 @@ Markus Hofmeister (mh807@cam.ac.uk), October 2022
 
 <!-- github -->
 [Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients
+[Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
-[EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
+[EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EnergyPerformanceCertificateAgent
+[CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 <!-- files -->
-[Dockerfile]: ./Dockerfile
 [docker compose file]: ./docker-compose.yml
 [resources]: ./resources
-[stack.sh]: ./stack.sh
-[stack_configs]: ./landregistry/utils/stack_configs.py
+[iris.py]: ./agent/datamodel/iris.py

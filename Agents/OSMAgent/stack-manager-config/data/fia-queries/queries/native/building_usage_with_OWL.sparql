@@ -1,0 +1,21 @@
+PREFIX obe: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT *
+WHERE {
+# Select building usage label from BG (where ontology is uploaded)
+  ?usagetypeiri rdfs:label ?label
+	{
+		# Inner query to retrieve relevant usage IRI from Ontop
+		SERVICE [ONTOP] {
+        SELECT DISTINCT ?usagetypeiri  ?value 
+        WHERE {
+                {[IRI] obe:hasPropertyUsage ?usageiri .
+                ?usageiri rdf:type ?usagetypeiri ; 
+                          obe:hasUsageShare ?usageshare .
+                BIND (concat(str(ROUND(?usageshare*10000)/100), ' %') AS ?value)}
+        }
+    }
+}}

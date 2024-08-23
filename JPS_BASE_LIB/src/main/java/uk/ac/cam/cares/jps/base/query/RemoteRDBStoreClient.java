@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -151,15 +150,6 @@ public class RemoteRDBStoreClient implements StoreClientInterface {
         } catch (SQLException e) {
             throw new JPSRuntimeException(ERR_PREFIX + "Failed at closing connection/statement while executing update", e);
         }
-    }
-
-    /**
-     * Executes the update request supplied by the calling method.
-     * @param update as UpdateRequest
-     */
-    @Override
-    public int executeUpdate(UpdateRequest update){
-        return executeUpdate(update.toString());
     }
 
     /**

@@ -33,6 +33,9 @@ services:
     mem_limit: 2g
     pull_policy: if_not_present
     restart: unless-stopped
+    environment:
+      - EMAIL_AGENT_URL=http://kg.cmclinnovations.com:81/agent/email/email
+      
 
   # Flood Agent
   flood-agent:

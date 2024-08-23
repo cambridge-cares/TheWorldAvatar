@@ -13,8 +13,11 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
         params = ontomatch.utils.util.read_json_from_path(config_file)
         # the config file defines the pickled files as src and tgt and thus will not add geocoordinates
         # thus we replace them here by the original turtle files
-        params['dataset']['src'] = './data/power_plant_DEU/kwl.ttl'
-        params['dataset']['tgt'] = './data/power_plant_DEU/gppd_DEU.ttl'
+        #params['dataset']['src'] = './data/power_plant_DEU/kwl.ttl'
+        params['dataset']['src'] = './tests/data/KWL_20_power_plants.ttl'
+        #params['dataset']['tgt'] = './data/power_plant_DEU/gppd_DEU.ttl'
+        #params['dataset']['tgt'] = './data/power_plant_DEU/gppd_DEU.pkl'
+        params['dataset']['tgt'] = 'any_pkl_file.pkl'
         params['pre_processing']['add_knowledge'] = 'ontomatch.knowledge.geocoding'
         # outcomment the next line if the full pipeline should be performed
         # None means that no instance matching is performed
@@ -29,7 +32,8 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_coordinator_step_3_instance_matching_and_step_4_evaluation(self):
 
-        config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO
+        #config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO
+        config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO_CSV
         params = ontomatch.utils.util.read_json_from_path(config_file)
         # since the config file defines pickled files as src and tgt,
         # step 1 loading and step 2 adding geo coordinates are omitted
@@ -43,7 +47,8 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_instance_matching_with_XGB(self):
 
-        config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_XGB
+        #config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_XGB
+        config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_XGB_CSV
         params = ontomatch.utils.util.read_json_from_path(config_file)
 
         # write the config params to the blackboard

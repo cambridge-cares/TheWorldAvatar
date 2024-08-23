@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,10 +47,10 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.opencsv.CSVReader;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
-import uk.ac.cam.cares.jps.agent.flood.objects.Connection;
+import uk.ac.cam.cares.jps.agent.flood.objects.StationConnection;
 import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.sparqlbuilder.ValuesPattern;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -59,7 +60,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  *
  */
 public class FloodSparql {
-    private StoreClientInterface storeClient;
+    private RemoteStoreClient storeClient;
     
     // prefix
 	private static final String ONTOEMS = "https://www.theworldavatar.com/kg/ontoems/";
@@ -126,19 +127,19 @@ public class FloodSparql {
     
     static Map<String, Iri> unitMap = new HashMap<>();
 	static {
-		unitMap.put("mAOD", iri("http://theworldavatar.com/resource/ontouom/metreAOD"));
-		unitMap.put("m", iri("http://theworldavatar.com/resource/ontouom/metreUnspecified"));
-		unitMap.put("mASD", iri("http://theworldavatar.com/resource/ontouom/metreASD"));
+		unitMap.put("mAOD", iri("https://www.theworldavatar.com/kg/ontouom/metreAOD"));
+		unitMap.put("m", iri("https://www.theworldavatar.com/kg/ontouom/metreUnspecified"));
+		unitMap.put("mASD", iri("https://www.theworldavatar.com/kg/ontouom/metreASD"));
 		unitMap.put("mm", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/millimetre"));
-		unitMap.put("mBDAT", iri("http://theworldavatar.com/resource/ontouom/metreBDAT"));
-		unitMap.put("l/s", iri("http://theworldavatar.com/resource/ontouom/litrePerSecond"));
+		unitMap.put("mBDAT", iri("https://www.theworldavatar.com/kg/ontouom/metreBDAT"));
+		unitMap.put("l/s", iri("https://www.theworldavatar.com/kg/ontouom/litrePerSecond"));
 		unitMap.put("m3/s", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/cubicMetrePerSecond-Time"));
 		unitMap.put("deg", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/degree"));
 		unitMap.put("m/s", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/PrefixedMetrePerSecond-Time"));
 		unitMap.put("Knots", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/knot-International"));
 	}
 
-	public FloodSparql(StoreClientInterface storeClient) {
+	public FloodSparql(RemoteStoreClient storeClient) {
 		this.storeClient = storeClient;
 	}
 	
@@ -266,6 +267,7 @@ public class FloodSparql {
 			properties.put("geom_iri", String.format("%s/geometry", station.getIri()));
 			properties.put("name", String.format("Environment Agency: %s (%s)", station.getLabel(), station.getIdentifier()));
 			properties.put("type", station.getIconImage());
+			properties.put("endpoint", this.storeClient.getQueryEndpoint());
             feature.put("properties", properties);
 
 			features.put(feature);
@@ -702,7 +704,7 @@ public class FloodSparql {
 	 * @param tsClient
 	 * @param measureIRIs
 	 */
-	List<Measure> addRangeForStageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
+	List<Measure> addRangeForStageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs, Connection conn) {
 		ModifyQuery modify = Queries.MODIFY(); // to store triples to add at the end
 		
 		// match meaures with qualifier = Stage
@@ -742,7 +744,7 @@ public class FloodSparql {
 			measureObject.setTypicalRangeLow(lowerbound);
 			measureObjectList.add(measureObject);
 			// query latest value
-			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri);
+			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri, conn);
 			List<Double> values = ts.getValuesAsDouble(measureIri);
 			if (!values.isEmpty()) {
 				double latestValue = values.get(values.size()-1);
@@ -773,7 +775,7 @@ public class FloodSparql {
 	 * @param tsClient
 	 * @param measureIRIs
 	 */
-	List<Measure> addRangeForDownstageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs) {
+	List<Measure> addRangeForDownstageScale(TimeSeriesClient<Instant> tsClient, List<String> measureIRIs, Connection conn) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		// match meaures with qualifier = Downstream Stage
@@ -816,7 +818,7 @@ public class FloodSparql {
 			measureObjectList.add(measureObject);
 
 			// query latest value
-			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri);
+			TimeSeries<Instant> ts = tsClient.getLatestData(measureIri, conn);
 			List<Double> values = ts.getValuesAsDouble(measureIri);
 			if (!values.isEmpty()) {
 				double latestValue = values.get(values.size()-1);
@@ -926,12 +928,12 @@ public class FloodSparql {
 	 * uses the difference between final and first value
 	 * if the change is greater than 10% based on the typical range, it is marked as either rising or falling
 	 */
-	void addTrends(TimeSeriesClient<Instant> tsClient, List<Measure> measures, Instant lowerbound, Instant upperbound) {
+	void addTrends(TimeSeriesClient<Instant> tsClient, List<Measure> measures, Instant lowerbound, Instant upperbound, Connection conn) {
 		ModifyQuery modify = Queries.MODIFY();
 
 		List<String> oldMeasureTrendToDelete = new ArrayList<>();
 		for (Measure measure : measures) {
-			TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure.getIri()), lowerbound, upperbound);
+			TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure.getIri()), lowerbound, upperbound, conn);
 			List<Double> values = ts.getValuesAsDouble(measure.getIri());
 
 			if (!values.isEmpty()) {
@@ -1009,7 +1011,7 @@ public class FloodSparql {
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
-    List<Connection> getConnections(Map<String, Station> stationsMap) {
+    List<StationConnection> getConnections(Map<String, Station> stationsMap) {
 		SelectQuery query = Queries.SELECT();
 		Variable upstream = query.var();
 		Variable downstream = query.var();
@@ -1017,7 +1019,7 @@ public class FloodSparql {
 		query.where(upstream.has(HAS_DOWNSTREAM_STATION, downstream)).prefix(P_EMS);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		List<Connection> connections = new ArrayList<>();
+		List<StationConnection> connections = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			String upstreamIri = queryResult.getJSONObject(i).getString(upstream.getQueryString().substring(1));
 			String downstreamIri = queryResult.getJSONObject(i).getString(downstream.getQueryString().substring(1));
@@ -1026,7 +1028,7 @@ public class FloodSparql {
 				Station upstreamStation = stationsMap.get(upstreamIri);
 				Station downstreamStation = stationsMap.get(downstreamIri);
 
-				connections.add(new Connection(upstreamStation, downstreamStation));
+				connections.add(new StationConnection(upstreamStation, downstreamStation));
 			}
 		}
 

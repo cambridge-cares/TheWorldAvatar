@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.utils.FileUtils;
+import com.cmclinnovations.stack.clients.utils.LocalTempFile;
 import com.cmclinnovations.stack.clients.utils.TempFile;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -36,7 +37,7 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
     private static final Pattern TARGET_LINES_PATTERN = Pattern.compile("([,;\\.])[\\t ]*\\r?\\n+[\\t ]+");
     // Matches two newline characters seperated whitespace
     private static final Pattern WHITESPACE_BETWEEN_MAPPINGS_PATTERN = Pattern.compile("(\\r?\\n)+\\s+\\r?\\n");
-    
+
     private final Map<String, String> prefixMap = new HashMap<>();
     private final Map<String, SQLPPTriplesMap> triplesMap = new HashMap<>();
 
@@ -79,7 +80,7 @@ final class SQLPPMappingImplementation implements SQLPPMapping {
     }
 
     public static TempFile createTempOBDAFile(Path ontopMappingFilePath) throws IOException {
-        return new TempFile(
+        return new LocalTempFile(
                 File.createTempFile(FileUtils.getFileNameWithoutExtension(ontopMappingFilePath), ".obda").toPath());
     }
 

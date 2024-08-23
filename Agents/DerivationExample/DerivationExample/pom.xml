@@ -64,7 +64,7 @@
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
-            <version>1.28.0</version>
+            <version>1.33.1</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

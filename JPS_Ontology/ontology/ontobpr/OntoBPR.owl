@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#"
-     xml:base="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl"
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontobpr/"
+     xml:base="https://www.theworldavatar.com/kg/ontobpr/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:ontobpr="https://www.theworldavatar.com/kg/ontobpr/"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:OntoBPR="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <owl:Ontology rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">31 May 2022</dc:date>
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobpr/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBPR is an ontology developed for expressing a back pressure regulator.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -33,8 +33,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/accomplishes">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#BackPressureRegulator"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#ReactorPressureControl"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobpr/BackPressureRegulator"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobpr/ReactorPressureControl"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between BackPressureRegulator and the reactor pressure control task it can conduct.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -45,8 +45,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasCommand">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustmentCommand"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobpr/PressureAdjustment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobpr/PressureAdjustmentCommand"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between PressureAdjustment function and PressureAdjustmentCommand command.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -57,8 +57,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasFunction">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#BackPressureRegulator"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustment"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobpr/BackPressureRegulator"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobpr/PressureAdjustment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the function of BackPressureRegulator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -70,8 +70,8 @@
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isAccomplishedBy">
         <owl:inverseOf rdf:resource="https://saref.etsi.org/core/accomplishes"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#ReactorPressureControl"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#BackPressureRegulator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobpr/ReactorPressureControl"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobpr/BackPressureRegulator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies that the BackPressureRegulator that can accomplish the reactor pressure control task.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -83,8 +83,8 @@
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isCommandOf">
         <owl:inverseOf rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustmentCommand"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustment"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobpr/PressureAdjustmentCommand"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobpr/PressureAdjustment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between PressureAdjustmentCommand command and PressureAdjustment function it can achieve.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -100,57 +100,6 @@
      -->
 
 
-    
-
-
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#BackPressureRegulator -->
-
-
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#BackPressureRegulator">
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#LabEquipment"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The device that is used to control the back pressure of a reactor.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustment -->
-
-
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustment">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Function"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to adjust the reactor pressure.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustmentCommand -->
-
-
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#PressureAdjustmentCommand">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to adjust the reactor pressure.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#ReactorPressureControl -->
-
-
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#ReactorPressureControl">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Task"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The task to control the reactor pressure based on its setting. Reactor pressure control is modelled as a saref:Task that can be accomplished by BackPressureRegulator.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#LabEquipment -->
-
-
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#LabEquipment"/>
     
 
 
@@ -172,6 +121,57 @@
 
 
     <owl:Class rdf:about="https://saref.etsi.org/core/Task"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobpr/BackPressureRegulator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobpr/BackPressureRegulator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The device that is used to control the back pressure of a reactor.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobpr/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobpr/PressureAdjustment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobpr/PressureAdjustment">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Function"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to adjust the reactor pressure.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobpr/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobpr/PressureAdjustmentCommand -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobpr/PressureAdjustmentCommand">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to adjust the reactor pressure.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobpr/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobpr/ReactorPressureControl -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobpr/ReactorPressureControl">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Task"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The task to control the reactor pressure based on its setting. Reactor pressure control is modelled as a saref:Task that can be accomplished by BackPressureRegulator.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobpr/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/LabEquipment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
 </rdf:RDF>
 
 

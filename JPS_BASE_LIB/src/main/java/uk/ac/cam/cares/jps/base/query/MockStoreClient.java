@@ -47,6 +47,20 @@ public class MockStoreClient extends LocalStoreClient {
 	}
 	
 	/**
+	 * Add a single quad to the store
+	 * @param graph
+	 * @param subject
+	 * @param predicate
+	 * @param object
+	 */
+	public void addQuad(String graph, String s, String p, String o) {
+		
+		UpdateBuilder builder = new UpdateBuilder();
+		builder.addInsert(graph, s, p, o);
+		executeUpdate(builder.buildRequest());	
+	}
+
+	/**
 	 * Clear the mock dataset
 	 */
 	public void clear() {

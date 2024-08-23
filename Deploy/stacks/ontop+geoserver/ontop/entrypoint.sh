@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Get the postgres password from a Docker secret, or set a default if none was supplied.
 # Write the result to the relevant properties file

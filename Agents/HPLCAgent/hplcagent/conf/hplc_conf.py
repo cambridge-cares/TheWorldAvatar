@@ -8,6 +8,7 @@ class HPLCConfig(AgentConfig):
     HPLC_REPORT_CONTAINER_DIR: str
     CURRENT_HPLC_METHOD: str
     HPLC_REPORT_FILE_EXTENSION: str
+    DRY_RUN: bool = True
 
 
 def config_hplc_agent(env_file: str = None) -> HPLCConfig:

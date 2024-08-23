@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  emissions-agent:
+    image: ghcr.io/cambridge-cares/emissions-agent:1.4
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    configs:
+      - postgis
+      - blazegraph
+    secrets:
+      - postgis_password
+    networks:
+      - stack
+

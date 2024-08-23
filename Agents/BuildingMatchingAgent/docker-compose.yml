@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  building_matching_agent:
+    image: building_matching_agent:1.0.0
+    build: .
+    container_name: building_matching_agent
+    ports:
+      - "58085:8080"

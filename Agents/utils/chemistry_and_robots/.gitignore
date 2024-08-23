@@ -13,3 +13,5 @@ dist/
 .vscode/
 
 # Miscellaneous files/folders:
+.pytest_cache/
+*.env

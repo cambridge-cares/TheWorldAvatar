@@ -10,7 +10,7 @@ class TestUtil(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_train_test_split(self):
 
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params = {
             'name': 'TokenBasedPairIterator',
             'model_specific': {

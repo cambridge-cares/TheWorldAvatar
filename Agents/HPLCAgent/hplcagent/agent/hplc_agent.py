@@ -1,4 +1,5 @@
 from datetime import datetime
+import shutil
 import glob
 import time
 import os
@@ -18,14 +19,16 @@ class HPLCAgent(DerivationAgent):
         hplc_report_container_dir: str,
         current_hplc_method: str,
         hplc_report_file_extension: str,
+        dry_run: bool=True,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.hplc_digital_twin = hplc_digital_twin
         self.hplc_report_periodic_timescale = hplc_report_periodic_timescale
-        self.hplc_report_container_dir = hplc_report_container_dir if hplc_report_container_dir.endswith("/") else hplc_report_container_dir + "/"
+        self.hplc_report_container_dir = hplc_report_container_dir
         self.current_hplc_method = current_hplc_method
         self.hplc_report_file_extension = hplc_report_file_extension
+        self.dry_run = dry_run
 
         # Initialise the sparql_client
         self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
@@ -39,7 +42,7 @@ class HPLCAgent(DerivationAgent):
                 raise Exception("Agent <%s> registration with hardware <%s> failed." % (self.agentIRI, self.hplc_digital_twin))
 
     def agent_input_concepts(self) -> list:
-        return [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION]
+        return [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALAMOUNT]
 
     def agent_output_concepts(self) -> list:
         return [ONTOHPLC_HPLCJOB]
@@ -51,26 +54,40 @@ class HPLCAgent(DerivationAgent):
         # Record the time when the job starts
         start_timestamp = datetime.now().timestamp()
 
-        # Get the ChemicalSolution iri from the agent inputs (derivation_inputs)
+        # Get the ChemicalAmount iri from the agent inputs (derivation_inputs)
         try:
-            chemical_solution_iri = derivation_inputs.getIris(ONTOLAB_CHEMICALSOLUTION)[0]
+            chemical_amount_iri = derivation_inputs.getIris(ONTOLAB_CHEMICALAMOUNT)[0]
             rxn_exp_iri = derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT)[0]
         except Exception as e:
             self.logger.error(e)
+
+        # If the agent in in dry_run mode, copy the dry_run_hplc_report_file to the same directory as the real report files
+        # TODO [next iteration] a better design is to separate the dry run report from the real report files
+        if self.dry_run:
+            copy_dry_run_file_to_report_folder(
+                file_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dry_run', 'dry_run_hplc_report_file.'+self.hplc_report_file_extension),
+                target_folder=self.hplc_report_container_dir,
+                extension=self.hplc_report_file_extension,
+            )
 
         hplc_report_detected = None
         while not hplc_report_detected:
             time.sleep(self.hplc_report_periodic_timescale)
             end_timestamp = datetime.now().timestamp()
-            hplc_report_detected = self.sparql_client.detect_new_hplc_report(
-                self.hplc_digital_twin, start_timestamp, end_timestamp
-            )
+            # here we catch the exception and retry in a few seconds in case the internet is cut off
+            try:
+                hplc_report_detected = self.sparql_client.detect_new_hplc_report(
+                    self.hplc_digital_twin, start_timestamp, end_timestamp
+                )
+            except Exception as e:
+                self.logger.error(f"HPLC report detection failed. Retrying in {self.hplc_report_periodic_timescale} seconds...", exc_info=True)
+                hplc_report_detected = None
 
         # NOTE to avoid the variable mysteriously stored in memory of g in collect_triples_for_hplc_job from being used
         # NOTE i.e., earlier collected triples not being erased, we initialise a new g=Graph() here
         g = Graph()
         g = self.sparql_client.collect_triples_for_hplc_job(
-            rxn_exp_iri, chemical_solution_iri,
+            rxn_exp_iri, chemical_amount_iri,
             self.hplc_digital_twin, hplc_report_detected, self.current_hplc_method,
             g
         )
@@ -124,7 +141,9 @@ class HPLCAgent(DerivationAgent):
 
     def get_list_of_hplc_files(self, log=True):
         self.timestamp_check, self.lst_files_check = datetime.now().timestamp(), glob.glob(
-            self.hplc_report_container_dir + "*." + self.hplc_report_file_extension, recursive=True)
+            os.path.join(self.hplc_report_container_dir, '**', '*.'+self.hplc_report_file_extension),
+            recursive=True
+        )
         if log:
             self.logger.info(
                 """The list of HPLC report files with filename extension (%s) found at local report directory (%s) of HPLC <%s> at timestamp %f: %s""" % (
@@ -160,6 +179,12 @@ class HPLCAgent(DerivationAgent):
         )
 
         self.logger.info("Monitor local report folder job is scheduled with a time interval of %d seconds." % (self.hplc_report_periodic_timescale))
+
+
+def copy_dry_run_file_to_report_folder(file_path, target_folder, extension):
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+    shutil.copy(file_path, os.path.join(target_folder,f'dry_run_{str(uuid.uuid4())}.{extension}'))
 
 
 # Show an instructional message at the HPLCInputAgent servlet root

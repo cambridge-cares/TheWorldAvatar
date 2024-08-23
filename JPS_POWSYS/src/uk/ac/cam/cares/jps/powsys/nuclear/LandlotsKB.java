@@ -93,7 +93,7 @@ public class LandlotsKB {
 	public void startConversion() throws Exception {
     	
 		String baseURL = Util.getResourceDir(this);
-    	String filePath = baseURL + "LotsTemplate.owl"; // the empty owl file 
+    	String filePath = baseURL + "/LotsTemplate.owl"; // the empty owl file 
 		FileInputStream inFile = new FileInputStream(filePath);
     	Reader in = new InputStreamReader(inFile, "UTF-8");
 	    			

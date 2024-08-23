@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  thingspeak-agent:
+    image: thingspeak-agent:1.1.0
+    build: .
+    container_name: thingspeak-agent
+    pull_policy: if_not_present
+    ports:
+      - "1015:8080"

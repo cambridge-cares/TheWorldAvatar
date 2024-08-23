@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  python-service:
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    security_opt:
+      - label=disable
+    networks:
+      - stack
+
+networks:
+  stack:
+    name: ${STACK_NAME}
+    driver: overlay
+    external: true
+

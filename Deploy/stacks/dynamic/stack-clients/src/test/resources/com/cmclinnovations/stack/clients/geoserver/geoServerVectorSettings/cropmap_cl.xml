@@ -1,0 +1,10 @@
+<layer>
+    <enabled>true</enabled>
+    <styles />
+    <authorityURLs />
+    <identifiers />
+    <metadata>
+        <entry key="advertised">true</entry>
+    </metadata>
+    <defaultStyle>the_world_avatar:cropmap</defaultStyle>
+</layer>

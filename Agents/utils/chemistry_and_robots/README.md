@@ -30,11 +30,10 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ## Installation via pip
 
-The following command can be used to install the `chemistry_and_robots` package and `agentlogging` package. This is a workaround as PyPI does NOT allow `install_requires` direct links, so we could NOT add package `agentlogging` from `'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'` as dependency, therefore, in order to make the semi-automated release process working, we here introduce a workaround to install agentlogging to the virtual environment but NOT as dependency in the setup.py of `chemistry_and_robots`. A long term solution could be that we publish `agentlogging` in PyPI as well.
+The following command can be used to install the `chemistry_and_robots` package.
 
 ```sh
 (<venv_name>) $ pip install chemistry_and_robots
-(<venv_name>) $ pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
 # How to use it #
@@ -59,7 +58,7 @@ Unit and integration tests are written for this package. The tests should pass i
 `(Linux)`
 ```sh
 cd /<your_absolute_path_to>/TheWorldAvatar/Agents/utils/chemistry_and_robots
-pytest -s --docker-compose=./chemistry_and_robots/tests/docker-compose.yml --reruns 5 --reruns-delay 5
+pytest -s --reruns 5 --reruns-delay 5
 ```
 
 # New features and package release #

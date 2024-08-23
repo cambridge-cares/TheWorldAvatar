@@ -1,0 +1,75 @@
+[PrefixDeclaration]
+:		    http://example.org/crops/
+os: http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#
+op: http://www.theworldavatar.com/ontology/ontopubchem/OntoPubChem.owl#
+gc:         http://purl.org/gc/
+ex:		    http://example.org/
+sio:        http://semanticscience.org/resource/
+pubchem:    http://rdf.ncbi.nlm.nih.gov/pubchem/
+compound:	http://rdf.ncbi.nlm.nih.gov/pubchem/compound/
+descriptor:	http://rdf.ncbi.nlm.nih.gov/pubchem/descriptor/
+inchikey:	http://rdf.ncbi.nlm.nih.gov/pubchem/inchikey/
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+foaf:		http://xmlns.com/foaf/0.1/
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+geo:		http://www.opengis.net/ont/geosparql#
+skos:       http://www.w3.org/2004/02/skos/core#
+
+
+[MappingDeclaration] @collection [[
+mappingId pubchem_compound
+# chemical entity
+target compound:{compound_id} rdf:type op:Compound .          
+       compound:{compound_id} op:has_Canonical_SMILES {canonical_smiles} .
+       compound:{compound_id} op:has_Compound_Identifier {compound_id} .
+       compound:{compound_id} op:has_Covalent_Unit_Count {count_covalent_unit} .
+       compound:{compound_id} op:has_Defined_Atom_Stereo_Count {count_def_atom_stereo} .
+       compound:{compound_id} op:has_Defined_Bond_Stereo_Count {count_def_bond_stereo} .
+       compound:{compound_id} op:has_Exact_Mass {exact_mass} .
+       compound:{compound_id} op:has_Hydrogen_Bond_Acceptor_Count {count_hydrogen_bond_acceptor} .
+       compound:{compound_id} op:has_Hydrogen_Bond_Donor_Count {count_hydrogen_bond_donor} .
+       compound:{compound_id} op:has_IUPAC_InChI {inchi_standard} .
+       compound:{compound_id} op:has_Isotope_Atom_Count {count_isotope_atom} .
+       compound:{compound_id} op:has_Heavy_Atom_Count {count_heavy_atoms} .
+       compound:{compound_id} op:has_Molecular_Formula {molecular_formula} .
+       compound:{compound_id} op:has_Molecular_Weight {molecular_weight} .
+       compound:{compound_id} op:has_Preferred_IUPAC_Name {iupac_name} .
+       compound:{compound_id} op:has_Rotatable_Bond_Count {count_rotatable_bond} .
+       compound:{compound_id} op:has_Structure_Complexity {compound_complexity} .
+       compound:{compound_id} op:has_TPSA {tpsa} .
+       compound:{compound_id} op:has_Total_Formal_Charge {charge} .
+       compound:{compound_id} op:has_Undefined_Atom_Stereo_Count {count_undef_atom_setereo} .
+       compound:{compound_id} op:has_Undefined_Bond_Stereo_Count {count_undef_bond_setereo} .
+       compound:{compound_id} op:has_XLogP3-AA {log_p} .
+       compound:{compound_id} op:has_InChI_Key {inchi_key} .
+#
+#    inchikey:{inchi_key} rdf:type op:Inchikey
+#    inchikey:{inchi_key} rdf:type op:Inchikey . 
+#    inchikey:{inchi_key} op:is-attribute-of compound:{compound_id} .
+#    inchikey:{inchi_key} rdf:type op:Inchikey .
+#    inchikey:{inchi_key} op:has_Compound_Identifier compound:{compound_id} .
+# define the SQL query
+source		SELECT compound_id,charge,compound_complexity,count_hydrogen_bond_acceptor,count_hydrogen_bond_donor,count_rotatable_bond,iupac_name,inchi_standard,inchi_key,log_p,exact_mass,molecular_formula,molecular_weight,tpsa,canonical_smiles,count_heavy_atoms,count_def_atom_stereo,count_undef_atom_setereo,count_def_bond_stereo,count_undef_bond_setereo,count_isotope_atom,count_covalent_unit
+            FROM "public"."pubchem"
+#
+# define the SQL query
+#source		SELECT compound_id, canonical_smiles, count_def_atom_stereo, count_def_bond_stereo
+#            FROM "public"."pubchem"
+#
+#
+#mappingId	pubchem_to_name
+# # test comment
+# target		os:pubchem_species/{id} a os:Species ; 
+#             skos:altLabel {pubchem_name} .
+# source		SELECT compound_desc.compound_id AS id, iupac_name_value.name_value AS pubchem_name
+#             FROM compound_desc
+#             INNER JOIN iupac_name_type
+#             ON compound_desc.name_desc = iupac_name_type.name_desc
+#             INNER JOIN iupac_name_value
+#             ON compound_desc.name_desc = iupac_name_value.name_desc;
+]]
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
+<style type="text/css">
+	.st0{display:none;}
+	.st1{display:inline;fill:#FFFFFF;}
+	.st2{display:inline;fill:#C00000;}
+	.st3{display:inline;fill:#E68C00;}
+	.st4{fill:#FFFFFF;}
+	.st5{fill:#68BF56;}
+	.st6{display:inline;}
+	.st7{fill:none;stroke:#68BF56;stroke-width:10;stroke-miterlimit:10;}
+	.st8{fill:none;stroke:#68BF56;stroke-width:12;stroke-linecap:round;stroke-miterlimit:10;}
+	.st9{display:inline;fill:none;stroke:#68BF56;stroke-width:12;stroke-linecap:round;stroke-miterlimit:10;}
+	.st10{fill:none;stroke:#68BF56;stroke-width:12;stroke-miterlimit:10;}
+	.st11{fill:none;stroke:#68BF56;stroke-width:8;stroke-miterlimit:10;}
+	.st12{fill:none;stroke:#68BF56;stroke-width:8;stroke-linecap:round;stroke-miterlimit:10;}
+	.st13{display:inline;fill:#68BF56;stroke:#68BF56;stroke-width:4;stroke-linecap:round;stroke-miterlimit:10;}
+	.st14{font-family:'Gulim';}
+	.st15{font-size:73.0792px;}
+	.st16{fill:#68BF56;stroke:#68BF56;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st17{font-size:137.6691px;}
+	.st18{font-size:61.9511px;}
+	.st19{font-size:60px;}
+	.st20{display:inline;fill:none;stroke:#68BF56;stroke-width:12;stroke-miterlimit:10;}
+	.st21{display:inline;opacity:0.8;fill:#68BF56;}
+	.st22{display:inline;opacity:0.9;fill:#68BF56;}
+	.st23{display:inline;opacity:0.7;fill:#68BF56;}
+	.st24{display:inline;fill:#68BF56;}
+	.st25{display:inline;fill:#FFFFFF;stroke:#68BF56;stroke-width:18;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+
+<g id="circle">
+	<circle class="st4" cx="128" cy="128" r="111.8"/>
+	<path class="st5" d="M128,22.2c58.4,0,105.8,47.4,105.8,105.8S186.4,233.8,128,233.8S22.2,186.4,22.2,128S69.6,22.2,128,22.2
+		 M128,10.2c-31.5,0-61,12.3-83.3,34.5S10.2,96.5,10.2,128s12.3,61,34.5,83.3s51.8,34.5,83.3,34.5s61-12.3,83.3-34.5
+		s34.5-51.8,34.5-83.3s-12.3-61-34.5-83.3S159.5,10.2,128,10.2L128,10.2z"/>
+</g>
+
+</svg>

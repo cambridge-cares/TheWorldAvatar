@@ -3,7 +3,7 @@ version: "3.8"
 services:
   blazegraph_ocgml:
     container_name: "blazegraph_ocgml"
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/blazegraph:1.1.0
     restart: unless-stopped
     pull_policy: if_not_present
     ports:

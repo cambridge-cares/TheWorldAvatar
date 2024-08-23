@@ -1,0 +1,4 @@
+// Example HTTP request to initialise the knowledge base at given KG endpoint with TBox and ABox from TWA
+
+GET http://165.232.172.16:5007/epcagent/initialise
+Content-Type: application/json

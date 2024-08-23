@@ -1,0 +1,125 @@
+From 3e3863df34414b7fd99eafa7cba4626628a8422b Mon Sep 17 00:00:00 2001
+From: George Brownbridge <gbrownbridge@cmclinnovations.com>
+Date: Wed, 28 Jun 2023 20:50:56 +0000
+Subject: [PATCH] Added generic_attributes.
+
+---
+ py3dtilers/CityTiler/citym_building.py   |  2 +-
+ py3dtilers/CityTiler/citym_cityobject.py |  3 ++
+ py3dtilers/Common/feature.py             | 35 ++++++++++++++++++++++++
+ py3dtilers/Common/polygon_extrusion.py   |  2 ++
+ 4 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/py3dtilers/CityTiler/citym_building.py b/py3dtilers/CityTiler/citym_building.py
+index 1cc8d98..a5bb2ef 100644
+--- a/py3dtilers/CityTiler/citym_building.py
++++ b/py3dtilers/CityTiler/citym_building.py
+@@ -94,7 +94,7 @@ class CityMBuildings(CityMCityObjects):
+ 
+         if split_surfaces:
+             query = \
+-                "SELECT surface_geometry.id, ST_AsBinary(ST_Multi( " + \
++                "SELECT thematic_surface.id, ST_AsBinary(ST_Multi( " + \
+                 "surface_geometry.geometry)), " + \
+                 "objectclass.classname " + \
+                 "FROM citydb.surface_geometry JOIN citydb.thematic_surface " + \
+diff --git a/py3dtilers/CityTiler/citym_cityobject.py b/py3dtilers/CityTiler/citym_cityobject.py
+index 47169f6..2361b5d 100644
+--- a/py3dtilers/CityTiler/citym_cityobject.py
++++ b/py3dtilers/CityTiler/citym_cityobject.py
+@@ -71,6 +71,7 @@ class CityMCityObject(Feature):
+                 geom_as_string = t[1]
+                 if geom_as_string is not None:
+                     cityobject = self.__class__(feature_id, self.get_gml_id())
++                    cityobject.add_generic_attributes(feature_id)
+                     associated_data = []
+ 
+                     if user_arguments.with_texture:
+@@ -198,11 +199,13 @@ class CityMCityObjects(FeatureList):
+             gml_id = obj[1]
+             if no_input:
+                 new_object = object_type(object_id, gml_id)
++                new_object.add_generic_attributes(object_id)
+                 result_objects.append(new_object)
+             else:
+                 cityobject = objects_with_gmlid_key[gml_id]
+                 cityobject.set_database_id(object_id)
+                 cityobject.set_gml_id(gml_id)
++                cityobject.add_generic_attributes(object_id)
+         if no_input:
+             return result_objects
+         else:
+diff --git a/py3dtilers/Common/feature.py b/py3dtilers/Common/feature.py
+index c9a8e47..8b0462c 100644
+--- a/py3dtilers/Common/feature.py
++++ b/py3dtilers/Common/feature.py
+@@ -1,4 +1,5 @@
+ import numpy as np
++from collections import defaultdict
+ from py3dtiles import BoundingVolumeBox, TriangleSoup
+ from typing import List
+ from ..Color import ColorConfig
+@@ -10,6 +11,8 @@ class Feature(object):
+     used with the corresponding tiler.
+     """
+ 
++    generic_attributes = None
++
+     def __init__(self, id=None):
+         """
+         :param id: given identifier
+@@ -140,6 +143,38 @@ class Feature(object):
+         else:
+             return []
+ 
++    def add_generic_attributes(self, feature_id):
++        """
++        Set the generic attributes of this object. They are kept in the batch table.
++        """
++
++        if Feature.generic_attributes is None:
++            cursor = self.objects_type.get_cursor()
++            Feature.generic_attributes = Feature.retrieve_generic_attributes(cursor, self.objects_type)
++
++        self.batchtable_data.update(Feature.generic_attributes[feature_id])
++
++    @staticmethod
++    def sql_query_generic_attributes():
++        """
++        :return: a string containing the right SQL query that should be executed.
++        """
++
++        query = \
++            "SELECT cityobject_id, attrname, concat_ws(' ', strval, intval, realval, urival, dateval, unit) FROM citydb.cityobject_genericattrib;"
++        return query
++
++    @staticmethod
++    def retrieve_generic_attributes(cursor, objects_type):
++        """
++        :param cursor: a database access cursor
++        :rtype Dict: attributes by object_id
++        """
++        res = defaultdict(dict)
++        cursor.execute(Feature.sql_query_generic_attributes())
++        for t in cursor.fetchall():
++            res[t[0]][t[1]] = t[2]
++        return res
+ 
+ class FeatureList(object):
+     """
+diff --git a/py3dtilers/Common/polygon_extrusion.py b/py3dtilers/Common/polygon_extrusion.py
+index 412f841..ab280b9 100644
+--- a/py3dtilers/Common/polygon_extrusion.py
++++ b/py3dtilers/Common/polygon_extrusion.py
+@@ -23,6 +23,8 @@ class ExtrudedPolygon(Feature):
+         self.polygon = polygon
+         self.features = features
+         self.set_geom()
++        if len(features) == 1:
++            self.add_generic_attributes(features[0].get_id())
+ 
+     def set_geom(self):
+         """
+-- 
+2.20.1
+

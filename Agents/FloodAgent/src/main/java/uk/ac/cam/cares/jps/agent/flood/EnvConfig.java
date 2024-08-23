@@ -25,6 +25,8 @@ public class EnvConfig {
 	
 	public static final String ONTOP_FILE = System.getenv("ONTOP_FILE");
 
+	public static final String BLAZEGRAPH_NAMESPACE = System.getenv("BLAZEGRAPH_NAMESPACE");
+
 	private EnvConfig() {
 		throw new IllegalStateException();
 	}

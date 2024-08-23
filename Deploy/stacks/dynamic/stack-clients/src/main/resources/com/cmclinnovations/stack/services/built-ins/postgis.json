@@ -1,0 +1,50 @@
+{
+    "type": "postgres",
+    "ServiceSpec": {
+        "Name": "postgis",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/cambridge-cares/postgis:15-3.4-3.4.1-extra-bundled-snapshot",
+                "Env": [
+                    "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256",
+                    "POSTGIS_SFCGAL=true"
+                ],
+                "Command": [
+                    "sh",
+                    "-c",
+                    "chmod +x /docker-entrypoint-initdb.d/3dcitydb-initdb.sh && docker-entrypoint.sh postgres"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "postgis_data",
+                        "Target": "/var/lib/postgresql/data"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "multidim_geospatial",
+                        "Target": "/multidim_geospatial"
+                    },
+                    {
+                        "Type": "tmpfs",
+                        "Target": "/dev/shm",
+                        "TmpfsOptions": {
+                            "SizeBytes": 1073741824
+                        }
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    }
+}

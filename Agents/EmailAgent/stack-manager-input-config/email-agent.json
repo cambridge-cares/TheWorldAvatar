@@ -1,0 +1,27 @@
+{
+    "ServiceSpec": {
+        "Name": "email-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/email-agent:1.0.1",
+                "Env": [
+                        "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
+			            "EMAIL_AGENT_PROPERTIES=/root/data/email-agent.properties"
+				],
+                "Mounts": [
+                    {
+                      "Type": "bind",
+                      "Source": "/mnt/c/Users/WANG01/Documents/CARES/EmailAgent/code/data/",
+                      "Target": "/root/data/"
+                    }
+                  ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/email_agent/",
+            "externalPath": "/email-agent/"
+        }
+    }
+}

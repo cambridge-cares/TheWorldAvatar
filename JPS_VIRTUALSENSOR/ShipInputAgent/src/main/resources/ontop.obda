@@ -1,0 +1,13 @@
+[PrefixDeclaration]
+geo:		http://www.opengis.net/ont/geosparql#
+xsd:		http://www.w3.org/2001/XMLSchema#
+disp:       http://www.theworldavatar.com/dispersion/
+
+[MappingDeclaration] @collection [[
+mappingId	ships
+target		<{datairi}> a geo:Feature; geo:hasGeometry <{geometry_iri}>. <{geometry_iri}> geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt_original}"^^geo:wktLiteral ; disp:hasTime {time}^^xsd:long .
+source		SELECT "dbTable"."dataIRI" AS datairi, timeseries.time AS time, ST_AsText(timeseries.value) AS wkt_original,
+            timeseries.tid as tid, concat("dbTable"."dataIRI",'/geometry',cast(tid as text)) as geometry_iri
+            FROM "dbTable", public.get_geometry_table("tableName", "columnName") as timeseries
+            WHERE "dbTable"."type"='geometry'
+]]

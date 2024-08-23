@@ -1,0 +1,54 @@
+package uk.ac.cam.cares.jps.agent.cea.data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class CEAOutputData {
+    public List<List<Double>> GridConsumption = new ArrayList<>();
+    public List<List<Double>> ElectricityConsumption = new ArrayList<>();
+    public List<List<Double>> HeatingConsumption = new ArrayList<>();
+    public List<List<Double>> CoolingConsumption = new ArrayList<>();
+    public List<Double> RoofSolarSuitableArea = new ArrayList<>();
+    public List<Double> SouthWallSolarSuitableArea = new ArrayList<>();
+    public List<Double> NorthWallSolarSuitableArea = new ArrayList<>();
+    public List<Double> EastWallSolarSuitableArea = new ArrayList<>();
+    public List<Double> WestWallSolarSuitableArea = new ArrayList<>();
+    public List<List<Double>> PVRoofSupply = new ArrayList<>();
+    public List<List<Double>> PVWallSouthSupply = new ArrayList<>();
+    public List<List<Double>> PVWallNorthSupply = new ArrayList<>();
+    public List<List<Double>> PVWallEastSupply = new ArrayList<>();
+    public List<List<Double>> PVWallWestSupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateRoofESupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallSouthESupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallNorthESupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallEastESupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallWestESupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateRoofQSupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallSouthQSupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallNorthQSupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallEastQSupply = new ArrayList<>();
+    public List<List<Double>> PVTPlateWallWestQSupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeRoofESupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallSouthESupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallNorthESupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallEastESupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallWestESupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeRoofQSupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallSouthQSupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallNorthQSupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallEastQSupply = new ArrayList<>();
+    public List<List<Double>> PVTTubeWallWestQSupply = new ArrayList<>();
+    public List<List<Double>> ThermalPlateRoofSupply = new ArrayList<>();
+    public List<List<Double>> ThermalPlateWallSouthSupply = new ArrayList<>();
+    public List<List<Double>> ThermalPlateWallNorthSupply = new ArrayList<>();
+    public List<List<Double>> ThermalPlateWallEastSupply = new ArrayList<>();
+    public List<List<Double>> ThermalPlateWallWestSupply = new ArrayList<>();
+    public List<List<Double>> ThermalTubeRoofSupply = new ArrayList<>();
+    public List<List<Double>> ThermalTubeWallSouthSupply = new ArrayList<>();
+    public List<List<Double>> ThermalTubeWallNorthSupply = new ArrayList<>();
+    public List<List<Double>> ThermalTubeWallEastSupply = new ArrayList<>();
+    public List<List<Double>> ThermalTubeWallWestSupply = new ArrayList<>();
+    public String targetUrl;
+    public List<String> iris = new ArrayList<>();
+    public List<String> times = new ArrayList<>();
+}

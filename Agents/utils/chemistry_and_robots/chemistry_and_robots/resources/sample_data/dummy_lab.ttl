@@ -11,19 +11,18 @@
 @prefix OntoCAPEPha:    <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
 @prefix OntoCAPEUpp:    <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
 @prefix ontospecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
-@prefix ontovapourtec:    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#> .
-@prefix ontohplc:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
-@prefix ontobpr:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
-@prefix ontolab:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
-@prefix ontouom:        <http://theworldavatar.com/resource/ontouom/> .
-@prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
+@prefix OntoVapourtec:    <https://www.theworldavatar.com/kg/ontovapourtec/> .
+@prefix ontohplc:        <https://www.theworldavatar.com/kg/ontohplc/> .
+@prefix ontobpr:        <https://www.theworldavatar.com/kg/ontobpr/> .
+@prefix OntoLab:        <https://www.theworldavatar.com/kg/ontolab/> .
+@prefix :                <https://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
 @prefix exp1:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
 @prefix exp2:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
 @prefix exp3:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/> .
 @prefix exp4:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/> .
 @prefix exp5:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
-@prefix ontorxn:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix ontorxn:        <https://www.theworldavatar.com/kg/ontoreaction/> .
 @prefix ChemRxn:        <https://www.example.com/triplestore/ontorxn/ChemRxn_1/> .
 @prefix SinglePhase:    <https://www.example.com/triplestore/ontorxn/SinglePhase/> .
 
@@ -41,26 +40,25 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 ## Laboratory - Dummy ##
 ########################
 :Laboratory_Dummy
-    a ontolab:Laboratory;
-    ontolab:contains :AutomatedRxnPlatform_Dummy;
-    ontolab:contains :VapourtecRS400_Dummy;
-    ontolab:contains :HPLC_Dummy;
-    ontolab:contains :BPR_Dummy;
-    ontolab:contains :VapourtecR4_Dummy;
-    ontolab:contains :VapourtecR4_Another_Dummy;
-    ontolab:contains :VapourtecR2_1_Dummy;
-    ontolab:contains :VapourtecR2_2_Dummy;
-    ontolab:contains :VapourtecR2_3_Dummy;
-    ontolab:contains :VapourtecR2_4_Dummy;
-    ontolab:contains :AutoSampler_Dummy;
+    a OntoLab:Laboratory;
+    OntoLab:contains :AutomatedRxnPlatform_Dummy;
+    OntoLab:contains :VapourtecRS400_Dummy;
+    OntoLab:contains :HPLC_Dummy;
+    OntoLab:contains :BPR_Dummy;
+    OntoLab:contains :VapourtecR4_Dummy;
+    OntoLab:contains :VapourtecR4_Another_Dummy;
+    OntoLab:contains :VapourtecR2_1_Dummy;
+    OntoLab:contains :VapourtecR2_2_Dummy;
+    OntoLab:contains :VapourtecR2_3_Dummy;
+    OntoLab:contains :VapourtecR2_4_Dummy;
+    OntoLab:contains :AutoSampler_Dummy;
 .
 
 ##################################################
 ## Automated reaction platform in the Dummy lab ##
 ##################################################
 :AutomatedRxnPlatform_Dummy 
-    a ontolab:LabEquipment;
-    ontolab:isContainedIn :Laboratory_Dummy;
+    a OntoLab:LabEquipment;
     saref:consistsOf :VapourtecRS400_Dummy;
     saref:consistsOf :HPLC_Dummy;
     saref:consistsOf :BPR_Dummy;
@@ -72,8 +70,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 :HPLC_Dummy
     a ontohplc:HighPerformanceLiquidChromatography;
     dbo:manufacturer :HPLC_Manufacturer;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :HPLC_Dummy_PowerSupply;
+    OntoLab:hasPowerSupply :HPLC_Dummy_PowerSupply;
     ontohplc:localReportDirectory "/home/user/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
     ontohplc:reportExtension <http://dbpedia.org/resource/Microsoft_Excel>;
     ontohplc:hasJob :HPLCJob_Dummy;
@@ -87,43 +84,107 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     ontohplc:characterises exp1:RxnExp_1;
 .
 
+# below report minic a processed report
+# this report should only contains the product and the internal standard as the identified species
+# all other peaks should be unidentified
+# for identified species but no response factor information is available, they are still marked as unidentified with the rdfs:comment about their identity
+# the data in this HPLCReport_Dummy matches the data in raw_hplc_report_txt.txt and raw_hplc_report_xls.xls
+# the data in this HPLCReport_Dummy should be interpreted following the :HPLCMethod_Dummy
+# note that as the :HPLCMethod_Dummy only provides response factor for the product and internal standard
+# only :ChromatogramPoint_Dummy_3 and :ChromatogramPoint_Dummy_8 should be identified
+# all other peaks should be unidentified, perhaps with a rdfs:comment about their identity
 :HPLCReport_Dummy
     a ontohplc:HPLCReport;
-    ontohplc:generatedFor :ChemicalSolution_For_OutputChemical_4;
+    ontohplc:generatedFor :ChemicalAmount_For_Dummy_OutputChemical;
     ontohplc:lastLocalModifiedAt "123"^^xsd:double;
     ontohplc:lastUploadedAt "125"^^xsd:double;
     ontohplc:remoteFilePath "http://placeholder_path"^^xsd:anyURI;
     ontohplc:localFilePath "placeholder_file_name"^^xsd:string;
     ontohplc:records :ChromatogramPoint_Dummy_1;
-    ontohplc:records :ChromatogramPoint_Dummy_2;
     ontohplc:records :ChromatogramPoint_Dummy_3;
     ontohplc:records :ChromatogramPoint_Dummy_4;
-    ontohplc:records :ChromatogramPoint_Dummy_5;
-    ontohplc:records :ChromatogramPoint_Dummy_6;
-    ontohplc:records :ChromatogramPoint_Dummy_7;
     ontohplc:records :ChromatogramPoint_Dummy_8;
+    # ontohplc:records :ChromatogramPoint_Dummy_2;
+    # ontohplc:records :ChromatogramPoint_Dummy_5;
+    # ontohplc:records :ChromatogramPoint_Dummy_6;
+    # ontohplc:records :ChromatogramPoint_Dummy_7;
 .
 
 # RetTime	Area
 # 0.55	3000 reactant benzaldehyde
 # 1.55	15000 product benzalacetone
-# 2.55	3400 reactant acetone
 # 3.55	120 internal standard
 # 4.55	20 impurity dibenzylideneacetone
-# 5.55	900 catalyst NaOH
-# 6.55	150 solvent acetonitrile
-# 7.55  100 solvent ethanol
-:ChemicalSolution_For_OutputChemical_4
-    a ontolab:ChemicalSolution;
-    ontocapecpsb:refersToMaterial exp1:OutputChemical_4;
-    ontovapourtec:fills :Vial_5;
+:ChemicalAmount_For_Dummy_OutputChemical
+    a OntoLab:ChemicalAmount;
+    ontocapecpsb:refersToMaterial :OutputChemical_Dummy;
+    OntoLab:containsUnidentifiedComponent "true"^^xsd:boolean;
 .
 
+:OutputChemical_Dummy
+    rdf:type ontorxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior :Phase_Dummy_OutputChemical;
+.
+
+# this single phase should only contain the product and the internal standard
+# as the concentration of others will not be calculated due to lack of response factor in the :HPLCMethod_Dummy
+:Phase_Dummy_OutputChemical
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior :OutputChemical_Dummy;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition :Composition_Dummy_OutputChemical;
+    OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_Product_oc;
+    OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_IS_oc;
+.
+
+:Composition_Dummy_OutputChemical
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly :PhaseComponent_Product_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly :PhaseComponent_IS_oc_Property_1;
+.
+
+:PhaseComponent_Product_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
+    OntoCAPEUpp:hasProperty :PhaseComponent_Product_oc_Property_1;
+.
+
+:PhaseComponent_Product_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue :PhaseComponent_Product_oc_Property_1_ScalarValue_1;
+.
+
+:PhaseComponent_Product_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+:PhaseComponent_IS_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEUpp:hasProperty :PhaseComponent_IS_oc_Property_1;
+.
+
+:PhaseComponent_IS_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue :PhaseComponent_IS_oc_Property_1_ScalarValue_1;
+.
+
+:PhaseComponent_IS_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+## chromatogram points
 :ChromatogramPoint_Dummy_1
     a ontohplc:ChromatogramPoint;
     ontohplc:hasPeakArea :PeakArea_CP_D1;
     ontohplc:atRetentionTime :RetentionTime_CP_D1;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_1_exp1_oc;
+    # ontohplc:indicatesComponent SinglePhase:PhaseComponent_1_exp1_oc;
+    ontohplc:unidentified "true"^^xsd:boolean;
+    rdfs:comment "identified as reactant benzaldehyde, however, labelled as unidentified due to missing response factor information"^^xsd:string;
 .
 
 :PeakArea_CP_D1
@@ -133,7 +194,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D1
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "3000"^^xsd:double;
 .
 
@@ -148,40 +209,42 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     om:hasNumericalValue "0.55"^^xsd:double;
 .
 
-:ChromatogramPoint_Dummy_2
-    a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea :PeakArea_CP_D2;
-    ontohplc:atRetentionTime :RetentionTime_CP_D2;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_2_exp1_oc;
-.
+# :ChromatogramPoint_Dummy_2
+#     a ontohplc:ChromatogramPoint;
+#     ontohplc:hasPeakArea :PeakArea_CP_D2;
+#     ontohplc:atRetentionTime :RetentionTime_CP_D2;
+#     ontohplc:indicatesComponent SinglePhase:PhaseComponent_2_exp1_oc;
+# .
 
-:PeakArea_CP_D2
-    a ontohplc:PeakArea;
-    om:hasValue :V_PA_CP_D2;
-.
+# :PeakArea_CP_D2
+#     a ontohplc:PeakArea;
+#     om:hasValue :V_PA_CP_D2;
+# .
 
-:V_PA_CP_D2
-    a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
-    om:hasNumericalValue "3400"^^xsd:double;
-.
+# :V_PA_CP_D2
+#     a om:Measure;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
+#     om:hasNumericalValue "3400"^^xsd:double;
+# .
 
-:RetentionTime_CP_D2
-    a ontohplc:RetentionTime;
-    om:hasValue :V_RT_CP_D2;
-.
+# :RetentionTime_CP_D2
+#     a ontohplc:RetentionTime;
+#     om:hasValue :V_RT_CP_D2;
+# .
 
-:V_RT_CP_D2
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "2.55"^^xsd:double;
-.
+# :V_RT_CP_D2
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "2.55"^^xsd:double;
+# .
 
 :ChromatogramPoint_Dummy_3
     a ontohplc:ChromatogramPoint;
     ontohplc:hasPeakArea :PeakArea_CP_D3;
     ontohplc:atRetentionTime :RetentionTime_CP_D3;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_3_exp1_oc;
+    ontohplc:indicatesComponent :PhaseComponent_Product_oc;
+    ontohplc:unidentified "false"^^xsd:boolean;
+    rdfs:comment "identified as product benzalacetone"^^xsd:string;
 .
 
 :PeakArea_CP_D3
@@ -191,7 +254,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D3
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "15000"^^xsd:double;
 .
 
@@ -210,7 +273,10 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     a ontohplc:ChromatogramPoint;
     ontohplc:hasPeakArea :PeakArea_CP_D4;
     ontohplc:atRetentionTime :RetentionTime_CP_D4;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_4_exp1_oc;
+    # ontohplc:indicatesComponent SinglePhase:PhaseComponent_4_exp1_oc;
+    ontohplc:unidentified "true"^^xsd:boolean;
+    rdfs:comment "identified as impurity dibenzylideneacetone, however, labelled as unidentified due to missing response factor information"^^xsd:string;
+
 .
 
 :PeakArea_CP_D4
@@ -220,7 +286,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D4
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "20"^^xsd:double;
 .
 
@@ -235,98 +301,100 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
     om:hasNumericalValue "4.55"^^xsd:double;
 .
 
-:ChromatogramPoint_Dummy_5
-    a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea :PeakArea_CP_D5;
-    ontohplc:atRetentionTime :RetentionTime_CP_D5;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_5_exp1_oc;
-.
+# :ChromatogramPoint_Dummy_5
+#     a ontohplc:ChromatogramPoint;
+#     ontohplc:hasPeakArea :PeakArea_CP_D5;
+#     ontohplc:atRetentionTime :RetentionTime_CP_D5;
+#     ontohplc:indicatesComponent SinglePhase:PhaseComponent_5_exp1_oc;
+# .
 
-:PeakArea_CP_D5
-    a ontohplc:PeakArea;
-    om:hasValue :V_PA_CP_D5;
-.
+# :PeakArea_CP_D5
+#     a ontohplc:PeakArea;
+#     om:hasValue :V_PA_CP_D5;
+# .
 
-:V_PA_CP_D5
-    a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
-    om:hasNumericalValue "900"^^xsd:double;
-.
+# :V_PA_CP_D5
+#     a om:Measure;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
+#     om:hasNumericalValue "900"^^xsd:double;
+# .
 
-:RetentionTime_CP_D5
-    a ontohplc:RetentionTime;
-    om:hasValue :V_RT_CP_D5;
-.
+# :RetentionTime_CP_D5
+#     a ontohplc:RetentionTime;
+#     om:hasValue :V_RT_CP_D5;
+# .
 
-:V_RT_CP_D5
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "5.55"^^xsd:double;
-.
+# :V_RT_CP_D5
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "5.55"^^xsd:double;
+# .
 
-:ChromatogramPoint_Dummy_6
-    a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea :PeakArea_CP_D6;
-    ontohplc:atRetentionTime :RetentionTime_CP_D6;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_6_exp1_oc;
-.
+# :ChromatogramPoint_Dummy_6
+#     a ontohplc:ChromatogramPoint;
+#     ontohplc:hasPeakArea :PeakArea_CP_D6;
+#     ontohplc:atRetentionTime :RetentionTime_CP_D6;
+#     ontohplc:indicatesComponent SinglePhase:PhaseComponent_6_exp1_oc;
+# .
 
-:PeakArea_CP_D6
-    a ontohplc:PeakArea;
-    om:hasValue :V_PA_CP_D6;
-.
+# :PeakArea_CP_D6
+#     a ontohplc:PeakArea;
+#     om:hasValue :V_PA_CP_D6;
+# .
 
-:V_PA_CP_D6
-    a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
-    om:hasNumericalValue "150"^^xsd:double;
-.
+# :V_PA_CP_D6
+#     a om:Measure;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
+#     om:hasNumericalValue "150"^^xsd:double;
+# .
 
-:RetentionTime_CP_D6
-    a ontohplc:RetentionTime;
-    om:hasValue :V_RT_CP_D6;
-.
+# :RetentionTime_CP_D6
+#     a ontohplc:RetentionTime;
+#     om:hasValue :V_RT_CP_D6;
+# .
 
-:V_RT_CP_D6
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "6.55"^^xsd:double;
-.
+# :V_RT_CP_D6
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "6.55"^^xsd:double;
+# .
 
-:ChromatogramPoint_Dummy_7
-    a ontohplc:ChromatogramPoint;
-    ontohplc:hasPeakArea :PeakArea_CP_D7;
-    ontohplc:atRetentionTime :RetentionTime_CP_D7;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_7_exp1_oc;
-.
+# :ChromatogramPoint_Dummy_7
+#     a ontohplc:ChromatogramPoint;
+#     ontohplc:hasPeakArea :PeakArea_CP_D7;
+#     ontohplc:atRetentionTime :RetentionTime_CP_D7;
+#     ontohplc:indicatesComponent SinglePhase:PhaseComponent_7_exp1_oc;
+# .
 
-:PeakArea_CP_D7
-    a ontohplc:PeakArea;
-    om:hasValue :V_PA_CP_D7;
-.
+# :PeakArea_CP_D7
+#     a ontohplc:PeakArea;
+#     om:hasValue :V_PA_CP_D7;
+# .
 
-:V_PA_CP_D7
-    a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
-    om:hasNumericalValue "100"^^xsd:double;
-.
+# :V_PA_CP_D7
+#     a om:Measure;
+#     om:hasUnit om:milliAbsorbanceUnitMinute-Time;
+#     om:hasNumericalValue "100"^^xsd:double;
+# .
 
-:RetentionTime_CP_D7
-    a ontohplc:RetentionTime;
-    om:hasValue :V_RT_CP_D7;
-.
+# :RetentionTime_CP_D7
+#     a ontohplc:RetentionTime;
+#     om:hasValue :V_RT_CP_D7;
+# .
 
-:V_RT_CP_D7
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "7.55"^^xsd:double;
-.
+# :V_RT_CP_D7
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "7.55"^^xsd:double;
+# .
 
 :ChromatogramPoint_Dummy_8
     a ontohplc:ChromatogramPoint;
     ontohplc:hasPeakArea :PeakArea_CP_D8;
     ontohplc:atRetentionTime :RetentionTime_CP_D8;
-    ontohplc:indicatesComponent SinglePhase:PhaseComponent_IS_exp1_oc;
+    ontohplc:indicatesComponent :PhaseComponent_IS_oc;
+    ontohplc:unidentified "false"^^xsd:boolean;
+    rdfs:comment "identified as internal standard"^^xsd:string;
 .
 
 :PeakArea_CP_D8
@@ -336,7 +404,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :V_PA_CP_D8
     a om:Measure;
-    om:hasUnit ontouom:milli_absorbance_unit_multiplies_minute;
+    om:hasUnit om:milliAbsorbanceUnitMinute-Time;
     om:hasNumericalValue "120"^^xsd:double;
 .
 
@@ -354,29 +422,31 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 :HPLCMethod_Dummy
 # all data in this field are made-up
     a ontohplc:HPLCMethod;
-    ontohplc:hasResponseFactor :ResponseFactor_1;
     ontohplc:hasRetentionTime :RetentionTime_1;
     ontohplc:hasResponseFactor :ResponseFactor_2;
     ontohplc:hasRetentionTime :RetentionTime_2;
-    ontohplc:hasResponseFactor :ResponseFactor_3;
-    ontohplc:hasRetentionTime :RetentionTime_3;
     ontohplc:hasResponseFactor :ResponseFactor_4;
     ontohplc:hasRetentionTime :RetentionTime_4;
-    ontohplc:hasResponseFactor :ResponseFactor_5;
     ontohplc:hasRetentionTime :RetentionTime_5;
-    ontohplc:hasResponseFactor :ResponseFactor_6;
-    ontohplc:hasRetentionTime :RetentionTime_6;
-    ontohplc:hasResponseFactor :ResponseFactor_7;
-    ontohplc:hasRetentionTime :RetentionTime_7;
-    ontohplc:hasResponseFactor :ResponseFactor_8;
-    ontohplc:hasRetentionTime :RetentionTime_8;
+    # NOTE below are all commented out to mimic the situation where either no information are available or the species is not visible in the chromatogram
+    # ontohplc:hasResponseFactor :ResponseFactor_1;
+    # ontohplc:hasResponseFactor :ResponseFactor_3;
+    # ontohplc:hasRetentionTime :RetentionTime_3;
+    # ontohplc:hasResponseFactor :ResponseFactor_5;
+    # ontohplc:hasResponseFactor :ResponseFactor_6;
+    # ontohplc:hasRetentionTime :RetentionTime_6;
+    # ontohplc:hasResponseFactor :ResponseFactor_7;
+    # ontohplc:hasRetentionTime :RetentionTime_7;
+    # ontohplc:hasResponseFactor :ResponseFactor_8;
+    # ontohplc:hasRetentionTime :RetentionTime_8;
     ontohplc:usesInternalStandard SinglePhase:PhaseComponent_InternalStandard;
+    ontohplc:retentionTimeMatchThreshold "0.15"^^xsd:double;
     rdfs:comment "HPLCMethod records the operation details of an HPLC job, e.g. HPLC analysis was performed using a XXX system equipped with a XXX pump, XXX column and XXX variable wavelength detector (VWD)... https://doi.org/10.1002/cmtd.202000044"^^xsd:string;
 .
 
 SinglePhase:PhaseComponent_InternalStandard
     rdf:type ontohplc:InternalStandard;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_InternalStandard_Property_1;
 .
 
@@ -388,24 +458,26 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1
 SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-    OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
+    OntoCAPEUpp:numericalValue "0.05"^^xsd:double;
 .
 
-:ResponseFactor_1 # reactant benzaldehyde
-    a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
-    om:hasValue :ResponseFactor_1_value;
-.
+# reactant benzaldehyde
+# NOTE the response factor is commented out to minic the situation if we don't have this information
+# :ResponseFactor_1
+#     a ontohplc:ResponseFactor;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+#     om:hasValue :ResponseFactor_1_value;
+# .
 
-:ResponseFactor_1_value
-    a om:Measure;
-    om:hasUnit om:one;
-    om:hasNumericalValue "10"^^xsd:double;
-.
+# :ResponseFactor_1_value
+#     a om:Measure;
+#     om:hasUnit om:one;
+#     om:hasNumericalValue "10"^^xsd:double;
+# .
 
 :RetentionTime_1
     a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
     om:hasValue :RetentionTime_1_value;
 .
 
@@ -417,7 +489,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :ResponseFactor_2 # product benzalacetone
     a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_637759;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     om:hasValue :ResponseFactor_2_value;
 .
 
@@ -429,7 +501,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :RetentionTime_2
     a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_637759;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     om:hasValue :RetentionTime_2_value;
 .
 
@@ -439,33 +511,9 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "1.55"^^xsd:double;
 .
 
-:ResponseFactor_3 # reactant acetone
-    a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
-    om:hasValue :ResponseFactor_3_value;
-.
-
-:ResponseFactor_3_value
-    a om:Measure;
-    om:hasUnit om:one;
-    om:hasNumericalValue "25"^^xsd:double;
-.
-
-:RetentionTime_3
-    a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
-    om:hasValue :RetentionTime_3_value;
-.
-
-:RetentionTime_3_value
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "2.56"^^xsd:double;
-.
-
 :ResponseFactor_4 # internal standard
     a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
     om:hasValue :ResponseFactor_4_value;
 .
 
@@ -477,7 +525,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :RetentionTime_4
     a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
     om:hasValue :RetentionTime_4_value;
 .
 
@@ -487,21 +535,23 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "3.62"^^xsd:double;
 .
 
-:ResponseFactor_5 # impurity dibenzylideneacetone
-    a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_640180;
-    om:hasValue :ResponseFactor_5_value;
-.
+# impurity dibenzylideneacetone
+# NOTE the response factor is commented out to minic the situation if we don't have this information
+# :ResponseFactor_5
+#     a ontohplc:ResponseFactor;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
+#     om:hasValue :ResponseFactor_5_value;
+# .
 
-:ResponseFactor_5_value
-    a om:Measure;
-    om:hasUnit om:one;
-    om:hasNumericalValue "50"^^xsd:double;
-.
+# :ResponseFactor_5_value
+#     a om:Measure;
+#     om:hasUnit om:one;
+#     om:hasNumericalValue "50"^^xsd:double;
+# .
 
 :RetentionTime_5
     a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_640180;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
     om:hasValue :RetentionTime_5_value;
 .
 
@@ -511,77 +561,108 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "4.55"^^xsd:double;
 .
 
-:ResponseFactor_6 # catalyst NaOH
-    a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
-    om:hasValue :ResponseFactor_6_value;
-.
+########################################################################################################
+## NOTE below response factor and retention time are removed as it is not visible in the chromatogram ##
+########################################################################################################
+# :ResponseFactor_3 # reactant acetone
+#     a ontohplc:ResponseFactor;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+#     om:hasValue :ResponseFactor_3_value;
+# .
 
-:ResponseFactor_6_value
-    a om:Measure;
-    om:hasUnit om:one;
-    om:hasNumericalValue "40"^^xsd:double;
-.
+# :ResponseFactor_3_value
+#     a om:Measure;
+#     om:hasUnit om:one;
+#     om:hasNumericalValue "25"^^xsd:double;
+# .
 
-:RetentionTime_6
-    a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
-    om:hasValue :RetentionTime_6_value;
-.
+# :RetentionTime_3
+#     a ontohplc:RetentionTime;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+#     om:hasValue :RetentionTime_3_value;
+# .
 
-:RetentionTime_6_value
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "5.60"^^xsd:double;
-.
+# :RetentionTime_3_value
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "2.56"^^xsd:double;
+# .
 
-:ResponseFactor_7 # solvent acetonitrile
-    a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
-    om:hasValue :ResponseFactor_7_value;
-.
+# :ResponseFactor_6 # catalyst NaOH
+#     a ontohplc:ResponseFactor;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
+#     om:hasValue :ResponseFactor_6_value;
+# .
 
-:ResponseFactor_7_value
-    a om:Measure;
-    om:hasUnit om:one;
-    om:hasNumericalValue "30"^^xsd:double;
-.
+# :ResponseFactor_6_value
+#     a om:Measure;
+#     om:hasUnit om:one;
+#     om:hasNumericalValue "40"^^xsd:double;
+# .
 
-:RetentionTime_7
-    a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
-    om:hasValue :RetentionTime_7_value;
-.
+# :RetentionTime_6
+#     a ontohplc:RetentionTime;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
+#     om:hasValue :RetentionTime_6_value;
+# .
 
-:RetentionTime_7_value
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "6.49"^^xsd:double;
-.
+# :RetentionTime_6_value
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "5.60"^^xsd:double;
+# .
 
-:ResponseFactor_8 # solvent ethanol
-    a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
-    om:hasValue :ResponseFactor_8_value;
-.
+# :ResponseFactor_7 # solvent acetonitrile
+#     a ontohplc:ResponseFactor;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+#     om:hasValue :ResponseFactor_7_value;
+# .
 
-:ResponseFactor_8_value
-    a om:Measure;
-    om:hasUnit om:one;
-    om:hasNumericalValue "20"^^xsd:double;
-.
+# :ResponseFactor_7_value
+#     a om:Measure;
+#     om:hasUnit om:one;
+#     om:hasNumericalValue "30"^^xsd:double;
+# .
 
-:RetentionTime_8
-    a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
-    om:hasValue :RetentionTime_8_value;
-.
+# :RetentionTime_7
+#     a ontohplc:RetentionTime;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+#     om:hasValue :RetentionTime_7_value;
+# .
 
-:RetentionTime_8_value
-    a om:Measure;
-    om:hasUnit om:minute-Time;
-    om:hasNumericalValue "7.5"^^xsd:double;
-.
+# :RetentionTime_7_value
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "6.49"^^xsd:double;
+# .
+
+# :ResponseFactor_8 # solvent ethanol
+#     a ontohplc:ResponseFactor;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+#     om:hasValue :ResponseFactor_8_value;
+# .
+
+# :ResponseFactor_8_value
+#     a om:Measure;
+#     om:hasUnit om:one;
+#     om:hasNumericalValue "20"^^xsd:double;
+# .
+
+# :RetentionTime_8
+#     a ontohplc:RetentionTime;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+#     om:hasValue :RetentionTime_8_value;
+# .
+
+# :RetentionTime_8_value
+#     a om:Measure;
+#     om:hasUnit om:minute-Time;
+#     om:hasNumericalValue "7.5"^^xsd:double;
+# .
+########################################################################################################
+########################################################################################################
+########################################################################################################
+
 
 #################
 ## BPR - Dummy ##
@@ -592,15 +673,14 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 ## Vapourtec RS400 - Dummy ##
 #############################
 :VapourtecRS400_Dummy
-    a ontovapourtec:VapourtecRS400;
-    ontolab:isContainedIn :Laboratory_Dummy;
+    a OntoVapourtec:VapourtecRS400;
     # Basic information
-    ontolab:hasPrice :VapRS400_Price;
-    ontolab:hasWeight :VapRS400_Weight; # TODO
-    ontolab:hasHeight :VapRS400_Height; # TODO
-    ontolab:hasWidth :VapRS400_Width; # TODO
-    ontolab:hasLength :VapRS400_Length; # TODO
-    ontolab:hasPowerSupply :VapRS400_PowerSupply; # TODO
+    OntoLab:hasPrice :VapRS400_Price;
+    OntoLab:hasWeight :VapRS400_Weight; # TODO
+    OntoLab:hasHeight :VapRS400_Height; # TODO
+    OntoLab:hasWidth :VapRS400_Width; # TODO
+    OntoLab:hasLength :VapRS400_Length; # TODO
+    OntoLab:hasPowerSupply :VapRS400_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     # Equipment parts of VapourtecRS400_Dummy
     saref:consistsOf :VapourtecR4_Dummy;
@@ -617,11 +697,58 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     #saref:isAccomplishedBy # TODO
     #saref:hasFunction # TODO
     saref:hasState :state_VapourtecRS400_Dummy;
+    # collection
+    OntoVapourtec:hasCollectionMethod :CollectionMethod_VapourtecRS400_Dummy;
+.
+
+:CollectionMethod_VapourtecRS400_Dummy
+    a OntoVapourtec:SingleReceptacle;
+    OntoVapourtec:toReceptacle :WasteReceptacle_Dummy;
+.
+
+:WasteReceptacle_Dummy
+    a OntoLab:WasteBottle;
+    OntoLab:hasMaxLevel :WasteReceptacle_1_level_max;
+    OntoLab:hasWarningLevel :WasteReceptacle_1_level_warning;
+    OntoLab:hasFillLevel :WasteReceptacle_1_level_fill;
+.
+
+:WasteReceptacle_1_level_max
+    a om:Volume;
+    om:hasValue :WasteReceptacle_1_level_max_Value;
+.
+
+:WasteReceptacle_1_level_max_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "20000"^^xsd:double;
+.
+
+:WasteReceptacle_1_level_warning
+    a om:Volume;
+    om:hasValue :WasteReceptacle_1_level_warning_Value;
+.
+
+:WasteReceptacle_1_level_warning_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "100"^^xsd:double;
+.
+
+:WasteReceptacle_1_level_fill
+    a om:Volume;
+    om:hasValue :WasteReceptacle_1_level_fill_Value;
+.
+
+:WasteReceptacle_1_level_fill_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "500"^^xsd:double;
 .
 
 :state_VapourtecRS400_Dummy
-    a ontovapourtec:Idle;
-    ontolab:stateLastUpdatedAt 0;
+    a OntoVapourtec:Idle;
+    OntoLab:stateLastUpdatedAt 0;
 .
 
 :VapRS400_Price
@@ -632,7 +759,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :VapRS400_Price_Value
     a om:Measure;
     om:hasUnit om:SingaporeDollar;
-    om:hasNumericalValue "92,540.15"^^xsd:double;
+    om:hasNumericalValue "92540.15"^^xsd:double;
 .
 
 #:VapRS400_Weight; # TODO
@@ -657,17 +784,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 ## Vapourtec R4 Reactor - Dummy ##
 ##################################
 :VapourtecR4_Dummy
-    a ontovapourtec:VapourtecR4Reactor;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :VapR4_PowerSupply; # TODO
+    a OntoVapourtec:VapourtecR4Reactor;
+    OntoLab:hasPowerSupply :VapR4_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "4"^^xsd:string;
-    ontovapourtec:hasReactorMaterial :VapourtecR4_Dummy_ReactorMaterial; #TODO to be added
-    ontovapourtec:hasInternalDiameter :VapourtecR4_Dummy_ReactorDiameter;
-    ontovapourtec:hasReactorLength :VapourtecR4_Dummy_ReactorLength;
-    ontovapourtec:hasReactorVolume :VapourtecR4_Dummy_ReactorVolume;
-    ontovapourtec:hasReactorTemperatureLowerLimit :VapourtecR4_Dummy_ReactorTemperatureLower;
-    ontovapourtec:hasReactorTemperatureUpperLimit :VapourtecR4_Dummy_ReactorTemperatureUpper;
+    OntoVapourtec:locationID "4"^^xsd:string;
+    OntoVapourtec:hasReactorMaterial :VapourtecR4_Dummy_ReactorMaterial; #TODO to be added
+    OntoVapourtec:hasInternalDiameter :VapourtecR4_Dummy_ReactorDiameter;
+    OntoVapourtec:hasReactorLength :VapourtecR4_Dummy_ReactorLength;
+    OntoVapourtec:hasReactorVolume :VapourtecR4_Dummy_ReactorVolume;
+    OntoVapourtec:hasReactorTemperatureLowerLimit :VapourtecR4_Dummy_ReactorTemperatureLower;
+    OntoVapourtec:hasReactorTemperatureUpperLimit :VapourtecR4_Dummy_ReactorTemperatureUpper;
 .
 
 :VapourtecR4_Dummy_ReactorDiameter
@@ -729,17 +855,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 ## Vapourtec R4 Reactor - Another_Dummy ##
 ##########################################
 :VapourtecR4_Another_Dummy
-    a ontovapourtec:VapourtecR4Reactor;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :VapR4_Another_DummyPowerSupply; # TODO
+    a OntoVapourtec:VapourtecR4Reactor;
+    OntoLab:hasPowerSupply :VapR4_Another_DummyPowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "1"^^xsd:string; # NOTE this is different from the locationID of :VapourtecR4_Dummy
-    ontovapourtec:hasReactorMaterial :VapourtecR4_Another_Dummy_ReactorMaterial; #TODO to be added
-    ontovapourtec:hasInternalDiameter :VapourtecR4_Another_Dummy_ReactorDiameter;
-    ontovapourtec:hasReactorLength :VapourtecR4_Another_Dummy_ReactorLength;
-    ontovapourtec:hasReactorVolume :VapourtecR4_Another_Dummy_ReactorVolume;
-    ontovapourtec:hasReactorTemperatureLowerLimit :VapourtecR4_Another_Dummy_ReactorTemperatureLower;
-    ontovapourtec:hasReactorTemperatureUpperLimit :VapourtecR4_Another_Dummy_ReactorTemperatureUpper;
+    OntoVapourtec:locationID "1"^^xsd:string; # NOTE this is different from the locationID of :VapourtecR4_Dummy
+    OntoVapourtec:hasReactorMaterial :VapourtecR4_Another_Dummy_ReactorMaterial; #TODO to be added
+    OntoVapourtec:hasInternalDiameter :VapourtecR4_Another_Dummy_ReactorDiameter;
+    OntoVapourtec:hasReactorLength :VapourtecR4_Another_Dummy_ReactorLength;
+    OntoVapourtec:hasReactorVolume :VapourtecR4_Another_Dummy_ReactorVolume;
+    OntoVapourtec:hasReactorTemperatureLowerLimit :VapourtecR4_Another_Dummy_ReactorTemperatureLower;
+    OntoVapourtec:hasReactorTemperatureUpperLimit :VapourtecR4_Another_Dummy_ReactorTemperatureUpper;
 .
 
 :VapourtecR4_Another_Dummy_ReactorDiameter
@@ -801,295 +926,338 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 ## Vapourtec R2 Pump - 1_Dummy ##
 #################################
 :VapourtecR2_1_Dummy
-    a ontovapourtec:VapourtecR2Pump;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :VapR2_1_PowerSupply; # TODO
+    a OntoVapourtec:VapourtecR2Pump;
+    OntoLab:hasPowerSupply :VapR2_1_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "A"^^xsd:string;
-    ontolab:specifiedBy :VapourtecR2_1_Dummy_Setting;
+    OntoVapourtec:locationID "A"^^xsd:string;
+    # NOTE this pump is set to have a ReagentBottle to test the mixed sourcing of input chemicals
+    OntoVapourtec:hasReagentSource :ReagentBottle_1_Dummy;
 .
 
-:VapourtecR2_1_Dummy_Setting
-    ontolab:specifies :VapourtecR2_1_Dummy;
-    ontovapourtec:pumpsLiquidFrom :Site_1;
+:ReagentBottle_1_Dummy
+    a OntoLab:ReagentBottle;
+    OntoLab:isFilledWith :ChemicalAmount_1;
+    OntoLab:hasMaxLevel :ReagentBottle_1_level_max;
+    OntoLab:hasWarningLevel :ReagentBottle_1_level_warning;
+    OntoLab:hasFillLevel :ReagentBottle_1_level_fill;
+.
+
+:ReagentBottle_1_level_max
+    a om:Volume;
+    om:hasValue :ReagentBottle_1_level_max_Value;
+.
+
+:ReagentBottle_1_level_max_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "1000"^^xsd:double;
+.
+
+:ReagentBottle_1_level_warning
+    a om:Volume;
+    om:hasValue :ReagentBottle_1_level_warning_Value;
+.
+
+:ReagentBottle_1_level_warning_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "100"^^xsd:double;
+.
+
+:ReagentBottle_1_level_fill
+    a om:Volume;
+    om:hasValue :ReagentBottle_1_level_fill_Value;
+.
+
+:ReagentBottle_1_level_fill_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "500"^^xsd:double;
 .
 
 #################################
 ## Vapourtec R2 Pump - 2_Dummy ##
 #################################
 :VapourtecR2_2_Dummy
-    a ontovapourtec:VapourtecR2Pump;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :VapR2_2_PowerSupply; # TODO
+    a OntoVapourtec:VapourtecR2Pump;
+    OntoLab:hasPowerSupply :VapR2_2_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "B"^^xsd:string;
+    OntoVapourtec:locationID "B"^^xsd:string;
 .
 
 #################################
 ## Vapourtec R2 Pump - 3_Dummy ##
 #################################
 :VapourtecR2_3_Dummy
-    a ontovapourtec:VapourtecR2Pump;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :VapR2_3_PowerSupply; # TODO
+    a OntoVapourtec:VapourtecR2Pump;
+    OntoLab:hasPowerSupply :VapR2_3_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "C"^^xsd:string;
+    OntoVapourtec:locationID "C"^^xsd:string;
 .
 
 #################################
 ## Vapourtec R2 Pump - 4_Dummy ##
 #################################
 :VapourtecR2_4_Dummy
-    a ontovapourtec:VapourtecR2Pump;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :VapR2_4_PowerSupply; # TODO
+    a OntoVapourtec:VapourtecR2Pump;
+    OntoLab:hasPowerSupply :VapR2_4_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:locationID "D"^^xsd:string;
+    OntoVapourtec:locationID "D"^^xsd:string;
 .
 
 #########################
 ## AutoSampler - Dummy ##
 #########################
 :AutoSampler_Dummy
-    a ontovapourtec:AutoSampler;
-    ontolab:isContainedIn :Laboratory_Dummy;
-    ontolab:hasPowerSupply :AutoSampler_PowerSupply; # TODO
+    a OntoVapourtec:AutoSampler;
+    OntoLab:hasPowerSupply :AutoSampler_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
-    ontovapourtec:hasSite :Site_1;
-    ontovapourtec:hasSite :Site_2;
-    ontovapourtec:hasSite :Site_3;
-    ontovapourtec:hasSite :Site_4;
-    ontovapourtec:hasSite :Site_5;
-    ontovapourtec:hasSite :Site_6;
-    ontovapourtec:hasSite :Site_7;
-    ontovapourtec:hasSite :Site_8;
-    ontovapourtec:hasSite :Site_9;
-    ontovapourtec:hasSite :Site_10;
-    ontovapourtec:hasSite :Site_11;
-    ontovapourtec:hasSite :Site_12;
-    ontovapourtec:hasSite :Site_13;
-    ontovapourtec:hasSite :Site_14;
-    ontovapourtec:hasSite :Site_15;
-    ontovapourtec:hasSite :Site_16;
-    ontovapourtec:hasSite :Site_17;
-    ontovapourtec:hasSite :Site_18;
-    ontovapourtec:hasSite :Site_19;
-    ontovapourtec:hasSite :Site_20;
-    ontovapourtec:hasSite :Site_21;
-    ontovapourtec:hasSite :Site_22;
-    ontovapourtec:hasSite :Site_23;
-    ontovapourtec:hasSite :Site_24;
-    ontovapourtec:hasSite :Site_25;
-    ontovapourtec:hasSite :Site_26;
-    ontovapourtec:hasSite :Site_27;
-    ontovapourtec:hasSite :Site_28;
-    ontovapourtec:hasSite :Site_29;
-    ontovapourtec:hasSite :Site_30;
-    ontovapourtec:hasSite :Site_31;
-    ontovapourtec:hasSite :Site_32;
-    ontovapourtec:hasSite :Site_33;
-    ontovapourtec:hasSite :Site_34;
-    ontovapourtec:hasSite :Site_35;
-    ontovapourtec:hasSite :Site_36;
-    ontovapourtec:hasSite :Site_37;
-    ontovapourtec:hasSite :Site_38;
-    ontovapourtec:hasSite :Site_39;
-    ontovapourtec:hasSite :Site_40;
-    ontovapourtec:hasSite :Site_41;
-    ontovapourtec:hasSite :Site_42;
-    ontovapourtec:hasSite :Site_43;
-    ontovapourtec:hasSite :Site_44;
-    ontovapourtec:hasSite :Site_45;
-    ontovapourtec:hasSite :Site_46;
-    ontovapourtec:hasSite :Site_47;
-    ontovapourtec:hasSite :Site_48;
-    ontovapourtec:hasSite :Site_49;
-    ontovapourtec:hasSite :Site_50;
-    ontovapourtec:hasSite :Site_51;
-    ontovapourtec:hasSite :Site_52;
-    ontovapourtec:hasSite :Site_53;
-    ontovapourtec:hasSite :Site_54;
-    ontovapourtec:hasSite :Site_55;
-    ontovapourtec:hasSite :Site_56;
-    ontovapourtec:hasSite :Site_57;
-    ontovapourtec:hasSite :Site_58;
-    ontovapourtec:hasSite :Site_59;
-    ontovapourtec:hasSite :Site_60;
-    ontovapourtec:hasSite :Site_61;
-    ontovapourtec:hasSite :Site_62;
-    ontovapourtec:hasSite :Site_63;
-    ontovapourtec:hasSite :Site_64;
-    ontovapourtec:hasSite :Site_65;
-    ontovapourtec:hasSite :Site_66;
-    ontovapourtec:hasSite :Site_67;
-    ontovapourtec:hasSite :Site_68;
-    ontovapourtec:hasSite :Site_69;
-    ontovapourtec:hasSite :Site_70;
-    ontovapourtec:hasSite :Site_71;
-    ontovapourtec:hasSite :Site_72;
-    ontovapourtec:hasSite :Site_73;
-    ontovapourtec:hasSite :Site_74;
-    ontovapourtec:hasSite :Site_75;
-    ontovapourtec:hasSite :Site_76;
-    ontovapourtec:hasSite :Site_77;
-    ontovapourtec:hasSite :Site_78;
-    ontovapourtec:hasSite :Site_79;
-    ontovapourtec:hasSite :Site_80;
-    ontovapourtec:hasSite :Site_81;
-    ontovapourtec:hasSite :Site_82;
-    ontovapourtec:hasSite :Site_83;
-    ontovapourtec:hasSite :Site_84;
-    ontovapourtec:hasSite :Site_85;
-    ontovapourtec:hasSite :Site_86;
-    ontovapourtec:hasSite :Site_87;
-    ontovapourtec:hasSite :Site_88;
-    ontovapourtec:hasSite :Site_89;
-    ontovapourtec:hasSite :Site_90;
-    ontovapourtec:hasSite :Site_91;
-    ontovapourtec:hasSite :Site_92;
-    ontovapourtec:hasSite :Site_93;
-    ontovapourtec:hasSite :Site_94;
-    ontovapourtec:hasSite :Site_95;
-    ontovapourtec:hasSite :Site_96;
-    ontovapourtec:hasSite :Site_97;
-    ontovapourtec:hasSite :Site_98;
-    ontovapourtec:hasSite :Site_99;
-    ontovapourtec:hasSite :Site_100;
-    ontovapourtec:hasSite :Site_101;
-    ontovapourtec:hasSite :Site_102;
-    ontovapourtec:hasSite :Site_103;
-    ontovapourtec:hasSite :Site_104;
-    ontovapourtec:hasSite :Site_105;
-    ontovapourtec:hasSite :Site_106;
-    ontovapourtec:hasSite :Site_107;
-    ontovapourtec:hasSite :Site_108;
-    ontovapourtec:hasSite :Site_109;
-    ontovapourtec:hasSite :Site_110;
-    ontovapourtec:hasSite :Site_111;
-    ontovapourtec:hasSite :Site_112;
-    ontovapourtec:hasSite :Site_113;
-    ontovapourtec:hasSite :Site_114;
-    ontovapourtec:hasSite :Site_115;
-    ontovapourtec:hasSite :Site_116;
-    ontovapourtec:hasSite :Site_117;
-    ontovapourtec:hasSite :Site_118;
-    ontovapourtec:hasSite :Site_119;
-    ontovapourtec:hasSite :Site_120;
-    ontovapourtec:hasSite :Site_121;
-    ontovapourtec:hasSite :Site_122;
-    ontovapourtec:hasSite :Site_123;
-    ontovapourtec:hasSite :Site_124;
-    ontovapourtec:hasSite :Site_125;
-    ontovapourtec:hasSite :Site_126;
-    ontovapourtec:hasSite :Site_127;
-    ontovapourtec:hasSite :Site_128;
-    ontovapourtec:hasSite :Site_129;
-    ontovapourtec:hasSite :Site_130;
-    ontovapourtec:hasSite :Site_131;
-    ontovapourtec:hasSite :Site_132;
-    ontovapourtec:hasSite :Site_133;
-    ontovapourtec:hasSite :Site_134;
-    ontovapourtec:hasSite :Site_135;
-    ontovapourtec:hasSite :Site_136;
-    ontovapourtec:hasSite :Site_137;
-    ontovapourtec:hasSite :Site_138;
-    ontovapourtec:hasSite :Site_139;
-    ontovapourtec:hasSite :Site_140;
-    ontovapourtec:hasSite :Site_141;
-    ontovapourtec:hasSite :Site_142;
-    ontovapourtec:hasSite :Site_143;
-    ontovapourtec:hasSite :Site_144;
-    ontovapourtec:hasSite :Site_145;
-    ontovapourtec:hasSite :Site_146;
-    ontovapourtec:hasSite :Site_147;
-    ontovapourtec:hasSite :Site_148;
-    ontovapourtec:hasSite :Site_149;
-    ontovapourtec:hasSite :Site_150;
-    ontovapourtec:hasSite :Site_151;
-    ontovapourtec:hasSite :Site_152;
-    ontovapourtec:hasSite :Site_153;
-    ontovapourtec:hasSite :Site_154;
-    ontovapourtec:hasSite :Site_155;
-    ontovapourtec:hasSite :Site_156;
-    ontovapourtec:hasSite :Site_157;
-    ontovapourtec:hasSite :Site_158;
-    ontovapourtec:hasSite :Site_159;
-    ontovapourtec:hasSite :Site_160;
-    ontovapourtec:hasSite :Site_161;
-    ontovapourtec:hasSite :Site_162;
-    ontovapourtec:hasSite :Site_163;
-    ontovapourtec:hasSite :Site_164;
-    ontovapourtec:hasSite :Site_165;
-    ontovapourtec:hasSite :Site_166;
-    ontovapourtec:hasSite :Site_167;
-    ontovapourtec:hasSite :Site_168;
-    ontovapourtec:hasSite :Site_169;
-    ontovapourtec:hasSite :Site_170;
-    ontovapourtec:hasSite :Site_171;
-    ontovapourtec:hasSite :Site_172;
-    ontovapourtec:hasSite :Site_173;
-    ontovapourtec:hasSite :Site_174;
-    ontovapourtec:hasSite :Site_175;
-    ontovapourtec:hasSite :Site_176;
-    ontovapourtec:hasSite :Site_177;
-    ontovapourtec:hasSite :Site_178;
-    ontovapourtec:hasSite :Site_179;
-    ontovapourtec:hasSite :Site_180;
-    ontovapourtec:hasSite :Site_181;
-    ontovapourtec:hasSite :Site_182;
-    ontovapourtec:hasSite :Site_183;
-    ontovapourtec:hasSite :Site_184;
-    ontovapourtec:hasSite :Site_185;
-    ontovapourtec:hasSite :Site_186;
-    ontovapourtec:hasSite :Site_187;
-    ontovapourtec:hasSite :Site_188;
-    ontovapourtec:hasSite :Site_189;
-    ontovapourtec:hasSite :Site_190;
-    ontovapourtec:hasSite :Site_191;
-    ontovapourtec:hasSite :Site_192;
-    ontovapourtec:hasSite :Site_193;
-    ontovapourtec:hasSite :Site_194;
-    ontovapourtec:hasSite :Site_195;
-    ontovapourtec:hasSite :Site_196;
-    ontovapourtec:hasSite :Site_197;
-    ontovapourtec:hasSite :Site_198;
-    ontovapourtec:hasSite :Site_199;
-    ontovapourtec:hasSite :Site_200;
-    ontovapourtec:hasSite :Site_201;
-    ontovapourtec:hasSite :Site_202;
-    ontovapourtec:hasSite :Site_203;
-    ontovapourtec:hasSite :Site_204;
-    ontovapourtec:hasSite :Site_205;
-    ontovapourtec:hasSite :Site_206;
-    ontovapourtec:hasSite :Site_207;
-    ontovapourtec:hasSite :Site_208;
-    ontovapourtec:hasSite :Site_209;
-    ontovapourtec:hasSite :Site_210;
-    ontovapourtec:hasSite :Site_211;
-    ontovapourtec:hasSite :Site_212;
-    ontovapourtec:hasSite :Site_213;
-    ontovapourtec:hasSite :Site_214;
-    ontovapourtec:hasSite :Site_215;
-    ontovapourtec:hasSite :Site_216;
-    ontovapourtec:hasSite :Site_217;
-    ontovapourtec:hasSite :Site_218;
-    ontovapourtec:hasSite :Site_219;
-    ontovapourtec:hasSite :Site_220;
+    OntoVapourtec:sampleLoopVolume :AutoSampler_Dummy_SampleLoopVolume;
+    OntoVapourtec:hasSite :Site_1;
+    OntoVapourtec:hasSite :Site_2;
+    OntoVapourtec:hasSite :Site_3;
+    OntoVapourtec:hasSite :Site_4;
+    OntoVapourtec:hasSite :Site_5;
+    OntoVapourtec:hasSite :Site_6;
+    OntoVapourtec:hasSite :Site_7;
+    OntoVapourtec:hasSite :Site_8;
+    OntoVapourtec:hasSite :Site_9;
+    OntoVapourtec:hasSite :Site_10;
+    OntoVapourtec:hasSite :Site_11;
+    OntoVapourtec:hasSite :Site_12;
+    OntoVapourtec:hasSite :Site_13;
+    OntoVapourtec:hasSite :Site_14;
+    OntoVapourtec:hasSite :Site_15;
+    OntoVapourtec:hasSite :Site_16;
+    OntoVapourtec:hasSite :Site_17;
+    OntoVapourtec:hasSite :Site_18;
+    OntoVapourtec:hasSite :Site_19;
+    OntoVapourtec:hasSite :Site_20;
+    OntoVapourtec:hasSite :Site_21;
+    OntoVapourtec:hasSite :Site_22;
+    OntoVapourtec:hasSite :Site_23;
+    OntoVapourtec:hasSite :Site_24;
+    OntoVapourtec:hasSite :Site_25;
+    OntoVapourtec:hasSite :Site_26;
+    OntoVapourtec:hasSite :Site_27;
+    OntoVapourtec:hasSite :Site_28;
+    OntoVapourtec:hasSite :Site_29;
+    OntoVapourtec:hasSite :Site_30;
+    OntoVapourtec:hasSite :Site_31;
+    OntoVapourtec:hasSite :Site_32;
+    OntoVapourtec:hasSite :Site_33;
+    OntoVapourtec:hasSite :Site_34;
+    OntoVapourtec:hasSite :Site_35;
+    OntoVapourtec:hasSite :Site_36;
+    OntoVapourtec:hasSite :Site_37;
+    OntoVapourtec:hasSite :Site_38;
+    OntoVapourtec:hasSite :Site_39;
+    OntoVapourtec:hasSite :Site_40;
+    OntoVapourtec:hasSite :Site_41;
+    OntoVapourtec:hasSite :Site_42;
+    OntoVapourtec:hasSite :Site_43;
+    OntoVapourtec:hasSite :Site_44;
+    OntoVapourtec:hasSite :Site_45;
+    OntoVapourtec:hasSite :Site_46;
+    OntoVapourtec:hasSite :Site_47;
+    OntoVapourtec:hasSite :Site_48;
+    OntoVapourtec:hasSite :Site_49;
+    OntoVapourtec:hasSite :Site_50;
+    OntoVapourtec:hasSite :Site_51;
+    OntoVapourtec:hasSite :Site_52;
+    OntoVapourtec:hasSite :Site_53;
+    OntoVapourtec:hasSite :Site_54;
+    OntoVapourtec:hasSite :Site_55;
+    OntoVapourtec:hasSite :Site_56;
+    OntoVapourtec:hasSite :Site_57;
+    OntoVapourtec:hasSite :Site_58;
+    OntoVapourtec:hasSite :Site_59;
+    OntoVapourtec:hasSite :Site_60;
+    OntoVapourtec:hasSite :Site_61;
+    OntoVapourtec:hasSite :Site_62;
+    OntoVapourtec:hasSite :Site_63;
+    OntoVapourtec:hasSite :Site_64;
+    OntoVapourtec:hasSite :Site_65;
+    OntoVapourtec:hasSite :Site_66;
+    OntoVapourtec:hasSite :Site_67;
+    OntoVapourtec:hasSite :Site_68;
+    OntoVapourtec:hasSite :Site_69;
+    OntoVapourtec:hasSite :Site_70;
+    OntoVapourtec:hasSite :Site_71;
+    OntoVapourtec:hasSite :Site_72;
+    OntoVapourtec:hasSite :Site_73;
+    OntoVapourtec:hasSite :Site_74;
+    OntoVapourtec:hasSite :Site_75;
+    OntoVapourtec:hasSite :Site_76;
+    OntoVapourtec:hasSite :Site_77;
+    OntoVapourtec:hasSite :Site_78;
+    OntoVapourtec:hasSite :Site_79;
+    OntoVapourtec:hasSite :Site_80;
+    OntoVapourtec:hasSite :Site_81;
+    OntoVapourtec:hasSite :Site_82;
+    OntoVapourtec:hasSite :Site_83;
+    OntoVapourtec:hasSite :Site_84;
+    OntoVapourtec:hasSite :Site_85;
+    OntoVapourtec:hasSite :Site_86;
+    OntoVapourtec:hasSite :Site_87;
+    OntoVapourtec:hasSite :Site_88;
+    OntoVapourtec:hasSite :Site_89;
+    OntoVapourtec:hasSite :Site_90;
+    OntoVapourtec:hasSite :Site_91;
+    OntoVapourtec:hasSite :Site_92;
+    OntoVapourtec:hasSite :Site_93;
+    OntoVapourtec:hasSite :Site_94;
+    OntoVapourtec:hasSite :Site_95;
+    OntoVapourtec:hasSite :Site_96;
+    OntoVapourtec:hasSite :Site_97;
+    OntoVapourtec:hasSite :Site_98;
+    OntoVapourtec:hasSite :Site_99;
+    OntoVapourtec:hasSite :Site_100;
+    OntoVapourtec:hasSite :Site_101;
+    OntoVapourtec:hasSite :Site_102;
+    OntoVapourtec:hasSite :Site_103;
+    OntoVapourtec:hasSite :Site_104;
+    OntoVapourtec:hasSite :Site_105;
+    OntoVapourtec:hasSite :Site_106;
+    OntoVapourtec:hasSite :Site_107;
+    OntoVapourtec:hasSite :Site_108;
+    OntoVapourtec:hasSite :Site_109;
+    OntoVapourtec:hasSite :Site_110;
+    OntoVapourtec:hasSite :Site_111;
+    OntoVapourtec:hasSite :Site_112;
+    OntoVapourtec:hasSite :Site_113;
+    OntoVapourtec:hasSite :Site_114;
+    OntoVapourtec:hasSite :Site_115;
+    OntoVapourtec:hasSite :Site_116;
+    OntoVapourtec:hasSite :Site_117;
+    OntoVapourtec:hasSite :Site_118;
+    OntoVapourtec:hasSite :Site_119;
+    OntoVapourtec:hasSite :Site_120;
+    OntoVapourtec:hasSite :Site_121;
+    OntoVapourtec:hasSite :Site_122;
+    OntoVapourtec:hasSite :Site_123;
+    OntoVapourtec:hasSite :Site_124;
+    OntoVapourtec:hasSite :Site_125;
+    OntoVapourtec:hasSite :Site_126;
+    OntoVapourtec:hasSite :Site_127;
+    OntoVapourtec:hasSite :Site_128;
+    OntoVapourtec:hasSite :Site_129;
+    OntoVapourtec:hasSite :Site_130;
+    OntoVapourtec:hasSite :Site_131;
+    OntoVapourtec:hasSite :Site_132;
+    OntoVapourtec:hasSite :Site_133;
+    OntoVapourtec:hasSite :Site_134;
+    OntoVapourtec:hasSite :Site_135;
+    OntoVapourtec:hasSite :Site_136;
+    OntoVapourtec:hasSite :Site_137;
+    OntoVapourtec:hasSite :Site_138;
+    OntoVapourtec:hasSite :Site_139;
+    OntoVapourtec:hasSite :Site_140;
+    OntoVapourtec:hasSite :Site_141;
+    OntoVapourtec:hasSite :Site_142;
+    OntoVapourtec:hasSite :Site_143;
+    OntoVapourtec:hasSite :Site_144;
+    OntoVapourtec:hasSite :Site_145;
+    OntoVapourtec:hasSite :Site_146;
+    OntoVapourtec:hasSite :Site_147;
+    OntoVapourtec:hasSite :Site_148;
+    OntoVapourtec:hasSite :Site_149;
+    OntoVapourtec:hasSite :Site_150;
+    OntoVapourtec:hasSite :Site_151;
+    OntoVapourtec:hasSite :Site_152;
+    OntoVapourtec:hasSite :Site_153;
+    OntoVapourtec:hasSite :Site_154;
+    OntoVapourtec:hasSite :Site_155;
+    OntoVapourtec:hasSite :Site_156;
+    OntoVapourtec:hasSite :Site_157;
+    OntoVapourtec:hasSite :Site_158;
+    OntoVapourtec:hasSite :Site_159;
+    OntoVapourtec:hasSite :Site_160;
+    OntoVapourtec:hasSite :Site_161;
+    OntoVapourtec:hasSite :Site_162;
+    OntoVapourtec:hasSite :Site_163;
+    OntoVapourtec:hasSite :Site_164;
+    OntoVapourtec:hasSite :Site_165;
+    OntoVapourtec:hasSite :Site_166;
+    OntoVapourtec:hasSite :Site_167;
+    OntoVapourtec:hasSite :Site_168;
+    OntoVapourtec:hasSite :Site_169;
+    OntoVapourtec:hasSite :Site_170;
+    OntoVapourtec:hasSite :Site_171;
+    OntoVapourtec:hasSite :Site_172;
+    OntoVapourtec:hasSite :Site_173;
+    OntoVapourtec:hasSite :Site_174;
+    OntoVapourtec:hasSite :Site_175;
+    OntoVapourtec:hasSite :Site_176;
+    OntoVapourtec:hasSite :Site_177;
+    OntoVapourtec:hasSite :Site_178;
+    OntoVapourtec:hasSite :Site_179;
+    OntoVapourtec:hasSite :Site_180;
+    OntoVapourtec:hasSite :Site_181;
+    OntoVapourtec:hasSite :Site_182;
+    OntoVapourtec:hasSite :Site_183;
+    OntoVapourtec:hasSite :Site_184;
+    OntoVapourtec:hasSite :Site_185;
+    OntoVapourtec:hasSite :Site_186;
+    OntoVapourtec:hasSite :Site_187;
+    OntoVapourtec:hasSite :Site_188;
+    OntoVapourtec:hasSite :Site_189;
+    OntoVapourtec:hasSite :Site_190;
+    OntoVapourtec:hasSite :Site_191;
+    OntoVapourtec:hasSite :Site_192;
+    OntoVapourtec:hasSite :Site_193;
+    OntoVapourtec:hasSite :Site_194;
+    OntoVapourtec:hasSite :Site_195;
+    OntoVapourtec:hasSite :Site_196;
+    OntoVapourtec:hasSite :Site_197;
+    OntoVapourtec:hasSite :Site_198;
+    OntoVapourtec:hasSite :Site_199;
+    OntoVapourtec:hasSite :Site_200;
+    OntoVapourtec:hasSite :Site_201;
+    OntoVapourtec:hasSite :Site_202;
+    OntoVapourtec:hasSite :Site_203;
+    OntoVapourtec:hasSite :Site_204;
+    OntoVapourtec:hasSite :Site_205;
+    OntoVapourtec:hasSite :Site_206;
+    OntoVapourtec:hasSite :Site_207;
+    OntoVapourtec:hasSite :Site_208;
+    OntoVapourtec:hasSite :Site_209;
+    OntoVapourtec:hasSite :Site_210;
+    OntoVapourtec:hasSite :Site_211;
+    OntoVapourtec:hasSite :Site_212;
+    OntoVapourtec:hasSite :Site_213;
+    OntoVapourtec:hasSite :Site_214;
+    OntoVapourtec:hasSite :Site_215;
+    OntoVapourtec:hasSite :Site_216;
+    OntoVapourtec:hasSite :Site_217;
+    OntoVapourtec:hasSite :Site_218;
+    OntoVapourtec:hasSite :Site_219;
+    OntoVapourtec:hasSite :Site_220;
+.
+
+:AutoSampler_Dummy_SampleLoopVolume
+    a om:Volume;
+    om:hasValue :AutoSampler_Dummy_SampleLoopVolume_value;
+.
+
+:AutoSampler_Dummy_SampleLoopVolume_value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "2.0"^^xsd:double;
 .
 
 :Site_1
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "1"^^xsd:string;
-    ontovapourtec:holds :Vial_1;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "1"^^xsd:string;
+    OntoVapourtec:holds :Vial_1;
 .
 
 :Vial_1
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_1;
-    ontovapourtec:isFilledWith :ChemicalSolution_1;
-    ontovapourtec:hasMaxLevel :Vial_1_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_1_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_1_level_fill;
+    a OntoLab:Vial;
+    OntoLab:isFilledWith :ChemicalAmount_1;
+    OntoLab:hasMaxLevel :Vial_1_level_max;
+    OntoLab:hasWarningLevel :Vial_1_level_warning;
+    OntoLab:hasFillLevel :Vial_1_level_fill;
 .
 
 :Vial_1_level_max
@@ -1103,17 +1271,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_1_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_1_level_warning_value;
-#.
+:Vial_1_level_warning
+   a om:Volume;
+   om:hasValue :Vial_1_level_warning_value;
+.
 
-#:Vial_1_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_1_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "2"^^xsd:int;
+.
 
 :Vial_1_level_fill
     a om:Volume;
@@ -1127,18 +1294,17 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 .
 
 :Site_2
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "2"^^xsd:string;
-    ontovapourtec:holds :Vial_2;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "2"^^xsd:string;
+    OntoVapourtec:holds :Vial_2;
 .
 
 :Vial_2
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_2;
-    ontovapourtec:isFilledWith :ChemicalSolution_2;
-    ontovapourtec:hasMaxLevel :Vial_2_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_2_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_2_level_fill;
+    a OntoLab:Vial;
+    OntoLab:isFilledWith :ChemicalAmount_2;
+    OntoLab:hasMaxLevel :Vial_2_level_max;
+    OntoLab:hasWarningLevel :Vial_2_level_warning;
+    OntoLab:hasFillLevel :Vial_2_level_fill;
 .
 
 :Vial_2_level_max
@@ -1152,17 +1318,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_2_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_2_level_warning_value;
-#.
+:Vial_2_level_warning
+   a om:Volume;
+   om:hasValue :Vial_2_level_warning_value;
+.
 
-#:Vial_2_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_2_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "2"^^xsd:int;
+.
 
 :Vial_2_level_fill
     a om:Volume;
@@ -1176,18 +1341,17 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 .
 
 :Site_3
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "3"^^xsd:string;
-    ontovapourtec:holds :Vial_3;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "3"^^xsd:string;
+    OntoVapourtec:holds :Vial_3;
 .
 
 :Vial_3
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_3;
-    ontovapourtec:isFilledWith :ChemicalSolution_3;
-    ontovapourtec:hasMaxLevel :Vial_3_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_3_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_3_level_fill;
+    a OntoLab:Vial;
+    OntoLab:isFilledWith :ChemicalAmount_3;
+    OntoLab:hasMaxLevel :Vial_3_level_max;
+    OntoLab:hasWarningLevel :Vial_3_level_warning;
+    OntoLab:hasFillLevel :Vial_3_level_fill;
 .
 
 :Vial_3_level_max
@@ -1201,17 +1365,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_3_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_3_level_warning_value;
-#.
+:Vial_3_level_warning
+   a om:Volume;
+   om:hasValue :Vial_3_level_warning_value;
+.
 
-#:Vial_3_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_3_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "3"^^xsd:int;
+.
 
 :Vial_3_level_fill
     a om:Volume;
@@ -1225,18 +1388,17 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 .
 
 :Site_4
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "4"^^xsd:string;
-    ontovapourtec:holds :Vial_4;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "4"^^xsd:string;
+    OntoVapourtec:holds :Vial_4;
 .
 
 :Vial_4
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_4;
-    ontovapourtec:isFilledWith :ChemicalSolution_4;
-    ontovapourtec:hasMaxLevel :Vial_4_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_4_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_4_level_fill;
+    a OntoLab:Vial;
+    OntoLab:isFilledWith :ChemicalAmount_4;
+    OntoLab:hasMaxLevel :Vial_4_level_max;
+    OntoLab:hasWarningLevel :Vial_4_level_warning;
+    OntoLab:hasFillLevel :Vial_4_level_fill;
 .
 
 :Vial_4_level_max
@@ -1250,17 +1412,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_4_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_4_level_warning_value;
-#.
+:Vial_4_level_warning
+   a om:Volume;
+   om:hasValue :Vial_4_level_warning_value;
+.
 
-#:Vial_4_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_4_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "3"^^xsd:int;
+.
 
 :Vial_4_level_fill
     a om:Volume;
@@ -1274,18 +1435,17 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 .
 
 :Site_5
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "5"^^xsd:string;
-    ontovapourtec:holds :Vial_5;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "5"^^xsd:string;
+    OntoVapourtec:holds :Vial_5;
 .
 
 :Vial_5
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_5;
-    ontovapourtec:isFilledWith :ChemicalSolution_For_OutputChemical_4;
-    ontovapourtec:hasMaxLevel :Vial_5_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_5_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_5_level_fill;
+    a OntoLab:Vial;
+    OntoLab:isFilledWith :ChemicalAmount_For_Dummy_OutputChemical;
+    OntoLab:hasMaxLevel :Vial_5_level_max;
+    OntoLab:hasWarningLevel :Vial_5_level_warning;
+    OntoLab:hasFillLevel :Vial_5_level_fill;
 .
 
 :Vial_5_level_max
@@ -1299,17 +1459,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_5_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_5_level_warning_value;
-#.
+:Vial_5_level_warning
+   a om:Volume;
+   om:hasValue :Vial_5_level_warning_value;
+.
 
-#:Vial_5_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_5_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "2"^^xsd:int;
+.
 
 :Vial_5_level_fill
     a om:Volume;
@@ -1324,17 +1483,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 # Create a few sites that holds empty vial
 :Site_56
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "56"^^xsd:string;
-    ontovapourtec:holds :Vial_56;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "56"^^xsd:string;
+    OntoVapourtec:holds :Vial_56;
 .
 
 :Vial_56
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_56;
-    ontovapourtec:hasMaxLevel :Vial_56_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_56_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_56_level_fill;
+    a OntoLab:Vial;
+    OntoLab:hasMaxLevel :Vial_56_level_max;
+    OntoLab:hasWarningLevel :Vial_56_level_warning;
+    OntoLab:hasFillLevel :Vial_56_level_fill;
 .
 
 :Vial_56_level_max
@@ -1348,17 +1506,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_56_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_56_level_warning_value;
-#.
+:Vial_56_level_warning
+   a om:Volume;
+   om:hasValue :Vial_56_level_warning_value;
+.
 
-#:Vial_56_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_56_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "8"^^xsd:int;
+.
 
 :Vial_56_level_fill
     a om:Volume;
@@ -1373,17 +1530,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 # Create a few sites that holds empty vial
 :Site_153
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "153"^^xsd:string;
-    ontovapourtec:holds :Vial_153;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "153"^^xsd:string;
+    OntoVapourtec:holds :Vial_153;
 .
 
 :Vial_153
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_153;
-    ontovapourtec:hasMaxLevel :Vial_153_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_153_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_153_level_fill;
+    a OntoLab:Vial;
+    OntoLab:hasMaxLevel :Vial_153_level_max;
+    OntoLab:hasWarningLevel :Vial_153_level_warning;
+    OntoLab:hasFillLevel :Vial_153_level_fill;
 .
 
 :Vial_153_level_max
@@ -1397,17 +1553,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_153_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_153_level_warning_value;
-#.
+:Vial_153_level_warning
+   a om:Volume;
+   om:hasValue :Vial_153_level_warning_value;
+.
 
-#:Vial_153_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_153_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "8"^^xsd:int;
+.
 
 :Vial_153_level_fill
     a om:Volume;
@@ -1422,17 +1577,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 # Create a few sites that holds empty vial
 :Site_216
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "216"^^xsd:string;
-    ontovapourtec:holds :Vial_216;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "216"^^xsd:string;
+    OntoVapourtec:holds :Vial_216;
 .
 
 :Vial_216
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_216;
-    ontovapourtec:hasMaxLevel :Vial_216_level_max;
-    #ontovapourtec:hasWarningLevel :Vial_216_level_warning; # TODO [when run in loop] bring this back
-    ontovapourtec:hasFillLevel :Vial_216_level_fill;
+    a OntoLab:Vial;
+    OntoLab:hasMaxLevel :Vial_216_level_max;
+    OntoLab:hasWarningLevel :Vial_216_level_warning;
+    OntoLab:hasFillLevel :Vial_216_level_fill;
 .
 
 :Vial_216_level_max
@@ -1446,17 +1600,16 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
     om:hasNumericalValue "10"^^xsd:int;
 .
 
-# TODO [when run in loop] bring this back
-#:Vial_216_level_warning
-#    a om:Volume;
-#    om:hasValue :Vial_216_level_warning_value;
-#.
+:Vial_216_level_warning
+   a om:Volume;
+   om:hasValue :Vial_216_level_warning_value;
+.
 
-#:Vial_216_level_warning_value
-#    a om:Measure;
-#    om:hasUnit om:millilitre;
-#    om:hasNumericalValue "8"^^xsd:int;
-#.
+:Vial_216_level_warning_value
+   a om:Measure;
+   om:hasUnit om:millilitre;
+   om:hasNumericalValue "8"^^xsd:int;
+.
 
 :Vial_216_level_fill
     a om:Volume;
@@ -1470,31 +1623,31 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 .
 
 ##################################
-## Chemical solutions instances ##
+## Chemical amounts instances ##
 ##################################
 
-:ChemicalSolution_1
-    a ontolab:ChemicalSolution;
-    ontovapourtec:fills :Vial_1;
+:ChemicalAmount_1
+    a OntoLab:ChemicalAmount;
     ontocapecpsb:refersToMaterial :Material_1;
+    OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_2
-    a ontolab:ChemicalSolution;
-    ontovapourtec:fills :Vial_2;
+:ChemicalAmount_2
+    a OntoLab:ChemicalAmount;
     ontocapecpsb:refersToMaterial :Material_2;
+    OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_3
-    a ontolab:ChemicalSolution;
-    ontovapourtec:fills :Vial_3;
+:ChemicalAmount_3
+    a OntoLab:ChemicalAmount;
     ontocapecpsb:refersToMaterial :Material_3;
+    OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_4
-    a ontolab:ChemicalSolution;
-    ontovapourtec:fills :Vial_4;
+:ChemicalAmount_4
+    a OntoLab:ChemicalAmount;
     ontocapecpsb:refersToMaterial :Material_4;
+    OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
 :Material_1
@@ -1582,55 +1735,55 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :PhaseComponent_1
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
     OntoCAPEUpp:hasProperty :PhaseComponent_1_Property_1;
 .
 
 :PhaseComponent_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
     OntoCAPEUpp:hasProperty :PhaseComponent_2_Property_1;
 .
 
 :PhaseComponent_IS_Input
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
     OntoCAPEUpp:hasProperty :PhaseComponent_IS_Input_Property_1;
 .
 
 :PhaseComponent_3
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_637759;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     OntoCAPEUpp:hasProperty :PhaseComponent_3_Property_1;
 .
 
 :PhaseComponent_4
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_640180;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
     OntoCAPEUpp:hasProperty :PhaseComponent_4_Property_1;
 .
 
 :PhaseComponent_5
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
     OntoCAPEUpp:hasProperty :PhaseComponent_5_Property_1;
 .
 
 :PhaseComponent_6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty :PhaseComponent_6_Property_1;
 .
 
 :PhaseComponent_6_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty :PhaseComponent_6_Property_2;
 .
 
 :PhaseComponent_7
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
     OntoCAPEUpp:hasProperty :PhaseComponent_7_Property_1;
 .
 
@@ -1664,7 +1817,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :PhaseComponent_IS_Input_Property_1_ScalarValue_1
     rdf:type OntoCAPEUpp:ScalarValue;
     OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-    OntoCAPEUpp:numericalValue "0.02"^^xsd:double;
+    OntoCAPEUpp:numericalValue "0.05"^^xsd:double;
 .
 
 :PhaseComponent_3_Property_1

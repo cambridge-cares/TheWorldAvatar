@@ -1,4 +1,4 @@
-import tests.conftest as cft
+from . import conftest as cft
 
 def create_rng_app():
     rng_agent = cft.create_rng_agent()
@@ -43,9 +43,20 @@ def create_diff_reverse_app():
 def create_update_endpoint():
     update_agent = cft.create_update_endpoint()
 
+    update_agent.set_diff_agent_service(cft.DIFFAGENT_SERVICE)
+    update_agent.set_diff_reverse_agent_service(cft.DIFFREVERSEAGENT_SERVICE)
+
     update_agent.add_url_pattern(
         '/update', 'update_derivation',
-        update_agent.update_derivations, methods=['GET']
+        update_agent.update_derivations, methods=['POST']
     )
 
     return update_agent.app
+
+
+def create_exception_throw_app():
+    exception_throw_agent = cft.create_exception_throw_agent()
+
+    exception_throw_agent.start_all_periodical_job()
+
+    return exception_throw_agent.app

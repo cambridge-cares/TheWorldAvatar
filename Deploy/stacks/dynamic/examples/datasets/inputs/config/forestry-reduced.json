@@ -1,0 +1,24 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "forestry",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "forestry-reduced",
+            "subdirectory": "vector",
+            "geoServerSettings": {
+                "defaultStyle": "the_world_avatar:forestry-reduced"
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "forestry-reduced",
+            "file": "forestry-reduced.sld"
+        }
+    ]
+}

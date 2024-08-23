@@ -108,6 +108,21 @@ public class ValuesPattern implements GraphPattern {
 		return formulateStringForVariables(this.variables) + " " + formulateStringForValuePairs(this.valuePairs);
 	}
 
+	/**
+	 * This method is used to make sure that the VALUES clause is not skipped when it is part of the GraphPatterns::union.
+	 * Otherwise, the default value GraphPattern::isEmpty will be true and the VALUES clause will not added to the list of
+	 * elements that are used to generate the final query.getQueryString().
+	 * 
+	 * The exact line that ignores the VALUES clause is:
+	 * https://github.com/eclipse/rdf4j/blob/0afd64b3c6604950b9d67626582afc1fd1bc6f1d/core/sparqlbuilder/src/main/java/org/eclipse/rdf4j/sparqlbuilder/graphpattern/GroupGraphPattern.java#L46
+	 * when called in GroupGraphPattern::extractOrConvertToGGP:
+	 * https://github.com/eclipse/rdf4j/blob/0afd64b3c6604950b9d67626582afc1fd1bc6f1d/core/sparqlbuilder/src/main/java/org/eclipse/rdf4j/sparqlbuilder/graphpattern/GraphPatterns.java#L249
+	 */
+	@Override
+	public boolean isEmpty() {
+		return variables.isEmpty() || valuePairs.isEmpty();
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Helper method to formulate the string for the variables and value pairs in the VALUES clause //
 	//////////////////////////////////////////////////////////////////////////////////////////////////

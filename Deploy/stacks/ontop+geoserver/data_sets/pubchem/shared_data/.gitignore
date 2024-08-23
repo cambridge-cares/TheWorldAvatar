@@ -1,0 +1,11 @@
+# Ignore shape files
+**/*.cpg
+**/*.dbf
+**/*.prj
+**/*.sbn
+**/*.sbx
+**/*.shp
+**/*.shp.xml
+**/*.shx
+**/*.xml
+**/*.csv

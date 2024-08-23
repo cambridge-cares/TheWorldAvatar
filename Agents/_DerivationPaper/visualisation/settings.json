@@ -1,0 +1,13 @@
+{
+    "start": {
+        "center": [0.377, 52.7534],
+        "zoom": 15,
+        "bearing": 0,
+        "pitch": 0
+    },
+    "search": {
+        "Name": "name",
+        "ID": "id"
+    },
+    "attribution": "Attribution placeholder 1<br/>Attribution placeholder 1"
+}

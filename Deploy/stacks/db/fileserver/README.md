@@ -4,6 +4,72 @@ The base URL of all requests is:
 
     http(s)://<hostname>:<port>/FileServer/
 
+## Deployment
+
+To deploy the docker image, plese follow below steps:
+1. Pull image in command line via `docker pull ghcr.io/cambridge-cares/fileserver:1.1.0`
+2. Create a `docker-compose.yml` file with the below content, or adding the `fileserver` service block and relevant credential block to your docker-compose file (you may want to adjust the `container_name` and first part of the `ports` as you wish):
+    ```yml
+    version: "3.8"
+
+    services:
+        # File server
+        fileserver:
+            image: ghcr.io/cambridge-cares/fileserver:1.1.0
+            container_name: "fileserver"
+            ports:
+                - 8888:8080
+            # Add secret to set BASIC authentication password
+            secrets:
+                - file_server_password
+
+    # Secrets used to set runtime passwords
+    secrets:
+        file_server_password:
+            file: ./secrets/fileserver_password.txt
+    ```
+3. Populate the `./secrets/fileserver_password.txt` with a credential that you would like to set **NOTE NEVER COMMIT THIS FILE TO GIT**
+4. Compose up via `docker compose -f "docker-compose.yml" up -d --build `
+
+You should now be able to access the fileserver with a username `fs_user` and the credential you set.
+
+## Integration with the Stack Manager
+
+The fileserver can also be integrated with the stack manager. Please refer to the general stack-manager documentation for more information, especially the "Specifying a custom container" section. ([Link to stack manager README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#specifying-custom-containers))  
+
+In short, you need to add a service configuration file and include the file server in the stack configuration file. The following example can be used as a starting point for the service configuration file. Make sure to name the secrets file with the stored credentials "file_server_password", otherwise a default password will be used. After spinning up the stack, you should be able to access the file server with the username `fs_user` and the credentials you set.
+
+```json
+{
+    "ServiceSpec": {
+        "Name": "file-server",
+        "TaskTemplate": {
+            "ContainerSpec":    {
+                                "Image": "ghcr.io/cambridge-cares/fileserver:1.1.0",
+                                "Mounts":   [
+                                                {
+                                                "Type": "volume",
+                                                "Source": "vis_files",
+                                                "Target": "/app/fs_root"
+                                                }
+                                            ],
+                                "Secrets": [
+                                                {
+                                                "SecretName": "file_server_password"
+                                                }
+                                            ]
+                                }
+                        }
+                    }, 
+    "endpoints":    {
+                    "file-server": {
+                                    "url": "http://localhost:8080/FileServer/",
+                                    "externalPath": "/file-server/"
+                                    }
+                    }
+}
+```
+
 ## POST
 
 ### Requests

@@ -2,102 +2,223 @@ package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Optional;
+import java.util.Properties;
 
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import org.eclipse.rdf4j.model.vocabulary.DCAT;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cmclinnovations.stack.clients.blazegraph.Namespace;
+import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Dataset {
+public class Dataset extends AbstractDataObject {
 
-    private String name;
-    private Path datasetDirectory;
-    private String workspaceName;
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
 
-    private String database;
+    private static final String NAME_DEPRECATION_NOTICE = "Specification of '{}' name is deprecated, in the future the name of the dataset will be used, i.e. '{}' instead of '{}'";
 
-    private List<String> externalDatasets;
+    public static final String NAME_KEY = "name";
 
-    private List<DataSubset> dataSubsets;
+    @JsonProperty(NAME_KEY)
+    @JacksonInject(NAME_KEY)
+    private final String name;
 
-    private List<GeoServerStyle> geoserverStyles;
+    @JsonProperty
+    private final Optional<Path> datasetDirectory;
 
-    private List<String> ontopMappings;
+    @JsonProperty
+    private final Optional<String> database;
+    @JsonProperty
+    private final Optional<Namespace> namespace;
+    @JsonProperty("workspace")
+    private final Optional<String> workspaceName;
 
-    private boolean skip;
+    @JsonProperty("externalDatasets")
+    private final Optional<List<String>> externalDatasetNames;
+    @JsonIgnore
+    private final List<Dataset> externalDatasets = new ArrayList<>();
+    @JsonProperty
+    private final Optional<List<DataSubset>> dataSubsets;
+
+    @JsonProperty("styles")
+    private final Optional<List<GeoServerStyle>> geoserverStyles;
+    @JsonProperty
+    private final Optional<StaticGeoServerData> staticGeoServerData;
+
+    @JsonProperty("mappings")
+    private final Optional<List<String>> ontopMappings;
+
+    @JsonProperty
+    private final Optional<String> rdfType;
+    @JsonProperty
+    private final Optional<String> baseIRI;
+
+    @JsonProperty
+    private final Optional<Metadata> additionalMetadata;
 
     @JsonCreator
-    public Dataset(@JsonProperty(value = "name") String name,
-            @JsonProperty(value = "datasetDirectory") Path datasetDirectory,
-            @JsonProperty(value = "workspace") String workspaceName,
-            @JsonProperty(value = "database") String database,
-            @JsonProperty(value = "externalDatasets") List<String> externalDatasets,
-            @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
-            @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
-            @JsonProperty(value = "mappings") List<String> ontopMappings,
-            @JsonProperty(value = "skip") boolean skip) {
+    Dataset() {
+        this.name = null;
+        this.datasetDirectory = Optional.empty();
+        this.database = Optional.empty();
+        this.namespace = Optional.empty();
+        this.workspaceName = Optional.empty();
+        this.externalDatasetNames = Optional.empty();
+        this.dataSubsets = Optional.empty();
+        this.geoserverStyles = Optional.empty();
+        this.staticGeoServerData = Optional.empty();
+        this.ontopMappings = Optional.empty();
+        this.rdfType = Optional.empty();
+        this.baseIRI = Optional.empty();
+        this.additionalMetadata = Optional.empty();
+    }
+
+    /**
+     * Intended to be used only for testing through the `DatasetBuilder`.
+     */
+    Dataset(String name,
+            Optional<String> description,
+            Optional<Path> datasetDirectory,
+            Optional<String> database,
+            Optional<Namespace> namespace,
+            Optional<String> workspaceName,
+            Optional<List<String>> externalDatasetNames,
+            Optional<List<DataSubset>> dataSubsets,
+            Optional<List<GeoServerStyle>> geoserverStyles,
+            Optional<StaticGeoServerData> staticGeoServerData,
+            Optional<List<String>> ontopMappings,
+            boolean skip,
+            Optional<String> rdfType,
+            Optional<String> baseIRI,
+            Optional<Metadata> metadataRDF) {
+        super(description, skip);
         this.name = name;
-        this.datasetDirectory = (null != datasetDirectory) ? datasetDirectory : Path.of(name);
-        this.workspaceName = (null != workspaceName) ? workspaceName : name;
+        this.datasetDirectory = datasetDirectory;
         this.database = database;
-        this.externalDatasets = (null != externalDatasets) ? externalDatasets : new ArrayList<>();
-        this.dataSubsets = (null != dataSubsets) ? dataSubsets : new ArrayList<>();
-        this.geoserverStyles = (null != geoserverStyles) ? geoserverStyles : new ArrayList<>();
-        this.ontopMappings = (null != ontopMappings) ? ontopMappings : new ArrayList<>();
-        this.skip = skip;
+        this.namespace = namespace;
+        this.workspaceName = workspaceName;
+        this.externalDatasetNames = externalDatasetNames;
+        this.dataSubsets = dataSubsets;
+        this.geoserverStyles = geoserverStyles;
+        this.staticGeoServerData = staticGeoServerData;
+        this.ontopMappings = ontopMappings;
+        this.rdfType = rdfType;
+        this.baseIRI = baseIRI;
+        this.additionalMetadata = metadataRDF;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Path getDirectory() {
+        return Path.of("/inputs", "data").resolve(datasetDirectory.orElse(Path.of(name)));
     }
 
-    public List<String> getExternalDatasets() {
-        return externalDatasets;
+    public String getDatabase() {
+        if (database.isPresent()) {
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "database", getName(), database.get());
+            return database.get();
+        }
+        return getName();
     }
 
-    public boolean isSkip() {
-        return skip;
+    public String getNamespace() {
+        if (namespace.isPresent() && null != namespace.get().getName()) {
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "namespace", getName(), namespace.get().getName());
+            return namespace.get().getName();
+        }
+        return getName();
     }
 
-    public void loadData() {
-        if (!skip) {
-            PostGISClient postGISClient = new PostGISClient();
-            GDALClient gdalClient = new GDALClient();
-            GeoServerClient geoServerClient = new GeoServerClient();
-            OntopClient ontopClient = new OntopClient();
-
-            Path fullDatasetDir = Path.of("/inputs", "data").resolve(datasetDirectory);
-            String fullDatasetDirStr = fullDatasetDir.toString();
-
-            if (null != database) {
-                postGISClient.createDatabase(database);
-            }
-
-            if (dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).count() > 0
-                    || !geoserverStyles.isEmpty()) {
-                geoServerClient.createWorkspace(workspaceName);
-
-                geoserverStyles.forEach(style -> geoServerClient.loadStyle(style, workspaceName));
-            }
-
-            dataSubsets.stream().filter(Predicate.not(DataSubset::getSkip)).forEach(
-                    subset -> {
-                        subset.loadData(gdalClient, fullDatasetDirStr, database);
-                        subset.runSQLPostProcess(postGISClient, database);
-                        subset.createLayer(geoServerClient, fullDatasetDirStr, workspaceName, database);
-                    });
-
-            ontopMappings.forEach(mapping -> ontopClient.updateOBDA(fullDatasetDir.resolve(mapping)));
+    public Properties getNamespaceProperties() {
+        if (namespace.isPresent() && null != namespace.get().getProperties()) {
+            return namespace.get().getProperties();
+        } else {
+            return new Properties();
         }
     }
 
+    public String getWorkspaceName() {
+        if (workspaceName.isPresent()) {
+            LOGGER.warn(NAME_DEPRECATION_NOTICE, "workspaceName", getName(), workspaceName.get());
+            return workspaceName.get();
+        }
+        return getName();
+    }
+
+    public String getOntopName() {
+        return EndpointNames.ONTOP + "-" + name;
+    }
+
+    public List<String> getExternalDatasetNames() {
+        return externalDatasetNames.orElse(Collections.emptyList());
+    }
+
+    public List<DataSubset> getDataSubsets() {
+        return dataSubsets.orElse(Collections.emptyList());
+    }
+
+    public List<GeoServerStyle> getGeoserverStyles() {
+        return geoserverStyles.orElse(Collections.emptyList());
+    }
+
+    public List<String> getOntopMappings() {
+        return ontopMappings.orElse(Collections.emptyList());
+    }
+
+    public StaticGeoServerData getStaticGeoServerData() {
+        return staticGeoServerData.get();
+    }
+
+    public String baseIRI() {
+        return baseIRI.orElse(SparqlConstants.DEFAULT_BASE_IRI);
+    }
+
+    public Iri getRdfType() {
+        return Rdf.iri(rdfType.orElse(DCAT.CATALOG.stringValue()));
+    }
+
+    public void addExternalDataset(Dataset dataset) {
+        externalDatasets.add(dataset);
+    }
+
+    public List<Dataset> getExternalDatasets() {
+        return externalDatasets;
+    }
+
+    public Metadata getAdditionalMetadata() {
+        return additionalMetadata.orElse(Metadata.EMPTY_METADATA);
+    }
+
+    boolean usesBlazegraph() {
+        return getDataSubsets().stream().anyMatch(DataSubset::usesBlazegraph);
+    }
+
+    boolean usesPostGIS() {
+        return getDataSubsets().stream().anyMatch(DataSubset::usesPostGIS);
+    }
+
+    boolean usesGeoServer() {
+        return !getGeoserverStyles().isEmpty() || getDataSubsets().stream().anyMatch(DataSubset::usesGeoServer);
+    }
+
+    boolean hasStaticGeoServerData() {
+        return staticGeoServerData.isPresent();
+    }
+
+    boolean usesOntop() {
+        return !getOntopMappings().isEmpty();
+    }
 }

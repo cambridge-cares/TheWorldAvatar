@@ -1,0 +1,14 @@
+#######################################
+## The World Avatar related packages ##
+#######################################
+py4jps==1.0.37
+pyderivationagent==1.5.0
+
+##########################
+## Third-party packages ##
+##########################
+flask==2.1.0
+gunicorn==20.0.4
+influxdb-client==1.37.0  # For InfluxDB integration
+joblib==1.3.2  # For loading the model
+scikit-learn==1.3.0  # For the ML model

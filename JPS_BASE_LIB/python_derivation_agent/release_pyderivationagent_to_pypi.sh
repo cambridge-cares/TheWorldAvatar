@@ -131,6 +131,8 @@ run_pyderivationagent_tests() {
         read -n 1 -s -r -p "Press any key to continue"
         exit -1
     fi
+    # compose down to ensure the containers are stopped
+    docker compose -f "./docker-compose.test.yml" down
 }
 
 install_pyderivationagent_and_test() {
@@ -238,7 +240,6 @@ test_release() {
     $PYTHON_EXEC -m pip install testcontainers
     $PYTHON_EXEC -m pip install pytest-docker-compose
     $PYTHON_EXEC -m pip install pytest-rerunfailures
-    $PYTHON_EXEC -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
     run_pyderivationagent_tests $PYTHON_EXEC
 

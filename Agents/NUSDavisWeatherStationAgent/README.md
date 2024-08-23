@@ -142,21 +142,21 @@ Note that for building the agent in the Claudius server the following command sh
 ```
 DOCKER_BUILDKIT=1 docker build .
 ```
-The agent is reachable at "nusdavisweatherstation-agent/retrieve" on localhost port 1080.
+The agent is reachable at "nusdavisweatherstation-agent/retrieve" on localhost port 1082.
 
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1080/nusdavisweatherstation-agent/retrieve with a correct JSON Object.
+To run the agent, a POST request must be sent to http://localhost:1082/nusdavisweatherstation-agent/retrieve with a correct JSON Object.
 Follow the request shown below.
 
 ```
-POST http://localhost:1080/nusdavisweatherstation-agent/retrieve
+POST http://localhost:1082/nusdavisweatherstation-agent/retrieve
 Content-Type: application/json
 {"agentProperties":"NUSDavisWeatherStation_AGENTPROPERTIES","apiProperties":"NUSDavisWeatherStation_APIPROPERTIES","clientProperties":"NUSDavisWeatherStation_CLIENTPROPERTIES"}
 ```
 In curl syntax
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"NUSDavisWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"NUSDavisWeatherStation_APIPROPERTIES\",\"clientProperties\":\"NUSDavisWeatherStation_CLIENTPROPERTIES\"}" http://localhost:1080/nusdavisweatherstation-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"NUSDavisWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"NUSDavisWeatherStation_APIPROPERTIES\",\"clientProperties\":\"NUSDavisWeatherStation_CLIENTPROPERTIES\"}" http://localhost:1082/nusdavisweatherstation-agent/retrieve
 ```
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.

@@ -3,12 +3,16 @@ package uk.ac.cam.cares.derivation.asynexample;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -33,8 +37,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * running
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for
  * more details.
- * For information regarding the Docker registry, see:
- * https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
  * 
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  * 
@@ -94,6 +96,7 @@ public class DockerIntegrationTest extends TestCase {
 	}
 
 	@Test
+	@Timeout(value = 180, unit = TimeUnit.SECONDS)
 	@Order(1)
 	public void testAllSync()
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
@@ -102,14 +105,12 @@ public class DockerIntegrationTest extends TestCase {
 		//////////////////////////////////
 
 		// stage 1: initialise triples for derivation DAG
+		// num of points = 0, therefore, no ouputs
 		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_1));
 		executeAndTestInitialiseInstances(response, true, true, true, true);
 
-		// stage 2: call InputAgent to make all derivations outdated again
-		executeAndTestInputAgent();
-
-		// stage 3: call UpdateDerivations
-		executeAndTestUpdateDerivations(response);
+		// stage 2: no outputs --> outputs --> outputs --> no outputs
+		executeTestNoToYesToNo(response);
 	}
 
 	@Test
@@ -125,11 +126,8 @@ public class DockerIntegrationTest extends TestCase {
 		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_2));
 		executeAndTestInitialiseInstances(response, true, true, true, false);
 
-		// stage 2: call InputAgent to make all derivations outdated again
-		executeAndTestInputAgent();
-
-		// stage 3: call UpdateDerivations
-		executeAndTestUpdateDerivations(response);
+		// stage 2: no outputs --> outputs --> outputs --> no outputs
+		executeTestNoToYesToNo(response);
 	}
 
 	@Test
@@ -145,11 +143,8 @@ public class DockerIntegrationTest extends TestCase {
 		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_3));
 		executeAndTestInitialiseInstances(response, true, false, true, false);
 
-		// stage 2: call InputAgent to make all derivations outdated again
-		executeAndTestInputAgent();
-
-		// stage 3: call UpdateDerivations
-		executeAndTestUpdateDerivations(response);
+		// stage 2: no outputs --> outputs --> outputs --> no outputs
+		executeTestNoToYesToNo(response);
 	}
 
 	@Test
@@ -165,11 +160,8 @@ public class DockerIntegrationTest extends TestCase {
 		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_4));
 		executeAndTestInitialiseInstances(response, true, true, false, false);
 
-		// stage 2: call InputAgent to make all derivations outdated again
-		executeAndTestInputAgent();
-
-		// stage 3: call UpdateDerivations
-		executeAndTestUpdateDerivations(response);
+		// stage 2: no outputs --> outputs --> outputs --> no outputs
+		executeTestNoToYesToNo(response);
 	}
 
 	@Test
@@ -185,11 +177,8 @@ public class DockerIntegrationTest extends TestCase {
 		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_6));
 		executeAndTestInitialiseInstances(response, false, false, false, false);
 
-		// stage 2: call InputAgent to make all derivations outdated again
-		executeAndTestInputAgent();
-
-		// stage 3: call UpdateDerivations
-		executeAndTestUpdateDerivations(response);
+		// stage 2: no outputs --> outputs --> outputs --> no outputs
+		executeTestNoToYesToNo(response);
 	}
 
 	// NOTE testMaxMinDiffAsync can now pass with the changes made to only do SPARQL
@@ -213,17 +202,21 @@ public class DockerIntegrationTest extends TestCase {
 		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_5));
 		executeAndTestInitialiseInstances(response, true, false, false, false);
 
-		// stage 2: call InputAgent to make all derivations outdated again
-		executeAndTestInputAgent();
-
-		// stage 3: call UpdateDerivations
-		executeAndTestUpdateDerivations(response);
+		// stage 2: no outputs --> outputs --> outputs --> no outputs
+		executeTestNoToYesToNo(response);
 	}
 
 	@Test
 	@Timeout(value = 180, unit = TimeUnit.SECONDS)
 	@Order(7)
-	public void testMultipleAsyncDerivations() throws InterruptedException {
+	public void testMultipleAsyncDerivations() throws InterruptedException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		// initialise triples for derivation DAG
+		// num of points = 0, therefore, no ouputs
+		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_1));
+		executeAndTestInitialiseInstances(response, true, true, true, true);
+		// num of points = 5, request updates
+		executeInputAndUpdate(5, response);
+
 		// create five DifferenceReverseDerivation
 		String maxvalue_instance = sparqlClient.getMaxValueIRI();
         String minvalue_instance = sparqlClient.getMinValueIRI();
@@ -279,7 +272,16 @@ public class DockerIntegrationTest extends TestCase {
 	// Below are utility functions to reduce code-duplication //
 	////////////////////////////////////////////////////////////
 
-	void assertAllInfoUpdateToDate(JSONObject response, boolean beforeInvokeInputAgent)
+	void executeTestNoToYesToNo(JSONObject response) throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, InterruptedException {
+		// num of points = 5
+		executeInputAndUpdate(5, response);
+
+		// num of points = 0
+		executeInputAndUpdate(0, response);
+	}
+
+	void assertAllInfoUpdateToDate(JSONObject response, boolean beforeInvokeInputAgent, int numOfPts)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		// get pure inputs instance IRIs
 		String upperlimit_instance = sparqlClient.getUpperLimitIRI();
@@ -301,6 +303,9 @@ public class DockerIntegrationTest extends TestCase {
 			Assert.assertEquals(response.getString(InitialiseInstances.num_of_pts_instance_key),
 					number_of_points_instance);
 			Assert.assertEquals(InitialiseInstances.number_of_points, sparqlClient.getValue(number_of_points_instance));
+		} else {
+			// test if the value for NumberOfPoints is updated to the new value
+			Assert.assertEquals(numOfPts, sparqlClient.getValue(number_of_points_instance));
 		}
 
 		// get all timestamp
@@ -331,21 +336,29 @@ public class DockerIntegrationTest extends TestCase {
 		// test if all values in the KG are correct
 		// test if it contains correct number of points in the derivation DAG
 		Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()),
-				sparqlClient.getAmountOfPointsInList());
+				sparqlClient.getAmountOfPointsInKG());
 		// test if no duplicate information written to KG in the situation of concurrent
 		// HTTP request
 		Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()),
 				sparqlClient.getAmountOfPointsInKG());
-		// test if the value is the same as the max value
-		Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getListOfRandomPointsIRI(), true),
-				sparqlClient.getValue(sparqlClient.getMaxValueIRI()));
-		// test if the value is the same as the min value
-		Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getListOfRandomPointsIRI(), false),
-				sparqlClient.getValue(sparqlClient.getMinValueIRI()));
-		// test if the value is the same as the difference value
-		int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI())
-				- sparqlClient.getValue(sparqlClient.getMinValueIRI());
-		Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
+		// if number of points is 0, test no max/min/difference value instances are created
+		if (sparqlClient.getAmountOfPointsInKG() == 0) {
+			Assert.assertTrue(sparqlClient.getMaxValueIRI().isEmpty());
+			Assert.assertTrue(sparqlClient.getMinValueIRI().isEmpty());
+			Assert.assertTrue(sparqlClient.getDifferenceIRI().isEmpty());
+		} else {
+			// otherwise, test if max/min/difference value instances are created and are correct
+			// test if the value is the same as the max value
+			Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getPointsInKG(), true),
+					sparqlClient.getValue(sparqlClient.getMaxValueIRI()));
+			// test if the value is the same as the min value
+			Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getPointsInKG(), false),
+					sparqlClient.getValue(sparqlClient.getMinValueIRI()));
+			// test if the value is the same as the difference value
+			int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI())
+					- sparqlClient.getValue(sparqlClient.getMinValueIRI());
+			Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
+		}
 	}
 
 	void executeAndTestInitialiseInstances(JSONObject response, boolean rng, boolean max, boolean min, boolean diff)
@@ -353,10 +366,13 @@ public class DockerIntegrationTest extends TestCase {
 		// for each created instance, test that only one instance should be created if
 		// it is sync derivation, otherwise, no instance should be created
 		if (rng) {
-			String listofrandompoints_instance = response.getString(InitialiseInstances.list_rand_pts_instance_key);
-			Assert.assertEquals(listofrandompoints_instance, sparqlClient.getListOfRandomPointsIRI());
+			JSONArray pt_instances = response.getJSONArray(InitialiseInstances.pt_instances_key);
+			Set<String> jsonArraySet = new HashSet<>(pt_instances.toList().stream().map(p -> (String) p).collect(Collectors.toList()));
+			Set<String> stringListSet = new HashSet<>(sparqlClient.getPointsInKG());
+			// both lists will be empty lists if the number of points is 0
+			Assert.assertEquals(jsonArraySet, stringListSet);
 		} else {
-			Assert.assertTrue(!response.has(InitialiseInstances.list_rand_pts_instance_key));
+			Assert.assertTrue(!response.has(InitialiseInstances.pt_instances_key));
 		}
 
 		if (max) {
@@ -395,30 +411,36 @@ public class DockerIntegrationTest extends TestCase {
 		TimeUnit.SECONDS.sleep(3);
 
 		// now all information should be up-to-date
-		assertAllInfoUpdateToDate(response, true);
+		assertAllInfoUpdateToDate(response, true, InitialiseInstances.number_of_points);
 	}
 
-	void executeAndTestInputAgent() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	void executeInputAndUpdate(int numOfPts, JSONObject response) throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, InterruptedException {
+		executeAndTestInputAgent(numOfPts);
+		executeAndTestUpdateDerivations(response, numOfPts);
+	}
+
+	void executeAndTestInputAgent(int numOfPts) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		// save information about the old NumberOfPoints instance
 		String numOfPoint_old = sparqlClient.getNumberOfPointsIRI();
-		int numOfPoints_val_old = sparqlClient.getValue(numOfPoint_old);
 		long numOfPoints_timestamp_old = (long) getTimestamp.invoke(devSparql, numOfPoint_old);
 
 		// invoke InputAgent via HTTP request
-		AgentCaller.executeGet(host + InputAgent.API_PATTERN);
+		AgentCaller.executeGet(host + InputAgent.API_PATTERN, InputAgent.NUMBER_OF_POINTS_KEY, String.valueOf(numOfPts));
 
 		// get information about new NumberOfPoints instance
 		String numOfPoint_new = sparqlClient.getNumberOfPointsIRI();
 		int numOfPoints_val_new = sparqlClient.getValue(numOfPoint_new);
 		long numOfPoints_timestamp_new = (long) getTimestamp.invoke(devSparql, numOfPoint_new);
 
-		// test if InputAgent increased the value
-		Assert.assertEquals(numOfPoints_val_old + 1, numOfPoints_val_new);
+		// test if InputAgent updated the value
+		Assert.assertEquals(numOfPts, numOfPoints_val_new);
+
 		// test if InputAgent modified the timestamp
 		Assert.assertTrue(numOfPoints_timestamp_new > numOfPoints_timestamp_old);
 	}
 
-	void executeAndTestUpdateDerivations(JSONObject response)
+	void executeAndTestUpdateDerivations(JSONObject response, int numOfPts)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
 		// get IRI of difference derivation
 		String difference_derivation = response.getString(InitialiseInstances.diff_dev_key);
@@ -428,14 +450,15 @@ public class DockerIntegrationTest extends TestCase {
 		String difference_instance_old = sparqlClient.getDifferenceIRI();
 
 		// invoke UpdateDerivations via HTTP request
-		AgentCaller.executeGet(host + UpdateDerivations.API_PATTERN);
+		AgentCaller.executeGet(host + UpdateDerivations.API_PATTERN, UpdateDerivations.DIFFERENCE_DERIVATION_KEY,
+				difference_derivation);
 
 		// once timestamp of difference derivation updated, the iri of difference should
 		// be different from the previous one, all information in the KG should also be
 		// up-to-date
 		long currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
 		while (currentTimestamp_difference_derivation <= difference_derivation_timestamp) {
-			TimeUnit.SECONDS.sleep(20);
+			TimeUnit.SECONDS.sleep(8);
 			currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
 		}
 
@@ -445,7 +468,7 @@ public class DockerIntegrationTest extends TestCase {
 		Assert.assertNotEquals(difference_instance_old, difference_instance_new);
 
 		// now all information in the KG should be up-to-date
-		assertAllInfoUpdateToDate(response, false);
+		assertAllInfoUpdateToDate(response, false, numOfPts);
 	}
 
 	public int countNumberOfDerivationsGivenStatusType(Map<String, StatusType> derivationsAndStatusType, StatusType statusType) {

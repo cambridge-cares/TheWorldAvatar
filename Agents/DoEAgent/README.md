@@ -47,13 +47,13 @@ If you wish to try out a previous version where DoE Agent itself is an HTTP serv
 ```json
 {
    "agent_input":{
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy":"https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain":"https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse":[
+      "https://www.theworldavatar.com/kg/ontodoe/Strategy":"https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
+      "https://www.theworldavatar.com/kg/ontodoe/Domain":"https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
+      "https://www.theworldavatar.com/kg/ontodoe/SystemResponse":[
          "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_1",
          "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_2"
       ],
-      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData":"https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
+      "https://www.theworldavatar.com/kg/ontodoe/HistoricalData":"https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
    }
 }
 ```
@@ -83,7 +83,7 @@ The script then writes below derivation related triples:
 <derivation> <OntoDerivation:isDerivedFrom> <https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1>
 
 # agent related
-<derivation> <OntoDerivation:isDerivedUsing> <http://www.theworldavatar.com/resource/agents/Service__DoE#Service>
+<derivation> <OntoDerivation:isDerivedUsing> <https://www.theworldavatar.com/kg/agents/Service__DoE/Service>
 
 # timestamp of derivation
 <derivation> <time:hasTime> <time>
@@ -101,7 +101,7 @@ The dockerised integration test can be invoked via below commands:
 `(Linux)`
 ```sh
 cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_docker_integration.py --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
+pytest -s --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
 ```
 
 If everything is working as expected, an output on console should be expected similar to the one below (this might take a few minutes) (**Please make a note of the IRI in the response as `<createdDerivationInstance>`, you will need this for querying later**):
@@ -112,8 +112,8 @@ If everything is working as expected, an output on console should be expected si
 
 As the derivation is initialised as `Requested` with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be started automatically. The update will be taken care of by DoE Agent and the IRI of the suggested instance of `OntoRxn:ReactionVariation` will be generated and uploaded into the knowledge graph. This can be verified by querying {`?new_exp` `OntoDerivation:belongsTo` `<createdDerivationInstance>`}:
 ```
-PREFIX OntoDerivation:     <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
-PREFIX OntoDoE:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX OntoDerivation:     <https://www.theworldavatar.com/kg/ontoderivation/>
+PREFIX OntoDoE:            <https://www.theworldavatar.com/kg/ontodoe/>
 
 SELECT ?ontorxn_rxn_exp
 WHERE {
@@ -138,13 +138,6 @@ This will also be reflected in the console as an output similar to below will be
 2022-05-22 14:05:54,427 (STDOUT) New experiment suggested successfully, suggested experiment instance: https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_35bb4494-9498-47b3-bdf7-eee8dce3edd6
 ```
 
-Another dockerised integration test is provided in the similar setting, except that the agent is instantiated in memory and the triple store is spun up with dynamic port decided at deployment. This can be executed via:
-
-`(Linux)`
-```sh
-cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_example_doe.py --reruns 5 --reruns-delay 5
-```
 
 ## Upload docker image to GitHub
 

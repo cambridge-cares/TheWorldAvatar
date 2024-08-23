@@ -10,8 +10,12 @@ from EntityRDFizer_new import *
 import time
  
 
-pipelines = pd.read_csv('OntoGasGrid/pipeline_owl_generator/pipeline_split.csv').to_numpy()
-offtakes = pd.read_csv('OntoGasGrid/grid_component_owl_generator/grid_component_data.csv').to_numpy()
+# The CSV file read at the following statement is stored on Dropbox under the path of
+# "IRP3 CAPRICORN shared folder/_JPS Development/data/ontogasgrid/pipeline_split.csv"
+pipelines = pd.read_csv('https://www.dropbox.com/s/fbi77hz3316dadv/pipeline_split.csv?dl=1').to_numpy()
+# The CSV file read at the following statement is stored on Dropbox under the path of
+# "IRP3 CAPRICORN shared folder/_JPS Development/data/ontogasgrid/grid_component_data.csv"
+offtakes = pd.read_csv('https://www.dropbox.com/s/d4pbj0odzlokz24/grid_component_data.csv?dl=1').to_numpy()
 
 if len(offtakes[0,:]) < 8:
 

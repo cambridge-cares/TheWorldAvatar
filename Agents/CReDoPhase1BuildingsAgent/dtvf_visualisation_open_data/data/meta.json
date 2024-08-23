@@ -1,0 +1,21 @@
+{
+    "global": {
+        "defaultCenter": [0.395, 52.750],
+        "defaultZoom": 13,
+        "defaultBearing": 0,
+        "defaultPitch": 30
+    },
+    "local": {
+        "label": "Data set",
+        "groups": [
+			{
+                "name": "Flood areas",
+                "directory": "flood_areas"
+            },
+            {
+                "name": "Flood warnings",
+                "directory": "flood_warnings"
+            }
+        ]
+    }
+}

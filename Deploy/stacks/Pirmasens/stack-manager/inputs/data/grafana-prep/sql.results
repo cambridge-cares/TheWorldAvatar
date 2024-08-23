@@ -1,0 +1,12 @@
+demand_hist	1c640775-e8f5-4f66-b553-7ffc9321d196
+heat_generation_HeatBoiler4	197d07d7-912e-4f13-a1ce-0283b0957cd6
+heat_generation_GasTurbine	3b4b05a2-c39d-4907-b1ea-f07a5cd52e1c
+demand_fc	ca59fa51-0689-492b-9e77-ffe3e6c62d6b
+gas_consumption_GasTurbine	02aa84c8-2faf-4686-b223-eba93e4cfeb6
+gas_consumption_HeatBoiler5	710761dd-6dd3-455c-aa0b-10ae85e5e8ab
+elec_cogen	3956610b-5d16-4df3-b7f1-a196567c0198
+heat_generation_HeatBoiler6	c2a953d1-d2ae-4904-96f8-30a43d66e79e
+gas_consumption_HeatBoiler6	4caebd86-19a2-4e74-b521-703049a7b1bd
+heat_sourcing	adf662e5-1800-440a-9df1-81dfce140788
+heat_generation_HeatBoiler5	6b03241a-d27b-4e85-b173-fdf1ac7defae
+gas_consumption_HeatBoiler4	d98ec0e2-fffc-41bd-be5a-a76b36a5b273

@@ -50,17 +50,27 @@ class HPLCPostProAgent(DerivationAgent):
 
         # Calculate each PerformanceIndicator
         lst_performance_indicator = []
-        for perf_clz in [ONTOREACTION_YIELD, ONTOREACTION_CONVERSION, ONTOREACTION_ECOSCORE, ONTOREACTION_ENVIRONMENTALFACTOR, ONTOREACTION_SPACETIMEYIELD, ONTOREACTION_RUNMATERIALCOST]:
+        for perf_clz in [
+            ONTOREACTION_YIELD,
+            ONTOREACTION_CONVERSION,
+            # ONTOREACTION_ECOSCORE, # NOTE disabled as the data for this eco score is not properly available
+            ONTOREACTION_ENVIRONMENTALFACTOR,
+            ONTOREACTION_SPACETIMEYIELD,
+            ONTOREACTION_RUNMATERIALCOST,
+            ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT,
+        ]:
             pi = hypo.calculate_performance_indicator(
                 hypo_reactor=hypo_reactor, hypo_end_stream=hypo_end_stream,
                 rxn_exp_instance=rxn_exp_instance, target_clz=perf_clz
             )[0] # [0] is used here to simplify the implementation as we know there will be only one performance indicator for such clz type
             # TODO add support if multiple PerformanceIndicator of the same type can be computed?
-            lst_performance_indicator.append(pi)
+            if pi is not None:
+                # NOTE here the performance indicator might be None for conversion if some response factor is missing, e.g. those of starting chemicals
+                lst_performance_indicator.append(pi)
 
         # Collect the generated OutputChemical triples, PerformanceIndicator triples and HPLCReport triples to derivation_outputs
         derivation_outputs.addGraph(self.sparql_client.collect_triples_for_performance_indicators(lst_performance_indicator, Graph()))
-        derivation_outputs.addGraph(self.sparql_client.collect_triples_for_output_chemical_of_chem_sol(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, Graph()))
+        derivation_outputs.addGraph(self.sparql_client.collect_triples_for_output_chemical_of_chem_amount(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, Graph()))
         derivation_outputs.addGraph(self.sparql_client.collect_triples_for_chromatogram_point(hplc_report_instance.records, hplc_report_iri, Graph()))
 
 

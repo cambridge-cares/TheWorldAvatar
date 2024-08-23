@@ -1,8 +1,8 @@
 from rdflib import RDF
 
-from pyderivationagent.kg_operations import TIME_HASTIME
-from pyderivationagent.kg_operations import TIME_INTIMEPOSITION
-from pyderivationagent.kg_operations import TIME_NUMERICPOSITION
+from pyderivationagent.data_model import TIME_HASTIME
+from pyderivationagent.data_model import TIME_INTIMEPOSITION
+from pyderivationagent.data_model import TIME_NUMERICPOSITION
 
 import hplcagent.tests.conftest as cf
 
@@ -13,14 +13,14 @@ import hplcagent.tests.conftest as cf
 def get_hplc_job(
     hplc_digital_twin,
     rxn_exp_iri,
-    chemical_solution_iri,
+    chemical_amount_iri,
     sparql_client
 ):
     query = """SELECT ?hplc_job WHERE {?hplc_job ^<%s> <%s>; <%s> <%s>; <%s> <%s>; <%s>/<%s> <%s>.}""" % (
         cf.ONTOHPLC_HASJOB, hplc_digital_twin,
         RDF.type.toPython(), cf.ONTOHPLC_HPLCJOB,
         cf.ONTOHPLC_CHARACTERISES, rxn_exp_iri,
-        cf.ONTOHPLC_HASREPORT, cf.ONTOHPLC_GENERATEDFOR, chemical_solution_iri
+        cf.ONTOHPLC_HASREPORT, cf.ONTOHPLC_GENERATEDFOR, chemical_amount_iri
     )
     response = sparql_client.performQuery(query)
     return [response[i]['hplc_job'] for i in range(len(response))]

@@ -1,0 +1,12 @@
+*.war
+*/target
+*/output
+*log4j2.xml
+
+# Integrated Development Environment (IDE)-specific files/folders:
+.iml
+.idea/
+.settings/
+.metadata
+.classpath
+.project

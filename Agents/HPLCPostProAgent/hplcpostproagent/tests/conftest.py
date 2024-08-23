@@ -1,14 +1,12 @@
 # NOTE courtesy of Daniel (dln22), this file is adapted from https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_uploader/tests/conftest.py
 from rdflib import Graph
-import logging
+import requests
 import pkgutil
 import pytest
 import shutil
 import time
 import uuid
 import os
-
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 from pyderivationagent.conf import config_derivation_agent
 
@@ -21,23 +19,35 @@ SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
+TEST_TRIPLES_DIR = os.path.join(THIS_DIR,'test_triples')
 HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
 HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
+HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_incomplete.xls'
+HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_incomplete.txt'
+HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_unidentified_peaks.xls'
+HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_unidentified_peaks.txt'
+HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_no_product.xls'
+HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_no_product.txt'
+
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
 
-DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
+DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
 EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
 NEW_RXN_EXP_1_IRI = EXP_1_BASE_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
 NEW_RXN_EXP_2_IRI = EXP_1_BASE_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
 HPLC_DIGITAL_TWIN_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
 HPLC_DIGITAL_TWIN_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
-CHEMICAL_SOLUTION_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_1_1'
-CHEMICAL_SOLUTION_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_2_1'
-HPLC_METHOD_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy'
+CHEMICAL_AMOUNT_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalAmount_1_1'
+CHEMICAL_AMOUNT_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalAmount_2_1'
+HPLC_METHOD_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy'
+
+# For testing if the cost calculation is correct
+RXN_EXP_6_SAME_COST = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_6/RxnExp_1'
+RXN_EXP_7_SAME_COST = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_7/RxnExp_1'
 
 # Configuration env files
 # NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack
@@ -78,12 +88,20 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url
     return _get_service_url
 
 @pytest.fixture(scope="session")
@@ -169,20 +187,34 @@ def create_hplc_postpro_agent():
             agent_iri=hplc_postpro_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=hplc_postpro_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=hplc_postpro_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=hplc_postpro_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=hplc_postpro_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(hplc_postpro_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(hplc_postpro_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=hplc_postpro_agent_config.KG_USERNAME,
             kg_password=hplc_postpro_agent_config.KG_PASSWORD,
-            fs_url=hplc_postpro_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(hplc_postpro_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=hplc_postpro_agent_config.FILE_SERVER_USERNAME,
             fs_password=hplc_postpro_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=hplc_postpro_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
             flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-            logger_name='dev'
+            logger_name='dev',
+            max_thread_monitor_async_derivations=hplc_postpro_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=hplc_postpro_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_postpro_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=hplc_postpro_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=hplc_postpro_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_postpro_agent
     return _create_hplc_postpro_agent
+
+
+# ----------------------------------------------------------------------------------
+# Helper functions
+# ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
 
 def generate_random_download_path(filename_extension):
     return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)

@@ -1,0 +1,18 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoCarpark,TBox,https://www.theworldavatar.com/kg/ontocarpark/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoCarpark,TBox,1.5,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoCarpark,TBox,OntoCarpark is an ontology for representing a carpark's information.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+Carpark,Class,https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic,IS-A,,,,An area or building where cars or other vehicles may be left temporarily.,https://www.theworldavatar.com/kg/ontocarpark/,Carpark
+LotType,Class,,,,,,The types of parking lots in a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,Lot type
+HeavyVehicles,Class,LotType,IS-A,,,,A parking lot for heavy vehicles.,https://www.theworldavatar.com/kg/ontocarpark/,Heavy vehicles
+Motorcycles,Class,LotType,IS-A,,,,A parking lot for motorcycles.,https://www.theworldavatar.com/kg/ontocarpark/,Motorcycles
+Cars,Class,LotType,IS-A,,,,A parking lot for cars.,https://www.theworldavatar.com/kg/ontocarpark/,Cars
+AvailableLots,Class,,,,,,The number of available lots for a particular type of parking lot in a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,Available lots
+hasLotType,Object Property,,,Carpark,LotType,,A relationship between a carpark and the type of parking lots it provides.,https://www.theworldavatar.com/kg/ontocarpark/,has lot type
+hasAvailableLots,Object Property,,,LotType,AvailableLots,,A relationship between a type of parking lot and it's availability.,https://www.theworldavatar.com/kg/ontocarpark/,has available lots
+hasID,Data Property,,,Carpark,String,,A relationship that describes the ID assigned to a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has ID
+hasAgency,Data Property,,,Carpark,String,,A relationship that describes the agency that manages the carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has agency
+hasCarparkRates,Data Property,,,Carpark,String,,A relationship that describes the rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,carpark rates
+hasWeekdayRates,Data Property,hasCarparkRates,IS-A,,,,A relationship that describes the weekday rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,weekday rates
+hasSaturdayRates,Data Property,hasCarparkRates,IS-A,,,,A relationship that describes the Saturday rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,saturday rates
+hasSundayAndPHRates,Data Property,hasCarparkRates,IS-A,,,,A relationship that describes the Sunday and Public Holidays rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,sunday and PH rates

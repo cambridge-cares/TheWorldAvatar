@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
-import com.cmclinnovations.stack.clients.core.StackClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
@@ -43,8 +43,7 @@ public class DockerClientTest {
 
     @BeforeClass
     public static void setup() {
-        StackClient.setInStack(false);
-        dockerAPI = new DockerClient();
+        dockerAPI = DockerClient.getInstance();
 
         String image = "busybox:latest";
 
@@ -73,7 +72,7 @@ public class DockerClientTest {
     }
 
     @AfterClass
-    public static void tearDown() throws InterruptedException {
+    public static void tearDown() {
         if (null != dockerAPI && null != containerId) {
             try (RemoveContainerCmd removeContainerCmd = dockerAPI.getInternalClient()
                     .removeContainerCmd(containerId)) {
@@ -159,7 +158,7 @@ public class DockerClientTest {
 
     private File createFile(File dir, String filename, String data) throws IOException {
         File file = new File(dir, filename);
-        FileUtils.writeStringToFile(file, data, "UTF-8");
+        FileUtils.writeStringToFile(file, data, StandardCharsets.UTF_8);
         return file;
     }
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<entry key="com.bigdata.rdf.sail.truthMaintenance">false</entry>
+<entry key="com.bigdata.rdf.store.AbstractTripleStore.textIndex">false</entry>
+<entry key="com.bigdata.namespace.lab.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
+<entry key="com.bigdata.rdf.store.AbstractTripleStore.justify">false</entry>
+<entry key="com.bigdata.namespace.lab.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
+<entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
+<entry key="com.bigdata.rdf.store.AbstractTripleStore.axiomsClass">com.bigdata.rdf.axioms.NoAxioms</entry>
+<entry key="com.bigdata.rdf.sail.namespace">[NAMESPACE]</entry>
+<entry key="com.bigdata.rdf.store.AbstractTripleStore.quads">false</entry>
+<entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">false</entry>
+<entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
+
+</properties>

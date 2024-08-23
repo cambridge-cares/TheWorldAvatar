@@ -1,0 +1,1248 @@
+﻿
+=======================================================================
+AERMET Version 22112
+=======================================================================
+
+       AERMET 22112 represents an update of the AERMET code from version 
+       21DRF. The changes listed in this document reflect changes made to 
+       AERMET since the 21DRF version.
+       
+-----  BUG FIXES
+
+       1.  Correct mechanical mixing heights for convective hours for ONSITE 
+           or PROG applications involving input mixing height. Mechanical 
+           mixing height is now calculated for convective hours and the 
+           input mixing height is assigned to the convective mixing heights. 
+           This change makes AERMET consistent the AERMOD formulation 
+           (See AERMOD Model Formulation document, Appendix A, Section A.11)
+       
+       2.  Correct a bug to initialize the variable SAVEWAN in the READ_ISHD 
+           subroutine
+       
+       3.  Correct a bug in subroutine AUDIT_SUMM that references the 
+           UP_AUDIT_INDEX array when it has not been allocated and no soundings 
+           have been read. Only reference the array if there are valid soundings
+       
+       4.  Correct a bug related to the MODIFY keyword in the UPPERAIR pathway
+       
+       5.  Correct a bug for the RANGE keyword with SURFACE data
+       
+       6.  Correct a bug in READ_EXT in the surface module that allowed 
+           AERMET to see non-ASOS observations as ASOS observations and 
+           apply the ASOS truncation correction; Non-ASOS observations 
+           now seen as non-ASOS
+       
+
+-----  ENHANCEMENTS
+
+       1.  Modified AERMET to ignore the input surface friction velocity (u*) 
+           and cloud cover if input data is prognostic and overland. This 
+           change makes AERMET 22112 consistent with past versions of AERMET 
+           when reading prognostic data
+       
+       2.  Modified PBL_PROC to recalculate u* and Monin-Obukhov length (L) 
+           for overwater applications when the reference wind speed is reset to 
+           √2σv (minimum wind speed in AERMET) because the wind speed is less 
+           than √2σv. Recalculated u* and L are based on the ratio of AERMET 
+           calculated u* based on the reset wind speed and original wind speed 
+           (See Section 5.6.2 of AERMET user’s guide for details)       
+       
+
+-----  MISCELLANEOUS
+
+       1.  Added code E81 to alert user that UPPERAIR data not read in and no 
+           input site-specific or prognostic mixing heights
+       
+       2.  Use code W75 to alert user of zero value for mixing height
+       
+       3.  New code I28, no sounding for the day
+       
+       4.  New code I29, no morning sounding for the day
+       
+       5.  Reset codes I80-I84 to I81-I85
+       
+       6.  New code I80 to alert user that prognostic data is overland and 
+           certain variables not used
+       
+       7.  New code I86, to alert user that u* and L are being calculated 
+           because wind speed has been reset to square root √2σv when an 
+           overwater application
+       
+       8.  New code I87 to alert user that mixing height is calculated for 
+           missing hour when ONSITE or PROG mixing height is input
+       
+       9.  Summary of calms, ASOS calms, variable winds, number of day with 
+           no soundings, number of days with no morning soundings, number 
+           of days with no convective conditions, number of observations 
+           per day for UPPERAIR, SURFACE, ONSITE/PROG, and ASOS 1-minute 
+           observations to REPORT file
+       
+      10.  AERMET run status (successful or unsuccessful) written to top 
+           of REPORT file
+
+=======================================================================
+AERMET Version 21DRF
+=======================================================================
+
+       AERMET 21DRF represents a complete update of the AERMET code from 
+       version 21112. New subroutines have been written and all previous 
+       subroutines have been deleted. While most changes will fall under 
+       enhancements there have been two bugs corrected since AERMET 21112.
+       
+-----  BUG FIXES
+
+       1.  Correct hourly site-specific precipitation values. Previous  
+           versions of AERMET did not reset output hourly precipitation so 
+           hours that were missing had the precipitation value for the 
+           previous occurrence of the precipitation for the hour.
+
+       2.  Smooth the mechanical mixing height for each based on the previous 
+           hour’s mixing height. Previously, this was only done for calculated 
+           mixing heights and not site-specific mixing heights. The AERMOD Model 
+           Formulation and Evaluation document specifies that the mixing 
+           heights should be smoothed regardless of whether the mixing height 
+           is calculated or read from site-specific data.       
+
+-----  ENHANCEMENTS
+
+       1.  AERMET is now a two-stage process instead of a three-stage process. 
+           The merge stage, stage 2 in previous versions of AERMET has been 
+           eliminated and the previous Stage 3 is now Stage 2. If the MERGE 
+           pathway is found in the AERMET control file, AERMET will ignore the 
+           associated keywords. Likewise, if AERMET encounters the DATA keyword 
+           with the METPREP pathway, AERMET will ignore the DATA keyword and 
+           associated file (old Stage 2 output)
+              
+       2.  AERMET can now run stage 1 and 2 in one single AERMET run instead of 
+           separate runs as with previous AERMET versions. Each stage can still 
+           be run separately.
+       
+       3.  EXTRACT and QAOUT files are now optional when running stage 1 and 2 
+           in the same AERMET run
+       
+       4.  AERMET will now keep the case (lower or upper case) of any input or 
+           output files, instead of assuming all uppercase for filenames. This 
+           makes the code more portable for Linux operating systems as Linux 
+           systems are case sensitive while DOS systems are case insensitive.
+       
+       5.  A new averaging option for vector averaging of winds has been added 
+           to Stage 1 for sub-hourly site-specific data. The user invokes the
+           option by specifying the word VECTOR after the number of observations 
+           per hour with the OBS_HOUR keyword. The default averaging is a scalar 
+           average
+       
+       6.  Surface data checked against XDATES after conversion from GMT to LST 
+           and hour 00-23 to 01-24
+       
+       7.  A new upper air data source, the Integrated Global Radiosonde Archive 
+           (IGRA), has been added in addition to the 6201 and FSL formats
+       
+       8.  A debug option has been added to help in diagnosing calculated variables
+           or report additional details on ISHD processing or upper-air calculated 
+           variables
+       
+       9.  Addition of a new pathway, PROG for prognostic data. The PROG pathway is 
+           analogous to the ONSITE pathway and uses the same keywords. The PROG 
+           pathway is utilized for prognostic data to allow for processing of 
+           certain variables when the application is overwater versus overland. 
+           When using the PROG pathway, AERMET will output a text string to the 
+           AERMET OUTPUT file in the header and for each hour denoting that the 
+           data is prognostic. This allows AERMOD to know the data is prognostic
+       
+      10.  New ONSITE variables have been added as input variables for overwater 
+           processing for the PROG pathway
+
+      11.  New optional parameter to denote overland or overwater data for DATA 
+           keyword for the ONSITE or PROG pathway. The optional parameter informs 
+           AERMET which input variables to use in calculations. Overland data is 
+           valid for both the ONSITE and PROG pathway, but overwater is only 
+           valid for the PROG pathway.
+
+      12.  If using prognostic data over water, AERMET will use the Monin-Obukhov 
+           length to determine the stability for the hour. If overland or input 
+           Monin-Obukhov length is missing for the hour, the standard solar 
+           angle approach is used to determine stability
+      
+      13.  AERMET now allows for the specification of year specific surface 
+           characteristics via the FREQ_SECT, FREQ_SECT2, AERSURF, and 
+           AERSURF2 keywords. This allows for a multi-year AERMET run for 
+           stage 2 in one AERMET run instead of separate annual AERMET runs 
+           when surface characteristics change on an annual basis.
+
+      14.  For seasonal surface characteristics only, AERMET uses the primary 
+           and secondary station coordinates to determine the hemisphere of 
+           the respective station. This is used to allocate the seasonal 
+           characteristics to the appropriate months based on the hemisphere.          
+
+-----  MISCELLANEOUS
+
+       1.  Years associated with XDATES must be 4-digit years
+
+       2.  Stage 1 EXTRACT and QAOUT files have different formats between 
+           AERMET 21DRF and previous versions. The ONSITE QAOUT file now 
+           has a consistent format whereas before the QAOUT file followed the format of the raw input file
+
+       3.  The 3280 format for SURFACE data has been dropped due to being 
+           obsolete
+
+       4.  The no persistence keyword, NOPERS, used for cloud cover and 
+           temperature substitution for hours 23 and 24 in METPREP are now 
+           obsolete. These keywords were present because previous versions 
+           of AERMET processed each day separately within the program and 
+           previous versions could not read ahead to the next day to allow 
+           for hours 23 and 24 interpolation. Based on the recoding of AERMET, 
+           AERMET can now read the next day’s observations so hours 23 and 24 
+           can be interpolated in the same manner as other hours in the day
+       
+       5.  In previous versions of AERMET, when processing NWS data, if hour 
+           24 was completely missing from the stage 2 output, i.e., the hour 
+           was not in the raw data file in stage 1, AERMET would copy hour 23 
+           (if available) to hour 24 for the day. This is no longer done in 
+           21DRF AERMET so hour 24 may be missing in the final AERMET output 
+           or temperature and cloud cover may be substituted from hour 23 of 
+           the same day and hour 1 or 2 of the next day. This change could 
+           result in differences for hours 24, 1, and 2 when comparing 21DRF 
+           AERMET to previous versions of AERMET
+       
+       6.  Real variables are now processed as double precision variables
+       
+       7.  NWS wind speeds associated with variable wind directions are not 
+           corrected for truncation in Stage 2 as done in previous versions 
+           of AERMET
+       
+=======================================================================
+AERMET Version 21112
+=======================================================================
+
+       This revised version of AERMET (dated 21112) includes several
+       modifications relative to the previous version (dated 19191);
+       see AERMET Model Change Bulletin (MCB) #10 and AERMET User's
+       Guide.
+
+-----  BUG FIXES
+
+       1.  Updated module ASOS_COMMDATES to correct anemometer height for
+	       Willimantic Airport from 1.21 to 7.92 m.  
+       2.  Updated module ASOS_COMMDATES to correct WBAN numbers for
+           Harriman (54768) and Ann Arbor (94889).  Corrected coordinates
+           for Harriman to 42.7N, 73.17W.  Corrected coordinates for Ann
+           Ann Arbor to 42.22N, 83.74W.
+
+       3.  Updated module ASOS_COMMDATES to correct WBAN for Francisco/
+           Saipan International Airport to 41418.  
+
+       4.  Updated module ASOS_COMMDATES to correct latitude for Challis Airport to 44.52. 
+           Corrected longitude for Willow Run to 83.53 W.  
+           Corrected longitude for Oneida County Airport to 75.38 W. 
+
+       5.  Reset convective mixing height to missing if convective mixing height is zero in subroutine CBLHT.  
+           Change does not affect AERMOD results as other convective parameters are already missing.
+
+       6.  Update subroutine OSHRAV to average heights when sub-hourly site-specific data is read.
+
+       7.  Update format statement for writing missing variables at a level in subroutine UAQASM.  
+           Update is to allow 3 digits for the level instead of 2.  The change does not affect data 
+           output, only reporting of data.
+
+       8.  Update MPPBL to initialize the input albedo for subroutine NR_ANG when processing site-specific 
+           data when temperature available but no cloud cover or no temperature and no cloud cover.
+
+       9.  Update subroutine RDISHD to not reset missing wind direction to 9990 from 999 in order for AERMET 
+           to not replace a valid observation with a missing observation.
+
+      10.  Update subroutine RDISHD to read the USAF ID in as character instead of integer to accommodate 
+           newer stationswith non-numeric USAF IDs.
+
+      11.  Update subroutine RDISHD to check the date as well as the hour for potential duplicate observations to avoid 
+           losing an hour on a day when the next observation in the ISHD file is the same hour but a different day.
+
+      12.  Update subroutine OSQACK to only write out 2-digit years to avoid a format overflow when the site-specific data   
+           has 4-digit years.This change does not affect data output, only reporting the date to the screen.
+
+      13.  Update MPPBL to only calculate mechanical mixing heights if ONSITE mixing heights are not provided.
+  
+      14.  Update SUBST.FOR to calculate station pressure from onsite elevation (if available) from standard 
+           atmosphere using SURFACE temperature, and ONSITE temperature is not available for the hour.  
+           This change makes the code consistent with the AERMET User's Guide, Section 5.6, bullet 2(h), page 5-13.
+
+      15.  Updated SUMHF.FOR to check for missing heat flux values when checking for negative heat flux values 
+           throughout the day to determine the last convective hour of the day for heat flux integration to calculate 
+           convective mixing heights.  Previously, AERMET did not check for missing values so a positive heat flux 
+           followed by two missing values early in the convective portion of the day could result in a short convective day.
+
+      16.  Updated SUMHF.FOR to only interpolate missing heat flux values for convective hours if the hour is already 
+           determined to be convective based on solar angle in MPPBL.FOR.  Previously, AERMET interpolated for any 
+           missing hour that was next to a convective hour, even if the interpolated hour was stable.
+      17.  Updated MPPBL and SMTHZI to check that the previous hour is also the same day as the current hour when 
+           smoothing the mechanical mixing height
+
+=======================================================================
+
+       This revised version of AERMET (dated 19191) includes several
+       modifications relative to the previous version (dated 18081);
+       see AERMET Model Change Bulletin (MCB) #9 and AERMET User's
+       Guide.
+
+ https://www.epa.gov/scram/meteorological-processors-and-accessory-programs#aermet
+
+
+-----  MODIFIED BY:    
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       July 10, 2019
+
+-----  MODIFIED FROM:         AERMET
+                       (Version Dated 18081)
+
+
+-----  BUG FIXES
+
+       1.  Modified subroutine MPPBL to correct issues with onsite
+           mixing height check when no non-missing convective mixing
+           heights (ZICONV).
+
+       2.  Corrected FORMAT statement in AUDIT.FOR to allow for larger
+           number for NTOT and upper air soundings.
+
+       3.  Modified subroutine RDISHD to replace a duplicate observation's
+           precipition for a given hour if the newewst precipitation is missing
+           or zero and the previous precipitation read for the hour is non-missing
+           and zero or greater.
+       4.  Removed check for missing station pressure and boundary checks on station
+           pressure for a sounding only when it is the first sounding.  The boundary
+           checks occur for each sounding and are used to determine the FSL version
+           and allows for a mix of old and new FSL formats in case data was
+           manually substituted into the FSL file.
+
+=======================================================================
+
+       This revised version of AERMET (dated 18081) includes several
+       modifications relative to the previous version (dated 16216);
+       see AERMET Model Change Bullentin (MCB) #8 and AERMET User's
+       Guide Addendum.
+
+ https://www.epa.gov/scram/meteorological-processors-and-accessory-programs#aermet
+
+
+-----  MODIFIED BY:    
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       March 22, 2018
+
+-----  MODIFIED FROM:         AERMET
+                       (Version Dated 16216)
+
+
+-----  BUG FIXES
+
+       1.  Modified subroutine SUBST, to correct the precipitation 
+           code to liquid or frozen if the precipitation amount is 
+           greater than zero for National Weather Service data.  
+           Previously, there was a mismatch in the code and precip 
+           amounts.
+
+       2.  Modified subroutine SFQASM to backspace file 70 to avoid 
+           trying to write past end of file.
+
+       3.  Modified subroutine BULKRI to set variables USTAR1, THSTR1,
+           and OBU to missing when variable Z_OVER_L > 0.7, to avoid 
+           NaN’s in the AERMET output surface file.
+
+-----  ENHANCEMENTS:
+
+       1.  Modified program AERMET to allow the user to input the 
+           stage runstream control filename on the command line when 
+           calling AERMET.  If no filename is provided, AERMET looks 
+           for the default ‘aermet.inp’.
+
+=======================================================================
+
+       This revised version of AERMET (dated 16216) includes several
+       modifications relative to the previous version (dated 15181);
+       see AERMET Model Change Bullentin (MCB) #7 and AERMET User's
+       Guide Addendum.
+
+       http://www.epa.gov/ttn/scram/metobsdata_procaccprogs.htm#aermet
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       August 3, 2016
+
+-----  MODIFIED FROM:         AERMET
+                       (Version Dated 15181)
+
+
+-----  BUG FIXES
+
+       1.  Modified subroutines MPFIN and SUBST to set RANDOM as the
+           default selection for the WIND_DIR variable under the
+           METHOD option in Stage 3 for NWS wind directions. This
+           affects Stage 3.
+
+       2.  Modified subroutine UCALST to remove the code for
+           adjusting USTAR if CHEK .GT. 1 for the ADJ_U* option.
+           Also incorporated a lower limit of USTCR for USTAR based
+           on Equation 26 of Qian and Venkatram (BLM, 2011). This
+           affects Stage 3.
+
+       3.  Modified subroutine BULKRI to set a lower limit of 1.0m
+           for the Monin-Obukhov length (L) as one of the criteria
+           for exiting the DO WHILE loop to avoid NaN’s for USTAR in
+           the surface output file for the ADU_U* option. Subroutine
+           BULKRI was also modified to use BETAM = 5.0 for the
+           ADJ U* option instead of 4.7. This affects Stage 3.
+
+       4.  Modified subroutine MPMET to correct the FORMAT statement
+           for including the ‘BULKRN/MMIF’ string in the surface
+           file header record. This affects Stage 3.
+
+
+-----  Miscellaneous:
+
+       1.  Modified several subroutines with minor or cosmetic
+           changes to the documentation of user options and error
+           handling and reporting. This affects all stages.
+
+=======================================================================
+
+
+       This revised version of AERMET (dated 15181) includes several
+       modifications relative to the previous version (dated 14134);
+       see AERMET Model Change Bullentin (MCB) #6 and AERMET User's
+       Guide Addendum.
+
+       http://www.epa.gov/ttn/scram/metobsdata_procaccprogs.htm#aermet
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       June 30, 2015
+
+-----  MODIFIED FROM:         AERMET
+                       (Version Dated 14134)
+
+
+-----  Bug Fixes:
+
+       1.  Modified subroutines UCALST and MPPBL to incorporate a
+           constant value of THSTAR of 0.08, full inclusion of the
+           displacement height, and a modified formulation for     
+           Monin-Obukhov length for the ADJ_U* option based on Qian
+           and Venkatram (BLM, v138, 2011). Subroutine UCALST was
+           also modified to adjust USTAR for wind speeds below the
+           “critical” wind speed. This affects Stage 3.
+
+       2.  Modified subroutine BULKRI to correct the calculation of
+           CDN to use ZREF(IHR)/Z0(IHR) instead of Z2/Z0(IHR).
+           Subroutine BULKRI was also modified to use BETAM = 0.5
+           for the ADJ_U* option instead of 0.47. This affects
+           Stage 3.
+
+
+-----  Enhancements:
+
+       1.  Modified subroutine BULKRI to incorporate additional
+           refinements to the ADJ_U* Beta option in conjunction with
+           the Bulk Richardson Number (BULKRN) option, based on
+           Luhar and Raynor (BLM, v132, 2009), including a more
+           refined method for calculating THSTAR, and extending its
+           applicability for very stable/low wind conditions. This
+           affects Stage 3.
+
+       2.  Modified subroutine MERGE to include the year in the
+           Stage 2 table of Daily Output Statistics. This affects   
+           Stage 2.
+
+       3.  Subroutine GET620 was modified to issue a message if the
+           UALOC in the upper data file does not match UALOC
+           specified on the LOCATION keyword. This allows users to
+           track when data from alternative representative upper air
+           stations are used in conjunction with the UPPERAER tool.
+           This affects Stage 1.
+
+-----  Miscellaneous:
+
+       1.  Modified several subroutines with minor or cosmetic
+           changes to the documentation of user options and error
+           handling and reporting. This affects all stages.
+
+=======================================================================
+
+       This revised version of AERMET (dated 14134) includes several
+       modifications relative to the previous version (dated 13350);
+       see AERMET Model Change Bullentin (MCB) #5 and AERMET User's
+       Guide Addendum.
+
+       http://www.epa.gov/ttn/scram/metobsdata_procaccprogs.htm#aermet
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       May 14, 2014
+
+-----  MODIFIED FROM:         AERMET
+                       (Version Dated 13350)
+
+
+-----  Bug Fixes:
+
+       1.  Modified subroutines SUBST and MPPBL to correct potential
+           issues associated with the options that were introduced
+           in version 13350 to substitute for missing cloud cover 
+           (CCVR) and/or temperature (TEMP) by linear interpolation
+           across 1 or 2-hour gaps. This included an error that may
+           have resulted in substituted CCVR values larger than 10
+           for hour 01, which may have resulted in 'NaN' (not a
+           number) for some calculated variables.
+
+           Issues with CCVR substitutions may also have occurred for
+           applications using ONSITE meteorological data only, with
+           ONSITE net radiation (NRAD) or with solar radiation 
+           (INSO) and delta-T (DT01) data using the Bulk Richardson
+           Number (BULKRN) option. In these cases AERMET calculates
+           equivalent cloud cover values that are included in the
+           surface output file, but no substitutions for missing
+           values should be included. This affects Stage 3.
+
+       2.  Modified subroutine SUBST to remove the initialization of
+           the GOT_OSTMP logical variable to .FALSE. for the current
+           hour. The GOT_OSTMP variable is assigned a value in
+           subroutine GETTEMP prior to the call to subroutine SUBST.
+           This error may have affected calculations of station
+           pressure and relative humidity for applications with
+           ONSITE data, including relative humidity values greater
+           than 100 for applications with both SURFACE and ONSITE
+           data. This affects Stage 3.
+
+       3.  Modified subroutine GETTEMP to reinitialize the LTZMAX4T
+           variable to .TRUE. within the hour loop, indicating that
+           the maximum height for ONSITE temperature had not been
+           reached yet. The ONSITE temperature may have been
+           incorrectly interpreted as being missing in version 13350
+           for some cases. This affects Stage 3.
+
+       4.  Modified subroutines GETTEMP and SUBST to ensure that
+           substitutions for missing ONSITE temperature data are
+           only based on values from the same measurement level if
+           multiple levels of temperature are available. This
+           affects Stage 3.
+
+       5.  Modified subroutine MPPBL to address issues associated
+           with the selection of the appropriate upper air sounding
+           time. This includes use the INT function instead of NINT
+           when assigning ‘MyZone’ to determine the reference
+           sounding time based on the longitude of the location for
+           the default option. Subroutine MPPBL was also modified to
+           use an integer variable (ICHRND_UASRISE) instead of a
+           real variable (CHRND_UASRISE) for assigning the
+           ‘START_WINDOW’ when the UASELECT SUNRISE option is used.
+           This affects Stage 3.
+
+       6.  Modified subroutines FLOPEN and WRTCRD to use
+           STATUS='REPLACE' instead of STATUS='SCRATCH' when opening
+           the DEV70 and DEV75 "temporary" files to store the header
+           records in the ".IQA", ".OQA", and MERGE data files that
+           contain information for reprocessing of input options
+           during subsequent stages of AERMET processing. This
+           modification addresses issues that were encountered where
+           AERMET was not able to locate the 'SCRATCH' files when
+           applying a 64-bit version of AERMET. This affects all
+           stages.
+
+       7.  Modified subroutines SUMHF and SUNDAT to eliminate
+           integer/real mixed-mode calculations in summing the
+           hourly heat fluxes, and in calculating sunrise/sunset
+           times and solar elevation angles. This affects Stage 3.
+
+       8.  Modified subroutine BULKRI to include the THSTAR
+           adjustment for low solar elevation angles under the
+           original BULKRN method and for the
+           non-Default/BETA ADJ_U* option associated with the BULKRN
+           option. Subroutine BULKRI was also modified to avoid an
+           array subscript out-of-bounds error in cases where the
+           iterative approach does not converge within the specified
+           loop limits. This affects Stage 3.
+
+       9.  Modified subroutine MPFIN to include additional error
+           handling and reporting associated with processing of
+           surface characteristics This affects Stage 3.
+
+-----  Enhancements:
+
+       1.  Modified subroutines VRCARD, SUBST, MPPBL, and MPOUT to
+           allow users to disable substitutions for missing
+           CCVR and/or TEMP data that are based on persistence for
+           hours 23 and 24. Additional flags have been added to the
+           surface output file to identify when this option is
+           applicable. These changes also allow users to specify
+           either the NO_SUB or NOTSUB keyword to disable TEMP
+           substitutions. This affects Stage 3.
+
+       2.  Subroutine OSDTCD was modified to include logical
+           variables to identify the availability of ONSITE data for
+           ambient temperature, solar radiation/insolation, cloud
+           cover, net radiation, delta-T, and/or mixing heights.
+           Several other subroutines were modified, including MPPBL,
+           MPMET, MPFIN, and MPTEST to track whether substitutions
+           for missing temperature and/or cloud cover should be
+           implemented by default, based on whether only ONSITE data
+           or only SURFACE data are available for a given parameter.
+           Cloud cover and temperature substitutions were not
+           implemented by default in v13350 if both SURFACE and
+           ONSITE data were available, irrespective of whether the
+           substituted parameter was included in both SURFACE and
+           ONSITE data inputs. Version 14134 will apply CCVR and/or
+           TEMP substitutions by default if the parameter is only
+           included in the SURFACE or ONSITE data. However, the user
+           options to disable substitutions are still available.
+           This affects Stage 3.
+
+       3.  Modified subroutines MPPBL, SUBST, and EQ_CCVR to address
+           potential issues with the use of ONSITE solar radiation
+           and delta-T data in lieu of cloud cover (utilizing the
+           delta-T based Bulk Richardson Number (BULKRN) method for
+           stable conditions) or if delta-T/BULKRN is being applied
+           with ONSITE or NWS cloud cover. These modifications were
+           focused especially on the transition from nighttime
+           stable conditions (controlled by delta-T/BULKRN) and
+           daytime convective conditions (controlled by solar
+           radiation data). The BULKRN/delta-T method will be used
+           if valid delta-T and ONSITE wind data are available and
+           if the delta-T lapse rate is stable, or if the cloud
+           cover or insolation data is missing, or if the cloud
+           cover is an "equivalent" cloud cover derived from solar
+           radiation data when the solar elevation angle is less
+           than the critical elevation angle for convective
+           conditions.
+
+           The critical solar elevation angle was also modified to
+           use an average of the previous 24-hours of temperature
+           data (with at least 75% data capture), instead of a
+           default value of 288 K, for hours when the temperature is
+           missing. An assumption of 5/10 cloud cover is also used
+           in the calculation of critical solar elevation angle for
+           hours when cloud cover is missing. Since the model will
+           not compute concentrations for these hours due to missing
+           temperature and/or cloud cover the effect of these
+           changes on modeled concentrations is likely to be
+           minimal. Furthermore, this approach should provide a
+           reasonable estimate of early morning heat fluxes, and
+           treating these hours as missing in terms of heat flux
+           could result in the entire convective portion of the day
+           being missing. This affects Stage 3.
+
+       4.  Subroutine EQ_CCVR was modified to account for cases when
+           the clear sky insolation value, QRNOT, is less than or
+           equal to 0. The equivalent CCVR is set to 0 in these
+           cases. This affects Stage 3.
+
+       5.  Modified subroutines MPMET, MPFIN, MPOUT, and AERSURF to
+           track and report the use of MMIF-generated inputs, in the
+           form of pseudo-ONSITE data alone (including "ONSITE"
+           mixing heights) or as pseudo-ONSITE and UPPERAIR data.
+           The use of MMIF-generated inputs is gleaned from
+           information in the AERSURF input file of surface
+           characteristics if it is used in Stage 3. The use of MMIF
+           data is flagged in the header record of the surface file
+           and by the use of the 'MMIF-OS' flag instead of the
+           hourly NAD-OS, ADJ-SFC, etc., flags associated with
+           ONSITE and/or SURFACE data.
+
+           Subroutines MPMET, MPFIN, and MPOUT were also modified to
+           track and report the use of the Bulk Richardson Number 
+           (BULKRN) option based on delta-T measurements, in lieu of
+           cloud cover, for stable conditions. For applications
+           using the BULKRN option, the header record of the surface
+           file will include the 'BULKRN' flag. An additional 'MMIF'
+           flag will be included if the BULKRN option is associated
+           with use of MMIF data. This affects Stage 3.
+
+       6.  Modified subroutine GET620 to allow the user to specify a
+           standard 5-digit WBAN, instead of an 8-digit number with
+           3 leading 0's, for processing upper air data in the 6201
+           format. Checks have also been included to identify issues
+           that may occur when users specify the 6201VB (TD-6201
+           variable-length block) format for upper air data. This
+           affects Stage 1.
+
+       7.  Modified subroutine GETFSL to read the WMO number from
+           upper air data in the FSL format, in addition to reading
+           the WBAN, and assign the WMO number to the BUF08(1)
+           variable if WBAN = '99999' to support non-US
+           applications. This affects Stage 1.
+
+       8.  Modified subroutines SETUP, MPPROC, OSCARD, MRCARD,
+           WRTCRD, and HEADER to allow re-processing of the XDATES
+           information from the MERGE file header records. This
+           information is included in the Stage 3 report, unless the
+           user has specified XDATES in the Stage 3 input file. Also
+           modified subroutine MERGE to use a consistent form for
+           reporting the extract dates in the report files across
+           all three stages. Subroutine CHROND was modified to fully
+           support 4-digit years and subroutine XDTCRD was modified
+           to use 4-digit years for extract dates in the report
+           files instead of 2-digit years. This affects Stage 3.
+
+-----  Miscellaneous:
+
+       1.  Modified several subroutines with minor or cosmetic
+           changes to the documentation of user options and error
+           handling and reporting, including elimination of trailing
+           blanks associated with filenames, etc., to minimize line
+           wrap in the AERMET report files. This affects all stages.
+
+       2.  Modified several subroutines to replace the FLOAT Fortran
+           function with the REAL function to convert integer
+           variables to reals. This affects all stages.
+
+=======================================================================
+
+       This revised version of AERMET (dated 13350) includes the
+       following modifications relative to the previous version
+       (dated 12345); see MCB#4 and updated User's Guide Addendum:
+
+
+-- Bug Fixes:
+
+   1.  Modified subroutine UCALST to incorporate AECOM's recommended
+       corrections to theta-star under the ADJ_U* Beta option.
+
+   2.  Modified subroutine MPMET to correct assignment of time-zone
+       adjustment (ZONE) to be based on the upper air time-zone (UALST)
+       for cases where both upper-air data and ONSITE mixing heights
+       are available.
+
+   3.  Modified subroutine SBLHT to correct the coefficient for
+       the mechnical mixing height from 2300 to 2400 based on
+       the original Venkatram reference (BLM, 2009).
+
+   4.  Modified subroutine MPPBL to correct the initialization of
+       the NO_SKY variable for missing on-site cloud cover to use
+       the OSTSKY(2) value based on the missing data code input by
+       the user, instead of a value of 99. This error could have
+       resulted in on-site cloud cover being flagged as missing
+       inappropriately in previous versions.
+
+   5.  Modified subroutine O3NEXT to remove the conversion of
+       delta-T values to lapse rate values (delta-T/delta-z)
+       before calling subroutine REALQA, which compares the value
+       to upper and lower bounds based on delta-T values. This
+       could have resulted in a large number of spurious QA warnings
+       for delta-T values out-of-range.
+
+   6.  Modified subroutine RDISHD to correct the processing of ASOS
+       cloud cover data based on the GA1-GA6 codes to avoid
+       inadvertently assigning a missing code to the ASKY variable.
+       Also modified subroutine RDISHD to move the check for hour
+       0 (zero) later in the processing in order to avoid using
+       a "special" ISHD observation that occurs on the hour instead
+       of a "non-special" (i.e., preferred) observation that occurs
+       earlier.
+
+   7.  Modified subroutine MPFIN to include additional error
+       checking and reporting regarding the completeness of the
+       surface characteristics arrays. Errors in processing user-
+       specified surface characteristics (i.e., not generated by
+       AERSURFACE) may have occurred in previous versions. This
+       modification also includes initializing the storage arrays
+       for surface characteristics in BLOCK1.INC to -9.0 instead
+       of 0.0.
+
+   8.  Modified several subroutines to allow the use of on-site
+       mixing heights only (OSMIX), without requiring upper air
+       data.  In these cases, the LOCATION keyword on the METPREP
+       pathway can be used to specify the time zone adjustment from
+       local time to GMT, since the time zone specified on the
+       ONSITE pathway is likely to be for local time.  Otherwise,
+       AERMET would assume GMT as local time and results would
+       be incorrect (unless local time actually was GMT). This
+       includes a modification to subroutine MPCARD to call
+       subroutine MPPROC to obtain information on OSMIX and UADATA,
+       before the METPREP LOCATION keyword is processed, and to
+       to return the new MPLST variable from the location keyword
+       processed in subroutine LOCCRD to identify the local vs.
+       GMT zone adjustment for cases with only ONSITE data. The
+       call to subroutine MPPROC, previously made in subroutine
+       SETUP, has been removed.
+
+       The warning message generated in subroutine LOCCRD was
+       also modified to indicate that the METPREP LOCATION
+       keyword is no longer considered obsolete if OSMIX and
+       no UADATA are being used.
+
+       Additional modifications were made to the initialization
+       and processing of the location IDs for the surface (SF),
+       upper air (UA) and onsite (OS) locations in order to
+       select the appropriate location for determining time
+       zone adjustments in Stage 3 processing. Previous
+       versions used character variables of various lengths
+       that were initialized as blank fields in WORK1.INC.
+       However, the initializations were accomplished by an
+       EQUIVALENCE statement in WORK1.INC, which may cause
+       problems when checking whether a location ID was
+       blank by comparing to the equivalenced variables.
+
+   9.  Modified subroutine MPPBL to correct the error message
+       associated with missing station pressure (FORMAT 1022)
+       which was also used for missing sky cover data.  A new
+       FORMAT statement (1021) was added for use with missing
+       station pressure. Also removed several FORMAT statements
+       in MPPBL that were not used.
+
+-- Enhancements:
+
+   1.  Modified subroutine BULKRI to incorporate a modified Bulk
+       Richardson Number approach under the ADJ_U* Beta option,
+       based on Luhar and Raynor (2009).  As with the ADJ_U* Beta
+       option incorporated in UCALST for applications which do not
+       employ the BULKRN option, this method is considered a
+       non-DFAULT option requiring approval as an alternative
+       model for use in regulatory applications.
+
+       Luhar A.K. and K. N. Rayner, 2009. Methods to Estimate Surface
+            Fluxes of Momentum and Heat from Routine Weather Observations
+            for Dispersion Applications under Stable Stratification.
+            Boundary-Layer Meteorology. 132:437454.
+
+   2.  Modified subroutines MPPBL, SUBST, VRCARD, and MPTEST to
+       include substitutions for missing cloud cover data and/or
+       missing ambient temperature by interpolating across 1 or 2-hour
+       gaps in the input data. New subroutines (GETCCVR and GETTEMP)
+       were also created to facilitate this enhancement.  The default
+       option is for AERMET to apply the substition for both missing
+       cloud cover and temperature, unless the user has specified
+       both SURFACE and ONSITE data.  New options have been added
+       to the METHOD keyword on Stage 3 that allow the user to
+       disable the cloud cover and/or temperature substition(s)
+       in cases where only SURFACE or ONSITE data are available,
+       or to activate the options in cases where both SURFACE and
+       ONSITE data are available. Subroutines MPMET and MPOUT
+       were also modified to include appropiate flags in the
+       surface output file indicating when these options have
+       been utilized.
+
+-- Miscellaneous:
+
+   1.  Modified several subroutines to improve error handling and
+       reporting in general, in addition to the modifications in
+       subroutine MPFIN described above as item 5 under Bug Fixes
+       to correct a potential bug related to processing of surface
+       characteristics.
+
+   2.  Modified subroutine MPFIN to include the temporal frequency
+       of the original user input of surface characteristics, i.e.,
+       MONTHLY, SEASONAL, or ANNUAL, since the summary table included
+       in the Stage 3 report file automatically lists values by month.
+
+   3.  Modified subroutine MPFIN to eliminate a redundant message
+       if the default ((Holtslag) method is used for the stable
+       boundary layer, without the non-default ADJ_U* Beta option.
+
+   4.  Included a DATA statement in subroutine RDISHD to initialize
+       the default "window" for acceptable data records, INC = 30
+       (i.e., up to 30 minutes before the hour, including the hour)
+       instead of a standard assignment statement.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       December 16, 2013
+
+-----  MODIFIED FROM:         AERMET
+                       (Version Dated 12345)
+
+=======================================================================
+
+       This revised version of AERMET (dated 12345) includes the
+       following modifications relative to the previous version
+       (dated 11059); see MCB#3 and updated User's Guide Addendum:
+
+
+-- Bug Fixes:
+
+   1.  Modified subroutine DOCLDS to correct for errors that
+       result when blank spaces occur between the cloud cover
+       and ceiling height fields for HUSWO surface data. Also
+       modified DOCLDS to no longer accept invalid ASOS cloud
+       cover codes for HUSWO surface data. These bug fixes
+       should not affect results for HUSWO surface data that
+       were extracted from the HUSWO CD, but could affect
+       results significantly for applications using surface
+       data that were reformatted to the HUSWO format from
+       another data format.
+
+   2.  Modified subroutine CBLHT to correct an error in the
+       calculation of the convective mixing height. Previous
+       versions of AERMET may have underestimated convective
+       mixing heights, and in turn the convective velocity
+       scale (w*), due to this error. The magnitude of the
+       errors would tend to be larger for cases where the
+       vertical temperature profile based on the upper air
+       sounding was based on fewer sounding levels. However,
+       due to the widespread nature of these convective mixing
+       height errors, AERMOD modeling results are likely to
+       be affected to some degree by this AERMET bug fix in
+       most cases.
+
+       The magnitude and direction of changes in AERMOD model
+       results due to this convective mixing height bug fix
+       will vary depending on the resolution of the upper
+       air data and the characteristics of the sources and
+       terrain included in the AERMOD model application. Also,
+       as noted in Section 3.2 of the "AERMOD Implementation
+       Guide," upper air data input to AERMET should be based
+       on "all levels" or "mandatory and significant levels"
+       to ensure adequate resolution of the vertical profile;
+       use of upper air data based on "mandatory levels only"
+       is not acceptable for AERMOD modeling applications.
+
+   3.  Modified subroutines CBLHT, MPPBL, MPMET, and SETUP
+       to check for ONSITE mixing heights (OSMIX) in the
+       determination of data completeness, and adjusted
+       warning messages to account for possible presence
+       of both ONSITE mixing heights and UPPERAIR data.
+
+
+-- Enhancements:
+
+   1.  Added a new THRESH_1MIN keyword to Stage 3 processing.
+       This optional keyword allows the user to specify a threshold
+       wind speed below which winds reported in the 1-minute ASOS
+       data processed through AERMINUTE, if in use, are considered
+       calm. There is no default value; however, a warning message
+       will be generated if the user-specified threshold is greater
+       than 0.5 m/s, and a fatal error message will be generated if
+       the user-specified threshold is less than zero (0) or greater
+       than 1.0.
+
+       This new keyword also required that the length of the
+       KEYWRD variable be increased from 10 to 12 characters,
+       resulting in modifications to several subroutines.
+
+   2.  Incorporated new "BETA" option to adjust u* (ustar) for
+       low wind speed stable conditions, based on Qian, W.,
+       and A. Venkatram, 2011: Performance of Steady-State
+       Dispersion Models Under Low Wind-Speed Conditions.
+       Boundary-Layer Meteorology, 138, 475-491. The new option
+       is selected by including the METHOD STABLEBL ADJ_U*
+       keyword on the METPREP pathway in the Stage 3 input file.
+
+       The ADJ_U* "BETA" option is considered to be a non-Default
+       option and is therefore subject to the alternative model
+       provisions in Section 3.2 of Appendix W (40 CFR Part 51).
+       Users should coordinate with the appropriate reviewing
+       authority regarding the procedures and requirements for
+       approval of this BETA option for regulatory modeling
+       applications.  Use of this option also requires the user
+       to include the BETA option on the CO MODELOPT keyword in
+       the AERMOD input file.
+
+   3.  Arrays for storing upper air soundings were increased to
+       accommodate up to 48 soundings, including the current
+       day and the previous day.
+
+
+-- Miscellaneous:
+
+   1.  The value used to adjust ASOS wind speeds to account for
+       bias due to wind speeds being truncated to whole knots was
+       modified to include three significant digits (from 0.26 m/s
+       to 0.257 m/s, based on 0.5 kt). This modification avoids
+       potential for mis-characterization of calm vs. non-calm
+       due to precision issues associated with the truncation
+       adjustment under the new THRESH_1MIN option.
+
+   2.  Modified subroutine GETFSL to issue a non-fatal warning
+       instead of a fatal error message when the UA station ID
+       specified on the UA LOCATION keyword does not match the
+       UA station ID in the data file. This change will accommodate
+       substitutions for missing UA soundings using data from other
+       representative UA stations, and will document when such
+       substitutions were made in the Stage 1 report file.
+       Since all convective hours will be missing on days when the
+       UA sounding is missing, this will allow users to minimize
+       the number of missing hours in the AERMET-processed surface
+       file due to missing UA soundings, while maintaining a record
+       of when such substitutions were made.
+
+   3.  Modified subroutine RDHUSW for processing HUSWO surface
+       data to change the "no records extracted" warning message
+       to a fatal error.
+
+   4.  Modified subroutines EQ_CCVR and INCRAD to remove a trailing
+       period within the single quotes in the INCLUDE 'WORK1.INC'
+       statements.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       James O. Paumier
+                       AMEC, Inc.
+
+                       December 10, 2012
+
+-----  MODIFIED FROM:          AERMET
+                       (Version Dated 11059)
+
+=======================================================================
+
+       This revised version of AERMET (dated 11059) includes the
+       following modifications relative to the previous version
+       (dated 06341); see MCB#2 and updated User's Guide Addendum:
+
+
+-- Bug Fixes:
+
+   1.  Corrected several problems associated with the processing of
+       subhourly ONSITE meteorological data, including:
+
+       a) Modified the procedure for calculating hourly averages
+          to use the "hour-ending" convention in accordance with
+          Section 7.3 of "Meteorological Monitoring Guidance for
+          Regulatory Modeling Applications," EPA-454/R-99-005,
+          February 2000; previous versions used the "hour-beginning"
+          convention.
+
+       b) Corrected the procedure for calculating hourly averages
+          from subhourly values for sigma-theta.  Previous versions
+          used an equation in Section 5.2 of the AERMET User's Guide,
+          but this has been replaced with the equation referenced in
+          Table 8-3 of Appendix W. The equation from Section 5.2 of
+          the AERMET User's Guide was also coded incorrectly in
+          previous versions of AERMET, which resulted in runtime
+          errors in some cases due to taking a square root of a
+          negative number.
+
+       c) Corrected the processing of subhourly wind data to properly
+          code hours as calm when more than half of the samples for
+          the hour are non-missing, but below the wind threshold.
+          Previous versions coded these hours as missing rather than
+          calm.
+
+       d) Addressed several issues associated with the extraction of
+          ONSITE data that could result in erroneous values being
+          assigned to ONSITE variables, and also improved error
+          handling and reporting for the processing of ONSITE data.
+
+       e) Corrected problems associated with processing of ONSITE
+          precipitation data, including the fact that subhourly
+          precipitation values were averaged rather than summed
+          to determine the hourly value, and that negative values
+          were also included in the summed value (before averaging)
+          if the missing data code was not properly specified.
+
+   2.  The implementation of the SUBNWS option was corrected to
+       avoid using the BULKRN option using ONSITE delta-T data when
+       the ONSITE winds are missing and the reference winds are
+       based on SURFACE data. Vertical rofiles of ONSITE temperature,
+       sigma-theta, and sigma-w are also skipped if the reference
+       winds are based on SURFACE data.  These changes are intended
+       to avoid internal inconsistencies in the characterization of
+       the boundary layer that may occur with some combinations of
+       SURFACE and ONSITE data.
+
+   3.  Corrected problems with time zone adjustments for cases with
+       surface and onsite stations in different time zones.
+
+   4.  Incorporated changes to properly handle ISHD surface files
+       with the problem addressed on an interim basis by FIXISHD
+       utility, which is no longer required.
+
+-- Enhancements:
+
+   1.  Enhancements were made to the heirarchy for handling missing
+       station pressure to make full use of other available data and
+       of user-specified station elevations for SURFACE stations
+       and ONSITE stations, if available.
+
+   2.  Increased the maximum record length for the runstream input file
+       from 80 to 132 characters, removed any limit on the record length
+       for ONSITE data records, increased the maximum field length for
+       filenames from 48 to 96, and allow for use of double quotes ()
+       as field delimiters to support filenames with embedded spaces.
+
+   3.  Several enhancements to provide more flexibility in selecting
+       the most appropriate upper air sounding, including a new option
+       for a user-specified window on upper air observation time, and
+       an option for AERMET to automatically select the most appropriate
+       sounding based on local sunrise. These enhancements allow AERMET
+       to better utilize upper air data that occurs more frequently
+       than twice-daily, including "pseudo" upper air data derived from
+       gridded meteorological models or reanalysis data, if deemed to
+       be appropriate in the future (note that use of gridded model
+       outputs or reanalysis data in AERMET would be considered as
+       an alternative modeling technique at the present time).  These
+       enhancements also provide better support for applications of
+       AERMOD beyond the U.S.
+
+   4.  Enhancement to allow the use of hourly-averaged winds derived
+       from 1-minute ASOS wind data (TD-6405), generated by the new
+       AERMINUTE program, which can improve the representativeness
+       of airport wind data by providing hourly averages as well as
+       filling in for many hours that are missing in the standard
+       airport data archives due to calm or variable winds.
+
+   5.  Adjustment of ASOS-based wind speeds (including winds derived
+       from 1-minute ASOS data) by +0.5 knot to account for the bias
+       in reported ASOS wind speeds due to winds being truncated
+       (rather than rounded) to whole knots.  This includes changes
+       to several subroutines to allow tracking whether surface data
+       are ASOS or observer-based across all three stages of data
+       processing, and the inclusion of an ASOS 'flag' in the surface
+       extraction and surface QA files.  A database of ASOS commission
+       dates has been included to allow AERMET to determine whether
+       observations for a specific surface station are ASOS or not.
+       The surface output file format has also been modified to include
+       a character string for each hour identifying whether the wind
+       speeds have been adjusted or not to account for the truncation
+       of the ASOS winds ('ADJ-' or 'NAD-') and whether the reference
+       wind data is based on ONSITE, SURFACE or 1-MIN ASOS data (OS,
+       SFC, or A1).
+
+   6.  Several enhancements to the error handling and reporting related
+       to processing ONSITE data, including an option to use FREE
+       format to read the data and the option to specify missing data
+       codes and upper/lower bounds for ONSITE data as REAL variables.
+
+   7.  A new option/requirement incorporated in Stage 3 to specify a
+       secondary set of surface characteristics for use when NWS winds
+       are substituted for missing on-site winds using the SUBNWS option
+       on the METPREP pathway.  The primary set of surface characteristics
+       is used when the reference wind is based on ONSITE data, and the
+       secondary surface characteristics are used when SURFACE data are
+       substituted for missing ONSITE data.  This ensures that an
+       appropriate surface roughness will be used depending on the
+       location of the reference wind data.
+
+   8.  New keywords, AERSURF and AERSURF2, were added to the METPREP
+       pathway to allow users to specify an external file to read
+       for surface characteristics, such as an AERSURFACE output file,
+       rather than entering the data directly in the Stage 3 input
+       file.
+
+   9.  Enhancements to utilize on-site precipitation and relative
+       humidity data, if available, in the surface output file.
+
+-- Miscellaneous:
+
+   1.  The LOCATION keyword is no longer supported on the METPREP
+       pathway in Stage 3.  The METPREP LOCATION keyword had been used
+       as the location for determining sunrise for convective mixing
+       height calculations.  This could result in somewhat different
+       results using the same raw input data depending on the METPREP
+       LOCATION, which are not meaningful.  A non-fatal warning message
+       is issued if the METPREP LOCATION keyword is found, and the
+       location used to determine sunrise for convective mixing height
+       calculations is based on the primary surface station location,
+       i.e., the ONSITE station if available, or the SURFACE (NWS)
+       station location.
+
+   2.  Modified several subroutines to adjust the lower limit on the
+       value of surface roughness length to 0.0001 meters, rather than
+       0.001 meters.  This allows more flexibility for applications of
+       AERMET for overwater or other very low roughness settings.
+
+   3.  Several subroutines were modified to improve error handling and
+       reporting for all three processing stages, including adjustments
+       and improvements to the order and formatting of information in
+       the report file.
+
+   4.  Implemented some restrictions on the use of surface (NWS) data
+       outside the valid range of dates based on the surface data format,
+       i.e., data that have been reformatted from another file format.
+       These restrictions affect cloud cover for ASOS data in the SCRAM
+       or SAMSON format, since the SAMSON CDs and nearly all SCRAM surface
+       data predated the advent of ASOS in 1992.  The ASOS cloud covers
+       are set to missing for any SURFACE data input in the SCRAM or
+       SAMSON format, since the interpretation and formatting of ASOS
+       cloud cover codes cannot be verified in these cases.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       February 28, 2011
+
+-----  MODIFIED FROM:          AERMET
+                       (Version Dated 06341)
+
+=======================================================================
+                                 AERMET
+        Meteorological Preprocessor for the AERMOD Dispersion Model
+
+     PURPOSE:  Controls the overall flow of AERMET processing through
+               Stages 1, 2 and 3.
+
+               There are four data types that can be processed
+               through AERMET:
+
+                  UPPERAIR - Upper air soundings
+
+                  SURFACE  - Hourly surface weather observations
+
+                  ASOS1MIN - Hourly-averaged winds derived from
+                             1-minute ASOS data (TD-6405), processed
+                             by the AERMINUTE processor
+
+                  ONSITE   - User supplied on-site meteorological data
+
+                In Stage 1, the UPPERAIR and SURFACE data are extracted
+                from a standard archive-formatted file and the quality
+                of the data are assessed; also in this stage, the
+                quality of the ONSITE data are assessed, if provided
+                by the user. There is no standard archive format for
+                on-site data, hence, there is no data extraction.
+
+                In Stage 2, the data input in Stage 1 are combined,
+                or merged, into 24-hour blocks of data.
+
+                In Stage 3, the merged data from Stage 2 are processed
+                to determine boundary layer scaling parameters, compute
+                hourly mixing heights, and output hourly data formatted
+                for input to the AERMOD dispersion model.  Stage 3 output
+                consists of a "surface" file, with scaling paramters,
+                reference wind and temperature data, hourly mixing
+                heights, and other parameters that may be used with
+                the deposition algorithms in AERMOD; and a "profile"
+                file, with vertical profiles of wind, temperature, and
+                turbulence data collected from an onsite tower, if
+                available.
+
+     Initial Release:  December 1992
+
+     Maintained by: Pacific Environmental Services, Inc. (PES)
+                    Research Triangle Park, NC
+
+     Revision History:
+        10/18/96
+          - added the write statement to display processing setup and
+            processing completed messages
+
+        06/27/99
+          - added capability to process upper air data retrieved from
+            Radiosonde Data of North America compact disc (aka "FSL
+            data")
+
+        10/26/06
+          - A single executable (AERMET) was created, replacing
+            STAGE1N2 and STAGE3.
+
+        05/29/08: MACTEC Federal Programs
+          - Commented out opening unit 3 (the console or screen) all
+            references to unit 3 in the code have been changed to
+            * (default output)
+-----------------------------------------------------------------------

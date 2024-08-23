@@ -1,0 +1,26 @@
+version: "3.8"
+
+networks:
+  stack:
+    name: <STACK-NAME>
+    driver: overlay
+    attachable: true
+
+services:
+  solarkataster_agent:
+    networks:
+      - stack
+    image: solarkataster_agent:1.0.0
+    build: .
+    container_name: solarkataster_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "10101:8080"
+
+    volumes:
+      - external_maven_repo_solarkataster:/root/.m2
+
+volumes:
+  external_maven_repo_solarkataster:
+    name: "external_maven_repo_solarkataster"

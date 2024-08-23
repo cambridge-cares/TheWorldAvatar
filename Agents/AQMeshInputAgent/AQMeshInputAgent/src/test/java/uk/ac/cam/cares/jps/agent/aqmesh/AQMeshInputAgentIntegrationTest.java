@@ -10,6 +10,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+
+import com.github.stefanbirkner.systemlambda.Statement;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
+
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -35,7 +39,7 @@ public class AQMeshInputAgentIntegrationTest {
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
-    private final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+    private final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
             .withExposedPorts(9999);
     // Create Docker container with postgres 13.3 image from Docker Hub
     @Container
@@ -104,11 +108,15 @@ public class AQMeshInputAgentIntegrationTest {
         writePropertyFile(gasMappingFile, gasMappings);
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolder.getCanonicalPath().
-                replace("\\","/")));
+        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=AQMESH_MAPPINGS"));
         // Create agent
-        agent = new AQMeshInputAgent(propertiesFile);
-
+        try {
+            SystemLambda.withEnvironmentVariable("AQMESH_MAPPINGS", mappingFolder.getCanonicalPath()).execute((Statement) () -> {
+                agent = new AQMeshInputAgent( propertiesFile);
+            });
+        } catch (Exception e) {
+            //no Exception should be thrown here
+        }
         // Create and set time-series client //
         // Set endpoint to the triple store. The host and port are read from the container
         String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
@@ -226,7 +234,7 @@ public class AQMeshInputAgentIntegrationTest {
         // Should only insert the gas time-series
         agent.initializeTimeSeriesIfNotExist();
         Mockito.verify(tsClientSpy, Mockito.times(1)).
-                initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString());
+                initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any());
         // Check that time-series instances were created
         Assert.assertEquals(2, tsClient.countTimeSeries());
         // Check that all IRIs have a time-series attached and that they are attached to the same

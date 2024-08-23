@@ -1,0 +1,4 @@
+# ignore all test vapourtec input files and agilent hplc files
+*.csv
+*.xls
+*.txt

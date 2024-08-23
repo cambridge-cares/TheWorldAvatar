@@ -3,12 +3,9 @@ version: "3.8"
 services:
   # Blazegraph for tests
   website:
-    image: docker.cmclinnovations.com/blazegraph_for_tests:1.0.0
+    image: ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0
     build: "./blazegraph_for_tests"
     container_name: "blazegraph_for_tests"    
-    labels:
-      description: "A lightweight blazegraph image for use in testing."
-      authors: "support@cmclinnovations"
     ports:
       - 9999:9999
     restart: unless-stopped

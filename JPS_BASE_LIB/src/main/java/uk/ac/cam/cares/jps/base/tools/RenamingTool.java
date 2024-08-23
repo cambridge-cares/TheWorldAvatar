@@ -9,13 +9,12 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.ExprVar;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * Renaming Tool
@@ -144,7 +143,7 @@ public class RenamingTool {
 	 * 
 	 * @param kbClient
 	 */
-	public void renameString(StoreClientInterface kbClient) {
+	public void renameString(TripleStoreClientInterface kbClient) {
 		renameString(kbClient, null);
 	}
 	
@@ -155,7 +154,7 @@ public class RenamingTool {
 	 * @param StoreClient
 	 * @param graph
 	 */
-	public void renameString(StoreClientInterface kbClient, String graph) {		
+	public void renameString(TripleStoreClientInterface kbClient, String graph) {
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -180,7 +179,7 @@ public class RenamingTool {
 	 * 
 	 * @param StoreClient
 	 */
-	public void renameIRI(StoreClientInterface kbClient) {
+	public void renameIRI(TripleStoreClientInterface kbClient) {
 		renameIRI(kbClient, null);
 	}
 	
@@ -190,7 +189,7 @@ public class RenamingTool {
 	 * @param kbClient StoreClient
 	 * @param graph
 	 */
-	public void renameIRI(StoreClientInterface kbClient, String graph) {
+	public void renameIRI(TripleStoreClientInterface kbClient, String graph) {
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -210,7 +209,7 @@ public class RenamingTool {
 	 * @param whereFilter
 	 * @param whereUpdate
 	 */
-	private void performRename(StoreClientInterface kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
+	private void performRename(TripleStoreClientInterface kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
 		
 		if(splitUpdate == true) {
 			
@@ -418,16 +417,12 @@ public class RenamingTool {
 		if (exprFilter != null) {
 			where.addFilter(exprFilter);
 		}
-		
-		try {
-			where.addWhere(varS, varP, varO)
-				.addBind( "<" + strTarget + ">", varTargetURI)
-				.addBind( "<" + strReplacement + ">", varReplacementURI)
-				.addFilter(orSPO);
-		} catch (ParseException e) {
-			throw new JPSRuntimeException(e);
-		}
-						
+
+		where.addWhere(varS, varP, varO)
+			.addBind( "<" + strTarget + ">", varTargetURI)
+			.addBind( "<" + strReplacement + ">", varReplacementURI)
+			.addFilter(orSPO);
+
 		return where;
 	}
 	

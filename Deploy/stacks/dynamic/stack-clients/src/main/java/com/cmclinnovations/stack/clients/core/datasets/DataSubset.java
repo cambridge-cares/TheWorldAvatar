@@ -1,72 +1,55 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(Tabular.class), @Type(Vector.class), @Type(Raster.class) })
-public abstract class DataSubset {
-
-    private String name;
-    private String subdirectory;
-
-    @JsonProperty(defaultValue = "public")
-    private String schema;
-    private String table;
+@JsonSubTypes({
+        @Type(value = Tabular.class, names = { "Tabular", "tabular" }),
+        @Type(value = Vector.class, names = { "Vector", "vector" }),
+        @Type(value = OSMRouting.class, names = { "OSMRouting", "osmRouting", "OsmRouting", "osmrouting" }),
+        @Type(value = Raster.class, names = { "Raster", "raster" }),
+        @Type(value = RDF.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }),
+        @Type(value = TBoxCSV.class, names = { "TBoxCSV", "TboxCSV", "tboxcsv" }),
+        @Type(value = CityDB.class, names = { "CityDB", "citydb" }),
+        @Type(value = XtoCityDB.class, names = { "XtoCityDB", "xtocitydb" }) })
+public abstract class DataSubset extends AbstractDataObject {
+    protected final Optional<String> name = Optional.empty();
     @JsonProperty
-    private String sql;
-
-    @JsonProperty
-    private boolean skip;
+    private final Optional<Path> subdirectory = Optional.empty();
 
     public String getName() {
-        return (null != name) ? name : table;
+        return name.orElse(getSubdirectory().map(subdir -> subdir.getFileName().toString())
+                .orElseThrow(() -> new RuntimeException("Not all datasets have a name: " + this.getClass())));
     }
 
-    public String getSubdirectory() {
-        return null != subdirectory ? subdirectory : "";
+    public Optional<Path> getSubdirectory() {
+        return subdirectory;
     }
 
-    public String getSchema() {
-        return schema;
+    public boolean usesPostGIS() {
+        return false;
     }
 
-    public String getTable() {
-        return (null != table) ? table : name;
+    public boolean usesBlazegraph() {
+        return false;
     }
 
-    public boolean getSkip() {
-        return skip;
+    public boolean usesGeoServer() {
+        return false;
     }
 
-    public abstract void loadData(GDALClient gdalClient, String dataSubsetDir, String database);
-
-    public abstract void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
-            String database);
-
-    public void runSQLPostProcess(PostGISClient postGISClient, String database) {
-        if (null != sql) {
-
-            if (sql.startsWith("@")) {
-                String sqlFile = sql.substring(1);
-                try {
-                    sql = Files.readString(Path.of(sqlFile));
-                } catch (IOException ex) {
-                    throw new RuntimeException(
-                            "Failed to read SQL file '" + sqlFile + "' for data subset '" + getName() + "'.", ex);
-                }
-            }
-
-            postGISClient.executeUpdate(database, sql);
+    public void load(Dataset dataset) {
+        if (!isSkip()) {
+            loadInternal(dataset);
         }
     }
+
+    abstract void loadInternal(Dataset dataset);
+
 }

@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  access-agent:
+    image: ghcr.io/cambridge-cares/access-agent:1.7.0
+    build:
+        context: "../"
+        dockerfile: "./docker-build/Dockerfile"
+    container_name: access-agent
+    pull_policy: if_not_present
+    ports:
+      - "48888:8080"

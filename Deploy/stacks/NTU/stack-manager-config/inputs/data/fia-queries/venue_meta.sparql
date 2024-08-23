@@ -1,0 +1,16 @@
+PREFIX powsys: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+        BIND ("Venue Name" AS ?Property)
+        [IRI] powsys:hasVenueName ?Value.
+    } UNION {
+        BIND ("Venue Location" AS ?Property)
+        [IRI] powsys:hasLocation ?Value.
+    } UNION{
+        BIND ("Venue Capacity" AS ?Property)
+        [IRI] powsys:hasVenueCapacity ?Value.
+    }
+}

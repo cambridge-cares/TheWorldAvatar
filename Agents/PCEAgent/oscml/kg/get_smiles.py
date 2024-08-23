@@ -14,10 +14,13 @@ def get_smiles(spec_iri, kg_endpoint):
     {
     <#speciesIRI#> rdf:type OntoSpecies:Species .
         OPTIONAL {
-            <#speciesIRI#> OntoSpecies:inChI ?Inchi .
-            <#speciesIRI#> OntoSpecies:SMILES ?smiles .
+            <#speciesIRI#> OntoSpecies:hasInChI ?InchiIRI .
+            ?InchiIRI OntoSpecies:value ?Inchi.
+            <#speciesIRI#> OntoSpecies:hasSMILES ?smilesIRI .
+            ?smilesIRI OntoSpecies:value ?smiles
         }
     }
+    LIMIT 1
     """.replace('#speciesIRI#', spec_iri)
 
     response = queryKG(sparqlEndPoint=kg_endpoint, queryStr=query)

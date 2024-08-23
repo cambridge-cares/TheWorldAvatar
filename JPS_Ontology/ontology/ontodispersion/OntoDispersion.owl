@@ -1,0 +1,793 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontodispersion/"
+     xml:base="https://www.theworldavatar.com/kg/ontodispersion/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontodispersion="https://www.theworldavatar.com/kg/ontodispersion/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodispersion/">
+        <dc:date>23 May 2024</dc:date>
+        <owl:versionInfo>2.0</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasQuantity -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasQuantity">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Density"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/emits -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/emits">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PointSource"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasDispersionColourBar -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasDispersionColourBar">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionOutput"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionColourBar"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasDispersionMatrix -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasDispersionMatrix">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionOutput"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionMatrix"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasDispersionRaster -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasDispersionRaster">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionOutput"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionRaster"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasHeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasHeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionOutput"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/z"/>
+        <rdfs:comment>Height above ground of dispersion output</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasOntoCityGMLCityObject -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasOntoCityGMLCityObject">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/StaticPointSource"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:comment>The range should be an OntoCityGML object, using owl:Thing because there is no type declarations</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasPollutantID -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasPollutantID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionOutput"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasName">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>To store the literal of the namespace</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>To store the literal of the dispersion polygon</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Density -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Density"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
+    
+
+
+    <!-- http://www.w3.org/2006/time#Instant -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/2006/time#Instant"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/AermapOutput -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/AermapOutput">
+        <rdfs:comment>URL to download the AERMAP output file stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/BuildingsLayer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/BuildingsLayer">
+        <rdfs:comment>Name of the building layer attached to this simulation, stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/CII -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CII">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:label>CII [g CO&amp;#8322;/t.nm]</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/CO -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CO">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Carbon monoxide</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>CO</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/CO2 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CO2">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Carbon dioxide</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>CO&amp;#x2082;</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/CallSign -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CallSign">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Call sign</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/CourseOverGround -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CourseOverGround">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:comment>Course in degrees</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Course over ground</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Dimension -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Dimension">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:comment>Physical dimension of the ship</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Dimension [m]</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/DispersionColourBar -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionColourBar">
+        <rdfs:comment>File server URL to download colour bar, stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/DispersionMatrix -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionMatrix">
+        <rdfs:comment>URL to download the raw output file stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/DispersionOutput -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionOutput">
+        <rdfs:comment>A set of output generated by AERMOD agent</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon">
+        <rdfs:comment>Polygon representing average value of pollutant</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/DispersionRaster -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionRaster">
+        <rdfs:comment>Name of raster file, stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Draught -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Draught">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:comment>Maximum static draught of the ship</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Maximum static draught [m]</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/DynamicPointSource -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DynamicPointSource">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PointSource"/>
+        <rdfs:comment>A moving point source</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Emission -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Emission">
+        <rdfs:comment>Emission emitted by point source</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/EnergyEfficiency -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/EnergyEfficiency">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:label>Energy efficiency [-]</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/IMONumber -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/IMONumber">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>IMO number</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Latitude -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Latitude">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Latitude</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Location -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Location">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:comment>PostGIS point object stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Longitude -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Longitude">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Longitude</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/MMSI -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/MMSI">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:comment>Maritime mobile service identity</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>MMSI</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/NO2 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/NO2">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Nitrogen dioxide</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>NO&amp;#x2082;</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/NOx -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/NOx">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Nitrogen oxides</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>NO&amp;#8339;</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Name -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Name">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Name</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace">
+        <rdfs:comment>The blazegraph namespace to query buildings data from http://www.theworldavatar.com:83/citieskg</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/PM10 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/PM10">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Particulate matter less than 10 micrometer</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>PM10</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/PM2.5 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/PM2.5">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Particulate matter less than 2.5 micrometer</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>PM2.5</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/PointSource -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/PointSource">
+        <rdfs:comment>A point source emitting emissions</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/PollutantID -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/PollutantID">
+        <rdfs:comment>Superclass of pollutant identifier</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/RateOfTurn -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/RateOfTurn">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Rate of turn</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/SO2 -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/SO2">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Sulphur dioxide</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>SO&amp;#x2082;</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Scope -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Scope">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+        <rdfs:comment>Geospatial extend defining the simulation box as rectangle</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Ship -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Ship">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/DynamicPointSource"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:comment>Ship properties that contain time series </rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/ShipProperty -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment>Superclass of all ship properties</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:comment>Ship properties that do not change</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/ShipType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipType">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Ship type</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/ShipsLayer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipsLayer">
+        <rdfs:comment>Name of the ships layer in GeoServer stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/SimulationTime -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/SimulationTime">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:comment>Unix timestamp to run the simulation</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/SpecificCO2Emission -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/SpecificCO2Emission">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:label>Specific CO2 emission [g CO&amp;#8322;/kWh]</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/SpecificFuelConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/SpecificFuelConsumption">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipStaticProperty"/>
+        <rdfs:label>Specific fuel consumption [g fuel/kWh]</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/Speed -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Speed">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Speed over ground</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/StaticPointSource -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/StaticPointSource">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PointSource"/>
+        <rdfs:comment>A static point source</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/StaticPointSourceLayer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/StaticPointSourceLayer">
+        <rdfs:comment>Name of the layer containing static point sources in GeoServer, stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/TrueHeading -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/TrueHeading">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>True heading</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/nx -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/nx">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment>Number of cells in x direction</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/ny -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ny">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment>Number of cells in y direction</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/uHC -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/uHC">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/PollutantID"/>
+        <rdfs:comment>Unburned hydrocarbon</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+        <rdfs:label>Unburned hydrocarbons</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/z -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/z">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment>Height to simulate</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

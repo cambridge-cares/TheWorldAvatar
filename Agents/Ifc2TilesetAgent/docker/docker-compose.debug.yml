@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  ifc2tileset-agent-debug:
+    container_name: ifc2tileset-agent-debug
+    image: ifc2tileset-agent:1.0.0
+    build:
+      context: ..
+      target: develop
+    ports:
+      - 5105:5105
+      - 5678:5678
+    volumes:
+      - ../data:/app/data
+      - ../config:/app/config

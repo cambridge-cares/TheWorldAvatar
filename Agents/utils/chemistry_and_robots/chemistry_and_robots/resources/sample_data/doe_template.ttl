@@ -1,0 +1,172 @@
+@prefix OntoDoE:		<https://www.theworldavatar.com/kg/ontodoe/> .
+@prefix OntoRxn:		<https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix exp1:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
+@prefix exp2:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
+@prefix exp3:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/> .
+@prefix exp4:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/> .
+@prefix exp5:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
+@prefix exp6:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_6/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:           <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix :			    <https://www.example.com/triplestore/ontodoe/DoE_Template/> .
+
+@prefix ChemRxn:        <https://www.example.com/triplestore/ontorxn/ChemRxn_1/> .
+
+###################################
+## Design of Experiment template ##
+## NOTE this is for specific rxn ##
+###################################
+
+# connection between DoE template and ChemRxn
+ChemRxn:ChemRxn_1 OntoDoE:hasDoETemplate :DoE_1 .
+
+# doe instance
+:DoE_1
+    rdf:type OntoDoE:DesignOfExperiment;
+    OntoDoE:usesStrategy :Strategy_1;
+    OntoDoE:hasDomain :Domain_1;
+    # OntoDoE:hasSystemResponse :SystemResponse_1;
+    # OntoDoE:hasSystemResponse :SystemResponse_2;
+    OntoDoE:utilisesHistoricalData :HistoricalData_1;
+    OntoDoE:designsChemicalReaction ChemRxn:ChemRxn_1;
+.
+
+# strategy
+:Strategy_1
+    rdf:type OntoDoE:TSEMO;
+    OntoDoE:nRetries "10"^^xsd:integer;
+    OntoDoE:nSpectralPoints "30"^^xsd:integer;
+    OntoDoE:nGenerations "20"^^xsd:integer;
+    OntoDoE:populationSize "20"^^xsd:integer;
+.
+
+# domain
+:Domain_1
+    rdf:type OntoDoE:Domain;
+    OntoDoE:hasDesignVariable :ContinuousVariable_1;
+    OntoDoE:hasDesignVariable :ContinuousVariable_2;
+    OntoDoE:hasDesignVariable :ContinuousVariable_3;
+    OntoDoE:hasDesignVariable :ContinuousVariable_4;
+    # NOTE as there's no prior experiment data, below fixed parameters are required for DoEAgent to read the default settings
+    OntoDoE:hasFixedParameter :FixedParameter_1;
+    OntoDoE:hasFixedParameter :FixedParameter_2;
+    OntoDoE:hasFixedParameter :FixedParameter_3;
+.
+
+# continuous variables
+:ContinuousVariable_1
+    rdf:type OntoDoE:ContinuousVariable;
+    OntoDoE:refersToQuantity :StoiRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    OntoDoE:upperLimit "10"^^xsd:double;
+    OntoDoE:lowerLimit "1"^^xsd:double;
+.
+
+:ContinuousVariable_2
+    rdf:type OntoDoE:ContinuousVariable;
+    OntoDoE:refersToQuantity :StoiRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
+    OntoDoE:upperLimit "0.2"^^xsd:double;
+    OntoDoE:lowerLimit "0.02"^^xsd:double;
+.
+
+:StoiRatio
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasUnit om:one;
+.
+
+:ContinuousVariable_3
+    rdf:type OntoDoE:ContinuousVariable;
+    OntoDoE:refersToQuantity :ResTime;
+    OntoDoE:upperLimit "15"^^xsd:double;
+    OntoDoE:lowerLimit "5"^^xsd:double;
+.
+
+:ResTime
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasUnit om:minute-Time;
+.
+
+:ContinuousVariable_4
+    rdf:type OntoDoE:ContinuousVariable;
+    OntoDoE:refersToQuantity :RxnTemp;
+    OntoDoE:upperLimit "70"^^xsd:double;
+    OntoDoE:lowerLimit "30"^^xsd:double;
+.
+
+:RxnTemp
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasUnit om:degreeCelsius;
+.
+
+# fixed parameters
+:FixedParameter_1
+    rdf:type OntoDoE:FixedParameter;
+    OntoDoE:refersToQuantity :StoiRatio_1;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+.
+
+:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasValue :StoiRatio_1_Measure_1;
+.
+
+:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+:FixedParameter_2
+    rdf:type OntoDoE:FixedParameter;
+    OntoDoE:refersToQuantity :RxnScale_1;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+.
+
+:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    om:hasValue :RxnScale_1_Measure_1;
+.
+
+:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+:FixedParameter_3
+    rdf:type OntoDoE:FixedParameter;
+    OntoDoE:refersToQuantity :RxnPressure_1;
+.
+
+:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasValue :RxnPressure_1_Measure_1;
+.
+
+:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+# # system response
+# :SystemResponse_1
+#     rdf:type OntoDoE:SystemResponse;
+#     OntoDoE:refersToQuantity OntoRxn:Yield;
+#     OntoDoE:maximise "true"^^xsd:boolean;
+# .
+
+# :SystemResponse_2
+#     rdf:type OntoDoE:SystemResponse;
+#     OntoDoE:refersToQuantity OntoRxn:RunMaterialCost;
+#     OntoDoE:maximise "false"^^xsd:boolean;
+# .
+
+# historical data
+:HistoricalData_1
+    rdf:type OntoDoE:HistoricalData;
+    OntoDoE:numOfNewExp "1"^^xsd:integer; # the numOfNewExp is set to be 1 for the DoE template of this chemrxn
+.

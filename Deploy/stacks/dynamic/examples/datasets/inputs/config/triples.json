@@ -1,0 +1,19 @@
+{
+    "datasetDirectory": "rdf",
+    "namespace": {
+        "name": "triples",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
+            "com.bigdata.rdf.sail.truthMaintenance": false,
+            "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms",
+            "com.bigdata.journal.AbstractJournal.bufferMode": "DiskRW"
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "subdirectory": "triples",
+            "skip": false
+        }
+    ]
+}

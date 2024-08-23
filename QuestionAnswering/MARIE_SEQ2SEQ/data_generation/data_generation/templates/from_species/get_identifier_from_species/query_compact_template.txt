@@ -1,0 +1,6 @@
+SELECT DISTINCT ?{IdentifierName}Value
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasIdentifier{IdentifierName} ?{IdentifierName}Value .
+}}

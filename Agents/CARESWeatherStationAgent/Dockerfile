@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/CARESWeatherStationInputAgent
-RUN --mount=type=cache,target=/root/.m2/repository mvn package
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn package
 
 
 #==================================================================================================
@@ -24,31 +24,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-# Copy in the properties file
-COPY ./config/agent.properties /root/agent.properties
-
-# Set the required environment variable
-ENV CARESWeatherStation_AGENTPROPERTIES="/root/agent.properties"
-
-# Copy in the properties file
-COPY ./config/api.properties /root/api.properties
-
-# Set the required environment variable
-ENV CARESWeatherStation_APIPROPERTIES="/root/api.properties"
-
-# Copy in the properties file
-COPY ./config/client.properties /root/client.properties
-
-# Set the required environment variable
-ENV CARESWeatherStation_CLIENTPROPERTIES="/root/client.properties"
-
-# Copy in the mapping folder
-COPY ./config/mappings /root/mappings
-
-# Set the required environment variable
-ENV CARESWeatherStation_AGENT_MAPPINGS="/root/mappings"
-
-COPY --from=builder /root/CARESWeatherStationInputAgent/output/caresweatherstation-agent##1.1.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/CARESWeatherStationInputAgent/output/cares-weather-station-agent##1.6.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

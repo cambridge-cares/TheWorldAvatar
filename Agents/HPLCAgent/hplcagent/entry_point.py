@@ -2,10 +2,6 @@ from hplcagent.agent import HPLCAgent
 from hplcagent.agent import default
 from hplcagent.conf import config_hplc_agent
 
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 def create_app():
     hplc_agent_config = config_hplc_agent()
@@ -28,7 +24,14 @@ def create_app():
         fs_user=hplc_agent_config.FILE_SERVER_USERNAME,
         fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        # logger_name='prod'
+        logger_name='prod',
+        dry_run=hplc_agent_config.DRY_RUN,
+        max_thread_monitor_async_derivations=hplc_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+        email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=hplc_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=hplc_agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=hplc_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])

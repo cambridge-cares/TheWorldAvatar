@@ -8,7 +8,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Vector extends DataSubset {
+public class Vector extends GeoServerDataSubset {
 
     @JsonProperty
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
@@ -17,17 +17,16 @@ public class Vector extends DataSubset {
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
     @Override
-    public void loadData(GDALClient gdalClient, String datasetDir, String database) {
-        Path dirPath = Path.of(datasetDir, getSubdirectory());
+    public void loadData(Path dirPath, String database, String baseIRI) {
         ogr2ogrOptions.setSchema(getSchema());
-        gdalClient.uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
+        GDALClient.getInstance()
+                .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
     }
 
     @Override
-    public void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
-            String database) {
-        geoServerClient.createPostGISLayer(dataSubsetDir, workspaceName, database, getSchema(), getName(),
-                geoServerSettings);
+    public void createLayers(String workspaceName, String database) {
+        GeoServerClient.getInstance()
+                .createPostGISLayer(workspaceName, database, getSchema(), getTable(), geoServerSettings);
     }
 
 }

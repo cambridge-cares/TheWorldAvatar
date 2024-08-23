@@ -27,4 +27,7 @@
   <rdf:Description rdf:about="http://www.w3.org/2006/time#unitMonth">
     <rdf:type rdf:resource="http://www.w3.org/2006/time#TemporalUnit"/>
   </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Unix_time">
+    <rdf:type rdf:resource="http://www.w3.org/2006/time#TRS"/>
+  </rdf:Description>
 </rdf:RDF>

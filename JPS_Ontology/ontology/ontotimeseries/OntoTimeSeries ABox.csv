@@ -1,10 +1,11 @@
-Source,Type,Target,Relation,Value,Data Type,,,
-ABoxOntoTimeSeries,Ontology,https://www.theworldavatar.com/kg/ontotimeseries/,http://www.w3.org/2002/07/owl#imports,,,,,
-ABoxOntoTimeSeries,Ontology,https://www.theworldavatar.com/kg/ontotimeseries/,base,,,,,
-http://www.w3.org/2006/time#unitDay,Instance,http://www.w3.org/2006/time#TemporalUnit,,,,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#unitHour,Instance,http://www.w3.org/2006/time#TemporalUnit,,,,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#unitMinute,Instance,http://www.w3.org/2006/time#TemporalUnit,,,,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#unitMonth,Instance,http://www.w3.org/2006/time#TemporalUnit,,,,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#unitSecond,Instance,http://www.w3.org/2006/time#TemporalUnit,,,,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#unitWeek,Instance,http://www.w3.org/2006/time#TemporalUnit,,,,,,http://www.w3.org/2006/time#
-http://www.w3.org/2006/time#unitYear,Instance,http://www.w3.org/2006/time#TemporalUnit,,,,,,http://www.w3.org/2006/time#
+Source,Type,Target,Relation,Value,Data Type
+ABoxOntoTimeSeries,Ontology,https://www.theworldavatar.com/kg/ontotimeseries/,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoTimeSeries,Ontology,https://www.theworldavatar.com/kg/ontotimeseries/,base,,
+http://www.w3.org/2006/time#unitDay,Instance,http://www.w3.org/2006/time#TemporalUnit,,,
+http://www.w3.org/2006/time#unitHour,Instance,http://www.w3.org/2006/time#TemporalUnit,,,
+http://www.w3.org/2006/time#unitMinute,Instance,http://www.w3.org/2006/time#TemporalUnit,,,
+http://www.w3.org/2006/time#unitMonth,Instance,http://www.w3.org/2006/time#TemporalUnit,,,
+http://www.w3.org/2006/time#unitSecond,Instance,http://www.w3.org/2006/time#TemporalUnit,,,
+http://www.w3.org/2006/time#unitWeek,Instance,http://www.w3.org/2006/time#TemporalUnit,,,
+http://www.w3.org/2006/time#unitYear,Instance,http://www.w3.org/2006/time#TemporalUnit,,,
+http://dbpedia.org/resource/Unix_time,Instance,http://www.w3.org/2006/time#TRS,,,

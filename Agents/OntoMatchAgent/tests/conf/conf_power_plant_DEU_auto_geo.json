@@ -42,11 +42,11 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
-		"symmetric": false
+		"delta": 0.025
 	}
 },
 "post_processing":{
 	"dump": null,
-	"evaluation_file": "./data/power_plant_DEU/matches_power_plant_DEU.csv"
+	"evaluation_file": "./tests/data/matches_power_plant_DEU.csv"
 }
 }

@@ -1,0 +1,29 @@
+BASE   <http://example.org/> 
+PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> 
+PREFIX schema: <http://schema.org/> 
+PREFIX dcterms: <http://purl.org/dc/terms/> 
+PREFIX wd: <http://www.wikidata.org/entity/> 
+
+GRAPH <http://example.org/bob>
+  {
+    <bob#me>
+        a foaf:Person ;
+        foaf:knows <alice#me> ;
+        schema:birthDate "1990-07-04"^^xsd:date ;
+        foaf:topic_interest wd:Q12418 .
+  }
+
+GRAPH <https://www.wikidata.org/wiki/Special:EntityData/Q12418>
+  {
+    wd:Q12418
+        dcterms:title "Mona Lisa" ;
+        dcterms:creator <http://dbpedia.org/resource/Leonardo_da_Vinci> .
+
+    <http://data.europeana.eu/item/04802/243FA8618938F4117025F17A8B813C5F9AA4D619>
+       dcterms:subject wd:Q12418 .
+  }
+
+<http://example.org/bob>
+    dcterms:publisher <http://example.org> ;
+    dcterms:rights <http://creativecommons.org/licenses/by/3.0/> .

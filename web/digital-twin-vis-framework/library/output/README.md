@@ -1,1 +1,0 @@
-Once the `dtvf-build` container has executed as successful compilation, this directory should contains the packaged files that can be deployed to a CDN for use by other developers.

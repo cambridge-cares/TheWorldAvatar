@@ -1,6 +1,7 @@
 __pycache__/
 .mypy_cache/
 .pytest_cache
+*.egg-info
 build/
 dist/
 *~*
@@ -12,10 +13,10 @@ coverage.xml
 *.png
 assets
 
-
-## User defined
-*.egg-info
-
 ## Directories
 data/*
 !.gitkeep
+
+## Celery beat schedule
+**/dump.rdb
+**/celerybeat-schedule

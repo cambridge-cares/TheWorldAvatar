@@ -1,6 +1,7 @@
 from chemistry_and_robots.data_model.base_ontology import *
 import pytest
 from typing import List
+from typing import Dict
 import uuid
 
 SIMPLETESTCLASS_CLZ = 'http://test_hash_eq/SimpleTestClass'

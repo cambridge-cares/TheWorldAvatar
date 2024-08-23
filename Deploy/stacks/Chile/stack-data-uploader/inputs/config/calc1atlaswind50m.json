@@ -1,0 +1,26 @@
+{
+    "name": "calc1atlaswind50m",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlaswind50m",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "calc1atlaswind50m",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "calc1atlaswind50m"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "calc1atlaswind50m",
+            "file": "calc1atlaswind50m.sld"
+        }
+    ]
+}

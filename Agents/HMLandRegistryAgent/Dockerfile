@@ -1,6 +1,9 @@
 # Install the HM Land Registry Agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,20 +20,20 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy stack-clients resource to be wrapped by py4jps
-COPY ./tmp_stack ./tmp_stack
+# directory structure matches requirements for jpsrm to update py4jps resources)
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
-# Installation of agentlogging (potentially to be excluded to avoid performance issues)
-RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # Add StackClients py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
@@ -47,11 +50,11 @@ FROM base as debug
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/landregistry/flaskapp/wsgi.py
+ENV FLASK_APP=app/agent/flaskapp/wsgi.py
 ENV FLASK_DEBUG=1
 
 # Launch application in container
-WORKDIR /app/landregistry/flaskapp/
+WORKDIR /app/agent/flaskapp/
 CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
@@ -60,11 +63,11 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.1.0
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./landregistry ./landregistry
+COPY ./agent ./agent
 COPY ./app_entry_point.sh .
 
 # Set the entrypoint
