@@ -26,6 +26,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     protected JSONArray sensorData;
     protected long startTime;
     protected String sensorName;
+    private boolean isRunning = false;
     Logger LOGGER = Logger.getLogger(getClass());
 
     /**
@@ -51,6 +52,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     public void start() {
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         startTime = System.currentTimeMillis() * 1000000;
+        isRunning = true;
     }
 
     /**
@@ -60,6 +62,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     @Override
     public void stop() {
         sensorManager.unregisterListener(this);
+        isRunning = false;
     }
 
     /**
@@ -121,5 +124,10 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     @Override
     public String getSensorName() {
         return sensorName;
+    }
+
+    // Method to check if the sensor is running
+    public Boolean isRunning() {
+        return isRunning;
     }
 }

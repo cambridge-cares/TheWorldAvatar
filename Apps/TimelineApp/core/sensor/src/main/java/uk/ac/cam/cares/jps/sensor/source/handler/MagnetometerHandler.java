@@ -20,5 +20,10 @@ public class MagnetometerHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_MAGNETIC_FIELD);
         this.sensorName = "magnetometer";
     }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.MAGNETOMETER;
+    }
 }
 

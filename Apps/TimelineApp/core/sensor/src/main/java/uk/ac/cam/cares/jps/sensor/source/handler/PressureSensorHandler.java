@@ -48,6 +48,11 @@ public class PressureSensorHandler extends AbstractSensorHandler {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.PRESSURE;
+    }
 }
 
 

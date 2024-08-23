@@ -8,9 +8,13 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandler;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.data.SensorRepository;
@@ -64,8 +68,8 @@ public class SensorViewModel extends ViewModel {
     /**
      * Start recording
      */
-    public void startRecording() {
-        sensorRepository.startRecording(new RepositoryCallback<>() {
+    public void startRecording(List<SensorType> selectedSensors) {
+        sensorRepository.startRecording(selectedSensors, new RepositoryCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 _isRecording.setValue(result);

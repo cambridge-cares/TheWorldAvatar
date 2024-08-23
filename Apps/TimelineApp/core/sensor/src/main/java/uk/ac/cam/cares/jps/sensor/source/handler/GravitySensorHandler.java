@@ -21,6 +21,11 @@ public class GravitySensorHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_GRAVITY);
         this.sensorName = "gravity";
     }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.GRAVITY;
+    }
 }
 
 

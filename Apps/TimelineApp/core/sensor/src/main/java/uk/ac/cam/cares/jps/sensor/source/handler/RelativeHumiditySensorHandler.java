@@ -49,6 +49,11 @@ public class RelativeHumiditySensorHandler extends AbstractSensorHandler {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.HUMIDITY;
+    }
 }
 
 

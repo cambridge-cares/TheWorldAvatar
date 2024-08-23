@@ -169,6 +169,11 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     }
 
     @Override
+    public SensorType getSensorType() {
+        return SensorType.SOUND;
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         // Not used for AudioRecord
     }

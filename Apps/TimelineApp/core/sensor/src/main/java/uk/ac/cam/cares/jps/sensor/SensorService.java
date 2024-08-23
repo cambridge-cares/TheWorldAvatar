@@ -24,6 +24,7 @@ import androidx.core.app.ServiceCompat;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -31,7 +32,9 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import kotlin.Pair;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandler;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
 
@@ -84,6 +87,24 @@ public class SensorService extends Service {
 
         String deviceId = intent.getExtras().getString("deviceId");
 
+        // Get the list of selected sensors
+        List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
+
+        if (selectedSensors == null || selectedSensors.isEmpty()) {
+            LOGGER.warn("No sensors selected or sensor list is empty.");
+            stopSelf();
+            return START_STICKY;
+        }
+
+        if (selectedSensors != null && !selectedSensors.isEmpty()) {
+            // Start only the selected sensors
+           sensorManager.startSelectedSensors(selectedSensors);
+        } else {
+            LOGGER.warn("No sensors selected or sensor list is empty.");
+            stopSelf();
+            return START_STICKY;
+        }
+
 
         Handler handler = new Handler(thread.getLooper());
         Runnable sendData = new Runnable() {
@@ -122,7 +143,6 @@ public class SensorService extends Service {
                 type
         );
 
-        sensorManager.startSensors();
         // run the sendData task on a separate thread
         handler.post(sendData);
 

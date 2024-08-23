@@ -5,7 +5,11 @@ import android.content.Intent;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.ac.cam.cares.jps.sensor.SensorService;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
@@ -37,12 +41,13 @@ public class SensorRepository {
      * Start foreground task to record sensor data
      * @param callback callback
      */
-    public void startRecording(RepositoryCallback<Boolean> callback) {
-        LOGGER.info("start recording");
+    public void startRecording(List<SensorType> selectedSensorTypes, RepositoryCallback<Boolean> callback) {
+        LOGGER.info("start recording with selected sensors");
         sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<>() {
             @Override
             public void onSuccess(String result) {
                 serviceIntent.putExtra("deviceId", result);
+                serviceIntent.putParcelableArrayListExtra("selectedSensors", new ArrayList<>(selectedSensorTypes));
                 context.startService(serviceIntent);
                 sensorCollectionStateManagerRepository.setRecordingState(true);
                 callback.onSuccess(true);

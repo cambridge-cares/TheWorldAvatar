@@ -19,6 +19,11 @@ public class AccelerometerHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_ACCELEROMETER);
         this.sensorName = "accelerometer";
     }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.ACCELEROMETER;
+    }
 }
 
 

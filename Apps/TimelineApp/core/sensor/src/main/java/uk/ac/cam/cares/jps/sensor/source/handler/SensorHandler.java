@@ -32,5 +32,9 @@ public interface SensorHandler {
     void clearSensorData();
 
     String getSensorName();
+
+    Boolean isRunning();
+
+    SensorType getSensorType();
 }
 

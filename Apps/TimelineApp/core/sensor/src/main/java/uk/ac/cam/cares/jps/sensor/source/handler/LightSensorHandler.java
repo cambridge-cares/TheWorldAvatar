@@ -50,6 +50,11 @@ public class LightSensorHandler extends AbstractSensorHandler {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.LIGHT;
+    }
 }
 
 

@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kotlin.Pair;
@@ -23,6 +24,7 @@ public class SensorManager {
 
     private Logger LOGGER = Logger.getLogger(SensorManager.class);
     private final SensorHandler[] sensorHandlers;
+    private Map<SensorType, SensorHandler> sensorHandlersMap;
 
     public SensorManager(Context applicationContext) {
         android.hardware.SensorManager sensorManager = (android.hardware.SensorManager) applicationContext.getSystemService(SENSOR_SERVICE);
@@ -38,18 +40,30 @@ public class SensorManager {
                 new SoundLevelHandler(applicationContext, sensorManager)
         };
 
+        sensorHandlersMap = new HashMap<>();
+        sensorHandlersMap.put(SensorType.ACCELEROMETER, new AccelerometerHandler(sensorManager));
+        sensorHandlersMap.put(SensorType.GYROSCOPE, new GyroscopeHandler(sensorManager));
+        sensorHandlersMap.put(SensorType.MAGNETOMETER, new MagnetometerHandler(sensorManager));
+        sensorHandlersMap.put(SensorType.LIGHT, new LightSensorHandler(sensorManager));
+        sensorHandlersMap.put(SensorType.HUMIDITY, new RelativeHumiditySensorHandler(sensorManager));
+        sensorHandlersMap.put(SensorType.PRESSURE, new PressureSensorHandler(sensorManager));
+        sensorHandlersMap.put(SensorType.GRAVITY, new GravitySensorHandler(sensorManager));
+        sensorHandlersMap.put(SensorType.LOCATION, new LocationHandler(applicationContext));
+        sensorHandlersMap.put(SensorType.SOUND, new SoundLevelHandler(applicationContext, sensorManager));
+
     }
 
     /**
-     * Start all sensor handlers
+     * Start selected sensor handlers
      */
-    public void startSensors() {
-
-        for(SensorHandler handler : sensorHandlers) {
-            handler.start();
+    public void startSelectedSensors(List<SensorType> selectedSensorTypes) {
+        for (SensorType type : selectedSensorTypes) {
+            SensorHandler handler = sensorHandlersMap.get(type);
+            if (handler != null) {
+                handler.start();
+            }
         }
-
-        LOGGER.info("sensors started");
+        LOGGER.info("Selected sensors started");
     }
 
     /**
@@ -75,10 +89,12 @@ public class SensorManager {
         Map<String, JSONArray> localStorageData = new HashMap<>();
         try {
             // Directly add all elements of each sensor's data to the single array
-            for(SensorHandler handler : sensorHandlers) {
-                JSONArray sensorData = handler.getSensorData();
-                addAllSensorData(allSensorData, sensorData);
-                localStorageData.put(handler.getSensorName(), sensorData);
+            for(SensorHandler handler : sensorHandlersMap.values()) {
+                if (handler.isRunning()) {
+                    JSONArray sensorData = handler.getSensorData();
+                    addAllSensorData(allSensorData, sensorData);
+                    localStorageData.put(handler.getSensorName(), sensorData);
+                }
             }
 
         } catch (JSONException e) {
@@ -99,8 +115,16 @@ public class SensorManager {
      * Clears all sensor data from the memory.
      */
     private void clearAllSensorData() {
-        for (SensorHandler handler : sensorHandlers) {
-            handler.clearSensorData();
+        for (SensorHandler handler : sensorHandlersMap.values()) {
+            if (handler.isRunning()) {
+                handler.clearSensorData();
+            }
         }
     }
+
+    // returns sensor handler to SensorSettingFragment class
+    public SensorHandler getSensorHandler(SensorType type) {
+        return sensorHandlersMap.get(type);
+    }
+
 }

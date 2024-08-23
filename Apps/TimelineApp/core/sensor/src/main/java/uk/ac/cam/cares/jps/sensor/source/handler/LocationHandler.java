@@ -36,6 +36,7 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     private JSONArray locationData;
     private int mslConstant; // Mean sea level pressure constant for altitude calculations
     private Logger LOGGER = Logger.getLogger(LocationHandler.class);
+    private boolean isRunning = false;
 
     /**
      * Constructs a LocationHandler with a specified context and initializes location and pressure sensors.
@@ -69,6 +70,7 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
         if (pressureSensor != null) {
             sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
+        this.isRunning = true;
     }
 
     /**
@@ -78,6 +80,7 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     public void stop() {
         locationManager.removeUpdates(this);
         sensorManager.unregisterListener(this);
+        this.isRunning = false;
     }
 
     /**
@@ -150,5 +153,15 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     @Override
     public String getSensorName() {
         return "location";
+    }
+
+    @Override
+    public Boolean isRunning() {
+        return isRunning;
+    }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.LOCATION;
     }
 }

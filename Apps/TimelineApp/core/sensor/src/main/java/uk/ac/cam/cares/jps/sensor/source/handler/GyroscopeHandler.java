@@ -21,6 +21,11 @@ public class GyroscopeHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_GYROSCOPE);
         this.sensorName = "gyroscope";
     }
+
+    @Override
+    public SensorType getSensorType() {
+        return SensorType.GYROSCOPE;
+    }
 }
 
 
