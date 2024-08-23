@@ -3,21 +3,25 @@ import Image from 'next/image'
 
 import { cn } from '@/lib/utils'
 
+import CMCLLogo from '@/public/images/cmcl.svg'
+import COMOLogo from '@/public/images/como_logo_processed.svg'
+import CARESLogo from '@/public/images/cares_short_logo_processed.svg'
+
 const ORGS = [
   {
-    imgSrc: '/images/cmcl.svg',
+    imgSrc: CMCLLogo,
     label: 'CMCL Innovations',
     url: 'https://cmclinnovations.com',
     displayUrl: 'cmclinnovations.com',
   },
   {
-    imgSrc: '/images/como_logo_processed.svg',
+    imgSrc: COMOLogo,
     label: 'Computational Modelling Group',
     url: 'https://como.ceb.cam.ac.uk/',
     displayUrl: 'como.ceb.cam.ac.uk',
   },
   {
-    imgSrc: '/images/cares_short_logo_processed.svg',
+    imgSrc: CARESLogo,
     label: 'Cambridge CARES',
     url: 'https://cares.cam.ac.uk/',
     displayUrl: 'cares.cam.ac.uk',

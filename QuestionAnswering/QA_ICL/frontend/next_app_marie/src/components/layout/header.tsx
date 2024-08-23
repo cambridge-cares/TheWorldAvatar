@@ -1,21 +1,25 @@
-import { cn } from '@/lib/utils'
 import React from 'react'
 import Image from 'next/image'
+
+import { cn } from '@/lib/utils'
+import CMCLLogo from '@/public/images/cmcl.svg'
+import COMOLogo from '@/public/images/como_logo_processed.svg'
+import CARESLogo from '@/public/images/cares_short_logo_processed.svg'
 
 const URL_AND_LOGO_LST = [
   {
     url: 'https://cmclinnovations.com/',
-    imgSrc: '/images/cmcl.svg',
+    imgSrc: CMCLLogo,
     imgAlt: 'CMCL logo',
   },
   {
     url: 'https://como.ceb.cam.ac.uk',
-    imgSrc: '/images/como_logo_processed.svg',
+    imgSrc: COMOLogo,
     imgAlt: 'CoMo logo',
   },
   {
     url: 'https://www.cares.cam.ac.uk',
-    imgSrc: '/images/cares_short_logo_processed.svg',
+    imgSrc: CARESLogo,
     imgAlt: 'CARES logo',
   },
 ]

@@ -3,9 +3,10 @@ import Image from 'next/image'
 import Markdown from 'react-markdown'
 
 import { cn } from '@/lib/utils'
+import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 
 export interface IntroSectionProps extends React.HTMLAttributes<HTMLElement> {
-  imgSrc: string
+  imgSrc: string | StaticImport
   imgAlt: string
   mdContent: string
 }
