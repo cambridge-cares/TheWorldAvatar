@@ -120,7 +120,7 @@ public class GeoServerClientTest {
         mockGeoServer.addExpectation(PUT,
                 "/rest/workspaces/" + EXISTING_WORKSPACE + "/coveragestores/" + NEW_COVERAGE_STORE
                         + "/external.imagemosaic",
-                200, request().withBody("file:/C:/geotiffs/postgres/public/newCoverageStore"),
+                200, request().withBody(Path.of("/geotiffs/postgres/public/newCoverageStore").toFile().toURI().toString()),
                 response().withBody("<coverageStore></coverageStore>"));
 
         mockGeoServer.addExpectation(POST,
