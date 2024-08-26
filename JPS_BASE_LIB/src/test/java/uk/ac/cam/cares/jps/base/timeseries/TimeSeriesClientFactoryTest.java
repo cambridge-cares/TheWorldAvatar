@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -22,12 +22,16 @@ public class TimeSeriesClientFactoryTest {
     @Container
     private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
     @Container
-    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
-    RemoteStoreClient remoteStoreClient;
-    RemoteRDBStoreClient remoteRDBStoreClient;
+    private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
+    static RemoteStoreClient remoteStoreClient;
+    static RemoteRDBStoreClient remoteRDBStoreClient;
+    static TimeSeriesRDBClient<Instant> timeSeriesRDBClient = new TimeSeriesRDBClient<>(Instant.class);
+    static TimeSeriesClient<Instant> tsClient;
+    static Instant timestamp;
+    static double insertedValue = 10.0;
 
-    @Before
-    public void initialiseSparqlClient() {
+    @BeforeClass
+    public static void initialiseSparqlClient() throws SQLException {
         // Start the container manually
         blazegraph.start();
         postgres.start();
@@ -37,14 +41,8 @@ public class TimeSeriesClientFactoryTest {
 
         remoteRDBStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
                 postgres.getPassword());
-    }
 
-    @Test
-    public void testTimeSeriesClientFactory()
-            throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
-        TimeSeriesRDBClient<Instant> timeSeriesRDBClient = new TimeSeriesRDBClient<>(Instant.class);
-        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(remoteStoreClient, timeSeriesRDBClient);
+        tsClient = new TimeSeriesClient<>(remoteStoreClient, timeSeriesRDBClient);
 
         String dataIri = "http://data1";
         List<String> dataIriList = Arrays.asList(dataIri);
@@ -52,8 +50,7 @@ public class TimeSeriesClientFactoryTest {
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             tsClient.initTimeSeries(dataIriList, Arrays.asList(Double.class), "timeUnit", conn);
 
-            Instant timestamp = Instant.now();
-            double insertedValue = 10.0;
+            timestamp = Instant.now();
 
             List<List<?>> values = new ArrayList<>();
             values.add(Arrays.asList(insertedValue));
@@ -61,7 +58,17 @@ public class TimeSeriesClientFactoryTest {
                     values);
 
             tsClient.addTimeSeriesData(timeSeries, conn);
+        }
+    }
 
+    @Test
+    public void testTimeSeriesClientFactory()
+            throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
+        String dataIri = "http://data1";
+        List<String> dataIriList = Arrays.asList(dataIri);
+
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
             TimeSeriesClient<?> newTimeSeriesClient = TimeSeriesClientFactory.getInstance(remoteStoreClient,
                     dataIriList);
 
@@ -82,25 +89,10 @@ public class TimeSeriesClientFactoryTest {
     public void testTimeSeriesClientFactoryFederated()
             throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
-        TimeSeriesRDBClient<Instant> timeSeriesRDBClient = new TimeSeriesRDBClient<>(Instant.class);
-        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(remoteStoreClient, timeSeriesRDBClient);
-
         String dataIri = "http://data1";
         List<String> dataIriList = Arrays.asList(dataIri);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            tsClient.initTimeSeries(dataIriList, Arrays.asList(Double.class), "timeUnit", conn);
-
-            Instant timestamp = Instant.now();
-            double insertedValue = 10.0;
-
-            List<List<?>> values = new ArrayList<>();
-            values.add(Arrays.asList(insertedValue));
-            TimeSeries<Instant> timeSeries = new TimeSeries<>(Arrays.asList(timestamp), dataIriList,
-                    values);
-
-            tsClient.addTimeSeriesData(timeSeries, conn);
-
             TimeSeriesClient<?> newTimeSeriesClient = TimeSeriesClientFactory.getInstance(
                     Arrays.asList(remoteStoreClient.getQueryEndpoint()), dataIriList);
 
