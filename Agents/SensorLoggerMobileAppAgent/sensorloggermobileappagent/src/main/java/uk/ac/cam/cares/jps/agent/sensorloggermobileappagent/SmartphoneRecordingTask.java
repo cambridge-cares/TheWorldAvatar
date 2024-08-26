@@ -170,7 +170,6 @@ public class SmartphoneRecordingTask {
         LOGGER.info("finish init postgres dbTable and the corresponding table");
     }
 
-    // todo: make it async
     private void bulkAddTimeSeriesData() throws RuntimeException {
         List<TimeSeries<OffsetDateTime>> tsList = sensorDataProcessorList.stream()
                 .filter(p -> p.getTimeSeriesLength() > 0)

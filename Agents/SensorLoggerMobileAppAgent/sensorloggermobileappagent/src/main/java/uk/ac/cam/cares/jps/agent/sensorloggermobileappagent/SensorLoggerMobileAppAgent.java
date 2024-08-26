@@ -108,10 +108,10 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        return !requestParams.has("messageId")
+        return !(!requestParams.has("messageId")
                 || !requestParams.has("sessionId")
                 || !requestParams.has("deviceId")
-                || !requestParams.has("payload");
+                || !requestParams.has("payload"));
     }
 
     private SmartphoneRecordingTask getSmartphoneRecordingTask(String deviceId) {
