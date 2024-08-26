@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * This class contains a collection of methods to interact with a triple
@@ -985,6 +986,42 @@ public class TimeSeriesSparql {
                 .prefix(PREFIX_ONTOLOGY);
 
         JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+
+        if (queryResult.length() != 1) {
+            throw new JPSRuntimeException(
+                    "Given IRIs do not have exactly one time class/rdb client class/rdb url/schema");
+        }
+
+        String timeClassName = queryResult.getJSONObject(0).getString(timeClassVar.getQueryString().substring(1));
+        String rdbClientClassName = queryResult.getJSONObject(0)
+                .getString(rdbClientClassVar.getQueryString().substring(1));
+        String rdbUrl = queryResult.getJSONObject(0).getString(rdbUrlVar.getQueryString().substring(1));
+        String schema = queryResult.getJSONObject(0).getString(schemaVar.getQueryString().substring(1));
+
+        return Arrays.asList(timeClassName, rdbClientClassName, rdbUrl, schema);
+    }
+
+    List<String> getTimeClassRdbClassAndUrlAndSchema(List<String> endpoints, List<String> dataIriList) {
+        SelectQuery query = Queries.SELECT();
+
+        Variable dataVar = query.var();
+        Variable timeClassVar = query.var();
+        Variable rdbClientClassVar = query.var();
+        Variable rdbUrlVar = query.var();
+        Variable schemaVar = query.var();
+
+        GraphPattern queryPattern = dataVar.has(PropertyPaths.path(hasTimeSeries, HAS_TIME_CLASS), timeClassVar)
+                .andHas(PropertyPaths.path(hasTimeSeries, HAS_RDB_CLIENT_CLASS), rdbClientClassVar)
+                .andHas(PropertyPaths.path(hasTimeSeries, hasRDB), rdbUrlVar)
+                .andHas(PropertyPaths.path(hasTimeSeries, HAS_SCHEMA), schemaVar);
+        ValuesPattern valuesPattern = new ValuesPattern(dataVar,
+                dataIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
+
+        query.select(timeClassVar, rdbClientClassVar, rdbUrlVar, schemaVar).where(queryPattern, valuesPattern)
+                .distinct()
+                .prefix(PREFIX_ONTOLOGY);
+
+        JSONArray queryResult = ((RemoteStoreClient) kbClient).executeFederatedQuery(endpoints, query.getQueryString());
 
         if (queryResult.length() != 1) {
             throw new JPSRuntimeException(

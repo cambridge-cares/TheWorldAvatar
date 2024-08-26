@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class TimeSeriesClientFactory {
     /**
@@ -43,6 +44,34 @@ public class TimeSeriesClientFactory {
         rdbClient.setSchema(schema);
 
         return new TimeSeriesClient<>(storeClient, rdbClient);
+    }
+
+    /**
+     * Similar as above, except that the data are obtained from multiple endpoints
+     * 
+     * @param endpoints
+     * @param dataIriList
+     * @return
+     * @throws ClassNotFoundException
+     */
+    public static TimeSeriesClient<?> getInstance(List<String> endpoints, List<String> dataIriList)
+            throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        TimeSeriesSparql timeSeriesSparql = new TimeSeriesSparql(new RemoteStoreClient());
+
+        List<String> timeRdbUrlSchema = timeSeriesSparql.getTimeClassRdbClassAndUrlAndSchema(endpoints, dataIriList);
+        Class<?> timeClass = Class.forName(timeRdbUrlSchema.get(0));
+        Class<?> rdbClientClass = Class.forName(timeRdbUrlSchema.get(1));
+        String rdbUrl = timeRdbUrlSchema.get(2);
+        String schema = timeRdbUrlSchema.get(3);
+        Constructor<?> constructor = rdbClientClass.getConstructor(Class.class);
+
+        TimeSeriesRDBClientInterface<?> rdbClient = (TimeSeriesRDBClientInterface<?>) constructor
+                .newInstance(timeClass);
+        rdbClient.setRdbURL(rdbUrl);
+        rdbClient.setSchema(schema);
+
+        return new TimeSeriesClient<>(new RemoteStoreClient(), rdbClient);
     }
 
     private TimeSeriesClientFactory() {

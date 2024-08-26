@@ -77,4 +77,43 @@ public class TimeSeriesClientFactoryTest {
             Assert.assertEquals(postgres.getJdbcUrl(), newTimeSeriesClient.getRdbUrl());
         }
     }
+
+    @Test
+    public void testTimeSeriesClientFactoryFederated()
+            throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
+        TimeSeriesRDBClient<Instant> timeSeriesRDBClient = new TimeSeriesRDBClient<>(Instant.class);
+        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(remoteStoreClient, timeSeriesRDBClient);
+
+        String dataIri = "http://data1";
+        List<String> dataIriList = Arrays.asList(dataIri);
+
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            tsClient.initTimeSeries(dataIriList, Arrays.asList(Double.class), "timeUnit", conn);
+
+            Instant timestamp = Instant.now();
+            double insertedValue = 10.0;
+
+            List<List<?>> values = new ArrayList<>();
+            values.add(Arrays.asList(insertedValue));
+            TimeSeries<Instant> timeSeries = new TimeSeries<>(Arrays.asList(timestamp), dataIriList,
+                    values);
+
+            tsClient.addTimeSeriesData(timeSeries, conn);
+
+            TimeSeriesClient<?> newTimeSeriesClient = TimeSeriesClientFactory.getInstance(
+                    Arrays.asList(remoteStoreClient.getQueryEndpoint()), dataIriList);
+
+            TimeSeries<?> queriedTimeSeries = newTimeSeriesClient.getTimeSeries(dataIriList, conn);
+
+            // queried Instant value is in different precision
+            Assert.assertEquals(timestamp.getEpochSecond(),
+                    ((Instant) queriedTimeSeries.getTimes().get(0)).getEpochSecond());
+
+            Assert.assertEquals((Double) insertedValue,
+                    (Double) queriedTimeSeries.getValuesAsDouble(dataIri).get(0));
+
+            Assert.assertEquals(postgres.getJdbcUrl(), newTimeSeriesClient.getRdbUrl());
+        }
+    }
 }
