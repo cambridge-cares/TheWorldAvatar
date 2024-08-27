@@ -60,9 +60,9 @@ Note that resources are optional and their configuration options can differ from
 - Scenario: Enables scenario selection in the `map` page
   - `url`: This is a required field that specifies the URL from which the scenarios and their settings can be retrieved. In this example, the URL points to a stack deployed on theworldavatar.io platform.
   - `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
-- Registry: Activate the `registry` page based on the backend resource indicated in the `url` parameter.
+- Registry: Activate the `registry` page based on the backend resource indicated in the `url` parameter. The registry page provides a table for viewing all records, as well as pages to add, delete, edit, and view these records individually using a form UI.
   - `url`: This should be `contract` at the moment.
-  - `data`: The stack endpoint holding the backend agents.
+  - `data`: The stack endpoint holding the backend agents. These agents should be able to generate a form template for generating the form UI following the template listed in [this document](form.md).
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
