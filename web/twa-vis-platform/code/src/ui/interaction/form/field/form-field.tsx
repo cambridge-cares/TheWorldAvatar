@@ -54,6 +54,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
           break;
         case "country":
         case "bin type":
+        case "service":
         case "service type":
         case "truck type":
         case "waste category": {

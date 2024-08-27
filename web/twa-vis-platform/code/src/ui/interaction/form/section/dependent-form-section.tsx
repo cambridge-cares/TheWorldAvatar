@@ -47,6 +47,8 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
     if (entityClass) {
       if (entityClass.includes("Client") || entityClass.includes("Employer")) {
         return "client";
+      } else if (entityClass.includes("Facility")) {
+        return "facility";
       } else if (entityClass.includes("ServiceProvider")) {
         return "serviceprovider";
       } else if (entityClass.includes("Employee")) {
@@ -95,7 +97,6 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
       let entities: FieldValues[] = [];
       // If there is supposed to be a parent element, retrieve the data associated with the selected parent option
       // If there is no valid parent option, there should be no entity
-
       if (field.qualifiedValueShape) {
         if (currentParentOption) {
           entities = await getData(props.agentApi, parentEntity, currentParentOption, entityType);
