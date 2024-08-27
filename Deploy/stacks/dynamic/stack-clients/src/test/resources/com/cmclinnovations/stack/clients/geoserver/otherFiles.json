@@ -1,0 +1,26 @@
+[
+    {
+        "source": "a1.txt",
+        "target": "a2.txt"
+    },
+    {
+        "source": "a1.txt",
+        "target": "a3/a4.txt"
+    },
+    {
+        "source": "d1",
+        "target": "d1"
+    },
+    {
+        "source": "d1",
+        "target": "d2"
+    },
+    {
+        "source": "d1/d1.txt",
+        "target": "d3"
+    },
+    {
+        "source": "d1/d1.txt",
+        "target": "d4/d5.txt"
+    }
+]

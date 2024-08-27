@@ -12,8 +12,11 @@ services:
       - NAMESPACE=  # Target Blazegraph namespace
       # Additional environment variables required for "standalone deployment"
       # (can be left blank for Stack deployment)
-      - QUERY_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies
-      - UPDATE_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies
+      - QUERY_ENDPOINT= # Query endpoint
+      - UPDATE_ENDPOINT= # Update endpoint
+      # Additional environment variables (when required)
+      - BG_USER= # Blazegraph user
+      - BG_PASSWORD= # Blazegraph password
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .

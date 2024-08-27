@@ -8,16 +8,16 @@ from typing import List, Optional
 import networkx as nx
 import numpy as np
 from tqdm import tqdm
+
 from constants.fs import ROOTDIR
 from constants.ontobuiltenv import OBE_PROPERTYUSAGE_LABELS, OBEAttrKey
-from data_generation.locate_then_ask.ontobuiltenv.entity_store import OBEEntityStore
-from locate_then_ask.query_graph import QueryGraph
 from utils.numerical import normalize_1d
-
+from utils.json import EnumEncoder
+from locate_then_ask.query_graph import QueryGraph
+from .entity_store import OBEEntityStore
 from .ask import OBEAsker
 from .locate import OBELocator
 from .mock_entity_store import MockOBEEntityStore
-from utils.json import EnumEncoder
 
 
 class OBEDatasetGenerator:

@@ -3,7 +3,7 @@
 
 AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-VENV_NAME='entityrdfizer_venv'
+VENV_NAME='venv'
 PROJECT_NAME='entityrdfizer'
 DEP_FILE='dependencies.yml'
 DO_NOT_PROMPT='n'

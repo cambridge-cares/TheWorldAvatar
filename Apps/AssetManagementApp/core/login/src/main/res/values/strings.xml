@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel_logout">Sign out canceled</string>
+    <string name="logout">Logout</string>
+    <string name="ok">OK</string>
+    <string name="session_expired">Your session has expired. Please login again.</string>
+    <string name="session_expired_title">Session Expired</string>
+    <string name="change_account">Change Account</string>
+    <string name="cancel">Cancel</string>
+    <string name="permission_deny">Permission Denied</string>
+    <string name="permission_deny_explain">You don\'t have the permission to do this operation. Please check with the admin or login with another account.</string>
+    <string name="sign_in">Sign in</string>
+    <string name="login_failure_due_to_check_system_clock">test</string>
+    <string name="connection_error">Connection failed, please check your network connection.</string>
+    <string name="fail_to_login">Fail to login, please try again.</string>
+</resources>

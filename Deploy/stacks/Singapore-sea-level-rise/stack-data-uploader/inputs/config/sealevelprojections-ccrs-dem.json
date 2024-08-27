@@ -1,0 +1,40 @@
+{
+    "name": "sealevelprojections-ccrs-dem",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "sealevelprojections",
+    "dataSubsets": [
+        {
+			"name": "sealevelprojections",
+            "type": "vector",
+			"subdirectory": "sealevelshape",
+            "sql": "@/inputs/data/sealevelprojections/sealevelshape/slrprojections.sql",
+            "ogr2ogrOptions": {
+
+                                "sridIn": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": [
+                        "MULTIPOLYGON"
+                    ]
+                }
+            },
+        
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "sealevelprojections",
+                    "escapeSql": false,
+                    "sql": "select * from sealevelprojections",
+                    "geometry": {
+                        "name": "geom",
+                        "type": "geometry",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        }
+    ],
+    "mappings": [
+        "sealevelprojections.obda"
+    ]
+}

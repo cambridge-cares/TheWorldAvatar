@@ -1,0 +1,235 @@
+{
+    "frameworks_count": {
+        "comment": "Check the number of frameworks on the server.",
+        "query": [
+            "PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>",
+            "PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>",
+            "PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>",
+            "",
+            "SELECT (COUNT(?framecode) AS ?fw_count)",
+            "WHERE {",
+            "  ?zeo_frame        zeo:hasFrameworkCode            ?framecode .",
+            "  PLACE_HOLDER_1 ",
+            "  PLACE_HOLDER_2 ",
+            "}",
+            "#GROUP BY ?framecode",
+            ""
+        ],
+        "draft": [
+            "  ?zeo_frame        zeo:hasTopologicalProperties      ?topo . ",
+            ""
+        ],
+        "suites": {
+            "s1": {
+                "input": {
+                    "PLACE_HOLDER_1": "",
+                    "PLACE_HOLDER_2": ""
+                },
+                "output": {
+                    "fw_count": "256"
+                },
+                "comment": "Total number of frameworks"
+            },
+            "s2": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   rdf:type       ocr:CrystalInformation ."
+                },
+                "output": {
+                    "fw_count": "256"
+                },
+                "comment": "Number of frameworks with Crystal Information"
+            },
+            "s3": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasTiledStructure  ?tiled_iri ."
+                },
+                "output": {
+                    "fw_count": "256"
+                },
+                "comment": "Number of frameworks with Tiled Structure. Some are missing."
+            },
+            "s4": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasUnitCell  ?ucell_iri ."
+                },
+                "output": {
+                    "fw_count": "256"
+                },
+                "comment": "Number of frameworks with Unit Cell"
+            },
+            "s5": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame   zeo:hasTopologicalProperties      ?topo .",
+                    "PLACE_HOLDER_2": "?topo   rdf:type  zeo:TopologicalProperties ."
+                },
+                "output": {
+                    "fw_count": "256"
+                },
+                "comment": "Number of frameworks with Topological Properties"
+            }
+        }
+    },
+    "frameworks_all": {
+        "comment": "Check the missing entries in lists on the server.",
+        "query": [
+            "PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>",
+            "PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>",
+            "PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>",
+            "",
+            "SELECT ?framecode ",
+            "       ?zeo_frame ",
+            "WHERE {",
+            "  ?zeo_frame        zeo:hasFrameworkCode            ?framecode .",
+            "  ?zeo_frame        rdf:type              zeo:ZeoliteFramework .",
+            "  PLACE_HOLDER_1 ",
+            "  PLACE_HOLDER_2 ",
+            "  PLACE_HOLDER_3 ",
+            "  OPTIONAL {",
+            "  }",
+            "}"
+        ],
+        "draft": [
+            "    ?zeo_frame    ocr:hasCrystalInformation   ?cryst_info .",
+            "    ?cryst_info   rdf:type  ocr:CrystalInformation .",
+            "  ?zeo_frame      zeo:hasTopologicalProperties      ?topo . ",
+            ""
+        ],
+        "suites": {
+            "s1": {
+                "input": {
+                    "PLACE_HOLDER_1": "",
+                    "PLACE_HOLDER_2": "",
+                    "PLACE_HOLDER_3": ""
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s2": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame  ocr:hasCrystalInformation   ?cryst_info .",
+                    "PLACE_HOLDER_2": "?cryst_info  rdf:type ocr:CrystalInformation .",
+                    "PLACE_HOLDER_3": ""
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s3": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame  zeo:hasTopologicalProperties   ?topo . ",
+                    "PLACE_HOLDER_2": "?topo   rdf:type zeo:TopologicalProperties . ",
+                    "PLACE_HOLDER_3": ""
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s4": {
+                "input": {
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasTiledStructure  ?tiled_iri . ",
+                    "PLACE_HOLDER_3": "?tiled_iri  rdf:type  ocr:TiledStructure"
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s5": {
+                "input": {
+                    "PLACE_HOLDER_3": "?ucell_iri   rdf:type  ocr:UnitCell",
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasUnitCell            ?ucell_iri . "
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s6": {
+                "input": {
+                    "PLACE_HOLDER_3": "?atomic_iri  rdf:type   ocr:AtomicStructure",
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasAtomicStructure  ?atomic_iri . "
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            },
+            "s7": {
+                "input": {
+                    "PLACE_HOLDER_3": "?transform_iri rdf:type  ocr:CoordinateTransformation .",
+                    "PLACE_HOLDER_1": "?zeo_frame   ocr:hasCrystalInformation  ?cryst_iri .",
+                    "PLACE_HOLDER_2": "?cryst_iri   ocr:hasCoordinateTransformation  ?transform_iri . "
+                },
+                "output": {
+                    "list_element": "framecode"
+                },
+                "comment": ""
+            }
+        }
+
+
+    },
+    "unitcell": {
+        "comment": "Check the values in unit cell on the server.",
+        "query": [
+            "PREFIX zeo: <http://www.theworldavatar.com/kg/ontozeolite/>",
+            "PREFIX ocr: <http://www.theworldavatar.com/kg/ontocrystal/>",
+            "PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>",
+            "",
+            "SELECT ?framecode ?sp_diam_a ?sp_diam_b ?sp_diam_c ?sp_diam_inc ?sp_diam_unit",
+            "       ?zeo_frame ",
+            "WHERE {",
+            "  ?zeo_frame        zeo:hasFrameworkCode            ?framecode .",
+            "  ?zeo_frame        zeo:hasFrameworkCode     PLACE_HOLDER_1 .",
+            "  OPTIONAL {",
+            "    ?zeo_frame        ocr:hasCrystalInformation   ?cryst_info .",
+            "    ?cryst_info   ocr:hasUnitCell    ucell_iri .",
+            "  }",
+            "  ?zeo_frame        zeo:hasTopologicalProperties      ?topo . ",
+            "}"
+        ],
+        "draft": [
+            ""
+        ],
+        "suites": {
+            "s1": {
+                "input": {
+                    "PLACE_HOLDER_1": "'ABW'",
+                    "PLACE_HOLDER_2": ""
+                },
+                "output": {
+                    "d": "256"
+                },
+                "comment": ""
+            }
+        }
+    },
+    "empty0": {
+        "comment": "",
+        "query": [
+            ""
+        ],
+        "draft": [
+            ""
+        ],
+        "suites": {
+            "s1": {
+                "input": {
+                    "PLACE_HOLDER_1": ""
+                },
+                "output": {},
+                "comment": ""
+            }
+        }
+    }
+}

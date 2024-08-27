@@ -94,6 +94,27 @@ To trigger an optimisation run, please send a POST request to the [DH Optimisati
 
 At least one timestep of AERMOD simulation needs to be present for the visualisation to work, and it can be viewed at http://localhost:3838/visualisation, replace `localhost` if deployed elsewhere.
 
+- Space Finder Filtering
+If not filtering on particular variable put in as `"'null'"`.
+For filtering the requests should resemble the following
+- Filter on area only http://localhost:3838/filter-agent/filter?subs=%7B%22area%22%3A%225000%22%2C%22zonetype%22%3A%22%27Industry%27%2C%20%27Automeile%27%22%7D
+- Filter on zone type only http://localhost:3838/filter-agent/filter?subs=%7B%22area%22%3A%22%27null%27%22%2C%22zonetype%22%3A%22%27Industry%27%22%7D
+- Filter on both area and zone type http://localhost:3838/filter-agent/filter?subs=%7B%22area%22%3A%225000%22%2C%22zonetype%22%3A%22%27Industry%27%22%7D
+
+To get all zone types can run the following query in blazegraph
+```sparql
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX plt:     <https://www.theworldavatar.com/kg/ontoplot/>
+PREFIX zone:    <https://www.theworldavatar.com/kg/ontozoning/>
+
+SELECT DISTINCT ?ZoneType WHERE {
+    SERVICE <http://pirmasens-ontop:8080/sparql/> {
+        ?zone zone:hasPlot [a plt:Plot];
+            zone:hasZoneType [rdfs:label ?ZoneType] .
+    }
+} 
+
 ### 7) Grafana Dashboard
 
 Two dashboards are provided as .json models in the [grafana-prep] repository, i.e., one `demand.json` and one `generation.json`. To update the provided model files to the current instantiation, one has to 1) update the grafana internal datasource uid and 2) update placeholder time series table names. To do so, please follow the provided [grafana-prep readme].
