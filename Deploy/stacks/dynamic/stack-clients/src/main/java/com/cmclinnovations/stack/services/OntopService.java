@@ -2,6 +2,8 @@ package com.cmclinnovations.stack.services;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,19 +35,24 @@ public final class OntopService extends ContainerService {
     private static final String ONTOP_DB_USER = "ONTOP_DB_USER";
     private static final String ONTOP_DB_PASSWORD_FILE = "ONTOP_DB_PASSWORD_FILE";
     private static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
+    private static final String ONTOP_ONTOLOGY_FILE = "ONTOP_ONTOLOGY_FILE";
 
     private static final String DEFAULT_PORT = "8080";
 
     private final String containerName;
     private final OntopEndpointConfig endpointConfig;
-    private final String configDir;
+    private final String mappingDir;
+    private final String ontologyDir;
+    private final List<String> configDirs;
 
     public OntopService(String stackName, ServiceConfig config) {
         super(stackName, config);
 
         containerName = StackClient.removeStackName(getConfig().getName());
 
-        configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
+        mappingDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
+        ontologyDir = Path.of(getEnvironmentVariable(ONTOP_ONTOLOGY_FILE)).getParent().toString();
+        configDirs = new ArrayList<>(new HashSet<>(Arrays.asList(mappingDir, ontologyDir)));
 
         endpointConfig = new OntopEndpointConfig(containerName, getHostName(), DEFAULT_PORT);
 
@@ -88,18 +95,20 @@ public final class OntopService extends ContainerService {
             mounts = new ArrayList<>();
             containerSpec.withMounts(mounts);
         }
-        mounts.add(new Mount()
-                .withSource(containerName)
-                .withTarget(configDir)
-                .withType(MountType.VOLUME)
-                .withReadOnly(false));
+        for (String dir : configDirs) {
+            mounts.add(new Mount()
+                    .withSource(containerName)
+                    .withTarget(dir)
+                    .withType(MountType.VOLUME)
+                    .withReadOnly(false));
+        }
     }
 
     @Override
     public void doPostStartUpConfiguration() {
         DockerClient dockerClient = DockerClient.getInstance();
         dockerClient.createComplexCommand(dockerClient.getContainerId(containerName),
-                "chown", "ontop:ontop", configDir)
+                "chown", "ontop:ontop", String.join(" ", configDirs))
                 .withUser("root");
     }
 

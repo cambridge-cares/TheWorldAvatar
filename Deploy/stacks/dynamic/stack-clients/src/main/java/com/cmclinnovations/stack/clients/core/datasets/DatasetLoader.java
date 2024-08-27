@@ -4,6 +4,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
@@ -36,10 +37,12 @@ public class DatasetLoader {
 
         List<Dataset> allDatasets = DatasetReader.getAllDatasets(configPath);
 
-        Stream<Dataset> selectedDatasets = DatasetReader.getStackSpecificDatasets(allDatasets, selectedDatasetName);
+        List<Dataset> selectedDatasets = DatasetReader.getStackSpecificDatasets(allDatasets, selectedDatasetName)
+                .collect(Collectors.toList());
 
         loadDatasets(selectedDatasets);
 
+        doPostLoadDatasetConfig(selectedDatasets);
     }
 
     public void loadDatasets(Collection<Dataset> selectedDatasets) {
@@ -117,4 +120,20 @@ public class DatasetLoader {
         }
     }
 
+    public void doPostLoadDatasetConfig(Collection<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(this::doPostLoadDatasetConfig);
+    }
+
+    public void doPostLoadDatasetConfig(Stream<Dataset> selectedDatasets) {
+        selectedDatasets.forEach(this::doPostLoadDatasetConfig);
+    }
+
+    public void doPostLoadDatasetConfig(Dataset dataset) {
+        // needs to be done after all datasets are uploaded
+        if (dataset.usesOntop() && !dataset.getOntopOntologyDatasets().isEmpty()) {
+            String ontopServiceName = dataset.getOntopName();
+            OntopClient ontopClient = OntopClient.getInstance(ontopServiceName);
+            ontopClient.uploadOntology(catalogNamespace, dataset.getOntopOntologyDatasets());
+        }
+    }
 }

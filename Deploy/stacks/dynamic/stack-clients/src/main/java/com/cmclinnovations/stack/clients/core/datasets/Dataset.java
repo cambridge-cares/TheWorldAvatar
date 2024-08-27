@@ -59,6 +59,9 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty("mappings")
     private final Optional<List<String>> ontopMappings;
 
+    @JsonProperty("ontologyDatasets")
+    private final Optional<List<String>> ontopOntologyDatasets;
+
     @JsonProperty
     private final Optional<String> rdfType;
     @JsonProperty
@@ -79,6 +82,7 @@ public class Dataset extends AbstractDataObject {
         this.geoserverStyles = Optional.empty();
         this.staticGeoServerData = Optional.empty();
         this.ontopMappings = Optional.empty();
+        this.ontopOntologyDatasets = Optional.empty();
         this.rdfType = Optional.empty();
         this.baseIRI = Optional.empty();
         this.additionalMetadata = Optional.empty();
@@ -98,6 +102,7 @@ public class Dataset extends AbstractDataObject {
             Optional<List<GeoServerStyle>> geoserverStyles,
             Optional<StaticGeoServerData> staticGeoServerData,
             Optional<List<String>> ontopMappings,
+            Optional<List<String>> ontopOntologyDatasets,
             boolean skip,
             Optional<String> rdfType,
             Optional<String> baseIRI,
@@ -113,6 +118,7 @@ public class Dataset extends AbstractDataObject {
         this.geoserverStyles = geoserverStyles;
         this.staticGeoServerData = staticGeoServerData;
         this.ontopMappings = ontopMappings;
+        this.ontopOntologyDatasets = ontopOntologyDatasets;
         this.rdfType = rdfType;
         this.baseIRI = baseIRI;
         this.additionalMetadata = metadataRDF;
@@ -176,6 +182,10 @@ public class Dataset extends AbstractDataObject {
 
     public List<String> getOntopMappings() {
         return ontopMappings.orElse(Collections.emptyList());
+    }
+
+    public List<String> getOntopOntologyDatasets() {
+        return ontopOntologyDatasets.orElse(Collections.emptyList());
     }
 
     public StaticGeoServerData getStaticGeoServerData() {
