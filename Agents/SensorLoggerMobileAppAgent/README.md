@@ -197,6 +197,7 @@ The downsampling method and frequency for the different measurements can be conf
 #### Timer Delay and Timer Frequency
 - `timerDelay` sets the initial time delay in seconds before the first timeseries instantiation.
 - `timerFrequency` sets the time in seconds between each subsequent timeseries instantiation.
+- `taskInactiveTime` sets the time in seconds to remove a `SmartPhoneRecording` task when it no longer receives data from the corresponding device.
 
 ## 4. Deploy 
 ### 4.1 Retrieving SensorLoggerMobileAppAgent's image
