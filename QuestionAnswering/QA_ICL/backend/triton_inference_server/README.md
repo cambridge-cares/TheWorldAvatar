@@ -10,18 +10,18 @@ This directory contains resources to serve ML models with Triton Inference Serve
 
 - [Docker](https://docs.docker.com/engine/install/)
 
-- ONNX weights for mpnet model
-  - PyTorch weights: [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2)
-  - See [Exporting a Transformers model to ONNX with CLI](https://huggingface.co/docs/transformers/en/serialization#exporting-a--transformers-model-to-onnx-with-cli)
+### Required resources
+
+ONNX weights for mpnet model should be placed in [model_repository/mpnet/1](model_repository/mpnet/1/).
+- PyTorch weights: [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2)
+- See [Exporting a Transformers model to ONNX with CLI](https://huggingface.co/docs/transformers/en/serialization#exporting-a--transformers-model-to-onnx-with-cli)
 
 ### Steps
 
-1. Place `.onnx` file for mpnet model weights in [model_repository/mpnet/1](model_repository/mpnet/1/).
-2. Build the image for the triton server and run it.
-   ```
-   docker build -t triton:0.1.0 .
-   docker run -d -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=256m --name inference_server_mpnet triton:0.1.0
-   ```
+```
+docker build -t triton:0.1.0 .
+docker run -d -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=256m --name inference_server_mpnet triton:0.1.0
+```
 
 ### Usage
 

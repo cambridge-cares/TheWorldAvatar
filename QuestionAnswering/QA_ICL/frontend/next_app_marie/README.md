@@ -29,7 +29,7 @@ docker run --name next-app-marie -p 3000:3000 next-app-marie
 
 The app will be available at `localhost:3000`. 
 
-## Runing Next app at a subpath behind an NGINX reverse proxy
+## Running Next app at a subpath behind an NGINX reverse proxy
 
 1. Set the environment variable `BASE_PATH` to prepend all Next routes with this value. Its default value is set in `.env.production`, which can be overriden by `.env.local`. Note that the `BASE_PATH` value must not have any trailing slash.
 1. Configure NGINX reverse proxy as follows, where `ROOT_URL` points to the public address where the Next app runs. 
@@ -52,8 +52,9 @@ The app will be available at `localhost:3000`.
 
 ### Overview of tech stack
 
-- State management: React's built-in functions
+- State management: [built-in React](https://react.dev/learn/managing-state)
 - Styling: [tailwindcss](https://tailwindcss.com/)
+- Routing: Next's [App Router](https://nextjs.org/docs/app)
 
 ### UI components
 

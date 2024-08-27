@@ -15,8 +15,9 @@
 
 ### Steps
 
-1. Populate the required data and config parameters for the `fastapi_app` according to its README sections ['Required resources'](./fastapi_app/README.md#required-resources) and ['Configurable parameters'](./fastapi_app/README.md#configurable-parameters).
-2. Execute the deployment script.
+1. Populate the required data and config parameters for the `fastapi_app` according to its README sections [Required resources](./fastapi_app/README.md#required-resources) and [Configurable parameters](./fastapi_app/README.md#configurable-parameters).
+1. Deposit the text embeedding model weights for the `triton_inference_server` according to its README section [Required resources](./triton_inference_server/README.md#required-resources).
+1. Execute the deployment script.
    ```{bash}
    sh deploy.sh
    ```
