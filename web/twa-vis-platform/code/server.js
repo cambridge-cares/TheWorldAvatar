@@ -58,8 +58,10 @@ app.prepare().then(() => {
         prefix: "redis",
         ttl: undefined,
       });
+      console.log(`development mode is:`, dev ? colorYellow : colorRed, dev, `-> connecting to redis session store`, colorReset);
     } else {
       store = new MemoryStore(); // use in-memory store for session data in dev mode
+      console.log(`development mode is:`, dev ? colorYellow : colorRed, dev, `-> using in-memory session store (express-session MemoryStore())`, colorReset);
     }
 
     server.use(
@@ -110,6 +112,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log('Running at', colorGreen, `http://localhost:${port}`, colorReset, `development mode is: ${dev}`);
+    console.log('Running at', colorGreen, `http://localhost:${port}`, colorReset, `development mode is:`, dev ? colorGreen : colorYellow, dev, colorReset);
   });
 });
