@@ -36,10 +36,10 @@ class OntopEndpointConfigTest {
 
     private static Stream<Arguments> getArgsForReadTests() {
         return Stream.of(
-                Arguments.of("testConfig.json", "ontopBasic", "hosty", "1234", "http://hosty:1234/sparql/"),
+                Arguments.of("testConfig.json", "ontopBasic", "hosty", "1234", "http://hosty:1234/sparql"),
                 Arguments.of("testConfigWithURL.json", "ontopExplicitURL", "hosty", "1234", "http://hosty:1234/test"),
                 Arguments.of("oldTestConfigWithCreds.json", "ontopOldWithCreds", "hosty", "1234",
-                        "http://hosty:1234/sparql/"));
+                        "http://hosty:1234/sparql"));
     }
 
     @ParameterizedTest

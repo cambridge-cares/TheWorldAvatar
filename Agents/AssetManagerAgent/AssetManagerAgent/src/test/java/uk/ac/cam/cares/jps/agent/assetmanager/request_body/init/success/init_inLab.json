@@ -1,0 +1,16 @@
+{"assetData": 
+    {  
+        "Prefix": "", 
+        "AssetClass": "OtherIT", "ID": "2023-10-27/5", "Name": "Projector Screen", 
+        "serialNum": "999999", "modelNumber": "999999", 
+        "SupplierName": "MOCK_COMPANY", "ManufacturerName": "MOCK_COMPANY", 
+        "SpecSheet": "projectorMOCK.pdf", "SpecSheetPage": "(Spec on Manual) Pg4-5", "Manual": "projectorMOCK.pdf", "ManualURL": "https://www.theworldavatar.com:1010/careslab/manuals/projectorMOCK.pdf", 
+        "BuildingLocation": "Research Wing", "FacilityLocation": "CARES Lab 1", "RoomLocation": "Open Lab Area", 
+        "WorkspaceName": "", "storage": "", "AssignedTo": "Markus KRAFT", 
+        "ItemComment": "Permanently fixed projector. Mock instance for testing.", 
+        "invoiceNum": "15111-IV005(B)", "DeliveryOrderNum": "1511-IV005(A)", "PurchaseOrderNum": "MOCK_NTU012345678", 
+        "BudgetCat": "A2.1", 
+        "ServiceCode": "HQ COMP & WS (<6K)", 
+        "price": "710"
+    }
+}

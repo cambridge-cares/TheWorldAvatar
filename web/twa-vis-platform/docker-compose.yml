@@ -3,24 +3,50 @@
 #
 services:
   # Empty visualisation image for deployment.
-  visualise:
-    image: ghcr.io/cambridge-cares/twa-vf:latest
+  base:
+    image: ghcr.io/cambridge-cares/twa-vf
     container_name: "twa-vf"
     restart: "no"
+    environment:
+      KEYCLOAK: false ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: page,/otherpage ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /role,/protected,/pages ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: viz:protected ## the role required for the above list
     secrets:
       - mapbox_username
       - mapbox_api_key
     build:
-      context: "./"
+      context: .
       dockerfile: "Dockerfile"
-      target: prod
+      target: production
       labels:
         authors: "support@cmcl.io"
         description: "TWA Visualisation Platform image."
     volumes:
-      - ./uploads:/twa/public/
+      - ./code/public:/twa/public/
     ports:
-      - "80:3000" 
+      - "3000:3000" 
+  
+  latest:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:latest
+    profiles: ["build-only"]
+
+  semantic-snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}.${MINOR}.${PATCH}-${SNAPSHOT}
+    profiles: ["build-only"]
+
+  major-snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}-${SNAPSHOT}
+    profiles: ["build-only"]
+
+  snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${SNAPSHOT}
+    profiles: ["build-only"]
+
 secrets:
     mapbox_username:
       file: ./mapbox_username

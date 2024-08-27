@@ -39,8 +39,8 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 ```json
 {
   "branding": {
-    "logo": "/images/whatever.svg", // Custom branding logo
-    "navbarLogo": "/images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
+    "logo": "./images/whatever.svg", // Custom branding logo
+    "navbarLogo": "./images/defaults/navbar-logo.svg" // Custom logo for the navbar (should be 5:1 aspect ratio)
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
@@ -50,6 +50,20 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
   }
 }
 ```
+
+The `resources` section in the configuration file allows for the specification of data resources for a viz app. One such resource is `scenario` resource, which enables scenario selection in the map page of the platform. This has so far only been applied to CReDo and an example of a config is shown below.
+
+```json
+"resources": {
+    "scenario": {
+        "url": "https://theworldavatar.io/demos/credo-ofwat/central/CentralStackAgent",
+        "data": "water"
+    }
+}
+```
+
+- `url`: This is a required field that specifies the URL from which the scenarios and their settings can be retrieved. In this example, the URL points to a stack deployed on theworldavatar.io platform.
+- `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
 
 ### 1.2 Map Settings
 
@@ -81,12 +95,12 @@ Icons on the map are shown by default in the layer tree. Additional legend items
       // Group one, item one
       "Active": {
         "type": "symbol",
-        "icon": "/images/active.svg"
+        "icon": "./images/active.svg"
       },
       // Group one, item two
       "Inactive": {
         "type": "symbol",
-        "icon": "/images/inactive.jpg"
+        "icon": "./images/inactive.jpg"
       },
       // Group one, item three
       "Unknown": {
@@ -180,7 +194,7 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
   },
   "icons": {
     // Mappings for the icon name that will be called in code and its corresponding url
-    "info": "/images/defaults/icons/info.svg"
+    "info": "./images/defaults/icons/info.svg"
   }
 }
 ```

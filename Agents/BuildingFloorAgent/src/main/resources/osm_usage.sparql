@@ -1,0 +1,9 @@
+PREFIX env:  <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+
+SELECT ?building ?usage 
+WHERE {
+  ?building a bldg:Building.
+  ?building env:hasPropertyUsage/rdf:type ?usage.
+}
