@@ -26,8 +26,6 @@
         <!--podman.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</podman.file-->
         <podman.file>${project.basedir}/src/main/swagger/podman/swagger-v4.3.yaml</podman.file>
 
-        <superset.file>${project.basedir}/src/main/swagger/superset/openapi.yaml</superset.file>
-
     </properties>
 
     <!-- Repository locations to deploy to -->
@@ -269,7 +267,8 @@
                 </executions>
             </plugin>
 
-            <plugin>
+            <!-- Example of how to use the Swagger v3 plugin -->
+            <!--plugin>
                 <groupId>io.swagger.codegen.v3</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
                 <executions>
@@ -302,7 +301,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
         </plugins>
 
     </build>
