@@ -22,6 +22,7 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 /**
  * Two mandatory parameters: lat, lon
@@ -40,6 +41,7 @@ public class CreateStation extends HttpServlet {
     private WeatherQueryClient weatherClient;
     private WeatherPostGISClient postgisClient;
 
+    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         new Config().initProperties();
         LOGGER.info("Received POST request to create a new weather station");
@@ -60,8 +62,12 @@ public class CreateStation extends HttpServlet {
         if (weatherClient == null) {
             RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser,
                     Config.kgpassword);
-            TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(kgClient, Instant.class, Config.dburl,
-                    Config.dbuser, Config.dbpassword);
+            TimeSeriesRDBClientWithReducedTables<Instant> rdbClient = new TimeSeriesRDBClientWithReducedTables<>(
+                    Instant.class);
+            rdbClient.setRdbURL(Config.dburl);
+            rdbClient.setRdbUser(Config.dbuser);
+            rdbClient.setRdbPassword(Config.dbpassword);
+            TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(kgClient, rdbClient);
             RemoteStoreClient ontopClient = new RemoteStoreClient(Config.ontop_url);
             weatherClient = new WeatherQueryClient(kgClient, tsClient, ontopClient);
         }
