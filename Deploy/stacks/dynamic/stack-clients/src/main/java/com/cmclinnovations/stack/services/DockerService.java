@@ -555,7 +555,12 @@ public class DockerService extends AbstractService
         if (!imageName.contains(":")) {
             throw new RuntimeException("Docker image '" + imageName + "' must include a version.");
         }
-        if (dockerClient.getInternalClient().listImagesCmd().withReferenceFilter(imageName).exec().isEmpty()) {
+
+        // Check using the full and Docker shortened image references.
+        List<String> imageReferences = Stream.of(imageName, imageName.replace("docker.io/", ""))
+                .distinct().collect(Collectors.toList());
+        if (dockerClient.getInternalClient().listImagesCmd()
+                .withFilter("reference", imageReferences).exec().isEmpty()) {
             // No image with the requested image ID, so try to pull image
             try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(imageName)) {
 
