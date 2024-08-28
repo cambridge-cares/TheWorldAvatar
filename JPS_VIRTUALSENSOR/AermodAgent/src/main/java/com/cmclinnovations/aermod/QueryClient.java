@@ -84,7 +84,6 @@ public class QueryClient {
     private RemoteRDBStoreClient rdbStoreClient;
     private TimeSeriesClient<Instant> tsClientInstant;
     private TimeSeriesClient<Long> tsClientLong;
-    private TimeSeriesClient<Instant> tsClientReduceTableInstant;
     private String citiesNamespace;
     private String namespaceCRS;
     private ServiceEndpoint ontopService;
@@ -193,10 +192,9 @@ public class QueryClient {
 
     public QueryClient(RemoteStoreClient storeClient, String ontopEndpoint, RemoteRDBStoreClient rdbStoreClient) {
         this.storeClient = storeClient;
-        this.tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
-        this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
-        TimeSeriesRDBClientWithReducedTables<Instant> timeSeriesRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Instant.class);
-        tsClientReduceTableInstant = new TimeSeriesClient<>(storeClient, timeSeriesRdbClient);
+        this.tsClientInstant = new TimeSeriesClient<>(storeClient,
+                new TimeSeriesRDBClientWithReducedTables<>(Instant.class));
+        this.tsClientLong = new TimeSeriesClient<>(storeClient, new TimeSeriesRDBClientWithReducedTables<>(Long.class));
         this.rdbStoreClient = rdbStoreClient;
         ontopService = new ServiceEndpoint(ontopEndpoint);
     }
@@ -451,7 +449,7 @@ public class QueryClient {
             measures.stream().forEach(measure -> {
                 TimeSeries<Instant> ts;
                 try {
-                    ts = tsClientReduceTableInstant.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
+                    ts = tsClientInstant.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
                             simTimeUpperBound, conn);
                     if (ts.getValuesAsPoint(measure).isEmpty()) {
                         return;
@@ -1224,7 +1222,7 @@ public class QueryClient {
                         .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
                         .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
                 pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(entity,zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
+                .select(entity, zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
@@ -1257,7 +1255,7 @@ public class QueryClient {
 
             ModifyQuery modify = Queries.MODIFY();
             modify.prefix(P_DISP);
-            modify.insert(iri(entityIri).has(HAS_SRID,srid));
+            modify.insert(iri(entityIri).has(HAS_SRID, srid));
             storeClient.executeUpdate(modify.getQueryString());
         }
 
