@@ -417,31 +417,22 @@ public class QueryClient {
 
     void updateTimeSeriesData(List<Ship> ships) {
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            ships.stream().forEach(ship -> {
+            ships.stream().filter(ship -> ship.hasTimeSeries() && !ship.getTimestampList().isEmpty()).forEach(ship -> {
                 List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(),
                         ship.getLocationMeasureIri(), ship.getLatMeasureIri(), ship.getLonMeasureIri());
 
                 // order of dataIRIs is course, speed, location, as defined in the previous loop
                 List<List<?>> values = new ArrayList<>();
-                List<Instant> time;
-                if (ship.hasTimeSeries() && !ship.getTimestampList().isEmpty()) {
-                    // data from aisstream.io, only save last data point to avoid having too much
-                    // data
-                    int tsSize = ship.getTimestampList().size();
-                    time = Arrays.asList(ship.getTimestampList().get(tsSize - 1));
-                    values.add(Arrays.asList(ship.getCogList().get(tsSize - 1)));
-                    values.add(Arrays.asList(ship.getSpeedList().get(tsSize - 1)));
-                    values.add(Arrays.asList(ship.getLocationList().get(tsSize - 1)));
-                    values.add(Arrays.asList(ship.getLatList().get(tsSize - 1)));
-                    values.add(Arrays.asList(ship.getLonList().get(tsSize - 1)));
-                } else {
-                    time = Arrays.asList(ship.getTimestamp());
-                    values.add(Arrays.asList(ship.getCourse()));
-                    values.add(Arrays.asList(ship.getSpeed()));
-                    values.add(Arrays.asList(ship.getLocation()));
-                    values.add(Arrays.asList(ship.getLat()));
-                    values.add(Arrays.asList(ship.getLon()));
-                }
+                // data from aisstream.io, only save last data point to avoid having too much
+                // data
+                int tsSize = ship.getTimestampList().size();
+                List<Instant> time = Arrays.asList(ship.getTimestampList().get(tsSize - 1));
+                values.add(Arrays.asList(ship.getCogList().get(tsSize - 1)));
+                values.add(Arrays.asList(ship.getSpeedList().get(tsSize - 1)));
+                values.add(Arrays.asList(ship.getLocationList().get(tsSize - 1)));
+                values.add(Arrays.asList(ship.getLatList().get(tsSize - 1)));
+                values.add(Arrays.asList(ship.getLonList().get(tsSize - 1)));
+
                 TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs, values);
                 tsClient.addTimeSeriesData(ts, conn);
             });
