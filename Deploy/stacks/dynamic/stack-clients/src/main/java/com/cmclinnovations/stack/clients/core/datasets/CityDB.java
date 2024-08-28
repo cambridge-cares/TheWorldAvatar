@@ -12,6 +12,7 @@ import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -131,6 +132,11 @@ public class CityDB extends GeoServerDataSubset {
             augmentData(database);
         }
         super.runSQLPostProcess(database);
+    }
+
+    @Override
+    public String getSchema() {
+        return PostGISClient.DEFAULT_SCHEMA_NAME;
     }
 
     @Override
