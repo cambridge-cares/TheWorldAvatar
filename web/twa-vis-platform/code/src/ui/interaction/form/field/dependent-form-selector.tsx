@@ -13,6 +13,7 @@ interface FormSelectorProps {
   form: UseFormReturn;
   options?: {
     required?: boolean;
+    disabled?: boolean;
   };
 }
 
@@ -31,6 +32,7 @@ export default function DependentFormSelector(props: Readonly<FormSelectorProps>
       id={props.field.fieldId}
       className={styles["selector"]}
       aria-label={props.field.fieldId}
+      disabled={props.options?.disabled}
       {...props.form.register(props.field.fieldId, getRegisterOptions(
         props.options?.required,
       ))}

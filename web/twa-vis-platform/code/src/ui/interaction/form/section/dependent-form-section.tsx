@@ -6,11 +6,11 @@ import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { PathNames } from 'io/config/routes';
-import { FormTemplate, ID_KEY, PROPERTY_GROUP_TYPE, PropertyGroup, PropertyShape, TYPE_KEY, VALUE_KEY } from 'types/form';
+import { ID_KEY, PropertyShape, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
-import { getAfterDelimiter, isValidIRI, parseWordsForLabels } from 'utils/client-utils';
-import { getData, getFormTemplate } from 'utils/server-actions';
+import { getAfterDelimiter, parseWordsForLabels } from 'utils/client-utils';
+import { getData } from 'utils/server-actions';
 import { FORM_STATES } from '../form-utils';
 import DependentFormSelector from '../field/dependent-form-selector';
 
@@ -35,7 +35,6 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   const control: Control = props.form.control;
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [selectElements, setSelectElements] = useState<FieldValues[]>([]);
-  const [depFields, setDepFields] = useState<FieldValues[]>([]);
 
   // If there is a need, retrieve the parent field name. Parent field depends on the shape to field mappings.
   // Else, it should remain as an empty string
@@ -102,64 +101,25 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
 
       // Update dropdown options
       setSelectElements(entities);
-      setDepFields([]);
       setIsFetching(false);
     }
 
     getDependencies(queryEntityType, props.dependentProp, props.form);
   }, [currentParentOption]);
 
-  // A hook that fetches the dependent fields based on the currently selected option
-  useEffect(() => {
-    // Declare an async function to retrieve the metadata for the target dependent entity
-    const getDependentFields = async (entityType: string, id: string) => {
-      setIsFetching(true);
-
-      // MUST retrieve a form template for the target ID
-      const template: FormTemplate = await getFormTemplate(props.agentApi, entityType, getAfterDelimiter(id, "/"));
-      // Iterate over the template to populate the dependent fields based on the available properties
-      const dependentFields: FieldValues[] = []
-      if (template)
-        template.property.map(currentProp => {
-          if (currentProp[TYPE_KEY].includes(PROPERTY_GROUP_TYPE)) {
-            // For any groups, their label must include the group name
-            const propGroup: PropertyGroup = currentProp as PropertyGroup;
-            propGroup.property.map(currentSubProp => {
-              const fieldName: string = currentSubProp.name[VALUE_KEY];
-              // IDs and parent entity should not be included
-              if (![FORM_STATES.ID].includes(fieldName) && !isValidIRI(currentSubProp.defaultValue)) {
-                dependentFields.push({
-                  label: parseWordsForLabels(`${propGroup.label[VALUE_KEY]} ${fieldName}`),
-                  value: currentSubProp.defaultValue,
-                });
-              }
-            })
-          } else {
-            // For any non-grouped properties
-            const fieldProp: PropertyShape = currentProp as PropertyShape;
-            const fieldName: string = fieldProp.name[VALUE_KEY];
-            // IDs and parent entity should not be included
-            if (![FORM_STATES.ID].includes(fieldName) && !isValidIRI(fieldProp.defaultValue)) {
-              dependentFields.push({
-                label: parseWordsForLabels(fieldName),
-                value: fieldProp.defaultValue,
-              });
-            }
-          }
-        });
-      setDepFields(dependentFields);
-      setIsFetching(false);
-    }
-
-    // If any fetching is still in progress, this should not be re-executed
-    if (currentOption) {
-      getDependentFields(queryEntityType, currentOption);
-    }
-  }, [currentOption]);
-
   // An event handler that will navigate to the required add form when clicked
   const openAddSubEntityModal = () => {
     let url: string = `../add/${queryEntityType}`;
+    if (formType != PathNames.REGISTRY_ADD) {
+      url = `../${url}`;
+    }
+    router.push(url);
+  };
+
+  // An event handler that will navigate to the required view form when clicked
+  const openViewSubEntityModal = () => {
+    let url: string = `../view/${queryEntityType}/${getAfterDelimiter(currentOption, "/")}`;
+    // Other form types will have an extra path for the entity id, except for ADD
     if (formType != PathNames.REGISTRY_ADD) {
       url = `../${url}`;
     }
@@ -184,16 +144,17 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
                   {parseWordsForLabels(label)}
                 </span>
               </label>}
-              {(formType != PathNames.REGISTRY && formType != PathNames.REGISTRY_DELETE) &&
-                (selectElements.length > 0 ?
-                  <DependentFormSelector
-                    field={props.dependentProp}
-                    form={props.form}
-                    selectOptions={selectElements.map(entity => entity.id)}
-                    selectLabels={selectElements.map(entity => entity.name ?? entity.first_name)}
-                  /> :
-                  <p className={styles["button-text"]}>No {label} detected</p>
-                )
+              {selectElements.length > 0 ?
+                <DependentFormSelector
+                  field={props.dependentProp}
+                  form={props.form}
+                  selectOptions={selectElements.map(entity => entity.id)}
+                  selectLabels={selectElements.map(entity => entity.name ?? entity.first_name)}
+                  options={{
+                    disabled: formType == PathNames.REGISTRY || formType == PathNames.REGISTRY_DELETE
+                  }}
+                /> :
+                <p className={styles["button-text"]}>No {label} detected</p>
               }
             </div>
             {(formType != PathNames.REGISTRY && formType != PathNames.REGISTRY_DELETE) && (
@@ -209,20 +170,15 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
             )}
           </div>
         )}
-        {!isFetching && depFields[0]?.value && (
-          <div className={styles["form-dependent-field-container"]}>
-            {depFields.map((depField, index) => {
-              return <div className={styles["form-dependent-field-line"]} key={`${depField.label} ${index}`}>
-                <div className={styles["form-dependent-field-label"]} >
-                  {`${depField.label}:`}
-                </div>
-                <div className={styles["form-dependent-field-value"]} >
-                  {depField.value}
-                </div>
-              </div>
-            })}
-          </div>
-        )
+        {!isFetching && <MaterialIconButton
+          iconName={"expand_circle_right"}
+          className={styles["button"] + " " + styles["button-layout"]}
+          text={{
+            styles: [styles["button-text"]],
+            content: `View more details`
+          }}
+          onClick={openViewSubEntityModal}
+        />
         }
       </fieldset>);
   }

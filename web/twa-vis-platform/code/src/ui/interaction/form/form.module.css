@@ -70,34 +70,6 @@
   margin: 1rem 0;
 }
 
-.form-dependent-field-container {
-  display: flex;
-  flex-direction: column;
-  width: max-content;
-  min-width: 10vw;
-  margin: 0 0.75rem;
-  padding: 0.5rem 0.75rem 0;
-
-  outline: 0.5px solid var(--border-tertiary);
-}
-
-.form-dependent-field-line {
-  margin-bottom: 0.5rem;
-}
-
-.form-dependent-field-label {
-  font-size: var(--font-size-tertiary-text);
-  white-space: nowrap;
-}
-
-.form-dependent-field-value {
-  display: flex;
-  justify-content: flex-end;
-
-  font-size: var(--font-size-tertiary-text);
-  color: var(--text-color-secondary);
-}
-
 .schedule-occurrence-container {
   width: 100%;
   margin: 0 1rem 1rem;
@@ -129,6 +101,7 @@
 
 .button {
   display: flex;
+  margin: 0 0.75rem;
   padding: 0.2rem 0.5rem;
   border-radius: .25rem;
 
