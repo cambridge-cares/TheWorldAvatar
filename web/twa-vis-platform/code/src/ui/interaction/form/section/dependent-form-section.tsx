@@ -96,8 +96,15 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
         entities = await getData(props.agentApi, entityType);
       }
 
+      // By default, use the first option's id
+      let defaultId: string = entities[0]?.id;
+      // If there is a default value, search and use the option matching the default instance's local name
+      if (field.defaultValue) {
+        const defaultValueId: string = getAfterDelimiter(field.defaultValue, "/");
+        defaultId = entities.find(entity => getAfterDelimiter(entity.id, "/") === defaultValueId).id;
+      }
       // Set the form value to the default value if available, else, default to the first option
-      form.setValue(field.fieldId, field.defaultValue ? field.defaultValue : entities[0]?.id);
+      form.setValue(field.fieldId, defaultId);
 
       // Update dropdown options
       setSelectElements(entities);
