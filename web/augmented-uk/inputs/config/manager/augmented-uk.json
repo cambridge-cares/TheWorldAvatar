@@ -1,0 +1,14 @@
+{
+    "services": {
+        "includes": [
+            "feature-info-agent"
+        ],
+        "excludes": [
+            "citytiler",
+            "citydbimpexp"
+        ]
+    },
+    "volumes": {
+        "fia-queries": "fia-queries"
+    }
+}

@@ -1,5 +1,12 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.1.1
+### Features
+* _No features present._
+### Bug Fixes:
+* Improved logging when reading configuration files.
+* Updated documentation.
+
 # 3.1.0
 
 ### Features

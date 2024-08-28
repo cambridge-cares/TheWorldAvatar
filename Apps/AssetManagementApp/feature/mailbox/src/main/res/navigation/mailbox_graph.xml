@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mailbox_graph"
+    app:startDestination="@id/mailbox">
+    <fragment
+        android:id="@+id/mailbox"
+        android:name="uk.ac.cam.cares.jps.mailbox.MailboxFragment"
+        tools:layout="@layout/fragment_mailbox"
+        android:label="Mailbox Fragment">
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/mail_box" />
+    </fragment>
+
+</navigation>

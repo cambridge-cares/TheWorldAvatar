@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+pyyaml
+pydantic
+rdflib
+redis
+SPARQLWrapper
+openai
+tritonclient[grpc]
+numpy
+pandas
+pint
+jinja2
+transformers
+tiktoken
+shapely

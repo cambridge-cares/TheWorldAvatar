@@ -21,7 +21,7 @@ interface TWAFeature {
  */
 export default class MapEventManager {
   private map: mapboxgl.Map = null;
-  private listeners: Array<{ event: MapEvent; listener: (e: MapMouseEvent) => void ; layerID?: string }> = [];
+  private listeners: Array<{ event: MapEvent; listener: (e: MapMouseEvent) => void; layerID?: string }> = [];
 
   // Constructs an instance of this event manager
   public constructor(map: mapboxgl.Map) {
@@ -49,7 +49,9 @@ export default class MapEventManager {
    */
 
   private addFeatureClickEventListener(dispatch: Dispatch<ActionType>, dataStore: DataStore) {
-    this.addEventListener("click", (e) => {
+    this.addEventListener({ type: "click", target: this.map }, (event) => {
+      const e = event as MapMouseEvent;
+
       // Reset features upon clicked
       dispatch(clearFeatures());
       // Store all clickable features within the clicked radius with some additional metadata
@@ -87,7 +89,10 @@ export default class MapEventManager {
       closeOnClick: false
     });
     // For any movement within the map, a tool tip should appear when hovering a feature
-    this.addEventListener("mousemove", function (e) {
+    this.addEventListener({ type: "mousemove", target: this.map }, (event) => {
+      const e = event as MapMouseEvent;
+
+
       // Remove the tool tip if it is currently open
       if (toolTip?.isOpen()) {
         toolTip.remove();
@@ -110,7 +115,7 @@ export default class MapEventManager {
     });
 
     // Removes the tool tip once the mouse pointer is outside the map container
-    this.addEventListener("mouseout", function () {
+    this.addEventListener({ type: "mouseout", target: this.map }, () => {
       toolTip.remove();
     });
   }
@@ -126,7 +131,8 @@ export default class MapEventManager {
       if (layer.hasInjectableProperty(Interactions.HOVER)) {
         const hoverProperty = layer.getInjectableProperty(Interactions.HOVER).style;
         // Updates the conditional paint property with the IRI of the currently hovering feature
-        this.addEventListener("mousemove", function (e) {
+        this.addEventListener({ type: "mousemove", target: this.map }, (event) => {
+          const e = event as MapMouseEvent;
           const feature = map.queryRenderedFeatures(e.point)[0];
           const twaFeature = feature as unknown as TWAFeature
           const prevIri: string = hoverProperty[1][2];
@@ -137,7 +143,7 @@ export default class MapEventManager {
         }, layer.id);
 
         // When hovering outside the layer, reset the property to ensure highlight is removed
-        this.addEventListener("mouseleave", function () {
+        this.addEventListener({ type: "mouseleave", target: this.map }, function () {
           hoverProperty[1][2] = "[HOVERED-IRI]";
           map.setPaintProperty(layer.id, "fill-opacity", hoverProperty);
         }, layer.id);
@@ -152,13 +158,15 @@ export default class MapEventManager {
    * @param {(e: MapMouseEvent) => void} listener - Event listener to be added.
    * @param {string} layerID - Optional parameter for the specified layer id if available.
    */
-  private addEventListener(event: MapEvent, listener: (e: MapMouseEvent) => void, layerID?: string): void {
+  private addEventListener(event: MapEvent, listener: (e: MapEvent) => void, layerID?: string): void {
     if (layerID) {
-      this.map.on(event, layerID, listener);
+      // Assuming `this.map.on` expects a listener of a specific type, ensure `listener` matches.
+      // This might require wrapping `listener` to match the expected signature.
+      this.map.on(event.type, layerID, listener);
     } else {
-      this.map.on(event, listener);
+      this.map.on(event.type, listener);
     }
-    this.listeners.push({ event, listener, layerID });
+    this.listeners.push({ event: event, listener, layerID });
   }
 
   /**
@@ -166,10 +174,11 @@ export default class MapEventManager {
    */
   private removeAllEventListeners(): void {
     this.listeners.forEach(({ event, layerID, listener }) => {
+      const l = listener as (e: MapEvent) => void
       if (layerID) {
-        this.map.off(event, layerID, listener);
+        this.map.off(event.type, layerID, l);
       } else {
-        this.map.off(event, listener);
+        this.map.off(event.type, l);
       }
     });
     this.listeners = [];

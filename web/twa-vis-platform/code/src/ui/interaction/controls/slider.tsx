@@ -1,11 +1,10 @@
 import Slider from '@mui/material/Slider';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectDimensionSliderValue, setValue } from 'state/dimension-slider-slice';
 import { ScenarioDimensionsData, ScenarioDimensionStep } from 'types/timeseries';
 import styles from './slider.module.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { setValue } from 'state/dimension-slider-slice';
-import { ReduxState } from 'app/store';
-import { useEffect, useState } from 'react';
 
 interface DimensionSliderProps {
     data: ScenarioDimensionsData;
@@ -23,7 +22,7 @@ export default function DimensionSlider({ data }: DimensionSliderProps) {
     const max = values[values.length - 1]?.value;
     const middle = Math.round((min + max) / 2);
     const dispatch = useDispatch();
-    const dimensionSliderValue = useSelector((state: ReduxState) => state.dimensionSlider.value);
+    const dimensionSliderValue = useSelector(selectDimensionSliderValue);
     const [tempValue, setTempValue] = useState(dimensionSliderValue);
     
     // TODO Debug purposes only, remove later

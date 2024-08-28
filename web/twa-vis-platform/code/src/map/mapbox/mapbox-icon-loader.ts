@@ -7,21 +7,17 @@ import { IconSettings } from 'types/settings';
  * @param {Map} map the Mapbox map instance.
  * @param {IconSettings} iconSettings object listing icons for load.
  */
-export function addIcons(map: Map, iconSettings: IconSettings) {
-  const promises: Promise<void>[] = [];
-  if (iconSettings) {
-    for (const key of Object.keys(iconSettings)) {
-      const promise = new Promise<void>(function (resolve) {
-        loadIcon(map, key, iconSettings[key], function () {
-          resolve();
-        });
-      });
-      promises.push(promise);
-    }
-  }
-  return Promise.all(promises).then(() => {
-    console.info("All custom image icons have been loaded and registered.");
+export async function addIcons(map: Map, iconSettings: IconSettings): Promise<void> {
+  if (!iconSettings) return;
+
+  const promises = Object.keys(iconSettings).map(async (key) => {
+    return new Promise<void>((resolve) => {
+      loadIcon(map, key, iconSettings[key], () => resolve());
+    });
   });
+
+  await Promise.all(promises);
+  console.info("All custom image icons have been loaded and registered.");
 }
 
 /**

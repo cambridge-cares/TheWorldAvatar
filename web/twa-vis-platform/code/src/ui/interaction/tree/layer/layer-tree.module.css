@@ -23,7 +23,7 @@
     width: 100%;
     box-sizing: border-box;
     height: 32px;
-    
+
     padding-right: 0.75vw;
     flex-grow: 0;
     display: flex;
@@ -32,7 +32,10 @@
     border-style: solid;
     border-color: var(--border-secondary);
     border-width: 0px 0px 1px 0px;
+
+    transition: background-color 0.5s ease;
 }
+
 .treeEntryHeader:hover {
     background-color: var(--background-secondary);
 }
@@ -44,16 +47,20 @@
     align-items: center;
     justify-content: center;
 }
+
 .icon span {
     font-size: var(--icon-size);
     color: var(--text-color-primary);
 }
+
 .icon svg {
     padding: 2px;
 }
+
 .icon.small span {
     font-size: var(--small-icon-size);
 }
+
 .treeIcon {
     pointer-events: none;
 }

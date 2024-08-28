@@ -7,4 +7,5 @@ POST http://localhost:3838/dispersion-interactor/ScheduledDispersion
 &z=50
 &label=Hamburg
 &delayMinutes=0
-&intervalMinutes=30
+&intervalMinutes=60
+&maxTimeMinutes=30

@@ -59,6 +59,7 @@ export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailPr
 export function DefaultPageThumbnail(props: Readonly<DefaultPageThumbnailProps>): React.ReactElement {
   return (
     <PageThumbnailTemplate
+      key={props.title}
       header={props.title}
       description={props.caption}
       icon={props.icon}

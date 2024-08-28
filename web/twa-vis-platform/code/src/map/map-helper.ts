@@ -4,16 +4,16 @@
 
 "use client";
 
-import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
-import { Map } from 'mapbox-gl';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { reduxStore } from 'app/store';
 import { DataStore } from 'io/data/data-store';
-import { CameraSettings, CameraPosition, ImagerySettings, ImageryOption, MapSettings } from 'types/settings';
+import { Map } from 'mapbox-gl';
+import { CameraPosition, CameraSettings, ImageryOption, ImagerySettings, MapSettings } from 'types/settings';
 import { addIcons } from './mapbox/mapbox-icon-loader';
-import { addAllSources } from './mapbox/mapbox-source-utils';
 import { addAllLayers } from './mapbox/mapbox-layer-utils';
+import { addAllSources } from './mapbox/mapbox-source-utils';
 
 // Default imagery options if users do not include them in the "map-settings.json" file
 const DEFAULT_IMAGERY_OPTIONS: ImagerySettings = {
@@ -64,19 +64,13 @@ const PLACENAME_LAYERS: string[] = [
  * @param {MapSettings} mapSettings The user specified map settings.
  * @param {DataStore} data The data of interest to add to the map.
  */
-export function addData(map: Map, mapSettings: MapSettings, data: DataStore): void {
+export async function addData(map: Map, mapSettings: MapSettings, data: DataStore): Promise<void> {
   // Parse data configuration and load icons
-  const iconPromise = addIcons(map, mapSettings.icons);
+  await addIcons(map, mapSettings.icons)
+  resetMap(map);
+  addAllSources(map, data);
+  addAllLayers(map, data, mapSettings.imagery);
 
-  Promise.all([iconPromise]).then(() => {
-    // Once that is done and completed...
-    console.log("Data definitions fetched and parsed.");
-    // Reset the map
-    resetMap(map);
-    // Plot data
-    addAllSources(map, data);
-    addAllLayers(map, data, mapSettings.imagery);
-  });
 }
 
 /**
@@ -85,7 +79,7 @@ export function addData(map: Map, mapSettings: MapSettings, data: DataStore): vo
  * @param {Map} map The current Mapbox map instance.
  */
 function resetMap(map: Map): void {
-  const layers: mapboxgl.AnyLayer[] = map.getStyle().layers;
+  const layers: mapboxgl.LayerSpecification[] = map.getStyle().layers;
   const sources: Set<string> = new Set();
 
   layers.map(layer => {
@@ -350,10 +344,10 @@ export function locateUser(map: Map): void {
       });
     },
     () => {
-      toast.warning(
-        "Cannot read user's location without browser authorisation.",
-        { position: toast.POSITION.BOTTOM_LEFT }
-      )
+      toast.warning("Cannot read user's location without browser authorisation.", {
+      })
+
     }
   );
 }
+

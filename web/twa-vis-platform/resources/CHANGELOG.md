@@ -3,6 +3,43 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.4.0
+
+### Features
+
+* Viz app can now be secured behind a Keycloak authentication server by configuring some environment variables. See main documentation of the project 1.1
+* Dependency management and build process optimised by using pnpm over npm for the project.
+* Docker build optimised with multi stage building and module caching
+* Rebuild should only occur if a change in a config file is detected
+* Some dependency updating and trimming down
+* NB there no longer two places to mount config files and media. All config files should go in `web/twa-vis-platform/code/public` and NOT `web/twa-vis-platform/uploads`
+
+## 5.3.3
+
+### Bug Fixes
+
+* Fix tooltips in ribbon
+
+## 5.3.2
+
+### Bug Fixes
+
+* Fix bug where sidepanel info did not show the correctly time indexed data
+* Side panel now re-queries when dimension is changed
+* Minor styling changes on scenario selector to fix weird icon scaling
+* Better layer tree and ribbon display on mobile
+
+## 5.3.1
+
+### Features
+
+* Scenario selection button now displays current scenario
+
+### Bug Fixes and Improvements
+
+* Several major updates in dependencies
+* Dev dependencies no longer shipped with production, reducing number of node packages installed inside the container by ~66%
+
 ## 5.3.0
 
 ### Features
