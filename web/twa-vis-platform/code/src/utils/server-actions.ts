@@ -42,12 +42,7 @@ export async function getData(agentApi: string, entityType: string, identifier?:
   } else {
     parsedResponse = responseData;
   }
-  return parsedResponse.map((item: FieldValues) => {
-    return {
-      ...item,
-      id: getAfterDelimiter(item.id, "/"),
-    }
-  });
+  return parsedResponse;
 }
 
 /**
@@ -90,7 +85,6 @@ export async function getFormTemplate(agentApi: string, entityType: string, iden
  * @param {string} agentApi API endpoint.
  */
 export async function sendGetRequest(agentApi: string): Promise<void> {
-  console.log(agentApi)
   const res = await fetch(agentApi);
   if (!res.ok) {
     throw new Error("Failed to fetch data");

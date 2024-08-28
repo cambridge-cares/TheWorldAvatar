@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 
 import { getIsOpenState } from 'state/modal-slice';
-import { parseWordsForLabels } from 'utils/client-utils';
+import { getAfterDelimiter, parseWordsForLabels } from 'utils/client-utils';
 import { getData } from 'utils/server-actions';
 import RegistryTable from './registry-table';
 import TableRibbon from './table-ribbon';
@@ -33,17 +33,17 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
 
   const handleClickView = (index: number): void => {
     // Move to the view modal page for the specific entity associated with the row
-    router.push(`./${props.entityType}/${currentInstances[index].id}`);
+    router.push(`./${props.entityType}/${getAfterDelimiter(currentInstances[index].id, "/")}`);
   };
 
   const handleClickEdit = (index: number): void => {
     // Move to the edit modal page for the specific entity associated with the row
-    router.push(`../edit/${props.entityType}/${currentInstances[index].id}`);
+    router.push(`../edit/${props.entityType}/${getAfterDelimiter(currentInstances[index].id, "/")}`);
   };
 
   const handleClickDelete = (index: number): void => {
     // Move to the delete modal page for the specific entity associated with the row
-    router.push(`../delete/${props.entityType}/${currentInstances[index].id}`);
+    router.push(`../delete/${props.entityType}/${getAfterDelimiter(currentInstances[index].id, "/")}`);
   };
 
   // A hook that refetches all data when the dialogs are closed
@@ -68,7 +68,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
         <h1 className={styles["title"]}>{parseWordsForLabels(props.entityType)}</h1>
         <TableRibbon
           entityType={props.entityType}
-          agentApi= {props.agentApi + PathNames.SCHEDULE_AGENT}
+          agentApi={props.agentApi + PathNames.SCHEDULE_AGENT}
         />
         <div className={styles["table-contents"]}>
           <RegistryTable
