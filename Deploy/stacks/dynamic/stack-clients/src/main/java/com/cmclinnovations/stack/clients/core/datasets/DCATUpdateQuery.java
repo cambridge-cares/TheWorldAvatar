@@ -103,7 +103,7 @@ final class DCATUpdateQuery {
 
         // Find referenced dataset, this should already exist as referenced datasets are
         // loaded first
-        query.where(referencedDatasetVar.isA(DCTERMS.REFERENCES).andHas(DCTERMS.TITLE, referencedDatasetName));
+        query.where(referencedDatasetVar.isA(DCAT.CATALOG).andHas(DCTERMS.TITLE, referencedDatasetName));
 
     }
 
