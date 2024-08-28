@@ -1,5 +1,9 @@
 # Marie frontend
 
+## Initial setup
+
+If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDPOINT` in [`.env`](.env), create a new file named `.env.local` and set its value here. Please note that the endpoint MUST have a trailing forward slash e.g. `http://123.123.123.123:3000/api/`, so that all URLs created relative to this base path are resolved correctly.
+
 ## Local installation
 
 ### Prerequisites
@@ -8,7 +12,7 @@
 
 ### Steps
 
-1. If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDPOINT` in [`.env`](.env), create a new file named `.env.local` and set its value here.
+1. [Initial setup](#initial-setup).
 2. `npm install`.
 3. Start the server:
    - Development mode: `npm run dev`,
@@ -22,7 +26,7 @@
 
 ## Deployment (via Docker)
 
-If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDPOINT` in [`.env`](.env), create a new file named `.env.local` and set its value here. Then, execute the following.
+First, followg the [Initial setup](#initial-setup). Then, execute the following commands.
 
 ```
 docker build -t next-app-marie .
@@ -33,8 +37,8 @@ The app will be available at `localhost:3000/demos/marie`.
 
 ## Running Next app at a subpath behind an NGINX reverse proxy
 
-1. Set the environment variable `BASE_PATH` to prepend all Next routes with this value. Its default value is set in `.env.production`, which can be overriden by `.env.local`. Note that the `BASE_PATH` value must not have any trailing slash.
-1. Configure NGINX reverse proxy as follows, where `ROOT_URL` points to the public address where the Next app runs. 
+1. Set the environment variable `BASE_PATH` to prepend all Next routes with this value. Its default value is set in `.env.production`, which can be overriden by `.env.local`. Note that the `BASE_PATH` value MUST NOT have any trailing slash.
+2. Configure NGINX reverse proxy as follows, where `ROOT_URL` points to the public address where the Next app runs. 
    ```
    location ${BASE_PATH} {
     proxy_pass  ${ROOT_URL}${BASE_PATH};
@@ -47,7 +51,7 @@ The app will be available at `localhost:3000/demos/marie`.
     proxy_pass  http://123.123.123.123:3000/demos/marie;
    }
    ```
-1. Proceed with starting the app, [locally](#local-installation) or [via Docker](#deployment-via-docker)
+3. Proceed with starting the app, [locally](#local-installation) or [via Docker](#deployment-via-docker)
 
 
 ## Development
