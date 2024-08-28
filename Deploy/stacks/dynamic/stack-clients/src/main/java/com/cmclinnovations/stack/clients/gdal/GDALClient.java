@@ -75,14 +75,14 @@ public class GDALClient extends ContainerClient {
                 + " password=" + postgreSQLEndpoint.getPassword();
     }
 
-    public void uploadVectorStringToPostGIS(String database, String layerName, String fileContents,
+    public void uploadVectorStringToPostGIS(String database, String schema, String layerName, String fileContents,
             Ogr2OgrOptions options, boolean append) {
 
         try (TempDir tmpDir = makeLocalTempDir()) {
             Path filePath = tmpDir.getPath().resolve(layerName);
             try {
                 Files.writeString(filePath, fileContents);
-                uploadVectorToPostGIS(database, layerName, filePath.toString(), options, append);
+                uploadVectorToPostGIS(database, schema, layerName, filePath.toString(), options, append);
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to write string for vector '" + layerName
                         + "' layer to a file in a temporary directory.", ex);
@@ -90,8 +90,8 @@ public class GDALClient extends ContainerClient {
         }
     }
 
-    public void uploadVectorFilesToPostGIS(String database, String layerName, String dirPath, Ogr2OgrOptions options,
-            boolean append) {
+    public void uploadVectorFilesToPostGIS(String database, String schema, String layerName, String dirPath,
+            Ogr2OgrOptions options, boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             tmpDir.copyFrom(Path.of(dirPath));
             String gdalContainerId = getContainerId(GDAL);
@@ -122,7 +122,7 @@ public class GDALClient extends ContainerClient {
                 }
 
                 for (String filePath : filesOfType) {
-                    uploadVectorToPostGIS(database, layerName, filePath, options, append);
+                    uploadVectorToPostGIS(database, schema, layerName, filePath, options, append);
                     // If inserting multiple sources into a single layer then ensure subsequent
                     // files are appended.
                     if (null != layerName) {
@@ -133,24 +133,27 @@ public class GDALClient extends ContainerClient {
         }
     }
 
-    public void uploadVectorFileToPostGIS(String database, String layerName, String filePath, Ogr2OgrOptions options,
-            boolean append) {
+    public void uploadVectorFileToPostGIS(String database, String schema, String layerName, String filePath,
+            Ogr2OgrOptions options, boolean append) {
 
         try (TempDir tmpDir = makeLocalTempDir()) {
             Path sourcePath = Path.of(filePath);
             tmpDir.copyFrom(sourcePath);
-            uploadVectorToPostGIS(database, layerName, tmpDir.getPath().resolve(sourcePath.getFileName()).toString(),
+            uploadVectorToPostGIS(database, schema, layerName,
+                    tmpDir.getPath().resolve(sourcePath.getFileName()).toString(),
                     options, append);
         }
     }
 
-    public void uploadVectorURLToPostGIS(String database, String layerName, String url, Ogr2OgrOptions options,
-            boolean append) {
-        uploadVectorToPostGIS(database, layerName, url, options, append);
+    public void uploadVectorURLToPostGIS(String database, String schema, String layerName, String url,
+            Ogr2OgrOptions options, boolean append) {
+        uploadVectorToPostGIS(database, schema, layerName, url, options, append);
     }
 
-    private void uploadVectorToPostGIS(String database, String layerName, String filePath, Ogr2OgrOptions options,
-            boolean append) {
+    private void uploadVectorToPostGIS(String database, String schema, String layerName, String filePath,
+            Ogr2OgrOptions options, boolean append) {
+
+        options.setSchema(schema);
 
         String containerId = getContainerId(GDAL);
 

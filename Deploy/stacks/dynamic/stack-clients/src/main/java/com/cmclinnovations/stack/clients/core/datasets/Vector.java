@@ -18,9 +18,9 @@ public class Vector extends GeoServerDataSubset {
 
     @Override
     public void loadData(Path dirPath, String database, String baseIRI) {
-        ogr2ogrOptions.setSchema(getSchema());
         GDALClient.getInstance()
-                .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
+                .uploadVectorFilesToPostGIS(database, getSchema(), getTable(), dirPath.toString(), ogr2ogrOptions,
+                        false);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class OSMRouting extends GeoServerDataSubset {
     private void createLayer(String workspaceName, String database, String layerName,
             GeoServerVectorSettings geoServerVectorSettings) {
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, layerName, geoServerVectorSettings);
+                .createPostGISLayer(workspaceName, database, layerName, getSchema(), geoServerVectorSettings);
     }
 
     private String prefixTableName(String tableName) {
