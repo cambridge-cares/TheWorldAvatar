@@ -204,7 +204,7 @@ public class GDALClient extends ContainerClient {
                     gdalOptions, mdimSettings);
 
             ensurePostGISRasterSupportEnabled(postGISContainerId, database);
-            uploadRasters(postGISContainerId, database, layerName, postgresFiles, append);
+            uploadRasters(postGISContainerId, database, schema, layerName, postgresFiles, append);
         }
     }
 
@@ -577,7 +577,7 @@ public class GDALClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
-    private void uploadRasters(String postGISContainerId, String database, String layerName,
+    private void uploadRasters(String postGISContainerId, String database, String schemaName, String layerName,
             List<String> geotiffFiles, boolean append) {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -588,7 +588,7 @@ public class GDALClient extends ContainerClient {
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
                         "raster2pgsql " + mode + " -C -t auto -R -F -q -I -M -Y"
                         + geotiffFiles.stream().collect(Collectors.joining("' '", " '", "' "))
-                        + layerName
+                        + "\"" + schemaName + "\".\"" + layerName + "\""
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
