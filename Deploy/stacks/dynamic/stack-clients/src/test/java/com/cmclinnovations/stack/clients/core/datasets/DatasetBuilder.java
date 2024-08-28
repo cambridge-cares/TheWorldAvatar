@@ -30,7 +30,7 @@ class DatasetBuilder {
 
     private List<String> ontopMappings;
 
-    private List<String> ontopOntologyDatasets;
+    private List<String> ontologyDatasetNames;
 
     private StaticGeoServerData staticGeoServerData;
 
@@ -96,8 +96,8 @@ class DatasetBuilder {
         return this;
     }
 
-    public DatasetBuilder withOntopOntologyDataset(List<String> ontopOntologyDatasets) {
-        this.ontopOntologyDatasets = ontopOntologyDatasets;
+    public DatasetBuilder withOntologyDataset(List<String> ontologyDatasetNames) {
+        this.ontologyDatasetNames = ontologyDatasetNames;
         return this;
     }
 
@@ -126,7 +126,7 @@ class DatasetBuilder {
                 Optional.ofNullable(database), Optional.ofNullable(namespace), Optional.ofNullable(workspaceName),
                 Optional.ofNullable(externalDatasetNames), Optional.ofNullable(dataSubsets),
                 Optional.ofNullable(geoserverStyles), Optional.ofNullable(staticGeoServerData),
-                Optional.ofNullable(ontopMappings), Optional.ofNullable(ontopOntologyDatasets), false,
+                Optional.ofNullable(ontopMappings), Optional.ofNullable(ontologyDatasetNames), false,
                 Optional.ofNullable(rdfType), Optional.ofNullable(baseIRI), Optional.ofNullable(metadataRDF), services);
     }
 
@@ -153,13 +153,13 @@ class DatasetBuilder {
                 Optional<List<GeoServerStyle>> geoserverStyles,
                 Optional<StaticGeoServerData> staticGeoServerData,
                 Optional<List<String>> ontopMappings,
-                Optional<List<String>> ontopOntologyDatasets,
+                Optional<List<String>> ontologyDatasetNames,
                 boolean skip,
                 Optional<String> rdfType,
                 Optional<String> baseIRI,
                 Optional<Metadata> metadataRDF, List<Service> services) {
             super(name, description, datasetDirectory, database, namespace, workspaceName, externalDatasetNames,
-                    dataSubsets, geoserverStyles, staticGeoServerData, ontopMappings, ontopOntologyDatasets, skip,
+                    dataSubsets, geoserverStyles, staticGeoServerData, ontopMappings, ontologyDatasetNames, skip,
                     rdfType, baseIRI, metadataRDF);
             this.services = services;
         }

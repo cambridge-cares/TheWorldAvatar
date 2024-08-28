@@ -41,8 +41,6 @@ public class DatasetLoader {
                 .collect(Collectors.toList());
 
         loadDatasets(selectedDatasets);
-
-        doPostLoadDatasetConfig(selectedDatasets);
     }
 
     public void loadDatasets(Collection<Dataset> selectedDatasets) {
@@ -112,28 +110,15 @@ public class DatasetLoader {
                     OntopClient defaultOntopClient = OntopClient.getInstance();
                     ontopMappings.forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
                 }
+
+                if (!dataset.getOntologyDatasetNames().isEmpty()) {
+                    ontopClient.uploadOntology(catalogNamespace, dataset.getOntologyDatasetNames());
+                }
             }
 
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient(catalogNamespace)
                     .executeUpdate(new DCATUpdateQuery().getUpdateQuery(dataset));
-        }
-    }
-
-    public void doPostLoadDatasetConfig(Collection<Dataset> selectedDatasets) {
-        selectedDatasets.forEach(this::doPostLoadDatasetConfig);
-    }
-
-    public void doPostLoadDatasetConfig(Stream<Dataset> selectedDatasets) {
-        selectedDatasets.forEach(this::doPostLoadDatasetConfig);
-    }
-
-    public void doPostLoadDatasetConfig(Dataset dataset) {
-        // needs to be done after all datasets are uploaded
-        if (dataset.usesOntop() && !dataset.getOntopOntologyDatasets().isEmpty()) {
-            String ontopServiceName = dataset.getOntopName();
-            OntopClient ontopClient = OntopClient.getInstance(ontopServiceName);
-            ontopClient.uploadOntology(catalogNamespace, dataset.getOntopOntologyDatasets());
         }
     }
 }

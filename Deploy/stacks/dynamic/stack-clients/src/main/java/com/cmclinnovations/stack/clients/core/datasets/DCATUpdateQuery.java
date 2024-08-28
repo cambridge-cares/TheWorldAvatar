@@ -93,28 +93,28 @@ final class DCATUpdateQuery {
                         .optional()));
     }
 
-    private int externalDatasetCount = 0;
+    private int referencedDatasetCount = 0;
 
-    private void addExternalDataset(String externalDatasetName) {
-        Variable externalDatasetVar = SparqlBuilder.var("externalDataset" + externalDatasetCount++);
+    private void addReferencedDataset(String referencedDatasetName) {
+        Variable referencedDatasetVar = SparqlBuilder.var("referencedDataset" + referencedDatasetCount++);
 
-        // Insert link to this external dataset
-        query.insert(datasetVar.has(DCAT.HAS_CATALOG, externalDatasetVar));
+        // Insert link to this referenced dataset
+        query.insert(datasetVar.has(DCTERMS.REFERENCES, referencedDatasetVar));
 
-        // Find external dataset, this should already exist as external datasets are
+        // Find referenced dataset, this should already exist as referenced datasets are
         // loaded first
-        query.where(externalDatasetVar.isA(DCAT.CATALOG).andHas(DCTERMS.TITLE, externalDatasetName));
+        query.where(referencedDatasetVar.isA(DCTERMS.REFERENCES).andHas(DCTERMS.TITLE, referencedDatasetName));
 
     }
 
-    private void removeExistingExternalDatasetLinks() {
-        Variable oldExternalDatasetVar = SparqlBuilder.var("externalDataset_old");
+    private void removeExistingReferencedDatasetLinks() {
+        Variable oldReferencedDatasetVar = SparqlBuilder.var("referencedDataset_old");
 
-        // Remove all existing links to external datasets
-        query.delete(datasetVar.has(DCAT.HAS_CATALOG, oldExternalDatasetVar));
+        // Remove all existing links to referenced datasets
+        query.delete(datasetVar.has(DCTERMS.REFERENCES, oldReferencedDatasetVar));
 
-        // Find existing links to external datasets
-        query.where(datasetVar.has(DCAT.HAS_CATALOG, oldExternalDatasetVar).optional());
+        // Find existing links to referenced datasets
+        query.where(datasetVar.has(DCTERMS.REFERENCES, oldReferencedDatasetVar).optional());
     }
 
     private int dataSubsetCount = 0;
@@ -275,6 +275,10 @@ final class DCATUpdateQuery {
         }
     }
 
+    private void addOntologyConformation(Dataset dataset) {
+
+    }
+
     private void removeExistingServiceLinks() {
         // Remove all existing links to/from this dataset and any service
         Variable oldServiceVar = SparqlBuilder.var("serviceVar_old");
@@ -283,6 +287,15 @@ final class DCATUpdateQuery {
 
         // Look for any services linked to this dataset
         query.where(oldServiceVar.has(DCAT.SERVES_DATASET, datasetVar).optional());
+    }
+
+    private void removeStandardConformationLinks() {
+        // Remove all existing links from this dataset to standards it conforms to
+        Variable standardVar = SparqlBuilder.var("standardVar_old");
+        query.delete(datasetVar.has(DCTERMS.CONFORMS_TO, standardVar));
+
+        // Look for any services linked to this dataset
+        query.where(datasetVar.has(DCTERMS.CONFORMS_TO, standardVar).optional());
     }
 
     private void removeExistingServices() {
@@ -310,8 +323,8 @@ final class DCATUpdateQuery {
 
         addDataset(dataset);
 
-        removeExistingExternalDatasetLinks();
-        dataset.getExternalDatasetNames().forEach(this::addExternalDataset);
+        removeExistingReferencedDatasetLinks();
+        dataset.getReferencedDatasetNames().forEach(this::addReferencedDataset);
 
         removeExistingDataSubsetLinks();
         dataset.getDataSubsets().stream()
@@ -336,7 +349,7 @@ final class DCATUpdateQuery {
 
         removeDataset(dataset);
 
-        removeExistingExternalDatasetLinks();
+        removeExistingReferencedDatasetLinks();
 
         removeExistingDataSubsets();
 
