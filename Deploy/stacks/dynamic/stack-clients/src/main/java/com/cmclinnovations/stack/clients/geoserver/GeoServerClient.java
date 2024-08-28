@@ -247,7 +247,9 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
             logger.info("GeoServer coverage store '{}' already exists.", name);
         } else {
             String geoserverRasterIndexDatabaseName = database + GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX;
-            PostGISClient.getInstance().createDatabase(geoserverRasterIndexDatabaseName);
+            PostGISClient postgisClient = PostGISClient.getInstance();
+            postgisClient.createDatabase(geoserverRasterIndexDatabaseName);
+            postgisClient.createSchema(geoserverRasterIndexDatabaseName, schema);
 
             String containerId = getContainerId(EndpointNames.GEOSERVER);
 
