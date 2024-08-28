@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.services.config.Connection;
@@ -56,6 +59,8 @@ import com.github.dockerjava.api.model.VolumeOptions;
 
 public class DockerService extends AbstractService
         implements ContainerManagerService<DockerClient> {
+
+    private static final Logger logger = LoggerFactory.getLogger(DockerService.class);
 
     // External path to socket on host
     private static final String API_SOCK = "API_SOCK";
@@ -530,26 +535,30 @@ public class DockerService extends AbstractService
             throw new RuntimeException("Docker image '" + imageName + "' must include a version.");
         }
 
-        // Check using the full and Docker shortened image references.
-        List<String> imageReferences = Stream.of(imageName, imageName.replace("docker.io/", ""))
-                .distinct().collect(Collectors.toList());
-        if (dockerClient.getInternalClient().listImagesCmd()
-                .withFilter("reference", imageReferences).exec().isEmpty()) {
-            // No image with the requested image ID, so try to pull image
-            try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(imageName)) {
-
-                // Add an AuthConfig that causes Docker to check the stored credentials.
-                AuthConfig authConfig = new AuthConfig().withRegistryAddress(imageName.replaceFirst("/.*", ""));
-                if (null != authConfig) {
-                    pullImageCmd.withAuthConfig(authConfig);
-                }
-
-                pullImageCmd.exec(new PullImageResultCallback()).awaitCompletion();
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Docker image pull command interrupted", ex);
+        try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(imageName)) {
+            // Add an AuthConfig that causes Docker to check the stored credentials.
+            AuthConfig authConfig = new AuthConfig().withRegistryAddress(imageName.replaceFirst("/.*", ""));
+            if (null != authConfig) {
+                pullImageCmd.withAuthConfig(authConfig);
+            }
+            pullImageCmd.exec(new PullImageResultCallback()).awaitCompletion();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Docker image pull command interrupted", ex);
+        } catch (RuntimeException ex) {
+            // Check using the full and Docker shortened image references.
+            List<String> imageReferences = Stream.of(imageName, imageName.replace("docker.io/", ""))
+                    .distinct().collect(Collectors.toList());
+            if (dockerClient.getInternalClient().listImagesCmd()
+                    .withFilter("reference", imageReferences).exec().isEmpty()) {
+                // No local image with the requested image ID, so throw exception
+                throw new RuntimeException(
+                        "Image '" + imageName + "' not present locally and attempt to pull it failed.", ex);
+            } else {
+                // Local image found so ignore failed pull attempt
+                logger.warn("Image '" + imageName + "' present locally but attempt to pull failed.", ex);
             }
         }
-    }
 
+    }
 }
