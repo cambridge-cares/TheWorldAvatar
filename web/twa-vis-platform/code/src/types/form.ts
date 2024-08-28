@@ -27,12 +27,8 @@ export interface PropertyShape {
   group?: JsonLdInstance;
   datatype?: string;
   class?: JsonLdInstance;
-  qualifiedValueShape?: {
-    "@id": string;
-    name: JsonLdLiteral;
-    targetClass: JsonLdInstance;
-    defaultValue?: string;
-  };
+  qualifiedValueShape?: JsonLdInstance[];
+  nodeKind?: JsonLdInstance;
   in?: JsonLdInstance;
 }
 

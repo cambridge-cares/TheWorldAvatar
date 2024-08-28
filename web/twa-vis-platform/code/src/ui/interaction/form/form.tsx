@@ -36,6 +36,7 @@ interface FormComponentProps {
 export function FormComponent(props: Readonly<FormComponentProps>) {
   const id: string = getAfterDelimiter(usePathname(), "/");
   const [formTemplate, setFormTemplate] = useState<FormTemplate>(null);
+  const [shapeToFieldName, setShapeToFieldName] = useState<Map<string, string>>(new Map<string, string>());
   const disableAllInputs: boolean = props.formType === PathNames.REGISTRY || props.formType === PathNames.REGISTRY_DELETE;
 
   // Sets the default value with the requested function call
@@ -65,6 +66,13 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             if (fieldset.label[VALUE_KEY].includes("schedule")) {
               return initFormField(fieldProp, initialState, fieldProp.name[VALUE_KEY]);
             }
+            // For property shapes with no node kind property
+            // Add node shapes and their corresponding field name to the map to facilite parent dependencies links
+            if (!fieldProp.nodeKind) {
+              fieldProp.qualifiedValueShape?.map(nodeShape => {
+                setShapeToFieldName(new Map(shapeToFieldName).set(nodeShape[ID_KEY], fieldProp.name[VALUE_KEY]));
+              });
+            }
             // Update and set property field ids to include their group name
             // Append field id with group name as prefix
             const fieldId: string = `${fieldset.label[VALUE_KEY]} ${fieldProp.name[VALUE_KEY]}`;
@@ -76,8 +84,16 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             property: properties,
           }
         } else {
+          const fieldShape: PropertyShape = field as PropertyShape;
+          // For property shapes with no node kind property
+          // Add node shapes and their corresponding field name to the map to facilite parent dependencies links
+          if (!fieldShape.nodeKind) {
+            fieldShape.qualifiedValueShape?.map(nodeShape => {
+              setShapeToFieldName(new Map(shapeToFieldName).set(nodeShape[ID_KEY], fieldShape.name[VALUE_KEY]));
+            });
+          }
           // For groupless properties, their field ID will be directly set without further parsing
-          return initFormField(field as PropertyShape, initialState, (field as PropertyShape).name[VALUE_KEY]);
+          return initFormField(fieldShape, initialState, fieldShape.name[VALUE_KEY]);
         }
       });
 
@@ -158,6 +174,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
                 agentApi={props.agentApi}
                 dependentProp={fieldProp}
                 form={form}
+                shapeToFieldMap={shapeToFieldName}
               />
             }
             return <FormFieldComponent

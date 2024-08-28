@@ -85,7 +85,7 @@ export function parseWordsForLabels(str: string): string {
  * 
  * @param {string} iri input iri.
  */
-function isValidIRI(iri: string): boolean {
+export function isValidIRI(iri: string): boolean {
     // eslint-disable-next-line
     const iriPattern = /^(https?|ftp|mailto|file|data|irc|tel|urn|uuid|doi):((\/\/[^\/?#]*)?[^?#]*)(\?[^#]*)?(#.*)?$/i;
     return iriPattern.test(iri);
