@@ -18,7 +18,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ConstructQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
         Variable ontologyDatasetVar = SparqlBuilder.var("ontologyDataset");
 
         ValuesPattern datasetValues = new ValuesPattern(ontologyDatasetVar,
-                ontologyDatasets.stream().map(RdfObject.class::cast).collect(Collectors.toList()));
+                ontologyDatasets.stream().map(Rdf::literalOf).collect(Collectors.toList()));
 
         query.construct(subjectVar.has(predicateVar, objectVar))
                 .where(serviceVar
