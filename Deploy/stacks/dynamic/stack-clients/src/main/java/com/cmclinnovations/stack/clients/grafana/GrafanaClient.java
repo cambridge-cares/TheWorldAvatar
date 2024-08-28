@@ -2,11 +2,10 @@ package com.cmclinnovations.stack.clients.grafana;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
-import com.cmclinnovations.swagger.grafana.api.DashboardsApi;
+//import com.cmclinnovations.swagger.grafana.api.DashboardsApi;
 
-public class GrafanaClient extends ContainerClient implements ClientWithEndpoint {
+public class GrafanaClient extends ClientWithEndpoint<GrafanaEndpointConfig> {
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
     private final GrafanaEndpointConfig grafanaEndpoint;
@@ -21,23 +20,18 @@ public class GrafanaClient extends ContainerClient implements ClientWithEndpoint
     }
 
     private GrafanaClient() {
+        super("grafana", GrafanaEndpointConfig.class);
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
         grafanaEndpoint = readEndpointConfig(EndpointNames.GRAFANA, GrafanaEndpointConfig.class);
     }
 
-    @Override
-    public GrafanaEndpointConfig getEndpoint() {
-        return grafanaEndpoint;
-    }
-
     public void addDatasource(String databaseName) {
-DashboardsApi dashboardsApi = new DashboardsApi();
-
-
-
+        // DashboardsApi dashboardsApi = new DashboardsApi();
+        throw new UnsupportedOperationException("Unimplemented method 'addDatasource'");
     }
 
     public void removeDatasource(String databaseName) {
-
+        throw new UnsupportedOperationException("Unimplemented method 'removeDatasource'");
     }
+
 }
