@@ -22,7 +22,8 @@ class EmissionAgent(DerivationAgent):
 
     def __init__(self, **kwargs):
         # Specify emission types to be considered
-        self.POLLUTANTS = [OD_NO2, OD_PM2_5, OD_PM10]
+        # NOTE: NO2 is currently not supported by Aermod; hence, NOx is used instead
+        self.POLLUTANTS = [OD_NOX, OD_PM2_5, OD_PM10]
         # Initialise DerivationAgent parent instance
         super().__init__(**kwargs)
 
@@ -61,6 +62,8 @@ class EmissionAgent(DerivationAgent):
             dictionary of validated input IRIs as key-value pairs with full concept IRIs
             as keys and values as lists of (single) values
         """
+        
+        print(f'Validating inputs for derivation {derivationIRI} ...')
         
         # Create dict between input concepts and return values
         input_iris = {
@@ -117,6 +120,8 @@ class EmissionAgent(DerivationAgent):
         if consumed_gas:
                 input_iris[OHN_CONSUMED_GAS_AMOUNT] = consumed_gas
 
+        print('Inputs successfully validated.')
+
         return input_iris
 
 
@@ -170,11 +175,13 @@ class EmissionAgent(DerivationAgent):
         emissions = []
         for pollutant in self.POLLUTANTS:
             if input_iris.get(OHN_PROVIDED_HEAT_AMOUNT):
+                print(f'Estimating {pollutant} emissions from EfW plant sourcing.')
                 # Estimate emissions from EfW plant sourcing, i.e.,
                 # amount refers to amount of sourced heat
                 emissions.append(calculate_emissions_for_provided_heat(pollutant, 
                                                                        provided_heat=amount))
             else:
+                print(f'Estimating {pollutant} emissions from natural gas burning.')
                 # Estimate emissions from natural gas burning, i.e.,
                 # amount refers to amount of consumed gas (wrt lower calorific value)
                 emissions.append(calculate_emissions_for_consumed_gas(pollutant, 
@@ -195,7 +202,7 @@ def default():
     msg += 'This emission estimation agent "converts" instantiated (time series) data for '
     msg += '1) burned natural gas amounts by conventional gas boilers and a CHP gas turbine or '
     msg += '2) generated heat amounts by an energy from waste plant into corresponding emission '
-    msg += 'values for certain emission types (i.e., PM2.5, PM10, NO2).<BR>'
+    msg += 'values for certain emission types (i.e., PM2.5, PM10, NOx).<BR>'
     msg += "The agent is implemented as derivation agent using synchronous derivation."
     msg += "<BR><BR>"
     msg += 'For further details please see the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DistrictHeatingEmissionEstimationAgent/">District Heating Emission Estimation Agent README</a>.'

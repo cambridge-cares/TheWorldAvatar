@@ -42,25 +42,27 @@ def create_app():
             data = request.get_json()
         except Exception as e:
             error_msg = str(e)
-            logger.error("Unable to get JSON from request! Have you used double quotes?")
-            return jsonify({"data": error_msg}), 400
+            logger.error(
+                "Unable to get JSON from request! Have you used double quotes?")
+            return jsonify({"Error": error_msg}), 400
 
         if "assetUrl" not in data:
             logger.error("Missing `assetUrl` parameter in request!")
-            return jsonify({"data": "Missing `assetUrl` parameter in request!"}), 400
+            return jsonify({"Error": "Missing `assetUrl` parameter in request!"}), 400
 
         if not validate_asset_url(data["assetUrl"]):
             url_error_msg = f"`assetUrl` parameter <{data['assetUrl']}> is invalid. " \
                             f"It must start with `.`, `..`, or `http://`, and must not end with `/`"
             logger.error(url_error_msg)
-            return jsonify({"data": url_error_msg}), 400
+            return jsonify({"Error": url_error_msg}), 400
 
         logger.debug("assetURL is valid!")
         global asset_url
         asset_url = data["assetUrl"] + "/"
 
         logger.info("Retrieving properties from yaml...")
-        query_endpoint, update_endpoint = load_properties('./config/properties.yaml')
+        query_endpoint, update_endpoint, solar_panel_tileset, sewage_tileset, root_tileset_data = load_properties(
+            './config/properties.yaml')
 
         logger.info("Cleaning the data directory...")
         cleandir()
@@ -70,7 +72,7 @@ def create_app():
         except (FileNotFoundError, InvalidInputError) as e:
             error_msg = str(e)
             logger.error(error_msg)
-            return jsonify({"data": error_msg}), 400
+            return jsonify({"Error": error_msg}), 400
 
         logger.info("Validating the IFC model...")
         try:
@@ -79,13 +81,15 @@ def create_app():
         except Exception as ex:
             error_msg = "IFC model validation fails. Cause: " + str(ex)
             logger.error(error_msg)
-            return jsonify({"data": error_msg}), 400
+            return jsonify({"Error": error_msg}), 400
 
         logger.info("Converting the model into geometry files...")
-        asset_data, building_iri = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
+        asset_data, building_data = conv2gltf(
+            ifc_filepath, query_endpoint, update_endpoint)
 
         logger.info("Generating the tilesets...")
-        gen_tilesets(asset_data, building_iri)
+        gen_tilesets(asset_data, building_data, solar_panel_tileset,
+                     sewage_tileset, root_tileset_data)
 
         # Return the result in JSON format
         return jsonify(

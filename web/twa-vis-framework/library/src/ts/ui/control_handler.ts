@@ -51,6 +51,16 @@ class ControlHandler {
         });
     }
 
+    /**
+     * Adds a callback that will fire with two arrays of layerIDs (visible, hidden)
+     * when any selection state in the layer tree changes.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+      public addTreeSelectionCallback(treeSelectionCallback) {
+        this.treeHandler.addTreeSelectionCallback(treeSelectionCallback);
+    }
+
 	/**
 	 * Generate the HTML for the control elements and add them to the 
 	 * "controlsContainer" element.

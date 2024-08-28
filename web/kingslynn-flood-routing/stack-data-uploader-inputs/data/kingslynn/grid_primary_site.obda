@@ -1,0 +1,17 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+obe: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+iso:    https://www.theworldavatar.com/kg/ontoisochrone/
+geo:    http://www.opengis.net/ont/geosparql#
+time:   http://www.w3.org/2006/time#
+ex:   https://example.org/
+twa: https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId   pirmasens-toilet
+target		twa:Building/{osm_id} a obe:Toilet;
+                geo:asWKT {"geom"}^^xsd:string.
+source      SELECT "SiteName", geom FROM grid_primary_site
+
+]]

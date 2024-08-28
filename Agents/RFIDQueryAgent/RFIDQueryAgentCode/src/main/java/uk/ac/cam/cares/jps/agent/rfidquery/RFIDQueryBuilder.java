@@ -41,6 +41,7 @@ public class RFIDQueryBuilder {
      * Log messages
      */
     private static final String GETTAG_ERROR_MSG = "Unable to query for tag IRI!" ;
+    private static final String GETTAGSTATE_ERROR_MSG = "Unable to query for tag state IRI!" ;
     private static final String GETTAGGEDOBJECT_ERROR_MSG = "Unable to query for tagged object IRI!" ;
     private static final String GETCHEMICALAMOUNT_ERROR_MSG = "Unable to query for chemical amount IRI!" ;
     private static final String GETCHEMICAL_ERROR_MSG = "Unable to query for chemical IRI!" ;
@@ -50,6 +51,9 @@ public class RFIDQueryBuilder {
     private static final String GETLABEL_ERROR_MSG = "Unable to query for label via rdfs:label!";
     private static final String GETCHEMICALCOMPONENT_ERROR_MSG = "Unable to query for chemical component IRI!";
     private static final String GETSTATEMENTLABELANDCOMMENT_ERROR_MSG = "Unable to query for GHS Hazard Statements labels and comments!";
+    private static final String GETMOLECULARFORMULA_ERROR_MSG = "Unable to query for molecular formula!";
+    private static final String GETMOLECULARWEIGHT_ERROR_MSG = "Unable to query for molecular weight!";
+    private static final String GETMOLECULARWEIGHTUNIT_ERROR_MSG = "Unable to query for molecular weight unit!";
     /**
      * Namespaces for ontologies
      */
@@ -79,7 +83,7 @@ public class RFIDQueryBuilder {
     private static final Prefix PREFIX_SAREF = SparqlBuilder.prefix("saref", iri(SAREF_NS));
     
 	/**
-     * Relationships
+     * Object Properties
      */ 
 	private static final Iri isAttachedTo = PREFIX_ONTODEVICE.iri("isAttachedTo");
 	private static final Iri isFilledWith = PREFIX_ONTOLAB.iri("isFilledWith");
@@ -87,12 +91,21 @@ public class RFIDQueryBuilder {
 	private static final Iri thermodynamicBehavior = PREFIX_ONTOCAPE_MATERIAL.iri("thermodynamicBehavior");
     private static final Iri isComposedOfSubsystem = PREFIX_ONTOCAPE_SYSTEM.iri("isComposedOfSubsystem");
     private static final Iri representsOccurenceOf = PREFIX_ONTOCAPE_PHASE_SYSTEM.iri("representsOccurenceOf");
-    private static final Iri label = PREFIX_RDFS.iri("label");
     private static final Iri hasState = PREFIX_SAREF.iri("hasState");
     private static final Iri hasGHSHazardStatement = PREFIX_ONTOSPECIES.iri("hasGHSHazardStatements");
-    private static final Iri comment = PREFIX_RDFS.iri("comment");
     private static final Iri intrinsicCharacteristics = PREFIX_ONTOCAPE_MATERIAL.iri("intrinsicCharacteristics");
     private static final Iri containsDirectly = PREFIX_ONTOCAPE_SYSTEM.iri("containsDirectly");
+    private static final Iri hasMolecularFormula = PREFIX_ONTOSPECIES.iri("hasMolecularFormula");
+    private static final Iri hasMolecularWeight = PREFIX_ONTOSPECIES.iri("hasMolecularWeight");
+    private static final Iri unit = PREFIX_ONTOSPECIES.iri("unit");
+
+    /**
+     * Data Properties
+     */
+    private static final Iri label = PREFIX_RDFS.iri("label");
+    private static final Iri comment = PREFIX_RDFS.iri("comment");
+    private static final Iri value = PREFIX_ONTOSPECIES.iri("value");
+
     /**
      * Classes
      */
@@ -126,6 +139,12 @@ public class RFIDQueryBuilder {
             } else {
                 throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
             }
+            if (prop.containsKey("sparql.username")) {
+				this.kbClient1.setUser(prop.getProperty("sparql.username"));
+			}
+			if (prop.containsKey("sparql.password")) {
+				this.kbClient1.setPassword(prop.getProperty("sparql.password"));
+			}
         }
         
         // Check whether properties file exists at specified location of filepath2
@@ -148,31 +167,80 @@ public class RFIDQueryBuilder {
             } else {
                 throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
             }
+            if (prop.containsKey("sparql.username")) {
+				this.kbClient2.setUser(prop.getProperty("sparql.username"));
+			}
+			if (prop.containsKey("sparql.password")) {
+				this.kbClient2.setPassword(prop.getProperty("sparql.password"));
+			}
         }
+    }
+
+    //SELECT ?tagStateIRI WHERE {  ?tag ontodevice:isAttachedTo <IRIString> .
+    //                     ?tag saref:hasState ?tagStateIRI }
+    /**
+     * Query for tag state IRI from tagged object IRI
+     * @param IRIString tagged object IRI
+     * @return tag state IRI
+     */
+    public String queryForTagStateIRIFromTaggedObjectIRI(String IRIString) {
+        String result = null;
+        Variable tagStateIRI = SparqlBuilder.var("tagStateIRI");
+        Variable tag = SparqlBuilder.var("tag");
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = tag.has(isAttachedTo, iri(IRIString));
+        TriplePattern queryPattern2 = tag.has(hasState, tagStateIRI);
+        query.prefix(PREFIX_ONTODEVICE, PREFIX_SAREF).select(tagStateIRI).where(queryPattern, queryPattern2);
+        kbClient1.setQuery(query.getQueryString());
+        try {
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info("The tagged object IRI " + IRIString + " has the following tag state IRI: " + kbClient1.executeQuery().getJSONObject(0).getString("tagStateIRI"));
+                result = kbClient1.executeQuery().getJSONObject(0).getString("tagStateIRI");
+            } else {
+                throw new JPSRuntimeException(GETTAGSTATE_ERROR_MSG);
+            }
+        } catch (Exception e){
+            throw new JPSRuntimeException(GETTAGSTATE_ERROR_MSG, e);
+        }
+        return result;
     }
     
     //SELECT ?tag WHERE { ?tag saref:hasState <IRIString> }
+    /**
+     * Query for tag IRI via saref:hasState
+     * @param IRIString state data IRI
+     * @return tag IRI
+     */
     public String queryForTagWithStateIRI(String IRIString) {
-         String result = null;
-         Variable tag = SparqlBuilder.var("tag");
-         SelectQuery query = Queries.SELECT();
+        String result = null;
+        Variable tag = SparqlBuilder.var("tag");
+        SelectQuery query = Queries.SELECT();
         //create triple pattern
         TriplePattern queryPattern = tag.has(hasState, iri(IRIString));
         query.prefix(PREFIX_ONTODEVICE, PREFIX_SAREF).select(tag).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient1.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("tag");
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                result = kbClient1.executeQuery().getJSONObject(0).getString("tag");
+            } else {
+                throw new JPSRuntimeException(GETTAG_ERROR_MSG);
+            }
+        } catch (Exception e){
+            throw new JPSRuntimeException(GETTAG_ERROR_MSG, e);
         }
-    } catch (Exception e){
-        throw new JPSRuntimeException(GETTAG_ERROR_MSG);
-    }
-    return result;
+        return result;
     }
     
     //SELECT ?TaggedObject WHERE { <IRIString> ontodevice:isAttachedTo ?TaggedObject }
+    /**
+     * Query for tagged object IRI
+     * @param IRIString tag IRI
+     * @return tagged object IRI
+     */
     public String queryForTaggedObjectWithIsAttachedTo(String IRIString) {
         String result = null;
         Variable taggedObject = SparqlBuilder.var("taggedObject");
@@ -182,18 +250,25 @@ public class RFIDQueryBuilder {
         query.prefix(PREFIX_ONTODEVICE).select(taggedObject).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient1.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("taggedObject");
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                result = kbClient1.executeQuery().getJSONObject(0).getString("taggedObject");
+            } else {
+                throw new JPSRuntimeException(GETTAGGEDOBJECT_ERROR_MSG);
+            }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETTAGGEDOBJECT_ERROR_MSG, e);
         }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETTAGGEDOBJECT_ERROR_MSG);
-    }
-    return result;
+        return result;
     }
 
-    //SELECT ?chemicalAmount WHERE { <IRIString> ontodevice:isFilledWith ?chemicalAmount }
+    //SELECT ?chemicalAmount WHERE { <IRIString> ontolab:isFilledWith ?chemicalAmount }
+    /**
+     * Query for chemical amount IRI via ontolab:isFilledWith
+     * @param IRIString chemical container IRI
+     * @return chemical amount IRI
+     */
     public String queryForChemicalAmountWithIsFilledWith(String IRIString) {
         String result = null;
         Variable chemicalAmount = SparqlBuilder.var("chemicalAmount");
@@ -203,18 +278,25 @@ public class RFIDQueryBuilder {
         query.prefix(PREFIX_ONTOLAB).select(chemicalAmount).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient1.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("chemicalAmount");
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                result = kbClient1.executeQuery().getJSONObject(0).getString("chemicalAmount");
+            } else {
+                result = "This tagged object does not contain any chemicals";
+            }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETCHEMICALAMOUNT_ERROR_MSG, e);
         }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETCHEMICALAMOUNT_ERROR_MSG);
-    }
-    return result;
+        return result;
     }
 
     //SELECT ?chemical WHERE { <IRIString> ontoCAPE_CPS_Behavior:refersToMaterial ?chemical }
+    /**
+     * Query for chemical IRI via ontoCAPE_CPS_Behavior:refersToMaterial
+     * @param IRIString chemical amount IRI
+     * @return chemical IRI
+     */
     public String queryForChemicalWithRefersToMaterial(String IRIString) {
         String result = null;
         Variable chemical = SparqlBuilder.var("chemical");
@@ -224,18 +306,25 @@ public class RFIDQueryBuilder {
         query.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR).select(chemical).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient1.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("chemical");
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                result = kbClient1.executeQuery().getJSONObject(0).getString("chemical");
+            } else {
+                throw new JPSRuntimeException(GETCHEMICAL_ERROR_MSG);
+            }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETCHEMICAL_ERROR_MSG, e);
         }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETCHEMICAL_ERROR_MSG);
-    }
-    return result;
+        return result;
     }
 
     //SELECT ?phase WHERE { <IRIString> ontoCAPE_Material:thermodynamicBehavior ?phase }
+    /**
+     * Query for phase IRI via ontoCAPE_Material:thermodynamicBehavior
+     * @param IRIString chemical or material IRI
+     * @return phase IRI
+     */
     public String queryForPhaseWithThermodynamicBehavior(String IRIString) {
         String result = null;
         Variable phase = SparqlBuilder.var("phase");
@@ -245,15 +334,17 @@ public class RFIDQueryBuilder {
         query.prefix(PREFIX_ONTOCAPE_MATERIAL).select(phase).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient1.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("phase");
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                result = kbClient1.executeQuery().getJSONObject(0).getString("phase");
+            } else {
+                throw new JPSRuntimeException(GETPHASE_ERROR_MSG);
+            }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETPHASE_ERROR_MSG, e);
         }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETPHASE_ERROR_MSG);
-    }
-    return result;
+        return result;
     }
 
 
@@ -263,6 +354,11 @@ public class RFIDQueryBuilder {
     //                               ?singlePhase ontoCAPE_System:isComposedOfSubsystem ?phaseComponent . }
     // else
     //SELECT ?phaseComponent WHERE {<IRIString> ontoCAPE_System:isComposedOfSubsystem ?phaseComponent }
+    /**
+     * Query for phase component IRI via ontoCAPE_System:isComposedOfSubsystem
+     * @param IRIString phase IRI
+     * @return phase component IRI
+     */
     public String queryForPhaseComponentWithIsComposedOfSubsystem(String IRIString) {
         String result = null;
         Variable variable = SparqlBuilder.var("variable");
@@ -272,45 +368,54 @@ public class RFIDQueryBuilder {
         query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(variable).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient1.executeQuery();
-        if(queryResult.getJSONObject(0).getString("variable").contains("MultiphaseSystem")){
-            Variable singlePhase = SparqlBuilder.var("singlePhase");
-            TriplePattern queryPattern3 = iri(IRIString).has(isComposedOfSubsystem, singlePhase);
-            Variable phaseComponent = SparqlBuilder.var("phaseComponent");
-            TriplePattern queryPattern4 = singlePhase.has(isComposedOfSubsystem, phaseComponent);
-            query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(phaseComponent).where(queryPattern3, queryPattern4);
-            kbClient1.setQuery(query.getQueryString());
-            try {
-                queryResult = kbClient1.executeQuery();
-                if(!queryResult.isEmpty()){
-                    LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-                    result = kbClient1.executeQuery().getJSONObject(0).getString("phaseComponent");
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(queryResult.getJSONObject(0).getString("variable").contains("MultiphaseSystem")){
+                Variable singlePhase = SparqlBuilder.var("singlePhase");
+                TriplePattern queryPattern3 = iri(IRIString).has(isComposedOfSubsystem, singlePhase);
+                Variable phaseComponent = SparqlBuilder.var("phaseComponent");
+                TriplePattern queryPattern4 = singlePhase.has(isComposedOfSubsystem, phaseComponent);
+                query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(phaseComponent).where(queryPattern3, queryPattern4);
+                kbClient1.setQuery(query.getQueryString());
+                try {
+                    queryResult = kbClient1.executeQuery();
+                    if(!queryResult.isEmpty()){
+                        LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                        result = kbClient1.executeQuery().getJSONObject(0).getString("phaseComponent");
+                    } else {
+                        throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
+                    }
+                } catch (Exception e) {
+                    throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG, e);
                 }
-            } catch (Exception e) {
-                throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
-            }
-        } else {
-            Variable phaseComponent = SparqlBuilder.var("phaseComponent");
-            TriplePattern queryPattern5 = iri(IRIString).has(isComposedOfSubsystem, phaseComponent);
-            query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(phaseComponent).where(queryPattern5);
-            kbClient1.setQuery(query.getQueryString());
-            try {
-                queryResult = kbClient1.executeQuery();
-                if(!queryResult.isEmpty()){
-                    LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-                    result = kbClient1.executeQuery().getJSONObject(0).getString("phaseComponent");
+            } else {
+                Variable phaseComponent = SparqlBuilder.var("phaseComponent");
+                TriplePattern queryPattern5 = iri(IRIString).has(isComposedOfSubsystem, phaseComponent);
+                query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(phaseComponent).where(queryPattern5);
+                kbClient1.setQuery(query.getQueryString());
+                try {
+                    queryResult = kbClient1.executeQuery();
+                    if(!queryResult.isEmpty()){
+                        LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                        result = kbClient1.executeQuery().getJSONObject(0).getString("phaseComponent");
+                    } else {
+                        throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
+                    }
+                } catch (Exception e) {
+                    throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG, e);
                 }
-            } catch (Exception e) {
-                throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
             }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG, e);
         }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
-    }
-    return result;
+        return result;
     }
 
     //SELECT ?Species WHERE { <IRIString> ontoCAPE_Phase_System:representsOccurenceOf ?Species }
+    /**
+     * Query for species IRI via ontoCAPE_Phase_System:representsOccurenceOf
+     * @param IRIString phase component IRI
+     * @return species IRI
+     */
     public String queryForSpeciesWithRepresentsOccurenceOf(String IRIString) {
         String result = null;
         Variable species = SparqlBuilder.var("species");
@@ -324,14 +429,21 @@ public class RFIDQueryBuilder {
             if(!queryResult.isEmpty()){
                 LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
                 result = kbClient1.executeQuery().getJSONObject(0).getString("species");
+            } else {
+                throw new JPSRuntimeException(GETSPECIES_ERROR_MSG);
             }
         } catch (Exception e) {
-            throw new JPSRuntimeException(GETSPECIES_ERROR_MSG);
+            throw new JPSRuntimeException(GETSPECIES_ERROR_MSG,e);
         }
         return result;
     }
 
     //SELECT ?label WHERE { <IRIString> rdfs:label ?label }
+    /**
+     * Query for species label
+     * @param IRIString species IRI
+     * @return label of species
+     */
     public String queryForSpeciesLabel(String IRIString) {
         String result = null;
         Variable labelOfChemicalSpecies = SparqlBuilder.var("label");
@@ -345,7 +457,9 @@ public class RFIDQueryBuilder {
             if(!queryResult.isEmpty()){
                 LOGGER.info(kbClient2.executeQuery());
                 result = kbClient2.executeQuery().getJSONObject(0).getString("label");
-            } 
+            } else {
+                throw new JPSRuntimeException(GETLABEL_ERROR_MSG);
+            }
         } catch (Exception e) {
             throw new JPSRuntimeException(GETLABEL_ERROR_MSG, e);
         }
@@ -353,6 +467,11 @@ public class RFIDQueryBuilder {
     }
 
     //SELECT ?label WHERE { <IRIString> rdfs:label ?Label }
+    /**
+     * Query for tagged object label
+     * @param IRIString tagged object IRI
+     * @return label of tagged object
+     */
     public String queryForTaggedObjectLabel(String IRIString) {
         String result = null;
         Variable taggedObjectLabel = SparqlBuilder.var("label");
@@ -366,7 +485,9 @@ public class RFIDQueryBuilder {
             if(!queryResult.isEmpty()){
                 LOGGER.info(kbClient1.executeQuery());
                 result = kbClient1.executeQuery().getJSONObject(0).getString("label");
-            } 
+            } else {
+                throw new JPSRuntimeException(GETLABEL_ERROR_MSG);
+            }
         } catch (Exception e) {
             throw new JPSRuntimeException(GETLABEL_ERROR_MSG, e);
         }
@@ -374,7 +495,14 @@ public class RFIDQueryBuilder {
     }
 
     //SELECT ?substance WHERE {<IRIString> ontoCAPE_Material:intrinsicCharacteristics ?substance}
-    public String queryForChemicalComponentWithIntrinsicCharacteristics(String IRIString) {
+    //if ?substance rdf:type is not a Mixture, query for chemicalComponent via ontoCAPE_System:containsDirectly
+    //else ?substance == ?chemicalComponent
+    /**
+     * Query for chemical component IRI using chemical/material IRI
+     * @param IRIString chemical or material IRI
+     * @return chemical component IRI
+     */
+    public String queryForChemicalComponent(String IRIString) {
         Variable substance = SparqlBuilder.var("substance");
         JSONArray queryResult;
         String chemicalComponent;
@@ -404,6 +532,11 @@ public class RFIDQueryBuilder {
     }
     
     //SELECT ?chemicalComponent WHERE <IRIString> ontoCAPE_System:containsDirectly ?chemicalComponent
+    /**
+     * Query for chemicalComponent via ontoCAPE_System:containsDirectly
+     * @param IRIString substance IRI
+     * @return chemical component IRI
+     */
     public String queryForChemicalComponentWithContainsDirectly(String IRIString) {
         SelectQuery query = Queries.SELECT();
         String result = null;
@@ -416,7 +549,9 @@ public class RFIDQueryBuilder {
             if(!queryResult.isEmpty()){
                 LOGGER.info(kbClient1.executeQuery());
                 result = kbClient1.executeQuery().getJSONObject(0).getString("chemicalComponent");
-            } 
+            } else {
+                throw new JPSRuntimeException(GETCHEMICALCOMPONENT_ERROR_MSG);
+            }
         } catch (Exception e) {
             throw new JPSRuntimeException(GETCHEMICALCOMPONENT_ERROR_MSG, e);
         }
@@ -424,6 +559,11 @@ public class RFIDQueryBuilder {
     }
 
     //SELECT ?GHSHazardStatements WHERE {<IRIString> ontospecies:hasGHSHazardStatements ?GHSHazardStatements}
+    /**
+     * Query for the GHSHazardStatements of a species IRI
+     * @param IRIString species IRI
+     * @return GHSHazardStatements IRIs of the species
+     */
     public JSONArray queryForGHSHazardStatements(String IRIString) {
         Variable ghsHazardStatements = SparqlBuilder.var("GHSHazardStatements");
         JSONArray queryResult;
@@ -441,6 +581,11 @@ public class RFIDQueryBuilder {
 
     //SELECT ?label WHERE {<IRIString> rdfs:label ?label}
     //SELECT ?comment WHERE {<IRIString> rdfs:comment ?comment}
+    /**
+     * Query for the label and comments of each GHSHazardStatement in the JSONArray
+     * @param IRIArray a JSONArray containing GHSHazardStatement IRIs
+     * @return a map containing the label and comment for each GHSHazardStatement IRI
+     */
     public Map<String, List<String>> queryForLabelAndCommentForGHSHazardStatements(JSONArray IRIArray) {
         Map<String, List<String>> map = new HashMap<>();
         if (IRIArray != null) {
@@ -465,6 +610,8 @@ public class RFIDQueryBuilder {
                         map.get("label").add(queryResult.getJSONObject(0).getString("label"));
                         LOGGER.info("The comment is " + queryResult.getJSONObject(0).getString("comment"));
                         map.get("comment").add(queryResult.getJSONObject(0).getString("comment"));
+                    } else {
+                        throw new JPSRuntimeException(GETSTATEMENTLABELANDCOMMENT_ERROR_MSG);
                     }
                 } catch (Exception e) {
                     throw new JPSRuntimeException(GETSTATEMENTLABELANDCOMMENT_ERROR_MSG, e);
@@ -474,6 +621,99 @@ public class RFIDQueryBuilder {
             map = null;
         }
         return map;
+    }
+
+    //SELECT ?molecularFormulaValue WHERE {<IRIString> ontospecies:hasMolecularFormula ?molecularFormula .
+    //                                     ?molecularFormula ontospecies:value ?molecularFormulaValue .}
+    /**
+     * Query for molecular formula of a species IRI
+     * @param IRIString species IRI
+     * @return molecular formula of the species
+     */
+    public String queryForMolecularFormula(String IRIString) {
+        String result = null;
+        Variable molecularFormula = SparqlBuilder.var("molecularFormula");
+        Variable molecularFormulaValue = SparqlBuilder.var("molecularFormulaValue");
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = iri(IRIString).has(hasMolecularFormula, molecularFormula);
+        TriplePattern queryPattern2 = molecularFormula.has(value, molecularFormulaValue);
+        query.prefix(PREFIX_ONTOSPECIES).select(molecularFormulaValue).where(queryPattern, queryPattern2);
+        kbClient2.setQuery(query.getQueryString());
+        try {
+            JSONArray queryResult = kbClient2.executeQuery();
+            if(!queryResult.isEmpty()){
+                result = queryResult.getJSONObject(0).getString("molecularFormulaValue");
+            }
+            else {
+                result = "Molecular Formula information not available";
+            }
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETMOLECULARFORMULA_ERROR_MSG, e);
+        }
+        return result;
+    }
+
+    //SELECT ?molecularWeightValue WHERE {<IRIString> ontospecies:hasMolecularWeight ?molecularWeight .
+    //                                     ?molecularWeight ontospecies:value ?molecularWeightValue .}
+    /**
+     * Query for molecular weight of a species IRI
+     * @param IRIString species IRI
+     * @return molecular weight
+     */
+    public String queryForMolecularWeightValue(String IRIString) {
+        String result = null;
+        Variable molecularWeight = SparqlBuilder.var("molecularWeight");
+        Variable molecularWeightValue = SparqlBuilder.var("molecularWeightValue");
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = iri(IRIString).has(hasMolecularWeight, molecularWeight);
+        TriplePattern queryPattern2 = molecularWeight.has(value, molecularWeightValue);
+        query.prefix(PREFIX_ONTOSPECIES).select(molecularWeightValue).where(queryPattern, queryPattern2);
+        kbClient2.setQuery(query.getQueryString());
+        try {
+            JSONArray queryResult = kbClient2.executeQuery();
+            if(!queryResult.isEmpty()){
+                result = queryResult.getJSONObject(0).getString("molecularWeightValue");
+            } else {
+                result = "Molecular Weight information not available";
+            }
+         } catch (Exception e) {
+            throw new JPSRuntimeException(GETMOLECULARWEIGHT_ERROR_MSG, e);
+        }
+        return result;
+    }
+
+    //SELECT ?molecularWeightUnit WHERE {<IRIString> ontospecies:hasMolecularWeight ?molecularWeight .
+    //                                     ?molecularWeight ontospecies:unit ?molecularWeightUnit .}
+    /**
+     * Query for molecular weight unit of a species IRI
+     * @param IRIString species IRI
+     * @return molecular weight unit
+     */
+    public String queryForMolecularWeightUnit(String IRIString) {
+        String result = null;
+        Variable molecularWeight = SparqlBuilder.var("molecularWeight");
+        Variable molecularWeightUnit = SparqlBuilder.var("molecularWeightUnit");
+        Variable molecularWeightUnitLabel = SparqlBuilder.var("molecularWeightUnitLabel");
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = iri(IRIString).has(hasMolecularWeight, molecularWeight);
+        TriplePattern queryPattern2 = molecularWeight.has(unit, molecularWeightUnit);
+        TriplePattern queryPattern3 = molecularWeightUnit.has(label, molecularWeightUnitLabel);
+        query.prefix(PREFIX_ONTOSPECIES, PREFIX_RDFS).select(molecularWeightUnitLabel).where(queryPattern, queryPattern2, queryPattern3);
+        kbClient2.setQuery(query.getQueryString());
+        try {
+            JSONArray queryResult = kbClient2.executeQuery();
+            if(!queryResult.isEmpty()){
+                result = queryResult.getJSONObject(0).getString("molecularWeightUnitLabel");
+            } else {
+                result = "Molecular Weight unit information not available";
+            }
+         } catch (Exception e) {
+            throw new JPSRuntimeException(GETMOLECULARWEIGHTUNIT_ERROR_MSG, e);
+        }
+        return result;
     }
 }
 

@@ -1,0 +1,4133 @@
+organosulfonic acid
+sulfonic acid derivative
+dipeptide
+oligopeptide
+peptide
+phospho sugar
+monosaccharide derivative
+polar amino acid
+pyrrolidines
+pyrimidine 2'-deoxyribonucleoside monophosphate
+pyrimidine nucleoside monophosphate
+nucleoside 5'-monophosphate
+nucleoside phosphate
+nucleobase-containing molecular entity
+2'-deoxyribonucleoside monophosphate
+sphingoid
+sphingolipid
+tetrahydropyridine
+imidazolidinone
+imidazolidines
+diazolidine
+ureas
+prenol phosphate
+isoprenoid phosphate
+phospholipid
+secondary amide
+pyrimidinemonocarboxylic acid
+pyrimidinecarboxylic acid
+N-acylurea
+Aliphatic Ketones, Other
+alpha-diketone
+diketone
+amino fatty acid
+amine
+nitrogen-containing fatty acid
+amino monocarboxylic acid
+Organophosphates, Other
+dialkyl phosphate
+alkyl phosphate
+organic thiophosphate
+thiophosphate
+organothiophosphorus compound
+Other Organic Compounds
+chromanone
+chromanes
+1-benzopyran
+benzopyran
+organic heteropolycyclic compound
+heteropolycyclic compound
+dithiol
+primary alpha-hydroxy ketone
+glycerone phosphates
+ketose phosphate
+glycerone derivative
+ketotriose derivative
+ketose derivative
+triose derivative
+propanones
+hydroxyalkyl phosphate
+secondary alpha-hydroxy ketone
+ketotriose
+ketose
+triose
+naphthoic acid
+naphthalenes
+carbobicyclic compound
+carbopolycyclic compound
+homopolycyclic compound
+bicyclic compound
+naphthalenediols
+hydroxynaphthalene
+naphthohydroquinone
+dihydroxy monocarboxylic acid
+N-methyl-amino acid
+N-methylglycines
+N-alkylglycine
+glycine derivative
+proteinogenic amino acid derivative
+secondary aliphatic amine
+secondary amine
+secondary amino compound
+methylamines
+alkylamines
+dimethylbenzimidazole
+benzimidazoles
+organic heterobicyclic compound
+heterobicyclic compound
+Other Solvents
+sulfoxide
+catecholamine
+aralkylamino compound
+monoamine molecular messenger
+monoamine
+acyclic mixed acid anhydride
+acyclic acid anhydride
+acid anhydride
+aldoxime
+oxime
+Ethanolamines
+O-acylcarnitine
+carboxylic ester
+carbonyl compound
+organic oxo compound
+organic molecule
+organic molecular entity
+carbon group molecular entity
+p-block molecular entity
+main group molecular entity
+molecular entity
+chemical entity
+molecule
+polyatomic entity
+organooxygen compound
+organochalcogen compound
+heteroorganic entity
+chalcogen molecular entity
+oxygen molecular entity
+ester
+ammonium betaine
+onium betaine
+zwitterion
+dipolar compound
+quaternary nitrogen compound
+organonitrogen compound
+nitrogen molecular entity
+pnictogen molecular entity
+alpha,beta-unsaturated monocarboxylic acid
+monocarboxylic acid
+carboxylic acid
+carbon oxoacid
+oxoacid
+hydroxides
+hydrogen molecular entity
+s-block molecular entity
+heteroatomic molecular entity
+organic acid
+cyclohexadienecarboxylic acid
+cyclohexadiene
+cycloalkadiene
+monocyclic olefin
+cyclic olefin
+olefin
+olefinic compound
+hydrocarbon
+organic fundamental parent
+organic hydride
+hydrides
+alicyclic compound
+aliphatic compound
+carbocyclic compound
+homocyclic compound
+cyclic compound
+organic cyclic compound
+Amines, Aliphatic
+Nitrogen Compounds
+secondary alcohol
+alcohol
+organic hydroxy compound
+amino alcohol
+organic amino compound
+oxoalkyl phosphate
+phosphoric ester
+phosphoric acid derivative
+phosphorus oxoacid derivative
+oxoacid derivative
+phosphorus oxoacids and derivatives
+phosphorus molecular entity
+organic phosphate
+phosphate
+organophosphorus compound
+Nitros, Aromatic
+C-nitro compound
+nitro compound
+monochlorobenzenes
+chlorobenzenes
+organochlorine compound
+organohalogen compound
+halide
+halogen molecular entity
+chlorine molecular entity
+benzenes
+benzenoid aromatic compound
+organic aromatic compound
+aromatic compound
+hydroxy fatty acid
+fatty acid
+lipid
+hydroxy monocarboxylic acid
+hydroxy carboxylic acid
+Chlorinated Aliphatics
+Solvents
+chloroethanes
+volatile organic compound
+chloroalkane
+haloalkane
+halohydrocarbon
+benzenetetrol
+phenols
+tetrol
+cyclohexadienol
+diamino acid
+cyclohexadienediol
+diol
+dichlorohydroquinone
+chlorohydroquinones
+hydroquinones
+dichlorobenzene
+Chlorophenols
+dichlorophenol
+chlorophenol
+halophenol
+enone
+alpha,beta-unsaturated ketone
+Plant Oils and Extracts
+omega-aminoaldehyde
+primary amino compound
+amino aldehyde
+propanals
+3-hydroxy steroid
+hydroxy steroid
+steroid
+organic polycyclic compound
+polycyclic compound
+3-hydroxy carboxylic acid
+2-hydroxy carboxylic acid
+chloroalanine
+chloroamino acid
+haloamino acid
+Nitriles
+nitrile
+cyanides
+cyclohexenones
+alicyclic ketone
+cyclic ketone
+aminobenzoic acid
+aromatic amino acid
+monohydroxybenzoic acid
+3-hydroxy monocarboxylic acid
+hydroxykynurenine
+hydroxy-amino acid
+substituted aniline
+anilines
+aromatic amine
+ketone body
+3-oxo fatty acid
+oxo fatty acid
+thiol
+organosulfur compound
+sulfur molecular entity
+Benzaldehydes
+hydroxybenzaldehyde
+benzaldehydes
+arenecarbaldehyde
+hydroxybenzyl alcohol
+benzyl alcohols
+aromatic alcohol
+carboxyalkyl phosphate
+serine derivative
+O-phosphoamino acid
+phosphoamino acid
+Organic Acids
+sulfur-containing carboxylic acid
+organosulfinic acid
+sulfinic acid derivative
+sulfur oxoacid derivative
+beta-alanine derivative
+non-proteinogenic amino acid derivative
+imidazole-4-carboxylic acid
+imidazolyl carboxylic acid
+imidazoles
+diazole
+azole
+monocyclic heteroarene
+heteroarene
+aminoimidazole
+aminobutanal
+butanals
+gamma-amino acid
+guanidines
+butanamides
+fatty amide
+monocarboxylic acid amide
+carboxamide
+primary amide
+amide
+4-hydroxy monocarboxylic acid
+4-hydroxy carboxylic acid
+Phenols
+Other Aromatic Compounds
+imidazolone
+alpha-CH2-containing aldehyde
+Nucleic Acids and Derivatives
+pyrimidine nucleobase
+pyrimidines
+diazines
+nucleobase
+pyrimidone
+aminopyrimidine
+UVCB
+monoterpenoid
+cresol
+hydroxytoluene
+toluenes
+aromatic fungicide
+ureidocarboxylic acid
+phosphonic acids
+methylcatechol
+gallate ester
+benzoate ester
+aromatic ester
+benzenetriol
+triol
+Aliphatics, Saturated (<C12)
+chloroolefin
+phloroglucinol
+dihydronaphthalenes
+Amino Carboxylic Acids
+beta-amino acid
+acetate ester
+triamine
+polyamine
+polyazaalkane
+azaalkane
+trihydroxybenzoic acid
+acetylenic compound
+pyrandicarboxylic acid
+pyrans
+5-oxo monocarboxylic acid
+aryl phosphate
+medium-chain fatty acid
+straight-chain saturated fatty acid
+straight-chain fatty acid
+saturated fatty acid
+N-acylammonia
+indoles
+benzopyrrole
+polycyclic heteroarene
+Nitros, Aliphatic
+secondary nitroalkane
+nitroalkane
+nitrohydrocarbon
+oxazolidines
+hydroxamic acid ester
+sulfur hydride
+chalcogen hydride
+inorganic hydride
+Amino Phenols
+aminophenol
+pyrrolidine N-oxides
+tertiary amine oxide
+N-oxide
+thio-fatty acid
+4-oxo monocarboxylic acid
+delta-amino acid
+omega-amino fatty acid
+bile acid
+hydroxy-5beta-cholanic acid
+5beta-cholanic acids
+5beta steroid
+cholanic acids
+cholanoid
+steroid acid
+bile acids
+hydroxytryptophan
+tryptophan derivative
+pteridines
+6,7-dihydropteridines
+7-oxo monocarboxylic acid
+Ethylene Glycols
+glycol
+ethanediol
+Other Nitrogen Compounds
+acetamides
+Food Additives
+methyl ketone
+Ketones (<C12)
+glutamic acid derivative
+purine nucleobase
+purines
+imidazopyrimidine
+6-aminopurines
+aminopurine
+purine nucleoside
+nucleoside
+N-glycosyl compound
+purine ribonucleoside diphosphate
+purine nucleoside diphosphate
+nucleoside 5'-diphosphate
+ribonucleoside diphosphate
+1-ribosylimidazolecarboxamide
+1-ribosylimidazole
+1-glycosylimidazole
+imidazolidine-2,4-dione
+Monosaccharides and Derivatives
+monoalkyl phosphate
+alkyl diphosphate
+organothiophosphate insecticide
+organophosphorus insecticide
+organophosphorus pesticide
+polyol
+Chlorinated Aromatics
+trichlorobenzene
+ketone
+Alcohols (<C12)
+alkyl alcohol
+aliphatic alcohol
+one-carbon compound
+primary alcohol
+dihydrodipicolinic acid
+dicarboxylic acid
+dicarboxylic acids and O-substituted derivatives
+dihydropyridine
+pyridines
+organic heteromonocyclic compound
+organic heterocyclic compound
+heterocyclic compound
+heteromonocyclic compound
+monocyclic compound
+organonitrogen heterocyclic compound
+Benzoic Acid Derivatives
+Other Classes
+dihydroxybenzoic acid
+hydroxybenzoic acid
+benzoic acids
+aromatic carboxylic acid
+(dihydroxyphenyl)propanoic acid
+catechols
+benzenediols
+tertiary alpha-hydroxy ketone
+alpha-hydroxy ketone
+alpha-oxyketone
+oxyketone
+tertiary alcohol
+3-oxo monocarboxylic acid
+oxo monocarboxylic acid
+oxo carboxylic acid
+2-hydroxy monocarboxylic acid
+non-proteinogenic alpha-amino acid
+alpha-amino acid
+amino acid
+non-proteinogenic amino acid
+oxo dicarboxylic acid
+amino dicarboxylic acid
+muconic semialdehyde
+aldehydic acid
+aldehyde
+dicarboxylic fatty acid
+fatty acid derivative
+2,3-dehydroamino acid
+dehydroamino acid
+amino acid derivative
+alanine derivative
+Other Toxic Gases & Vapors
+Toxic Gases & Vapors
+chloroethanol
+ethanols
+5-oxo-2-furylacetic acid
+butenolide
+gamma-lactone
+lactone
+oxacycle
+furans
+2-hydroxydicarboxylic acid
+tetrahydrofurandione
+tetrahydrofuranone
+oxolanes
+hydroxymalonate
+dicarboxylic acid anion
+carboxylic acid anion
+oxoanion
+oxide
+polyatomic anion
+anion
+ion
+polyatomic ion
+organic anion
+organic ion
+dicarboxylic acid dianion
+carboxylic acid dianion
+branched-chain keto acid
+2-oxo monocarboxylic acid
+hexose
+monosaccharide
+carbohydrate
+carbohydrates and carbohydrate derivatives
+Biochemical Research
+Other Uses
+Amino Acids and Derivatives
+Biological Agents
+short-chain fatty acid
+tetronic acid derivative
+aldonic acid derivative
+carbohydrate acid derivative
+carbohydrate derivative
+monophosphoglyceric acid
+phosphoglyceric acid
+aldonic acid phosphate
+carbohydrate phosphate
+bisphosphoglyceric acid
+primary amine
+ethanolamines
+farnesyl phosphate
+polyprenol phosphate
+terpenyl phosphate
+terpenoid
+isoprenoid
+polyprenyl diphosphate
+hydroxycinnamic acid
+cinnamic acids
+Aldehydes
+Amides (<C10)
+formamides
+C-glycosyl compound
+glycosyl compound
+Polymers
+Plastics & Rubber
+C4-dicarboxylic acid
+amino-acid betaine
+Organochlorine Pesticides
+Pesticides
+Enzymes
+chlorocyclohexane
+chlorocycloalkane
+chlorohydrocarbon
+aldotriose phosphate
+aldose phosphate
+aldonolactone
+carbohydrate lactone
+delta-lactone
+alpha,omega-dicarboxylic acid
+amino-acid anion
+acyl monophosphate
+N-carbamoyl-amino acid
+aspartic acid derivative
+Simple Asphyxiants
+gas molecular entity
+carbon oxide
+organic oxide
+Chemical Asphyxiants
+monocarboxylic acid anion
+hydroxylamines
+Polysaccharides
+Disaccharides
+mononuclear parent hydride
+alkane
+chlorocarboxylic acid
+haloacetic acid
+Halogenated Monoaromatics
+cinnamaldehydes
+enal
+alpha,beta-unsaturated aldehyde
+tricarboxylic acid
+hexadienedioic acid
+polyunsaturated dicarboxylic acid
+halide anion
+monovalent inorganic anion
+inorganic anion
+inorganic ion
+inorganic molecular entity
+monoatomic monoanion
+monoatomic anion
+monoatomic ion
+monoatomic entity
+elemental molecular entity
+monoanion
+monoatomic chlorine
+monoatomic halogen
+elemental chlorine
+elemental halogen
+Acids, Inorganic
+hydrogen halide
+hydracid
+pyrimidine ribonucleoside monophosphate
+ribonucleoside monophosphate
+pyrimidine nucleotide-sugar
+nucleotide-sugar
+nucleotide-carbohydrate
+nucleotide conjugate
+Other Biomolecules
+coproporphyrinogen
+tetracarboxylic acid
+porphyrinogens
+calixpyrroles
+calix(hetero)arene
+calixaromatic
+macrocycle
+porphyrins
+cyclic tetrapyrrole
+tetrapyrrole
+polypyrrole
+cyclic polypyrrole
+coumaric acid
+monohydroxycinnamic acid
+Plant Toxins
+coumarins
+phenylpropanoid
+chromenone
+chromenes
+p-menthane monoterpenoid
+2-hydroxy fatty acid
+pyridinethione
+thiocarbonyl compound
+Metalloid Compounds (Boron)
+organoboron compound
+isocoumarins
+isochromenes
+2-benzopyran
+aminopropionitrile
+ortho- and peri-fused polycyclic arene
+ortho- and peri-fused compound
+4-hydroxynonenal
+monounsaturated fatty aldehyde
+benzoisoquinoline
+Avicides
+azepanes
+quinoxaline derivative
+amino cyclitol
+tropane alkaloid
+alkylglycerol
+glycerol ether
+ifosfamides
+phosphorodiamide
+indene
+indolyl alcohol
+inositol nicotinate
+cyclitol nicotinate
+cyclitol ester
+benzenedicarboxamide
+dicarboxylic acid diamide
+amidobenzoic acid
+isoflavones
+carbohydrazide
+hydrazide
+biphenylyltetrazole
+tetrazoles
+3-isobutyl-1-methylxanthine
+7-methoxyisoflavones
+methoxyisoflavone
+hydroxyisoflavone
+piperidinecarboxamide
+secondary fatty alcohol
+pyrazolone
+benzoxadiazole
+hydroxy-1,4-naphthoquinone
+hydroxynaphthoquinone
+carbonate ester
+carbonates
+Monoisocyanates
+Rubber Additives
+boric acids
+boron oxoacid
+Esters (<C12)
+(Meth)acrylates
+enoate ester
+alpha,beta-unsaturated carboxylic ester
+benzyl ether
+alkyl cinnamate
+cinnamate ester
+Aromatic Hydrocarbons
+diphenylethane
+benzyl ester
+Ethers, Other
+butyrate ester
+isocyanates
+Isothiocyanates
+isothiocyanate
+Emulsifiers/Surfactants
+Lactones
+formate ester
+tolualdehyde
+Halogenated Anisoles
+Oximes
+alkyl cyanoacetate ester
+cyanoacetate ester
+Halogenated Esters
+propanoate ester
+Chloroacetic Acid Derivatives
+methyl-branched fatty acid
+Metalloid Compounds (Silicon)
+organosiloxane
+siloxane
+silicon molecular entity
+organosilicon compound
+alanine
+serine
+tetraphenes
+purine ribonucleoside 5'-triphosphate
+purine ribonucleoside triphosphate
+purine nucleoside triphosphate
+aspartic acid
+glutamine
+alkenyl isothiocyanate
+pseudohalide anion
+polyatomic monoanion
+Halogenated Alcohols
+keto-fructose
+fructose
+ketohexose
+D-fructose
+sulfamic acids
+steroid ester
+aporphine alkaloid
+C19-steroid
+17beta-hydroxy steroid
+benzoquinolizine
+adenosines
+purine ribonucleoside
+purine ribonucleoside 5'-diphosphate
+azabicycloalkene
+tetrachlorophenol
+tetrachlorobenzene
+uridines
+uridine 5'-phosphate
+uridine phosphate
+folic acids
+L-glutamic acid derivative
+vitamin B9
+Quinolines
+dopa
+L-tyrosine derivative
+Organic Acids, Metal Salts
+polyamino carboxylic acid
+tyrosine
+3',5'-cyclic purine nucleotide
+nucleoside 3',5'-cyclic phosphate
+cyclic nucleotide
+cyclic purine nucleotide
+1-benzothiophenes
+benzothiophenes
+N-oxyethylpiperidine
+yohimban alkaloid
+monoterpenoid indole alkaloid
+phenyl acetates
+stilbenol
+flavin
+benzopteridine
+thiazolopyrimidine
+Di- and Triaryl Dyes
+diarylheptanoid
+organoarsonic acid
+organoarsenic compound
+organometalloidal compound
+2-nitrophenols
+iodoarene
+haloarene
+1,2-benzisothiazole
+salicylamides
+hemisuccinate
+succinate ester
+dicarboxylic acid monoester
+salicylates
+phenethylamine alkaloid
+Hydrazides
+N-nitrosoureas
+flavonolignan
+dioxanes
+trialkyl phosphate
+Peroxides, Organic
+alkadiene
+hemiterpene
+terpene
+2-methyl-branched fatty aldehyde
+Halogenated Aliphatics, Unsaturated
+dialkyl ketone
+butanone
+Halogenated Ketones
+alpha-chloroketone
+chloroketone
+primary fatty amide
+primary carboxamide
+a peroxy acid
+peroxy acid
+dithiocarbamic acids
+Amines, Cyclic
+vitamin B5
+pantothenic acid
+Wood Dusts & Extracts
+monoterpene
+Halogenated Polyaromatics
+brominated flame retardant
+bromobisphenol
+bisphenol
+Epoxy Resins
+Chlorosilanes
+peroxol
+hydroperoxide
+chalcoperoxol
+Terpenes
+pinene
+chlorofluorocarbon
+fluorocarbon
+Sulfonic Acids, Alkyl
+silyl chloride
+cyanohydrin
+alpha-hydroxynitrile
+hydroxynitrile
+fluoroalcohol
+alkyl hydroperoxide
+PFAS
+inorganic peroxide
+peroxides
+reactive oxygen species
+benzenediol
+Purines
+nucleobase analogue
+oxopurine
+branched-chain amino acid
+Imidazoles
+imidazole
+mancude organic heteromonocyclic parent
+ketimine
+imine
+Indoles
+indole
+mancude organic heterobicyclic parent
+ortho-fused heteroarene
+ortho-fused compound
+fused compound
+sn-glycerol 3-phosphates
+indoleacetaldehyde
+indol-3-yl carboxylic acid anion
+Plant Growth Regulators
+indole-3-acetic acids
+indol-3-yl carboxylic acid
+indolyl carboxylic acid
+Elements, Nonmetallic
+diatomic iodine
+elemental iodine
+Other Monomers
+monohydroxyproline
+hydroxyproline
+hydroxypyrrolidine
+citrullines
+cystathionines
+hydroxyphenylalanine
+tyrosine derivative
+glutamyl phosphate
+aminoacyl phosphate
+methionine derivative
+piperidinemonocarboxylic acid
+2-halophenol
+iodophenol
+iodothyronine
+iodoamino acid
+pentose
+fatty acid 18:3
+trienoic fatty acid
+Amides, Other
+dithiolanes
+heterocyclic fatty acid
+cyclic fatty acid
+oligosaccharide
+glycan
+glycoside
+tetraric acid
+aldaric acid
+alkanethiol
+2-oxo aldehyde
+ketoaldehyde
+hydrocarbyl anion
+inositol phosphate
+cyclitol phosphate
+cyclitol
+hexol
+S-substituted coenzyme M
+triazene derivative
+Herbicides, Other
+diester
+monohydroxyanthraquinone
+hydrazone
+Curing Agents (Aromatic)
+sulfone
+tert-butyl ester
+anthracycline
+polyketide
+isoquinolines
+carboxamidine
+amidine
+4-pyridones
+pyridone
+acyclic desferrioxamine
+desferrioxamine
+1,4-benzodiazepinone
+benzodiazepine
+capsaicinoid
+21-hydroxy steroid
+morphinane-like compound
+fluoroamino acid
+benzothiadiazine
+thiazide
+dibenzothiophenes
+Brominated Solvents
+bromohydrocarbon
+bromomethanes
+bromoalkane
+halomethane
+Phthalate Esters
+phthalate ester
+Herbicides, Chlorophenoxy
+bibenzimidazole
+hydroxyisoflavanone
+isoflavanones
+isoflavans
+isoflavonoid
+1,1-bis(phosphonic acid)
+retinyl ester
+Plant-Derived Allergens
+alkenylbenzene
+2-aminopurines
+farnesane sesquiterpenoid
+chlorobenzophenone
+difluorobenzene
+pyrimidine 2'-deoxyribonucleoside
+2'-deoxyribonucleoside
+monohydroxytetrahydrofuran
+conazole antifungal drug
+conazole antifungal agent
+triazole antifungal drug
+triazole antifungal agent
+nucleoside analogue
+pyrimidine antifungal drug
+pyrimidine antifungal agent
+imidazobenzodiazepine
+xanthene dye
+xanthenes
+dibenzopyran
+fluorobiphenyl
+imidazole antifungal drug
+imidazole antifungal agent
+triterpenoid
+deoxyhexitol
+fumonisin
+nitrofuran antibiotic
+triazole fungicide
+conazole fungicide
+propan-1-ols
+purine
+pyrazines
+Pyrazines
+pyrazinecarboxylic acid
+Pyrazoles
+pyrazole
+pyridinecarbaldehyde
+heteroarenecarbaldehyde
+vitamin B6 phosphate
+aminoalkylpyridine
+diphosphate ion
+quinic acid
+cyclitol carboxylic acid
+cinchona alkaloid
+quinoline alkaloid
+pyridinedicarboxylic acid
+retinals
+S-substituted dihydrolipoamide
+divalent inorganic anion
+selenium oxoacid
+selenium oxoanion
+Sulfites
+2-aminooctadecene-1,3-diol
+Thiophenes
+tetrahydrothiophenes
+Radioactive Compounds
+Physical/Radiation
+disaccharide phosphate
+disaccharide derivative
+poly(ethylene glycol)
+aromatic amino-acid anion
+aminobenzoate
+azobenzenes
+propanolamine
+chromones
+pyridochromene
+aminoquinoline
+dithioketal
+dithioacetal
+thioacetal
+corticosteroid hormone
+corticosteroid
+steroid hormone
+Herbicides, Triazine
+methoxy-1,3,5-triazine
+diamino-1,3,5-triazine
+methylthio-1,3,5-triazine
+Herbicides, Chloracetanilide
+Herbicides, Anilide
+chloro-1,3,5-triazine
+dibenzazecine alkaloid
+dibenzazecine
+3'-deoxyribonucleoside
+ethylenediamine derivative
+dibenzothiazepine
+tetrahydroxyanthraquinone
+bipyridine
+chlorophenoxyacetic acid
+bromophenol
+Other Nitrogen Rings
+Amino Alcohols, Other
+fluoro fatty acid
+halo fatty acid
+isoleucine
+2-amino-3-methylpentanoic acid
+Amines, Polyaromatic
+Azo Dyes
+alkanesulfonic acid
+glutamine family amino acid
+arginine
+methyl halides
+alkene
+acyclic olefin
+alkyne
+acyclic acetylene
+acetylenes
+iodomethanes
+iodoalkane
+boranes
+boron hydride
+boron molecular entity
+boron group molecular entity
+Chlorofluorocarbons
+Aliphatics, Unsaturated
+Vinyl Halides
+monohaloethene
+haloethene
+haloalkene
+chloroethenes
+chloroalkene
+aliphatic nitrile
+Thiols
+fluoromethanes
+fluoroalkane
+cycloalkane
+boron fluoride
+boron halide
+Acid Halides
+acyl chloride
+hydrochlorofluorocarbon
+primary nitroalkane
+epoxide
+cyclic ether
+cephalosporin
+cephem
+semisynthetic derivative
+beta-lactam antibiotic allergen
+thiopurine
+other linear non-peptide
+benzimidazole
+4-[1-hydroxy-2-(methylamino)ethyl]benzene-1,2-diol
+thyroxine
+L-phenylalanine derivative
+1-phenylpropan-2-amine
+ammonium salt
+ammonium compound
+penicillamine
+phosphonic ester
+cysteine
+3beta-hydroxy-Delta(5)-steroid
+3beta-hydroxy steroid
+2-acetamidofluorenes
+N-glycosyl-1,2,4-triazine
+1,2,4-triazines
+alpha-amino acid ester
+pilocarpine
+xi,xi-pilocarpine
+uric acid
+xanthine
+1-pyrrolinecarboxylic acid
+hydroxyflavan
+polyphenol
+cyclohexenecarboxylic acid
+cembrane diterpenoid
+catechin
+phenanthroline
+phenanthrolines
+1,2-diglyceride
+diglyceride
+diradylglycerol
+decanoate ester
+fatty acid ester
+Hydrazines
+hydrazines
+isoquinolinol
+biguanides
+1,2-diacyl-sn-glycero-3-phosphocholine
+phosphatidylcholine
+glycerophosphocholine
+phosphocholines
+cholines
+quaternary ammonium ion
+ammonium ion derivative
+polyatomic cation
+N-acylpiperidine
+phenylpyridine
+HETE
+hydroxy polyunsaturated fatty acid
+icosanoid
+prostanoid
+acetylenic fatty acid
+oxadiazoloquinoxaline
+Other Dyes
+Naphthoic Acids
+carbazole
+dithiolopyrrolone antibiotic
+dithiolopyrrole
+salicylanilides
+salicylamide
+benzanilide fungicide
+anilide fungicide
+1,3,5-triazinanes
+triazinanes
+trichlorophenol
+trichlorophenols
+Aminobenzenesulfonic Acids
+aminobenzenesulfonic acid
+iodobenzoic acid
+mononitrotoluene
+carbamoylbenzoic acid
+p-menthan-3-one
+methylnaphthalene
+Halowaxes
+naphthol
+phellandrene
+p-menthadiene
+nitroaniline
+benzyl chlorides
+benzyl halide
+4-nitroanisoles
+mononitroanisoles
+dinitrobenzene
+nitrobenzenes
+benzyl bromides
+Styrenes
+phenylalkylamine
+arylalkylamine
+N-substituted amine
+cyanopyridine
+piperidine
+saturated organic heterobicyclic parent
+Phosphite Compounds
+chlorophenylmethane
+thiocyanates
+6-isopentenylaminopurine
+piperazinecarboxamide
+diazo compound
+Perfluoroalkyl Acids
+fluoroaniline
+ethyl sulfide
+benzazepine alkaloid
+benzazepine alkaloid fundamental parent
+alkaloid fundamental parent
+kynurenamines
+fluorophenol
+citrulline
+glucocorticoid
+20-oxo steroid
+17alpha-hydroxy steroid
+N-acetylarylamine
+heptenone
+Other Mineral Dusts
+Mineral Dusts
+Cyanamides
+phosphorus halide
+phosphorus coordination entity
+main-group coordination entity
+coordination entity
+pnictogen halide
+organic trisulfide
+butenoic acid
+phenoxybenzoic acid
+chlorine oxoacid
+halogen oxoacid
+diazepine
+decenals
+benzocycloheptapyridine
+dichlorocatechol
+triisocyanate
+dimethylbutyric acid
+pyruvate ester
+alpha-ketoester
+ketoester
+dinitronaphthalene
+tertiary phosphine
+3-hydroxykynurenine
+dibromophenol
+anthracenone
+aminoacridines
+xanthones
+naphthyridine
+2-nitroanisoles
+Coumarin Dyes
+7-aminocoumarins
+aminocoumarin
+indoledione
+naphthylamine
+tetracenes
+naphthalenediol
+xanthene
+phenothiazine
+thianthrenes
+other cyclic peptide (other cyclic peptide)
+Bases
+silicon oxoacid
+silicon hydroxide
+Animal-Derived Allergens
+alpha-tocopherol
+vitamin E
+Molluscicides
+octahydronaphthalenes
+himachalene
+selenomethionines
+selenoamino acid
+diselenide
+dihydrofuran
+Nitrobenzesulfonic Acids
+borate esters
+borates
+dodecylbenzenesulfonic acid
+anthrapyrazole
+phthalic acid monoester
+N-(1-naphthyl)carboxamide
+condensed ureas
+oxanes
+Triazines
+bromoarene
+methylpyridine
+tertiary allylic alcohol
+piperazinium salt
+Dithiocarbamates (Rubber)
+D-alpha-amino acid
+proline
+tetritol
+azetidine-2-carboxylic acid
+azetidinecarboxylic acid
+azetidines
+carboxybiphenyl
+cyclopentapyrimidine
+dithiolanecarboxylic acid
+Phosphate Compounds
+naphthalenediamine
+carvone
+mandelic acid
+alpha-ketonitrile
+ketonitrile
+L-cysteine derivative
+acetylcysteine
+N-acetyl-L-amino acid
+N-acyl-L-amino acid
+5-[(1-carboxyethenyl)oxy]-6-hydroxycyclohexa-1,3-diene-1-carboxylic acid
+ethoxybenzoic acid
+cinnamamides
+carnitine
+cycloheptatriene
+cycloalkatriene
+norterpene
+3-hydroxy fatty acid
+phytocannabinoid
+sulfoximide
+dichlorobiphenyl
+monochlorobiphenyl
+N-acyl-gamma-aminobutyric acid
+O-acetylcarnitine
+O-acyl-D-carnitine
+pentaethylene glycol
+pyrimidine 5'-deoxyribonucleoside
+aminonicotinic acid
+tetradecanoate ester
+wax ester
+wax
+hexonic acid
+citraconoyl group
+2-pyranones
+quinone imine
+arylacetylene
+epsilon-lactone
+farnesene
+oxetanes
+5-alkylresorcinol
+dihydroxytoluene
+dialkenyl ketone
+propane-1,3-diols
+thiazolidine
+dioxane
+dithiane
+dithianes
+hexenal
+hydroxypalmitic acid
+omega-hydroxy-long-chain fatty acid
+fatty acid 26:0
+an (S)-7,8,13,14-tetrahydroprotoberberine
+berberine alkaloid
+dibenzoquinolizine
+canadine
+2-aminohexanoic acid
+pentenoic acid
+L-cysteine thioether
+S-substituted L-cysteine
+prenylcysteine
+S-hydrocarbyl-L-cysteine
+S-organyl-L-cysteine
+bis(azo) compound
+Corrosive Gases
+azane
+nitrogen hydride
+pnictogen hydride
+purine ribonucleoside monophosphate
+purine nucleoside monophosphate
+Aminobenzoic Acids
+icosatetraenoic acid
+fatty acid 20:4
+polyunsaturated fatty acid
+unsaturated fatty acid
+long-chain fatty acid
+olefinic fatty acid
+arsenate ion
+arsenic oxoanion
+arsenic molecular entity
+pnictogen oxoanion
+Arsenic Compounds, Inorganic
+Metals
+arsenic oxoacid
+pnictogen oxoacid
+dicarboxylic acid monoamide
+dicarboxylic acid amide
+aromatic ether
+ether
+tertiary amino compound
+acridines
+dibenzopyridine
+organic heterotricyclic compound
+organic tricyclic compound
+heterotricyclic compound
+Aromatic Solvents
+Petroleum, Refined
+aromatic annulene
+monocyclic arene
+arene
+cyclic hydrocarbon
+annulene
+monocyclic hydrocarbon
+benzoates
+aromatic carboxylate
+Alcohols and Polyols, Other
+Quaternary Amines
+biotins
+azabicycloalkane
+thiabicycloalkane
+organosulfur heterocyclic compound
+hydroxybiphenyls
+biphenyls
+biaryl
+ring assembly
+Fungicides
+monoatomic bromine
+elemental bromine
+butanediol
+butanediols
+short-chain primary fatty alcohol
+primary fatty alcohol
+fatty alcohol
+fatty acid 4:0
+alkane-alpha,omega-diamine
+primary diamine
+diamine
+diazaalkane
+chalcones
+aromatic ketone
+flavonoids
+pyridine alkaloid
+alkaloid
+aminoacylpyridine
+cholestanoid
+hydroxybutyric acid
+(omega-1)-hydroxy fatty acid
+monochlorobenzoic acid
+chlorobenzoic acid
+N-acylglycine
+secondary carboxamide
+N-acyl-amino acid
+hexitol
+alditol
+saturated fatty aldehyde
+fatty aldehyde
+aliphatic aldehyde
+n-alkanal
+medium-chain fatty aldehyde
+pterins
+guaiacols
+monomethoxybenzene
+methoxybenzenes
+Unambiguous Lipids
+Lipids
+other linear non-peptide (BMAA)
+3'-hydroxyflavanones
+hydroxyflavanone
+flavanones
+flavans
+flavonoid
+4'-hydroxyflavanones
+dihydroflavonols
+pentahydroxyflavanone
+dioxo monocarboxylic acid
+beta-diketone
+omega-(methylthio)-2-oxocarboxylic acid
+methyl sulfide
+organic sulfide
+sulfide
+choline sulfates
+organic sulfate
+sulfates
+sulfuric acid derivative
+choline ester
+sulfuric ester
+sulfur oxoanion
+chalcogen oxoanion
+sulfur oxide
+inorganic oxide
+sulfur oxoacid
+chalcogen oxoacid
+acetylspermidine
+pyrrolidin-2-ones
+pyrrolidinone
+gamma-lactam
+lactam
+cyclic amide
+pyrrolidinemonocarboxylic acid
+pyrrolidinecarboxylic acid
+oxoproline
+proline derivative
+N-substituted putrescine
+N-substituted diamine
+imidazolinone
+inorganic heterocyclic compound
+phosphorus oxoacid
+cyclic phosphorus acid anhydride
+cyclic acid anhydride
+methylisocitric acid
+Hydrides
+selenium hydride
+selenium molecular entity
+pseudohalogen oxoacid
+Other Aromatics (Nitrogen)
+furoic acid
+trivalent inorganic anion
+arsenite ion
+dihydroxyphenylacetic acid
+phenylacetic acids
+aliphatic sulfide
+thia fatty acid
+epsilon-amino acid
+arylmercury compound
+organomercury compound
+mercury molecular entity
+zinc group molecular entity
+d-block molecular entity
+transition element molecular entity
+organometallic compound
+Benzofuran Derivatives
+mancude organic heterotricyclic parent
+mancude organic heterocyclic parent
+organic mancude parent
+mancude ring
+heterocyclic organic fundamental parent
+dibenzofurans
+hydroxamic acid
+chromenemonocarboxylic acid
+chromenol
+sulfur-containing amino acid
+organic disulfide
+disulfide
+cysteine derivative
+benzazepine
+tetracyclic antidepressant
+organic heterotetracyclic compound
+diarylmethane
+dihydroxyanthraquinone
+hydroxyanthraquinones
+anthraquinone
+acenoquinone
+acenes
+quinone
+anthracenes
+carbotricyclic compound
+organoiodine compound
+iodine molecular entity
+N-sulfonyldiazepane
+N-acyldiazepane
+diazepane
+sulfonamide
+morpholines
+oxazinane
+benzamides
+arenecarboxamide
+aromatic amide
+Bacterial Toxins
+aminonaphthalene
+azaspiro compound
+spiro compound
+dibenzoazepine
+carbamate ester
+pyrroline
+Mushroom Toxins
+isoxazoles
+oxazole
+2-benzofurans
+benzofurans
+phosphine
+monoazo compound
+azo compound
+substituted spermine
+tetramine
+Insect Repellents
+N-acylindole
+N-arylpiperazine
+piperazines
+(trifluoromethyl)benzenes
+organofluorine compound
+fluorine molecular entity
+leucine derivative
+phenylureas
+maleimides
+dicarboximide
+imide
+amphetamines
+beta-carbolines
+pyridoindole
+valine derivative
+terminal acetylenic compound
+methoxynaphthalene
+alkyloxynaphthalene
+quinolone antibiotic
+organonitrogen heterocyclic antibiotic
+heterocyclic antibiotic
+pyridoquinoline
+hydroxypiperidine
+piperidines
+heteroarylpiperidine
+tetralins
+Organophosphate Insecticides
+organophosphate insecticide
+organobromine compound
+bromine molecular entity
+1,8-naphthyridine derivative
+naphthyridine derivative
+phenanthrenes
+morphinane alkaloid
+isoquinoline alkaloid
+phthalimides
+isoindoles
+N-alkylpiperazine
+naphthalenetrisulfonate
+naphthalenesulfonate
+arenesulfonate oxoanion
+organosulfonate oxoanion
+naphthalenesulfonic acid
+arenesulfonic acid
+tryptamines
+phenylalanine derivative
+triazoles
+benzoxazocine
+amino acid amide
+N-alkylpyrrolidine
+Pharmaceuticals
+primary allylic alcohol
+allylic alcohol
+polyprenol
+prenols
+octadienol
+alkenyl alcohol
+ubiquinones
+prenylquinone
+p-quinones
+1,4-benzoquinones
+benzoquinones
+cyclopropanes
+dipyridodiazepine
+methyl ester
+proteinogenic amino acid
+serine family amino acid
+L-alpha-amino acid
+aldotriose
+aldose
+trionic acid
+aldonic acid
+carbohydrate acid
+glycerol monophosphate
+glycerol phosphate
+alditol phosphate
+alditol derivative
+glycolaldehydes
+hydroxyaldehyde
+guanidinoacetic acids
+N-amidino-amino acid
+chalcocarbonic acid
+carbon oxoanion
+aromatic primary alcohol
+homocysteines
+non-proteinogenic L-alpha-amino acid
+elemental hydrogen
+elemental molecule
+Oxidizers
+para-terphenyl
+naphthyl ketone
+diazine
+triazine
+tetrazine
+trithiane
+crown ether
+crown compound
+diiodotyrosine
+iodotyrosine
+dihalogenated L-tyrosine
+N-(2-naphthyl)carboxamide
+N-(naphthyl)carboxamide
+arginine derivative
+aryl dialkyl phosphate
+Halogenated Aliphatic Amines
+heptanoate ester
+sterol ester
+dibenzodiazepine
+N-glycosyl-1,3,5-triazine
+pentacenes
+benzotriazoles
+D-tyrosine derivative
+D-phenylalanine derivative
+NTA
+bicine
+dihydroxybenzaldehyde
+diarsenes
+acrylate ester
+5-O-phosphono-D-ribofuranosyl diphosphate
+5-phosphoribosyl diphosphate
+ribose diphosphate
+ribose bisphosphate
+lactate ester
+arsonic acids
+benzenesulfonic acids
+L-proline derivative
+5-oxoproline
+trinitrobenzene
+limonene monoterpenoid
+carvones
+Triazoles
+benzothiophene
+trimethylbenzene
+pentanone
+chloropropane-1,2-diol
+cyclopentanols
+cyclopentanes
+thiophenecarboxylic acid
+anthrol
+Tear Gas Agents
+hydroxycyclohexanone
+deoxypentose
+dithiocarbamic ester
+thiadiazinane
+dinitrophenol acaricide
+dinitrophenol pesticide
+cumic acid
+alkylacylglycero-3-phosphocholine
+imidazopyrazine
+trimethylxanthine
+bornane monoterpenoid
+cyclic monoterpene ketone
+monoterpene ketone
+benzimidazolecarboxylic acid
+furofuran
+cyclobutanedicarboxylic acid
+fatty alcohol 16:0
+pyrroloquinoxaline
+triazoloquinazoline
+aldehyde hydrate
+nitrogen halide
+sulfur coordination entity
+selenium coordination entity
+tellurium coordination entity
+tellurium molecular entity
+deuterated compound
+isotopically modified compound
+water
+interhalogen compound
+Halogens, Inorganic Compounds
+halohalide
+Perchlorates
+oxygen halide
+sulfuryl halide
+hydrate
+addition compound
+1-acylglycerol 18:0
+monoacylglycerol 18:0
+monoacylglycerol
+1-monoglyceride
+monoradylglycerol
+Glycol Ethers (P Series)
+undecenoate
+medium-chain fatty acid anion
+fatty acid anion
+monounsaturated fatty acid anion
+unsaturated fatty acid anion
+straight-chain fatty acid anion
+1-acylglycerol 16:0
+fluoroalkanoic acid
+perfluorinated compound
+hexadecafluorononanoic acid
+anabolic androgenic steroid
+11beta-hydroxy steroid
+11-hydroxy steroid
+fluorinated steroid
+1-benzofurans
+ynone
+Biological Buffers
+mercaptopropanoic acid
+pentaerythritol nitrate
+indolocarbazole
+dihydroxyflavone
+hydroxyflavone
+dihydroxyflavanone
+monohydroxyflavanone
+octadecadiynoic acid
+quinuclidines
+acetohydroxamic acids
+N-acetyl-amino acid
+acetyl-amino acid
+diterpene alkaloid
+terpene alkaloid
+Acridine Dyes
+2',3'-cyclic purine nucleotide
+2',3'-cyclic nucleotide
+docosatetraenoic acid
+benzimidazolylcarbamate fungicide
+carbamate fungicide
+tocopherol
+tocol
+chromanol
+Acetals
+caprolactams
+hexanoate ester
+hydroxyoctadecanoic acid
+citronellol
+fatty acid ethyl ester
+Acid Anhydrides, Other
+octanoate ester
+dibromobenzene
+xylene
+chloroaniline
+aminotoluene
+phenylenediamine
+2,5-diketopiperazines
+homodetic cyclic peptide
+cyclic peptide
+piperazinone
+fatty acid methyl ester
+Epoxides
+Glycidyl Ethers
+butene
+butadiene
+propenol
+propynol
+aliphatic aldoxime
+Halogenated Ethers
+phosphinic ester
+organic diphosphate
+triamino-1,3,5-triazine
+amidopiperidine
+adamantanes
+dibenzooxazepine
+benzothiazine
+etabonate ester
+piperidine alkaloid
+N-acylethanolamine 20:4
+N-(polyunsaturated fatty acyl)ethanolamine
+N-acylpyrrolidine
+anthroic acid
+aristolochic acids
+cyclic acetal
+quinomethanes
+benzoxazine
+benzotriazines
+indolobenzazepine
+cyclohexanones
+furanochromone
+4-pyranones
+pyranone
+benzochromenone
+benzochromene
+imidazothiazole
+naphthalenone
+octadecadienoic acid
+fatty acid 18:2
+octadecanoid
+cyclopentanones
+monoalkyl-sn-glycero-3-phosphocholine
+ether lipid
+monoalkylglycerophosphocholine
+1-alkylglycero-3-phosphocholine
+2-lysophosphatidic acid
+lysophosphatidic acid
+lysophosphatidic acids
+monoacylglycerol phosphate
+haloacetate(1-)
+bile acid taurine conjugate
+organic ammonium salt
+tellurium hydride
+butyn-1-ols
+cyclohexenone
+benzothiazole
+hydroxycoumarin
+keratan 6'-sulfate
+keratan sulfate
+mucopolysaccharide
+glycosaminoglycan
+aminoglycan
+polysaccharide derivative
+biomacromolecule
+macromolecule
+sulfated glycosaminoglycan
+carbohydrate sulfate
+phenanthrenamine
+phenylindole
+delta-amino acid ester
+hydroxyflavonoid
+trimethoxyflavone
+trihydroxyflavone
+saturated dicarboxylic acid dianion(2-)
+L-lysine derivative
+homoarginine
+perylenes
+ortho- and peri-fused tricyclic hydrocarbon
+carbotetracyclic compound
+organic tetracyclic compound
+chromene
+indazole
+benzofuran
+benzodioxole
+indolizines
+mancude carbobicyclic parent
+azulenes
+1,2,4-triazole
+triazole
+cis-chrysanthemic acid
+chrysanthemic acid
+naphthylmethanol
+dithiolane
+toluene meta-diisothiocyanate
+propranolol
+diastereoisomeric mixture
+imidazopurine
+acylamino acid fungicide
+methyl N-(2,6-dimethylphenyl)-N-(phenylacetyl)alaninate
+D-alanine derivative
+1-(biphenyl-4-yloxy)-3,3-dimethyl-1-(1,2,4-triazol-1-yl)butan-2-ol
+vestitol
+hydroxyisoflavans
+methoxyisoflavan
+prostaglandin A1
+prostaglandins A
+prostaglandin
+indolecarboxylic acid
+chlorinated steroid
+alkaloid ester
+dialkyl aryl phosphate
+sulfonium betaine
+sulfonium compound
+HEPES
+N-(sulfoalkyl)piperazine
+Rare Earth Metals
+lanthanoid atom
+rare earth metal atom
+f-block element atom
+Radionuclides
+actinoid atom
+Elements, Metallic
+cobalt group element atom
+platinum group metal atom
+iron group element atom
+scandium group element atom
+Manganese Compounds, Inorganic
+manganese group element atom
+elemental mercury
+chromium group element atom
+p-block element atom
+noble gas atom
+nonmetal atom
+vanadium group element atom
+tetracenequinone
+tetracenequinones
+nicotinamide mononucleotide
+nicotinamide nucleotide
+pyridine nucleotide
+octanediol
+carboximidic acid
+imidic acid
+polybromodiphenyl ether
+1,2-diacyl-sn-glycerol 3-phosphate
+nereistoxin analogue insecticide
+organosulfur insecticide
+phosphinamidine
+azatricycloalkane
+furoquinoline
+N-acyl-L-aspartic acid
+N-acyl-aspartic acid
+fatty alcohol 24:0
+very long-chain primary fatty alcohol
+Cyanides
+thioacetic acid
+monothiocarboxylic acid
+thiocarboxylic acid
+organic peroxide
+xanthophyll
+carotenoid
+tetraterpenoid
+triarylmethane
+17beta-hydroxyandrostan-3-one
+3-oxo-5alpha-steroid
+cadinene
+1,2-naphthoquinones
+hexenoic acid
+omega-hydroxy-medium-chain fatty acid
+omega-hydroxy fatty acid
+6-hydroxy monocarboxylic acid
+hydroxypyrimidine
+cyclic terpene ketone
+terpene ketone
+fenchane monoterpenoid
+hydroxyquinoxaline
+dihydroxyacetophenone
+chlorocatechol
+aminobiphenyl
+organic bromide salt
+bromide salt
+cadmium molecular entity
+phosphorus oxide
+nitramine
+N-nitro compound
+anthracenetriol
+anthracenol
+trimethylbenzoic acid
+pyrrolizines
+C27-steroid
+methylnaphthalenes
+adenosine bisphosphate
+purine nucleoside bisphosphate
+nucleoside bisphosphate
+ribonucleoside bisphosphate
+acyl sulfate
+purine ribonucleoside bisphosphate
+hexahydronaphthalenes
+botanical anti-fungal agent
+phenanthrol
+benzyltetrahydroisoquinoline
+ketone hydrate
+1,1-diol
+2,4-dihydroxypteridine
+dihydroxypteridine
+tetramethylbenzene
+methylquinoline
+2-arylpropionic acid
+Glycol Ethers (E Series)
+glycol ether
+Pyrroles
+pyrrole
+butynediol
+Glycol Ethers (Glymes)
+cycloalkene
+trioxane
+Morpholines
+Propylene Glycols
+Lubricants
+hexadecanoate ester
+hexanol
+octadecanoate ester
+long-chain fatty acid ethyl ester
+octene
+ynoate ester
+dodecanoate ester
+dodecene
+undecenal
+dodecanols
+fatty alcohol 14:0
+octadecene
+fatty alcohol 18:0
+Halogenated Cyclic Hydrocarbons
+cyclobutanes
+styrenes
+dinitroglycerol
+ketoxime
+ynal
+dichloroaniline
+monobromopyridine
+bromopyridine
+trihydroxytoluene
+anthracenamine
+anthracenamines
+phosphine oxide
+acyclic heterone
+heterone
+vinylnaphthalene
+vinylarene
+methoxycinnamic acid
+3-oxo-Delta(1),Delta(4)-steroid
+3-oxo-Delta(1) steroid
+monosaccharide sulfate
+spermidine alkaloid
+columbianetin
+isoquinolinonaphthyridine
+benzopyridoquinolizidine derivative
+pyridoisoquinoline
+2,3,8,9-tetramethoxy-13-methyl-5,6,11,12-tetrahydro-5,11-epiminodibenzo[a,e][8]annulene
+hydroxyfluorenes
+formylindanone
+1-(4-{[2-(2,4-dichlorophenyl)-2-(1H-1,2,4-triazol-1-ylmethyl)-1,3-dioxolan-4-yl]methoxy}phenyl)-4-isopropylpiperazine
+N-[4-cyano-3-(trifluoromethyl)phenyl]-3-[(4-fluorophenyl)sulfonyl]-2-hydroxy-2-methylpropanamide
+tartrate salt
+heptitol
+5-L-glutamyl amino acid
+chaulmoogric acid
+2-amino-3-(2-methylenecyclopropyl)propanoic acid
+selenocystathionine
+isoxazolidinone
+angucycline
+nonatrienedicarboxylic acid
+organoammonium phosphate
+phosphate salt
+neoflavones
+atrolactic acid
+dihydrolipoamide
+halothane
+methionine sulfone
+methyluridine
+phosphatidylethanolamine 32:0
+1,2-diacyl-sn-glycero-3-phosphoethanolamine zwitterion
+phosphatidylethanolamine zwitterion
+glycerophosphoethanolamine zwitterion
+trans-1,2-dithiane-4,5-diol
+3-deoxy-D-manno-octulosonic acid
+rosiglitazone
+hydroxypolyether phosphate
+1,2-diacyl-sn-glycero-3-phosphoethanolamine
+glycerophosphoethanolamine
+phosphatidylethanolamine
+1,2-dichloropropane
+ADP-D-ribose
+ADP-sugar
+purine nucleotide-sugar
+isoglutamine
+CMP-sugar
+homoserine lactone
+1-acyl-2-hexadecanoyl-sn-glycero-3-phosphate
+1,4-dithiothreitol
+nitrile oxide
+nitrilium betaine
+Metal Alkoxides
+1-O-acyl-sn-glycero-3-phosphocholine
+acyl-sn-glycero-3-phosphocholine
+lysophosphatidylcholine
+2-lysophosphatidylcholine
+lysophosphatidylcholine 16:0
+lysophosphatidylcholine 14:0
+pyrimidotriazine
+alditol 4-phosphate
+tetritol phosphate
+tetritol derivative
+taxifolin
+tetracenecarboxylate ester
+1,2-thiazoles
+phosphoramidate ester
+organic phosphoramidate
+heterocyclyl sulfate
+alkatetraene
+pyranopyrazole
+2-furoate ester
+methylhistidine
+Weinreb amide
+7-hydroxyisoflavones
+Cholesterol and Derivatives
+triazolophthalazine
+1,3-diglyceride
+diterpene glycoside
+terpene glycoside
+2-deoxy-2-fluorohexose
+fluoro sugar
+cyclohexanecarboxylate ester
+cis-1-acetyl-4-(4-{[2-(2,4-dichlorophenyl)-2-(1H-imidazol-1-ylmethyl)-1,3-dioxolan-4-yl]methoxy}phenyl)piperazine
+1-acetyl-4-(4-{[2-(2,4-dichlorophenyl)-2-(1H-imidazol-1-ylmethyl)-1,3-dioxolan-4-yl]methoxy}phenyl)piperazine
+purvalanol
+dibenzonaphthyridine
+3'-methoxyflavones
+pyrimidinethione
+pyridobenzimidazole
+7-hydroxyflavonol
+1-phenylethanol
+hydroxy monocarboxylic acid anion
+citronellal
+linalool
+dihydrocarveol
+4-isopropenyl-7-methyloxepan-2-one
+3-isopropenyl-6-oxoheptanoate
+6-oxo monocarboxylic acid anion
+oxo monocarboxylic acid anion
+3-isopropenyl-6-oxoheptanoic acid
+6-isopropenyl-3-methyloxepan-2-one
+L-aspartic acid derivative
+N-acyl-L-alpha-amino acid
+N-formyl amino acid
+L-alanine derivative
+anthrafuran
+versicolorone
+rolipram
+4-dodecyl-2,6-dimethylmorpholine
+oxadiazole
+nucleotide-(amino alcohol)s
+citrate salt
+N-silyl compound
+1,3-thiazole-2-carbaldehyde
+alkyltetrahydrofuran
+1,3,4-oxadiazoles
+purine ribonucleoside 5'-tetraphosphate
+ribonucleoside 5'-tetraphosphate
+purine ribonucleoside tetraphosphate
+purine nucleoside tetraphosphate
+nucleoside tetraphosphate
+ribonucleoside tetraphosphate
+organosilanediol
+cycloheptafuran
+trans-9,10-dihydrophenanthrene-9,10-diol
+9,10-dihydrophenanthrene-9,10-diol
+dihydrophenanthrenediol
+methanesulfonate salt
+organosulfonate salt
+organophosphate nematicide
+organophosphorus nematicide
+omega-hydroxy-short-chain fatty acid
+5-hydroxy monocarboxylic acid
+alpha-amino-acid anion
+marmesin
+atenolol
+triazolopyridazine
+meroterpenoid
+L-serine derivative
+Phosphides
+organotellurium compound
+tripeptide
+dimethoxyflavone
+3-(1-methylpyrrolidin-2-yl)pyridine
+terthiophene
+hydroxy-L-arginine
+L-arginine derivative
+depsidones
+glutamine derivative
+1,2-didecanoylglycerol
+1,2-diacyl-sn-glycerol
+pterocarpans
+benzofurochromene
+5-chloro-2-methyl-2,3,3a,12b-tetrahydrodibenzo[2,3:6,7]oxepino[4,5-c]pyrrole
+thujane monoterpenoid
+Azine Dyes
+3-nitrophenols
+3-nitroanisoles
+triacylglycerol 54:0
+imidazole fungicide
+cyclosiloxane
+nitroguanidine
+iodine oxoacid
+sulfinyl halide
+phosphanes
+phosphorus hydride
+N-ribosyl-N(6)-isopentenyladenine
+diatomic bromine
+S-alkyl-L-cysteine
+bromine oxoacid
+dihydrocarvones
+thiosulfuric acid
+diatomic fluorine
+elemental fluorine
+diatomic chlorine
+N-acylimidazole
+pentachlorobiphenyl
+iminium salt
+thiadiazole antifungal agent
+dihydroxybenzenesulfonic acid
+oxo dicarboxylate
+berbine
+isoquinoline alkaloid fundamental parent
+C4-dicarboxylate
+oxo dicarboxylic acid dianion
+oxo carboxylic acid anion
+phosphole
+hydnocarpic acid
+cyclopentenyl fatty acid
+vinylaziridine
+vinylaziridines
+1-vinylaziridines
+phytanoyl-CoAs
+acyl-CoA
+thioester
+adenosine 3',5'-bisphosphate
+dihydroxyindole
+dihydrocarvone
+6-(dimethylamino)-4,4-diphenylheptan-3-one
+tetrazocane
+Thiourea Compounds
+xylulose phosphate
+xylulose derivative
+ketopentose derivative
+ketopentose phosphate
+2-hydroxypropyl-CoM
+3-hydroxy-L-aspartic acid
+3-hydroxyaspartic acid
+2,3-dimethylpentane
+trans-hydrindane
+hydrindane
+thiomalic acid
+3-aminoalanine
+2,4-diaminobutyric acid
+Jasmonate derivatives
+fatty alcohol 17:0
+thiadiazole
+triazolobenzothiazole
+gitoxigenin
+14beta-hydroxy steroid
+14-hydroxy steroid
+16beta-hydroxy steroid
+16-hydroxy steroid
+thioglycines
+silyl ester
+acylimine
+(2R)-2-hydroxy monocarboxylic acid
+lysophosphatidylcholine 18:0
+organosulfate oxoanion
+limonoid
+tetradecenoic acid
+nitroalkene
+nitroolefin
+tricosenoic acid
+D-ribofuranose
+ribofuranose
+C-glycosyl pyrimidine
+C-nucleoside
+D-ribofuranose 5-phosphate
+D-ribose 5-phosphate
+monothioglycerol
+pyrimidinothiazolopyrimidine
+acetoin
+isocitric acid
+piperidinylimidazole
+ubiquinol
+1-acyl-2-octadecanoyl-sn-glycero-3-phosphate
+D-allopyranose
+allopyranose
+allose
+D-allose
+N-acetylmethionine
+Phthalocyanine Dyes
+butoconazole
+carbazole alkaloid
+dityrosine
+dialkylglycerol
+glyceraldehyde 3-phosphate
+alpha-N-substituted L-arginine
+quinacrine
+tetrapeptide
+peptidyl amide
+indoleacetic acid amide conjugate
+indoleacetic acid conjugate
+indole-L-aspartic acid conjugate
+hydratropic acid
+2-aminopimelic acid
+aryl phosphonate
+N-[4-(4-nitrophenylphospho)butanoyl]alanine
+5-methyl-5-(4-phenoxyphenyl)-3-(phenylamino)-1,3-oxazolidine-2,4-dione
+phosphate monoester
+2-amino-3-O-[(R)-1-carboxyethyl]-2-deoxy-D-glucopyranose
+muramic acid
+muramic acids
+butane-1,3-diol
+1,2-distearoylphosphatidylethanolamine zwitterion
+gamma-valerolactone
+1-phenylethylamine
+3-phenyllactic acid
+tropic acid
+3-fluorotyrosine
+sulpiride
+tetrahydroxyflavan
+aconitic acid
+cyanogenic glycoside
+indole phytoalexin
+Cyclamide (Depsipeptide)
+cyclodepsipeptide
+depsipeptide
+7-(3-aminopyrrolidin-1-yl)-1-(2,4-difluorophenyl)-6-fluoro-4-oxo-1,4-dihydro-1,8-naphthyridine-3-carboxylic acid
+hydroxypyrazine
+1-erythrosylbenzimidazole
+dichlorine dioxide
+arsenic oxide
+boron oxide
+thiazolidinecarboxamide
+N-acetyl-D-amino acid
+N-acyl-D-amino acid
+hydrobromide
+N-methylvaline
+sn-glycerophosphodiester(1-)
+bile acid conjugate
+Organic Compounds, Metal Salts
+neoflavonoid
+naphtho-alpha-pyrone
+naphthopyran
+Stearates
+steroid aldehyde
+azepine
+thiochromane
+azamacrocycle
+bile acid glycine conjugate
+phosphonic acid
+organic heterohexacyclic compound
+sesquiterpene
+azocanes
+aliphatic nitrogen antifungal agent
+N-sulfonylpiperazine
+harmala alkaloid
+tannin
+hydroxypyridone antifungal drug
+cyclic hydroxamic acid
+cinnolines
+ynamide
+clonidine
+oxazolobenzodiazepine
+vitamin K
+piperidinecarboxylate ester
+polycyclic cage
+bridged compound
+Hydroxylamines
+beta-amino acid ester
+aryl sulfate
+dialkylarylamine
+Aliphatics, Saturated (>C11)
+long-chain alkane
+fatty alcohol 20:0
+long-chain primary fatty alcohol
+long chain primary alcohol
+long-chain fatty alcohol
+2-bromocarboxylic acid
+Urea Compounds
+dimethylbenzoic acid
+Acid Anhydrides, Cyclic
+cyclic dicarboxylic anhydride
+pyrrolecarboxylic acid
+cyclohexanedione
+Phosphorus Compounds
+diterpene
+fatty nitrile
+Rodenticides
+2-fluoroacetamides
+dihydroxy-1,3,5-triazine
+monoamino-1,3,5-triazine
+Other Plasticizers
+fluorescein isothiocyanate
+oxaspiro compound
+Herbicides, Carbamate
+ocimene
+naphthodithiin
+dinitrile
+thujene
+beta-hydroxy ketone
+Ammonium Compounds
+1,4-dimercaptobutane-2,3-diol
+quinoxaline antifungal agent
+quinoxaline pesticide
+organonitrogen pesticide
+N-hydroxy-alpha-amino-acid
+1r,3c,4t-p-menthane-3,8-diol
+p-menthane-3,8-diol
+a 1-methyl-3-phenylurea
+L-rhamnose
+rhamnose
+deoxymannose
+deoxyhexose
+deoxy sugar
+aldohexose
+3',5'-cyclic pyrimidine nucleotide
+cyclic pyrimidine nucleotide
+p-menthan-3-ol
+dimethylnaphthalene
+mononitronaphthalene
+nitronaphthalene
+nitroarene
+naphthylacetic acid
+Naphthols
+1,2-benzoquinones
+benzoquinone
+Diisocyanates
+toluene meta-diisocyanate
+diisocyanate
+allenes
+quaternary ammonium salt
+organoammonium salt
+methylbutanal
+angelica lactone
+oxopentanoic acid
+fluorohydrocarbon
+bromoalkene
+isocyanide
+thioureas
+thiosulfonate ester
+monohydroxyflavone
+flavonols
+homocysteic acid
+carboxyalkanesulfonic acid
+borate ion
+boron oxoanion
+phosphite ion
+2-halobenzoate
+fluorobenzoate
+isobenzofuranone
+thioproline
+2-methyl-3-(pyrrolidin-1-yl)-1-[4-(trifluoromethyl)phenyl]propan-1-one
+organic iodide salt
+iodide salt
+benzocycloheptathiophene
+methyladenosine
+hydrocarbyladenosine
+N-acylethanolamine 18:0
+hydroxylamine O-sulfonic acid
+dihydroxypyridine
+silicon coordination entity
+nonanone
+selegiline
+bilanes
+linear tetrapyrrole
+6-phenyl-2,3,5,6-tetrahydroimidazo[2,1-b][1,3]thiazole
+abietane diterpenoid
+O-sulfoamino acid
+hydroxykynurenamine
+sedoheptulose derivative
+ketoheptose derivative
+heptose derivative
+ketoheptose phosphate
+serine phosphoethanolamine
+(beta-D-ribofuranosyl)uric acid
+L-methionine derivative
+eudesmane sesquiterpenoid
+prostaglandins E
+aminoxyls
+organic radical
+radical
+branched-chain saturated fatty acid anion
+branched-chain fatty acid anion
+saturated fatty acid anion
+fatty acid anion 4:0
+short-chain fatty acid anion
+tricyclic diterpenoid
+hydroxy-L-valine
+L-valine derivative
+pentonic acid
+ketoaldonic acid
+1-(phosphoribosyl)imidazole
+glutamyl-L-amino acid
+2-aminoadipic acid
+Metals, Inorganic Compounds
+carbapenems
+silicon hydride
+monoatomic hydrogen
+chlorine oxide
+halogen oxide
+inorganic radical
+1-(phosphoribosyl)imidazolecarboxamide
+organogermanium compound
+germanium molecular entity
+L-leucine derivative
+N-acetyl-beta-D-glucosaminide
+N-acetyl-D-glucosaminide
+D-glucosaminide
+hexosaminide
+N-acetyl-D-hexosaminide
+6-methoxymellein
+isochromanes
+2-hydroxy-4-methylvaleric acid
+(2S)-2-hydroxy monocarboxylic acid
+S-substituted N-acetyl-L-cysteine
+phthalimide insecticide
+S-conjugate
+bioconjugate
+glutathione derivative
+citrate(2-)
+citrate anion
+tricarboxylic acid anion
+tricarboxylic acid dianion
+triatomic oxygen
+chlorine dioxide
+tellurium oxoacid
+coformycins
+imidazodiazepine
+Fluorides, Inorganic
+fluoride salt
+inorganic chloride
+inorganic salt
+N(2)-acylglutamine
+Chromium Compounds, Inorganic
+S-ethylhomocysteine
+fatty acid-taurine conjugate
+methyl-branched fatty acyl-L-carnitine
+fatty acyl-L-carnitine
+glycerol 1-phosphodiester(1-)
+tartaric acid
+2,3-dihydroxybutanedioic acid
+heptane-1,2,3-triol
+(oxaloamino)benzoic acid
+2-benzylsuccinic acid
+chloroquine
+Oligosaccharides
+1-(5-hydroxyhexyl)-3,7-dimethyl-3,7-dihydro-1H-purine-2,6-dione
+long-chain fatty acid anion
+fatty acid anion 16:0
+2-saturated fatty acid anion
+omega-methyl fatty acid anion
+phosphatidylcholine 24:0
+triazolothiadiazole
+pyrimido-indole
+ergostanoid
+cucurbitacin
+tetracyclic triterpenoid
+apo carotenoid triterpenoid
+triterpene
+polyene
+N-hydroxysuccinimide ester
+calycanthaceous alkaloid
+aminal
+hopanoid
+naphthalenecarboxamide
+N-acyl hemiaminal
+phosphatidylcholine 32:0
+1-acyl-2-hexadecanoyl-sn-glycero-3-phosphocholine
+organic heteroheptacyclic compound
+asterriquinones
+9-fluoro-3-methyl-10-(4-methylpiperazin-1-yl)-7-oxo-2,3-dihydro-7H-[1,4]oxazino[2,3,4-ij]quinoline-6-carboxylic acid
+hydrobenzoin
+N-carbamoylvaline
+L-isoleucine derivative
+synephrine
+nipecotamide
+naphthoate ester
+formamidopyrimidine
+amidopyrimidine
+3-(3,5-dichlorophenyl)-5-ethenyl-5-methyl-2,4-oxazolidinedione
+triterpenoid saponin
+benzocycloheptene
+ethyl 2-hydroxypropanoate
+methyl 2-hydroxypropionate
+alpha-thujene
+2-methylbutan-1-ol
+benzoin
+diethylpropion
+9,10-dimethoxy-3-isobutyl-1,3,4,6,7,11b-hexahydro-2H-pyrido[2,1-a]isoquinolin-2-one
+thianthrene
+naringenin
+etodolac
+dobutamine
+profenamine
+bupropion
+carprofen
+oxazolidine
+thioacetate ester
+thienopyrimidine
+N-acyl-L-phenylalanine
+3-nitrotyrosine
+2-(4-isopropyl-4-methyl-5-oxo-4,5-dihydro-1H-imidazol-2-yl)nicotinic acid
+antagonist
+pharmacological role
+biological role
+role
+triazinoindole
+1,2,4-oxadiazole
+ethyl 4-(3-hydroxyphenyl)-6-methyl-2-thioxo-1,2,3,4-tetrahydropyrimidine-5-carboxylate
+6-chloro-2,3,4,9-tetrahydro-1H-carbazole-1-carboxamide
+N-benzoylalanine
+N-acyl-L-alanine
+chlorphenamine
+4-fluorophenylalanine
+2-fluorophenylalanine
+D-proline derivative
+3-ammonio-3-phenylpropanoate
+pindolol
+N-(indole-3-acetyl)leucine
+dyphylline
+2-(butan-2-yl)-4,6-dinitrophenol
+clenbuterol
+6-alkylaminopurine
+2-hydroxy-3-(2-methoxyphenoxy)propyl carbamate
+N-acyl-L-homoserine lactone
+N-acyl homoserine lactone
+4-[2-[[1-hydroxy-1-(4-hydroxyphenyl)propan-2-yl]amino]ethyl]phenol
+zeatin
+7-hydroxyflavanone
+4'-hydroxyflavanone
+3'-hydroxyflavanone
+flavanone
+physalin
+1,2-dipalmitoylglycerol
+dihexadecanoylglycerol
+diacylglycerol 32:0
+ribulose
+ketopentose
+O-acyl-L-carnitine
+saturated fatty acyl-L-carnitine
+O-isobutyrylcarnitine
+C4-acylcarnitine
+O-dodecanoylcarnitine
+sulfamidate
+hexacosenoic acid
+timolol
+malate salt
+Erythrina alkaloid
+threitol
+butane-1,2,3,4-tetrol
+4'-methoxyisoflavones
+thioadenosine
+monohydroxy-1,4-benzoquinones
+vitamin B7
+arylammonium sulfate salt
+organoammonium sulfate salt
+organic sulfate salt
+sulfate salt
+D-aspartic acid derivative
+humulene
+glutamic acid
+iridoid monoterpenoid
+N-(butan-2-yl)-6-chloro-N'-ethyl-1,3,5-triazine-2,4-diamine
+5-methyl-1-phenyl-3,4,5,6-tetrahydro-1H-2,5-benzoxazocine
+N(2),N(5)-diacyl-L-ornithine
+L-ornithine derivative
+ornithine derivative
+1-(4-chlorophenoxy)-3,3-dimethyl-1-(1,2,4-triazol-1-yl)butan-2-one
+succinate
+malate
+4'-methoxyflavanones
+methoxyflavanone
+(2S)-flavan-4-one
+monomethoxyflavanone
+coclaurine
+N-methyl-L-alpha-amino acid
+L-tryptophan derivative
+3-oxo-Delta(5)-steroid
+amino acid opine
+opine
+3-hydroxymethylcephalosporin
+cyclic hemiketal
+hemiketal
+allysine
+aminoadipate semialdehyde
+adipate semialdehyde
+quinolizidine alkaloid
+quinolizidines
+decenoic acid
+Herbicides, Imidazolinone
+spiroketal
+sulfonanilide fungicide
+anilinopyrimidine fungicide
+pyrimidine fungicide
+morpholine fungicide
+morpholine antifungal agent
+triazole insecticide
+bisacylhydrazine insecticide
+benzoylurea insecticide
+pyrazole acaricide
+pyrazole pesticide
+pyrazole insecticide
+Insecticides, Neonicotinoid
+aminoglutethimide
+bisabolene
+polycyclic olefin
+monoatomic fluorine
+morpholine N-oxide
+L-asparagine derivative
+asparagine derivative
+bromo fatty acid
+piperazine-1-carbaldehydes
+alpha-pinene
+L-mannose
+mannose
+aldehydo-mannose
+cyclopeptine
+benzophenanthridine alkaloid
+benzophenanthridine
+D-tryptophan derivative
+5-hydroxytryptophan
+1,3,2-dioxaborolane
+boronate ester
+boronate
+anabasine
+4-(diethylamino)but-2-yn-1-ol
+lombricine
+2-keto-xylose
+ketoaldopentose
+ketoaldose
+oxooctadecadienoic acid
+proanthocyanidin
+flavonoid oligomer
+dimethylarginine
+O-isovalerylcarnitine
+C5-acylcarnitine
+carbinoxamine
+silanes
+dihydrojasmonic acid
+vitamin B6 phosphate anion
+L-lyxose
+lyxose
+3,3',5'-triiodothyronine
+L-alpha-amino acid zwitterion
+8-cyclohexyl-2,3,3a,4,5,6-hexahydropyrazino[3,2,1-jk]carbazole
+thioketone
+2-methylbutanenitrile
+2,3-dimethylbutyric acid
+isoindole
+alkylglucosinolate
+glucosinolate
+glycosinolate
+dihydroorotic acid
+1-[2-(2,4-dichlorobenzyloxy)-2-(2,4-dichlorophenyl)ethyl]imidazole
+gatifloxacin
+2-[(1-benzylpiperidin-4-yl)methyl]-5,6-dimethoxyindan-1-one
+thiomorpholine-3-carboxylic acid
+1-(3,6-dibromocarbazol-9-yl)-3-(dimethylamino)propan-2-ol
+2,3-dihydro-3-hydroxyanthranilic acid
+N-carbamoyl-D-alpha-amino acid
+D-methionine derivative
+2-methylbutyric acid
+1-acyl-2-tetradecanoyl-sn-glycero-3-phosphate
+2-[4-(2,4-dichlorophenoxy)phenoxy]propanoic acid
+2-(4-{[3-chloro-5-(trifluoromethyl)pyridin-2-yl]oxy}phenoxy)propanoic acid
+dihydrolipoic acid
+4-phosphoerythronic acid
+phosphoerythronic acid
+tetronic acid phosphate
+substituted diphenylfuran
+diphenylfurans
+2-{[4-chloro-6-(ethylamino)-1,3,5-triazin-2-yl]amino}-2-methylbutanenitrile
+1,3,5-triazinylamino nitrile
+hydroxypolyether aldehyde
+pyrrolopyrazole
+Proteins
+peptide hormone
+2,3,8,9-tetramethoxy-5,6,11,12-tetrahydro-5,11-epiminodibenzo[a,e][8]annulene
+butane-1,2-diol
+tricarboxylic acid triamide
+tricarboxylic acid amide
+cyclobutadipyrimidine
+alpha-amino fatty acid
+2-aminoheptanoic acid
+pipecolic acid
+D-5-monosubstituted hydantoin
+N-(1-phenylethyl)acetamide
+thienopyran
+N-{1-[(naphthalen-2-yl)amino]-1-oxo-3-phenylpropan-2-yl}benzamide
+1,3-dihydroimidazole-2-thiones
+furopyrimidine
+flavan
+D-leucine derivative
+pyrimidinecarboxylate anion
+piperazinecarboxylic acid
+omega-hydroxy-very-long-chain fatty acid
+omega-hydroxy-ultra-long-chain fatty acid
+(3R)-3-hydroxy fatty acid
+3-hydroxylauric acid
+11-hydroxylauric acid
+6-hydroxyheptanoic acid
+3-hydroxyoctadecanoic acid
+3-hydroxyoctanoic acid
+1,3-thiazolemonocarboxylic acid
+N-acetylcitrulline
+D-mannopyranuronic acid
+D-mannonic acid
+mannonic acid
+(+)-cis-allethrin
+cis-allethrin
+allethrin
+2-[4-methyl-5-oxo-4-(propan-2-yl)-4,5-dihydro-1H-imidazol-2-yl]quinoline-3-carboxylic acid
+2-(benzoylamino)-3-phenylpropanoic acid
+2-bromo-N-carbamoyl-3-methylbutanamide
+ethyl 2-{4-[(6-chloroquinoxalin-2-yl)oxy]phenoxy}propanoate
+quinoxaline herbicide
+naphthalenedisulfonate
+rose oxide
+benzoylpyrazole
+3'-hydroxyflavonoid
+dibromobisphenol
+substituted calixarene
+calixarenes
+thiazolopyridine
+2-hydroxymyristic acid
+1-acyl-sn-glycerol
+1-monolauroylglycerol
+alpha-campholenaldehyde
+4-aminophenylalanine
+triazolidines
+zopiclone
+H3HP-DO3A
+pyrazolylpiperidine
+3-hydroxytetradecanoic acid
+2-deoxy-2-fluoro-D-glucopyranose
+2-deoxy-2-fluorohexopyranose
+2-deoxy-2-fluoro-D-glucose
+D-glutamic acid derivative
+Nitrates and Nitrites
+polychlorinated dibenzodioxine
+polychlorinated dibenzodioxines and related compounds
+dibenzodioxine
+Thiazoles
+pyrenes
+Nitroanilines
+Herbicides, Protox-Inhibiting
+epoxystearic acid
+epoxy fatty acid
+epoxy monocarboxylic acid
+hexacarboxylic acid
+5-methoxyfurocoumarin
+extended flavonoid
+naphtho-gamma-pyrone
+propan-3-olide
+beta-lactone
+bridged diphenyl antifungal drug
+macrolide
+macrocyclic lactone
+eugenol
+enol ether
+Fatty Acids and Fats
+n-alk-2-enal
+Benzidine and Derivatives
+brompheniramine
+phthalimide fungicide
+dicarboximide fungicide
+dicarboximide antifungal agent
+very long-chain fatty acid
+tetrachlorobiphenyl
+polychlorobiphenyl
+chlorobiphenyl
+chloroarene
+terpineol
+monoterpenols
+terpenol
+quinoxaline acaricide
+organonitrogen acaricide
+dithioloquinoxaline
+acetate salt
+methylbutyric acid
+Naphthylamines
+methylbenzoic acid
+2-halobenzoic acid
+monohydroxyacetophenone
+hydroxyacetophenone
+trinitrotoluene
+dinitroanisoles
+nitroanisoles
+benzoins
+aminonaphthalenesulfonic acid
+acene
+naphthyloxyacetic acid
+paraben
+4-hydroxybenzoate ester
+steroid sulfate
+fatty alcohol 22:0
+homoserine
+alkatriene
+delta-lactam
+enyne
+carbodiimide
+piperideine
+polycyclic alkane
+naphthols
+phenoxyphenol
+sulfamides
+sulfuric amide
+phenylsulfamide fungicide
+amide fungicide
+amide antifungal agent
+cyclopropenyl fatty acid
+cyclopropenes
+carbocyclic fatty acid
+homoallylic alcohol
+Rodenticides, Anticoagulant
+beta-triketone
+triketone
+acenaphthenes
+acenaphthylenes
+indanone
+methylindole
+alkaloid antibiotic
+Terphenyls
+2-hydroxyisophthalic acid
+phenylhydrazines
+thiazolidinemonocarboxylic acid
+fluorobenzoic acid
+dihydronaphthalene
+alkadiyne
+pseudohalogen
+homocystines
+nitrite esters
+nitrites
+ketene
+terpenoid fundamental parent
+natural product fundamental parent
+oxoaporphine alkaloid
+ultra-long-chain fatty acid
+elemental silver
+silver molecular entity
+copper group molecular entity
+Metal Hydrides
+titanium group element atom
+elemental antimony
+antimony molecular entity
+monoatomic argon
+elemental argon
+argon molecular entity
+arsine
+arsanes
+arsenic hydride
+Cadmium Compounds, Inorganic
+zinc group element atom
+copper group element atom
+germanium hydride
+s-block element atom
+monoatomic xenon
+elemental xenon
+xenon molecular entity
+astatine molecular entity
+sulfide salt
+N-acetyl-D-glucosamine
+N-acetylglucosamine
+N-acylglucosamine
+glucosamines
+N-acetyl-D-hexosamine
+N-acetylhexosamine
+malate ester
+silicon oxide
+hamacanthin A
+pyrazinone
+thiomorpholinemonocarboxylic acid
+thiomorpholines
+thiazinane
+thiazinemonocarboxylic acid
+1,4-thiazine
+tetrahydroxyflavanone
+crown amine
+trans-1,2-dihydronaphthalene-1,2-diol
+1,2-dihydronaphthalene-1,2-diol
+oxabicycloalkane
+cineole
+O-propanoylcarnitine
+glucosamine phosphate
+methylarsinous acid
+2,3-bisphosphoglyceric acid
+pyran
+alpha-amino acid zwitterion
+cis-3,4-dihydrophenanthrene-3,4-diol
+3,4-dihydrophenanthrene-3,4-diol
+other linear non-peptide (Lyngbya toxin (alkaloid))
+trans-stilbene oxide
+stilbene oxide
+2-(4-chloro-2-methylphenoxy)propanoic acid
+ultra-long-chain primary fatty alcohol
+maackiain
+versiconol
+arsonous acids
+cyclic desferrioxamine
+pyrrolidinecarboxamide
+N-glycosylzeatin
+D-mannose
+D-aldohexose
+D-hexose
+mannosamine
+deoxymannose derivative
+deoxyhexose derivative
+deoxy sugar derivative
+N(beta)-acyl-L-2,3-diaminopropionic acid
+octopamine
+N(alpha)-methyl-L-histidines
+2,3-dihydroxy-3-methylbutanoic acid
+ribose monophosphate
+N-benzoyl-D-arginines
+D-arginine derivative
+nucleoside triphosphate analogue
+aldonate ester phosphate
+carbohydrate acid ester
+2,2'-bithiophenes
+2-acetamido-2-deoxy-D-glucopyranose 1-phosphate
+N-acetyl-D-glucosamine 1-phosphate
+N-acyl-D-glucosamine 1-phosphate
+N-acyl-D-glucosamine phosphate
+guanidinoethyl methyl phosphates
+gamma-glutamylcysteine
+diethyl 2-methyl-3-hydroxysuccinate
+N-substituted cadaverine
+S-acylglutathione
+S-substituted glutathione
+acylglutathione
+N-acetoxyarylamine
+eremophilane sesquiterpenoid
+sesquiterpene phytoalexin
+terpenoid phytoalexin
+1-alkyl-sn-glycero-3-phosphocholine
+lysophosphatidylcholine O-16:0
+ketotetrose
+tetrose
+methoxybenzoic acid
+Herbicides, Nitrile
+chlorophenylethylene
+organochlorine insecticide
+organochlorine pesticide
+chlorophenylethane
+Biocides/Disinfectants
+bridged diphenyl fungicide
+bridged diphenyl antifungal agent
+alkenyl phosphate
+organochlorine acaricide
+tertiary amine
+deoxyribonucleoside
+Esters, Other
+acyclic carboxylic anhydride
+carboxylic anhydride
+N-methylpiperazine
+N-carbamoylpiperazine
+N-carbonylpiperazine
+N-acylpiperazine
+Chelating Agents
+pentacarboxylic acid
+peptide ergot alkaloid
+ergot alkaloid
+hemiterpenoid indole alkaloid
+terpenoid indole alkaloid
+indole alkaloid
+Chemical Weapons
+organic phosphonate
+phosphonate
+phosphonic acid derivative
+benzothiazepine
+imidothiocarbamic ester
+Sulfur Compounds (Alcohols)
+oxazolidinone
+phenothiazines
+dinitrotoluene
+nitrotoluene
+phosphatidic acid
+glycerophospholipid
+glycerolipid
+Benzophenones
+benzophenones
+pivalate ester
+pyrimidopyrimidine
+pyrazoles
+isopropyl ester
+2-methoxyethyl ester
+ethyl ester
+Explosives
+nitroglycerol
+nitrate ester
+nitrates
+1,3-thiazoles
+thiazoles
+lignan
+quinolinemonocarboxylic acid
+quinolines
+quinolone
+fluoroquinolone antibiotic
+17-hydroxy steroid
+3-oxo-Delta(4) steroid
+3-oxo steroid
+oxo steroid
+nitrobenzoic acid
+other linear non-peptide (Polybrominated diphenyl ethers (PBDEs))
+alkylbenzene
+phenylethanolamines
+tyramines
+oxazinoquinoline
+2,6-diaminopurines
+bipyridines
+carbazoles
+dibenzopyrrole
+1,3,5-triazines
+triazines
+azaarene
+cardenolide glycoside
+cardiac glycoside
+steroid lactone
+cardenolides
+penicillin
+penicillanic acids
+penams
+beta-lactam antibiotic
+beta-lactam
+Amines, Aromatic
+primary aliphatic amine
+1,3-oxazoles
+hemiaminal ether
+Sunscreens
+hydroxybenzophenone
+amino acid ester
+racemate
+mixture
+chemical substance
+imidazolines
+diazoline
+pyrazolidines
+Aromatic Ketones
+iodine oxide
+imidazoquinoline
+ketoaldohexose
+methylcytosine
+aurones
+phosphatidic acid 36:2
+kynurenine
+N(6)-acyl-L-lysine
+iodine oxoanion
+halogen oxoanion
+phosphorothioic acid
+1-acylglycerone 3-phosphate
+acylglycerone phosphate
+UDP-amino sugar
+UDP-sugar
+hydroxamic acid anion
+phenolate anion
+pantothenate
+lactate salt
+phosphatidylcholine O-32:0
+alkyl,acyl-sn-glycero-3-phosphocholine
+1-acyl-2-alkyl-sn-glycero-3-phosphocholine
+5-aminocyclohexa-1,3-diene-1-carboxylic acid
+secondary allylic alcohol
+phosphatidylglycerol
+glycerophosphoglycerols
+santonin
+naphthofuran
+2-aryloxyketone
+aryloxyketone
+malic acid
+androstane-3,17-dione
+aminophenylarsonous acid
+mineralocorticoid
+phosphatidylcholine 14:0
+5-benzoyl-2,3-dihydro-1H-pyrrolizine-1-carboxylic acid
+phthalate
+ketamine
+N(2)-acyl-L-glutamine
+L-glutamine derivative
+N(2)-acetylglutamine
+pyridine nucleoside
+N-glycosylpyridine
+arene epoxide
+steroid glucosiduronic acid
+glucosiduronic acid
+glycosiduronic acid
+histidine derivative
+dimethoxyflavanone
+methoxyflavan
+laudanine
+beta-chamigrene
+alpha-curcumene
+butan-2-ol
+2-(2,4-dichlorophenoxy)propanoic acid
+pyrimidinecarboxylate ester
+D-fructose 1,6-bisphosphate
+ketohexose bisphosphate
+ketohexose phosphate
+hexose phosphate
+hexose derivative
+bromine oxoanion
+1,1-diunsubstituted alkanesulfonate
+alkanesulfonate oxoanion
+4-hydroxytryptophan
+tetramethoxyflavone
+trifluoroacetamide
+coumestans
+1-alkyl-2-acyl-glycero-3-phosphocholine
+organophosphate oxoanion
+anthracenedialdehyde
+acene dialdehyde
+acene aldehyde
+acene-2,3-dialdehyde
+disaccharide
+tetracenomycin
+organophosphonate oxoanion
+mitomycin
+azirinopyrroloindole
+1,2,3,4-tetrahydronaphthalenediol
+methylhypoxanthine
+octadecynoic acid
+nitrotyrosine
+2',3'-cyclic pyrimidine nucleotide
+N-ethylasparagine
+glutamic semialdehyde
+purine N-oxides
+quinoline N-oxide
+CDP-4-dehydro-3,6-dideoxy-D-glucose
+CDP-sugar
+L-histidine derivative
+7-oxo steroid
+acetyl-L-ornithine
+N(5)-acyl-L-ornithine
+N(5)-acetylornithine
+aldopentose
+nucleoside pentaphosphate
+norcoclaurine
+1-(1-methylpyrrolidin-2-yl)acetone
+oxime O-ether
+diterpene lactone
+cyameluric acid
+heptaazaphenalene
+N-acylphytosphingosine
+phytoceramide
+N-acylsphingoid
+ceramide
+phytoceramides
+beta-amino-fatty acid
+aryltetrahydrofuran
+3-oxoalanine
+other linear non-peptide (AHLs)
+p-menth-8-en-3-one
+neolignan
+pyrazolooxadiazepine
+clothianidin
+2-nitroguanidine derivative
+nitroguanidine derivative
+O-butanoylcarnitine
+2,1-benzoxazoles
+aminopiperidine
+thioenol
+ortho ester
+silyl ether
+thujopsene
+menthofuran
+alpha-phellandrene
+beta-phellandrene
+p-menth-4(8)-en-3-one
+alpha-terpineol
+2,7-naphthyridine derivative
+bisindole alkaloid
+bisindole
+imidazo[2,1-b][1,3]oxazines
+imidazooxazine
+bicyclic nitroimidazole
+androstane-3,17-diol
+nucleotide 2-aminoethylphosphonate
+alpha-glutamyl phosphate
+biladienes
+dihydrotricetin
+3',5'-dihydroxyflavanone
+N(5)-[amino(hydroxyimino)methyl]ornithine
+N(omega)-hydroxyarginine
+hydroxyarginine
+4-hydroxy-2-oxoglutaric acid
+2-hydroxybutyric acid
+5'-acylphosphoadenosine
+3-hydroxyisobutyric acid
+2-methyl-3-oxopropanoic acid
+3-methyl-2-oxovaleric acid
+2-acetyllactic acid
+organic sulfamate oxoanion
+threo-3-methylmalic acid
+3-methylmalic acid
+2-methyl-3-oxosuccinic acid
+4-hydroxy-4-methyl-L-glutamic acid
+4-hydroxy-4-methylglutamic acid
+limonene
+omega-oxo fatty acid
+6-oxo monocarboxylic acid
+1,3,4,6-tetrachlorocyclohexa-1,4-diene
+pretetramide
+tetracyclines
+carbapenemcarboxylic acid
+3-ethenylcyclohexa-3,5-diene-1,2-diol
+mandelamide
+2-amino-3-oxo-4-(phosphonooxy)butanoic acid
+2-acylphloroglucinol
+Latia luciferin
+apo carotenoid sesquiterpenoid
+apo carotenoid
+Metals, Organic Compounds
+thionoester
+quassinoid
+rotenones
+rotenoid
+tetrahydrochromenochromene
+chromenochromene
+isoleucine derivative
+C19-gibberellin
+gibberellin
+gibberellin monocarboxylic acid
+enamine
+carveol
+ethyl 3-hydroxyhexanoate
+1-pyrroline-5-carboxylic acid
+3-(indol-3-yl)-2-oxobutyric acid
+glucaric acid derivative
+hexaric acid derivative
+aldaric acid derivative
+3-(4-hydroxyphenyl)lactic acid
+2,3,4,5-tetrahydrodipicolinic acid
+beta-ketoester
+naphthalenetetrol
+1-aminopropan-2-yl phosphate
+glucosamine sulfate
+O-acylglucosamine
+hexosamine sulfate
+beta-pinene
+norlaudanosoline
+delta-cadinene
+5'-acylphosphouridine
+norreticuline
+nororientaline
+ropivacaine
+seco-androstane
+seco-steroid
+L-glutamyl ester
+S-(methylbutanoyl)dihydrolipoamide
+hydroxyimidazole
+3-hydroxy-L-proline
+3-hydroxyproline
+N-methylcoclaurine
+reticuline
+hemiaminal
+2-aminohexano-6-lactam
+4-hydroxymandelic acid
+pyrrolizine
+propane-1,2-diol
+heptaketide
+chloroindole
+haloindole
+octitol
+anhydro sugar
+3-sulfolactic acid
+pentapeptide
+Seafood Toxins
+benzimidazolequinone
+salicylaldehyde imines
+aldimine
+hydroxybenzo[c]phenanthrene
+purine 2',3'-dideoxyribonucleoside
+purine deoxyribonucleoside
+steroid saponin
+saponin
+bromoindole
+organofluorine acaricide
+organofluorine pesticide
+organofluorine insecticide
+tetrayne
+chlorine oxoanion
+N-acyl-L-glutamic acid
+N-acylglutamic acid
+monoatomic oxygen
+butane-2,3-diol
+monoterpene alkaloid
+pyranopyridine
+pyranopyranone
+pyranopyran
+usnic acid
+tetrahydroxyflavone
+selinene
+diphenoxybenzene
+oxygen radical
+kaurane diterpenoid
+cedrane sesquiterpenoid
+Ambiguous Lipids
+triacylglycerol 46:0
+triacylglycerol 50:0
+triacyl-sn-glycerol
+trichothecene
+2-acylglycerol 18:2
+2-monoglyceride
+monoacylglycerol 18:2
+indolamine
+indolinone
+2-amino-2-deoxy-D-glucopyranose
+D-glucosamine
+glucosamine
+D-hamamelose
+D-ribopyranose
+ribopyranose
+ribose
+D-ribose
+pyrimidine 2'-deoxyribonucleoside 5'-monophosphate
+pyrimidine 2'-deoxyribonucleotide
+2'-deoxyribonucleotide
+deoxyribonucleotide
+deoxyaldopentose phosphate
+2-deoxyribose phosphate
+2'-deoxyribonucleoside 5'-monophosphate
+2'-deoxyribonucleoside 5'-phosphate
+pentayne
+pentitol derivative
+indolyl carboxylate ester
+indolizidine alkaloid
+citramalic acid
+ethanolamine sulfate salt
+withanolide
+tosylate ester
+imidazolylacetaldehyde
+S-alkyl-L-cysteine zwitterion
+S-substituted L-cysteine zwitterion
+ketohexose monophosphate
+dihydrophenanthrene
+pyrrolizidine alkaloid
+hydroxy-1,2-naphthoquinone
+methoxyisoflavanone
+N-methylisoleucine
+lipoyl-AMP
+methyl-L-alanine
+3,5-dihydroxy-3-methylpentanoate
+long-chain fatty acyl-AMP
+fatty acyl-AMP
+glyoxylates
+2-oxo monocarboxylic acid anion
+N-methyl-3-phenyl-3-[4-(trifluoromethyl)phenoxy]propan-1-amine
+sebacate
+2,6-diaminopimelic acid
+lipoate
+thia fatty acid anion
+arabinarate(2-)
+arabinaric acid anion
+pentaric acid anion
+aldaric acid anion
+carbohydrate acid anion
+arabinaric acid
+pentaric acid
+dipeptide zwitterion
+peptide zwitterion
+L-arginine ester
+N-carbamoylaspartic acid
+N-acylglycinate
+sterigmatocystins
+biflavonoid
+taxane diterpenoid
+allenic fatty acid
+benzo[g]pteridine-2,4-dione
+inorganic radical anion
+radical anion
+radical ion
+inorganic radical ion
+organic radical anion
+organic radical ion
+tetraatomic sulfur
+elemental sulfur
+triatomic sulfur
+diatomic sulfur
+bromine oxide
+elemental selenium
+fatty acid anion 22:0
+straight-chain saturated fatty acid anion
+threose
+threoses
+aldotetrose
+ribonic acid
+sulfonatobenzoate
+benzyne
+aryne
+diatomic phosphorus
+elemental phosphorus
+organoarsonic acid anion
+octacenes
+heptacenes
+N-carbamoyl-L-alpha-amino acid anion
+N-carbamoyl-L-alpha-amino acid
+N-carbamoyl-L-amino acid
+N-carbamoyl-D-alpha-amino acid anion
+N-acyl-D-alpha-amino acid anion
+L-5-monosubstituted hydantoin
+borinic acids
+7,8-dimethylbenzo[g]pteridine-2,4-dione
+phosphatidylethanolamine 34:0 zwitterion
+2-phospholactic acid
+polyboron hydride
+polyboron cluster
+homonuclear cluster
+cluster
+homomonocyclic compound
+tetrathionate ion
+indacene
+indacenes
+as-indacenes
+tricarboxylic acid monoanion
+tricarboxylic acid trianion
+carboxylic acid trianion
+s-indacenes
+carbene
+tetracarboxylic acid anion
+1-heptyl-2-octylcyclopentane
+3-phenyllactate
+2-hydroxy carboxylate
+(2S)-2-hydroxy monocarboxylic acid anion
+prolinate
+L-alpha-amino acid anion
+branched-chain amino-acid anion
+valinate
+serinate
+alpha-amino-acid radical
+tyrosinyl radical
+tyrosinate(2-)
+tyrosinate(1-)
+selenocysteinate(2-)
+cysteinyl radical
+D-amino acid radical
+L-amino acid radical
+tryptophanyl radical
+tryptophanate
+pyrroloquinoline
+hydroxylysine
+lysine derivative
+amino sulfonic acid
+Dithiocarbamates (Pesticide)
+organosulfur acaricide
+organosulfur pesticide
+Herbicides, Urea Derivative
+3-(3,4-substituted-phenyl)-1,1-dimethylurea
+branched-chain saturated fatty acid
+branched-chain fatty acid
+aminodiol
+oxindoles
+indolones
+1,4-naphthoquinones
+naphthoquinone
+quinolizines
+heteroarenecarboxylate ester
+dibenzothiepine
+quinazolines
+benzodioxine
+dibenzooxepine
+5'-deoxyribonucleoside
+thiophenes
+propane-1,2-diols
+propanediol
+benzoselenazole
+organoselenium heterocyclic compound
+organoselenium compound
+dihydroxy-1,4-benzoquinones
+hydroxybenzoquinone
+hydroxyquinone
+enol
+trihydroxyanthraquinone
+cyclodiene organochlorine insecticide
+cyclic sulfite ester
+sulfite ester
+sulfites
+sulfurous acid derivative
+Waste Anesthetic Gases
+ergoline alkaloid
+aminoglycoside
+triazolobenzodiazepine
+pyrazolopyridine
+Ethers (<C12)
+Animal Feed Additives
+phenoxazine
+benzothiazoles
+germacranolide
+sesquiterpene lactone
+sesquiterpenoid
+terpene lactone
+Mycotoxins
+furopyran
+lactol
+hemiacetal
+bromobenzenes
+pyridopyrimidine
+acrylamides
+enamide
+alpha,beta-unsaturated carboxylic acid amide
+monomethoxyflavone
+methoxyflavone
+flavones
+anthoxanthin
+diether
+polyether
+benzazocine
+barbiturates
+N-(2-hydroxyethyl)piperazine
+diaminopyridine
+aminopyridine
+heteranthrene
+phenazines
+Indicator Dyes
+Dyes
+Benzenesulfonic Acid Derivatives
+sultone
+arenesulfonate ester
+organosulfonic ester
+2,1-benzoxathiole
+benzoxathiole
+Pyrethrins/Pyrethroids
+cyclopropanecarboxylate ester
+Arsenic Compounds, Organic
+arsine oxides
+acyl fluoride
+acyl halide
+dihydrochalcones
+phorbol ester
+diterpenoid
+tetracyclic diterpenoid
+1,3-benzoxazoles
+benzoxazole
+phosphinic acids
+sulfonamide antibiotic
+dialdehyde
+pyrroloindole
+stilbenoid
+butan-4-olide
+monofluorobenzenes
+fluorobenzenes
+hexadecenoic acid
+monounsaturated fatty acid
+alpha-haloketone
+haloketone
+N-(long-chain-acyl)ethanolamine
+N-(fatty acyl)-ethanolamine
+N-acylethanolamine
+endocannabinoid
+cannabinoid
+N-(saturated fatty acyl)ethanolamine
+phosphonoacetic acid
+dimethoxybenzene
+benzylisoquinoline alkaloid
+monochlorophenol
+Fumigants
+dimethylxanthine
+methylxanthine
+purine alkaloid
+N-acyl-hexosamine
+hexosamine
+amino monosaccharide
+amino sugar
+hexosamine phosphate
+amino sugar phosphate
+N-acylserotonin
+hydroxyindoles
+anilide
+aralkylamine
+acetylspermine
+Naphthalenes
+ortho-fused bicyclic arene
+ortho-fused polycyclic arene
+ortho-fused polycyclic hydrocarbon
+polycyclic arene
+polycyclic hydrocarbon
+ortho-fused bicyclic hydrocarbon
+trihydroxyflavanone
+Nickel Compounds, Inorganic
+transition element atom
+metal atom
+atom
+d-block element atom
+metal allergen
+nickel group element atom
+Vitamins and Derivatives
+vitamin B3
+B vitamin
+pyridinecarboxamide
+pyridinemonocarboxylate
+pyridinemonocarboxylic acid
+pyrrolidine alkaloid
+nitrogen oxoanion
+reactive nitrogen species
+nitrogen oxoacid
+diatomic nitrogen
+elemental nitrogen
+elemental pnictogen
+nitrogen oxide
+dimethylaniline
+methylaniline
+Amine Oxides
+homoserine derivative
+octanol
+oxygen hydride
+Other Inorganic Compounds
+inorganic hydroxy compound
+octadecenoic acid
+fatty acid 18:1
+Polyoxyethylenes
+Inorganic Oxidizing Agents
+diatomic oxygen
+elemental oxygen
+Nitrophenols
+4-nitrophenols
+mononitrophenol
+nitrophenol
+acyclic phosphorus acid anhydride
+long-chain fatty aldehyde
+2,3-saturated fatty aldehyde
+phosphopantetheine
+pantetheines
+pantothenic acids
+amidoalkyl phosphate
+pentachlorobenzenes
+Polycyclic Aromatic Hydrocarbons
+ortho-fused tricyclic hydrocarbon
+tricyclic hydrocarbon
+phenylacetaldehydes
+phenylethylamine
+phosphate ion
+phosphorus oxoanion
+phosphoric acids
+phosphoethanolamine
+benzenedicarboxylic acid
+Pyridines
+pyrroles
+orthoquinones
+pyrroloquinoline cofactor
+argininate
+thiolate anion
+organic sulfur anion
+glutaminate
+asparaginate
+sulfur-containing amino-acid anion
+cyclopentapyrrole
+benzenesulfonate ester
+oxazolopyridine
+3',5'-dimethoxyflavone
+methioninate
+leucinate
+isoleucinate
+anhydrohexose
+deoxyketohexose
+lysinate
+trideoxyhexose derivative
+histidinate(2-)
+histidinate(1-)
+phenylalaninate
+trideoxyhexose
+cysteinate(2-)
+cysteinate(1-)
+alaninate
+fatty acid anion 20:0
+fatty acid anion 24:0
+very long-chain fatty acid anion
+fatty acid anion 26:0
+fatty acid anion 30:0
+ultra-long-chain fatty acid anion
+fatty acid anion 28:0
+azirine
+dicarboxylic acid monoanion
+piperidinecarboxylate
+isocitrate(3-)
+furancarboxylate
+acetamide
+(3R)-3-hydroxybutanoic acid oligomer
+oligomer
+oxalosuccinic acid
+pyrimidinecarboxamide
+phosphatidylcholine 26:0
+pentaatomic sulfur
+2-hydroxy-3-methylbutyric acid
+pyrrolidinedicarboxylic acid
+medetomidine
+pyranochromane
+synthetic cannabinoid
+tyrosine betaine
+7-hydroxyisoflavone
+acridone derivatives
+thiomalate(2-)
+Lead Compounds, Inorganic
+carbon group element atom
+acrovestone
+2-succinyl-6-hydroxycyclohexa-2,4-diene-1-carboxylic acid
+3-aminoisobutyrate
+beta-amino-acid anion
+blebbistatin
+3-chloroalanine
+alkali metal atom
+boron group element atom
+alkaline earth metal atom
+pnictogen
+metalloid atom
+thyronine
+nucleoside 5'-triphoshate(4-)
+ribonucleoside triphosphate oxoanion
+gamma-amino acid anion
+(2R)-2-hydroxy monocarboxylic acid anion
+2,3,4,5-tetrahydrodipicolinate(2-)
+N,N-dihydroxy-alpha-amino acid
+2-methylcitrate(3-)
+dideoxyhexose derivative
+thallium
+camphorsulfonic acid
+hydroxyaurone
+lavandulol
+purinemonocarboxylic acid
+phosphatidylcholine 28:0
+1-[biphenyl-4-yl(phenyl)methyl]imidazole
+acetylenic fatty acid anion
+3-hydroxybutane-1,2,3-tricarboxylic acid
+malate(2-)
+dopachrome
+hydroxy saturated fatty acid anion
+hydroxy fatty acid anion
+10-hydroxyoctadecanoate
+aconitate(3-)
+3-aminoisobutyric acid
+3-aminoalaninate
+phosphomethylribose
+1-palmitoylglycerol 3-phosphate
+1-acyl-sn-glycerol 3-phosphate
+monoacyl-sn-glycerol 3-phosphate
+cyclohexadienecarboxylate
+oxo fatty acid anion
+arabinonates
+pentonate
+aldonate
+thioxanthenes
+pyridazinone
+pyridazines
+furanocoumarin
+furochromene
+thiazolidinediones
+thiazolidines
+bipiperidines
+Piperazines
+saturated organic heteromonocyclic parent
+saturated organic heterocyclic parent
+azacycloalkane
+benzodioxoles
+tertiary carboxamide
+pyridobenzodiazepine
+phenanthridines
+furonaphthodioxole
+imidazotetrazine
+indanones
+indanes
+resorcinols
+dioxolane
+cyclic ketal
+ketal
+acetal
+hydroxypolyether
+hydroxyether
+monoatomic krypton
+elemental krypton
+krypton molecular entity
+noble gas molecular entity
+phosphoramide
+bisbenzylisoquinoline alkaloid
+piperidones
+benzimidazole fungicide
+vitamin B1
+1,3-thiazolium cation
+organic cation
+cation
+thiamine phosphate
+thiazolidenedione
+sulfanylbenzoic acid
+aryl thiol
+Insect Sterilants
+aziridines
+thienopyridine
+fluoren-9-ones
+fluorenes
+thiadiazoles
+benzothiadiazole
+aryl sulfide
+phthalazines
+N-sulfonylurea
+monothiocarbamic ester
+thiocarbamic ester
+thiocarboxylic ester
+pyranoindolizinoquinoline
+organic heteropentacyclic compound
+aminopyrrolidine
+triazolopyrimidines
+triazolopyridine
+retinoid
+triglyceride
+triradylglycerol
+glyceride
+Herbicides, Thiocarbamate
+Herbicides, Nitroaromatic
+adenosine 5'-phosphate
+adenosine phosphate
+adenyl ribonucleotide
+adenyl nucleotide
+purine nucleotide
+nucleotide
+purine ribonucleotide
+ribonucleotide
+ribose phosphate
+aldopentose phosphate
+pentose phosphate
+pentose derivative
+purine ribonucleoside 5'-monophosphate
+ribonucleoside 5'-monophosphate
+ribonucleoside 5'-phosphate
+nucleoside 5'-phosphate
+mononucleotide
+tryptamine alkaloid
+hydroxymethylpyridine
+methylpyridines
+monohydroxypyridine
+hydroxypyridine
+heteroaryl hydroxy compound
+pyruvate family amino acid
+leucine
+Nitrobenzoic Acids
+lipoic acid
+methanesulfonate ester
+methanesulfonates
+primary arylamine
+2,2-dialkylglycine zwitterion
+amino acid zwitterion
+Nitrosamines
+ketoaldonate
+2-isopropylmalate
+2-isopropylmalate(2-)
+2-hydroxydicarboxylate(2-)
+5-oxo monocarboxylic acid anion
+4-hydroxy-4-methyloxan-2-one
+hydridoboron(2.)
+hydridoboron
+boranylidene
+diatomic arsenic
+elemental arsenic
+organosulfinate oxoanion
+glycerophosphatidylethanolamine
+ketoheptose
+heptose
+quinolinemonocarboxylate
+erythrulose 1-phosphate
+ketotetrose phosphate
+4-oxo monocarboxylic acid anion
+amidobenzoate
+2-O-sulfolactic acid
+carboxyalkyl sulfate
+ketoaldonic acid phosphate
+pimelate
+3-hydroxydicarboxylate(2-)
+L-fructose
+D-rhamnose
+erythrulose
+dideoxyhexose
+hexuronic acid
+uronic acid
+ribonate
+ribonates
+3-oxo monocarboxylic acid anion
+2-{4-[(6-chloroquinoxalin-2-yl)oxy]phenoxy}propanoic acid
+8,8'-bicoumarins
+bicoumarin
+carboxyalkyl phosphate oxoanion
+sulfobenzoate
+gluconic acid derivative
+O-phospho-3-sulfolactate(4-)
+nitro-1,3,5-triazine
+pipecolate
+glycidol
+Beryllium Compounds, Inorganic
+tellurium oxoanion
+halogen
+elemental astatine
+pyrazolide
+diatomic carbon
+elemental carbon
+selenomethionine
+aspartate(2-)
+aspartate
+glutamate(2-)
+dihydrogenphosphite
+cis-gamma-himachalene
+gamma-himachalene
+cis-alpha-bergamotene
+alpha-bergamotene
+D-mannose 6-phosphate
+mannose 6-phosphate
+mannose phosphate
+aldohexose phosphate
+1-[3-(dimethylamino)propyl]-1-(4-fluorophenyl)-1,3-dihydro-2-benzofuran-5-carbonitrile
+pyranoxanthones
+cyclopentapyran
+fluorine oxide
+alkaloid phosphate
+carbohydrate acid derivative anion
+carbanilate fungicide
+methoxycarbanilate strobilurin antifungal agent
+strobilurin antifungal agent
+linalool oxide pyranoside
+heteroacene
+lactate
+aminobenzenesulfonate
+7-oxo monocarboxylic acid anion
+2-hydroxyglutarate(2-)
+2-hydroxyglutarate
+omega-oxo fatty acid anion
+aldehydic acid anion
+2,3-dihydrodipicolinate(2-)
+dihydrodipicolinate(2-)
+omega-hydroxy-medium-chain fatty acid anion
+omega-hydroxy fatty acid anion
+mandelate
+citramalate(2-)
+tartrate(2-)
+2,3-dihydroxybutanedioate
+tartrate
+tetraric acid anion
+dihydroorotate
+glutamate(1-)
+polar amino acid zwitterion
+quinolinate
+pyridinedicarboxylate
+polyunsaturated dicarboxylic acid dianion
+3-oxo fatty acid anion
+thio fatty acid anion
+dioxo monocarboxylic acid anion
+glycerate
+glycerates
+trionate
+oxopentanoates
+gamma-cadinene
+isomenthone
+D-alanyl ester
+melanins
+Metalloid Compounds (Antimony)
+4-aminopent-3-en-2-one
+enaminone
+monoatomic boron
+elemental boron
+diatomic boron
+aluminium atom
+tellurium atom
+chalcogen
+secoisolariciresinol
+elemental silicon
+tin atom
+lithium atom
+boron atom
+polonium atom
+carbapenam
+primary linear alkyl sulfate ester(1-)
+organic nitrogen anion
+glyceric acid
+Metalloid Compounds (Germanium)
+Metalloid Compounds (Tellurium)
+phosphorous acid derivative
+betaxolol
+mannaric acid
+hexaric acid
+nitrosamine
+nitroso compound
+androstanoid
+17-oxo steroid
+Carbamate Insecticides
+pyrimidine ribonucleoside 5'-monophosphate
+pyrimidine ribonucleotide
+pyrimidine nucleotide
+cytidine 5'-phosphate
+cytidine phosphate
+pyrimidine ribonucleoside 5'-diphosphate
+ribonucleoside 5'-diphosphate
+pyrimidine ribonucleoside diphosphate
+pyrimidine nucleoside diphosphate
+aspartate family amino acid
+methionine
+erythrose 4-phosphate/phosphoenolpyruvate family amino acid
+phenylalanine
+alkyl sulfate
+colchicine
+hydrochloride
+organic chloride salt
+organic halide salt
+organic salt
+salt
+chloride salt
+halide salt
+pyridinium salt
+vitamin B6
+cytidines
+pyrimidine ribonucleosides
+pyrimidine nucleoside
+ribonucleoside
+dihydroxytetrahydrofuran
+tetrahydrofuranol
+pyrimidine ribonucleoside 5'-triphosphate
+ribonucleoside 5'-triphosphate
+pyrimidine ribonucleoside triphosphate
+pyrimidine nucleoside triphosphate
+nucleoside 5'-triphoshate
+ribonucleoside triphosphate
+dinitrophenol
+aminouracil
+nitrogen mustard
+naphthaldehyde
+naphthaldehydes
+psoralens
+Pyrimidines
+chloromethanes
+Halogenated Aliphatics, Saturated
+chlorocarbon
+4-amino-1,2-oxazolidin-3-one
+organooxygen heterocyclic antibiotic
+N-glycosylpyrrolopyrimidine
+pyrrolopyrimidine
+antibiotic antifungal agent
+iminium betaine
+thiazolidinone
+alkylamine
+indolecarboxamide
+undecenoic acid
+Carbamic Acid Esters
+Preservatives
+Other Insecticides
+cyclohexanols
+oxa-steroid
+dihydroxyquinoline
+hydroxyquinoline
+1,3-thiazine
+thiazine
+methylbenzene
+indazoles
+N-sulfonylcarboxamide
+mixed diacylamine
+pyrimidine 2',3'-dideoxyribonucleoside
+pyrimidine deoxyribonucleoside
+2',3'-dideoxyribonucleoside
+pyrazolopyrimidine
+imidazopyridine
+1,2-benzoxazoles
+benzisoxazole
+pyrrolopyrazine
+monochloropyridine
+chloropyridine
+mannitol
+Aromatic Ketones, Halogenated
+alpha-bromoketone
+bromoketone
+acetophenones
+ornithine
+asparagine
+Sulfonamides
+histidine
+pentanol
+valine
+Anthraquinone Dyes
+Benzidine Dyes
+monohydroxyquinoline
+tryptophan
+aminoalkylindole
+Sulfur Compounds

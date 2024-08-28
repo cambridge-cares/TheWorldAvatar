@@ -1,7 +1,5 @@
 /**
  * Handles reading and plotting standard Time Series data.
- * 
- * TODO: Could use some refactoring (low priority).
  */
 class TimeseriesHandler {
 
@@ -29,77 +27,92 @@ class TimeseriesHandler {
         }
 
         // Parse raw JSON into expanded form
-        for(var i = 0; i < entries.length; i++) {
-            var entry = entries[i];
+        for(const element of entries) {
+            let entry = element;
 
-            if(entry == null || !entry["data"] || !entry["units"] || !entry["time"] || !entry["values"]){
+            if(!entry?.["data"] || !entry?.["units"] || !entry?.["time"] || !entry?.["values"]){
                 // Skip if any required properties are missing
                 continue;
             }
 
             // May have multiple data sets with differing units
-            var tableNames = entry["data"];
-            var tableUnits = entry["units"];
+            let tableNames = entry["data"];
+            let tableUnits = entry["units"];
 
-            for(var j = 0; j < tableNames.length; j++) {
+            for(let j = 0; j < tableNames.length; j++) {
                 // Dependent name
-                var tableName = tableNames[j];
+                let tableName = tableNames[j];
 
                 // Dependent unit
-                var tableUnit = tableUnits[j];
-                tableName += " [" + tableUnit + "]";
+                let tableUnit = tableUnits[j];
+                if(tableUnit != null && tableUnit !== "null") {
+                    tableName += " [" + tableUnit + "]";
+                }
                 
                 // Get timestamps
-                var tableTimes = entry["time"];
+                let tableTimes = entry["time"];
 
                 // Condition time format
-                var timeClass = null
-                var firstTime = tableTimes[0];
+                let timeClass = null
+                let firstTime = tableTimes[0];
 
-                // Regex tokens to test before and after conversion to Moment format
-                var regexBeforeMoment = String(firstTime).match(/^\d{4}-\d{2}-\d{2}T\d{2}(:\d{2}){1,2}Z/);
-                var regexAfterMoment = String(firstTime).match(/^\d{4}-\d{2}-\d{2}\s\d{2}(:\d{2}){1,2}/);
-
-                if(regexBeforeMoment || regexAfterMoment) {
-                    timeClass = "dateTime"
-                } else if(String(firstTime).includes(":")) {
-                    timeClass = "offsetTime"
-                } else {
-                    timeClass = "number";
-                }
+                // Attempt to determine if time values are dates, times, or numbers
+                timeClass = this.determineTimeValueType(entry, firstTime, timeClass);
                 
                 // Align time series formats
                 // dateTime / Instant: "YYYY-MM-DD HH:mm:ss"
                 // offsetTime: "HH:mm:ss"
                 // All times are local times!!
-                for(var t = 0; t < tableTimes.length; t++) {
-                    // dateTime/Instant format
-                    if(timeClass === "dateTime") {
-                        // @ts-ignore
-                        tableTimes[t] = moment(tableTimes[t], "YYYY-MM-DDTHH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
-                    }
-                    // OffsetTime format
-                    else if(timeClass === "offsetTime") {
-                        // @ts-ignore
-                        tableTimes[t] = moment(tableTimes[t], "HH:mm:ss").format("HH:mm:ss");
-                    }
-                }
-
-                // Get correct value array
-                var tableValues = entry["values"][j];
-
-                // Store
-                this._selectedData.push({
-                    "name": tableName,
-                    "id": this._selectedData.length,
-                    "unit": tableUnit,
-                    "times": tableTimes,
-                    "values": tableValues,
-                    "timeClass": timeClass,
-                    "valuesClass": (entry["valuesClass"]) ? entry["valuesClass"][j] : "Number"
-                });
+                this.formatTimeSeries(tableTimes, timeClass, entry, j, tableName, tableUnit);
             }            
         }
+    }
+
+    private determineTimeValueType(entry: any, firstTime: any, timeClass: any) {
+        if (undefined == entry["timeClass"]) {
+            if (isNaN(Date.parse(firstTime)) && isNaN(Date.parse(firstTime.replaceAll("-", "/")))) {
+                if (firstTime.includes(":")) {
+                    timeClass = "offsetTime";
+                }
+                else {
+                    timeClass = "number";
+                }
+            }
+            else {
+                timeClass = "dateTime";
+            }
+        } else { timeClass = entry["timeClass"]; }
+        return timeClass;
+    }
+
+    private formatTimeSeries(tableTimes: any, timeClass: any, entry: any, j: number, tableName: any, tableUnit: any) {
+        for (let t = 0; t < tableTimes.length; t++) {
+            // dateTime/Instant format
+            if (timeClass === "dateTime" || entry["timeClass"] === "Instant") {
+                // @ts-ignore
+                tableTimes[t] = moment(tableTimes[t], "YYYY-MM-DDTHH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+            }
+
+            // OffsetTime format
+            else if (timeClass === "offsetTime") {
+                // @ts-ignore
+                tableTimes[t] = moment(tableTimes[t], "HH:mm:ss").format("HH:mm:ss");
+            }
+        }
+
+        // Get correct value array
+        let tableValues = entry["values"][j];
+
+        // Store
+        this._selectedData.push({
+            "name": tableName,
+            "id": this._selectedData.length,
+            "unit": tableUnit,
+            "times": tableTimes,
+            "values": tableValues,
+            "timeClass": timeClass,
+            "valuesClass": (entry["valuesClass"]) ? entry["valuesClass"][j] : "Number"
+        });
     }
 
     /**
@@ -109,7 +122,7 @@ class TimeseriesHandler {
      */
     public showData(containerElement) {
         // Create dropdowns to change between tables
-        var selectHTML = this.buildComboBox();
+        let selectHTML = this.buildComboBox();
 
         // Setup HTML for results
         document.getElementById(containerElement).innerHTML = `
@@ -130,7 +143,7 @@ class TimeseriesHandler {
      * @param {String} setName data set name
      */
     public updateTable(setName) {
-        var tableContainer = document.getElementById("time-series-table-container");
+        let tableContainer = document.getElementById("time-series-table-container");
         tableContainer.innerHTML = this.buildTable(setName);
     }
 
@@ -149,8 +162,26 @@ class TimeseriesHandler {
      * @param {Integer} setID timeseries ID
      */
     public update(setID) {
+        // Find the correct data entry
+        let data = null;
+        this._selectedData.forEach(entry => {
+            if(data === null && entry["id"] === +setID) {
+                data = entry;
+            }
+        });
+        if(data == null) return;
+
+        // Update table
         this.updateTable(setID);
-        this.updateChart(setID);
+
+        // Update chart if values list is not String
+        let chartContainer = document.getElementById("time-series-chart-container");
+        if(data["valuesClass"] !== "String") {
+            this.updateChart(setID);
+            chartContainer.style.display = "block";
+        } else {
+            chartContainer.style.display = "none";
+        }
     }
 
     /**
@@ -160,7 +191,7 @@ class TimeseriesHandler {
      */
     public buildTable(setID) {
         // Find the correct data entry
-        var data = null;
+        let data = null;
         this._selectedData.forEach(entry => {
             if(data === null && entry["id"] === +setID) {
                 data = entry;
@@ -169,17 +200,17 @@ class TimeseriesHandler {
         if(data == null) return;
 
         // Get the data for the table
-        var independents = data["times"];
-        var dependents = data["values"];
+        let independents = data["times"];
+        let dependents = data["values"];
 
         // Build the HTML for the table
-        var tableHTML = `<table class="time-series-table" width="100%">`;
+        let tableHTML = `<table class="time-series-table" width="100%">`;
         tableHTML += `<tr><th>Time</th><th>` + data["name"] + `</th></tr>`;
 
-        for(var r = 0; r < independents.length; r++) {
+        for(let r = 0; r < independents.length; r++) {
             // Build HTML for one row
-            var independent = independents[r];
-            var dependent = dependents[r];
+            let independent = independents[r];
+            let dependent = dependents[r];
 
             tableHTML += `
                 <tr>
@@ -204,7 +235,7 @@ class TimeseriesHandler {
      */
     public buildChart(setID) {
         // Find the correct data entry
-        var data = null;
+        let data = null;
         this._selectedData.forEach(entry => {
             if(data === null && entry["id"] === +setID) {
                 data = entry;
@@ -213,11 +244,12 @@ class TimeseriesHandler {
         if(data == null) return;
 
         // Get data for plotting
-        var independents = [...data["times"]];
-        var dependents = [];
+        let independents = [...data["times"]];
+        let dependents = [];
 
-        for(var i = 0 ; i < independents.length; i++) {
-            if(data["timeClass"] === "dateTime") {
+        for(let i = 0 ; i < independents.length; i++) {
+
+            if(data["timeClass"] === "dateTime" || data["timeClass"] === "Instant") {
                 // @ts-ignore
                 independents[i] = moment(independents[i], "YYYY-MM-DD HH:mm:ss");
 
@@ -239,12 +271,12 @@ class TimeseriesHandler {
 
         // Create the new chart element
         // @ts-ignore
-        var ctx = document.getElementById("chart-canvas").getContext("2d");
+        let ctx = document.getElementById("chart-canvas").getContext("2d");
 
         // Determine axis types
-        var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
-        var xAxisType = "linear";
-        if(data["timeClass"] === "dateTime" || data["timeClass"] === "offsetTime") {        
+        let yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
+        let xAxisType = "linear";
+        if(data["timeClass"] === "dateTime" || data["timeClass"] === "offsetTime" || data["timeClass"] === "Instant") {        
             xAxisType = "time";
         }
 
@@ -273,7 +305,7 @@ class TimeseriesHandler {
                             },
                             title: {
                                 display: true,
-                                text: "Time",
+                                text: "Date/Time",
                                 font: {
                                     weight: 700,
                                     size: 12
@@ -319,7 +351,7 @@ class TimeseriesHandler {
      * @returns html component
      */
     public buildComboBox() {
-        var selectHTML = `
+        let selectHTML = `
             <label for="time-series-select">Select a data set:</label>
             <select name="time-series-select" id="time-series-select" onchange="manager.updateTimeseries(this.value)">
         `;

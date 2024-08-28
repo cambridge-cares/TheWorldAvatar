@@ -1,0 +1,95 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ontocape: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+prefix powsys: <http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#>
+prefix powsysReal: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+prefix math: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+        BIND ("Branch From" AS ?Property)
+        [IRI] ontocape:isModeledBy ?model.
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "BusFrom"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Branch To" AS ?Property)
+        [IRI] ontocape:isModeledBy ?model.
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "BusTo"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION{
+        BIND ("Minimum Angle" AS ?Property)
+        [IRI] ontocape:isModeledBy ?model.
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "AngleMin"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Maximum Angle" AS ?Property)
+        [IRI] ontocape:isModeledBy ?model.
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "AngleMax"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("B" AS ?Property)
+        [IRI] ontocape:isModeledBy ?model.
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "B"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("X" AS ?Property)
+        [IRI] ontocape:isModeledBy ?model.
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "X"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+         BIND ("R" AS ?Property)
+         [IRI] ontocape:isModeledBy ?model.
+         ?model math:hasModelVariable ?modelVariable .
+         FILTER(STRENDS(STR(?modelVariable), "R"))
+         ?modelVariable ontocape:hasValue ?v .
+         ?v ontocape:numericalValue ?Value .
+    } UNION {
+        BIND ("Rate A" AS ?Property)
+        [IRI] ontocape:isModeledBy ?model.
+        ?model math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "RateA"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    } UNION {
+         BIND ("Rate B" AS ?Property)
+         [IRI] ontocape:isModeledBy ?model.
+         ?model math:hasModelVariable ?modelVariable .
+         FILTER(STRENDS(STR(?modelVariable), "RateB"))
+         ?modelVariable ontocape:hasValue ?v .
+         ?v ontocape:numericalValue ?Value .
+    } UNION {
+         BIND ("Rate C" AS ?Property)
+         [IRI] ontocape:isModeledBy ?model.
+         ?model math:hasModelVariable ?modelVariable .
+         FILTER(STRENDS(STR(?modelVariable), "RateC"))
+         ?modelVariable ontocape:hasValue ?v .
+         ?v ontocape:numericalValue ?Value .
+    } UNION {
+         BIND ("Branch Status" AS ?Property)
+         [IRI] ontocape:isModeledBy ?model.
+         ?model math:hasModelVariable ?modelVariable .
+         FILTER(STRENDS(STR(?modelVariable), "BranchStatus"))
+         ?modelVariable ontocape:hasValue ?v .
+         ?v ontocape:numericalValue ?Value .
+    } UNION {
+         BIND ("Ratio Coefficient" AS ?Property)
+         [IRI] ontocape:isModeledBy ?model.
+         ?model math:hasModelVariable ?modelVariable .
+         FILTER(STRENDS(STR(?modelVariable), "RatioCoefficient"))
+         ?modelVariable ontocape:hasValue ?v .
+         ?v ontocape:numericalValue ?Value .
+    }
+}

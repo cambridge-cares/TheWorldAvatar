@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} around {value1} and {PropertyName2} around {value2}
+Provide a catalog of chemical species having {PropertyName1} approximately at {value1} and {PropertyName2} approximately at {value2}.
+List molecules exhibiting {PropertyName1} around {value1} and {PropertyName2} around {value2}.
+Enumerate compounds with {PropertyName1} about {value1} and {PropertyName2} about {value2}.
+Furnish a record of species demonstrating {PropertyName1} near {value1} and {PropertyName2} near {value2}.
+Offer a compilation of chemical entities displaying {PropertyName1} around {value1} and {PropertyName2} around {value2}.
+Jot down a series of molecules manifesting {PropertyName1} approximately {value1} and {PropertyName2} approximately {value2}.
+Present a lineup of compounds featuring {PropertyName1} at about {value1} and {PropertyName2} at about {value2}.
+Display a list of species with {PropertyName1} roughly {value1} and {PropertyName2} roughly {value2}.
+Provide an inventory of chemical species having {PropertyName1} in the vicinity of {value1} and {PropertyName2} in the vicinity of {value2}.
+Enumerate molecules exhibiting {PropertyName1} around {value1} and {PropertyName2} around {value2}.
+Offer a compilation of compounds with {PropertyName1} approximately {value1} and {PropertyName2} approximately {value2}.
+Furnish a record of species demonstrating {PropertyName1} close to {value1} and {PropertyName2} close to {value2}.
+Provide a catalog of chemical entities displaying {PropertyName1} at around {value1} and {PropertyName2} at around {value2}.
+Jot down a series of molecules manifesting {PropertyName1} near {value1} and {PropertyName2} near {value2}.
+Present a lineup of compounds featuring {PropertyName1} around {value1} and {PropertyName2} around {value2}.
+Display a list of species with {PropertyName1} about {value1} and {PropertyName2} about {value2}.
+Provide an inventory of chemical species having {PropertyName1} approximately {value1} and {PropertyName2} approximately {value2}.
+Enumerate molecules exhibiting {PropertyName1} roughly {value1} and {PropertyName2} roughly {value2}.
+Offer a compilation of compounds with {PropertyName1} in the vicinity of {value1} and {PropertyName2} in the vicinity of {value2}.
+Furnish a record of species demonstrating {PropertyName1} at about {value1} and {PropertyName2} at about {value2}.

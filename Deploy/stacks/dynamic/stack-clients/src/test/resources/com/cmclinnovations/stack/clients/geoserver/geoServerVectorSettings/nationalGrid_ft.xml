@@ -1,0 +1,23 @@
+<featureType>
+    <enabled>true</enabled>
+    <metadata>
+        <entry key="JDBC_VIRTUAL_TABLE">
+            <virtualTable>
+                <name>layerName_ng_towers</name>
+                <geometry>
+                    <name>wkb_geometry</name>
+                    <type>Point</type>
+                    <srid>27700</srid>
+                </geometry>
+                <sql />
+            </virtualTable>
+        </entry>
+    </metadata>
+    <keywords />
+    <metadataLinks />
+    <attributes />
+    <name>layerName</name>
+    <projectionPolicy>NONE</projectionPolicy>
+    <title>layerName</title>
+    <nativeName>layerName_ng_towers</nativeName>
+</featureType>

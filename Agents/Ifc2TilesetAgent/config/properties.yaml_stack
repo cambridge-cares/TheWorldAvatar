@@ -3,3 +3,12 @@
 # localhost and docker.internal.host are not accessible without further network configurations
 query_endpoint: "http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/<NAMESPACE>/sparql"
 update_endpoint: "http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/<NAMESPACE>/sparql"
+# BIM root tileset metadata
+bim_tileset_iri: ""
+bim_tileset_name: ""
+# Solar panel tileset metadata
+solar_panel_tileset_iri: ""
+solar_panel_tileset_name: ""
+# Sewage tileset metadata
+sewage_tileset_iri: ""
+sewage_tileset_name: ""

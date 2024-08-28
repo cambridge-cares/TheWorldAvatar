@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns3="http://www.w3.org/2002/07/owl#"
+   xmlns:ns4="https://dbpedia.org/ontology/"
+   xmlns:ns5="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_County_Durham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_County_Durham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Redcar_and_Cleveland">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">199.74</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_South_Tyneside">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">410.73</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Gateshead">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Gateshead"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Gateshead"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Gateshead"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Hartlepool">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Hartlepool"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hartlepool"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Hartlepool"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Northumberland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Northumberland"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Northumberland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_North_East_England">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3871.55</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/North_East_England">
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/County_Durham"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Newcastle_upon_Tyne"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Gateshead"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/South_Tyneside"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Sunderland"/>
+    <ns4:areaCode>E12000001</ns4:areaCode>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Middlesbrough"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Northumberland"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Redcar_and_Cleveland"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Stockton-on-Tees"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/North_Tyneside"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Darlington"/>
+    <rdf:type rdf:resource="https://dbpedia.org/ontology/Region"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Hartlepool"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_County_Durham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_County_Durham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_County_Durham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_County_Durham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Gateshead">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Gateshead"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_County_Durham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">759.84</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_North_East_England">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_North_East_England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Hartlepool">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">133.72</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_North_East_England">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11209.52</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Middlesbrough">
+    <ns4:areaCode>E06000002</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_North_East_England">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_East_England"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_North_East_England"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_North_East_England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hartlepool">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hartlepool"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Tyneside">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">204.11</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Newcastle_upon_Tyne">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">407.32</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Gateshead">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Gateshead"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Gateshead"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Redcar_and_Cleveland">
+    <ns4:areaCode>E06000003</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Gateshead">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">549.04</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Northumberland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Northumberland"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Northumberland"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Northumberland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Gateshead">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">835.88</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Darlington">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Darlington"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Darlington"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Darlington"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Middlesbrough">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">465.39</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_County_Durham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1141.86</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Middlesbrough">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Middlesbrough"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/South_Tyneside">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E08000023</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Redcar_and_Cleveland">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Redcar_and_Cleveland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Redcar_and_Cleveland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Darlington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">398.23</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Middlesbrough">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">273.17</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Sunderland">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Sunderland"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Sunderland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Redcar_and_Cleveland">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Redcar_and_Cleveland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Redcar_and_Cleveland"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Redcar_and_Cleveland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Redcar_and_Cleveland">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">601.78</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_County_Durham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_County_Durham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Stockton-on-Tees">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">998.24</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Middlesbrough">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Middlesbrough"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Middlesbrough"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Sunderland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Sunderland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Gateshead">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E08000037</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Middlesbrough">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Middlesbrough"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Middlesbrough"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Middlesbrough"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Redcar_and_Cleveland">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">801.52</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Darlington">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Darlington"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Middlesbrough">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">192.21</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Gateshead">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">286.84</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#North_East_England">
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#North_Tyneside"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Gateshead"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Hartlepool"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Darlington"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Middlesbrough"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Northumberland"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Redcar_and_Cleveland"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Newcastle_upon_Tyne"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#County_Durham"/>
+    <ns2:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999.owl#energyConsumptionIn9999"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_North_East_England"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#South_Tyneside"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/North_East_England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Stockton-on-Tees"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Sunderland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_North_Tyneside">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">297.67</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Redcar_and_Cleveland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Redcar_and_Cleveland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hartlepool">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">304.57</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Sunderland">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">391.05</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Hartlepool">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000001</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Sunderland">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1241.32</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Darlington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">166.1</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Darlington">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">232.13</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Stockton-on-Tees">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Stockton-on-Tees"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/North_Tyneside">
+    <ns4:areaCode>E08000022</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_South_Tyneside">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">206.62</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Northumberland">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1478.29</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_North_Tyneside">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Tyneside"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_North_Tyneside"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_North_Tyneside"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Newcastle_upon_Tyne">
+    <ns4:areaCode>E08000021</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Gateshead">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Gateshead"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#North_Tyneside">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_North_Tyneside"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/North_Tyneside"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_North_Tyneside">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">737.68</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_North_Tyneside">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_North_Tyneside"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Stockton-on-Tees">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Stockton-on-Tees"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Stockton-on-Tees"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Stockton-on-Tees"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Northumberland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Northumberland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Tyneside">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Tyneside"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Darlington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Darlington"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Darlington"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Northumberland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Northumberland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Middlesbrough">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Middlesbrough"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Stockton-on-Tees">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1275.54</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Newcastle_upon_Tyne">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">817.63</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Darlington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000005</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Northumberland">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">553.15</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Stockton-on-Tees">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000004</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Sunderland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Sunderland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#South_Tyneside">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_South_Tyneside"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/South_Tyneside"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Northumberland">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">925.14</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#County_Durham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/County_Durham"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_County_Durham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Newcastle_upon_Tyne">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Newcastle_upon_Tyne"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Newcastle_upon_Tyne"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Tyneside">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">440.02</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Hartlepool">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Hartlepool"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Stockton-on-Tees">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Stockton-on-Tees"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Stockton-on-Tees"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_South_Tyneside">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_South_Tyneside"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Tyneside"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_South_Tyneside"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Tyneside">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Tyneside"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_East_England">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_East_England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_East_England">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7337.98</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Sunderland">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">850.28</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_County_Durham">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1901.7</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Stockton-on-Tees">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">277.3</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Darlington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Darlington"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Newcastle_upon_Tyne">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Newcastle_upon_Tyne"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Newcastle_upon_Tyne">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Newcastle_upon_Tyne"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Newcastle_upon_Tyne"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Newcastle_upon_Tyne"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Sunderland">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Sunderland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Sunderland"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Sunderland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/County_Durham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E06000047</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Redcar_and_Cleveland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Redcar_and_Cleveland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Newcastle_upon_Tyne">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1224.95</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_Newcastle_upon_Tyne">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_Newcastle_upon_Tyne"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Northumberland">
+    <ns4:areaCode>E06000057</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Hartlepool">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Total_Electricity_Consumption_of_Hartlepool"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Hartlepool"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Industrial_and_Commercial_Electricity_Consumption_of_Stockton-on-Tees">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Stockton-on-Tees"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Total_Electricity_Consumption_of_Hartlepool">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">438.29</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Sunderland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E08000024</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#Domestic_Electricity_Consumption_of_South_Tyneside">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/North_East_England.owl#value_Domestic_Electricity_Consumption_of_South_Tyneside"/>
+  </rdf:Description>
+</rdf:RDF>

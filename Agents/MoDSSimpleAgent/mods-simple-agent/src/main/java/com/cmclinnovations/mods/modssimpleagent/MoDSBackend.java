@@ -23,6 +23,7 @@ public final class MoDSBackend {
 
     private final long timeout;
     private final long killTimeout = 10;
+    public static final String DEFAULT_SURROGATE_ALGORITHM_NAME = "GenSurrogateAlg";
 
     private Process process;
 
@@ -116,6 +117,10 @@ public final class MoDSBackend {
 
     public Path getWorkingDir() {
         return workingDir;
+    }
+
+    public Path getSurrogateDirectory() {
+        return getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
 }

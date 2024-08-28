@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block body %}
+<section class="intro-container three-quarter-width">
+    <div class="intro-left">
+        {% if name == "marie" %}
+        <video width="175" height="250" poster="https://kg.cmclinnovations.com/user/images/marie/marie-thumbnail.jpg"
+            controls="controls">
+            <source src="https://kg.cmclinnovations.com/user/videos/animated-marie.mp4" type="video/mp4">
+            </source>
+        </video>
+        {% elif name == "zaha" %}
+        <img style="width: 175px; height: 250px; box-shadow: none; object-fit: cover;" src="./static/img/zaha.png" />
+        {% endif %}
+    </div>
+    <div class="intro-center">
+        <h2>{{ title }}</h2>
+        {% for para in subtitle_paras %}
+        <p>{{ para }}</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="marie-input-container full-width">
+    <div class="input-group">
+        <input id="input-field" type="search" autocomplete="off" placeholder="Type your query..."
+            onkeydown="if (event.keyCode == 13) askQuestion()">
+        <button id="ask-button" type="button" class="mybutton" onclick="askQuestion()"></button>
+    </div>
+</section>
+
+<section id="result-section" class="three-quarter-width" style="display: none;">
+    <div id="error-container" style="display: none; margin-bottom: 2rem; color: red;"></div>
+    <div class="container-fluid" style="padding: 0; margin-bottom: 2rem;">
+        <div class="row">
+            <div id="qa-metadata-container" style="margin-bottom: 2rem; width: 100%;">
+                <button id="toggle-steps" type="submit" class="accordion" onclick="">Click to view reasoning
+                    steps</button>
+                <div class="accordion-panel">
+                    <div id="qa-steps-container" class="table-responsive"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="qa-data-container" class="col-md-7">
+            </div>
+            <div class="col-md-5">
+                <div class="card" id="chatbot-response-card" style="display: none">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ title }}'s response</h5>
+                        <div>
+                            <p id="chatbot-response" style="display: inline-block; margin: 0;"></p>
+                            <span class="spinner-grow spinner-grow-sm text-primary" role="status" id="chatbot-spinner">
+                                <span class="sr-only">Loading...</span>
+                            </span>
+                            <div>
+                                <a class="card-link" id="chatbot-stop"
+                                    onclick="chatbotResponseCard.interruptChatbotStream()"
+                                    style="cursor: pointer;">Stop</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="three-quarter-width">
+    <h3>Example Questions</h3>
+
+    {% for qa_domain_grp in sample_questions %}
+    <button type="submit" class="accordion">{{ qa_domain_grp["label"] }}</button>
+    <div class="accordion-panel">
+        {% for data_domain_grp in qa_domain_grp["subdomains"] %}
+        <p>{{ data_domain_grp["label"] }}</p>
+        <ul>
+            {% for question in data_domain_grp["questions"] %}
+            <li class="sample-question"
+                onclick='inputField.populateInputText("{{ question }}"); globalState.set("qa_domain", "{{ qa_domain_grp["qa_domain"] }}"); askQuestion();'>
+                {{ question }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

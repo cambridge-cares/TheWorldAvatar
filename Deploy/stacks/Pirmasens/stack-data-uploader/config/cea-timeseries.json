@@ -1,0 +1,11 @@
+{
+    "database": "CEAAgent",
+    "name": "cea-timeseries",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "sql": "@/inputs/data/cea/timeseries/CEAAgent_081123.sql"
+        }
+    ]
+}

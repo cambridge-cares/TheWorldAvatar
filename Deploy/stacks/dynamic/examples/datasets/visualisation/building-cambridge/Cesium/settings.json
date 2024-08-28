@@ -1,13 +1,17 @@
 {
     "start": {
-        "center": [0.119,52.2,800],
+        "center": [
+            0.119,
+            52.2,
+            800
+        ],
         "pitch": -10,
         "roll": -0,
         "heading": 0,
-		"opacity": 0.3
+        "opacity": 0.3
     },
-	"terrain": {
-		"url": "https://api.maptiler.com/tiles/terrain-quantized-mesh-v2/?key=",
-		"requestVertexNormals": true
-	}
+    "terrain": {
+        "url": "https://api.maptiler.com/tiles/terrain-quantized-mesh-v2/?key=",
+        "requestVertexNormals": true
+    }
 }

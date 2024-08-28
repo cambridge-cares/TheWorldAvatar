@@ -19,7 +19,7 @@ print("Have read version file.")
 
 # Read the top most section of the patch notes
 notes = ""
-with open('./web/twa-vis-framework/CHANGELOG.md', 'r') as f:
+with open('./web/twa-vis-framework/library/CHANGELOG.md', 'r') as f:
     lines = f.readlines()
     section = 0
 
@@ -39,7 +39,7 @@ notes = markdown.markdown(notes.replace("|", "\n"))
 print("Have converted change log to HTML.")
 
 # Read template email file
-with open('./web/twa-vis-framework/library/release.html', 'r') as f:
+with open('./web/twa-vis-framework/library/resources/release.html', 'r') as f:
     template = f.read()
 print("Have read template email file.")
 

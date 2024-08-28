@@ -27,7 +27,7 @@ class KGClient(PySparqlClient):
     #
     # SPARQL QUERIES
     #
-    def get_associated_dataIRI(self, instance_iri:str, unit=None, forecast=False) -> tuple:
+    def get_associated_dataIRI(self, instance_iri:str, unit=None, forecast=True) -> tuple:
         """
         Retrieves the dataIRI (i.e., IRI with attached time series) associated
         with a given instance IRI (e.g., consumed gas amount IRI)
@@ -228,7 +228,6 @@ class KGClient(PySparqlClient):
                                              quantity=k, value=v)
             
             return graph
-
 
         # Create Graph of derivation output triples
         graph = Graph()

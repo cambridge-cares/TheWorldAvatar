@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.base.agent;
 
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;

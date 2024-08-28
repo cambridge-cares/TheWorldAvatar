@@ -129,8 +129,8 @@ def test_extract_time_series_amounts(
 @pytest.mark.parametrize(
     "derivation_input_set, amount_iris, ts_times, ts_values, expected_results",
     [
-        (cf.DERIVATION_INPUTS_1, [cf.DATA_IRI_1], cf.TIMES, cf.VALUES_1, [cf.EXPECTED_OUTPUTS_1, cf.EXPECTED_OUTPUTS_2]),
-        (cf.DERIVATION_INPUTS_2, [cf.DATA_IRI_2, cf.DATA_IRI_3], cf.TIMES, cf.VALUES_1, [cf.EXPECTED_OUTPUTS_3, cf.EXPECTED_OUTPUTS_4])
+        (cf.DERIVATION_INPUTS_1, [cf.DATA_IRI_2], cf.TIMES, cf.VALUES_1, [cf.EXPECTED_OUTPUTS_1, cf.EXPECTED_OUTPUTS_2]),
+        (cf.DERIVATION_INPUTS_2, [cf.DATA_IRI_3, cf.DATA_IRI_4], cf.TIMES, cf.VALUES_1, [cf.EXPECTED_OUTPUTS_3, cf.EXPECTED_OUTPUTS_4])
     ],
 )
 def test_derive_emissions(

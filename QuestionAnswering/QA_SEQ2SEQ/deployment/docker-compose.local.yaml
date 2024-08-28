@@ -1,0 +1,26 @@
+services:
+  triton:
+    build:
+      context: triton
+    entrypoint: tritonserver
+    command: --model-repository=/models --model-control-mode=explicit --load-model=seq2seq_kingslynn --load-model=seq2seq_singapore
+    shm_size: 256m
+    # ports:
+    #   - 8000:8000
+  # chatbot:
+  #   image: ghcr.io/abetlen/llama-cpp-python:latest
+  #   volumes:
+  #     - type: bind
+  #       source: chatbot/models
+  #       target: /models
+  #   env_file:
+  #     - chatbot-variables.env
+  #   # ports:
+  #   #   - 8001:8000
+  fastapi:
+    build:
+      context: fastapi_app
+    env_file:
+      - fastapi-variables.env
+    ports:
+      - 5000:8000

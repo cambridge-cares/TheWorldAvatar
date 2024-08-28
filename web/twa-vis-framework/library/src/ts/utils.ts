@@ -3,14 +3,14 @@
  * Opens the user help document associated with this version of the TWA-VF.
  */
 function openHelpURL() {
-    window.open("./twa-vf/help/index.html", "_blank");
+    window.open("./lib/help/", "_blank");
 }
 
 /**
  * Returns the current version of the TWA-V.
  */
 async function getVisVersion() {
-    return await fetch("./twa-vf/VERSION").then(response => {
+    return await fetch("./lib/VERSION").then(response => {
         return response.text();
     });
 }
@@ -49,7 +49,6 @@ async function loadHTML(htmlFile: string) {
  * @returns 
  */
 function getDefaultImagery() {
-    console.log("GENERATING DEFAULT IMAGERY");
     let imagerySettings = Manager.SETTINGS.getSetting("imagery");
     if(imagerySettings == null) {
 
@@ -63,7 +62,6 @@ function getDefaultImagery() {
     }
 
     let defaultSetting = imagerySettings["default"];
-    console.log("DEFAULT " + defaultSetting);
 
     let url = imagerySettings[defaultSetting];
     if(url.endsWith("_token=")) url += MapHandler.MAP_API;

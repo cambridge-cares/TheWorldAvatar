@@ -1,0 +1,20 @@
+Can you provide the {PropertyName} of {species}? 
+What {PropertyName} does {species} have?
+What is the {PropertyName} of {species}?
+Could you tell me the {PropertyName} of {species}?
+Can you provide the {PropertyName} of {species}?
+Can you share the {PropertyName} of {species} with me?
+Could you inform me of the {PropertyName} of {species}?
+What is the exact {PropertyName} of {species}?
+What is the {PropertyName} for {species}?
+Can you let me know the {PropertyName} of {species}?
+Do you know the {PropertyName} of {species}?
+What is the {species} {PropertyName}?
+{PropertyName} of {species}
+I'm curious about the {PropertyName} of {species}. Can you provide that information?
+Do you happen to know the {PropertyName} of {species}?
+What can you tell me about the {PropertyName} of {species}?
+I'd like to learn more about the {PropertyName} of {species}. Can you help?
+I'm interested in finding out the {PropertyName} of {species}. Any insights?
+What details do you have regarding the {PropertyName} of {species}?
+Tell me about the {PropertyName} of {species}.

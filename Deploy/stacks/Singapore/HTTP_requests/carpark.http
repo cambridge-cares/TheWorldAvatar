@@ -1,0 +1,8 @@
+# for instantiation
+POST http://localhost:3838/carpark-agent/create
+
+### for scheduled updates
+POST http://localhost:3838/carpark-agent/retrieve
+content-type: application/json
+
+{"delay":"0", "interval":"180", "timeunit":"seconds"}

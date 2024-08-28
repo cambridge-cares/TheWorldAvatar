@@ -1,12 +1,13 @@
 {
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "datasetDirectory": "building-hongkong",
+    "datasetDirectory": "buildings",
     "dataSubsets": [
         {
             "type": "XtoCityDB",
             "skip": false,
             "table": "raw_gdal",
+            "subdirectory": "hongkong",
             "ogr2ogrOptions": {
                 "otherOptions": {
                     "-select": [
@@ -25,11 +26,11 @@
                 "sridIn": "4326"
             },
             "preprocessSql": "@/inputs/config/building-hongkong_preprocess_building.sql",
-            "name": "hongkong_gsl",
+            "name": "building-hongkong_gsl",
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "mapbox_layer",
-                    "sql": "@/inputs/config/building-hongkong_mapbox.sql",
+                    "sql": "@/inputs/config/mapbox-footprint-flipxy.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geometry",

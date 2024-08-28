@@ -13,7 +13,10 @@ on:
     branches:
       - main
     paths:
-      - web/twa-vis-framework/library/**
+      - 'web/twa-vis-framework/library/**'
+      - '!web/twa-vis-framework/**/README.md'
+      - '!**.md'
+      - '!**/release.html'
 
 
 # Job definitions

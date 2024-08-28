@@ -9,7 +9,6 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.ExprVar;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -418,16 +417,12 @@ public class RenamingTool {
 		if (exprFilter != null) {
 			where.addFilter(exprFilter);
 		}
-		
-		try {
-			where.addWhere(varS, varP, varO)
-				.addBind( "<" + strTarget + ">", varTargetURI)
-				.addBind( "<" + strReplacement + ">", varReplacementURI)
-				.addFilter(orSPO);
-		} catch (ParseException e) {
-			throw new JPSRuntimeException(e);
-		}
-						
+
+		where.addWhere(varS, varP, varO)
+			.addBind( "<" + strTarget + ">", varTargetURI)
+			.addBind( "<" + strReplacement + ">", varReplacementURI)
+			.addFilter(orSPO);
+
 		return where;
 	}
 	

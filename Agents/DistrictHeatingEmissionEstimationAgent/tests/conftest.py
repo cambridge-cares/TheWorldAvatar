@@ -56,7 +56,7 @@ RDB_SERVICE = "postgres_test"
 TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
-ABOX_TRIPLES = 28
+ABOX_TRIPLES = 31
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -110,11 +110,12 @@ SIMULATION_TIME_3 = TEST_TRIPLES_BASE_IRI + 'SimulationTime_3'
 POINT_SOURCE_1 = TEST_TRIPLES_BASE_IRI + 'StaticPointSource_1'
 PROVIDED_HEAT_AMOUNT_1 = TEST_TRIPLES_BASE_IRI + 'ProvidedHeatAmount_1'
 DATA_IRI_1 = TEST_TRIPLES_BASE_IRI + 'Measure_1'
+DATA_IRI_2 = TEST_TRIPLES_BASE_IRI + 'Forecast_1'
 PROVIDED_HEAT_AMOUNT_2 = TEST_TRIPLES_BASE_IRI + 'ProvidedHeatAmount_2'
 CONSUMED_GAS_AMOUNT_1 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_1'
-DATA_IRI_2 = TEST_TRIPLES_BASE_IRI + 'Measure_2'
+DATA_IRI_3 = TEST_TRIPLES_BASE_IRI + 'Forecast_2'
 CONSUMED_GAS_AMOUNT_2 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_2'
-DATA_IRI_3 = TEST_TRIPLES_BASE_IRI + 'Measure_3'
+DATA_IRI_4 = TEST_TRIPLES_BASE_IRI + 'Forecast_3'
 
 # Define derivation input sets to test
 DERIVATION_INPUTS_1 = [SIMULATION_TIME_1, POINT_SOURCE_1, 
@@ -126,12 +127,12 @@ DERIVATION_INPUTS_2 = [SIMULATION_TIME_1, POINT_SOURCE_1,
 temp_efw = 220 + 273.15
 density_efw = round(CP.PropsSI('D', 'T', temp_efw, 'P', 101325, 'Air'), 6)
 EXPECTED_OUTPUTS_1 = {
-    OD_NO2: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.012386}, 
+    OD_NOX: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.012386}, 
     OD_PM2_5: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000367}, 
     OD_PM10: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000409}
 }
 EXPECTED_OUTPUTS_2 = {
-    OD_NO2: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.024772}, 
+    OD_NOX: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.024772}, 
     OD_PM2_5: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000733}, 
     OD_PM10: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000818}
 }
@@ -139,12 +140,12 @@ EXPECTED_OUTPUTS_2 = {
 temp_hkw = 200 + 273.15
 density_hkw = round(CP.PropsSI('D', 'T', temp_hkw, 'P', 101325, 'Air'), 6)
 EXPECTED_OUTPUTS_3 = {
-    OD_NO2: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.001384}, 
+    OD_NOX: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.001384}, 
     OD_PM2_5: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 3.7e-05}, 
     OD_PM10: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 4.6e-05}
 }
 EXPECTED_OUTPUTS_4 = {
-    OD_NO2: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.002769}, 
+    OD_NOX: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.002769}, 
     OD_PM2_5: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 7.5e-05}, 
     OD_PM10: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 9.3e-05}
 }

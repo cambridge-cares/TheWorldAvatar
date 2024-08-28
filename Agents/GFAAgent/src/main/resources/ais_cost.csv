@@ -1,0 +1,24 @@
+Category,Type,S$/m2 GFA lower limit,S$/m2 GFA upper limit,average
+Residential,Terraced Houses,4000,4500,4250
+Residential,Semi-Detached Houses,5000,7000,6000
+Residential,Detached Houses,6500,10000,8250
+Residential,Condominiums - average standard,3700,4900,4300
+Residential,Condominiums - above average standard,4500,7150,5825
+Residential,Luxury Condominiums,7000,8900,7950
+Office,Offices - average standard,4450,5700,5075
+Office,Prestige Offices,5250,6900,6075
+Commercial,Shopping Centres - average quality,4550,6350,5450
+Commercial,Shopping Centres - high quality,5050,6800,5925
+Car Park,Multi-Storey Car Parks,,,
+Car Park,Basement Car Parks,,,
+Industrial,Flatted Light Industrial Building,2300,2750,2525
+Industrial,Flatted Heavy Industrial Buildings,2550,3650,3100
+Industrial,Single Storey Industrial Buildings,2100,2300,2200
+Industrial,Flatted Warehouses,2150,2700,2425
+Industrial,Single Storey Warehouses,2100,2300,2200
+Hotel,3-Star Hotels,5450,6050,5750
+Hotel,4-Star Hotels,5950,7300,6625
+Hotel,5-Star Hotels,6950,8700,7825
+Hotel,Co-living,6250,7350,6800
+Health,Private Hospitals,6950,7600,7275
+Health,Medical Centres,5700,6600,6150

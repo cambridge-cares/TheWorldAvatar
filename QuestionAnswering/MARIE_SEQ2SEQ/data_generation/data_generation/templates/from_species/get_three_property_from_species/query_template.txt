@@ -1,0 +1,31 @@
+SELECT DISTINCT ?label ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue ?{PropertyName3}Value ?{PropertyName3}UnitValue ?{PropertyName3}ReferenceStateValue ?{PropertyName3}ReferenceStateUnitValue 
+WHERE {{
+    ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+
+    ?SpeciesIRI ?hasIdentifier ?IdentifierIRI .
+    ?IdentifierIRI  rdf:type ?Identifier ; os:value ?species .
+    ?Identifier rdfs:subClassOf os:Identifier .
+
+    FILTER( ?species = "{species}")
+
+    ?SpeciesIRI os:has{PropertyName1} ?{PropertyName1}IRI .
+    ?{PropertyName1}IRI os:value ?{PropertyName1}Value ; os:unit ?{PropertyName1}UnitIRI ; os:hasProvenance ?{PropertyName1}ProvenanceIRI . 
+    ?{PropertyName1}UnitIRI rdfs:label ?{PropertyName1}UnitValue .
+    OPTIONAL{{?{PropertyName1}IRI os:hasReferenceState ?{PropertyName1}ReferenceStateIRI .
+    ?{PropertyName1}ReferenceStateIRI os:value ?{PropertyName1}ReferenceStateValue ; os:unit ?{PropertyName1}ReferenceStateUnitIRI .
+    ?{PropertyName1}ReferenceStateUnitIRI rdfs:label ?{PropertyName1}ReferenceStateUnitValue .}}
+
+    ?SpeciesIRI os:has{PropertyName2} ?{PropertyName2}IRI .
+    ?{PropertyName2}IRI os:value ?{PropertyName2}Value ; os:unit ?{PropertyName2}UnitIRI ; os:hasProvenance ?{PropertyName2}ProvenanceIRI . 
+    ?{PropertyName2}UnitIRI rdfs:label ?{PropertyName2}UnitValue .
+    OPTIONAL{{?{PropertyName2}IRI os:hasReferenceState ?{PropertyName2}ReferenceStateIRI .
+    ?{PropertyName2}ReferenceStateIRI os:value ?{PropertyName2}ReferenceStateValue ; os:unit ?{PropertyName2}ReferenceStateUnitIRI .
+    ?{PropertyName2}ReferenceStateUnitIRI rdfs:label ?{PropertyName2}ReferenceStateUnitValue .}}
+
+    ?SpeciesIRI os:has{PropertyName3} ?{PropertyName3}IRI .
+    ?{PropertyName3}IRI os:value ?{PropertyName3}Value ; os:unit ?{PropertyName3}UnitIRI ; os:hasProvenance ?{PropertyName3}ProvenanceIRI . 
+    ?{PropertyName3}UnitIRI rdfs:label ?{PropertyName3}UnitValue .
+    OPTIONAL{{?{PropertyName3}IRI os:hasReferenceState ?{PropertyName3}ReferenceStateIRI .
+    ?{PropertyName3}ReferenceStateIRI os:value ?{PropertyName3}ReferenceStateValue ; os:unit ?{PropertyName3}ReferenceStateUnitIRI .
+    ?{PropertyName3}ReferenceStateUnitIRI rdfs:label ?{PropertyName3}ReferenceStateUnitValue .}}
+}}

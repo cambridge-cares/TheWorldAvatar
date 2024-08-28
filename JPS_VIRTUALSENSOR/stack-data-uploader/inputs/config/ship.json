@@ -1,0 +1,40 @@
+{
+    "database": "postgres",
+    "workspace": "dispersion",
+    "datasetDirectory": "ship",
+    "skip": true,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "rawship",
+            "subdirectory": "subdir",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-select": [
+                        "BaseDateTime,MMSI,LAT,LON,SOG,COG,VesselType"
+                    ],
+                    "-where": [
+                        "\"LON\" >= -130.0 AND \"LON\" <= -60.0 AND \"LAT\" >= 15.0 AND \"LAT\" <= 50.0"
+                    ]
+                }
+            },
+            "sql": "@/inputs/config/ship.sql",
+            "name": "ship_gsl",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "mapbox_layer",
+                    "sql": "@/inputs/config/mapbox-ship.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "point"
+            }
+        }
+    ]
+}

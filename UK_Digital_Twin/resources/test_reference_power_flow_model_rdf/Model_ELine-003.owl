@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns2="http://www.w3.org/2002/07/owl#"
+   xmlns:ns3="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#Angle_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Angle"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_Angle_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#Model_ELine-003">
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RateA_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#FromBusNumber_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#ToBusNumber_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RateC_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RatioCoeff_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#X_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#Angle_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RateB_ELine-003"/>
+    <ns1:models rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#ELine-003"/>
+    <ns1:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine.owl#Model_ELine"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#R_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#AngleMax_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#B_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Submodel"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#AngleMin_ELine-003"/>
+    <ns3:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#Status_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RateB_ELine-003">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MVA"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_B_ELine-003">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#siemens"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.9436293861580003</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RateC_ELine-003">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MVA"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_AngleMin_ELine-003">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-360.0</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#FromBusNumber_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusFrom"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_FromBusNumber_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RateA_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateA"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RateA_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_R_ELine-003">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.00167444550636</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ohm"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#ToBusNumber_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusTo"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_ToBusNumber_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#X_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#X"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_X_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl">
+    <ns2:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns2:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+    <ns2:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#AngleMax_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AngleMax"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_AngleMax_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_ToBusNumber_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#Status_ELine-003">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_Status_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStatus"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#B_ELine-003">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_B_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#B"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RatioCoeff_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#ELine-003">
+    <ns1:isModeledBy rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#Model_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RateA_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MVA"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8400.792858</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_Angle_ELine-003">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#AngleMin_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#AngleMin"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_AngleMin_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RatioCoeff_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RatioCoeff_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RatioCoefficient"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#R_ELine-003">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_R_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#R"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_AngleMax_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">360.0</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_Status_ELine-003">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RateB_ELine-003">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RateB_ELine-003"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateB"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#RateC_ELine-003">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RateC"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_RateC_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_X_ELine-003">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0161833441748</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ohm"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine.owl#Model_ELine">
+    <ns1:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#Model_ELine-003"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-003.owl#value_FromBusNumber_ELine-003">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+</rdf:RDF>

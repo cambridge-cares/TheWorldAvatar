@@ -11,7 +11,7 @@ public class VisualisationService extends ContainerService {
     }
 
     @Override
-    protected void doPreStartUpConfigurationImpl() {
+    protected void doPreStartUpConfiguration() {
         ensureOptionalSecret("mapbox_username");
         ensureOptionalSecret("mapbox_api_key");
     }
