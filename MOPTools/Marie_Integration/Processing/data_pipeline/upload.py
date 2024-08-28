@@ -64,14 +64,14 @@ class OntoLab(BaseOntology):
 class OntoSpecies(BaseOntology):
     # Below fields can be set up to provide metadata for your ontology
     base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontospecies/"
-    namespace:          ClassVar[str]           = 'OntoSpecies.owl#'
+    namespace:          ClassVar[str]           = 'OntoSpecies.owl'
     owl_versionInfo:    ClassVar[str]           = '0.0.1'
     rdfs_comment:       ClassVar[str]           = 'Your ontology'
 
 class OntoMOPs(BaseOntology):
     # Below fields can be set up to provide metadata for your ontology
-    base_url:           ClassVar[str]           = TWA_BASE_URL
-    namespace:          ClassVar[str]           = 'ontomops'
+    base_url:           ClassVar[str]           = "https://www.theworldavatar.com/kg/"
+    namespace:          ClassVar[str]           = 'ontomops/'
     owl_versionInfo:    ClassVar[str]           = '0.0.1'
     rdfs_comment:       ClassVar[str]           = 'Your ontology'
 
@@ -144,42 +144,43 @@ class RDFS(BaseOntology):
 # ---- om2 classes: ----
 # General:
 # Measure used to set the correct type, IRI needs to be changed afterwards
+# Notes: use set as default instead of None to ensure one can add with classname.property.add(classname)
 class UnitOfMeasure(BaseClass):
     rdfs_isDefinedBy                    = OM2
 class Measure(BaseClass):
     rdfs_isDefinedBy                    = OM2
-    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = None
-    hasUnit                             : Optional[HasUnit[UnitOfMeasure]]                               = None
+    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = set()
+    hasUnit                             : Optional[HasUnit[UnitOfMeasure]]                              = set()
 # Duration:
 class DurationUnit(BaseClass):
     rdfs_isDefinedBy                    = OM2
 class DurationValue(BaseClass):
     rdfs_isDefinedBy                    = OM2
-    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = None
-    hasUnit                             : Optional[HasUnit[DurationUnit]]                               = None
+    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = set()
+    hasUnit                             : Optional[HasUnit[DurationUnit]]                               = set()
 class Duration(BaseClass):
     rdfs_isDefinedBy                    = OM2
-    hasValue                            : Optional[HasValue[Measure]]                               = None
+    hasValue                            : Optional[HasValue[Measure]]                                   = set()
 # Temperature:
 class TemperatureUnit(BaseClass):
     rdfs_isDefinedBy                    = OM2
 class Temperature(BaseClass):
     rdfs_isDefinedBy                    = OM2
-    hasValue                            : Optional[HasValue[Measure]]                                       = None
+    hasValue                            : Optional[HasValue[Measure]]                                   = set()
 class TemperatureValue(BaseClass):
     rdfs_isDefinedBy                    = OM2
-    hasNumericalValue                   : Optional[HasNumericalValue[float]]                                = None
-    hasUnit                             : Optional[HasUnit[TemperatureUnit]]                                = None
+    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = set()
+    hasUnit                             : Optional[HasUnit[TemperatureUnit]]                            = set()
 # Temperature Rate:
 class TemperatureChangeRateUnit(BaseClass):
     rdfs_isDefinedBy                    = OM2
 class TemperatureRate(BaseClass):
     rdfs_isDefinedBy                    = OM2
-    hasValue                            : Optional[HasValue[Measure]]                                     = None
+    hasValue                            : Optional[HasValue[Measure]]                                   = set()
 class HeatChillValue(BaseClass):
     rdfs_isDefinedBy                    = OM2
-    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = None
-    hasUnit                             : Optional[HasUnit[DurationUnit]]                               = None
+    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = set()
+    hasUnit                             : Optional[HasUnit[DurationUnit]]                               = set()
 class ChemicalTransformation(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
     isDescribedBy                       : Optional[IsDescribedBy[ChemicalSynthesis]]                    = set()
@@ -193,48 +194,47 @@ class ChemicalSynthesis(BaseClass):
     retrievedFrom                       : Optional[RetrievedFrom[Document]]                             = set()
 class SynthesisStep(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    hasVessel                           : Optional[HasVessel[Vessel]]                                   = None
-    hasOrder                            : Optional[HasOrder[int]]                                       = None
-    hasExecutionPoint                   : Optional[HasExecutionPoint[ExecutionPoint]]                   = None
-    hasVesselEnvironment                : Optional[HasVesselEnvironment[VesselEnvironment]]             = None
-    hasStepDuration                     : Optional[HasStepDuration[Duration]]                           = None
+    hasVessel                           : Optional[HasVessel[Vessel]]                                   = set()
+    hasOrder                            : Optional[HasOrder[int]]                                       = set()
+    hasExecutionPoint                   : Optional[HasExecutionPoint[ExecutionPoint]]                   = set()
+    hasVesselEnvironment                : Optional[HasVesselEnvironment[VesselEnvironment]]             = set()
+    hasStepDuration                     : Optional[HasStepDuration[Duration]]                           = set()
 class Product(BaseClass):
     rdfs_isDefinedBy                    = OntoKin
 class ChemicalOutput(Product):
     rdfs_isDefinedBy                    = OntoSyn
     # should be with OntoMop
-    isRepresentedBy                     : Optional[IsRepresentedBy[MetalOrganicPolyhedron]]             = None
+    isRepresentedBy                     : Optional[IsRepresentedBy[MetalOrganicPolyhedron]]             = set()
     #hasSynthesisYield                   : HasSynthesisYield[SynthesisYield]
 class SynthesisYield(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
-    hasYieldMass                        : Optional[HasYieldMass[Mass]]                                  = None
+    hasYieldMass                        : Optional[HasYieldMass[Mass]]                                  = set()
 class SynthesisReactant(BaseClass):
     rdfs_isDefinedBy                    = OntoReaction
 class Add(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
-    isAdded                             : Optional[IsAdded[Material]]                                   = None
-    isDropwise                          : Optional[IsDropwise[bool]]                                    = None  
-    addedAmount                         : Optional[AddedAmount[ScalarValue]]                            = None   
+    isDropwise                          : Optional[IsDropwise[bool]]                                    = set()
+    hasAddedChemicalInput               : Optional[HasAddedChemicalInput[ChemicalInput]]                = set()
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
-    isWashedWith                        : Optional[IsWashedWith[Material]]                              = None
-    hasWashingSolvent                   : Optional[HasWashingSolvent[ChemicalInput]]                    = None
-    isRepeated                          : Optional[IsRepeated[int]]                                     = None
+    isWashedWith                        : Optional[IsWashedWith[Material]]                              = set()
+    hasWashingSolvent                   : Optional[HasWashingSolvent[ChemicalInput]]                    = set()
+    isRepeated                          : Optional[IsRepeated[int]]                                     = set()
 class Dry(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
 class Stir(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasStirringRate                     : Optional[HasStirringRate[float]]                              = None
+    hasStirringRate                     : Optional[HasStirringRate[float]]                              = set()
 class Sonication(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
 class HeatChill(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
-    hasTargetTemperature                : Optional[HasTargetTemperature[Temperature]]                   = None
-    hasTemperatureRate                  : Optional[HasTemperatureRate[TemperatureRate]]                 = None
-    hasHeatChillDevice                  : Optional[HasHeatChillDevice[HeatChillDevice]]                 = None
-    hasVacuum                           : Optional[HasVacuum[bool]]                                     = None
-    isSealed                            : Optional[IsSealed[bool]]                                      = None
-    hasStirringSpeed                    : Optional[HasStirringSpeed[float]]                             = None
+    hasTargetTemperature                : Optional[HasTargetTemperature[Temperature]]                   = set()
+    hasTemperatureRate                  : Optional[HasTemperatureRate[TemperatureRate]]                 = set()
+    hasHeatChillDevice                  : Optional[HasHeatChillDevice[HeatChillDevice]]                 = set()
+    hasVacuum                           : Optional[HasVacuum[bool]]                                     = set()
+    isSealed                            : Optional[IsSealed[bool]]                                      = set()
+    hasStirringSpeed                    : Optional[HasStirringSpeed[float]]                             = set()
 class ExecutionPoint(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
 class LabEquipment(BaseClass):
@@ -246,34 +246,35 @@ class Vessel(LabEquipment):
     rdfs_isDefinedBy                    = OntoSyn
 class Species(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
-    label                               : Optional[Label[str]]                                          = None
-    altLabel                            : Optional[AltLabel[str]]                                       = None
+    label                               : Optional[Label[str]]                                          = set()
+    altLabel                            : Optional[AltLabel[str]]                                       = set()
 class PhaseComponent(BaseClass):
     rdfs_isDefinedBy                    = OntoCapePhaseSystem
-    representsOccurenceOf               : Optional[RepresentsOccurenceOf[Species]]                      = None
+    representsOccurenceOf               : Optional[RepresentsOccurenceOf[Species]]                      = set()
+    hasProperty                         : Optional[HasProperty[PhaseComponentConcentration]]            = set()
 class ScalarValue(BaseClass):
     rdfs_isDefinedBy                    = OntoCapeSystem
-    hasUnitOfMeasure                    : Optional[HasUnitOfMeasure[AmountOfSubstanceConcentration]]    = None
-    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = None
+    hasUnitOfMeasure                    : Optional[HasUnitOfMeasure[UnitOfMeasure]]                     = set()
+    hasNumericalValue                   : Optional[HasNumericalValue[float]]                            = set()
 class PhaseComponentConcentration(BaseClass):
     rdfs_isDefinedBy                    = OntoCapePhaseSystem
-    hasValue                            : Optional[HasValue[ScalarValue]]                               = None
+    hasValue                            : Optional[HasValue[ScalarValue]]                               = set()
 class Composition(BaseClass):
     rdfs_isDefinedBy                    = OntoCapePhaseSystem
-    comprisesDirectly                   : Optional[ComprisesDirectly[PhaseComponentConcentration]]      = None
+    comprisesDirectly                   : Optional[ComprisesDirectly[PhaseComponentConcentration]]      = set()
 class SinglePhase(BaseClass):
     rdfs_isDefinedBy                    = OntoCapePhaseSystem
-    isComposedOfSubsystem               : Optional[IsComposedOfSubsystem[PhaseComponent]]               = None
-    hasComposition                      : Optional[HasComposition[Composition]]                         = None
+    isComposedOfSubsystem               : Optional[IsComposedOfSubsystem[PhaseComponent]]               = set()
+    hasComposition                      : Optional[HasComposition[Composition]]                         = set()
 class Material(BaseClass):
     rdfs_isDefinedBy                    = OntoCapeMaterial
-    thermodynamicBehaviour              : Optional[ThermodynamicBehaviour[SinglePhase]]                 = None
+    thermodynamicBehaviour              : Optional[ThermodynamicBehaviour[SinglePhase]]                 = set()
 class ChemicalInput(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
     referencesMaterial                  : Optional[ReferencesMaterial[Material]]                        = set()
 class MetalOrganicPolyhedron(BaseClass):
     rdfs_isDefinedBy                    = OntoMOPs
-    hasCCDCNumber                       : Optional[HasCCDCNumber[int]]                                  = set()
+    hasCCDCNumber                       : Optional[HasCCDCNumber[str]]                                  = set()
     hasMOPFormula                       : Optional[HasMOPFormula[str]]                                  = set()
     mopAltLabel                         : Optional[MopAltLabel[str]]                                    = set()
 class HeatChillDevice(LabEquipment):
@@ -370,9 +371,7 @@ class HasStepDuration(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class YieldLimitingSpecies(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
-class HasAddedReactant(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoSyn
-class HasAddedSolvent(ObjectProperty):
+class HasAddedChemicalInput(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasReactantMaterialAmount(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
@@ -387,10 +386,6 @@ class HasTargetTemperature(ObjectProperty):
 class HasTemperatureRate(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasStirringRate(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoSyn
-class IsAdded(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoSyn
-class AddedAmount(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsWashedWith(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
@@ -411,6 +406,8 @@ class HasUnit(ObjectProperty):
 class HasValue(ObjectProperty):
     rdfs_isDefinedBy                    = OM2
 class HasUnitOfMeasure(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoCapeSystem
+class HasProperty(ObjectProperty):
     rdfs_isDefinedBy                    = OntoCapeSystem
 
 def change_property(instance_var, property_var, value_var, client, push=False):
@@ -440,9 +437,14 @@ def upload_predefined(client):
     duration_s                          = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time", rdfs_label="second")
     temperature_rate_degs               = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerSecond-Time", rdfs_label="degree Celsius per second")
     mole_per_litre                      = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre", rdfs_label="mole per litre")
-    revolutions_per_minute              = UnitOfMeasure(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/RevolutionsPerMinute", rdfs_label="revolutions per minute")
+    grams                               = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/gram", rdfs_label="gram")
+    mole                                = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/mole", rdfs_label="mole")
+    mmole                               = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/millimole", rdfs_label="mmole") 
+    mlitre                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre", rdfs_label="mlitre")
+    # from TWA branch of OM:
+    revolutions_per_minute              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/revolutionPerMinute-Time", rdfs_label="revolution per minute", rdfs_comment="Revolution per minute is a unit of rotational speed (or rotational frequency) for rotating machines.")
 
-    instances                           = [vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_day, duration_h, duration_s, temperature_rate_degs, mole_per_litre, revolutions_per_minute]
+    instances                           = [vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_day, duration_h, duration_s, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, mole, mmole, mlitre]
     push_component_to_kg(instances, client)
 
 def extract_numbers_and_units(text, pattern_type):
@@ -492,6 +494,7 @@ class TextToCSV:
                 cleaned_row = {key.strip().strip('"'): value.strip().strip('"') for key, value in row.items()}
                 entries.append(cleaned_row)
         return entries
+    
     def filter_by_synthesis_role(self, entries):
         product_entries     = []
         other_entries       = []
@@ -524,6 +527,7 @@ def species_querying(client, species_label, recursion_counter):
         VALUES ?Text {{"{species_label[recursion_counter]}"}}
         ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES)/os:value)|rdfs:label|rdf:label|skos:altLabel|<http://www.w3.org/2000/01/rdf-schema/label>) ?Text . 
         }}"""
+    
     query_result                    = client.perform_query(query)
     print("queried result: ", query_result)
     # return if solution is found or maximum iterations are reached.
@@ -537,21 +541,22 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
     CCDC_number             = remove_na(CCDC_number)
     mop_formula             = remove_na(mop_formula)
     mop_name                = remove_na(mop_name)
-    if CCDC_number != "N/A":
-        query = f"""
-            PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
-            PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-            PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-            PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
-            SELECT ?mop
-            WHERE {{
-            ?mop a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
-            VALUES ?Text {{"{CCDC_number, mop_formula, mop_name}"}}
-            ?mop (<https://www.theworldavatar.com/kg/ontomops/hasMOPFormula>|<https://www.theworldavatar.com/kg/ontomops/mopAltLabel>|<https://www.theworldavatar.com/kg/ontomops/hasCCDCNumber>) ?Text .  
-            }}"""
-        out                     = client.perform_query(query)
-    else:
-        out                     = []
+    # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
+    query = f"""
+        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        SELECT ?MOPIRI
+        WHERE {{
+        ?MOPIRI a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
+        VALUES ?Text {{"{CCDC_number}" "{mop_formula}" "{mop_name}"}}
+        ?MOPIRI (<https://www.theworldavatar.com/kg/ontomops/hasMOPFormula>|<https://www.theworldavatar.com/kg/ontomops/mopAltLabel>|<https://www.theworldavatar.com/kg/ontomops/hasCCDCNumber>) ?Text .  
+        }}
+        GROUP BY ?MOPIRI"""
+    out                     = client.perform_query(query)
+    print("used query: ", query)
+    print("MOp query result returned: ", out)
     return out
 
 def transformation_querying(client, mop_name):
@@ -569,9 +574,10 @@ def transformation_querying(client, mop_name):
         ?mop a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
         VALUES ?Text {{"{mop_name}"}}
         ?mop (<https://www.theworldavatar.com/kg/ontomops/hasMOPFormula>|<https://www.theworldavatar.com/kg/ontomops/mopAltLabel>|<https://www.theworldavatar.com/kg/ontomops/hasCCDCNumber>) ?Text .  
-        
                 }}"""
-    return  client.perform_query(query)
+    out             = client.perform_query(query)
+    print("\n ----- \n", out)
+    return out
 
 def get_client(name):
     a_box_updates_config                        = config_a_box_updates(f"../{name}.env")
@@ -605,7 +611,7 @@ def match_vessel(vessel_name, client):
 
 def get_unit(unit_name, client):
     print("unit_name: ", unit_name)
-    match unit_name[0]:
+    match unit_name:
         case "°C" | "C" | "degC":
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius", client, recursive_depth=-1)[0]
         case "K" | "Kelvin":
@@ -619,29 +625,24 @@ def get_unit(unit_name, client):
         case "day" | "days" | "d" :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/day", client, recursive_depth=-1)[0]    
         case "seconds" | "second" | "s" :
-            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time", client, recursive_depth=-1)[0]    
-                                  
+            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time", client, recursive_depth=-1)[0]                      
+        case "g" | "gram" :
+            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/gram", client, recursive_depth=-1)[0]                      
+        case "mol" | "mole" :
+            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/mole", client, recursive_depth=-1)[0]                                  
+        case "mmol" | "milimole" :
+            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/millimole", client, recursive_depth=-1)[0]  
+        case "mL" | "mililitre" | "mL" | "ml"  :
+            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre", client, recursive_depth=-1)[0]                                  
         case _: 
             print(f"Unit was not recognized. Check the following unit: {unit_name} \n")
             unit                = UnitOfMeasure()
 
     """
-    temperature_rate_degs                       = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerSecond-Time", rdfs_label="degree Celsius per second")
     mole_per_litre                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre", rdfs_label="mole per litre")
-    revolutions_per_minute                      = UnitOfMeasure(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/RevolutionsPerMinute", rdfs_label="revolutions per minute")
+    revolutions_per_minute                      = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/revolutionPerMinute-Time", rdfs_label="revolutions per minute")
     """
     return unit
-def insert_query_unit(subject_syn, label_syn):
-    return                                   f"""
-                                                    PREFIX om:          <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
-                                                    PREFIX os:          <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-                                                    PREFIX osyn:        <https://www.theworldavatar.com/kg/ontosyn/OntoSyn.owl#>
-                                                    PREFIX rdfs:        <http://www.w3.org/2000/01/rdf-schema#>
-                                                    PREFIX xsd: 	    <http://www.w3.org/2001/XMLSchema#>
-                                                    INSERT DATA {{
-                                                    {subject_syn}   rdfs:label 	    "{label_syn}"        .
-                                                    }}
-                                                """
 def heatchill_upload(client, heatchill_step):
     temp, temp_unit                             = extract_numbers_and_units(heatchill_step["Target temperature"],"temp")
     heat_time, time_unit                        = extract_numbers_and_units(heatchill_step["Heat or cooling Time"], "add")
@@ -651,17 +652,17 @@ def heatchill_upload(client, heatchill_step):
     print("duration: ", heat_time, time_unit)
     # temperature 
     id_hash_value                               = str(uuid.uuid4())
-    temperature_unit                            = get_unit(temp_unit, client) 
+    temperature_unit                            = get_unit(temp_unit[0], client) 
     temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
     target_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetTemperature_{id_hash_value}", hasValue=temperature_value)
 
     # heat rate
-    rate_unit                                   = get_unit(rate_unit, client) 
+    rate_unit                                   = get_unit(rate_unit[0], client) 
     rate_value                                  = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureRate_{id_hash_value}", hasNumericalValue=heat_rate[0], hasUnit=rate_unit)
     temperature_rate                            = TemperatureRate(hasValue=rate_value) 
 
     # duration 
-    duration_unit                               = get_unit(time_unit, client) 
+    duration_unit                               = get_unit(time_unit[0], client) 
     duration_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/StepDuration_{id_hash_value}", hasNumericalValue=heat_time[0], hasUnit=duration_unit)
     duration                                    = Duration(hasValue=duration_value)
 
@@ -671,17 +672,57 @@ def heatchill_upload(client, heatchill_step):
     vacuum                                      = heatchill_step["under Vacuum"]
     heatchill_device                            = heatchill_step["used Device"]
     # put everything together
-    heat_chill                                  = HeatChill(hasVessel=vessel, hasStepDuration=duration, hasTargetTemperature=target_temperature, hasTemperatureRate=temperature_rate, hasVacuum=vacuum, isSealed=sealed)
+    heat_chill                                  = HeatChill(hasVessel=vessel, hasStepDuration=duration, hasTargetTemperature=target_temperature, hasTemperatureRate=temperature_rate, hasVacuum=vacuum, isSealed=sealed, hasOrder=heatchill_step['step Number'])
     components = [temperature_value, target_temperature, temperature_value, temperature_rate, duration_value, duration, heat_chill]
     push_component_to_kg(components, client)
     return  heat_chill
+
+def add_upload(add_step, synthesis_client, species_client):
+    added_amount                                        = add_step["added chemical amount"]
+    add_value, add_unit                                 = extract_numbers_and_units(added_amount, "add")
+    vessel                                              = match_vessel(add_step['used Vessel'], synthesis_client)
+    chemical_name                                       = add_step['added chemical name']
+    # Vessel:
+    species_name                                        = chemical_name     
+    species                                             = instantiate_input(species_name, species_name, client_species=species_client, client_synthesis=synthesis_client) 
+    # Initialize an empty list to hold `ScalarValue` instances
+    scalar_values = []
+    # Iterate over each pair of unit and value
+    for unit, value in zip(add_unit, add_value):
+        # Get the unit using the `get_unit` function
+        print("unit and value: ", unit, value)
+        unit_instance                                   = get_unit(unit, synthesis_client)
+        
+        # Create a `ScalarValue` instance and add it to the list
+        scalar_value_instance                           = ScalarValue(hasNumericalValue=value, hasUnitOfMeasure=unit_instance)
+        scalar_values.append(scalar_value_instance)
+
+    # Create a `PhaseComponentConcentration` instance with all scalar values
+    phase_component_concentration                       = PhaseComponentConcentration(hasValue=set(scalar_values))
+    phase_component                                     = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
+    composition                                         = Composition(comprisesDirectly=phase_component_concentration)
+    single_phase                                        = SinglePhase(isComposedOfSubsystem=phase_component, hasComposition=composition)     
+    material                                            = Material(thermodynamicBehaviour=single_phase)
+    chemical_input                                      = ChemicalInput(referencesMaterial=material)
+    add_class                                           = Add(hasOrder=add_step['step number'], hasVessel=vessel, hasAddedChemicalInput=chemical_input)
+    components = [phase_component_concentration, phase_component, composition, single_phase, material, chemical_input, add_class]
+    push_component_to_kg(components, synthesis_client)
+    return add_class
+
+def filter_upload(filter_step, synthesis_client):
+    print("filter step: ", filter_step)
+    
+    filter_class                                        = Filter(hasOrder=filter_step["step Number"], isRepeated=filter_step["Repetitions"])                                         
+    components = [filter_class]
+    push_component_to_kg(components, synthesis_client)
+    return filter_class
 
 def remove_na(input_candidate):
     if input_candidate == "N/A":
         return ""
     return input_candidate
 
-def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
+def instantiate_input_old(chemical_formula, species_name, client_species, client_synthesis):
     # search the ontospecies and ontosynthesis blazegraphs for existing instances
     triples                                                 = species_querying(client_species, species_name, 0)
     print("OntoSpecies results: ", triples)
@@ -701,27 +742,46 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
     else:
         species                                             = Species.pull_from_kg(triples[0]["Species"], client_species, recursive_depth=-1)[0]
         species.altLabel.update(species_name) 
+        print("species rdf type: ", species.rdf_type)
+    return species
+
+def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
+    # search the ontospecies and ontosynthesis blazegraphs for existing instances
+    species_iri                                             = str(uuid.uuid4())
+    triples                                                 = species_querying(client_species, species_name, 0)
+    print("OntoSpecies results: ", triples)
+    if triples == None or triples == []:
+        triples                                             = species_querying(client_synthesis, species_name, 0)
+        if triples == None or triples == []:
+            species                                         = Species(label=chemical_formula, altLabel=species_name)
+            # Ontospecies uses different base IRIs for rdf type and the actual instance IRI.
+            species.instance_iri                            = f"http://www.theworldavatar.com/kb/ontospecies/Species_{species_iri}"
+        else:
+            print("Success: ", triples[0]["Species"])
+            species                                         = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
+            species.altLabel.update(species_name)
+
+    else:
+        species                                             = Species(label=chemical_formula, altLabel=species_name)
+        species.instance_iri                                = triples[0]["Species"]
+        print("species rdf type: ", species.rdf_type)
     return species
 
 def instantiate_output(ccdc_number, chemical_formula, mop_names, client_mop, client_synthesis):
     # query for existing mops either in the onto mops ontology or if not in the onto synthesis ontology
-    mop_iri                         = mop_querying(client_mop, ccdc_number, chemical_formula, mop_names)
+    mop_iri                             = mop_querying(client_mop, ccdc_number, chemical_formula, mop_names)
     if mop_iri == [] or mop_iri == None:
-        mop_iri                     = mop_querying(client_synthesis, ccdc_number, chemical_formula, mop_names)
+        mop_iri                         = mop_querying(client_synthesis, ccdc_number, chemical_formula, mop_names)
         # pull the mop instance with the iri and update the alt labels. If it fails isntantiate a new MOP instance.
-        try:
-            mop                     = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis, recursive_depth=-1)
-            mop.altLabel.update(mop_names)
-        except:
+
             # ccdc_number is of type int and "N/A" a string -> causes an error
-            if ccdc_number == "N/A":
+    if ccdc_number == "N/A":
                 mop                 = MetalOrganicPolyhedron(hasMOPFormula=chemical_formula, mopAltLabel=mop_names)
-            else:
+    else:
                 mop                 = MetalOrganicPolyhedron(hasCCDCNumber=ccdc_number, hasMOPFormula=chemical_formula, mopAltLabel=mop_names)
-    #mop.push_to_kg(sparql_client, recursive_depth=-1)
-    else: 
-        mop                         = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_mop, recursive_depth=-1)
-        mop.altLabel.update(mop_names)
+    if mop_iri != [] and mop_iri != None:
+        mop.instance_iri            = mop_iri[0]["MOPIRI"] 
+
     chemical_output                 = ChemicalOutput(isRepresentedBy=mop)
 
     return mop, chemical_output
@@ -746,8 +806,10 @@ def chemicals_upload(input_path, output_path):
         mop, chemical_output                    = instantiate_output(line["CCDC Number"], line["Chemical Formula"], mop_name, client_mop, client_synthesis)
         chemical_transformation                 = ChemicalTransformation(hasChemicalOutput=chemical_output)
         components                              = [chemical_output, mop, chemical_transformation]
-        for component in components:
-            push_component_to_kg(component, client_synthesis)
+        print("mop: ", mop)
+        print(chemical_output)
+        push_component_to_kg(components, client_synthesis)
+
     last_prod                                               = ""
     for nr, line in enumerate(other_entries):
         print("CSV row: ",line)
@@ -765,57 +827,71 @@ def chemicals_upload(input_path, output_path):
                 print(f"not able to link with MOP: {species_name}")
             else:
                 print("queried IRI: ", syn_prod)
-                chemical_transformation                     = ChemicalTransformation.pull_from_kg(syn_prod[0]["chemicalTrans"], client_synthesis, recursive_depth=-1)   
-
+                chemical_transformation                     = ChemicalTransformation.pull_from_kg(syn_prod[0]["chemicalTrans"], sparql_client=client_synthesis, recursive_depth=-1)   
+        print(chemical_transformation)
         chemical_transformation[0].hasChemicalInput.add(chemical_input)
-        components                                          = [phase_component, single_phase, material, chemical_input, species,chemical_transformation[0]]
+        components                                          = [phase_component, single_phase, material, chemical_input, species, chemical_transformation]
         # Loop through each component and call the function
-        for component in components:
-            push_component_to_kg(component, client_synthesis)
+        print("phasse component: ", phase_component)
+        push_component_to_kg(components, client_synthesis)
         last_prod                                           = syn_prod
             
 def push_component_to_kg(instances:list, client, recursive_depth=-1):
     for instance in instances:
-        g_to_remove, g_to_add                                   = instance.push_to_kg(client, recursive_depth)
+        print("instance: ", instance)
+        try:
+            g_to_remove, g_to_add                                   = instance.push_to_kg(client, recursive_depth)
+        except:
+            instance                                                = instance[0]
+            g_to_remove, g_to_add                                   = instance.push_to_kg(client, recursive_depth)
+
 # uploaded: 10.1021_ja 0104352.txt
 
 def main():
     sparql_client_synthesis                                 = get_client("OntoSynthesisConnection")
     sparql_client_species                                   = get_client("OntoSpeciesConnection") 
     sparql_client_mop                                       = get_client("OntoMOPConnection") 
-    # upload_predefined(sparql_client_synthesis)
-    #unit_upload(sparql_client)
-    #chemicals_upload("../Data/first10_prompt22/10.1021_ja 0104352.txt", "")
-    #another_object_of_one_concept = species.pull_from_kg('https://iri-of-the-object-of-interest', sparql_client, recursive_depth=-1)
+    upload_predefined(sparql_client_synthesis)
+    chemicals_upload("../Data/first10_prompt22/10.1021_ja 0104352.txt", "")
     # read in JSON:
     SynthesisJson                                           = read_json_file("../Data/first10_prompt52/10.1021_ja 0104352.json")["Synthesis"]
     data2                                                   = SynthesisJson[0]
-
     print("json file: ", data2)
     mop_name                                                = data2["product name"]
     mop_ccdc                                                = data2["product CCDC number"]
     transformation_iri                                      = transformation_querying(sparql_client_synthesis, mop_name=mop_name)
-    
     if transformation_iri == []:
         transformation_querying(sparql_client_synthesis, mop_name=mop_ccdc)
-    print("transformation iri", transformation_iri)
-    #chemical_synthesis                          = ChemicalSynthesis()   
+    print("transformation iri", transformation_iri)  
     print("IRI: ", transformation_iri[0]["chemicalTrans"])
-    #chemical_transformation                     = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
-    #chemical_transformation.isDescribedBy.add(chemical_synthesis)
-    #print("chemical transformation: ", chemical_transformation)
+    print("full data: ", data2)
     add_json                                    = data2["Add"]
-    add1                                        = add_json[0]
-    addedAmount                                 = add1["added chemical amount"]
-    number, units                               = extract_numbers_and_units(addedAmount, "add")
+    filter_json                                 = data2["Filter"]
     heatchill_json                              = data2["HeatChill"]
+    print("add step: ", add_json)
+    step_list                                   = []
+    for add_step in add_json:
+        add_class                               = add_upload(add_step=add_step, synthesis_client=sparql_client_synthesis, species_client=sparql_client_species)
+        step_list.append(add_class)
+
+    for filter_step in filter_json:
+        filter_class                            = filter_upload(filter_step, sparql_client_synthesis)
+        step_list.append(filter_class)
 
     for heatchill_step in heatchill_json:
         # remove non numerical entries
         if heatchill_step["Target temperature"] == "—" or heatchill_step["Target temperature"] == "room temperature" or heatchill_step["Target temperature"] == "N/A":
             continue
-        # target temperature
-        heatchill_upload(sparql_client_synthesis, heatchill_step=heatchill_step)
+
+        print("heatchill step: ", heatchill_step)
+        heat_class                              = heatchill_upload(sparql_client_synthesis, heatchill_step)
+        step_list.append(heat_class)
+
+    chemical_transformation                     = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
+    chemical_synthesis                          = ChemicalSynthesis(hasSynthesisStep=step_list) 
+    chemical_transformation[0].isDescribedBy.add(chemical_synthesis)
+    components = [chemical_synthesis, chemical_transformation]
+    push_component_to_kg(components, sparql_client_synthesis)
 
 
 
