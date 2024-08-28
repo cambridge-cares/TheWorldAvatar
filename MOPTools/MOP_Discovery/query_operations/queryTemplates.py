@@ -99,12 +99,11 @@ def species_properties(cbuIRI):
     SELECT ?MolecularWeightValue ?MolecularChargeValue
     WHERE
     {
-    ?cbu OntoSpecies:hasMolecularWeight ?MolecularWeight .
-    ?MolecularWeight OntoSpecies:value ?MolecularWeightValue .
-    ?cbu OntoSpecies:hasCharge ?MolecularCharge .
-    ?MolecularCharge OntoSpecies:value ?MolecularChargeValue .
-
-    FILTER ((?cbu) = <#CBUIRI>) .
+        values ?cbu {<#CBUIRI>}
+        ?cbu OntoSpecies:hasMolecularWeight ?MolecularWeight .
+        ?MolecularWeight Measure:hasValue/Measure:hasNumericalValue ?MolecularWeightValue .
+        ?cbu OntoSpecies:hasCharge ?MolecularCharge .
+        ?MolecularCharge Measure:hasValue/Measure:hasNumericalValue ?MolecularChargeValue .
     }"""
 
     queryStr = queryStr.replace('#CBUIRI', str(cbuIRI))
