@@ -253,12 +253,20 @@ public class QueryClient {
         TimeSeries<Long> dispRasterTimeSeries = tsClientLong
                 .getTimeSeriesWithinBounds(dispRasterIriList, latestTimeLong, null, conn);
 
+        // ignore first time step because the lower bound provided in the previous query
+        // is inclusive
+        if (dispRasterTimeSeries.getTimes().size() <= 1) {
+            return;
+        }
+
         for (Map.Entry<String, String> concToDataIri : concToDataIriMap.entrySet()) {
             String pollutant = concToPollutantMap.get(concToDataIri.getKey());
             String dispRasterIri = pollutantToDispRaster.get(pollutant);
             List<String> dispersionRasterFileNames = dispRasterTimeSeries.getValuesAsString(dispRasterIri);
             List<Double> concentrations = new ArrayList<>();
-            for (int j = 0; j < dispersionRasterFileNames.size(); j++) {
+
+            // ignore first time step
+            for (int j = 1; j < dispersionRasterFileNames.size(); j++) {
                 String rasterFileName = dispersionRasterFileNames.get(j);
                 String sql = String.format(
                         "SELECT ST_Value(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) AS val "
@@ -291,7 +299,7 @@ public class QueryClient {
         List<Long> timeStampsLong = dispRasterTimeSeries.getTimes();
         List<Instant> timeStamps = new ArrayList<>();
 
-        timeStampsLong.stream().forEach(ts -> {
+        timeStampsLong.subList(1, timeStampsLong.size()).stream().forEach(ts -> {
             Instant timeInstant = Instant.ofEpochSecond(ts);
             timeStamps.add(timeInstant);
         });
