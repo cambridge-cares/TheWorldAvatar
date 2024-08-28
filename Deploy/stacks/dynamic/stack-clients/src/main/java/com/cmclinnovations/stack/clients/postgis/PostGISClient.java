@@ -90,7 +90,7 @@ public class PostGISClient extends ClientWithEndpoint<PostGISEndpointConfig> {
         RemoteRDBStoreClient remoteStoreClient = getRemoteStoreClient(database);
         try (Connection conn = remoteStoreClient.getConnection();
                 Statement stmt = conn.createStatement()) {
-            String sql = "CREATE SCHEMA IF NOT EXISTS " + schemaName;
+            String sql = "CREATE SCHEMA IF NOT EXISTS \"" + schemaName + "\"";
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to create schema '" + schemaName
