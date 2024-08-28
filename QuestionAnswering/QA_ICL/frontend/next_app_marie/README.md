@@ -8,9 +8,9 @@
 
 ### Steps
 
-1. Update the `.env.local` file with the URL of the backend server for the variable `NEXT_PUBLIC_BACKEND_ENDPOINT`.
-1. `npm install`.
-1. Start the server:
+1. If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDPOINT` in [`.env`](.env), create a new file named `.env.local` and set its value here.
+2. `npm install`.
+3. Start the server:
    - Development mode: `npm run dev`,
    - Production mode: 
      - Create production build: `npm run build`,
@@ -22,12 +22,14 @@
 
 ## Deployment (via Docker)
 
+If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDPOINT` in [`.env`](.env), create a new file named `.env.local` and set its value here. Then, execute the following.
+
 ```
 docker build -t next-app-marie .
 docker run --name next-app-marie -p 3000:3000 next-app-marie
 ```
 
-The app will be available at `localhost:3000`. 
+The app will be available at `localhost:3000/demos/marie`. 
 
 ## Running Next app at a subpath behind an NGINX reverse proxy
 
