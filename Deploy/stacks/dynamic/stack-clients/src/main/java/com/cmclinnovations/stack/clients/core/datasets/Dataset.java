@@ -191,7 +191,7 @@ public class Dataset extends AbstractDataObject {
     }
 
     public List<String> getReferencedDatasetNames() {
-        return Stream.concat(getOntologyDatasetNames().stream(), getExternalDatasetNames().stream())
+        return Stream.concat(getExternalDatasetNames().stream(), getOntologyDatasetNames().stream())
                 .collect(Collectors.toList());
     }
 

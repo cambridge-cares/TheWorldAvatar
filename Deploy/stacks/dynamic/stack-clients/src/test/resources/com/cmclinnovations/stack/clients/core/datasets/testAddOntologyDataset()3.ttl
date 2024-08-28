@@ -10,48 +10,35 @@
 @prefix sesame: <http://www.openrdf.org/schema/sesame#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
-<https://theworldavatar.io/kg/2b05d34c-a49a-43be-8362-5af042c944c3>
-        rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
-        <http://purl.org/dc/terms/description>
-                "A";
-        <http://purl.org/dc/terms/issued>
-                "2024-05-30T14:09:42.480Z"^^xsd:dateTime;
-        <http://purl.org/dc/terms/modified>
-                "2024-05-30T14:09:42.480Z"^^xsd:dateTime;
-        <http://purl.org/dc/terms/title>
-                "A" .
-
-<https://theworldavatar.io/kg/65c2de24-e7ab-4c29-90b6-315b02b8d6b7>
+<https://theworldavatar.io/kg/e6c6aa66-8018-444c-a59f-d3f56f47f752>
         rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "C";
         <http://purl.org/dc/terms/issued>
-                "2024-05-30T14:09:42.722Z"^^xsd:dateTime;
+                "2024-08-28T16:04:14.306Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/modified>
-                "2024-05-30T14:09:42.722Z"^^xsd:dateTime;
+                "2024-08-28T16:04:14.306Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
                 "C" .
 
-<https://theworldavatar.io/kg/2f9da96d-5bc4-415e-9d71-e03f179e7cb6>
+<https://theworldavatar.io/kg/7433473c-9eab-4cc8-bfae-af316463b7b5>
         rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "B";
         <http://purl.org/dc/terms/issued>
-                "2024-05-30T14:09:42.639Z"^^xsd:dateTime;
+                "2024-08-28T16:04:14.205Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/modified>
-                "2024-05-30T14:09:42.639Z"^^xsd:dateTime;
+                "2024-08-28T16:04:14.205Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
                 "B" .
 
-<https://theworldavatar.io/kg/db0af831-8fd8-4c0b-9901-bb3b76299a7c>
+<https://theworldavatar.io/kg/e042e800-af44-4781-a846-f18dd1a1eb85>
         rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
-                "Dataset for testing";
+                "A";
         <http://purl.org/dc/terms/issued>
-                "2024-05-30T14:09:42.790Z"^^xsd:dateTime;
+                "2024-08-28T16:04:13.891Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/modified>
-                "2024-05-30T14:09:42.790Z"^^xsd:dateTime;
+                "2024-08-28T16:04:13.891Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
-                "testDataset";
-        <http://purl.org/dc/terms/references>
-                <https://theworldavatar.io/kg/2f9da96d-5bc4-415e-9d71-e03f179e7cb6> , <https://theworldavatar.io/kg/2b05d34c-a49a-43be-8362-5af042c944c3> .
+                "A" .
