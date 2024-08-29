@@ -7,7 +7,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { PropertyGroup, VALUE_KEY } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
 import FormCheckboxField from '../field/form-checkbox-field';
-import { FORM_STATES, getRegisterOptions } from '../form-utils';
+import { FORM_STATES } from '../form-utils';
 
 interface FormScheduleProps {
   group: PropertyGroup;
@@ -42,9 +42,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             step={"1"}
             readOnly={props.options?.disabled}
             aria-label={FORM_STATES.RECURRENCE}
-            {...props.form.register(FORM_STATES.RECURRENCE, getRegisterOptions(
-              true,
-            ))}
+            {...props.form.register(FORM_STATES.RECURRENCE)}
           />
           <span className={fieldStyles["field-text"]}>week</span>
         </div>

@@ -26,7 +26,7 @@ export interface InputFieldProps {
  * 
  * @param {PropertyShape} field The SHACL shape property for this field. 
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
- * @param {boolean} options.required Optional indicator for validation that this field is required. Defaults to false.
+ * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.
  * @param {string[]} styles.label Optional styles for the label element.
  * @param {string[]} styles.input Optional styles for the input element.
  */
@@ -59,9 +59,7 @@ export default function FormInputField(props: Readonly<InputFieldProps>) {
         placeholder={`Add ${label} here`}
         readOnly={props.options?.disabled}
         aria-label={label}
-        {...props.form.register(props.field.fieldId, getRegisterOptions(
-          false,
-        ))}
+        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       />
       {/* Return error for failed validation */}
       <FormErrorComponent

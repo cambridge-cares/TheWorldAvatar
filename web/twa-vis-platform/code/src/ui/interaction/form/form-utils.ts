@@ -1,6 +1,6 @@
 import { PathNames } from "io/config/routes";
 import { FieldValues, RegisterOptions } from "react-hook-form";
-import { PropertyShape } from "types/form";
+import { PropertyShape, VALUE_KEY } from "types/form";
 
 export const FORM_STATES: Record<string, string> = {
   ID: "id",
@@ -82,12 +82,13 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 /**
  * Generate the RegisterOptions required for react-hook-form inputs based on user requirements.
  * 
- * @param {boolean} isRequired Indicates if the form input must have a value or not before submission.
+ * @param {PropertyShape} field The SHACL restrictions for the specific property
  */
-export function getRegisterOptions(isRequired?: boolean): RegisterOptions {
+export function getRegisterOptions(field: PropertyShape): RegisterOptions {
   const options: RegisterOptions = {};
 
-  if (isRequired) {
+  // Add register options if the field is required
+  if (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1) {
     options.required = "This field is required!";
   }
 

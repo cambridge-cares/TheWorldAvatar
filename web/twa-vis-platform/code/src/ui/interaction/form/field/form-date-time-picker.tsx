@@ -80,9 +80,7 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
         className={styles["dtpicker"]}
         type={inputType}
         aria-label={props.field.name[VALUE_KEY]}
-        {...props.form.register(props.field.fieldId, getRegisterOptions(
-          false,
-        ))}
+        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       />
       {/* Return error for failed validation */}
       <FormErrorComponent

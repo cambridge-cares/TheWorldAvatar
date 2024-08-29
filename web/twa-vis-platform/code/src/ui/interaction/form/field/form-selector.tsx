@@ -14,9 +14,6 @@ interface FormSelectorProps {
   selectOptions: string[];
   selectLabels: string[];
   form: UseFormReturn;
-  options?: {
-    required?: boolean;
-  };
   styles?: {
     label?: string[],
   };
@@ -29,7 +26,6 @@ interface FormSelectorProps {
  * @param {string[]} selectOptions The list of option values for the dropdown.
  * @param {string[]} selectLabels The list of option labels that will be displayed on the dropdown.
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
- * @param {boolean} options.required Optional indicator for validation that this field is required. Defaults to false.
  * @param {string[]} styles.label Optional styles for the label element.
  */
 export default function FormSelector(props: Readonly<FormSelectorProps>) {
@@ -54,9 +50,7 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
         id={props.field.fieldId}
         className={styles["selector"]}
         aria-label={label}
-        {...props.form.register(props.field.fieldId, getRegisterOptions(
-          props.options?.required,
-        ))}
+        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       >
         {props.selectOptions.map((option, index) => (
           <option key={option} value={option}>
