@@ -23,6 +23,9 @@ The `daily_path_area_query.sql` file retrieves and counts food retailers that in
 **Daily Greenspace Exposure Query:**<br/>
 The `daily_greenspace_exposure_query.sql` file retrieves greenspaces that intersect with the daily path area, which is formed by a 100-metre buffer around the line(s) created with the set of data points for a day.
 
+**Trip Wise Greenspace Exposure Count Query:**<br/>
+The `trip_wise_greenspace_exposure_count_query.sql` file counts greenspaces that intersect with the trip path area, which is formed by a 100-metre buffer around the line(s) created with the set of data points for a trip.
+
 **Nearest Entity Query:**<br/>
 The `nearest_entity_query.sql` file constructs a 100-metre buffer around the daily trajectory to identify food retailers intersecting with the buffer. Each exposed entity is correlated with the nearest GPS point of the daily path. Finally, it enumerates the number of entities associated with each GPS point.
 
