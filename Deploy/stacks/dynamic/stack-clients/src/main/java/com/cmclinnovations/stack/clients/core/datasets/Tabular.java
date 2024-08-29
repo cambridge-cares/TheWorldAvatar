@@ -18,7 +18,8 @@ public class Tabular extends PostgresDataSubset {
     @Override
     public void loadData(Path dirPath, String database, String baseIRI) {
         GDALClient.getInstance()
-                .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
+                .uploadVectorFilesToPostGIS(database, getSchema(), getTable(), dirPath.toString(), ogr2ogrOptions,
+                        false);
     }
 
 }
