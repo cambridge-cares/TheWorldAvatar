@@ -72,9 +72,6 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
         <span className={styles["field-text"]}>{parseWordsForLabels(props.field.name[VALUE_KEY])}{props.form.formState.errors[props.field.fieldId] && "*"}</span>
         <span className={styles["format-label"]}>{formatLabel}</span>
       </label>
-      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
-        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
-      </p>
       <input
         id={props.field.fieldId}
         className={styles["dtpicker"]}
@@ -82,6 +79,9 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
         aria-label={props.field.name[VALUE_KEY]}
         {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       />
+      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
+        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
+      </p>
       {/* Return error for failed validation */}
       <FormErrorComponent
         error={props.form.formState.errors[props.field.fieldId] as FieldError}

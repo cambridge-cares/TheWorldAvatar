@@ -48,11 +48,6 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
         <Icon className={`${styles["info-icon"]} material-symbols-outlined`} onClick={toggleDescription}>info</Icon>
         <span className={styles["field-text"]}>{label}{props.form.formState.errors[props.field.fieldId] && "*"}</span>
       </label>
-      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
-        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
-        <br /><br />
-        <b className={styles["field-text"]}>{selectedOption.label}:</b> {selectedOption.description}
-      </p>
       <select
         id={props.field.fieldId}
         className={styles["selector"]}
@@ -65,6 +60,11 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
           </option>
         ))}
       </select>
+      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
+        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
+        <br /><br />
+        <b className={styles["field-text"]}>{selectedOption.label}:</b> {selectedOption.description}
+      </p>
       {/* Return error for failed validation */}
       <FormErrorComponent
         error={props.form.formState.errors[props.field.fieldId] as FieldError}
