@@ -63,8 +63,14 @@ public class DatasetLoader {
 
             // Ensure Blazegraph namespace exists, if specified
             if (dataset.usesBlazegraph()) {
-                BlazegraphClient.getInstance().createNamespace(dataset.getNamespace(),
+                BlazegraphClient blazegraphClient = BlazegraphClient.getInstance();
+                blazegraphClient.createNamespace(dataset.getNamespace(),
                         dataset.getNamespaceProperties());
+
+                if (!dataset.getOntologyDatasetNames().isEmpty()) {
+                    blazegraphClient.cloneDatasets(dataset.getNamespace(), dataset.getOntologyDatasetNames(),
+                            catalogNamespace);
+                }
             }
 
             if (dataset.usesGeoServer()) {

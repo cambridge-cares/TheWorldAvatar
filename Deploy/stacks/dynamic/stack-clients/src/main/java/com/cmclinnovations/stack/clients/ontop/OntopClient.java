@@ -8,28 +8,17 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
-import org.eclipse.rdf4j.model.vocabulary.DCAT;
-import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
-import org.eclipse.rdf4j.sparqlbuilder.constraint.propertypath.builder.PropertyPathBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ConstructQuery;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
-import com.cmclinnovations.stack.clients.core.datasets.SparqlConstants;
-import com.cmclinnovations.stack.clients.utils.ServiceEndpoint;
+import com.cmclinnovations.stack.clients.core.datasets.CopyDatasetQuery;
 import com.cmclinnovations.stack.clients.utils.TempFile;
-
-import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 
 public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
@@ -53,29 +42,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
     }
 
     public void uploadOntology(String catalogNamespace, List<String> ontologyDatasets) {
-        ConstructQuery query = Queries.CONSTRUCT();
-
-        Variable subjectVar = SparqlBuilder.var("subject");
-        Variable predicateVar = SparqlBuilder.var("predicate");
-        Variable objectVar = SparqlBuilder.var("object");
-
-        Variable serviceVar = SparqlBuilder.var("service");
-        Variable serviceUrlVar = SparqlBuilder.var("serviceUrl");
-        Variable ontologyDatasetVar = SparqlBuilder.var("ontologyDataset");
-
-        ValuesPattern datasetValues = new ValuesPattern(ontologyDatasetVar,
-                ontologyDatasets.stream().map(Rdf::literalOf).collect(Collectors.toList()));
-
-        query.construct(subjectVar.has(predicateVar, objectVar))
-                .where(serviceVar
-                        .has(PropertyPathBuilder.of(DCAT.SERVES_DATASET).then(DCTERMS.TITLE).build(),
-                                ontologyDatasetVar)
-                        .andIsA(SparqlConstants.BLAZEGRAPH_SERVICE)
-                        .andHas(DCAT.ENDPOINT_URL, serviceUrlVar)
-                        .and(new ServiceEndpoint(serviceUrlVar, subjectVar.has(predicateVar, objectVar))),
-                        datasetValues);
-
-        LOGGER.info("uploadOntology query: {}", query.getQueryString());
+        ConstructQuery query = CopyDatasetQuery.getConstructQuery(ontologyDatasets);
 
         Model model = BlazegraphClient.getInstance().getRemoteStoreClient(catalogNamespace)
                 .executeConstruct(query.getQueryString());
