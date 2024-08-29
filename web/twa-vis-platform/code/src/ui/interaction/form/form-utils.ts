@@ -1,4 +1,5 @@
 import { PathNames } from "io/config/routes";
+import { escape } from "querystring";
 import { FieldValues, RegisterOptions } from "react-hook-form";
 import { PropertyShape, VALUE_KEY } from "types/form";
 
@@ -87,11 +88,60 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 export function getRegisterOptions(field: PropertyShape): RegisterOptions {
   const options: RegisterOptions = {};
 
-  // Add register options if the field is required
+  // Add options if the field is required
   if (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1) {
-    options.required = "This field is required!";
+    options.required = "Required";
   }
 
+  // For numerical values which must have least meet the min inclusive target
+  if (field.minInclusive) {
+    options.min = {
+      value: Number(field.minInclusive[VALUE_KEY]),
+      message: `Please enter a number that is ${field.minInclusive[VALUE_KEY]} or greater!`,
+    };
+  } else if (field.minExclusive) {
+    options.min = {
+      value: Number(field.minExclusive[VALUE_KEY]) + 0.1,
+      message: `Please enter a number greater than ${field.minExclusive[VALUE_KEY]}!`,
+    };
+  }
+
+  // For numerical values which must have least meet the max inclusive target
+  if (field.maxInclusive) {
+    options.max = {
+      value: Number(field.maxInclusive[VALUE_KEY]),
+      message: `Please enter a number that is ${field.maxInclusive[VALUE_KEY]} or smaller!`,
+    };
+  } else if (field.maxExclusive) {
+    options.max = {
+      value: Number(field.maxExclusive[VALUE_KEY]) + 0.1,
+      message: `Please enter a number less than  ${field.maxExclusive[VALUE_KEY]}!`,
+    };
+  }
+
+  if (field.minLength) {
+    options.minLength = {
+      value: Number(field.minLength[VALUE_KEY]),
+      message: `Input requires at least ${field.minLength[VALUE_KEY]} letters!`,
+    };
+  }
+  if (field.maxLength) {
+    options.maxLength = {
+      value: Number(field.maxLength[VALUE_KEY]),
+      message: `Input has exceeded maximum length of ${field.maxLength[VALUE_KEY]} letters!`,
+    };
+  }
+
+  // For any custom patterns
+  if (field.pattern) {
+    // Change message if only digits are allowed
+    const msg: string = field.pattern[VALUE_KEY] = "\\d+" ? `Only numerical inputs are allowed!` :
+      `This field must follow the pattern ${field.pattern[VALUE_KEY]}`;
+    options.pattern = {
+      value: new RegExp(field.pattern[VALUE_KEY]),
+      message: msg,
+    };
+  }
   return options;
 }
 
