@@ -45,7 +45,6 @@ hasMOPFormula,Data Property,,,MetalOrganicPolyhedron,String,,,https://www.thewor
 hasCCDCNumber,Data Property,,,MetalOrganicPolyhedron,String,,A data property that informs on the exact deposition number of the MOP in the CCDC database.,https://www.theworldavatar.com/kg/ontomops/,
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Geometry,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry,Object Property,,,MetalOrganicPolyhedron UNION ChemicalBuildingUnit,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Geometry,,A relation between a molecular entity and the geometry associated with it. ,https://www.theworldavatar.com/kg/ontomops/,
-hasGeometryFile,Data Property,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Geometry,String,,The path to the XYZ file representing a molecular geometry.,https://www.theworldavatar.com/kg/ontomops/,
 hasModularity,Data Property,,,GenericBuildingUnit,Integer,,The number of generic building units that connect to a selected generic building.,https://www.theworldavatar.com/kg/ontomops/,
 hasPlanarity,Data Property,,,GenericBuildingUnit,String,,"Description of how the other beneric building units are spatially oriented arround the building unit of interst. (e.g. linear, bent, off-set, pyramidal, planar).",https://www.theworldavatar.com/kg/ontomops/,
 hasUnitNumberValue,Data Property,,,GenericBuildingUnitNumber,Integer,,,https://www.theworldavatar.com/kg/ontomops/,
