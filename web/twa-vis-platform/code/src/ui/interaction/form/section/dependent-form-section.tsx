@@ -177,7 +177,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
             )}
           </div>
         )}
-        {!isFetching && <MaterialIconButton
+        {!isFetching && selectElements.length > 0 && <MaterialIconButton
           iconName={"expand_circle_right"}
           className={styles["button"] + " " + styles["button-layout"]}
           text={{
