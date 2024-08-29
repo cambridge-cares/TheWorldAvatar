@@ -32,6 +32,13 @@ export interface PropertyShape {
   in?: JsonLdInstance;
   minCount?: JsonLdLiteral;
   maxCount?: JsonLdLiteral;
+  minInclusive?: JsonLdLiteral ;
+  maxInclusive?: JsonLdLiteral ;
+  minExclusive?: JsonLdLiteral ;
+  maxExclusive?: JsonLdLiteral ;
+  minLength?: JsonLdLiteral ;
+  maxLength?: JsonLdLiteral ;
+  pattern?: JsonLdLiteral 
 }
 
 export interface PropertyGroup {

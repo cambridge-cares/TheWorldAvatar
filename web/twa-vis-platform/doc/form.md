@@ -129,4 +129,12 @@ The following fields are optional utility fields that does not affect the catego
 
 For form validation purposes, several SHACL restrictions can also be utilised in the following combinations:
 
-1. Required form field: minCount: 1, maxCount: 1
+1. Required form field: `minCount: 1`, `maxCount: 1`
+2. Number form field >= value: `minInclusive: number`
+3. Number form field > value: `minExclusive: number`
+4. Number form field <= value: `maxInclusive: number`
+5. Number form field < value: `maxExclusive: number`
+6. Text form field with a minimum length: `minLength: string`
+7. Text form field with a maximum length: `maxLength: string`
+8. Text form field that contains only digits: `pattern: "^\d+$"`
+9. Text form field conforming to a specified regex pattern: `pattern: string`
