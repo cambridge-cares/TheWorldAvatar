@@ -63,7 +63,7 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
       <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
         <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
         <br /><br />
-        <b className={styles["field-text"]}>{selectedOption.label}:</b> {selectedOption.description}
+        <b className={styles["field-text"]}>{selectedOption?.label}:</b> {selectedOption?.description}
       </p>
       {/* Return error for failed validation */}
       <FormErrorComponent
