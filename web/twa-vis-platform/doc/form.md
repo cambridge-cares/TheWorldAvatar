@@ -112,14 +112,11 @@ With that said, the properties `PropertyShape` themselves must comply with [SHAC
 - **Number**: `decimal`, `integer`
 - **Date**: `date`, `time`, `dateTime`
 
-2. `in`: Generates a select input field with options based on the associated class `{"@id": "class"}`
-3. `class`: Generates a dependent form section that consists of a select input field and nested field properties. The select input field will contain the instances of the associated class `{"@id": "class"}`. The associated fields for the selected element will then be retrieved and displayed.
-4. `qualifiedValueShape`: Generates a dependent form section similar to (3), but incorporates a parent select element for a parent dependency. For instance, an employee must always belong to a specific employer. The `qualifiedValueShape` must have the following inputs:
+2. `in`: Generates a select input field with options containing the **subclasses** on the associated class `{"@id": "class"}`
+3. `class`: Generates a form section based on a select input field, containing the **instances** of the associated class `{"@id": "class"}`. Additional buttons are available to either add a new instance or view more details about the selected instance. This property can be used as a standalone without any dependency capabilities enabled. In enabling dependencies, please also include the following properties:
 
-- **@id**: A `string` id that will be ignored but required for the SPARQL `CONSTRUCT` query
-- **name**: `{"@value": "name"}` containing the label name for this parent element; Typically the rdfs:label of the `targetClass`
-- **targetClass**: `{"@id": "targetClass"}` containing the target class of the parent element that the frontend will retrieve
-- **defaultValue**: An optional `string` containing the current value of this dependent element
+- `qualifiedValueShape`: An optional property that must be included with `class` to enable dependencies between two fields. For instance, an employee must always be linked to a specific employer. This property must contain an array of the associated node shape instances in the format `{"@id": "node shape"}`. Note that one property may have as many node shapes as possible using the `sh:and` property in the original `SHACL` format.
+- `nodeKind`: An optional property that must be included with `class` and `qualifiedValueShape` to denote if the property is a dependent property, that is dependent on a separate (independent) field with the same node shape. If `nodeKind` is not added, we assume that the property is an independent field that other dependent fields will require.
 
 ### 2.2. Form utilities
 
