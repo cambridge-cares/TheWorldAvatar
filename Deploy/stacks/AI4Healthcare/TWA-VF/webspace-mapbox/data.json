@@ -2,7 +2,8 @@
     "name": "All Layers",
     "groups": [
         {
-            "name": "Buildings",
+            
+            "name": "Cam-Ely-Wisbech Buildings",
             "stack": "http://174.138.27.240:3838",
             "sources": [
                 {
@@ -34,7 +35,7 @@
             "layers": [
                 {
                     "id": "cambridge-layer",
-                    "name": "Cambridge-Ely-Wisbech",
+                    "name": "Cambridge-Ely-Wisbech Building",
                     "treeable": false,
                     "source": "cambridge-source",
                     "source-layer": "cambridge_gsl",
@@ -122,7 +123,7 @@
             ]
         },
         {
-            "name": "Kings-Lynn",
+            "name": "Kings-Lynn Buildings",
             "stack": "http://165.232.172.16:3838",
             "sources": [
                 {
@@ -161,7 +162,7 @@
             "layers": [
                 {
                     "id": "buildings-layer-value",
-                    "name": "Property value estimates",
+                    "name": "Property Value Estimates",
                     "source": "building_values",
                     "source-layer": "marketvalues",
                     "type": "fill-extrusion",
@@ -191,7 +192,7 @@
                 },
                 {
                     "id": "buildings-layer-sales",
-                    "name": "Actual property sales",
+                    "name": "Actual Property Sales",
                     "source": "building_sales",
                     "source-layer": "transactions",
                     "type": "fill-extrusion",
@@ -396,7 +397,7 @@
         {
             "name": "Example GPS trajectories",
             "groups": [
-              {
+            {
                 "name": "Example trajectory (2015)",
                 "stack": "http://174.138.27.240:5007",
                 "sources": [
@@ -404,15 +405,16 @@
                     "id": "Recorded Points Sources",
                     "type": "vector",
                     "tiles": [
-                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "https://theworldavatar.io/demos/fenland/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                   },
                   {
                     "id": "Movement Trajectory Sources",
-                    "type": "raster",
-                    "tiles": [
-                      "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
-                    ]
+                    "type": "geojson",
+					"cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Agps_line&&outputFormat=application%2Fjson"
                   }
                 ],
                 "layers": [
@@ -436,12 +438,16 @@
                     "id": "Movement Trajectory_layer",
                     "name": "Interpolated movement",
                     "source": "Movement Trajectory Sources",
-                    "type": "raster",
-                    "minzoom": 4,
-                    "order": 3,
+                    "type": "line",
+                    "minzoom": 12,
+                    "order": 100,
                     "layout": {
                       "visibility": "none"
-                    }
+                    },
+					"paint": {
+						"line-color": "#326578",
+						"line-width": 3
+					}
                   }
                 ]
               },
@@ -476,7 +482,7 @@
                     "layout": {
                       "visibility": "none",
                       "icon-image": "gpslocation2",
-                      "icon-size": 0.37,
+                      "icon-size": 0.27,
                       "icon-allow-overlap": true,
                       "icon-ignore-placement": true
                     }
@@ -688,6 +694,178 @@
         
                 ]
             },
+            {
+                "name": "Points of Interest",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                    {
+                        "id": "poi-sport-entertainment-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    },
+                    {
+                        "id": "poi-education-health-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    },
+                    {
+                        "id": "poi-public-infrastructure-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    },
+                    {
+                        "id": "poi-supermarkets-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_ex_supermarkets&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    }
+                ],
+                "layers": [
+                    {
+                        "id": "poi-sport-entertainment",
+                        "name": "Sport and entertainment",
+                        "source": "poi-sport-entertainment-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "sports",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-sport-entertainment-cluster",
+                        "name": "Sport and entertainment",
+                        "source": "poi-sport-entertainment-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "sports_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    },
+                    {
+                        "id": "poi-education-health",
+                        "name": "Education and health",
+                        "source": "poi-education-health-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "edu",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-education-health-cluster",
+                        "name": "Education and health",
+                        "source": "poi-education-health-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "edu_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    },
+                    {
+                        "id": "poi-public-infrastructure",
+                        "name": "Public infrastructure",
+                        "source": "poi-public-infrastructure-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "public",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-public-infrastructure-cluster",
+                        "name": "Public infrastructure",
+                        "source": "poi-public-infrastructure-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "public_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    },
+                    {
+                        "id": "poi-supermarkets",
+                        "name": "Food Retail (Supermarkets)",
+                        "source": "poi-supermarkets-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "supermarket",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-supermarkets-cluster",
+                        "name": "Food Retail (Supermarkets)",
+                        "source": "poi-supermarkets-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "supermarket_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    }
+                ]
+            },                                                                                                                                                                                                                   
               {
                 "name": "Fenland Study (circa 2014)",
                 "stack": "http://174.138.27.240:5007",
@@ -902,6 +1080,69 @@
                 }
             ]
         },
+        {
+            "name": "Flood Warnings",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "floodwarnings_active",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=true"
+                    ]
+                },
+                {
+                    "id": "floodwarnings_inactive",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=false"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "floodwarnings",
+                    "name": "Active flood warnings",
+                    "source": "floodwarnings_active",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 11,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "text-field": ["get", "severity"],
+                    "paint": {
+                        "fill-color": [
+                            "match",
+                            ["get", "severity"],
+                            "4", "#add8e6",
+                            "3", "#ebc244",
+                            "2", "#ff8800",
+                            "1", "#c90a0a",
+                            "#808080"
+                          ],
+                        "fill-opacity": 0.4,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "floodwarnings_outdated",
+                    "name": "Inactive flood warnings",
+                    "source": "floodwarnings_inactive",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 10,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#808080",
+                        "fill-opacity": 0.3,
+                        "fill-outline-color": "#000000"
+                    }
+                }
+            ]
+        },        
         {
             "name": "Land use",
             "groups": [
