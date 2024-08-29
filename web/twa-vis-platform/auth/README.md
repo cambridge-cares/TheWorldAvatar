@@ -35,3 +35,9 @@ This should not require any further configuration.
 A PGAdmin container is included as a part of this stack, you can use it to check if realms and users are being correctly stored in postgres. You will need to add your postgres server using the host `postgres` (visible inside the docker network), and database 'keycloak'.
 
 You can also connect to this via adminer if you prefer, by starting an adminer container and connecting to the database on port `5432` which is forwarded to the server host by default (`localhost:5432`). This assumes you do not have another database forwarding to localhost.
+
+## Redis
+
+A redis store is in place to store sessions. This will run at port `6379` but you will need to specify the host of the machine running it for a viz app inside a docker container to work. This, like the keycloak server url in your `keycloak.json` will likely need to be the local IP (191.xx.xxx.xxx) or host.docker.internal sometimes works.
+
+This will default to localhost if the node server is running on the bare metal.
