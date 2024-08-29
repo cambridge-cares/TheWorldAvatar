@@ -25,6 +25,13 @@
 	"gpslocation2": "data/icons/gpslocation2.png",
 	"takeaway": "data/icons/takeaway.png",
 	"supermarket": "data/icons/supermarket.png",
+	"supermarket_circle": "data/icons/supermarket_circle.png",
+	"sports": "data/icons/sports.png",
+	"sports_circle": "data/icons/sports_circle.png",
+	"edu": "data/icons/edu_and_health.png",
+	"edu_circle": "data/icons/edu_and_health_circle.png",
+	"public": "data/icons/public_infras.png",
+	"public_circle": "data/icons/public_infras_circle.png",
 
 	"power-primary": "data/icons/power-primary.png",
 	"power-secondary": "data/icons/power-secondary.png",
