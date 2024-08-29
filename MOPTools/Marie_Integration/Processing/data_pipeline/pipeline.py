@@ -149,90 +149,134 @@ class ChatGPTAPI:
               response_format={
                   "type": "json_schema",
                   "json_schema": {
-                      "name" : "synthesis",
-                      "schema":{
-                      "type": "object",
-                      "properties": {
-                          "Synthesis": {
-                              "type": "array",
-                              "items": {
-                                  "type": "object",
-                                  "properties": {
-                                      "productName": { "type": "string" },
-                                      "productCCDCNumber": { "type": "string" },
-                                      "steps":{
-                                      "Add": {
-                                          "type": "object",
-                                          "properties": {
-                                              "usedVessel": { "type": "string" },
-                                              "addedChemicalName": { "type": "string" },
-                                              "addedChemicalAmount": { "type": "string" },
-                                              "stepNumber": { "type": "integer" }
-                                          },
-                                          "required": ["usedVessel", "addedChemicalName", "addedChemicalAmount", "stepNumber"],
-                                          "additionalProperties": False
+                      "name": "synthesis",
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "Synthesis": {
+                                  "type": "array",
+                                  "items": {
+                                      "type": "object",
+                                      "properties": {
+                                          "productName": {"type": "string"},
+                                          "productCCDCNumber": {"type": "string"},
+                                          "steps": {
+                                              "type": "array",
+                                              "items": {
+                                                  "type": "object",
+                                                  "anyOf": [
+                                                      {
+                                                          "type": "object",
+                                                          "properties": {
+                                                              "Add": {
+                                                                  "type": "object",
+                                                                  "properties": {
+                                                                      "usedVessel": {"type": "string"},
+                                                                      "addedChemicalName": {"type": "string"},
+                                                                      "addedChemicalAmount": {"type": "string"},
+                                                                      "stepNumber": {"type": "integer"}
+                                                                  },
+                                                                  "required": ["usedVessel", "addedChemicalName", "addedChemicalAmount", "stepNumber"],
+                                                                  "additionalProperties": False
+                                                              }
+                                                          },
+                                                          "required": ["Add"],
+                                                          "additionalProperties": False
+                                                      },
+                                                      {
+                                                          "type": "object",
+                                                          "properties": {
+                                                              "HeatChill": {
+                                                                  "type": "object",
+                                                                  "properties": {
+                                                                      "heatCoolingTime": {"type": "string"},
+                                                                      "usedDevice": {"type": "string"},
+                                                                      "targetTemperature": {"type": "string"},
+                                                                      "heatingCoolingRate": {"type": "string"},
+                                                                      "underVacuum": {"type": "boolean"},
+                                                                      "usedVessel": {"type": "string"},
+                                                                      "sealedVessel": {"type": "boolean"},
+                                                                      "stepNumber": {"type": "integer"}
+                                                                  },
+                                                                  "required": ["heatCoolingTime", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVessel", "sealedVessel", "stepNumber"],
+                                                                  "additionalProperties": False
+                                                              }
+                                                          },
+                                                          "required": ["HeatChill"],
+                                                          "additionalProperties": False
+                                                      },
+                                                      {
+                                                          "type": "object",
+                                                          "properties": {
+                                                              "Filter": {
+                                                                  "type": "object",
+                                                                  "properties": {
+                                                                      "washingSolventName": {"type": "string"},
+                                                                      "washingSolventAmount": {"type": "string"},
+                                                                      "repetitions": {"type": "integer"},
+                                                                      "usedVessel": {"type": "string"},
+                                                                      "stepNumber": {"type": "integer"}
+                                                                  },
+                                                                  "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVessel", "stepNumber"],
+                                                                  "additionalProperties": False
+                                                              }
+                                                          },
+                                                          "required": ["Filter"],
+                                                          "additionalProperties": False
+                                                      },
+                                                      {
+                                                          "type": "object",
+                                                          "properties": {
+                                                              "Stir": {
+                                                                  "type": "object",
+                                                                  "properties": {
+                                                                      "stirringTime": {"type": "string"},
+                                                                      "usedVessel": {"type": "string"},
+                                                                      "stepNumber": {"type": "integer"}
+                                                                  },
+                                                                  "required": ["stirringTime", "usedVessel", "stepNumber"],
+                                                                  "additionalProperties": False
+                                                              }
+                                                          },
+                                                          "required": ["Stir"],
+                                                          "additionalProperties": False
+                                                      },
+                                                      {
+                                                          "type": "object",
+                                                          "properties": {
+                                                              "Sonicate": {
+                                                                  "type": "object",
+                                                                  "properties": {
+                                                                      "sonicationTime": {"type": "string"},
+                                                                      "usedVessel": {"type": "string"},
+                                                                      "stepNumber": {"type": "integer"}
+                                                                  },
+                                                                  "required": ["sonicationTime", "usedVessel", "stepNumber"],
+                                                                  "additionalProperties": False
+                                                              }
+                                                          },
+                                                          "required": ["Sonicate"],
+                                                          "additionalProperties": False
+                                                      }
+                                                  ]
+                                              }
+                                          }
                                       },
-                                      "HeatChill": {
-                                          "type": "object",
-                                          "properties": {
-                                              "heatCoolingTime": { "type": "string" },
-                                              "usedDevice": { "type": "string" },
-                                              "targetTemperature": { "type": "string" },
-                                              "heatingCoolingRate": { "type": "string" },
-                                              "underVacuum": { "type": "boolean" },
-                                              "usedVessel": { "type": "string" },
-                                              "sealedVessel": { "type": "boolean" },
-                                              "stepNumber": { "type": "integer" }
-                                          },
-                                          "required": ["heatCoolingTime", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVessel", "sealedVessel", "stepNumber"],
-                                          "additionalProperties": False
-                                      },
-                                      "Filter": {
-                                          "type": "object",
-                                          "properties": {
-                                              "washingSolventName": { "type": "string" },
-                                              "washingSolventAmount": { "type": "string" },
-                                              "repetitions": { "type": "integer" },
-                                              "usedVessel": { "type": "string" },
-                                              "stepNumber": { "type": "integer" }
-                                          },
-                                          "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVessel", "stepNumber"],
-                                          "additionalProperties": False
-                                      },
-                                      "Stir": {
-                                          "type": "object",
-                                          "properties": {
-                                              "stirringTime": { "type": "string" },
-                                              "usedVessel": { "type": "string" },
-                                              "stepNumber": { "type": "integer" }
-                                          },
-                                          "required": ["stirringTime", "usedVessel", "stepNumber"],
-                                          "additionalProperties": False
-                                      },
-                                      "Sonicate": {
-                                          "type": "object",
-                                          "properties": {
-                                              "sonicationTime": { "type": "string" },
-                                              "usedVessel": { "type": "string" },
-                                              "stepNumber": { "type": "integer" }
-                                          },
-                                          "required": ["sonicationTime", "usedVessel", "stepNumber"],
-                                          "additionalProperties": False
-                                      }}
-                                  },
-                                  "required": ["productName", "productCCDCNumber", "Add", "HeatChill", "Filter", "Stir", "Sonicate"],
-                                  "additionalProperties": False
+                                      "required": ["productName", "productCCDCNumber", "steps"],
+                                      "additionalProperties": False
+                                  }
                               }
-                          }
+                          },
+                          "required": ["Synthesis"],
+                          "additionalProperties": False
                       },
-                      "required": ["Synthesis"],
-                      "additionalProperties": False
-                      },
-                  "strict": True
+                      "strict": True
                   }
               },
               messages=messages
           )
+
+
 
         else:
           messages    =[
