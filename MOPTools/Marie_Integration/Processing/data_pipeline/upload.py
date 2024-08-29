@@ -184,13 +184,13 @@ class HeatChillValue(BaseClass):
 class ChemicalTransformation(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
     isDescribedBy                       : Optional[IsDescribedBy[ChemicalSynthesis]]                    = set()
-    hasChemicalInput                    : Optional[HasChemicalInput[ChemicalInput]]                     = set()
     hasChemicalOutput                   : Optional[HasChemicalOutput[ChemicalOutput]]                   = set()
 class ChemicalSynthesis(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
     hasSynthesisStep                    : Optional[HasSynthesisStep[SynthesisStep]]                     = set()
     hasFirstStep                        : Optional[HasFirstStep[SynthesisStep]]                         = set()
     hasEquipment                        : Optional[HasEquipment[LabEquipment]]                          = set()
+    hasChemicalInput                    : Optional[HasChemicalInput[ChemicalInput]]                     = set()
     retrievedFrom                       : Optional[RetrievedFrom[Document]]                             = set()
 class SynthesisStep(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
@@ -426,7 +426,8 @@ def upload_predefined(client):
     round_bottom_flask                  = Vessel(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/Vessel_5a7d7ec9-44d5-4280-8467-f9f624374a9d", rdfs_label="round bottom flask")
     glass_scintilation_vial             = Vessel(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/Vessel_b67ea47b-7849-4aac-b0fd-e2715a4ac034", rdfs_label="glass scintillation vial")
     pyrex_tube                          = Vessel(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/Vessel_080ad74b-950d-4651-a87c-5aa96d5ffb52", rdfs_label="pyrex tube")
-    
+    undefined_vessel                    = Vessel(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/Vessel_183ad74b-950d-4631-a47c-5aa91d5ffb12", rdfs_label="N/A")
+      
 
     degree_celsius                      = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius", rdfs_label="degree Celsius")
     kelvin                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin", rdfs_label="kelvin")
@@ -443,8 +444,9 @@ def upload_predefined(client):
     mlitre                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre", rdfs_label="mlitre")
     # from TWA branch of OM:
     revolutions_per_minute              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/revolutionPerMinute-Time", rdfs_label="revolution per minute", rdfs_comment="Revolution per minute is a unit of rotational speed (or rotational frequency) for rotating machines.")
+    unknown_unit                        = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/unknown", rdfs_label="N/A")
 
-    instances                           = [vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_day, duration_h, duration_s, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, mole, mmole, mlitre]
+    instances                           = [vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_day, duration_h, duration_s, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, mole, mmole, mlitre, undefined_vessel, unknown_unit]
     push_component_to_kg(instances, client)
 
 def extract_numbers_and_units(text, pattern_type):
@@ -464,6 +466,10 @@ def extract_numbers_and_units(text, pattern_type):
     # Separate numbers and units
     numbers             = [float(match[0]) for match in matches]
     units               = [match[1] for match in matches]
+    if numbers == []:
+        numbers         = [0] 
+    if units == []:
+        units         = ["N/A"] 
     return numbers, units
 
 class TextToCSV:
@@ -606,6 +612,8 @@ def match_vessel(vessel_name, client):
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_b67ea47b-7849-4aac-b0fd-e2715a4ac034"
         case 'pyrex tube':  
             vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_080ad74b-950d-4651-a87c-5aa96d5ffb52"
+        case _:     
+            vessel_iri                          = "https://www.theworldavatar.com/kg/OntoSyn/Vessel_183ad74b-950d-4631-a47c-5aa91d5ffb12"
     vessel                                      = Vessel.pull_from_kg(vessel_iri, client,recursive_depth=-1)[0]
     return vessel
 
@@ -635,8 +643,9 @@ def get_unit(unit_name, client):
         case "mL" | "mililitre" | "mL" | "ml"  :
             unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre", client, recursive_depth=-1)[0]                                  
         case _: 
-            print(f"Unit was not recognized. Check the following unit: {unit_name} \n")
-            unit                = UnitOfMeasure()
+            print(f"Unit was not recognized. Check the following unit: {unit_name} \n")            
+            unit                = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/unknown", client, recursive_depth=-1)[0]                                  
+       
 
     """
     mole_per_litre                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre", rdfs_label="mole per litre")
@@ -644,9 +653,9 @@ def get_unit(unit_name, client):
     """
     return unit
 def heatchill_upload(client, heatchill_step):
-    temp, temp_unit                             = extract_numbers_and_units(heatchill_step["Target temperature"],"temp")
-    heat_time, time_unit                        = extract_numbers_and_units(heatchill_step["Heat or cooling Time"], "add")
-    heat_rate, rate_unit                        = extract_numbers_and_units(heatchill_step["Heating or cooling rate"], "temp")
+    temp, temp_unit                             = extract_numbers_and_units(heatchill_step["targetTemperature"],"temp")
+    heat_time, time_unit                        = extract_numbers_and_units(heatchill_step["heatCoolingTime"], "add")
+    heat_rate, rate_unit                        = extract_numbers_and_units(heatchill_step["heatingCoolingRate"], "temp")
     print("temperature: ", temp, temp_unit)
     print("heatingrate: ", heat_rate, rate_unit)
     print("duration: ", heat_time, time_unit)
@@ -667,21 +676,22 @@ def heatchill_upload(client, heatchill_step):
     duration                                    = Duration(hasValue=duration_value)
 
     # Vessel:
-    vessel                                      = match_vessel(heatchill_step['used Vessel'], client)
-    sealed                                      = heatchill_step["sealed Vessel"]
-    vacuum                                      = heatchill_step["under Vacuum"]
-    heatchill_device                            = heatchill_step["used Device"]
+    vessel                                      = match_vessel(heatchill_step['usedVessel'], client)
+    sealed                                      = heatchill_step["sealedVessel"]
+    vacuum                                      = heatchill_step["underVacuum"]
+    heatchill_device                            = heatchill_step["usedDevice"]
     # put everything together
-    heat_chill                                  = HeatChill(hasVessel=vessel, hasStepDuration=duration, hasTargetTemperature=target_temperature, hasTemperatureRate=temperature_rate, hasVacuum=vacuum, isSealed=sealed, hasOrder=heatchill_step['step Number'])
+    heat_chill                                  = HeatChill(hasVessel=vessel, hasStepDuration=duration, hasTargetTemperature=target_temperature, hasTemperatureRate=temperature_rate, hasVacuum=vacuum, isSealed=sealed, hasOrder=heatchill_step['stepNumber'])
     components = [temperature_value, target_temperature, temperature_value, temperature_rate, duration_value, duration, heat_chill]
     push_component_to_kg(components, client)
     return  heat_chill
 
 def add_upload(add_step, synthesis_client, species_client):
-    added_amount                                        = add_step["added chemical amount"]
+    print("add step inside: ", add_step)
+    added_amount                                        = add_step["addedChemicalAmount"]
     add_value, add_unit                                 = extract_numbers_and_units(added_amount, "add")
-    vessel                                              = match_vessel(add_step['used Vessel'], synthesis_client)
-    chemical_name                                       = add_step['added chemical name']
+    vessel                                              = match_vessel(add_step['usedVessel'], synthesis_client)
+    chemical_name                                       = add_step['addedChemicalName']
     # Vessel:
     species_name                                        = chemical_name     
     species                                             = instantiate_input(species_name, species_name, client_species=species_client, client_synthesis=synthesis_client) 
@@ -697,22 +707,20 @@ def add_upload(add_step, synthesis_client, species_client):
         scalar_value_instance                           = ScalarValue(hasNumericalValue=value, hasUnitOfMeasure=unit_instance)
         scalar_values.append(scalar_value_instance)
 
-    # Create a `PhaseComponentConcentration` instance with all scalar values
     phase_component_concentration                       = PhaseComponentConcentration(hasValue=set(scalar_values))
     phase_component                                     = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
     composition                                         = Composition(comprisesDirectly=phase_component_concentration)
     single_phase                                        = SinglePhase(isComposedOfSubsystem=phase_component, hasComposition=composition)     
     material                                            = Material(thermodynamicBehaviour=single_phase)
     chemical_input                                      = ChemicalInput(referencesMaterial=material)
-    add_class                                           = Add(hasOrder=add_step['step number'], hasVessel=vessel, hasAddedChemicalInput=chemical_input)
+    add_class                                           = Add(hasOrder=add_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input)
     components = [phase_component_concentration, phase_component, composition, single_phase, material, chemical_input, add_class]
     push_component_to_kg(components, synthesis_client)
     return add_class
 
 def filter_upload(filter_step, synthesis_client):
     print("filter step: ", filter_step)
-    
-    filter_class                                        = Filter(hasOrder=filter_step["step Number"], isRepeated=filter_step["Repetitions"])                                         
+    filter_class                                        = Filter(hasOrder=filter_step["stepNumber"], isRepeated=filter_step["repetitions"])                                         
     components = [filter_class]
     push_component_to_kg(components, synthesis_client)
     return filter_class
@@ -793,6 +801,15 @@ def chemicals_upload(input_path, output_path):
     print("Input path: ", input_path)
     # read in CSV:
     # path: "../Data/first10_prompt2/10.1021_ic402428m.txt" 
+    filename                                    = os.path.basename(input_path)
+    # Split the filename into the two parts using '_'
+    number1, number2_with_extension             = filename.split('_')
+    # Remove the '.txt' extension from the second part
+    number2                                     = os.path.splitext(number2_with_extension)[0]
+    # Combine the parts in the desired format
+    doi = f"{number1}/{number2}"
+    print("doi: ", doi)
+    document                                    = Document(doi=doi)
     csv_class                                   = TextToCSV(input_path)
     csv_lines                                   = csv_class.read_and_clean_file()
     csv_out                                     = csv_class.extract_csv_entries(csv_lines)
@@ -804,7 +821,8 @@ def chemicals_upload(input_path, output_path):
         mop_name                                = line["Chemical Name"]
         print("CSV row: ",line)
         mop, chemical_output                    = instantiate_output(line["CCDC Number"], line["Chemical Formula"], mop_name, client_mop, client_synthesis)
-        chemical_transformation                 = ChemicalTransformation(hasChemicalOutput=chemical_output)
+        chemical_synthesis                      = ChemicalSynthesis(retrievedFrom=document) 
+        chemical_transformation                 = ChemicalTransformation(hasChemicalOutput=chemical_output, isDescribedBy=chemical_synthesis)
         components                              = [chemical_output, mop, chemical_transformation]
         print("mop: ", mop)
         print(chemical_output)
@@ -827,12 +845,19 @@ def chemicals_upload(input_path, output_path):
                 print(f"not able to link with MOP: {species_name}")
             else:
                 print("queried IRI: ", syn_prod)
-                chemical_transformation                     = ChemicalTransformation.pull_from_kg(syn_prod[0]["chemicalTrans"], sparql_client=client_synthesis, recursive_depth=-1)   
+                chemical_transformation                     = ChemicalTransformation.pull_from_kg(syn_prod[0]["chemicalTrans"], sparql_client=client_synthesis, recursive_depth=-1) 
+                print("chemical transformation: ", chemical_transformation[0])
+                chemical_synthesis_set                      = chemical_transformation[0].isDescribedBy  
+                print("chemical synthesis: ", chemical_synthesis_set)
+                # get IRI from set
+                for synthesis in chemical_synthesis_set:
+                    instance_iri = synthesis.instance_iri
+                chemical_synthesis                          = ChemicalSynthesis.pull_from_kg(instance_iri, sparql_client=client_synthesis, recursive_depth=-1) 
         print(chemical_transformation)
-        chemical_transformation[0].hasChemicalInput.add(chemical_input)
-        components                                          = [phase_component, single_phase, material, chemical_input, species, chemical_transformation]
+        chemical_synthesis[0].hasChemicalInput.add(chemical_input)
+        components                                          = [phase_component, single_phase, material, chemical_input, species, chemical_transformation, chemical_synthesis]
         # Loop through each component and call the function
-        print("phasse component: ", phase_component)
+        print("phase component: ", phase_component)
         push_component_to_kg(components, client_synthesis)
         last_prod                                           = syn_prod
             
@@ -851,48 +876,49 @@ def main():
     sparql_client_synthesis                                 = get_client("OntoSynthesisConnection")
     sparql_client_species                                   = get_client("OntoSpeciesConnection") 
     sparql_client_mop                                       = get_client("OntoMOPConnection") 
-    upload_predefined(sparql_client_synthesis)
-    chemicals_upload("../Data/first10_prompt22/10.1021_ja 0104352.txt", "")
+    #upload_predefined(sparql_client_synthesis)
+    # 10.1039_C6DT02764D
+    # 10.1021_ja0104352.txt
+    chemicals_upload("../Data/first10_prompt22/10.1021_ja0104352.txt", "")
     # read in JSON:
-    SynthesisJson                                           = read_json_file("../Data/first10_prompt52/10.1021_ja 0104352.json")["Synthesis"]
-    data2                                                   = SynthesisJson[0]
+    synthesis_json                                           = read_json_file("../Data/first10_prompt53/10.1021_ja0104352.json")["Synthesis"]
+    print("actual full data: ", synthesis_json)
+    for entry in synthesis_json:
+        print("entry: ", entry)
+    data2                                                   = synthesis_json[0]
     print("json file: ", data2)
-    mop_name                                                = data2["product name"]
-    mop_ccdc                                                = data2["product CCDC number"]
+    mop_name                                                = data2["productName"]
+    mop_ccdc                                                = data2["productCCDCNumber"]
     transformation_iri                                      = transformation_querying(sparql_client_synthesis, mop_name=mop_name)
     if transformation_iri == []:
         transformation_querying(sparql_client_synthesis, mop_name=mop_ccdc)
     print("transformation iri", transformation_iri)  
     print("IRI: ", transformation_iri[0]["chemicalTrans"])
     print("full data: ", data2)
-    add_json                                    = data2["Add"]
-    filter_json                                 = data2["Filter"]
-    heatchill_json                              = data2["HeatChill"]
-    print("add step: ", add_json)
+    step_data                                   = data2["steps"]
     step_list                                   = []
-    for add_step in add_json:
-        add_class                               = add_upload(add_step=add_step, synthesis_client=sparql_client_synthesis, species_client=sparql_client_species)
-        step_list.append(add_class)
+    for step_dat in step_data:
+        if 'Add' in step_dat:
+            add_class                               = add_upload(add_step=step_dat["Add"], synthesis_client=sparql_client_synthesis, species_client=sparql_client_species)
+            step_list.append(add_class)
 
-    for filter_step in filter_json:
-        filter_class                            = filter_upload(filter_step, sparql_client_synthesis)
-        step_list.append(filter_class)
+        elif 'HeatChill' in step_dat:
+            heatchill_step                          = step_dat["HeatChill"]
+            print("heatchill step: ", heatchill_step)
+            if heatchill_step["targetTemperature"] == "—" or heatchill_step["targetTemperature"] == "room temperature" or heatchill_step["targetTemperature"] == "N/A":
+                continue
+            heat_class                              = heatchill_upload(sparql_client_synthesis, heatchill_step)
+            step_list.append(heat_class)
 
-    for heatchill_step in heatchill_json:
-        # remove non numerical entries
-        if heatchill_step["Target temperature"] == "—" or heatchill_step["Target temperature"] == "room temperature" or heatchill_step["Target temperature"] == "N/A":
-            continue
-
-        print("heatchill step: ", heatchill_step)
-        heat_class                              = heatchill_upload(sparql_client_synthesis, heatchill_step)
-        step_list.append(heat_class)
+        elif 'Filter' in step_dat:
+            filter_class                            = filter_upload(step_dat["Filter"], sparql_client_synthesis)
+            step_list.append(filter_class)
 
     chemical_transformation                     = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
     chemical_synthesis                          = ChemicalSynthesis(hasSynthesisStep=step_list) 
     chemical_transformation[0].isDescribedBy.add(chemical_synthesis)
     components = [chemical_synthesis, chemical_transformation]
     push_component_to_kg(components, sparql_client_synthesis)
-
 
 
     #OntoSyn         = "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl"
