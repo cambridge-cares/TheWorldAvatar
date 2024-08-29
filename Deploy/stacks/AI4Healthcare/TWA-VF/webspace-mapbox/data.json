@@ -701,7 +701,7 @@
                     {
                         "id": "poi-sport-entertainment-source",
                         "type": "geojson",
-                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_sport_and_entertainment&&outputFormat=application%2Fjson",
                         "cluster": true,
                         "clusterMaxZoom": 14,
                         "clusterRadius": 50
@@ -709,7 +709,7 @@
                     {
                         "id": "poi-education-health-source",
                         "type": "geojson",
-                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_education_and_health&&outputFormat=application%2Fjson",
                         "cluster": true,
                         "clusterMaxZoom": 14,
                         "clusterRadius": 50
@@ -717,7 +717,7 @@
                     {
                         "id": "poi-public-infrastructure-source",
                         "type": "geojson",
-                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest&&outputFormat=application%2Fjson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_public_infrastructure&&outputFormat=application%2Fjson",
                         "cluster": true,
                         "clusterMaxZoom": 14,
                         "clusterRadius": 50
