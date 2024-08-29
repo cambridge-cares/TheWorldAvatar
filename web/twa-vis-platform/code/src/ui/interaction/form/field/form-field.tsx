@@ -67,6 +67,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
           concepts = null;
           break;
       }
+
       if (concepts && concepts.length > 0 && !props.options.disabled) {
         let sortedConcepts: OntologyConcept[] = sortConcepts(concepts);
         sortedConcepts = reorderConcepts(sortedConcepts, form.getValues(field.fieldId));
@@ -133,8 +134,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
           <FormSelector
             field={props.field}
             form={props.form}
-            selectOptions={dropdownValues.map(concept => concept.type)}
-            selectLabels={dropdownValues.map(concept => concept.label)}
+            selectOptions={dropdownValues}
             styles={{
               label: [styles["form-input-label"]],
             }}
