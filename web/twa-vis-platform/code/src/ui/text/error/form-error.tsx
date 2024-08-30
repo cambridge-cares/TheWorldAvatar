@@ -10,7 +10,7 @@ interface FormErrorComponentProps {
 /**
  * Renders error message based on the error message
  * 
- * @param {string} status The status to display.
+ * @param {FieldError} error A react-hook-form error object if an error is present.
  */
 export default function FormErrorComponent(props: Readonly<FormErrorComponentProps>) {
   // Retrieve the message for a field if available

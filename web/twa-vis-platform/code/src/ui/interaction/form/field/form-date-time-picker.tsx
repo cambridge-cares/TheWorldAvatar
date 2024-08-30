@@ -1,13 +1,11 @@
 import styles from './field.module.css';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
-import { Icon } from '@mui/material';
 
 import { PropertyShape, VALUE_KEY } from 'types/form';
-import FormErrorComponent from 'ui/text/error/form-error';
 import { getRegisterOptions } from 'ui/interaction/form/form-utils';
-import { parseWordsForLabels } from 'utils/client-utils';
+import FormInputContainer from './form-input-container';
 
 interface FormDateTimePickerProps {
   field: PropertyShape;
@@ -29,8 +27,6 @@ interface FormDateTimePickerProps {
 export default function FormDateTimePicker(props: Readonly<FormDateTimePickerProps>) {
   const dateType: string = "date";
   const timeType: string = "time";
-  const labelClassNames: string = props.styles?.label?.join(" ");
-  const [showDescription, setShowDescription] = useState<boolean>(false);
 
   let formatLabel: string;
   // Retrieve input type based on field input
@@ -61,17 +57,13 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
     props.form.setValue(props.field.fieldId, currentDateTime);
   }
 
-  const toggleDescription = () => {
-    setShowDescription(!showDescription);
-  };
-
   return (
-    <>
-      <label className={labelClassNames} htmlFor={props.field.fieldId}>
-        <Icon className={`${styles["info-icon"]} material-symbols-outlined`} onClick={toggleDescription}>info</Icon>
-        <span className={styles["field-text"]}>{parseWordsForLabels(props.field.name[VALUE_KEY])}{props.form.formState.errors[props.field.fieldId] && "*"}</span>
-        <span className={styles["format-label"]}>{formatLabel}</span>
-      </label>
+    <FormInputContainer
+      field={props.field}
+      error={props.form.formState.errors[props.field.fieldId] as FieldError}
+      labelStyles={props.styles?.label}
+      formatLabel={formatLabel}
+    >
       <input
         id={props.field.fieldId}
         className={styles["dtpicker"]}
@@ -79,13 +71,6 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
         aria-label={props.field.name[VALUE_KEY]}
         {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       />
-      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
-        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
-      </p>
-      {/* Return error for failed validation */}
-      <FormErrorComponent
-        error={props.form.formState.errors[props.field.fieldId] as FieldError}
-      />
-    </>
+    </FormInputContainer>
   );
 }

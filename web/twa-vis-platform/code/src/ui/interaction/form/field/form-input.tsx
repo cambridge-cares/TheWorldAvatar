@@ -1,13 +1,11 @@
 import styles from './field.module.css';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
-import { Icon } from '@mui/material';
 
 import { PropertyShape, VALUE_KEY } from 'types/form';
-import FormErrorComponent from 'ui/text/error/form-error';
 import { getRegisterOptions } from 'ui/interaction/form/form-utils';
-import { parseWordsForLabels } from 'utils/client-utils';
+import FormInputContainer from './form-input-container';
 
 export interface InputFieldProps {
   field: PropertyShape;
@@ -31,23 +29,17 @@ export interface InputFieldProps {
  * @param {string[]} styles.input Optional styles for the input element.
  */
 export default function FormInputField(props: Readonly<InputFieldProps>) {
-  const [showDescription, setShowDescription] = useState<boolean>(false);
-  const labelClassNames: string = props.styles?.label?.join(" ");
   const inputClassNames: string = props.styles?.input?.join(" ");
   const label: string = props.field.name[VALUE_KEY];
   // Disabled inputs should provide only text input
   const inputType: string = props.options?.disabled || props.field.datatype === "string" ? "text" : "number";
 
-  const toggleDescription = () => {
-    setShowDescription(!showDescription);
-  };
-
   return (
-    <>
-      <label className={labelClassNames} htmlFor={props.field.fieldId}>
-        <Icon className={`${styles["info-icon"]} material-symbols-outlined`} onClick={toggleDescription}>info</Icon>
-        <span className={styles["field-text"]}>{parseWordsForLabels(label)}{props.form.formState.errors[props.field.fieldId] && "*"}</span>
-      </label>
+    <FormInputContainer
+      field={props.field}
+      error={props.form.formState.errors[props.field.fieldId] as FieldError}
+      labelStyles={props.styles?.label}
+    >
       <input
         id={props.field.fieldId}
         type={inputType}
@@ -58,13 +50,6 @@ export default function FormInputField(props: Readonly<InputFieldProps>) {
         aria-label={label}
         {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       />
-      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
-        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
-      </p>
-      {/* Return error for failed validation */}
-      <FormErrorComponent
-        error={props.form.formState.errors[props.field.fieldId] as FieldError}
-      />
-    </>
+    </FormInputContainer>
   );
 }
