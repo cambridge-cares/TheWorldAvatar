@@ -79,16 +79,16 @@ export async function getFormTemplate(agentApi: string, entityType: string, iden
 }
 
 /**
- * Sends a GET request to the specified agent to execute its task. 
- * Note that this method is only concerned with a successful GET request and will not return any parameter.
+ * Sends a GET request to the specified agent to execute its task, and return its text if required.
  * 
  * @param {string} agentApi API endpoint.
  */
-export async function sendGetRequest(agentApi: string): Promise<void> {
+export async function sendGetRequest(agentApi: string): Promise<string> {
   const res = await fetch(agentApi);
   if (!res.ok) {
     throw new Error("Failed to fetch data");
   }
+  return res.text();
 }
 
 

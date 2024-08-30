@@ -8,6 +8,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import { getAfterDelimiter } from 'utils/client-utils';
 import { sendGetRequest } from 'utils/server-actions';
+import { DownloadButton } from 'ui/interaction/download/download';
+import { PathNames } from 'io/config/routes';
 
 interface TableRibbonProps {
   entityType: string;
@@ -18,7 +20,7 @@ interface TableRibbonProps {
  * Renders a ribbon for the view page
  * 
  * @param {string} entityType The type of entity.
- * @param {string} agentApi The target endpoint for contacting the backend scheduler agent.
+ * @param {string} agentApi The target stack endpoint.
 
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
@@ -30,7 +32,7 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   };
 
   const sendScheduleRequest = () => {
-    sendGetRequest(`${props.agentApi}schedule`);
+    sendGetRequest(`${props.agentApi}${PathNames.SCHEDULE_AGENT}schedule`);
   };
 
   return (
@@ -54,6 +56,10 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
           onClick={openAddModal}
         />
         }
+        <DownloadButton
+          agentApi={`${props.agentApi}${PathNames.OPS_AGENT}csv/${item}`}
+          className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
+        />
       </div>
     </div>
   );

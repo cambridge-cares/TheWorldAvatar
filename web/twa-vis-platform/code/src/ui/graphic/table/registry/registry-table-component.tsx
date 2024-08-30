@@ -68,7 +68,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
         <h1 className={styles["title"]}>{parseWordsForLabels(props.entityType)}</h1>
         <TableRibbon
           entityType={props.entityType}
-          agentApi={props.agentApi + PathNames.SCHEDULE_AGENT}
+          agentApi={props.agentApi}
         />
         <div className={styles["table-contents"]}>
           <RegistryTable
