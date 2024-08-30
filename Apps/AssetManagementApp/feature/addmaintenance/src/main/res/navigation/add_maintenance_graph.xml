@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_maintenance_graph"
+    app:startDestination="@id/add_maintenance">
+    <fragment
+        android:id="@+id/add_maintenance"
+        android:name="uk.ac.cam.cares.jps.addmaintenance.AddMaintenanceFragment"
+        android:label="@string/add_maintenance"
+        tools:layout="@layout/fragment_add_maintenance">
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/add_maintenance?assetinfo={assetinfo}" >
+            <argument
+                android:name="assetinfo"
+                app:argType="string"
+                />
+        </deepLink>
+    </fragment>
+</navigation>

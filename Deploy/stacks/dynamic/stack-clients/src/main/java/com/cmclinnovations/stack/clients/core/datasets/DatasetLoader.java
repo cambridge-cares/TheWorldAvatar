@@ -58,7 +58,12 @@ public class DatasetLoader {
             List<DataSubset> dataSubsets = dataset.getDataSubsets();
             // Ensure PostGIS database exists, if specified
             if (dataset.usesPostGIS()) {
-                PostGISClient.getInstance().createDatabase(dataset.getDatabase());
+                PostGISClient postGISClient = PostGISClient.getInstance();
+                postGISClient.createDatabase(dataset.getDatabase());
+                dataSubsets.stream().filter(DataSubset::usesPostGIS)
+                        .filter(subset -> subset instanceof PostgresDataSubset)
+                        .forEach(subset -> postGISClient.createSchema(dataset.getDatabase(),
+                                ((PostgresDataSubset) subset).getSchema()));
             }
 
             // Ensure Blazegraph namespace exists, if specified
