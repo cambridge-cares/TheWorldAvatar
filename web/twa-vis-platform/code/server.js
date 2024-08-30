@@ -55,7 +55,7 @@ app.prepare().then(() => {
 
     if (!dev) {
       let redisClient;
-      console.log(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourYellow, `${redisHost}:${redisPort}`, colourReset);
+      console.log(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourGreen, `${redisHost}:${redisPort}`, colourReset);
       try {
         redisClient = createClient({
           socket: {
@@ -126,6 +126,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log('Running at', colourGreen, `http://localhost:${port}`, colourReset, `development mode is:`, dev ? colourGreen : colourYellow, dev, colourReset);
+    console.log('Running at', colourGreen, `http://localhost:${port}`, colourReset, `development mode is:`, dev ? colourYellow : colourGreen, dev, colourReset);
   });
 });
