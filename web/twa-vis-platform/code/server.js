@@ -31,9 +31,12 @@ const colourYellow = "\x1b[33m";
 if (process.env.PORT) { console.log('port specified in .env file: ', colourGreen, process.env.PORT, colourReset); }
 const port = process.env.PORT || 3000;
 const keycloakEnabled = process.env.KEYCLOAK === 'true';
-console.log('keycloak authorisation required: ', keycloakEnabled ? colorYellow : colorGreen, process.env.KEYCLOAK, colorReset)
-console.log('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colorYellow : colorRed, process.env.PROTECTED_PAGES, colorReset)
-console.log('the following pages require the', process.env.ROLE ? colorYellow : colorRed, process.env.ROLE, colorReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colorYellow : colorRed, process.env.ROLE_PROTECTED_PAGES, colorReset)
+const redisHost = process.env.REDIS_HOST || 'localhost';
+const redisPort = process.env.REDIS_PORT || 6379;
+
+console.log('keycloak authorisation required: ', keycloakEnabled ? colourYellow : colourGreen, process.env.KEYCLOAK, colourReset)
+console.log('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colourYellow : colourRed, process.env.PROTECTED_PAGES, colourReset)
+console.log('the following pages require the', process.env.ROLE ? colourYellow : colourRed, process.env.ROLE, colourReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colourYellow : colourRed, process.env.ROLE_PROTECTED_PAGES, colourReset)
 
 // Determine the deployment mode based on NODE_ENV; default to 'development' mode if not specified
 const dev = process.env.NODE_ENV !== "production";
@@ -70,7 +73,6 @@ app.prepare().then(() => {
         prefix: "redis",
         ttl: undefined,
       });
-      console.log(`development mode is:`, dev ? colorYellow : colorRed, dev, `-> connecting to redis session store`, colorReset);
     } else {
       store = new MemoryStore(); // use in-memory store for session data in dev mode
       console.log(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
