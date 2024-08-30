@@ -106,7 +106,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
 
 ### Backend
 
-Visit `/docs` to see detailed API documentation.
+Visit `/docs` to see detailed API documentation. This Swagger UI will show you all available endpoints and allow you to test them directly from the browser.
 
 Overview:
 
@@ -116,6 +116,6 @@ Overview:
 - `GET` `/ontozeolite/zeolite-frameworks`: given criteria such as XRD peaks and unit cell dimensions, returns all zeolite frameworks that fulfil the requirements.
 - `GET` `/ontozeolite/zeolitic-materials`: given criteria such as framework code and an author's family name, returns all zeolitic materials that fulfil the requirements.
 
-### Frontend (to be deprectaed)
+### Frontend (to be deprecated)
 
 Zaha's frontend can be accessed at `localhost:5000` in the browser.
