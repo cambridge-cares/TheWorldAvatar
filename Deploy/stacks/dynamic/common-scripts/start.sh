@@ -31,7 +31,7 @@ if [ "${EXECUTABLE}" == "docker" ]; then
     fi
 
     # Redeploy services
-    ${EXECUTABLE} stack deploy --compose-file=docker-compose-stack.yml --compose-file=docker-compose.yml $EXECUTABLE_SPECIFIC_COMPOSE_FILE $DEBUG_COMPOSE_FILE --with-registry-auth "${STACK_NAME}"
+    ${EXECUTABLE} stack deploy --compose-file=docker-compose-stack.yml --compose-file=docker-compose.yml $EXECUTABLE_SPECIFIC_COMPOSE_FILE $DEBUG_COMPOSE_FILE --with-registry-auth --detach=true "${STACK_NAME}"
 
     # Don't exit if sub-process fails
     set +e
