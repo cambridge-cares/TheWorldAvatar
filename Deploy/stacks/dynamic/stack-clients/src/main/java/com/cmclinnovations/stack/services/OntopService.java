@@ -36,6 +36,7 @@ public final class OntopService extends ContainerService {
     private static final String ONTOP_DB_PASSWORD_FILE = "ONTOP_DB_PASSWORD_FILE";
     private static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
     private static final String ONTOP_ONTOLOGY_FILE = "ONTOP_ONTOLOGY_FILE";
+    private static final String ONTOP_SPARQL_RULES_FILE = "ONTOP_SPARQL_RULES_FILE";
 
     private static final String DEFAULT_PORT = "8080";
 
@@ -43,6 +44,7 @@ public final class OntopService extends ContainerService {
     private final OntopEndpointConfig endpointConfig;
     private final String mappingDir;
     private final String ontologyDir;
+    private final String rulesDir;
     private final List<String> configDirs;
 
     public OntopService(String stackName, ServiceConfig config) {
@@ -52,7 +54,8 @@ public final class OntopService extends ContainerService {
 
         mappingDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
         ontologyDir = Path.of(getEnvironmentVariable(ONTOP_ONTOLOGY_FILE)).getParent().toString();
-        configDirs = new ArrayList<>(new HashSet<>(Arrays.asList(mappingDir, ontologyDir)));
+        rulesDir = Path.of(getEnvironmentVariable(ONTOP_SPARQL_RULES_FILE)).getParent().toString();
+        configDirs = new ArrayList<>(new HashSet<>(Arrays.asList(mappingDir, ontologyDir, rulesDir)));
 
         endpointConfig = new OntopEndpointConfig(containerName, getHostName(), DEFAULT_PORT);
 

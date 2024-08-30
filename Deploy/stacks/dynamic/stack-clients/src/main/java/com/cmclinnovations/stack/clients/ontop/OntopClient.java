@@ -19,6 +19,8 @@ import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.datasets.CopyDatasetQuery;
 import com.cmclinnovations.stack.clients.utils.TempFile;
+import com.moandjiezana.toml.Toml;
+import com.moandjiezana.toml.TomlWriter;
 
 public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
@@ -26,6 +28,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
     public static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
     public static final String ONTOP_ONTOLOGY_FILE = "ONTOP_ONTOLOGY_FILE";
+    public static final String ONTOP_SPARQL_RULES_FILE = "ONTOP_SPARQL_RULES_FILE";
 
     private static Map<String, OntopClient> instances = new HashMap<>();
 
@@ -89,6 +92,31 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
         } catch (IOException ex) {
             throw new RuntimeException(
                     "Failed to write out combined Ontop mapping file '" + ontopMappingFilePath + "'.", ex);
+        }
+    }
+
+    public void uploadRules(List<Path> rules) {
+        String containerId = getContainerId(getContainerName());
+        Path sparqlRulesFilePath = getEnvironmentVariable(containerId, ONTOP_SPARQL_RULES_FILE)
+                .map(Path::of)
+                .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_SPARQL_RULES_FILE
+                        + " not set through Docker for '" + "ontop" + "' container."));
+        SparqlRulesFile sparqlRules = new SparqlRulesFile();
+
+        rules.forEach(file -> {
+            Toml tomlRules = new Toml().read(file.toFile());
+            sparqlRules.addRules(tomlRules.to(SparqlRulesFile.class));
+        });
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            TomlWriter tomlWriter = new TomlWriter();
+            tomlWriter.write(sparqlRules, outputStream);
+            sendFilesContent(containerId,
+                    Map.of(sparqlRulesFilePath.getFileName().toString(), outputStream.toByteArray()),
+                    sparqlRulesFilePath.getParent().toString());
+        } catch (IOException ex) {
+            throw new RuntimeException(
+                    "Failed to write SPARQL Rules file.", ex);
         }
     }
 

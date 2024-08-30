@@ -120,6 +120,9 @@ public class DatasetLoader {
                 if (!dataset.getOntologyDatasetNames().isEmpty()) {
                     ontopClient.uploadOntology(catalogNamespace, dataset.getOntologyDatasetNames());
                 }
+
+                ontopClient.uploadRules(dataset.getOntopSettings().getRules().stream().map(directory::resolve)
+                        .collect(Collectors.toList()));
             }
 
             // record added datasets in the default kb namespace
