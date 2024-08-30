@@ -9,7 +9,7 @@ import { PathNames } from 'io/config/routes';
 import { ID_KEY, PropertyShape, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
-import { getAfterDelimiter, parseWordsForLabels } from 'utils/client-utils';
+import { getAfterDelimiter } from 'utils/client-utils';
 import { getData } from 'utils/server-actions';
 import { FORM_STATES } from '../form-utils';
 import DependentFormSelector from '../field/dependent-form-selector';
@@ -143,50 +143,48 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
             <LoadingSpinner isSmall={true} />
           </div>
         }
-        {!isFetching && (
+        {!isFetching && selectElements.length > 0 && (
           <div className={fieldStyles["form-field-container"]}>
             <div className={fieldStyles["form-input-container"]}>
-              {selectElements.length > 0 && <label className={fieldStyles["form-input-label"]} htmlFor={props.dependentProp.fieldId}>
-                <span className={fieldStyles["field-text"]}>
-                  {parseWordsForLabels(label)}
-                </span>
-              </label>}
-              {selectElements.length > 0 ?
-                <DependentFormSelector
-                  field={props.dependentProp}
-                  form={props.form}
-                  selectOptions={selectElements.map(entity => entity.id)}
-                  selectLabels={selectElements.map(entity => entity.name ?? entity.first_name)}
-                  options={{
-                    disabled: formType == PathNames.REGISTRY || formType == PathNames.REGISTRY_DELETE
-                  }}
-                /> :
-                <p className={styles["button-text"]}>No {label} detected</p>
-              }
-            </div>
-            {(formType != PathNames.REGISTRY && formType != PathNames.REGISTRY_DELETE) && (
-              <MaterialIconButton
-                iconName={"add"}
-                className={styles["button"] + " " + styles["button-layout"]}
-                text={{
-                  styles: [styles["button-text"]],
-                  content: `New ${label}`
+              <DependentFormSelector
+                field={props.dependentProp}
+                form={props.form}
+                selectOptions={selectElements.map(entity => entity.id)}
+                selectLabels={selectElements.map(entity => entity.name ?? entity.first_name)}
+                options={{
+                  disabled: formType == PathNames.REGISTRY || formType == PathNames.REGISTRY_DELETE
                 }}
-                onClick={openAddSubEntityModal}
-              />
-            )}
+                styles={{
+                  label: [styles["form-input-label"]],
+                }} />
+            </div>
           </div>
         )}
-        {!isFetching && selectElements.length > 0 && <MaterialIconButton
-          iconName={"expand_circle_right"}
-          className={styles["button"] + " " + styles["button-layout"]}
-          text={{
-            styles: [styles["button-text"]],
-            content: `View more details`
-          }}
-          onClick={openViewSubEntityModal}
-        />
-        }
+        <div className={styles["form-dependent-button-layout"]}>
+          {!isFetching && (selectElements.length > 0 ? <MaterialIconButton
+            iconName={"expand_circle_right"}
+            className={styles["button"] + " " + styles["button-layout"]}
+            text={{
+              styles: [styles["button-text"]],
+              content: `View more details`
+            }}
+            onClick={openViewSubEntityModal}
+          /> : <p style={{ margin: "0 0.75rem", padding: "0.2rem 0.25rem" }} className={styles["button-text"]}>
+            No {label} detected
+          </p>
+          )}
+          {(formType != PathNames.REGISTRY && formType != PathNames.REGISTRY_DELETE) && (
+            <MaterialIconButton
+              iconName={"add"}
+              className={styles["button"] + " " + styles["button-layout"]}
+              text={{
+                styles: [styles["button-text"]],
+                content: `New ${label}`
+              }}
+              onClick={openAddSubEntityModal}
+            />
+          )}
+        </div>
       </fieldset>);
   }
 }

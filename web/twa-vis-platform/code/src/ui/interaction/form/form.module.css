@@ -70,6 +70,11 @@
   margin: 1rem 0;
 }
 
+.form-dependent-button-layout {
+  display: flex;
+  flex-direction: row;
+}
+
 .schedule-occurrence-container {
   width: 100%;
   margin: 0 1rem 1rem;
@@ -122,6 +127,11 @@
 @media only screen and (max-width: 480px) {
   .form-fieldset-contents {
     flex-direction: column;
+  }
+
+  .form-dependent-button-layout {
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .schedule-day-container {
