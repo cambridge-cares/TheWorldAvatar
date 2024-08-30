@@ -48,9 +48,6 @@ export default function FormInputField(props: Readonly<InputFieldProps>) {
         <Icon className={`${styles["info-icon"]} material-symbols-outlined`} onClick={toggleDescription}>info</Icon>
         <span className={styles["field-text"]}>{parseWordsForLabels(label)}{props.form.formState.errors[props.field.fieldId] && "*"}</span>
       </label>
-      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
-        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
-      </p>
       <input
         id={props.field.fieldId}
         type={inputType}
@@ -61,6 +58,9 @@ export default function FormInputField(props: Readonly<InputFieldProps>) {
         aria-label={label}
         {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       />
+      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
+        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
+      </p>
       {/* Return error for failed validation */}
       <FormErrorComponent
         error={props.form.formState.errors[props.field.fieldId] as FieldError}

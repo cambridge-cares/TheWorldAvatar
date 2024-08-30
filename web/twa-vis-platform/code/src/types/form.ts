@@ -7,6 +7,7 @@ export const PROPERTY_GROUP_TYPE = "PropertyGroup";
 export type OntologyConcept = {
   type: string;
   label: string;
+  description: string;
 };
 
 export type FormTemplate = {

@@ -1,7 +1,7 @@
-import { PathNames } from "io/config/routes";
-import { escape } from "querystring";
 import { FieldValues, RegisterOptions } from "react-hook-form";
+
 import { PropertyShape, VALUE_KEY } from "types/form";
+import { PathNames } from "io/config/routes";
 
 export const FORM_STATES: Record<string, string> = {
   ID: "id",
@@ -135,7 +135,7 @@ export function getRegisterOptions(field: PropertyShape): RegisterOptions {
   // For any custom patterns
   if (field.pattern) {
     // Change message if only digits are allowed
-    const msg: string = field.pattern[VALUE_KEY] = "\\d+" ? `Only numerical inputs are allowed!` :
+    const msg: string = field.pattern[VALUE_KEY] === "^\\d+$" ? `Only numerical inputs are allowed!` :
       `This field must follow the pattern ${field.pattern[VALUE_KEY]}`;
     options.pattern = {
       value: new RegExp(field.pattern[VALUE_KEY]),

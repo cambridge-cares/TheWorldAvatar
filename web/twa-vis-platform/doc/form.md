@@ -136,5 +136,5 @@ For form validation purposes, several SHACL restrictions can also be utilised in
 5. Number form field < value: `maxExclusive: number`
 6. Text form field with a minimum length: `minLength: string`
 7. Text form field with a maximum length: `maxLength: string`
-8. Text form field that contains only digits: `pattern: "\\d+"`
+8. Text form field that contains only digits: `pattern: "^\d+$"`
 9. Text form field conforming to a specified regex pattern: `pattern: string`
