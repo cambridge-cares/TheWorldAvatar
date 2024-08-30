@@ -5,9 +5,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.cmclinnovations</groupId>
-  <artifactId>stack-data-uploader</artifactId>
-  <version>1.35.5-944-replace-superset-with-grafana-SNAPSHOT</version>
+    <groupId>com.cmclinnovations</groupId>
+    <artifactId>stack-data-uploader</artifactId>
+    <version>1.35.5-944-replace-superset-with-grafana-SNAPSHOT</version>
 
     <name>Stack Data Uploader</name>
     <url>https://theworldavatar.io</url>
@@ -26,11 +26,11 @@
 
     <dependencies>
 
-    <dependency>
-      <groupId>com.cmclinnovations</groupId>
-      <artifactId>stack-clients</artifactId>
-      <version>1.35.5-944-replace-superset-with-grafana-SNAPSHOT</version>
-    </dependency>
+        <dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>stack-clients</artifactId>
+            <version>1.35.5-944-replace-superset-with-grafana-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -58,8 +58,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <!-- These properties add the copied dependencies to the classpath so the .jar can
-              find them at runtime. -->
+                            <!-- These properties add the copied dependencies to the classpath so
+                            the .jar can find them at runtime. -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>.</classpathPrefix>
                             <classpathLayoutType>repository</classpathLayoutType>
@@ -71,8 +71,8 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target
-        directory. -->
+                <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the
+                target directory. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
