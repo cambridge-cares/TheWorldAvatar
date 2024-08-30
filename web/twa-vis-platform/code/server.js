@@ -51,8 +51,20 @@ app.prepare().then(() => {
     server.set('trust proxy', true); // the client’s IP address is understood as the left-most entry in the X-Forwarded-For header.
 
     if (!dev) {
-      let redisClient = createClient() // assumes client is running on localhost:6379, expose this in docker-compose!
-      redisClient.connect().catch(console.error)
+      let redisClient;
+      console.log(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourYellow, `${redisHost}:${redisPort}`, colourReset);
+      try {
+        redisClient = createClient({
+          socket: {
+            host: redisHost,
+            port: redisPort
+          }
+        });
+      } catch (error) {
+        console.log('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container');
+        console.error(error);
+      }
+      redisClient.connect().catch('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container', console.error);
       store = new RedisStore({
         client: redisClient,
         prefix: "redis",
