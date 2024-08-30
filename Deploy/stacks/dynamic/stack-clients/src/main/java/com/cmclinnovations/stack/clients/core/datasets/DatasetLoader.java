@@ -117,9 +117,7 @@ public class DatasetLoader {
                     ontopMappings.forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
                 }
 
-                if (!dataset.getOntologyDatasetNames().isEmpty()) {
-                    ontopClient.uploadOntology(catalogNamespace, dataset.getOntologyDatasetNames());
-                }
+                ontopClient.uploadOntology(catalogNamespace, dataset.getOntologyDatasetNames());
 
                 ontopClient.uploadRules(dataset.getOntopSettings().getRules().stream().map(directory::resolve)
                         .collect(Collectors.toList()));
