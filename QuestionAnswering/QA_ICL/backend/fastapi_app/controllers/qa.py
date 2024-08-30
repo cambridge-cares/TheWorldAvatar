@@ -32,6 +32,12 @@ logger = logging.getLogger(__name__)
 
 
 class DataSupporter:
+    """
+    Main controller class for processing natural lanaguage queries and transforming them into structured data.
+
+    This class orchestrates the entire process to handle a user's query from rewriting, and context retrieval to SPARSQL execution and visualisation.
+    """
+
     def __init__(
         self,
         nlq_rewriter: NlqRewriter,
@@ -42,6 +48,9 @@ class DataSupporter:
         artifact_store: QARequestArtifactStore,
         vis_data_store: VisualisationDataStore,
     ):
+        """
+        Initialise the DataSupporter
+        """
         self.nlq_rewriter = nlq_rewriter
         self.context_retriever = context_retriever
         self.llm_caller = llm_caller
@@ -51,16 +60,37 @@ class DataSupporter:
         self.vis_data_store = vis_data_store
 
     def query(self, query: str):
+        """
+        Process a natural language query and return structured data.
+
+        This method orchestrates the entire query processing pipeline:
+        1. Query rewriting
+        2. Context retrieval
+        3. Translation to data request
+        4. Entity linking
+        5. Data request execution
+        6. Visualisation data retrieval
+        7. Artifact storage
+
+        Args:
+            query (str): The input natural language query.
+
+        Returns:
+            QAResponse: A structured response containing the processed data and metadata.
+        """
         logger.info("Input query: " + query)
 
+        # Step 1: Rewrite the query
         logger.info("Rewriting input query...")
         rewritten_query = self.nlq_rewriter.rewrite(question=query)
         logger.info("Rewritten query: " + rewritten_query)
 
+        # Step 2: Retrieve translation context
         logger.info("Retrieving translation context...")
         translation_context = self.context_retriever.retrieve(nlq=rewritten_query)
         logger.info("Translation context: " + str(translation_context))
 
+        # Step 3: Translate to data request
         logger.info("Translating input question into data request...")
         data_req = self.llm_caller.forward(
             nlq=rewritten_query, translation_context=translation_context
@@ -68,11 +98,13 @@ class DataSupporter:
         logger.info(f"Predicted data request: {data_req}")
 
         if data_req is None:
+            # Handle case where no data request could be generated
             data_artifact = None
             var2iris = dict()
             vis_var2structs: dict[str, list[ChemicalStructureData]] = dict()
             data = list()
         else:
+            # Step 4: Entity linking
             logger.info(
                 f"Performing entity linking for bindings: {data_req.entity_bindings}"
             )
@@ -95,6 +127,7 @@ class DataSupporter:
             }
             logger.info(f"Linked IRIs: {var2iris}")
 
+            # Step 5: Execute data request
             logger.info("Executing data request...")
             data, data_artifact, vis_var2iris = self.executor.exec(
                 var2cls=data_req.var2cls,
@@ -105,8 +138,9 @@ class DataSupporter:
             )
             logger.info("Done")
 
+            # Step 6: Retrieve visualisation data
             logger.info("Retrieving visualisation data...")
-            clses = [
+            clses = [     
                 data_req.var2cls.get(var)
                 for var in data_req.visualise
                 for _ in vis_var2iris.get(var, [])
@@ -124,6 +158,7 @@ class DataSupporter:
                 vis_var2structs[iri2var[iri]].append(datum)
             logger.info("Done")
 
+        # Step 7: Save QA request artifact
         logger.info("Saving QA request artifact...")
         request_id = self.artifact_store.save(
             QARequestArtifact(
@@ -135,6 +170,7 @@ class DataSupporter:
         )
         logger.info("Done")
 
+        # Return structured response
         return QAResponse(
             request_id=request_id,
             metadata=QAResponseMetadata(
@@ -162,6 +198,16 @@ def get_data_supporter(
     artifact_store: Annotated[QARequestArtifactStore, Depends(get_qaReq_artifactStore)],
     vis_data_store: Annotated[VisualisationDataStore, Depends(get_visData_store)],
 ):
+    """
+    Factory function for creating a DataSupporter instance.
+
+    This uses FastAPI's dependency injection system to create a DataSupporter with all
+    its required dependecies. The @cache decorator ensures that only one instance is 
+    created and reused across requests.
+
+    Returns:
+        DataSupporter: An instance of the DataSupporter class with all dependencies injected.
+    """
     return DataSupporter(
         nlq_rewriter=nlq_rewriter,
         context_retriever=context_retriever,

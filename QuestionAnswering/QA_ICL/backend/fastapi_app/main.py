@@ -11,14 +11,19 @@ app = FastAPI()
 
 
 async def catch_exceptions_middleware(request: Request, call_next):
+    """
+    Middleware to catch and log exceptions
+    """
     try:
         return await call_next(request)
     except Exception:
         logging.exception("Unhandled exception")
         return Response("Internal server error", status_code=500)
 
-
+# Add exception handling middleware
 app.middleware("http")(catch_exceptions_middleware)
+
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,8 +31,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Include routers for the application
 app.include_router(html.router)
 app.include_router(ontospecies.router, prefix="/ontospecies", tags=["ontospecies"])
 app.include_router(ontozeolite.router, prefix="/ontozeolite", tags=["ontozeolite"])
