@@ -37,6 +37,8 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
         if (next === "id") return 1;
         if (current === "name") return -1;
         if (next === "name") return 1;
+        // The IRI field should be ignored and moved to the very end
+        if (current.toLowerCase() === "iri" || next.toLowerCase() === "iri") return -1;
         return 0; // Keep other items in the same order
       }).slice(0, limit);
     };
