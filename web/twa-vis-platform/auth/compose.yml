@@ -4,7 +4,8 @@ services:
     container_name: "keycloak-dev-server"
     image: keycloak/keycloak:latest
     ports:
-      - "8081:8080"
+      - "8080:8080"
+      - "8443:8443"
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}    
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-theworldavatar}
@@ -33,6 +34,11 @@ services:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       - auth-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "healthcheck" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
 
   postgres:
     restart: always
@@ -77,3 +83,7 @@ services:
 networks:
   auth-network:
     driver: bridge
+
+secrets:
+  postgres-password:
+    file: ./postgres-password
