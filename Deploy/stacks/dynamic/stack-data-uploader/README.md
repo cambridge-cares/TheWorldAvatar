@@ -275,7 +275,7 @@ An example of a style specification in the configuration file is:
 ]
 ```
 
-#### `"mappings"`
+### `"mappings"`
 
 A list of Ontop mapping file definition objects provided as paths relative to the [`"datasetDirectory"`](#datasetdirectory).
 Currently only the Ontop native format (`.obda`) is supported as it is much easier for both humans and Ontop to work with.
@@ -284,7 +284,7 @@ Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader 
 The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)) shows the Ontop OBDA format.
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
-#### `"staticGeoServerData"`
+### `"staticGeoServerData"`
 
 A description of static data to be loaded into and served by GeoServer.
 The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
