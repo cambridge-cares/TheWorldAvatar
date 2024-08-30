@@ -14,7 +14,8 @@
     "dev": "NODE_ENV=development node --env-file='.env.local' server.js",
     "dev-docker": "NODE_ENV=development node server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node  --env-file='.env.local' server.js",
+    "start": "NODE_ENV=production node --env-file='.env.local' server.js",
+    "start-docker": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "test": "jest"
   },
