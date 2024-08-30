@@ -21,14 +21,14 @@ import { createClient } from "redis"
 import RedisStore from 'connect-redis';
 import Keycloak from 'keycloak-connect';
 
-const colorReset = "\x1b[0m";
-const colorRed = "\x1b[31m";
-const colorGreen = "\x1b[32m";
-const colorYellow = "\x1b[33m";
+const colourReset = "\x1b[0m";
+const colourRed = "\x1b[31m";
+const colourGreen = "\x1b[32m";
+const colourYellow = "\x1b[33m";
 
 
 // Configure the server port; default to 3000 if not specified in environment variables
-if (process.env.PORT) { console.log('port specified in .env file: ', colorGreen, process.env.PORT, colorReset); }
+if (process.env.PORT) { console.log('port specified in .env file: ', colourGreen, process.env.PORT, colourReset); }
 const port = process.env.PORT || 3000;
 const keycloakEnabled = process.env.KEYCLOAK === 'true';
 console.log('keycloak authorisation required: ', keycloakEnabled ? colorYellow : colorGreen, process.env.KEYCLOAK, colorReset)
@@ -61,7 +61,7 @@ app.prepare().then(() => {
       console.log(`development mode is:`, dev ? colorYellow : colorRed, dev, `-> connecting to redis session store`, colorReset);
     } else {
       store = new MemoryStore(); // use in-memory store for session data in dev mode
-      console.log(`development mode is:`, dev ? colorYellow : colorRed, dev, `-> using in-memory session store (express-session MemoryStore())`, colorReset);
+      console.log(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
     }
 
     server.use(
@@ -112,6 +112,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log('Running at', colorGreen, `http://localhost:${port}`, colorReset, `development mode is:`, dev ? colorGreen : colorYellow, dev, colorReset);
+    console.log('Running at', colourGreen, `http://localhost:${port}`, colourReset, `development mode is:`, dev ? colourGreen : colourYellow, dev, colourReset);
   });
 });
