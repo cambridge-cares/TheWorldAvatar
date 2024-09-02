@@ -275,10 +275,6 @@ final class DCATUpdateQuery {
         }
     }
 
-    private void addOntologyConformation(Dataset dataset) {
-
-    }
-
     private void removeExistingServiceLinks() {
         // Remove all existing links to/from this dataset and any service
         Variable oldServiceVar = SparqlBuilder.var("serviceVar_old");
@@ -287,15 +283,6 @@ final class DCATUpdateQuery {
 
         // Look for any services linked to this dataset
         query.where(oldServiceVar.has(DCAT.SERVES_DATASET, datasetVar).optional());
-    }
-
-    private void removeStandardConformationLinks() {
-        // Remove all existing links from this dataset to standards it conforms to
-        Variable standardVar = SparqlBuilder.var("standardVar_old");
-        query.delete(datasetVar.has(DCTERMS.CONFORMS_TO, standardVar));
-
-        // Look for any services linked to this dataset
-        query.where(datasetVar.has(DCTERMS.CONFORMS_TO, standardVar).optional());
     }
 
     private void removeExistingServices() {
