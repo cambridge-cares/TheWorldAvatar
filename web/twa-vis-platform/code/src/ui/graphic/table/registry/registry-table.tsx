@@ -2,15 +2,15 @@ import styles from './registry.table.module.css';
 import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import React, { useEffect, useState } from 'react';
-import { FieldValues } from 'react-hook-form';
 
+import { RegistryFieldValues } from 'types/form';
 import StatusComponent from 'ui/text/status/status';
 import IconComponent from 'ui/graphic/icon/icon';
 import { MaterialIconButtonWithIndex } from 'ui/graphic/icon/icon-button';
 import { parseWordsForLabels } from 'utils/client-utils';
 
 interface RegistryTableProps {
-  fields: FieldValues[];
+  fields: RegistryFieldValues[];
   clickEventHandlers: { [key: string]: (index: number) => void };
   limit?: number;
 }
@@ -18,7 +18,7 @@ interface RegistryTableProps {
 /**
  * This component renders a registry of table based on the input headers and rows.
  * 
- * @param {FieldValues[]} fields The field values for the table.
+ * @param {RegistryFieldValues[]} fields The field values for the table.
  * @param {Function} clickEventHandlers Event on button click.
  * @param {number} limit Optional limit to the number of columns shown.
  */
@@ -30,7 +30,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
   // A hook that parses the headers whenever fields are refetched
   useEffect(() => {
     // A function to parse headers from the inputs
-    const parseHeaders = (fields: FieldValues[], limit: number): string[] => {
+    const parseHeaders = (fields: RegistryFieldValues[], limit: number): string[] => {
       return Object.keys(fields[0]).sort((current, next) => {
         // Always move the id first if available, else, name should be first
         if (current === "id") return -1;
@@ -60,10 +60,10 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
     };
 
     // A function to generate the row elements in the table based on the headers and field inputs
-    const genRows = (fields: FieldValues[], headers: string[]): React.ReactNode => {
+    const genRows = (fields: RegistryFieldValues[], headers: string[]): React.ReactNode => {
       if (fields?.length > 0) {
         return fields.map((row, rowIndex) => (
-          <tr key={row[headers[0]] + rowIndex}>
+          <tr key={row[headers[0]].value + rowIndex}>
             <td>
               <div className={styles["table-icon-cell"]}>
                 <MaterialIconButtonWithIndex
@@ -87,7 +87,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
               </div>
             </td>
             {headers.map((column, colIndex) => {
-              const columnVal: string = parseWordsForLabels(row[column]);
+              const columnVal: string = parseWordsForLabels(row[column].value);
               return colIndex == statusCol ?
                 (<td key={column + colIndex}><StatusComponent status={columnVal} /> </td>) :
                 (<td key={column + colIndex} >{columnVal}</td>)

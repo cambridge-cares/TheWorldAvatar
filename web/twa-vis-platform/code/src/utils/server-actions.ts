@@ -5,8 +5,7 @@
 
 import { FieldValues } from 'react-hook-form';
 
-import { getAfterDelimiter } from './client-utils';
-import { FormTemplate, OntologyConcept } from 'types/form';
+import { RegistryFieldValues, FormTemplate, OntologyConcept } from 'types/form';
 
 export interface HttpResponse {
   success: boolean;
@@ -21,7 +20,7 @@ export interface HttpResponse {
  * @param {string} identifier Optional identifier of the parent entity.
  * @param {string} subEntityType Optional type of sub entity to retrieve entities associated with the specific parent entity.
  */
-export async function getData(agentApi: string, entityType: string, identifier?: string, subEntityType?: string): Promise<FieldValues[]> {
+export async function getData(agentApi: string, entityType: string, identifier?: string, subEntityType?: string): Promise<RegistryFieldValues[]> {
   // Append identifier to the url if it exist
   let url: string = `${agentApi}/${entityType}`;
   if (identifier) {
@@ -35,7 +34,7 @@ export async function getData(agentApi: string, entityType: string, identifier?:
     throw new Error("Failed to fetch data");
   }
   const responseData = await res.json();
-  let parsedResponse: FieldValues[];
+  let parsedResponse: RegistryFieldValues[];
   // If response is a single object, store it as an array
   if (!Array.isArray(responseData)) {
     parsedResponse = [responseData];

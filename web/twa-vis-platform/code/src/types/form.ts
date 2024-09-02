@@ -4,10 +4,19 @@ export const TYPE_KEY = "@type";
 export const VALUE_KEY = "@value";
 export const PROPERTY_GROUP_TYPE = "PropertyGroup";
 
-export type OntologyConcept = {
+interface RegistryFieldValue {
+  value: string;
   type: string;
-  label: string;
-  description: string;
+  dataType: string;
+  lang: string;
+};
+
+export type RegistryFieldValues = Record<string, RegistryFieldValue>;
+
+export type OntologyConcept = {
+  type: RegistryFieldValue;
+  label: RegistryFieldValue;
+  description: RegistryFieldValue;
 };
 
 export type FormTemplate = {
@@ -24,7 +33,7 @@ export interface PropertyShape {
   description: JsonLdLiteral;
   order: number;
   fieldId?: string; // Not present but appended after
-  defaultValue?: string;
+  defaultValue?: RegistryFieldValue;
   group?: JsonLdInstance;
   datatype?: string;
   class?: JsonLdInstance;

@@ -6,7 +6,7 @@ import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { PathNames } from 'io/config/routes';
-import { ID_KEY, PropertyShape, VALUE_KEY } from 'types/form';
+import { ID_KEY, PropertyShape, RegistryFieldValues, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
@@ -34,7 +34,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const control: Control = props.form.control;
   const [isFetching, setIsFetching] = useState<boolean>(true);
-  const [selectElements, setSelectElements] = useState<FieldValues[]>([]);
+  const [selectElements, setSelectElements] = useState<RegistryFieldValues[]>([]);
 
   // If there is a need, retrieve the parent field name. Parent field depends on the shape to field mappings.
   // Else, it should remain as an empty string
@@ -82,7 +82,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
     // Declare an async function to retrieve the list of dependent entities for the dropdown selector
     const getDependencies = async (entityType: string, field: PropertyShape, form: UseFormReturn) => {
       setIsFetching(true);
-      let entities: FieldValues[] = [];
+      let entities: RegistryFieldValues[] = [];
       // If there is supposed to be a parent element, retrieve the data associated with the selected parent option
       if (field.nodeKind) {
         if (currentParentOption) {
@@ -91,17 +91,17 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
         // If there is no valid parent option, there should be no entity
       } else if (formType === PathNames.REGISTRY || formType === PathNames.REGISTRY_DELETE) {
         // Retrieve only one entity to reduce query times as users cannot edit anything in view or delete mode
-        entities = await getData(props.agentApi, entityType, getAfterDelimiter(field.defaultValue, "/"));
+        entities = await getData(props.agentApi, entityType, getAfterDelimiter(field.defaultValue.value, "/"));
       } else {
         entities = await getData(props.agentApi, entityType);
       }
 
       // By default, use the first option's id
-      let defaultId: string = entities[0]?.id;
+      let defaultId: string = entities[0]?.id.value;
       // If there is a default value, search and use the option matching the default instance's local name
       if (field.defaultValue) {
-        const defaultValueId: string = getAfterDelimiter(field.defaultValue, "/");
-        defaultId = entities.find(entity => getAfterDelimiter(entity.id, "/") === defaultValueId).id;
+        const defaultValueId: string = getAfterDelimiter(field.defaultValue.value, "/");
+        defaultId = entities.find(entity => getAfterDelimiter(entity.id.value, "/") === defaultValueId).id.value;
       }
       // Set the form value to the default value if available, else, default to the first option
       form.setValue(field.fieldId, defaultId);
@@ -149,8 +149,8 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
               <DependentFormSelector
                 field={props.dependentProp}
                 form={props.form}
-                selectOptions={selectElements.map(entity => entity.id)}
-                selectLabels={selectElements.map(entity => entity.name ?? entity.first_name)}
+                selectOptions={selectElements.map(entity => entity.id.value)}
+                selectLabels={selectElements.map(entity => entity.name.value ?? entity.first_name.value)}
                 options={{
                   disabled: formType == PathNames.REGISTRY || formType == PathNames.REGISTRY_DELETE
                 }}

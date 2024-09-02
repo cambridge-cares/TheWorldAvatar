@@ -3,7 +3,6 @@
 import styles from './registry.table.module.css';
 
 import React, { useEffect, useState } from 'react';
-import { FieldValues } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 
@@ -13,6 +12,7 @@ import { getData } from 'utils/server-actions';
 import RegistryTable from './registry-table';
 import TableRibbon from './table-ribbon';
 import { PathNames } from 'io/config/routes';
+import { RegistryFieldValues } from 'types/form';
 
 interface RegistryTableComponentProps {
   entityType: string;
@@ -29,28 +29,28 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
   const router = useRouter();
 
   const isModalOpen: boolean = useSelector(getIsOpenState);
-  const [currentInstances, setCurrentInstances] = useState<FieldValues[]>([]);
+  const [currentInstances, setCurrentInstances] = useState<RegistryFieldValues[]>([]);
 
   const handleClickView = (index: number): void => {
     // Move to the view modal page for the specific entity associated with the row
-    router.push(`./${props.entityType}/${getAfterDelimiter(currentInstances[index].id, "/")}`);
+    router.push(`./${props.entityType}/${getAfterDelimiter(currentInstances[index].id.value, "/")}`);
   };
 
   const handleClickEdit = (index: number): void => {
     // Move to the edit modal page for the specific entity associated with the row
-    router.push(`../edit/${props.entityType}/${getAfterDelimiter(currentInstances[index].id, "/")}`);
+    router.push(`../edit/${props.entityType}/${getAfterDelimiter(currentInstances[index].id.value, "/")}`);
   };
 
   const handleClickDelete = (index: number): void => {
     // Move to the delete modal page for the specific entity associated with the row
-    router.push(`../delete/${props.entityType}/${getAfterDelimiter(currentInstances[index].id, "/")}`);
+    router.push(`../delete/${props.entityType}/${getAfterDelimiter(currentInstances[index].id.value, "/")}`);
   };
 
   // A hook that refetches all data when the dialogs are closed
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        const instances: FieldValues[] = await getData(props.agentApi + PathNames.OPS_AGENT, props.entityType);
+        const instances: RegistryFieldValues[] = await getData(props.agentApi + PathNames.OPS_AGENT, props.entityType);
         setCurrentInstances(instances);
       } catch (error) {
         console.error('Error fetching instances', error);

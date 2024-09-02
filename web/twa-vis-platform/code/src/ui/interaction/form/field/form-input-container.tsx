@@ -47,7 +47,7 @@ export default function FormInputContainer(props: Readonly<FormInputContainerPro
         <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
         {props.selectedOption && (<>
           <br /><br />
-          <b className={styles["field-text"]}>{props.selectedOption?.label}:</b> {props.selectedOption?.description}
+          <b className={styles["field-text"]}>{props.selectedOption?.label.value}:</b> {props.selectedOption?.description.value}
         </>)}
       </p>
       {/* Return error for failed validation */}

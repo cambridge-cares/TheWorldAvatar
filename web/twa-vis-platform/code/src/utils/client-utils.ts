@@ -109,7 +109,7 @@ export function getAfterDelimiter(str: string, delimiter: string): string {
  */
 export function reorderConcepts(concepts: OntologyConcept[], matchingValue: string): OntologyConcept[] {
     // Match either for label or type
-    const matchingIndex: number = concepts.findIndex(concept => concept.label === matchingValue || concept.type === matchingValue);
+    const matchingIndex: number = concepts.findIndex(concept => concept.label.value === matchingValue || concept.type.value === matchingValue);
     if (matchingIndex === -1) {
         return concepts; // If no match is found, return the original
     }

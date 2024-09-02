@@ -32,7 +32,7 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
     name: props.field.fieldId,
   });
 
-  const selectedOption: OntologyConcept = props.selectOptions.find(option => option.type === currentOption);
+  const selectedOption: OntologyConcept = props.selectOptions.find(option => option.type.value === currentOption);
 
   return (
     <FormInputContainer
@@ -48,8 +48,8 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
         {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
       >
         {props.selectOptions.map((option, index) => (
-          <option key={option.label + index} value={option.type}>
-            {option.label}
+          <option key={option.label.value + index} value={option.type.value}>
+            {option.label.value}
           </option>
         ))}
       </select>
