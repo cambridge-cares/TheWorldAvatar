@@ -22,7 +22,7 @@
                 "Tbox1" .
 
 <https://theworldavatar.io/kg/45f9a7c7-d7a1-4f49-944d-369bb9f20c68>
-        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox>;
+        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox> , <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "Dataset for testing";
         <http://purl.org/dc/terms/issued>

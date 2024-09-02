@@ -56,6 +56,7 @@ final class DCATUpdateQuery {
         // Insert new or updated values
         Variable issuedVar = createVar(datasetVar, "issued");
         query.insert(datasetVar.isA(dataset.getRdfType())
+                .andIsA(Rdf.iri(DCAT.CATALOG.stringValue()))
                 .andHas(DCTERMS.TITLE, dataset.getName())
                 .andHas(DCTERMS.DESCRIPTION, dataset.getDescription())
                 // Insert new "issued" triple the first time and then just re-insert same triple
@@ -70,6 +71,7 @@ final class DCATUpdateQuery {
         query.where(GraphPatterns.and(
                 // "rdfType" and "name" define the dataset
                 existingDatasetVar.isA(dataset.getRdfType())
+                        .andIsA(Rdf.iri(DCAT.CATALOG.stringValue()))
                         .andHas(DCTERMS.TITLE, dataset.getName())
                         .andHas(DCTERMS.DESCRIPTION, existingDescriptionVar)
                         .andHas(DCTERMS.ISSUED, existingIssuedVar)
@@ -88,6 +90,7 @@ final class DCATUpdateQuery {
         query.where(GraphPatterns.and(
                 // "rdfType" and "name" define the dataset
                 datasetVar.isA(dataset.getRdfType())
+                        .andIsA(Rdf.iri(DCAT.CATALOG.stringValue()))
                         .andHas(DCTERMS.TITLE, dataset.getName())
                         .andHas(existingPVar, existingOVar)
                         .optional()));
