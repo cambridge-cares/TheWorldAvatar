@@ -33,7 +33,6 @@ package uk.ac.cam.cares.jps;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.jena.base.Sys;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -58,7 +57,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.time.Instant;
 
@@ -95,9 +93,11 @@ public class TimeSeriesClientIntegrationBenchmark {
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
     @Param({ "1" })
-    private int n1; // number of time series that has three fields
+    private int numTimeSeries; // number of time series
     @Param({ "1" })
-    private int nt; // number of row in time series data
+    private int numCol; // number of column in time series
+    @Param({ "1" })
+    private int numRow; // number of row in time series
 
     private List<String> getTimeSeriesIRI(int offset, int numDataSeries) {
         List<String> dataIRI = new ArrayList<>();
@@ -107,7 +107,8 @@ public class TimeSeriesClientIntegrationBenchmark {
         return dataIRI;
     }
 
-    private int addData(int offset, String timeUnit, List<Class<?>> dataClass, int n) {
+    private void addData(String timeUnit, List<Class<?>> dataClass, int n) {
+        int offset = 0;
         int nClass = dataClass.size();
         for (int i = 0; i < n; i++) {
             List<String> dataIRI = getTimeSeriesIRI(offset, nClass);
@@ -116,7 +117,6 @@ public class TimeSeriesClientIntegrationBenchmark {
             units.add(timeUnit);
             offset += nClass;
         }
-        return offset;
     }
 
     @Setup(Level.Trial)
@@ -127,16 +127,29 @@ public class TimeSeriesClientIntegrationBenchmark {
         dataIRIs = new ArrayList<>();
         classes = new ArrayList<>();
         units = new ArrayList<>();
-        int offset = 0; // need this to keep all dataIRI unique
 
         // Initialise time unit for all test data series
         String timeUnit = "http://s";
 
-        // Initialise 1st time series with 3 associated data series
-        // Specify type of data for each column (most data will be in doubles, but one
-        // can specify different data types)
-        List<Class<?>> dataClass1 = Arrays.asList(Double.class, String.class, Integer.class);
-        offset = addData(offset, timeUnit, dataClass1, n1);
+        // Initialise time series with numCol associated data series
+        // Specify type of data for each column
+        List<Class<?>> dataClass = new ArrayList<>();
+        for (int i = 0; i < numCol; i++) {
+            switch (i % 3) {
+                case 0:
+                    dataClass.add(Double.class);
+                    break;
+                case 1:
+                    dataClass.add(String.class);
+                    break;
+                case 2:
+                    dataClass.add(Integer.class);
+                    break;
+                default:
+                    break;
+            }
+        }
+        addData(timeUnit, dataClass, numTimeSeries);
 
         // Prepare sample data to be added
 
@@ -145,14 +158,15 @@ public class TimeSeriesClientIntegrationBenchmark {
         List<Instant> time = new ArrayList<>();
         Instant currentInstant = Instant.now();
 
-        for (int i = 0; i < nt; i++) {
+        for (int i = 0; i < numRow; i++) {
             time.add(currentInstant);
             currentInstant = currentInstant.plusSeconds(1);
         }
 
         for (int i = 0; i < dataIRIs.size(); i++) {
 
-            TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs.get(i), sampleTimeSeriesData(classes.get(i), nt));
+            TimeSeries<Instant> ts = new TimeSeries<>(time, dataIRIs.get(i),
+                    sampleTimeSeriesData(classes.get(i), numRow));
             tss.add(ts);
         }
 
@@ -276,6 +290,7 @@ public class TimeSeriesClientIntegrationBenchmark {
             }
         }
     }
+
     @State(Scope.Benchmark)
     public static class EmptyTableState extends NoTableState {
 
@@ -315,6 +330,5 @@ public class TimeSeriesClientIntegrationBenchmark {
     public void testgetAllTimeSeries(EmptyTableState state, Blackhole blackhole) {
         blackhole.consume(EmptyTableState.tsClient.getAllTimeSeries());
     }
-
 
 }

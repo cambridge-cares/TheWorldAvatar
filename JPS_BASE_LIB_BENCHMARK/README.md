@@ -39,4 +39,4 @@ java -jar target/benchmarks.jar -p [PARAM]=[VALUE1],[VALUE2],[VALUE3...]
 ## Useful notes
 
 @Benchmark annotates an actual benchmarking test.
-@Setup annotates functions that are called before actual benchmarking. It takes _LEVEL_ as a parameter; Level.Trial indicates a function to be run once before benchmarking the entire class, whereas Level.Invocation indicates a function to be run before even benchmark call.
+@Setup annotates functions that are called before actual benchmarking. It takes _LEVEL_ as a parameter; Level.Trial indicates a function to be run once before benchmarking the entire class, whereas Level.Invocation indicates a function to be run before every benchmark call.
