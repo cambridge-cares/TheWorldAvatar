@@ -24,3 +24,7 @@ class Measure(BaseClass):
     rdfs_isDefinedBy = OM
     hasUnit: HasUnit[Unit]
     hasNumericalValue: HasNumericalValue[float]
+
+# TODO need to find a better way for defining the units
+gramPerMole = OM.namespace_iri + 'gramPerMole'
+elementaryCharge = OM.namespace_iri + 'elementaryCharge'
