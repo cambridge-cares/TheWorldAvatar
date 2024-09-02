@@ -112,11 +112,11 @@ class ChemicalBuildingUnit(BaseClass):
 
 class MetalOrganicPolyhedron(CoordinationCage):
     hasAssemblyModel: HasAssemblyModel[AssemblyModel]
-    hasCavity: HasCavity[Cavity]
+    hasCavity: Optional[HasCavity[Cavity]] = None
     hasChemicalBuildingUnit: HasChemicalBuildingUnit[ChemicalBuildingUnit]
     hasProvenance: HasProvenance[Provenance]
     hasCharge: ontospecies.HasCharge[ontospecies.Charge]
     hasMolecularWeight: ontospecies.HasMolecularWeight[ontospecies.MolecularWeight]
-    hasGeometry: HasGeometry[ontospecies.Geometry]
+    hasGeometry: Optional[HasGeometry[ontospecies.Geometry]] = None
     hasCCDCNumber: Optional[HasCCDCNumber[str]] = None
     hasMOPFormula: HasMOPFormula[str]
