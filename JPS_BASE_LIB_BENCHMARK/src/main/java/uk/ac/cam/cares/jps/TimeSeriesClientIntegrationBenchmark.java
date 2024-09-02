@@ -97,8 +97,6 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Param({ "1" })
     private int n1; // number of time series that has three fields
     @Param({ "1" })
-    private int n2; // number of time series that has one field
-    @Param({ "1" })
     private int nt; // number of row in time series data
 
     private List<String> getTimeSeriesIRI(int offset, int numDataSeries) {
@@ -139,11 +137,6 @@ public class TimeSeriesClientIntegrationBenchmark {
         // can specify different data types)
         List<Class<?>> dataClass1 = Arrays.asList(Double.class, String.class, Integer.class);
         offset = addData(offset, timeUnit, dataClass1, n1);
-
-        // Initialise 2nd time series with 1 associated data series
-
-        List<Class<?>> dataClass2 = Arrays.asList(Double.class);
-        offset = addData(offset, timeUnit, dataClass2, n2);
 
         // Prepare sample data to be added
 

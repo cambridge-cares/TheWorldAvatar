@@ -61,7 +61,7 @@ import org.postgis.Point;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class TimeSeriesBenchmark {
 
-    @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
+    @Param({"1000"})
     private int size;
     private boolean printToScreen;
 
