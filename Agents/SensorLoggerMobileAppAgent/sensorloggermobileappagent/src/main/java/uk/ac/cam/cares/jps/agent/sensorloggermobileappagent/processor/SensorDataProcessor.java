@@ -15,7 +15,7 @@ public abstract class SensorDataProcessor {
     AgentConfig config;
     RemoteStoreClient storeClient;
     Node smartphoneIRINode;
-    final ArrayList<OffsetDateTime> timeList = new ArrayList<>();
+    final List<OffsetDateTime> timeList = new ArrayList<>();
     boolean isIriInstantiationNeeded = false;
     boolean isRbdInstantiationNeeded = false;
 
@@ -28,7 +28,7 @@ public abstract class SensorDataProcessor {
 
     public abstract void addData(HashMap<String, List<?>> data);
 
-    public abstract TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception;
+    public abstract TimeSeries<Long> getProcessedTimeSeries() throws Exception;
 
     public abstract void initIRIs();
 
@@ -37,6 +37,7 @@ public abstract class SensorDataProcessor {
     public abstract Map<String, String> getDataIRIMap();
 
     abstract void clearData();
+
     abstract void getIrisFromKg();
 
     public boolean isIriInstantiationNeeded() {

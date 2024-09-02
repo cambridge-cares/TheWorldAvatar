@@ -12,6 +12,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
@@ -30,14 +31,19 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Collections.singletonList(dbfsIRI);
         List<List<?>> valueList = Collections.singletonList(dBFSList);
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getDbfsDSResolution(), config.getDbfsDSType());
 
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().getEpochSecond())
+                .collect(Collectors.toList());
+
+        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(dbfsIRI));
+
         clearData();
-        return ts;
+        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
     }
 
     @Override
@@ -76,19 +82,19 @@ public class DBFSDataProcessor extends SensorDataProcessor {
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("slma", SLA)
-                .addPrefix ("saref",SAREF)
+                .addPrefix("saref", SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
-                .addPrefix("om",OM)
-                .addWhere(smartphoneIRINode,"saref:consistsOf","?microphone")
-                .addWhere("?microphone","rdf:type","ontodevice:Microphone")
-                .addWhere("?microphone","ontodevice:measures","?om_soundPressureLevel")
+                .addPrefix("om", OM)
+                .addWhere(smartphoneIRINode, "saref:consistsOf", "?microphone")
+                .addWhere("?microphone", "rdf:type", "ontodevice:Microphone")
+                .addWhere("?microphone", "ontodevice:measures", "?om_soundPressureLevel")
                 .addWhere("?om_soundPressureLevel", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
 
-        JSONArray queryResult=storeClient.executeQuery(sb.buildString());
+        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
         if (queryResult.isEmpty()) {
             return;
         }

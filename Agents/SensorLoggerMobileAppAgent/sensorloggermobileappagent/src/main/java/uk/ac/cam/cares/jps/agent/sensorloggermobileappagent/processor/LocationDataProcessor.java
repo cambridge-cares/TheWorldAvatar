@@ -6,12 +6,15 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import org.postgis.Point;
+
+import net.sf.jsqlparser.statement.select.Offset;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
@@ -40,14 +43,17 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() {
+    public TimeSeries<Long> getProcessedTimeSeries() {
         // todo: do processing of location data
         List<String> dataIRIList = Arrays.asList(bearingIRI, speedIRI, altitudeIRI, pointIRI);
         List<List<?>> valueList = Arrays.asList(new ArrayList<>(bearingList),
                 new ArrayList<>(speedList),
                 new ArrayList<>(altitudeList),
                 new ArrayList<>(geomLocationList));
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(new ArrayList<>(timeList), dataIRIList, valueList);
+
+        List<Long> epochlist = timeList.stream().map(t -> t.toInstant().getEpochSecond())
+                .collect(Collectors.toList());
+        TimeSeries<Long> ts = new TimeSeries<>(new ArrayList<>(epochlist), dataIRIList, valueList);
 
         clearData();
         return ts;
@@ -110,7 +116,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om", OM)
-                .addPrefix("sf",SF)
+                .addPrefix("sf", SF)
                 .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
                 .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Bearing")

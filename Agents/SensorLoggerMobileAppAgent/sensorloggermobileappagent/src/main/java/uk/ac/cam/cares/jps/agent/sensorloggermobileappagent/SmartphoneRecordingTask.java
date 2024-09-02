@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -32,7 +33,7 @@ public class SmartphoneRecordingTask {
     private final String deviceId;
 
     private final RemoteStoreClient storeClient;
-    private final TimeSeriesClient<OffsetDateTime> tsClient;
+    private final TimeSeriesClient<Long> tsClient;
     private final AgentConfig config;
 
     private long lastProcessedTime;
@@ -44,8 +45,12 @@ public class SmartphoneRecordingTask {
         LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
 
         this.storeClient = storeClient;
-        this.tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class,
-                rdbStoreClient.getRdbURL(), rdbStoreClient.getUser(), rdbStoreClient.getPassword());
+        TimeSeriesRDBClientWithReducedTables<Long> tsRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Long.class);
+        tsRdbClient.setRdbURL(rdbStoreClient.getRdbURL());
+        tsRdbClient.setRdbUser(rdbStoreClient.getUser());
+        tsRdbClient.setRdbPassword(rdbStoreClient.getPassword());
+
+        this.tsClient = new TimeSeriesClient<>(storeClient, tsRdbClient);
         this.config = config;
         lastActiveTime = System.currentTimeMillis();
         lastProcessedTime = System.currentTimeMillis();
@@ -174,7 +179,7 @@ public class SmartphoneRecordingTask {
     }
 
     private void bulkAddTimeSeriesData() throws RuntimeException {
-        List<TimeSeries<OffsetDateTime>> tsList = sensorDataProcessorList.stream()
+        List<TimeSeries<Long>> tsList = sensorDataProcessorList.stream()
                 .filter(p -> p.getTimeSeriesLength() > 0)
                 .map(p -> {
                     try {

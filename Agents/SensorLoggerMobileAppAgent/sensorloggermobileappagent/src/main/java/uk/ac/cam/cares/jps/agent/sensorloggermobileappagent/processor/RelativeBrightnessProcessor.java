@@ -4,7 +4,10 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.function.library.leviathan.degreesToRadians;
 import org.json.JSONArray;
+
+import net.sf.jsqlparser.statement.select.Offset;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -12,6 +15,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
@@ -31,14 +35,19 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Collections.singletonList(relativeBrightnessIRI);
         List<List<?>> valueList = Collections.singletonList(brightnessList);
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getRbDSResolution(), config.getRbDSType());
 
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().getEpochSecond())
+                .collect(Collectors.toList());
+
+        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(relativeBrightnessIRI));
+
         clearData();
-        return ts;
+        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
     }
 
     @Override
@@ -46,7 +55,8 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
         getIrisFromKg();
 
         if (relativeBrightnessIRI == null || relativeBrightnessIRI.isEmpty()) {
-            relativeBrightnessIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/relativeBrightness_" + UUID.randomUUID();
+            relativeBrightnessIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/relativeBrightness_"
+                    + UUID.randomUUID();
 
             isIriInstantiationNeeded = true;
             isRbdInstantiationNeeded = true;

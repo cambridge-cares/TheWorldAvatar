@@ -5,6 +5,8 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
+
+import net.sf.jsqlparser.statement.select.Offset;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -12,6 +14,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
@@ -38,14 +41,20 @@ public class AccelerometerProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<List<?>> valueList = Arrays.asList(xList, yList, zList);
         List<String> iriList = Arrays.asList(xIri, yIri, zIri);
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<OffsetDateTime>(timeList, iriList, valueList);
+        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, iriList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getAccelDSResolution(), config.getAccelDSType());
 
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().getEpochSecond())
+                .collect(Collectors.toList());
+
+        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(xIri), ts.getValuesAsDouble(yIri),
+                ts.getValuesAsDouble(zIri));
+
         clearData();
-        return ts;
+        return new TimeSeries<>(epochlist, iriList, downsampledValuesList);
     }
 
     @Override

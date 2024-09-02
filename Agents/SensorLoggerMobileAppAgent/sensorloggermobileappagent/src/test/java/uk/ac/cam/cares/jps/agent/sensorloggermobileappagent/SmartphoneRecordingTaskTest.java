@@ -3,10 +3,8 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentMatchers;
 import org.postgis.Point;
-import org.testng.annotations.BeforeTest;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -76,10 +74,12 @@ public class SmartphoneRecordingTaskTest {
         List<Double> dBFSList = Arrays.asList(-10.0, -20.0, -30.0);
 
         // Light value lists
-        ArrayList<OffsetDateTime> lightValue_tsList = new ArrayList<>(Arrays.asList(now, fiveMinutesAgo, tenMinutesAgo));
+        ArrayList<OffsetDateTime> lightValue_tsList = new ArrayList<>(
+                Arrays.asList(now, fiveMinutesAgo, tenMinutesAgo));
         List<Double> lightValueList = Arrays.asList(300.0, 500.0, 700.0);
 
-        ArrayList<OffsetDateTime> brightness_tsList = new ArrayList<>(Arrays.asList(now, fiveMinutesAgo, tenMinutesAgo));
+        ArrayList<OffsetDateTime> brightness_tsList = new ArrayList<>(
+                Arrays.asList(now, fiveMinutesAgo, tenMinutesAgo));
         List<Double> brightnessList = Arrays.asList(200.0, 250.0, 300.0);
 
         HashMap<String, List<?>> dataHashmap = new HashMap<>();

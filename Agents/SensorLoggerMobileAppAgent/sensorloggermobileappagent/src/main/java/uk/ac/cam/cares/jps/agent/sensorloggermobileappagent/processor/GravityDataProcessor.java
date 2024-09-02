@@ -12,6 +12,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
@@ -38,15 +39,21 @@ public class GravityDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Arrays.asList(xIri, yIri, zIri);
         List<List<?>> dataValues = Arrays.asList(xList, yList, zList);
 
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, dataValues);
         ts = Downsampling.downsampleTS(ts, config.getGravityDSResolution(), config.getGravityDSType());
 
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().getEpochSecond())
+                .collect(Collectors.toList());
+
+        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(xIri), ts.getValuesAsDouble(yIri),
+                ts.getValuesAsDouble(zIri));
+
         clearData();
-        return ts;
+        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
     }
 
     @Override
