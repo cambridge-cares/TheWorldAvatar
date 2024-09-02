@@ -64,7 +64,7 @@ class OntoLab(BaseOntology):
 class OntoSpecies(BaseOntology):
     # Below fields can be set up to provide metadata for your ontology
     base_url:           ClassVar[str]           = "http://www.theworldavatar.com/ontology/ontospecies/"
-    namespace:          ClassVar[str]           = 'OntoSpecies.owl'
+    namespace:          ClassVar[str]           = 'OntoSpecies.owl#'
     owl_versionInfo:    ClassVar[str]           = '0.0.1'
     rdfs_comment:       ClassVar[str]           = 'Your ontology'
 
@@ -217,7 +217,6 @@ class Add(SynthesisStep):
     hasAddedChemicalInput               : Optional[HasAddedChemicalInput[ChemicalInput]]                = set()
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
-    isWashedWith                        : Optional[IsWashedWith[Material]]                              = set()
     hasWashingSolvent                   : Optional[HasWashingSolvent[ChemicalInput]]                    = set()
     isRepeated                          : Optional[IsRepeated[int]]                                     = set()
 class Dry(SynthesisStep):
@@ -513,16 +512,15 @@ class TextToCSV:
         
         return product_entries, other_entries
     
-def species_querying(client, species_label, recursion_counter):
-    print(recursion_counter)
-    print(species_label)
+def species_querying(client, species_label):
     # avoid linking all to N/A instance:
-    if species_label[recursion_counter] == 'N/A':
-        if recursion_counter < 2:
-            return species_querying(client, species_label, recursion_counter=recursion_counter+1)
-        else:
-            return []
-
+    species_label               = [item for item in species_label if item != 'N/A']
+    insert_string               = ""
+    # Loop through each element in the list
+    for label in species_label:
+        # Append each formatted element to the result string
+        insert_string += f""" "{label}" """
+    
     query = f"""
         PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
         PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -530,18 +528,13 @@ def species_querying(client, species_label, recursion_counter):
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         SELECT ?Species WHERE {{
         ?Species a os:Species .
-        VALUES ?Text {{"{species_label[recursion_counter]}"}}
+        VALUES ?Text {{{insert_string}}}
         ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES)/os:value)|rdfs:label|rdf:label|skos:altLabel|<http://www.w3.org/2000/01/rdf-schema/label>) ?Text . 
         }}"""
-    
+    print("species query: ", query)
     query_result                    = client.perform_query(query)
-    print("queried result: ", query_result)
-    # return if solution is found or maximum iterations are reached.
-    if query_result              != [] or recursion_counter >= 2:
-        print(f"Species querying for: {species_label[recursion_counter]}", query_result, "\n")
-        return query_result
-    else:
-        return species_querying(client, species_label, recursion_counter=recursion_counter+1)
+    print("query result: ", query_result)
+    return query_result
 
 def mop_querying(client, CCDC_number, mop_formula, mop_name):
     CCDC_number             = remove_na(CCDC_number)
@@ -694,7 +687,7 @@ def add_upload(add_step, synthesis_client, species_client):
     chemical_name                                       = add_step['addedChemicalName']
     # Vessel:
     species_name                                        = chemical_name     
-    species                                             = instantiate_input(species_name, species_name, client_species=species_client, client_synthesis=synthesis_client) 
+    species                                             = instantiate_input(species_name, [species_name], client_species=species_client, client_synthesis=synthesis_client) 
     # Initialize an empty list to hold `ScalarValue` instances
     scalar_values = []
     # Iterate over each pair of unit and value
@@ -716,63 +709,94 @@ def add_upload(add_step, synthesis_client, species_client):
     add_class                                           = Add(hasOrder=add_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input)
     components = [phase_component_concentration, phase_component, composition, single_phase, material, chemical_input, add_class]
     push_component_to_kg(components, synthesis_client)
-    return add_class
+    return add_class, chemical_input
 
-def filter_upload(filter_step, synthesis_client):
+def filter_upload(filter_step, synthesis_client, species_client):
     print("filter step: ", filter_step)
-    filter_class                                        = Filter(hasOrder=filter_step["stepNumber"], isRepeated=filter_step["repetitions"])                                         
+    washing_amount                                      = filter_step['washingSolventAmount']
+    filter_value, filter_unit                           = extract_numbers_and_units(washing_amount, "add")
+    """
+    if "/" in filter_step["washingSolventName"]:
+        # Split the string into two parts
+        chemicals_out                                   = filter_step["washingSolventName"].split("/", 1)
+        phase_components                                = []
+        phase_component_concentrations                  = []
+        for chem in chemicals_out:
+            phase_component_concentration               = PhaseComponentConcentration(hasValue=set(scalar_values))
+            phase_component_concentrations.append(scalar_value_instance)
+
+
+        phase_component_concentration1                  = PhaseComponentConcentration(hasValue=set(scalar_values))
+        phase_component_concentration2                  = PhaseComponentConcentration(hasValue=set(scalar_values))
+        phase_component1                                = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
+        phase_component2                                = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
+        composition                                     = Composition(comprisesDirectly=phase_component_concentration)
+        single_phase                                    = SinglePhase(isComposedOfSubsystem=phase_component, hasComposition=composition)     
+        material                                        = Material(thermodynamicBehaviour=single_phase)
+        chemical_input                                  = ChemicalInput(referencesMaterial=material)
+    else:
+    """
+    species                                         = instantiate_input(filter_step["washingSolventName"], [filter_step["washingSolventName"]], client_species=species_client, client_synthesis=synthesis_client) 
+    scalar_values = []
+    for unit, value in zip(filter_unit, filter_value):
+    # Get the unit using the `get_unit` function
+        print("unit and value: ", unit, value)
+        unit_instance                               = get_unit(unit, synthesis_client)
+        
+        # Create a `ScalarValue` instance and add it to the list
+        scalar_value_instance                       = ScalarValue(hasNumericalValue=value, hasUnitOfMeasure=unit_instance)
+        scalar_values.append(scalar_value_instance)
+
+    phase_component_concentration                   = PhaseComponentConcentration(hasValue=set(scalar_values))
+    phase_component                                 = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
+    composition                                     = Composition(comprisesDirectly=phase_component_concentration)
+    single_phase                                    = SinglePhase(isComposedOfSubsystem=phase_component, hasComposition=composition)     
+    material                                        = Material(thermodynamicBehaviour=single_phase)
+    chemical_input                                  = ChemicalInput(referencesMaterial=material)
+    filter_class                                    = Filter(hasOrder=filter_step["stepNumber"], isRepeated=filter_step["repetitions"], hasWashingSolvent=chemical_input)  
     components = [filter_class]
     push_component_to_kg(components, synthesis_client)
-    return filter_class
+    return filter_class, chemical_input
 
 def remove_na(input_candidate):
     if input_candidate == "N/A":
         return ""
     return input_candidate
 
-def instantiate_input_old(chemical_formula, species_name, client_species, client_synthesis):
-    # search the ontospecies and ontosynthesis blazegraphs for existing instances
-    triples                                                 = species_querying(client_species, species_name, 0)
-    print("OntoSpecies results: ", triples)
-    if triples == None or triples == []:
-        triples                                             = species_querying(client_synthesis, species_name, 0)
-        if triples == None or triples == []:
-            species                                         = Species(label=chemical_formula, altLabel=species_name)
-        else:
-            print("Success: ", triples[0]["Species"])
-            try:
-                species                                     = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
-                species.altLabel.update(species_name)
-            except:
-                # not found matching instance in either ontospecies or ontomops blazegraph => make a new entry!
-                print("Could not find IRI. \n")
-                species                                     = Species(label=chemical_formula, altLabel={species_name})
-    else:
-        species                                             = Species.pull_from_kg(triples[0]["Species"], client_species, recursive_depth=-1)[0]
-        species.altLabel.update(species_name) 
-        print("species rdf type: ", species.rdf_type)
+def update_alt_label(species, species_name):
+    print("speecies name and type: ", type(species_name), species_name)
+    for name in species_name:
+        print("name to be added: ", name)
+        if name not in species.altLabel:
+            species.altLabel.update(name)
+            print("updated alt label: ", name)
     return species
+
+
 
 def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
     # search the ontospecies and ontosynthesis blazegraphs for existing instances
     species_iri                                             = str(uuid.uuid4())
-    triples                                                 = species_querying(client_species, species_name, 0)
+    triples                                                 = species_querying(client_synthesis, species_name)
     print("OntoSpecies results: ", triples)
     if triples == None or triples == []:
-        triples                                             = species_querying(client_synthesis, species_name, 0)
+        triples                                             = species_querying(client_species, species_name)
         if triples == None or triples == []:
             species                                         = Species(label=chemical_formula, altLabel=species_name)
             # Ontospecies uses different base IRIs for rdf type and the actual instance IRI.
             species.instance_iri                            = f"http://www.theworldavatar.com/kb/ontospecies/Species_{species_iri}"
         else:
-            print("Success: ", triples[0]["Species"])
-            species                                         = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
-            species.altLabel.update(species_name)
+            #species                                         = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
+            species                                         = Species.pull_from_kg(triples[0]["Species"], client_species, recursive_depth=-1)[0]
+            species                                         = update_alt_label(species, species_name=species_name)
+            print("species iri found in species kg: ", species.altLabel)
 
     else:
-        species                                             = Species(label=chemical_formula, altLabel=species_name)
-        species.instance_iri                                = triples[0]["Species"]
-        print("species rdf type: ", species.rdf_type)
+        print("Success: ", triples[0]["Species"])
+        # species                                             = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
+        species                                             = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
+        # update if not already saved (avoids 1000s of duplicates)
+        species                                             = update_alt_label(species, species_name=species_name)
     return species
 
 def instantiate_output(ccdc_number, chemical_formula, mop_names, client_mop, client_synthesis):
@@ -863,7 +887,6 @@ def chemicals_upload(input_path, output_path):
             
 def push_component_to_kg(instances:list, client, recursive_depth=-1):
     for instance in instances:
-        print("instance: ", instance)
         try:
             g_to_remove, g_to_add                                   = instance.push_to_kg(client, recursive_depth)
         except:
@@ -876,49 +899,65 @@ def main():
     sparql_client_synthesis                                 = get_client("OntoSynthesisConnection")
     sparql_client_species                                   = get_client("OntoSpeciesConnection") 
     sparql_client_mop                                       = get_client("OntoMOPConnection") 
-    #upload_predefined(sparql_client_synthesis)
+    upload_predefined(sparql_client_synthesis)
     # 10.1039_C6DT02764D
     # 10.1021_ja0104352.txt
-    chemicals_upload("../Data/first10_prompt22/10.1021_ja0104352.txt", "")
+    # 10.1002_chem.201700798
+    # 10.1021_ja105986b
+    chemicals_upload("../Data/first10_prompt22/10.1039_C6DT02764D.txt", "")
     # read in JSON:
-    synthesis_json                                           = read_json_file("../Data/first10_prompt53/10.1021_ja0104352.json")["Synthesis"]
+    input_path                                              = "../Data/first10_prompt53/10.1039_C6DT02764D.json"
+    synthesis_json                                          = read_json_file(input_path)["Synthesis"]
     print("actual full data: ", synthesis_json)
+    
     for entry in synthesis_json:
         print("entry: ", entry)
-    data2                                                   = synthesis_json[0]
-    print("json file: ", data2)
-    mop_name                                                = data2["productName"]
-    mop_ccdc                                                = data2["productCCDCNumber"]
-    transformation_iri                                      = transformation_querying(sparql_client_synthesis, mop_name=mop_name)
-    if transformation_iri == []:
-        transformation_querying(sparql_client_synthesis, mop_name=mop_ccdc)
-    print("transformation iri", transformation_iri)  
-    print("IRI: ", transformation_iri[0]["chemicalTrans"])
-    print("full data: ", data2)
-    step_data                                   = data2["steps"]
-    step_list                                   = []
-    for step_dat in step_data:
-        if 'Add' in step_dat:
-            add_class                               = add_upload(add_step=step_dat["Add"], synthesis_client=sparql_client_synthesis, species_client=sparql_client_species)
-            step_list.append(add_class)
+        data2                                                   = entry
+        print("json file: ", data2)
+        mop_name                                                = data2["productName"]
+        mop_ccdc                                                = data2["productCCDCNumber"]
+        transformation_iri                                      = transformation_querying(sparql_client_synthesis, mop_name=mop_name)
+        if transformation_iri == []:
+            transformation_iri                                  = transformation_querying(sparql_client_synthesis, mop_name=mop_ccdc)
+        print("transformation iri", transformation_iri)  
+        print("IRI: ", transformation_iri[0]["chemicalTrans"])
+        print("full data: ", data2)
+        step_data                                               = data2["steps"]
+        step_list                                               = []
+        chemicals_list                                          = []
+        filename                                        = os.path.basename(input_path)
+        # Split the filename into the two parts using '_'
+        number1, number2_with_extension                 = filename.split('_')
+        # Remove the '.txt' extension from the second part
+        number2                                         = os.path.splitext(number2_with_extension)[0]
+        # Combine the parts in the desired format
+        doi                                             = f"{number1}/{number2}"
+        print("doi: ", doi)
+        document                                        = Document(doi=doi)
+        for step_dat in step_data:
+            if 'Add' in step_dat:
+                add_class, chemical_input               = add_upload(add_step=step_dat["Add"], synthesis_client=sparql_client_synthesis, species_client=sparql_client_species)
+                step_list.append(add_class)
+                chemicals_list.append(chemical_input)
 
-        elif 'HeatChill' in step_dat:
-            heatchill_step                          = step_dat["HeatChill"]
-            print("heatchill step: ", heatchill_step)
-            if heatchill_step["targetTemperature"] == "—" or heatchill_step["targetTemperature"] == "room temperature" or heatchill_step["targetTemperature"] == "N/A":
-                continue
-            heat_class                              = heatchill_upload(sparql_client_synthesis, heatchill_step)
-            step_list.append(heat_class)
+            elif 'HeatChill' in step_dat:
+                heatchill_step                          = step_dat["HeatChill"]
+                print("heatchill step: ", heatchill_step)
+                if heatchill_step["targetTemperature"] == "—" or heatchill_step["targetTemperature"] == "room temperature" or heatchill_step["targetTemperature"] == "N/A":
+                    continue
+                heat_class                              = heatchill_upload(sparql_client_synthesis, heatchill_step)
+                step_list.append(heat_class)
 
-        elif 'Filter' in step_dat:
-            filter_class                            = filter_upload(step_dat["Filter"], sparql_client_synthesis)
-            step_list.append(filter_class)
+            elif 'Filter' in step_dat:
+                filter_class, chemical_input            = filter_upload(step_dat["Filter"], sparql_client_synthesis, sparql_client_species)
+                step_list.append(filter_class)
 
-    chemical_transformation                     = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
-    chemical_synthesis                          = ChemicalSynthesis(hasSynthesisStep=step_list) 
-    chemical_transformation[0].isDescribedBy.add(chemical_synthesis)
-    components = [chemical_synthesis, chemical_transformation]
-    push_component_to_kg(components, sparql_client_synthesis)
+        print("pulling transformation iri: ", transformation_iri[0]["chemicalTrans"])
+        chemical_transformation                         = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=0)   
+        print("chemical list: ", chemicals_list)
+        chemical_synthesis                              = ChemicalSynthesis(hasSynthesisStep=step_list, retrievedFrom=document, hasChemicalInput=chemicals_list) 
+        components                                      = [chemical_synthesis, chemical_transformation]
+        push_component_to_kg(components, sparql_client_synthesis)
 
 
     #OntoSyn         = "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl"
