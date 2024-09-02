@@ -1,8 +1,10 @@
 alg1 = """
+prefix os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 prefix mops: <https://www.theworldavatar.com/kg/ontomops/>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-select distinct ?metal_formula ?organic_formula ?am_label ?metal_gbu_label ?organic_gbu_label ?metal_gbu_number ?organic_gbu_number ?am ?metal ?organic
+select distinct ?metal_formula ?organic_formula ?metal_mw ?organic_mw ?metal_charge ?organic_charge ?am_label ?metal_gbu_label ?organic_gbu_label ?metal_gbu_number ?organic_gbu_number ?am ?metal ?organic ?metal_gbu ?organic_gbu
 where {
   {
     select distinct ?metal_formula ?metal_gbu_label ?am_label ?metal_gbu_number ?am ?metal_gbu ?metal ?metal_binding ?metal_ocn
@@ -32,6 +34,8 @@ where {
       filter (contains(str(?_existing_mop_formula), concat(str(?organic_formula), str(?organic_gbu_number))))
     }
   }
+  ?metal os:hasMolecularWeight/om:hasValue/om:hasNumericalValue ?metal_mw; os:hasCharge/om:hasValue/om:hasNumericalValue ?metal_charge.
+  ?organic os:hasMolecularWeight/om:hasValue/om:hasNumericalValue ?organic_mw; os:hasCharge/om:hasValue/om:hasNumericalValue ?organic_charge.
   filter (?metal_gbu != ?organic_gbu)
   filter (?metal_ocn = ?organic_ocn)
   filter (?metal_binding = ?organic_binding)

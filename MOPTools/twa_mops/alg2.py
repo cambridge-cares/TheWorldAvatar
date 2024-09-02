@@ -2,10 +2,12 @@
 # we can change "=" in `filter (?gbu_modularity >= ?metal_gbu_modularity)` and `filter (?_gbu_modularity >= ?organic_gbu_modularity)`
 # to ">="
 alg2 = """
+prefix os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 prefix mops: <https://www.theworldavatar.com/kg/ontomops/>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-select distinct ?metal_formula ?organic_formula ?am_label ?am_symmetry ?metal_gbu_label ?organic_gbu_label ?metal_gbu_number ?organic_gbu_number ?am ?metal ?organic
+select distinct ?metal_formula ?organic_formula ?am_label ?am_symmetry ?metal_mw ?organic_mw ?metal_charge ?organic_charge ?metal_gbu_label ?organic_gbu_label ?metal_gbu_number ?organic_gbu_number ?am ?metal ?organic ?metal_gbu ?organic_gbu
 where {
   {
     select distinct ?metal_formula ?metal_gbu_label ?am_label ?am_symmetry ?metal_gbu_number ?am ?metal_gbu ?metal ?metal_binding ?metal_ocn
@@ -65,6 +67,8 @@ where {
       filter (?_gbu_modularity = ?organic_gbu_modularity)
     }
   }
+  ?metal os:hasMolecularWeight/om:hasValue/om:hasNumericalValue ?metal_mw; os:hasCharge/om:hasValue/om:hasNumericalValue ?metal_charge.
+  ?organic os:hasMolecularWeight/om:hasValue/om:hasNumericalValue ?organic_mw; os:hasCharge/om:hasValue/om:hasNumericalValue ?organic_charge.
   filter (?organic_gbu != ?metal_gbu)
   filter (?organic_ocn = ?metal_ocn)
   filter (?organic_binding = ?metal_binding)
