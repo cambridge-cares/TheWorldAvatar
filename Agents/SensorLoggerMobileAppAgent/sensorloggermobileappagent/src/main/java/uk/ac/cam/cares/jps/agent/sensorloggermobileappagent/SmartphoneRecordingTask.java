@@ -39,7 +39,8 @@ public class SmartphoneRecordingTask {
     private long lastActiveTime;
     private boolean isProcessing;
 
-    public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient, AgentConfig config, String deviceId) {
+    public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient,
+            AgentConfig config, String deviceId) {
         LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
 
         this.storeClient = storeClient;
@@ -153,7 +154,8 @@ public class SmartphoneRecordingTask {
     }
 
     private void bulkInitRdb() {
-        Iterator<SensorDataProcessor> iterator = sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded).iterator();
+        Iterator<SensorDataProcessor> iterator = sensorDataProcessorList.stream()
+                .filter(SensorDataProcessor::isRbdInstantiationNeeded).iterator();
         List<List<String>> dataIris = new ArrayList<>();
         List<List<Class<?>>> dataClasses = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -166,7 +168,8 @@ public class SmartphoneRecordingTask {
         List<String> timeUnits = Collections.nCopies(dataIris.size(), OffsetDateTime.class.getSimpleName());
         tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits);
 
-        sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded).forEach(p -> p.setRbdInstantiationNeeded(false));
+        sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded)
+                .forEach(p -> p.setRbdInstantiationNeeded(false));
         LOGGER.info("finish init postgres dbTable and the corresponding table");
     }
 
