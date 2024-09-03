@@ -12,7 +12,7 @@ The namespace for the ontology is:
 - [2. Data Model](#2-data-model)
   - [Legend](#legend)
   - [2.1 Service Agreement](#21-service-agreement)
-  - [2.2 Service Agreement](#22-service-events)
+  - [2.2 Service Events](#22-service-events)
   - [2.3 Reporting](#23-reporting)
 
 # 2. Data Model
@@ -95,6 +95,8 @@ Figure 2: TBox representation of the payment obligations stated in the service a
 
 ```mermaid
     erDiagram
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
+    "fibo-fnd-pas-pas:Service" ||--o{ "fibo-fnd-pas-psch:PaymentObligation" : "ontoservice:obligedTo"
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServicePaymentObligation" : "fibo-fnd-rel-rel:confers"
     "ontoservice:ServicePaymentObligation" ||--o{ "fibo-fnd-pas-psch:PaymentObligation" : "rdfs:subClassOf"
     "ontoservice:ServicePaymentObligation" ||--|{ "ontoservice:BaseCharge"  : "ontoservice:hasBaseCharge"
@@ -115,7 +117,7 @@ Figure 2: TBox representation of the payment obligations stated in the service a
     "ontoservice:ServiceTonnage" ||--o{ "om:Mass"  : "ontoservice:hasQuantity"
 ```
 
-The service agreement will also mandate a service commitment, including the service time, schedule, facility (i.e. the location for service execution) and/or remarks.
+The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks.
 
 - It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 3 to optimise and arrange services with executable details.
 
@@ -123,7 +125,10 @@ Figure 3: TBox representation of the contractual obligations for a service
 
 ```mermaid
     erDiagram
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
+    "ontoservice:ServiceCommitment" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "rdfs:subClassOf"
+    "fibo-fnd-pas-pas:Service" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "ontoservice:commitsTo"
 
     "ontoservice:ServiceCommitment" {
         rdfs-subClassOf fibo-fnd-agr-ctr-ContractualCommitment

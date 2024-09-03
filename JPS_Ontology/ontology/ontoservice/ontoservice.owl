@@ -81,6 +81,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/commitsTo -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/commitsTo">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment"/>
+        <rdfs:comment>A relationship that links the commitments made when providing or engaging with the associated service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>commits to</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/dependsOn -->
 
 
@@ -183,6 +196,19 @@
         <rdfs:comment>A relationship describing a legally enforceable variable rate for a service based on certain parameters.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>has variable rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/obligedTo -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/obligedTo">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/PaymentObligation"/>
+        <rdfs:comment>A relationship that links the obligations made when providing or engaging with the associated service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>obliged to</rdfs:label>
     </owl:ObjectProperty>
     
 
