@@ -73,7 +73,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
         sortedConcepts = reorderConcepts(sortedConcepts, form.getValues(field.fieldId));
         if (field.name[VALUE_KEY].toLowerCase() === "country") { sortedConcepts = reorderConcepts(sortedConcepts, "Singapore"); }
         setDropdownValues(sortedConcepts);
-        form.setValue(field.fieldId, sortedConcepts[0].type);
+        form.setValue(field.fieldId, sortedConcepts[0].type.value);
       }
       setIsFetching(false);
     }
