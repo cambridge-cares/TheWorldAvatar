@@ -5,7 +5,14 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOf;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,15 +20,18 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.*;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
@@ -30,7 +40,6 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * This class contains a collection of methods to interact with a triple
@@ -50,20 +59,20 @@ public class TimeSeriesSparql {
     public static final String NS_TIME = "http://www.w3.org/2006/time#";
 
     // Prefixes
-    private static final Prefix PREFIX_ONTOLOGY = SparqlBuilder.prefix("ts", iri(TIMESERIES_NAMESPACE));
-    private static final Prefix PREFIX_KB = SparqlBuilder.prefix("kb", iri(TIMESERIES_NAMESPACE));
-    private static final Prefix PREFIX_TIME = SparqlBuilder.prefix("time", iri(NS_TIME));
+    static final Prefix PREFIX_ONTOLOGY = SparqlBuilder.prefix("ts", iri(TIMESERIES_NAMESPACE));
+    static final Prefix PREFIX_KB = SparqlBuilder.prefix("kb", iri(TIMESERIES_NAMESPACE));
+    static final Prefix PREFIX_TIME = SparqlBuilder.prefix("time", iri(NS_TIME));
 
     // Relationships
-    private static final Iri hasTimeSeries = PREFIX_ONTOLOGY.iri("hasTimeSeries");
-    private static final Iri hasRDB = PREFIX_ONTOLOGY.iri("hasRDB");
-    private static final Iri hasTimeUnit = PREFIX_ONTOLOGY.iri("hasTimeUnit");
-    private static final Iri hasAveragingPeriod = PREFIX_ONTOLOGY.iri("hasAveragingPeriod");
-    private static final Iri numericDuration = PREFIX_TIME.iri("numericDuration");
-    private static final Iri unitType = PREFIX_TIME.iri("unitType");
-    private static final Iri HAS_RDB_CLIENT_CLASS = PREFIX_ONTOLOGY.iri("hasRDBClientClass");
-    private static final Iri HAS_TIME_CLASS = PREFIX_ONTOLOGY.iri("hasTimeClass");
-    private static final Iri HAS_SCHEMA = PREFIX_ONTOLOGY.iri("hasSchema");
+    static final Iri hasTimeSeries = PREFIX_ONTOLOGY.iri("hasTimeSeries");
+    static final Iri hasRDB = PREFIX_ONTOLOGY.iri("hasRDB");
+    static final Iri hasTimeUnit = PREFIX_ONTOLOGY.iri("hasTimeUnit");
+    static final Iri hasAveragingPeriod = PREFIX_ONTOLOGY.iri("hasAveragingPeriod");
+    static final Iri numericDuration = PREFIX_TIME.iri("numericDuration");
+    static final Iri unitType = PREFIX_TIME.iri("unitType");
+    static final Iri HAS_RDB_CLIENT_CLASS = PREFIX_ONTOLOGY.iri("hasRDBClientClass");
+    static final Iri HAS_TIME_CLASS = PREFIX_ONTOLOGY.iri("hasTimeClass");
+    static final Iri HAS_SCHEMA = PREFIX_ONTOLOGY.iri("hasSchema");
 
     // Fields for class specific exceptions
     private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
@@ -956,85 +965,6 @@ public class TimeSeriesSparql {
         }
 
         kbClient.executeUpdate(modify.getQueryString());
-    }
-
-    /**
-     * used by TimeSeriesClientFactory to get the necessary information to create a
-     * TimeSeriesClient object
-     * 
-     * @param dataIriList
-     * @return
-     */
-    List<String> getTimeClassRdbClassAndUrlAndSchema(List<String> dataIriList) {
-        SelectQuery query = Queries.SELECT();
-
-        Variable dataVar = query.var();
-        Variable timeClassVar = query.var();
-        Variable rdbClientClassVar = query.var();
-        Variable rdbUrlVar = query.var();
-        Variable schemaVar = query.var();
-
-        GraphPattern queryPattern = dataVar.has(PropertyPaths.path(hasTimeSeries, HAS_TIME_CLASS), timeClassVar)
-                .andHas(PropertyPaths.path(hasTimeSeries, HAS_RDB_CLIENT_CLASS), rdbClientClassVar)
-                .andHas(PropertyPaths.path(hasTimeSeries, hasRDB), rdbUrlVar)
-                .andHas(PropertyPaths.path(hasTimeSeries, HAS_SCHEMA), schemaVar);
-        ValuesPattern valuesPattern = new ValuesPattern(dataVar,
-                dataIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
-
-        query.select(timeClassVar, rdbClientClassVar, rdbUrlVar, schemaVar).where(queryPattern, valuesPattern)
-                .distinct()
-                .prefix(PREFIX_ONTOLOGY);
-
-        JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
-
-        if (queryResult.length() != 1) {
-            throw new JPSRuntimeException(
-                    "Given IRIs do not have exactly one time class/rdb client class/rdb url/schema");
-        }
-
-        String timeClassName = queryResult.getJSONObject(0).getString(timeClassVar.getQueryString().substring(1));
-        String rdbClientClassName = queryResult.getJSONObject(0)
-                .getString(rdbClientClassVar.getQueryString().substring(1));
-        String rdbUrl = queryResult.getJSONObject(0).getString(rdbUrlVar.getQueryString().substring(1));
-        String schema = queryResult.getJSONObject(0).getString(schemaVar.getQueryString().substring(1));
-
-        return Arrays.asList(timeClassName, rdbClientClassName, rdbUrl, schema);
-    }
-
-    List<String> getTimeClassRdbClassAndUrlAndSchema(List<String> endpoints, List<String> dataIriList) {
-        SelectQuery query = Queries.SELECT();
-
-        Variable dataVar = query.var();
-        Variable timeClassVar = query.var();
-        Variable rdbClientClassVar = query.var();
-        Variable rdbUrlVar = query.var();
-        Variable schemaVar = query.var();
-
-        GraphPattern queryPattern = dataVar.has(PropertyPaths.path(hasTimeSeries, HAS_TIME_CLASS), timeClassVar)
-                .andHas(PropertyPaths.path(hasTimeSeries, HAS_RDB_CLIENT_CLASS), rdbClientClassVar)
-                .andHas(PropertyPaths.path(hasTimeSeries, hasRDB), rdbUrlVar)
-                .andHas(PropertyPaths.path(hasTimeSeries, HAS_SCHEMA), schemaVar);
-        ValuesPattern valuesPattern = new ValuesPattern(dataVar,
-                dataIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
-
-        query.select(timeClassVar, rdbClientClassVar, rdbUrlVar, schemaVar).where(queryPattern, valuesPattern)
-                .distinct()
-                .prefix(PREFIX_ONTOLOGY);
-
-        JSONArray queryResult = ((RemoteStoreClient) kbClient).executeFederatedQuery(endpoints, query.getQueryString());
-
-        if (queryResult.length() != 1) {
-            throw new JPSRuntimeException(
-                    "Given IRIs do not have exactly one time class/rdb client class/rdb url/schema");
-        }
-
-        String timeClassName = queryResult.getJSONObject(0).getString(timeClassVar.getQueryString().substring(1));
-        String rdbClientClassName = queryResult.getJSONObject(0)
-                .getString(rdbClientClassVar.getQueryString().substring(1));
-        String rdbUrl = queryResult.getJSONObject(0).getString(rdbUrlVar.getQueryString().substring(1));
-        String schema = queryResult.getJSONObject(0).getString(schemaVar.getQueryString().substring(1));
-
-        return Arrays.asList(timeClassName, rdbClientClassName, rdbUrl, schema);
     }
 
     /**
