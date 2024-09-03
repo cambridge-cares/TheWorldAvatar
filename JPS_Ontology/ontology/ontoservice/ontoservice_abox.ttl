@@ -3,8 +3,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-os:ServiceStatusEnum a os:ServiceStatus ;
-  owl:oneOf (
+os:ServiceStatus owl:oneOf (
     os:AwaitingScheduling
     os:InReview
     os:InQueue
@@ -12,22 +11,22 @@ os:ServiceStatusEnum a os:ServiceStatus ;
     os:Completed
 ) .
 
-os:AwaitingScheduling a os:ServiceStatusEnum ;
+os:AwaitingScheduling a os:ServiceStatus ;
   rdfs:label "Awaiting scheduling";
   rdfs:comment "Represents the service status in the system. This status indicates that the service is currently awaiting scheduling.".
 
-os:InReview a os:ServiceStatusEnum ;
+os:InReview a os:ServiceStatus ;
   rdfs:label "In review";
   rdfs:comment "Represents the service status in the system. This status indicates that the service is currently in review awaiting approval.".
 
-os:InQueue a os:ServiceStatusEnum ;
+os:InQueue a os:ServiceStatus ;
   rdfs:label "In queue";
   rdfs:comment "Represents the service status in the system. This status indicates that the service is currently queued.".
 
-os:InProgress a os:ServiceStatusEnum ;
+os:InProgress a os:ServiceStatus ;
   rdfs:label "In progress";
   rdfs:comment "Represents the service status in the system. This status indicates that the service is currently in progress.".
 
-os:Completed a os:ServiceStatusEnum ;
+os:Completed a os:ServiceStatus ;
   rdfs:label "Completed";
   rdfs:comment "Represents the service status in the system. This status indicates that the service has been completed.".

@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>23 August 2024</dc:date>
+        <dc:date>03 September 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -397,6 +397,12 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoservice/hasStatus"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceStatus"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A specific occurrence or instance of a service being performed, characterised by a particular time and context. Each event capture details such as the date, time, and/or specific actions to record and analyse individual performances for quality, efficiency, and compliance with service agreements.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Service event</rdfs:label>
@@ -446,18 +452,6 @@
         <rdfs:comment>The current state of a service.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Service status</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceStatusEnum -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceStatusEnum">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceStatus"/>
-        <rdfs:comment>The enumerated states belonging to the service status, including awaiting scheduling, in review, in queue, in progress, completed.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Service status enum</rdfs:label>
     </owl:Class>
     
 
