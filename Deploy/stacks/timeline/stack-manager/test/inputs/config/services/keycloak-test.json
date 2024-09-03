@@ -1,0 +1,46 @@
+{
+  "ServiceSpec": {
+    "Name": "keycloak",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "quay.io/keycloak/keycloak:21.0.2",
+        "Command": [
+          "./keycloak_start.sh"
+        ],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "themes",
+            "Target": "/opt/keycloak/themes"
+          },
+          {
+            "Type": "bind",
+            "Source": "keycloak_start_test.sh",
+            "Target": "/keycloak_start.sh"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "keycloak_test.conf",
+            "File": {
+              "Name":"/opt/keycloak/conf/keycloak.conf"
+            }
+          },
+          {
+            "SecretName": "keycloak_admin_username_test"
+          },
+          {
+            "SecretName": "keycloak_admin_password_test"
+          }
+
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/keycloak/",
+      "externalPath": "/keycloak/"
+    }
+  }
+}

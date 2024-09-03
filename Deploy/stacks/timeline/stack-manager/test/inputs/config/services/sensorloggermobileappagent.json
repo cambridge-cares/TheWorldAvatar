@@ -1,0 +1,42 @@
+{
+  "ServiceSpec": {
+    "Name": "sensorloggermobileappagent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "sensorloggermobileappagent:3.0.0-dev-timeline-stack-SNAPSHOT",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "sensor-logger-resources",
+            "Target": "/resources"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "postgis"
+          },
+          {
+            "ConfigName": "geoserver"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "isochroneagent": {
+      "url": "http://localhost:8080/sensorloggermobileappagent/",
+      "externalPath": "/sensorloggermobileappagent/"
+    }
+  }
+}
