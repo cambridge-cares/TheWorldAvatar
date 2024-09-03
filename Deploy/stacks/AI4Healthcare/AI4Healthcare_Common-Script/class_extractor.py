@@ -3,6 +3,18 @@ import re
 import pandas as pd
 import sys
 import os
+from nltk.corpus import words
+
+# Download the words corpus
+import nltk
+nltk.download('words')
+
+# List of valid English words
+valid_words = set(words.words())
+
+# Function to check if a word is valid
+def is_valid_word(word):
+    return word in valid_words
 
 # Function to extract text from the PDF
 def extract_text_from_pdf(pdf_path):
@@ -15,6 +27,9 @@ def extract_text_from_pdf(pdf_path):
             # Remove common header and footer patterns (customise these patterns as needed)
             page_text = remove_headers_footers(page_text)
             text += page_text
+    
+    # Clean the extracted text
+    # cleaned_text = clean_extracted_text(text)
     return text
 
 # Function to remove headers and footers
@@ -35,12 +50,61 @@ def remove_headers_footers(page_text):
     cleaned_lines = page_text.split('\n')
     return '\n'.join(cleaned_lines)
 
+# Function to remove digits followed by one or more spaces
+def remove_digits_followed_by_spaces(text):
+    text = text.strip()
+    # Use regular expression to remove digits followed by one or more spaces
+    return re.sub(r'\d+\s+', '', text)
+
 def is_category(line):
     # Check if the line matches the pattern
     if re.match(r'^\d{2} ', line):
         return True
     else:
         return False
+
+# Function to clean extracted text
+def clean_extracted_text(text):
+    # Correct common OCR errors
+    # corrections = {
+    #     'dri nking': 'drinking',
+    #     'service s': 'services',
+    #     't oiletries':'toiletries',
+    #     'Or e':'Ore',
+    #     'Mixe d': 'Mixed',
+    # }
+
+    # for error, correction in corrections.items():
+    #     text = text.replace(error, correction)
+
+    # Refine regex to avoid merging valid separate words like 'Eating and'
+    def smart_merge(match):
+        first_word, second_word = match.groups()
+        merged_word = first_word + second_word
+
+        # Use specific corrections from the dictionary if they exist
+        # if match.group(0) in corrections:
+        #     return corrections[match.group(0)]
+
+        # Only merge if the merged word is valid and both words aren't valid individually
+        if is_valid_word(merged_word) and not (is_valid_word(first_word) and is_valid_word(second_word)):
+            return merged_word
+        else:
+            return match.group(0)  # Return original match if merge isn't appropriate
+
+    # Apply smart merging to the text using the updated smart_merge function
+    text = re.sub(r'(\w+)\s+(\w+)', smart_merge, text)
+
+    # Merge separated single characters except 'a'
+    text = re.sub(r'\b([b-zB-Z])\s+(\w+)\b', r'\1\2', text)
+
+    # Remove spaces before hyphens in compound words
+    text = re.sub(r'(\w)\s+-(\w)', r'\1-\2', text)
+    
+    # Remove spaces between a prefix and a hyphen (e.g., "pre -" -> "pre-")
+    text = re.sub(r'(\b\w+)\s+-', r'\1-', text)
+
+    return text
 
 # Improved function to extract categories and classes
 def extract_categories_classes(text):
@@ -145,6 +209,10 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
     data = []
     for category, classes in category_dict.items():
         for cls in classes:
+            cls = clean_extracted_text(cls)
+            cls = remove_digits_followed_by_spaces(cls)
+            category = clean_extracted_text(category)
+            category = remove_digits_followed_by_spaces(category)
             data.append([
                 cls,     # Source
                 "Class",      # Type
@@ -153,9 +221,9 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
                 "",           # Domain (empty)
                 "",           # Range (empty)
                 "",           # Quantifier (empty)
-                "",           # Comment (empty)
-                "",           # Defined By (empty)
-                ""            # Label (empty)
+                cls + " is a subcategory of " + category, # Comment
+                "https://www.theworldavatar.com/kg/ontopoi",           # Defined By (empty)
+                cls            # Label (empty)
             ])
 
     columns = ["Source", "Type", "Target", "Relation", "Domain", "Range", "Quantifier", "Comment", "Defined By", "Label"]
