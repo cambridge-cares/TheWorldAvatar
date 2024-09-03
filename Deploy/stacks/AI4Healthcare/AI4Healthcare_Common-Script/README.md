@@ -1,6 +1,23 @@
 ## Introduction ##
 
-This documentation outlines the scripts (provided in the .py files) developed to process data and class files provided by the relevant project partner. It describes how to run the scripts.
+This documentation outlines the scripts (provided in the .py file) developed to process data and class files provided by the relevant project partner. It describes how to create a virtual environment, install the required libraries and run the scripts. It is strongly recommended to create and activate a virtual environment before running the Python script.
+
+## Creating and activating a virtual environment ##
+To create a virtual environment named `classextract`, run the following command:
+```
+python -m venv classextract
+```
+
+Activate the virtual environment by executing the following command:
+```
+.\classextract\Scripts\activate
+```
+
+## Installing libraries ##
+To install the required libraries, run the following commnand:
+```
+pip install -r .\requirements.txt
+```
 
 ## Scripts ##
 
