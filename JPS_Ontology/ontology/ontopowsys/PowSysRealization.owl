@@ -1720,7 +1720,7 @@
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPowerFactor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>A device that converts electric current from one form to another.</rdfs:comment>
+        <rdfs:comment>A device that changes the characteristics of an electric current.</rdfs:comment>
     </owl:Class>
 
 
@@ -1729,7 +1729,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentTransformer">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter"/>
-	<rdfs:comment>A type of instrument transformer designed to measure alternating current (AC) in power systems.</rdfs:comment>
+	<rdfs:comment>A device that reduces or steps down the high current in a power line to a lower, more manageable level, suitable for measurement or control.</rdfs:comment>
     </owl:Class>
 
 
@@ -2435,37 +2435,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentBooster -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentBooster">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasCurrentType"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentType"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedCurrent"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedCurrent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedFrequency"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedFrequency"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedPower"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPower"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedVoltage"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedVoltage"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter"/>
         <rdfs:comment>A device or system designed to increase the current flowing through a circuit.</rdfs:comment>
     </owl:Class>
 
