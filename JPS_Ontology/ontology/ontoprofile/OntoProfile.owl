@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoprofile="https://www.theworldavatar.com/kg/ontoprofile/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoprofile/">
-        <dc:date>23 August 2024</dc:date>
+        <dc:date>03 September 2024</dc:date>
         <rdfs:comment>OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -154,6 +154,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/Driver -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Driver">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to drive a vehicle.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Driver</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus -->
 
 
@@ -183,6 +195,42 @@
         <rdfs:comment>The initials of a person are the first letters of their first name and last name (and sometimes middle name).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
         <rdfs:label>Initials</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/OperationManager -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/OperationManager">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to manages and supervises the operational conditions of a service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Operation manager</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/OperationScheduler -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/OperationScheduler">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to manage the operational schedule of a service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Operation scheduler</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/SalesAdmin -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/SalesAdmin">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+        <rdfs:comment>A person who is employed to communicate with clients about the company&apos;s products and/or services. The person is primarily based at the front-desk.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
+        <rdfs:label>Sales admin</rdfs:label>
     </owl:Class>
     
 

@@ -113,8 +113,12 @@ Note that the employee status are represented as enums in the corresponding ABox
 
 The profile of a person generally includes their name and may include their contact information. A person may also play the following roles represented under the `cmns-pts:PartyRole` concept:
 
-1. `fibo-fnd-org-fm:Employee` - person in the service of another under any contract of hire
-2. `ontoprofile:Student` - A person who has a membership role within an educational institution, typically enrolled in a course of study or program, and is involved in learning or training activities under the supervision of educators
+1. `fibo-fnd-org-fm:Employee` - A person in the service of another under any contract of hire
+2. `ontoprofile:Driver`- An employee who is specifically employed to drive a vehicle
+3. `ontoprofile:OperationManager`- An employee who is specifically employed to manage and supervise the operational conditions of a service
+4. `ontoprofile:OperationScheduler`- An employee who is specifically employed to manage the operational schedule of a service
+5. `ontoprofile:SalesAdmin`- An employee who is specifically employed to communicate with clients about the company's products and/or services
+6. `ontoprofile:Student` - A person who has a membership role within an educational institution, typically enrolled in a course of study or program, and is involved in learning or training activities under the supervision of educators
 
 Figure 3: TBox representation for a person
 

@@ -6,31 +6,11 @@
 op:WorkResponsibilityEnum a op:WorkResponsibility ;
   owl:oneOf (
     op:ServiceContact
-    op:Driver
-    op:OperationManager
-    op:OperationScheduler
-    op:SalesAdmin
 ) .
 
 op:ServiceContact a op:WorkResponsibilityEnum ;
   rdfs:label "contact";
   rdfs:comment "In charge of being the main point of contact for a specific service".
-
-op:Driver a op:WorkResponsibilityEnum ;
-  rdfs:label "driver";
-  rdfs:comment "In charge of driving a vehicle.".
-
-op:OperationManager a op:WorkResponsibilityEnum ;
-  rdfs:label "operation manager";
-  rdfs:comment "Manages and supervises the operational conditions of any service.".
-
-op:OperationScheduler a op:WorkResponsibilityEnum ;
-  rdfs:label "operation scheduler";
-  rdfs:comment "Manages the operational schedule of service.".
-
-op:SalesAdmin a op:WorkResponsibilityEnum ;
-  rdfs:label "sales admin";
-  rdfs:comment "Primarily based at the front-desk to communicate with clients about the company's products and/or services.".
 
 op:EmployeeStatusEnum a op:EmployeeStatus ;
 owl:oneOf (
