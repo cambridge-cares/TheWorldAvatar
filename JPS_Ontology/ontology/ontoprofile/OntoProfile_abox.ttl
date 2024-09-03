@@ -3,15 +3,6 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-op:WorkResponsibilityEnum a op:WorkResponsibility ;
-  owl:oneOf (
-    op:ServiceContact
-) .
-
-op:ServiceContact a op:WorkResponsibilityEnum ;
-  rdfs:label "contact";
-  rdfs:comment "In charge of being the main point of contact for a specific service".
-
 op:EmployeeStatusEnum a op:EmployeeStatus ;
 owl:oneOf (
   op:OnLeave
