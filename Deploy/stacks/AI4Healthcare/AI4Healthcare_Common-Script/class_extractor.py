@@ -207,6 +207,19 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
 
     # Convert the dictionary to a DataFrame for better visualization
     data = []
+    
+    # Pre-defined ontology entries
+    ontology_entries = [
+        ["ontopoi", "TBox", "https://www.theworldavatar.com/kg/ontopoi/", "https://www.w3.org/2007/05/powder-s#hasIRI", "", "", "", "", "", ""],
+        ["ontopoi", "TBox", 1, "http://www.w3.org/2002/07/owl#versionInfo", "", "", "", "", "", ""],
+        ["ontopoi", "TBox", "OntoPOI is an ontology developed for representing points of interest.", "http://www.w3.org/2000/01/rdf-schema#comment", "", "", "", "", "", ""],
+        ["ontopoi", "TBox", "", "http://www.w3.org/2002/07/owl#imports", "", "", "", "", "", ""]
+    ]
+
+    # Add pre-defined ontology entries to the data list
+    data.extend(ontology_entries)
+
+
     for category, classes in category_dict.items():
         for cls in classes:
             cls = clean_extracted_text(cls)
