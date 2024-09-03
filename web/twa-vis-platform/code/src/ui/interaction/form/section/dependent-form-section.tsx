@@ -150,7 +150,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
                 field={props.dependentProp}
                 form={props.form}
                 selectOptions={selectElements.map(entity => entity.id.value)}
-                selectLabels={selectElements.map(entity => entity.name.value ?? entity.first_name.value)}
+                selectLabels={selectElements.map(entity => entity.name?.value ?? entity.first_name?.value)}
                 options={{
                   disabled: formType == PathNames.REGISTRY || formType == PathNames.REGISTRY_DELETE
                 }}
