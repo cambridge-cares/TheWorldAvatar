@@ -213,6 +213,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/servesAsContactFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/servesAsContactFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContactService"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:comment>A relationship describing the contact point for another service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>serves as contact for</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/services -->
 
 
@@ -373,6 +386,18 @@
         <rdfs:comment>A base charge for the service agreed in the contract.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Base charge</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ContactService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContactService">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:comment>A service that acts as a point of contact for communication, support, or assistance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Contact service</rdfs:label>
     </owl:Class>
     
 
