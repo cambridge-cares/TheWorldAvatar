@@ -213,6 +213,8 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
             cls = remove_digits_followed_by_spaces(cls)
             category = clean_extracted_text(category)
             category = remove_digits_followed_by_spaces(category)
+            comment = cls + " is a subcategory of " + category
+            comment = comment.capitalize()
             data.append([
                 cls,     # Source
                 "Class",      # Type
@@ -221,7 +223,7 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
                 "",           # Domain (empty)
                 "",           # Range (empty)
                 "",           # Quantifier (empty)
-                cls + " is a subcategory of " + category, # Comment
+                comment, # Comment
                 "https://www.theworldavatar.com/kg/ontopoi",           # Defined By (empty)
                 cls            # Label (empty)
             ])
