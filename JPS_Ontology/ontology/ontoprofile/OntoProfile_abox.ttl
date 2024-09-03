@@ -3,16 +3,15 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-op:EmployeeStatusEnum a op:EmployeeStatus ;
-owl:oneOf (
+op:EmployeeStatus owl:oneOf (
   op:OnLeave
   op:OnWork
 ) .
 
-op:OnLeave a op:EmployeeStatusEnum ;
+op:OnLeave a op:EmployeeStatus ;
   rdfs:label "On leave";
   rdfs:comment "This status indicates that the employee is on leave.".
 
-op:OnWork a op:EmployeeStatusEnum ;
+op:OnWork a op:EmployeeStatus ;
   rdfs:label "On work";
   rdfs:comment "This status indicates that the employee is working on another task.".

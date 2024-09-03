@@ -129,7 +129,14 @@
     <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee -->
 
 
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/hasStatus"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/EmployeeStatus"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
