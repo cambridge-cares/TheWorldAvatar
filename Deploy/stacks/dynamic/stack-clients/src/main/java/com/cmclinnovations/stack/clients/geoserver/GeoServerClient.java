@@ -191,7 +191,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         }
     }
 
-    public void createPostGISLayer(String workspaceName, String database, String layerName,
+    public void createPostGISLayer(String workspaceName, String database, String schema, String layerName,
             GeoServerVectorSettings geoServerSettings) {
         String storeName = database;
 
@@ -199,9 +199,9 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
         // 2-arg version of "existsLayer" incorrectly calls the 3-arg version of the
         // "existsLayerGroup" method.
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
-            logger.info("GeoServer database layer '{}' already exists.", database);
+            logger.info("GeoServer database layer '{}' already exists.", layerName);
         } else {
-            createPostGISDataStore(workspaceName, storeName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
+            createPostGISDataStore(workspaceName, storeName, database, schema);
 
             GSFeatureTypeEncoder fte = geoServerSettings.getFeatureTypeSettings();
             if (fte.getName() == null) {
@@ -247,7 +247,9 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
             logger.info("GeoServer coverage store '{}' already exists.", name);
         } else {
             String geoserverRasterIndexDatabaseName = database + GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX;
-            PostGISClient.getInstance().createDatabase(geoserverRasterIndexDatabaseName);
+            PostGISClient postgisClient = PostGISClient.getInstance();
+            postgisClient.createDatabase(geoserverRasterIndexDatabaseName);
+            postgisClient.createSchema(geoserverRasterIndexDatabaseName, schema);
 
             String containerId = getContainerId(EndpointNames.GEOSERVER);
 
@@ -294,8 +296,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
                 files.put("indexer.properties",
                         indexerProperties.getBytes());
 
-                sendFilesContent(containerId, files,
-                        geotiffDir.toString());
+                sendFilesContent(containerId, files, geotiffDir.toString());
             } catch (IOException ex) {
                 throw new RuntimeException(
                         "The 'datastore.properties' and 'indexer.properties' files for the GeoServer coverage datastore '"
@@ -316,9 +317,7 @@ public class GeoServerClient extends ClientWithEndpoint<RESTEndpointConfig> {
 
                 processDimensions(geoServerSettings, storeEncoder);
 
-                if (manager.getPublisher().publishExternalMosaic(
-                        workspaceName, name,
-                        geotiffDir.toFile(),
+                if (manager.getPublisher().publishExternalMosaic(workspaceName, name, geotiffDir.toFile(),
                         storeEncoder, layerEncoder)) {
                     logger.info("GeoServer coverage (datastore and layer) '{}' created.", name);
                 } else {
