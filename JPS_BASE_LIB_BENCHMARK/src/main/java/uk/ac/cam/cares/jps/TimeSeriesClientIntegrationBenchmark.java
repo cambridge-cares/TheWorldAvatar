@@ -359,28 +359,6 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @Benchmark
-    public void testGetLatestData(PopulatedTableState state, Blackhole blackhole) throws SQLException {
-        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
-            for (List<String> dataIRI : dataIRIs) {
-                for (String datumIRI : dataIRI) {
-                    blackhole.consume(PopulatedTableState.tsClient.getLatestData(datumIRI, conn));
-                }
-            }
-        }
-    }
-
-    @Benchmark
-    public void testGetOldestData(PopulatedTableState state, Blackhole blackhole) throws SQLException {
-        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
-            for (List<String> dataIRI : dataIRIs) {
-                for (String datumIRI : dataIRI) {
-                    blackhole.consume(PopulatedTableState.tsClient.getOldestData(datumIRI, conn));
-                }
-            }
-        }
-    }
-
-    @Benchmark
     public void testGetTimeSeries(PopulatedTableState state, Blackhole blackhole) throws SQLException {
         try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
             for (List<String> dataIRI : dataIRIs) {
@@ -389,8 +367,38 @@ public class TimeSeriesClientIntegrationBenchmark {
         }
     }
 
+    @FunctionalInterface
+    public interface DatumIRIFunction {
+        void apply(String datumIRI, Connection conn, Blackhole blackhole) throws SQLException;
+    }
+
+    public void loopDatum(PopulatedTableState state, Blackhole blackhole, DatumIRIFunction function)
+            throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (List<String> dataIRI : dataIRIs) {
+                for (String datumIRI : dataIRI) {
+                    function.apply(datumIRI, conn, blackhole);
+                }
+            }
+        }
+    }
+
     @Benchmark
-    public void testGetAverage(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+    public void testGetLatestData(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        loopDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            bh.consume(PopulatedTableState.tsClient.getLatestData(datumIRI, conn));
+        });
+    }
+
+    @Benchmark
+    public void testGetOldestData(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        loopDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            bh.consume(PopulatedTableState.tsClient.getOldestData(datumIRI, conn));
+        });
+    }
+
+    public void loopNumericDatum(PopulatedTableState state, Blackhole blackhole, DatumIRIFunction function)
+            throws SQLException {
         try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
             for (int i = 0; i < dataIRIs.size(); i++) {
                 List<String> dataIRI = dataIRIs.get(i);
@@ -399,56 +407,39 @@ public class TimeSeriesClientIntegrationBenchmark {
                     String datumIRI = dataIRI.get(j);
                     Class<?> datumClass = dataClass.get(j);
                     if ((datumClass == Double.class) || (datumClass == Integer.class)) {
-                        blackhole.consume(PopulatedTableState.tsClient.getAverage(datumIRI, conn));
+                        function.apply(datumIRI, conn, blackhole);
                     }
                 }
             }
         }
+    }
+
+    @Benchmark
+    public void testGetAverage(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        loopNumericDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            bh.consume(PopulatedTableState.tsClient.getAverage(datumIRI, conn));
+        });
     }
 
     @Benchmark
     public void testGetMaxValue(PopulatedTableState state, Blackhole blackhole) throws SQLException {
-        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
-            for (int i = 0; i < dataIRIs.size(); i++) {
-                List<String> dataIRI = dataIRIs.get(i);
-                List<Class<?>> dataClass = classes.get(i);
-                for (int j = 0; j < dataIRI.size(); j++) {
-                    String datumIRI = dataIRI.get(j);
-                    Class<?> datumClass = dataClass.get(j);
-                    if ((datumClass == Double.class) || (datumClass == Integer.class)) {
-                        blackhole.consume(PopulatedTableState.tsClient.getMaxValue(datumIRI, conn));
-                    }
-                }
-            }
-        }
+        loopNumericDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            bh.consume(PopulatedTableState.tsClient.getMaxValue(datumIRI, conn));
+        });
     }
 
     @Benchmark
     public void testGetMinValue(PopulatedTableState state, Blackhole blackhole) throws SQLException {
-        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
-            for (int i = 0; i < dataIRIs.size(); i++) {
-                List<String> dataIRI = dataIRIs.get(i);
-                List<Class<?>> dataClass = classes.get(i);
-                for (int j = 0; j < dataIRI.size(); j++) {
-                    String datumIRI = dataIRI.get(j);
-                    Class<?> datumClass = dataClass.get(j);
-                    if ((datumClass == Double.class) || (datumClass == Integer.class)) {
-                        blackhole.consume(PopulatedTableState.tsClient.getMinValue(datumIRI, conn));
-                    }
-                }
-            }
-        }
+        loopNumericDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            bh.consume(PopulatedTableState.tsClient.getMinValue(datumIRI, conn));
+        });
     }
 
     @Benchmark
-    public void testDeleteIndividualTimeSeries(PopulatedTableState state) throws SQLException {
-        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
-            for (List<String> dataIRI : dataIRIs) {
-                for (String datumIRI : dataIRI) {
-                    PopulatedTableState.tsClient.deleteIndividualTimeSeries(datumIRI, conn);
-                }
-            }
-        }
+    public void testDeleteIndividualTimeSeries(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        loopDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            PopulatedTableState.tsClient.deleteIndividualTimeSeries(datumIRI, conn);
+        });
     }
 
     @Benchmark
@@ -462,8 +453,10 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @Benchmark
-    public void testdeleteAll(PopulatedTableState state) {
-        PopulatedTableState.tsClient.deleteAll();
+    public void testDeleteAll(PopulatedTableState state) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            PopulatedTableState.tsClient.deleteAll(conn);
+        }
     }
 
 }
