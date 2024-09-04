@@ -367,7 +367,6 @@ public class TimeSeriesClientIntegrationBenchmark {
                 }
             }
         }
-
     }
 
     @Benchmark
@@ -379,7 +378,66 @@ public class TimeSeriesClientIntegrationBenchmark {
                 }
             }
         }
+    }
 
+    @Benchmark
+    public void testGetTimeSeries(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (List<String> dataIRI : dataIRIs) {
+                blackhole.consume(PopulatedTableState.tsClient.getTimeSeries(dataIRI, conn));
+            }
+        }
+    }
+
+    @Benchmark
+    public void testGetAverage(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (int i = 0; i < dataIRIs.size(); i++) {
+                List<String> dataIRI = dataIRIs.get(i);
+                List<Class<?>> dataClass = classes.get(i);
+                for (int j = 0; j < dataIRI.size(); j++) {
+                    String datumIRI = dataIRI.get(j);
+                    Class<?> datumClass = dataClass.get(j);
+                    if ((datumClass == Double.class) || (datumClass == Integer.class)) {
+                        blackhole.consume(PopulatedTableState.tsClient.getAverage(datumIRI, conn));
+                    }
+                }
+            }
+        }
+    }
+
+    @Benchmark
+    public void testGetMaxValue(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (int i = 0; i < dataIRIs.size(); i++) {
+                List<String> dataIRI = dataIRIs.get(i);
+                List<Class<?>> dataClass = classes.get(i);
+                for (int j = 0; j < dataIRI.size(); j++) {
+                    String datumIRI = dataIRI.get(j);
+                    Class<?> datumClass = dataClass.get(j);
+                    if ((datumClass == Double.class) || (datumClass == Integer.class)) {
+                        blackhole.consume(PopulatedTableState.tsClient.getMaxValue(datumIRI, conn));
+                    }
+                }
+            }
+        }
+    }
+
+    @Benchmark
+    public void testGetMinValue(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (int i = 0; i < dataIRIs.size(); i++) {
+                List<String> dataIRI = dataIRIs.get(i);
+                List<Class<?>> dataClass = classes.get(i);
+                for (int j = 0; j < dataIRI.size(); j++) {
+                    String datumIRI = dataIRI.get(j);
+                    Class<?> datumClass = dataClass.get(j);
+                    if ((datumClass == Double.class) || (datumClass == Integer.class)) {
+                        blackhole.consume(PopulatedTableState.tsClient.getMinValue(datumIRI, conn));
+                    }
+                }
+            }
+        }
     }
 
     @Benchmark
