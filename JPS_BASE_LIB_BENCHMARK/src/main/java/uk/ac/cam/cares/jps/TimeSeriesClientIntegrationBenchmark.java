@@ -93,13 +93,13 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Container
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
-    public enum RDBMode {
+    public enum RDBBackend {
         DEFAULT,
         REDUCEDTABLE
     }
 
     @Param({ "DEFAULT" })
-    private static RDBMode aRDBMode; // how the relational database should be set up
+    private static RDBBackend RDBMode; // how the relational database should be set up
 
     @Param({ "1" })
     private int numTimeSeries; // number of time series
@@ -272,7 +272,7 @@ public class TimeSeriesClientIntegrationBenchmark {
 
                 // Initialise TimeSeriesClient client with pre-configured kb client
 
-                switch (aRDBMode) {
+                switch (RDBMode) {
                     case DEFAULT:
                         tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
                         break;
