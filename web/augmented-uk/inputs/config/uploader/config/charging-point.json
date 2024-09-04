@@ -19,7 +19,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "charging_point_kl_virtual_table",
-                    "sql": "@/inputs/config/sql/charging-point-kings-lynn-virtual.sql",
+                    "sql": "@/inputs/config/sql/virtualTables/charging-point-kings-lynn-virtual.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geometry_charging_point_kl",

@@ -18,7 +18,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "street_lighting_cambridge_virtual_table",
-                    "sql": "@/inputs/config/sql/street-light-cambridge.sql",
+                    "sql": "@/inputs/config/sql/virtualTables/street-light-cambridge.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geom",
