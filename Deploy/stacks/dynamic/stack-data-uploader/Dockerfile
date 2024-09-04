@@ -1,6 +1,6 @@
 # First stage: download the Java dependencies and build
 #==================================================================================================
-FROM maven:3.8.3-adoptopenjdk-11 as builder
+FROM maven:3.8.3-adoptopenjdk-11 AS builder
 
 # Copy in Maven settings templates and credentials 
 COPY docker/credentials /root/credentials
@@ -29,7 +29,7 @@ ARG CACHEBUST=1
 
 RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn package --update-snapshots
 
-FROM builder as test
+FROM builder AS test
 
 RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository2,sharing=locked mkdir -p /root/.m2/repository && cp -r /root/.m2/repository2/* /root/.m2/repository
 
@@ -39,7 +39,7 @@ CMD ["mvn", "test"]
 
 # Second stage: copy the output into a clean image
 #==================================================================================================
-FROM adoptopenjdk/openjdk11:jre-11.0.13_8 as agent
+FROM adoptopenjdk/openjdk11:jre-11.0.13_8 AS agent
 
 # Copy in the entrypoint script
 COPY docker/entrypoint.sh /entrypoint.sh

@@ -29,17 +29,6 @@
     
 
 
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
 
 
@@ -267,17 +256,6 @@
     
 
 
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
-
-
-    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontomops/hasCBUFormula -->
 
 
@@ -297,18 +275,6 @@
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A data property that informs on the exact deposition number of the MOP in the CCDC database.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontomops/</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontomops/hasGeometryFile -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontomops/hasGeometryFile">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Geometry"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The path to the XYZ file representing a molecular geometry.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontomops/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
@@ -704,16 +670,6 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoSpecies is a web ontology for chemical species. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:Class>
 </rdf:RDF>

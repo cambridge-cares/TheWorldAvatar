@@ -19,13 +19,14 @@ public class Vector extends GeoServerDataSubset {
     @Override
     public void loadData(Path dirPath, String database, String baseIRI) {
         GDALClient.getInstance()
-                .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
+                .uploadVectorFilesToPostGIS(database, getSchema(), getTable(), dirPath.toString(), ogr2ogrOptions,
+                        false);
     }
 
     @Override
     public void createLayers(String workspaceName, String database) {
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, getTable(), geoServerSettings);
+                .createPostGISLayer(workspaceName, database, getSchema(), getTable(), geoServerSettings);
     }
 
 }
