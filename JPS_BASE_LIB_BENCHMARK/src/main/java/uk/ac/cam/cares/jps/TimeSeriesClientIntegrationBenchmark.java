@@ -359,6 +359,30 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @Benchmark
+    public void testGetLatestData(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (List<String> dataIRI : dataIRIs) {
+                for (String datumIRI : dataIRI) {
+                    blackhole.consume(PopulatedTableState.tsClient.getLatestData(datumIRI, conn));
+                }
+            }
+        }
+
+    }
+
+    @Benchmark
+    public void testGetOldestData(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (List<String> dataIRI : dataIRIs) {
+                for (String datumIRI : dataIRI) {
+                    blackhole.consume(PopulatedTableState.tsClient.getOldestData(datumIRI, conn));
+                }
+            }
+        }
+
+    }
+
+    @Benchmark
     public void testDeleteIndividualTimeSeries(PopulatedTableState state) throws SQLException {
         try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
             for (List<String> dataIRI : dataIRIs) {
