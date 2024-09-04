@@ -9,7 +9,7 @@ interface RegistryFieldValue {
   type: string;
   dataType: string;
   lang: string;
-};
+}
 
 export type RegistryFieldValues = Record<string, RegistryFieldValue>;
 
