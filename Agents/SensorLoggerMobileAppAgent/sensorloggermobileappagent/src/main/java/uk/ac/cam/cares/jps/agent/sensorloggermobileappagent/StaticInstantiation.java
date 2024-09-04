@@ -13,7 +13,7 @@ import java.util.*;
 public class StaticInstantiation {
 
     private static String stackName;
-    public static void instantiationMethod(HashMap IRI) {
+    public static void instantiationMethod(Map IRI) {
         String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
         String DEVICEID=IRI.get("deviceID").toString();
         stackName = StackClient.getStackName();

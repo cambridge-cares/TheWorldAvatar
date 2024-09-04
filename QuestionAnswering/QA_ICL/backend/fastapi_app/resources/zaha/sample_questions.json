@@ -1,0 +1,51 @@
+[
+    {
+        "qa_domain": "singapore",
+        "label": "Singapore",
+        "subdomains": [
+            {
+                "data_domain": "sg_land_lots",
+                "label": "Singapore's Land Lots",
+                "questions": [
+                    "What does Special Use mean as a land use category?",
+                    "What land use category would hospitals be classified as?",
+                    "what's the difference between Business 1 and Business 2 land use classifications?",
+                    "How many land plots are designated for commercial use?",
+                    "What is the percentage of plots zoned for residential use, out of the total number of plots?",
+                    "What is the area of the smallest agriculture lot?",
+                    "What is the lowest gross plot ratio of lots designated for health and medical care facilities",
+                    "Average GFA allowed for lots classified for business activities",
+                    "How many land lots do not exceed their max permitted GFA?",
+                    "What is the number of plots that exceed max permitted GFA for each land use category"
+                ]
+            },
+            {
+                "data_domain": "sg_buildings",
+                "label": "Singapore's Buildings",
+                "questions": [
+                    "In total, how many buildings are there in Singapore?",
+                    "What's the building height of Jurong Island Desalination Plant",
+                    "Visualise the building footprint of Abbott Manufacturing",
+                    "How many office buildings are there?",
+                    "What are the 5 most common building usages?"
+                ]
+            },
+            {
+                "data_domain": "sg_dispersion",
+                "label": "Singapore's Dispersion",
+                "questions": [
+                    "What are the concentrations of air pollutants in Jurong Island, Singapore",
+                    "What's the maximum static draught of ship Legend Aquarius",
+                    "what's the speed over ground of ship with MMSI 563071320"
+                ]
+            },
+            {
+                "data_domain": "sg_carpark",
+                "label": "Singapore's Carparks",
+                "questions": [
+                    "Find me the carpark nearest to CREATE Tower"
+                ]
+            }
+        ]
+    }
+]

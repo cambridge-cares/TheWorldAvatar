@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="last_service">Last Service</string>
+    <string name="next_service">Next Service</string>
+    <string name="pick_next_service_date">Pick a next service date.</string>
+    <string name="pick_last_service_date">Pick last service date</string>
+    <string name="interval">Interval</string>
+    <string name="months">Months</string>
+    <string name="service_provider">Service Provider</string>
+    <string name="inventory_id">Inventory ID</string>
+    <string name="add_maintenance">Add Maintenance</string>
+    <string name="service_date_cannot_be_empty">Please fill in last service date or new service date.</string>
+    <string name="field_is_required">This field is required.</string>
+    <string name="add_maintenance_succeeded">Maintenance schedule is added.</string>
+    <string name="add_maintenance_failed">Failed to add maintenance schedule. Please try again later.</string>
+    <string name="next_service_date_before_last_service_date">Next service date is before the last service date.</string>
+</resources>

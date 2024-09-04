@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoreaction="https://www.theworldavatar.com/kg/ontoreaction/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoreaction/">
-        <dc:date>20 August 2024</dc:date>
+        <dc:date>23 August 2024</dc:date>
         <rdfs:comment>An ontology developed for describing reaction experiment.</rdfs:comment>
         <owl:versionInfo>1.11</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -428,8 +428,15 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isOperatedBy">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Operator"/>
-        <rdfs:comment>A relation between a reaction experiment and its operator.</rdfs:comment>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Student"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:comment>A relation between a reaction experiment and its operator (An employee or student of an organization).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/"/>
     </owl:ObjectProperty>
     
@@ -693,10 +700,17 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoprofile/Operator -->
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Operator"/>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/Student -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Student"/>
     
 
 

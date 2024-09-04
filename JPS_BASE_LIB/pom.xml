@@ -10,7 +10,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.44.1-1318-update-feature-info-agent-to-for-reduced-time-series-tables-SNAPSHOT</version>
+    <version>1.44.2-1318-update-feature-info-agent-to-for-reduced-time-series-tables-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
