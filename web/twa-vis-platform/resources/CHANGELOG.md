@@ -3,6 +3,21 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.5.0
+
+### Features
+
+* Addition of the registry pages, enabling users to view, create, edit, and remove records from the knowledge graph
+* Addition of scheduling capabilities for the specific registry pages
+* Users can deploy multiple navbar logos
+* Improvements to the handling and structure of configuration settings and pages
+* Improvements to the documentation and tutorial
+
+### Bug Fixes
+
+* Fix the development mode in a Docker container
+* Improve user experience if modules are disabled by redirecting back to homepage
+
 ## 5.4.0
 
 ### Features
