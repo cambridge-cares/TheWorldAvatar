@@ -333,7 +333,7 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @Benchmark
-    public void testgetAllTimeSeries(EmptyTableState state, Blackhole blackhole) {
+    public void testGetAllTimeSeries(EmptyTableState state, Blackhole blackhole) {
         blackhole.consume(EmptyTableState.tsClient.getAllTimeSeries());
     }
 
@@ -359,7 +359,7 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @Benchmark
-    public void testdeleteIndividualTimeSeries(PopulatedTableState state) throws SQLException {
+    public void testDeleteIndividualTimeSeries(PopulatedTableState state) throws SQLException {
         try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
             for (List<String> dataIRI : dataIRIs) {
                 for (String datumIRI : dataIRI) {
@@ -367,6 +367,21 @@ public class TimeSeriesClientIntegrationBenchmark {
                 }
             }
         }
+    }
+
+    @Benchmark
+    public void testDeleteTimeSeries(PopulatedTableState state) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            List<String> tsIRIs = PopulatedTableState.tsClient.getAllTimeSeries();
+            for (String tsIRI : tsIRIs) {
+                PopulatedTableState.tsClient.deleteTimeSeries(tsIRI, conn);
+            }
+        }
+    }
+
+    @Benchmark
+    public void testdeleteAll(PopulatedTableState state) {
+        PopulatedTableState.tsClient.deleteAll();
     }
 
 }
