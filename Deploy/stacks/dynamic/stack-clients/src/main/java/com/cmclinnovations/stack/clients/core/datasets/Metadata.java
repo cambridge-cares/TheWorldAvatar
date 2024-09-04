@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicateObjectList;
 
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -28,7 +29,7 @@ class Metadata {
     Metadata(@JsonProperty("prefixes") Map<String, String> prefixes,
             @JsonProperty("triplePatterns") Optional<String> triplePatterns) {
         this.prefixes = prefixes;
-        this.triplePatterns = triplePatterns.map(AbstractDataObject::handleFileValues);
+        this.triplePatterns = triplePatterns.map(JsonHelper::handleFileValues);
     }
 
     public List<Prefix> getPrefixes() {
