@@ -99,6 +99,8 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Param({ "1" })
     private int numRow; // number of row in time series
 
+    // CREATE SAMPLE DATA FOR TESTING
+
     private List<String> getTimeSeriesIRI(int offset, int numDataSeries) {
         List<String> dataIRI = new ArrayList<>();
         for (int i = 0; i < numDataSeries; i++) {
@@ -216,6 +218,8 @@ public class TimeSeriesClientIntegrationBenchmark {
         return values;
     }
 
+    // TESTS STARTING FROM A DATABASE WITHOUT ANY EXISTING TIME SERIES
+
     // Clear all tables after each test to ensure clean slate
     private static void clearDatabase(RemoteRDBStoreClient rdbStoreClient) throws SQLException {
         try (Connection conn = rdbStoreClient.getConnection()) {
@@ -291,6 +295,8 @@ public class TimeSeriesClientIntegrationBenchmark {
         }
     }
 
+    // TESTS STARTING WITH EMPTY TIME SERIES
+
     @State(Scope.Benchmark)
     public static class EmptyTableState extends NoTableState {
 
@@ -329,6 +335,38 @@ public class TimeSeriesClientIntegrationBenchmark {
     @Benchmark
     public void testgetAllTimeSeries(EmptyTableState state, Blackhole blackhole) {
         blackhole.consume(EmptyTableState.tsClient.getAllTimeSeries());
+    }
+
+    // TESTS STARTING WITH INITIALISED TIME SERIES
+
+    @State(Scope.Benchmark)
+    public static class PopulatedTableState extends EmptyTableState {
+
+        // This state will have time series table initialised and with data.
+
+        @Setup(Level.Invocation)
+        @Override
+        public void initialise() {
+            super.initialise();
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                tsClient.bulkaddTimeSeriesData(tss, conn);
+            } catch (SQLException e) {
+                throw new JPSRuntimeException(
+                        "SQLException when trying to populate time series for benchmark.",
+                        e);
+            }
+        }
+    }
+
+    @Benchmark
+    public void testdeleteIndividualTimeSeries(PopulatedTableState state) throws SQLException {
+        try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
+            for (List<String> dataIRI : dataIRIs) {
+                for (String datumIRI : dataIRI) {
+                    PopulatedTableState.tsClient.deleteIndividualTimeSeries(datumIRI, conn);
+                }
+            }
+        }
     }
 
 }
