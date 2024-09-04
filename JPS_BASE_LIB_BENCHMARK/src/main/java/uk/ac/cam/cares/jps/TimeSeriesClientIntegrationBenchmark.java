@@ -397,6 +397,20 @@ public class TimeSeriesClientIntegrationBenchmark {
         });
     }
 
+    @Benchmark
+    public void testGetMaxTime(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        loopDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            bh.consume(PopulatedTableState.tsClient.getMaxTime(datumIRI, conn));
+        });
+    }
+
+    @Benchmark
+    public void testGetMinTime(PopulatedTableState state, Blackhole blackhole) throws SQLException {
+        loopDatum(state, blackhole, (datumIRI, conn, bh) -> {
+            bh.consume(PopulatedTableState.tsClient.getMinTime(datumIRI, conn));
+        });
+    }
+
     public void loopNumericDatum(PopulatedTableState state, Blackhole blackhole, DatumIRIFunction function)
             throws SQLException {
         try (Connection conn = PopulatedTableState.rdbStoreClient.getConnection()) {
