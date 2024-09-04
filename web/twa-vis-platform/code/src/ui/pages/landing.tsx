@@ -89,7 +89,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={"Scheduler"}
             caption={"Plan and organise upcoming tasks"}
-            icon={"./images/defaults/icons/glossary.svg"}
+            icon={"./images/defaults/icons/schedule.svg"}
             url={`${Routes.REGISTRY}/${props.settings.resources?.scheduler?.data}`}
           />
         )}
