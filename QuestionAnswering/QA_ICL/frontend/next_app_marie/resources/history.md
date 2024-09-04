@@ -6,7 +6,9 @@
 
 [3] X. Zhou, S. Zhang, M. Agarwal, J. Akroyd, S. Mosbach, and M. Kraft, ["Marie and BERT - A knowledge graph embedding based question answering system for chemistry"](https://doi.org/10.1021/acsomega.3c05114), ACS Omega, 8, 36, 33039-33057, (2023).
 
-[4] D. Tran, L. Pascazio, J. Akroyd, S. Mosbach, and M. Kraft, ["Leveraging text-to-text pre-trained language models for question answering in chemistry"](https://doi.org/10.1021/acsomega.3c08842), ACS Omega (2024).
+[4] D. Tran, L. Pascazio, J. Akroyd, S. Mosbach, and M. Kraft, ["Leveraging text-to-text pre-trained language models for question answering in chemistry"](https://doi.org/10.1021/acsomega.3c08842), ACS Omega, 9, 12, 13883-13896, (2024).
+
+[5] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, ["Question-answering system for combustion kinetics"](https://doi.org/10.1016/j.proci.2024.105428), Proceedings of the Combustion Institute, 40, 105428, (2024).
 
 ## Preprints
 
@@ -20,6 +22,8 @@
 
 [5] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, "Question-answering system for combustion kinetics", Technical Report 315, c4e-Preprint Series, Cambridge, 2023 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-315.pdf)).
 
+[6] D. Tran, S. D. Rihm, A. Kondniski, L. Pascazio, F. Saluz, S. Mosbach, J. Akroyd, and M. Kraft, "Natural Language Access Point to Digital Metal-Organic Polyhedra Chemistry in The World Avatar", Technical Report 327, c4e-Preprint Series, Cambridge, 2024 ([PDF]https://como.ceb.cam.ac.uk/media/preprints/c4e_327_nmdt2_MarieICL__preprint_.pdf)
+
 ## Previous versions
 
 1. Marie version 1: Ref. [1]
@@ -30,4 +34,6 @@
 
 1. [Marie version 4](http://159.223.42.53:3838/): Ref. [4]
 
-1. [Marie version 5](http://159.223.42.53:3839/): Preprint [5]
+1. [Marie version 5](http://159.223.42.53:3839/): Ref. [5]
+
+1. [Marie version 6](http://139.59.105.78:3000/demos/marie): Preprint [6]
