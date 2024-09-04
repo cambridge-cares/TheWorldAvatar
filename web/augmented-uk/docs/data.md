@@ -85,6 +85,7 @@ Similarly to above, download links are in each of the relevant Uk Power Networks
 
 Shapefiles are obtained from [national forestry inventory 2020](https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.089693%2C-2.724655%2C6.98) and backed upon pavilion. The feature info agent is used to cross reference with the power lines and determine whether or not they intersect.
 
-### Street lights, traffic lights and England highways
-Similarly to above, download links are in each of the relevant subdirectory. Look up for the ReadMe in each of the folder and put the dataset in the same place as the ReadMe.
+### Streetlamps, traffic signals and England highways
+
+Links to sources (mostly local council data portals) are in each relevant [data folder](inputs/config/uploader/data).
 
