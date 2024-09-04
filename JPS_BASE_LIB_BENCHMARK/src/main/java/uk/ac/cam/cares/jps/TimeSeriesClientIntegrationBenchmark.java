@@ -64,6 +64,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -91,6 +92,14 @@ public class TimeSeriesClientIntegrationBenchmark {
     // Create Docker container with postgres 13.3 image from Docker Hub
     @Container
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
+
+    public enum RDBMode {
+        DEFAULT,
+        REDUCEDTABLE
+    }
+
+    @Param({ "DEFAULT" })
+    private static RDBMode aRDBMode; // how the relational database should be set up
 
     @Param({ "1" })
     private int numTimeSeries; // number of time series
@@ -262,7 +271,20 @@ public class TimeSeriesClientIntegrationBenchmark {
                 kbClient = blazegraph.getRemoteStoreClient();
 
                 // Initialise TimeSeriesClient client with pre-configured kb client
-                tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
+
+                switch (aRDBMode) {
+                    case DEFAULT:
+                        tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
+                        break;
+                    case REDUCEDTABLE:
+                        TimeSeriesRDBClientWithReducedTables<Instant> rdbClient = new TimeSeriesRDBClientWithReducedTables<>(
+                                Instant.class);
+                        tsClient = new TimeSeriesClient<>(kbClient, rdbClient);
+                        break;
+                    default:
+                        // shouldn't be here
+                        break;
+                }
 
                 // Configure database access
                 rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
