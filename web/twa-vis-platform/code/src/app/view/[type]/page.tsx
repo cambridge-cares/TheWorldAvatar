@@ -34,11 +34,16 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default function ViewRegistryPage(props: Readonly<ViewRegistryPageProps>) {
   const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  // Scheduler API should only be given IF scheduling is enabled in the configuration and current route matches the entity of interest
+  const schedulerApi: string = uiSettings.modules.scheduler && uiSettings.resources?.scheduler?.data === props.params?.type
+    ? uiSettings.resources?.scheduler?.url : null;
+
   if (uiSettings.modules.registry && uiSettings.resources?.registry) {
     return (
       <RegistryTableComponent
         entityType={props.params?.type}
-        agentApi={uiSettings.resources?.registry?.data}
+        registryAgentApi={uiSettings.resources?.registry?.url}
+        schedulerAgentApi={schedulerApi}
       />
     );
   } else {

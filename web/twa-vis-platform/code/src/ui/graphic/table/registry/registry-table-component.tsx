@@ -11,19 +11,20 @@ import { getAfterDelimiter, parseWordsForLabels } from 'utils/client-utils';
 import { getData } from 'utils/server-actions';
 import RegistryTable from './registry-table';
 import TableRibbon from './table-ribbon';
-import { PathNames } from 'io/config/routes';
 import { RegistryFieldValues } from 'types/form';
 
 interface RegistryTableComponentProps {
   entityType: string;
-  agentApi: string;
+  registryAgentApi: string;
+  schedulerAgentApi: string;
 }
 
 /**
  * This component renders a registry table for the specified entity.
  * 
  * @param {string} entityType Type of entity for rendering.
- * @param {string} agentApi The target stack endpoint for contacting the backend agents.
+ * @param {string} registryAgentApi The target endpoint for default registry agents.
+ * @param {string} schedulerAgentApi The target endpoint for scheduler specific functionality.
  */
 export default function RegistryTableComponent(props: Readonly<RegistryTableComponentProps>) {
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        const instances: RegistryFieldValues[] = await getData(props.agentApi + PathNames.OPS_AGENT, props.entityType);
+        const instances: RegistryFieldValues[] = await getData(props.registryAgentApi, props.entityType);
         setCurrentInstances(instances);
       } catch (error) {
         console.error('Error fetching instances', error);
@@ -68,7 +69,8 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
         <h1 className={styles["title"]}>{parseWordsForLabels(props.entityType)}</h1>
         <TableRibbon
           entityType={props.entityType}
-          agentApi={props.agentApi}
+          registryAgentApi={props.registryAgentApi}
+          schedulerAgentApi={props.schedulerAgentApi}
         />
         <div className={styles["table-contents"]}>
           <RegistryTable

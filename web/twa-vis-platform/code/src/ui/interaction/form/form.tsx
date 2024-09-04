@@ -28,10 +28,9 @@ interface FormComponentProps {
  * @param { React.MutableRefObject<HTMLFormElement>} formRef Reference to the form element.
  * @param {string} entityType The type of entity.
  * @param {string} formType The type of submission. Valid inputs include add and update.
- * @param {string} agentApi The target endpoint for contacting the backend agent.
- * @param {boolean} isSubmitted Indicates if the form should be submitted.
- * @param {React.Dispatch<React.SetStateAction<boolean>>} setIsSubmitting A dispatch function for indicating that the request is being submitted and awaiting a response.
+ * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {React.Dispatch<React.SetStateAction<HttpResponse>>} setResponse A dispatch function for setting the response after submission.
+ * @param onSubmittingChange A function to handle the changes needed when submission should occur.
  */
 export function FormComponent(props: Readonly<FormComponentProps>) {
   const id: string = getAfterDelimiter(usePathname(), "/");

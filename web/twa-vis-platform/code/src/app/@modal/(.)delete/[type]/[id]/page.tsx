@@ -36,7 +36,7 @@ export default function InterceptFormDeletePage(props: Readonly<InterceptDeleteF
       <FormContainerComponent
         entityType={props.params?.type}
         formType={PathNames.REGISTRY_DELETE}
-        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.data}
+        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
       />
     </FormModal>
   );

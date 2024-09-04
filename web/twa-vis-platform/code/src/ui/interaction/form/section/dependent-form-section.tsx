@@ -24,7 +24,7 @@ interface DependentFormSectionProps {
 /**
  * This component renders a form section that has dependencies on related entities.
  * 
- * @param {string} agentApi The target endpoint for contacting the backend agent.
+ * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {PropertyShape} dependentProp The dependent property's SHACL restrictions.
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
  */

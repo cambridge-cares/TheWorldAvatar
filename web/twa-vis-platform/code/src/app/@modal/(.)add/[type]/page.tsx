@@ -36,7 +36,7 @@ export default function InterceptAddFormPage(props: Readonly<InterceptAddFormPag
       <FormContainerComponent
         entityType={props.params?.type}
         formType={PathNames.REGISTRY_ADD}
-        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.data}
+        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
       />
     </FormModal>
   );

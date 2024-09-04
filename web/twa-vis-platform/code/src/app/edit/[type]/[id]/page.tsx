@@ -38,7 +38,7 @@ export default function EditFormPage(props: Readonly<EditFormPageProps>) {
       <FormContainerComponent
         entityType={props.params?.type}
         formType={PathNames.REGISTRY_EDIT}
-        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.data}
+        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
       />
     </div>
   );

@@ -20,7 +20,7 @@ interface FormSectionProps {
  * This component renders a form section.
  * 
  * @param {string} entityType The type of entity.
- * @param {string} agentApi The target endpoint for contacting the backend agent.
+ * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {PropertyGroup} group Fieldset group model.
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
  * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.

@@ -28,10 +28,9 @@ interface FormFieldProps {
  * Renders a form field as part of the form component.
  * 
  * @param {string} entityType The type of entity.
- * @param {string} agentApi The target endpoint for contacting the backend agent.
+ * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {PropertyShape} field The form field data model.
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
- * @param {string} defaultText Optional default text for the input.
  * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.
  */
 export default function FormFieldComponent(props: Readonly<FormFieldProps>) {

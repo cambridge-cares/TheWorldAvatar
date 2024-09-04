@@ -38,7 +38,7 @@ export default function DeleteFormPage(props: Readonly<DeleteFormPageProps>) {
       <FormContainerComponent
         entityType={props.params?.type}
         formType={PathNames.REGISTRY_DELETE}
-        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.data}
+        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
       />
     </div>
   );

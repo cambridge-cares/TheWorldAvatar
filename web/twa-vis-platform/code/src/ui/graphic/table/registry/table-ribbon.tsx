@@ -3,61 +3,54 @@
 import styles from './table.ribbon.module.css';
 
 import React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
-import { getAfterDelimiter } from 'utils/client-utils';
 import { sendGetRequest } from 'utils/server-actions';
 import { DownloadButton } from 'ui/interaction/download/download';
-import { PathNames } from 'io/config/routes';
 
 interface TableRibbonProps {
   entityType: string;
-  agentApi: string;
+  registryAgentApi: string;
+  schedulerAgentApi: string;
 }
 
 /**
  * Renders a ribbon for the view page
  * 
  * @param {string} entityType The type of entity.
- * @param {string} agentApi The target stack endpoint.
-
+ * @param {string} registryAgentApi The target endpoint for default registry agents.
+ * @param {string} schedulerAgentApi The target endpoint for scheduler specific functionality.
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
-  const item: string = getAfterDelimiter(usePathname(), "/");
+  // Users can only either add or schedule at one time; schedule is expected to add new instances but with restrictions
+  const buttonIcon: string = props.schedulerAgentApi ? "schedule_send" : "add";
+  const buttonText: string = props.schedulerAgentApi ? "schedule today" : "add " + props.entityType;
 
-  const openAddModal = () => {
+  const openAddModal: React.MouseEventHandler<HTMLDivElement> = () => {
     router.push(`../add/${props.entityType}`);
   };
 
-  const sendScheduleRequest = () => {
-    sendGetRequest(`${props.agentApi}${PathNames.SCHEDULE_AGENT}schedule`);
+  const sendScheduleRequest: React.MouseEventHandler<HTMLDivElement> = () => {
+    sendGetRequest(`${props.schedulerAgentApi}schedule`);
   };
+  const buttonEvent: React.MouseEventHandler<HTMLDivElement> = props.schedulerAgentApi ? sendScheduleRequest : openAddModal;
 
   return (
     <div className={styles.menu}>
       <div className={styles["ribbon-button-container"]}>
-        {item == "service" ? <MaterialIconButton
-          iconName={"schedule_send"}
+        <MaterialIconButton
+          iconName={buttonIcon}
           className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
           text={{
             styles: [styles["button-text"]],
-            content: "schedule today"
+            content: buttonText
           }}
-          onClick={sendScheduleRequest}
-        /> : <MaterialIconButton
-          iconName={"add"}
-          className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
-          text={{
-            styles: [styles["button-text"]],
-            content: "add " + props.entityType
-          }}
-          onClick={openAddModal}
+          onClick={buttonEvent}
         />
-        }
         <DownloadButton
-          agentApi={`${props.agentApi}${PathNames.OPS_AGENT}csv/${item}`}
+          agentApi={`${props.registryAgentApi}csv/${props.entityType}`}
           className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
         />
       </div>

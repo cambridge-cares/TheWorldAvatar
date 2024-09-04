@@ -39,7 +39,7 @@ export default function ViewFormPage(props: Readonly<ViewFormPageProps>) {
     <FormContainerComponent
       entityType={props.params?.type}
       formType={PathNames.REGISTRY}
-      agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.data}
+      agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
     />
   </div>
   );
