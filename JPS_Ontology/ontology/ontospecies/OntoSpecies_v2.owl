@@ -1367,6 +1367,17 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometryFile -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometryFile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Geometry"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The path to the XYZ file representing a molecular geometry..</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
+    </owl:DatatypeProperty>    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasX1 -->
 
 
