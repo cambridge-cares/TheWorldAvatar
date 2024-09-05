@@ -4,6 +4,10 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.ClassPathResource;
+
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
+
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor.*;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -11,10 +15,15 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
+import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import org.json.JSONArray;
 
 public class SmartphoneRecordingTask {
 
@@ -33,6 +42,7 @@ public class SmartphoneRecordingTask {
     private final String deviceId;
 
     private final RemoteStoreClient storeClient;
+    private final RemoteStoreClient ontopRemoteStoreClient;
     private final TimeSeriesClient<Long> tsClient;
     private final AgentConfig config;
 
@@ -40,11 +50,14 @@ public class SmartphoneRecordingTask {
     private long lastActiveTime;
     private boolean isProcessing;
 
+    private SensorLoggerPostgresClient sensorLoggerPostgresClient;
+
     public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient,
-            AgentConfig config, String deviceId) {
+            AgentConfig config, String deviceId, RemoteStoreClient ontopRemoteStoreClient) {
         LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
 
         this.storeClient = storeClient;
+        this.ontopRemoteStoreClient = ontopRemoteStoreClient;
         TimeSeriesRDBClientWithReducedTables<Long> tsRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Long.class);
         tsRdbClient.setRdbURL(rdbStoreClient.getRdbURL());
         tsRdbClient.setRdbUser(rdbStoreClient.getUser());
@@ -61,6 +74,8 @@ public class SmartphoneRecordingTask {
 
         initSensorProcessors();
 
+        sensorLoggerPostgresClient = new SensorLoggerPostgresClient(rdbStoreClient.getRdbURL(),
+                rdbStoreClient.getUser(), rdbStoreClient.getPassword());
     }
 
     public synchronized void addData(HashMap<String, List<?>> data) {
@@ -90,10 +105,11 @@ public class SmartphoneRecordingTask {
         LOGGER.info("Processing and sending data");
         if (sensorDataProcessorList.stream().allMatch(SensorDataProcessor::isIriInstantiationNeeded)) {
             LOGGER.info("Need to init kg");
-            bulkInitKg();
+            initKgUsingOntop(sensorLoggerPostgresClient);
         }
 
         if (sensorDataProcessorList.stream().anyMatch(SensorDataProcessor::isRbdInstantiationNeeded)) {
+            sensorDataProcessorList.forEach(s -> s.initIRIs());
             LOGGER.info("Need to init rdb");
             bulkInitRdb();
         }
@@ -124,13 +140,14 @@ public class SmartphoneRecordingTask {
     }
 
     private void initSensorProcessors() {
-        accelerometerProcessor = new AccelerometerProcessor(this.config, this.storeClient, smartphoneIRI);
-        dbfsDataProcessor = new DBFSDataProcessor(this.config, this.storeClient, smartphoneIRI);
-        gravityDataProcessor = new GravityDataProcessor(this.config, this.storeClient, smartphoneIRI);
-        illuminationProcessor = new IlluminationProcessor(this.config, this.storeClient, smartphoneIRI);
-        locationDataProcessor = new LocationDataProcessor(this.config, this.storeClient, smartphoneIRI);
-        magnetometerDataProcessor = new MagnetometerDataProcessor(this.config, this.storeClient, smartphoneIRI);
-        relativeBrightnessProcessor = new RelativeBrightnessProcessor(this.config, this.storeClient, smartphoneIRI);
+        accelerometerProcessor = new AccelerometerProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
+        dbfsDataProcessor = new DBFSDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
+        gravityDataProcessor = new GravityDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
+        illuminationProcessor = new IlluminationProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
+        locationDataProcessor = new LocationDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
+        magnetometerDataProcessor = new MagnetometerDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
+        relativeBrightnessProcessor = new RelativeBrightnessProcessor(this.config, ontopRemoteStoreClient,
+                smartphoneIRI);
 
         sensorDataProcessorList = Arrays.asList(accelerometerProcessor,
                 dbfsDataProcessor,
@@ -146,16 +163,33 @@ public class SmartphoneRecordingTask {
                 .collect(Collectors.joining("; ")));
     }
 
-    private void bulkInitKg() {
-        Map<String, String> iriMap = sensorDataProcessorList.stream()
-                .map(SensorDataProcessor::getDataIRIMap)
-                .flatMap(map -> map.entrySet().stream())
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        iriMap.put("deviceID", deviceId);
-        StaticInstantiation.instantiationMethod(iriMap);
+    private void initKgUsingOntop(SensorLoggerPostgresClient sensorLoggerPostgresClient) {
+        LOGGER.info("Instantiating kg in ontop");
+
+        List<String> sensorClasses = sensorDataProcessorList.stream().map(s -> s.getOntodeviceLabel())
+                .collect(Collectors.toList());
+
+        boolean firstTime = sensorLoggerPostgresClient.populateTable(deviceId, sensorClasses);
+
+        if (firstTime) {
+            Path obdaFile = null;
+            try {
+                obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
+            } catch (IOException e) {
+                LOGGER.error("Could not retrieve ontop.obda file.");
+                throw new RuntimeException(e);
+            }
+            OntopClient.getInstance().updateOBDA(obdaFile);
+        }
 
         sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
         LOGGER.info("finish instantiating kg");
+        // wait 30 seconds for ontop to initialise before allow queries execution
+        try {
+            Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void bulkInitRdb() {
@@ -170,7 +204,7 @@ public class SmartphoneRecordingTask {
         }
 
         LOGGER.info("bulk init iris in rdb");
-        List<String> timeUnits = Collections.nCopies(dataIris.size(), OffsetDateTime.class.getSimpleName());
+        List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
         tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits);
 
         sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded)
@@ -193,8 +227,36 @@ public class SmartphoneRecordingTask {
             return;
         }
 
+        // downsampling algorithm applied in getProcessedTimeSeries might make a time
+        // series empty
+        Iterator<TimeSeries<Long>> tsIterator = tsList.iterator();
+        while (tsIterator.hasNext()) {
+            if (tsIterator.next().getTimes().isEmpty()) {
+                tsIterator.remove();
+            }
+        }
+
         LOGGER.info(String.format("bulk adding %d time series", tsList.size()));
         tsClient.bulkaddTimeSeriesData(tsList);
         LOGGER.info("finish adding data to postgres tables");
+    }
+
+    String getSmartphoneIRI() {
+        String smartphone = null;
+        String query = """
+                SELECT ?device
+                WHERE {
+                  ?device <https://www.theworldavatar.com/kg/ontodevice/hasDeviceID> "%s"
+                }
+                """.formatted(deviceId);
+        JSONArray queryResult = ontopRemoteStoreClient.executeQuery(query);
+
+        if (queryResult.length() == 1) {
+            smartphone = queryResult.getJSONObject(0).getString("device");
+        } else if (queryResult.length() > 1) {
+            throw new RuntimeException("More than one smartphone associated with " + deviceId);
+        }
+
+        return smartphone;
     }
 }

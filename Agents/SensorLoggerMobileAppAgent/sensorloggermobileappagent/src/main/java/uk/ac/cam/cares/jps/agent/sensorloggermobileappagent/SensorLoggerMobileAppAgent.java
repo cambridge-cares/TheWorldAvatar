@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 public class SensorLoggerMobileAppAgent extends JPSAgent {
     Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
     private RemoteStoreClient storeClient;
+    private RemoteStoreClient ontopClient;
     private RemoteRDBStoreClient rdbStoreClient;
     private AgentConfig agentConfig;
     private ExecutorService addDataExecutor;
@@ -41,6 +42,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
                 endpointConfig.getDbpassword());
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        ontopClient = new RemoteStoreClient(endpointConfig.getOntopUrl());
 
         addDataExecutor = Executors.newFixedThreadPool(5);
         sendDataExecutor = Executors.newFixedThreadPool(5);
@@ -124,7 +126,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
             LOGGER.info(deviceId + ": creating new task");
             SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, agentConfig,
-                    deviceId);
+                    deviceId, ontopClient);
             smartphoneHashmap.put(deviceId, task);
             return task;
         }

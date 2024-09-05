@@ -36,7 +36,8 @@ public class SmartphoneRecordingTaskTest {
         when(agentConfigMock.getTaskInactiveTime()).thenReturn(2);
 
         String deviceId = "123";
-        task = new SmartphoneRecordingTask(storeClientMock, rdbStoreClientMock, agentConfigMock, deviceId);
+        task = new SmartphoneRecordingTask(storeClientMock, rdbStoreClientMock, agentConfigMock, deviceId,
+                storeClientMock);
     }
 
     private HashMap<String, List<?>> getDataHashMap() {

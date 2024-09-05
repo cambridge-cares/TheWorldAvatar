@@ -23,7 +23,6 @@ public abstract class SensorDataProcessor {
         this.config = config;
         this.storeClient = storeClient;
         this.smartphoneIRINode = smartphoneIRINode;
-        initIRIs();
     }
 
     public abstract void addData(HashMap<String, List<?>> data);
@@ -59,4 +58,6 @@ public abstract class SensorDataProcessor {
     public int getTimeSeriesLength() {
         return timeList.size();
     }
+
+    public abstract String getOntodeviceLabel();
 }

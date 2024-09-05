@@ -6,7 +6,6 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 
-import net.sf.jsqlparser.statement.select.Offset;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -19,17 +18,17 @@ import java.util.stream.Collectors;
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class AccelerometerProcessor extends SensorDataProcessor {
+    private String xIri = null;
+    private String yIri = null;
+    private String zIri = null;
 
-    private String xIri;
-    private String yIri;
-    private String zIri;
-
-    private final List<Double> xList = new ArrayList<>();
-    private final List<Double> yList = new ArrayList<>();
-    private final List<Double> zList = new ArrayList<>();
+    private List<Double> xList = new ArrayList<>();
+    private List<Double> yList = new ArrayList<>();
+    private List<Double> zList = new ArrayList<>();
 
     public AccelerometerProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
         super(config, storeClient, smartphoneNode);
+        initIRIs();
     }
 
     @Override
@@ -44,10 +43,11 @@ public class AccelerometerProcessor extends SensorDataProcessor {
     public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<List<?>> valueList = Arrays.asList(xList, yList, zList);
         List<String> iriList = Arrays.asList(xIri, yIri, zIri);
+
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, iriList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getAccelDSResolution(), config.getAccelDSType());
 
-        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().getEpochSecond())
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
                 .collect(Collectors.toList());
 
         List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(xIri), ts.getValuesAsDouble(yIri),
@@ -59,15 +59,14 @@ public class AccelerometerProcessor extends SensorDataProcessor {
 
     @Override
     public void initIRIs() {
+        if (xIri != null && yIri != null && zIri != null) {
+            // already instantiated in previous call
+            return;
+        }
+
         getIrisFromKg();
 
-        if ((xIri == null || xIri.isEmpty())
-                && (yIri == null || yIri.isEmpty())
-                && (zIri == null || zIri.isEmpty())) {
-            xIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_x_" + UUID.randomUUID();
-            yIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_y_" + UUID.randomUUID();
-            zIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_z_" + UUID.randomUUID();
-
+        if (xIri == null && yIri == null && zIri == null) {
             isIriInstantiationNeeded = true;
             isRbdInstantiationNeeded = true;
         }
@@ -102,8 +101,6 @@ public class AccelerometerProcessor extends SensorDataProcessor {
         Var z = Var.alloc("z");
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoslma", ONTOSLMA)
-                .addPrefix("slma", SLA)
                 .addPrefix("saref", SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
@@ -111,18 +108,24 @@ public class AccelerometerProcessor extends SensorDataProcessor {
                 .addWhere(smartphoneIRINode, "saref:consistsOf", "?accelerometer")
                 .addWhere("?accelerometer", "rdf:type", "ontodevice:Accelerometer")
                 .addWhere("?accelerometer", "ontodevice:measures", "?vector")
-                .addWhere("?vector", "rdf:type", "ontoslma:AccelerationVector")
-                .addWhere("?vector", "ontoslma:hasXComponent", "?quantityX")
+                .addWhere("?vector", "rdf:type", "ontodevice:AccelerationVector")
+                .addWhere("?vector", "ontodevice:hasXComponent", "?quantityX")
                 .addWhere("?quantityX", "om:hasValue", x)
-                .addWhere("?vector", "ontoslma:hasYComponent", "?quantityY")
+                .addWhere("?vector", "ontodevice:hasYComponent", "?quantityY")
                 .addWhere("?quantityY", "om:hasValue", y)
-                .addWhere("?vector", "ontoslma:hasZComponent", "?quantityZ")
+                .addWhere("?vector", "ontodevice:hasZComponent", "?quantityZ")
                 .addWhere("?quantityZ", "om:hasValue", z);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(x).addVar(y).addVar(z).addWhere(wb);
 
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+        JSONArray queryResult;
+        try {
+            queryResult = storeClient.executeQuery(sb.buildString());
+        } catch (Exception e) {
+            // ontop does not accept queries before any mapping is added
+            return;
+        }
         if (queryResult.isEmpty()) {
             return;
         }
@@ -131,4 +134,8 @@ public class AccelerometerProcessor extends SensorDataProcessor {
         zIri = queryResult.getJSONObject(0).optString("z");
     }
 
+    @Override
+    public String getOntodeviceLabel() {
+        return "Accelerometer";
+    }
 }

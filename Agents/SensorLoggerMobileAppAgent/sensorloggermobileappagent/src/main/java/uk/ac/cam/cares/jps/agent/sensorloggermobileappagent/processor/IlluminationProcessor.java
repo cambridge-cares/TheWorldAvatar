@@ -17,12 +17,13 @@ import java.util.stream.Collectors;
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class IlluminationProcessor extends SensorDataProcessor {
-    private String illuminationIri;
+    private String illuminationIri = null;
 
     private final List<Double> illuminationList = new ArrayList<>();
 
     public IlluminationProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
+        initIRIs();
     }
 
     @Override
@@ -39,7 +40,7 @@ public class IlluminationProcessor extends SensorDataProcessor {
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getLightValueDSResolution(), config.getLightValueDSType());
 
-        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().getEpochSecond())
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
                 .collect(Collectors.toList());
 
         List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(illuminationIri));
@@ -50,10 +51,13 @@ public class IlluminationProcessor extends SensorDataProcessor {
 
     @Override
     public void initIRIs() {
-        getIrisFromKg();
-        if (illuminationIri == null || illuminationIri.isEmpty()) {
-            illuminationIri = "https://www.theworldavatar.com/kg/sensorloggerapp/light_value_" + UUID.randomUUID();
+        if (illuminationIri != null) {
+            return;
+        }
 
+        getIrisFromKg();
+
+        if (illuminationIri == null) {
             isIriInstantiationNeeded = true;
             isRbdInstantiationNeeded = true;
         }
@@ -92,13 +96,23 @@ public class IlluminationProcessor extends SensorDataProcessor {
                 .addWhere("?camera", "ontodevice:measures", "?om_illuminance")
                 .addWhere("?om_illuminance", "om:hasValue", VAR_O);
 
-        SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
+        SelectBuilder sb = new SelectBuilder().addVar(VAR_O).addWhere(wb);
 
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+        JSONArray queryResult;
+        try {
+            queryResult = storeClient.executeQuery(sb.buildString());
+        } catch (Exception e) {
+            // ontop does not accept queries before any mapping is added
+            return;
+        }
         if (queryResult.isEmpty()) {
             return;
         }
         illuminationIri = queryResult.getJSONObject(0).optString("o");
+    }
+
+    @Override
+    public String getOntodeviceLabel() {
+        return "Camera";
     }
 }
