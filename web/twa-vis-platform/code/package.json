@@ -10,7 +10,6 @@
     "verbose": true
   },
   "scripts": {
-    "predev": "node -e \"if (process.env.npm_execpath.indexOf('pnpm') === -1) { console.error('Please use pnpm to run scripts.'); process.exit(1); }\"",
     "dev": "NODE_ENV=development node --env-file='.env.local' server.js",
     "dev-docker": "NODE_ENV=development node server.js",
     "build": "next build",
