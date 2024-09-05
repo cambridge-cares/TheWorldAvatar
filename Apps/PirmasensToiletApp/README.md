@@ -34,6 +34,87 @@ Any data access required should be contacted through someone working on the repo
 
 The app will require a running [The World Avatar stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) as the backend. Data specified in [this section](#12-data-sources) should be uploaded using the [Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader).
 
+The stack will also require the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) service to retrieve metadata. Please read setting up the [built-in service section](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#built-in-containers) for more details on deploying this. This agent will require the following configuration targeted at the toilet class in `fia-config.json`:
+
+```json
+{
+  "entries": [
+    {
+      "id": "Toilet",
+      "class": "https://www.theworldavatar.com/kg/ontocitytoilets/Toilet",
+      "meta": {
+        "queryFile": "fia_toilet.sparql"
+      }
+    }
+  ]
+}
+```
+
+The relevant SPARQL query is as follows:
+
+```
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tps: <https://www.theworldavatar.com/kg/ontocitytoilets/>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX schema: <https://schema.org/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  {
+  	SERVICE [ONTOP] {[IRI] ?prop_iri ?Value .}
+    ?prop_iri rdfs:label ?Property .
+    FILTER(isLiteral(?Value))
+  } UNION {
+    tps:hasImage rdfs:label ?Property .
+    SERVICE [ONTOP] {
+      [IRI] tps:hasImage/dcat:distribution/dcat:downloadURL ?Value .
+      FILTER(BOUND(?Value) && STRLEN(STR(?Value))>0)
+    }
+  } UNION {
+    SERVICE [ONTOP] {
+      [IRI] schema:openingHoursSpecification ?open_hour_spec.
+      ?open_hour_spec schema:opens ?opens;
+        schema:closes ?closes;
+        schema:dayOfWeek ?day.
+      BIND(CONCAT(STR(SUBSTR(STR(?day), 20)), " open hours") as ?Property)
+      BIND(CONCAT(STR(SUBSTR(STR(?opens), 0,6) ),"-",STR(SUBSTR(STR(?closes), 0,6))) as ?Value)
+      FILTER(BOUND(?Value) && STRLEN(STR(?Value))>0)
+    }
+  } UNION {
+    BIND("average rating" as ?Property)
+    {
+      SELECT (ROUND(AVG(?rating)) AS ?Value)
+      WHERE {
+        [IRI] tps:hasRating ?ratingNode .
+        ?ratingNode tps:ratingValue ?rating .
+      }
+    }
+  } UNION {
+    BIND("validity" as ?Property)
+    SERVICE [ONTOP] {
+      [IRI] schema:openingHoursSpecification ?open_hour_spec.
+      ?open_hour_spec schema:dayOfWeek schema:Monday;
+      	schema:validThrough ?through;
+        schema:validFrom ?from.
+      BIND(CONCAT(STR( SUBSTR(STR(?from), 6) )," until ",STR(SUBSTR(STR(?through), 6))) as ?Value)
+      FILTER(BOUND(?Value) && STRLEN(STR(?Value))>0)
+    }
+  } UNION {
+    SERVICE [ONTOP] {
+    	[IRI] tps:hasFee/tps:price ?Value .
+	  }
+	  tps:price rdfs:label ?Property
+  }
+  UNION {
+    SERVICE [ONTOP] {
+    	[IRI] tps:hasFee/tps:priceCurrency ?Value .
+	  }
+    tps:priceCurrency rdfs:label ?Property
+  }
+}
+```
+
 ### 2.2 Android deployment
 
 This section is under construction.
