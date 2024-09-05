@@ -2,6 +2,21 @@
 
 This repo contains the code for the Pirmasens Amenities App, which is intended to display the amenities in Pirmasens and their information such as operating hours and costs. At the moment, only toilets and Wasgau (markets) are available. It will briefly explain the data requirements and instructions for deployment.
 
+## Table of Contents
+
+- [Pirmasens Amenities App](#pirmasens-amenities-app)
+  - [1. Requirement](#1-requirements)
+    - [1.1 Ontology](#11-ontology)
+    - [1.2 Data sources](#12-data-sources)
+    - [1.3 Agents](#13-agents)
+  - [2. Deployment](#2-deployment)
+    - [2.1 Backend services](#21-backend-services)
+      - [2.1.1 Feature Info Agent](#211-feature-info-agent)
+    - [2.2 Android deployment](#22-android-deployment)
+      - [2.2.1 Mapbox token](#221-mapbox-token)
+      - [2.2.2 Phone and stack communication](#222-phone-and-stack-communication)
+    - [2.3 Web visualization](#23-web-visualization)
+
 ## 1. Requirements
 
 ### 1.1 Ontology
@@ -33,6 +48,8 @@ Any data access required should be contacted through someone working on the repo
 ### 2.1 Backend Services
 
 The app will require a running [The World Avatar stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) as the backend. Data specified in [this section](#12-data-sources) should be uploaded using the [Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader).
+
+### 2.1.1 Feature Info Agent
 
 The stack will also require the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) service to retrieve metadata. Please read setting up the [built-in service section](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#built-in-containers) for more details on deploying this. This agent will require the following configuration targeted at the toilet class in `fia-config.json`:
 
