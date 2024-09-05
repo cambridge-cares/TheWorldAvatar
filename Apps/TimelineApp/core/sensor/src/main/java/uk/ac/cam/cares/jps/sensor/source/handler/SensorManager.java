@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import kotlin.Pair;
@@ -22,58 +21,61 @@ import kotlin.Pair;
  */
 public class SensorManager {
 
+    private final SensorHandler accelerometerHandler;
+    private final SensorHandler gyroscopeHandler;
+    private final SensorHandler magnetometerHandler;
+    private final SensorHandler lightSensorHandler;
+    private final SensorHandler humiditySensorHandler;
+    private final SensorHandler pressureSensorHandler;
+    private final SensorHandler gravitySensorHandler;
+    private final LocationHandler locationTracker;
+    private final SoundLevelHandler soundLevelHandler;
+
     private Logger LOGGER = Logger.getLogger(SensorManager.class);
-    private final SensorHandler[] sensorHandlers;
-    private Map<SensorType, SensorHandler> sensorHandlersMap;
 
     public SensorManager(Context applicationContext) {
         android.hardware.SensorManager sensorManager = (android.hardware.SensorManager) applicationContext.getSystemService(SENSOR_SERVICE);
-        sensorHandlers = new SensorHandler[]{
-                new AccelerometerHandler(sensorManager),
-                new GyroscopeHandler(sensorManager),
-                new MagnetometerHandler(sensorManager),
-                new LightSensorHandler(sensorManager),
-                new RelativeHumiditySensorHandler(sensorManager),
-                new PressureSensorHandler(sensorManager),
-                new GravitySensorHandler(sensorManager),
-                new LocationHandler(applicationContext),
-                new SoundLevelHandler(applicationContext, sensorManager)
-        };
-
-        sensorHandlersMap = new HashMap<>();
-        sensorHandlersMap.put(SensorType.ACCELEROMETER, new AccelerometerHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.GYROSCOPE, new GyroscopeHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.MAGNETOMETER, new MagnetometerHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.LIGHT, new LightSensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.HUMIDITY, new RelativeHumiditySensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.PRESSURE, new PressureSensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.GRAVITY, new GravitySensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.LOCATION, new LocationHandler(applicationContext));
-        sensorHandlersMap.put(SensorType.SOUND, new SoundLevelHandler(applicationContext, sensorManager));
-
+        accelerometerHandler = new AccelerometerHandler(sensorManager);
+        gyroscopeHandler = new GyroscopeHandler(sensorManager);
+        magnetometerHandler = new MagnetometerHandler(sensorManager);
+        lightSensorHandler = new LightSensorHandler(sensorManager);
+        humiditySensorHandler = new RelativeHumiditySensorHandler(sensorManager);
+        pressureSensorHandler = new PressureSensorHandler(sensorManager);
+        gravitySensorHandler = new GravitySensorHandler(sensorManager);
+        locationTracker = new LocationHandler(applicationContext);
+        soundLevelHandler = new SoundLevelHandler(applicationContext, sensorManager);
     }
 
     /**
-     * Start selected sensor handlers
+     * Start all sensor handlers
      */
-    public void startSelectedSensors(List<SensorType> selectedSensorTypes) {
-        for (SensorType type : selectedSensorTypes) {
-            SensorHandler handler = sensorHandlersMap.get(type);
-            if (handler != null) {
-                handler.start();
-            }
-        }
-        LOGGER.info("Selected sensors started");
+    public void startSensors() {
+        accelerometerHandler.start();
+        gyroscopeHandler.start();
+        magnetometerHandler.start();
+        lightSensorHandler.start();
+        humiditySensorHandler.start();
+        pressureSensorHandler.start();
+        gravitySensorHandler.start();
+        locationTracker.start();
+        soundLevelHandler.start();
+
+        LOGGER.info("sensors started");
     }
 
     /**
      * Stop all sensor handlers
      */
     public void stopSensors() {
-
-        for(SensorHandler handler : sensorHandlers) {
-            handler.stop();
-        }
+        accelerometerHandler.stop();
+        gyroscopeHandler.stop();
+        magnetometerHandler.stop();
+        lightSensorHandler.stop();
+        humiditySensorHandler.stop();
+        pressureSensorHandler.stop();
+        gravitySensorHandler.stop();
+        locationTracker.stop();
+        soundLevelHandler.stop();
 
         LOGGER.info("sensors stopped");
     }
@@ -89,13 +91,26 @@ public class SensorManager {
         Map<String, JSONArray> localStorageData = new HashMap<>();
         try {
             // Directly add all elements of each sensor's data to the single array
-            for(SensorHandler handler : sensorHandlersMap.values()) {
-                if (handler.isRunning()) {
-                    JSONArray sensorData = handler.getSensorData();
-                    addAllSensorData(allSensorData, sensorData);
-                    localStorageData.put(handler.getSensorName(), sensorData);
-                }
-            }
+            addAllSensorData(allSensorData, accelerometerHandler.getSensorData());
+            addAllSensorData(allSensorData, gyroscopeHandler.getSensorData());
+            addAllSensorData(allSensorData, lightSensorHandler.getSensorData());
+            addAllSensorData(allSensorData, humiditySensorHandler.getSensorData());
+            addAllSensorData(allSensorData, pressureSensorHandler.getSensorData());
+            addAllSensorData(allSensorData, gravitySensorHandler.getSensorData());
+            addAllSensorData(allSensorData, magnetometerHandler.getSensorData());
+            addAllSensorData(allSensorData, locationTracker.getSensorData());
+            addAllSensorData(allSensorData, soundLevelHandler.getSensorData());
+            // add other sensors similarly
+
+            localStorageData.put(accelerometerHandler.getSensorName(), accelerometerHandler.getSensorData());
+            localStorageData.put(gyroscopeHandler.getSensorName(), gyroscopeHandler.getSensorData());
+            localStorageData.put(lightSensorHandler.getSensorName(), lightSensorHandler.getSensorData());
+            localStorageData.put(humiditySensorHandler.getSensorName(), humiditySensorHandler.getSensorData());
+            localStorageData.put(pressureSensorHandler.getSensorName(), pressureSensorHandler.getSensorData());
+            localStorageData.put(gravitySensorHandler.getSensorName(), gravitySensorHandler.getSensorData());
+            localStorageData.put(magnetometerHandler.getSensorName(), magnetometerHandler.getSensorData());
+            localStorageData.put(locationTracker.getSensorName(), locationTracker.getSensorData());
+            localStorageData.put(soundLevelHandler.getSensorName(), soundLevelHandler.getSensorData());
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -115,16 +130,14 @@ public class SensorManager {
      * Clears all sensor data from the memory.
      */
     private void clearAllSensorData() {
-        for (SensorHandler handler : sensorHandlersMap.values()) {
-            if (handler.isRunning()) {
-                handler.clearSensorData();
-            }
-        }
+        accelerometerHandler.clearSensorData();
+        gyroscopeHandler.clearSensorData();
+        magnetometerHandler.clearSensorData();
+        lightSensorHandler.clearSensorData();
+        humiditySensorHandler.clearSensorData();
+        pressureSensorHandler.clearSensorData();
+        gravitySensorHandler.clearSensorData();
+        locationTracker.clearSensorData();
+        soundLevelHandler.clearSensorData();
     }
-
-    // returns sensor handler to SensorSettingFragment class
-    public SensorHandler getSensorHandler(SensorType type) {
-        return sensorHandlersMap.get(type);
-    }
-
 }

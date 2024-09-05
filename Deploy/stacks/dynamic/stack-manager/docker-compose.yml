@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   stack-manager:
-    image: ghcr.io/cambridge-cares/stack-manager${IMAGE_SUFFIX}:1.24.0
+    image: ghcr.io/cambridge-cares/stack-manager${IMAGE_SUFFIX}:1.25.0
     environment:
       EXTERNAL_PORT: "${EXTERNAL_PORT-3838}"
       STACK_BASE_DIR: "${STACK_BASE_DIR-}"

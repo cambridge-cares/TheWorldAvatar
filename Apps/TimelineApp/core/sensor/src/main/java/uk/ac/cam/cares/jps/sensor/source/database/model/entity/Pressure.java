@@ -6,34 +6,19 @@ import androidx.room.PrimaryKey;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Represents a Pressure sensor data entity in the database.
- * This class extends {@link SensorData} and stores pressure-specific attributes.
- * The data is stored in the "pressure" table in the database.
- */
 @Entity(tableName = "pressure")
-public class Pressure extends SensorData {
+public class Pressure {
+    @PrimaryKey
+    public long time;
 
-    /**
-     * represents the ambient air pressure
-     */
     public double pressure;
 
-    /**
-     * Default constructor
-     */
     public Pressure() {}
 
-    /**
-     * Constructs a pressure object using a JSONObject.
-     * @param jo the JSONObject which stores data related to pressure.
-     */
     public Pressure(JSONObject jo) {
-
-        // get time from JSONObject from abstract class
-        super(jo);
-
         try {
+            // Extract time from the JSONObject
+            this.time = jo.getLong("time");
 
             // Extract the nested values JSONObject
             JSONObject values = jo.getJSONObject("values");
@@ -43,10 +28,5 @@ public class Pressure extends SensorData {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public String toJSONString() {
-        return "";
     }
 }

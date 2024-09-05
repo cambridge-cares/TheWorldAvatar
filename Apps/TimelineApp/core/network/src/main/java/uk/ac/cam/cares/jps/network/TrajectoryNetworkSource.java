@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.network;
 
 import android.content.Context;
-import android.util.Base64;
 
 import androidx.annotation.NonNull;
 
@@ -14,8 +13,6 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Locale;
 
 import okhttp3.HttpUrl;
@@ -63,14 +60,6 @@ public class TrajectoryNetworkSource {
     private StringRequest buildCreateLayerRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, String createLayerUri, String date) {
         Response.Listener<String> onCreateLayerSuccess = s -> {
             try {
-                // Log the full server response
-                LOGGER.error("Full server response: " + s);
-
-                if (s.startsWith("<?xml")) {
-                    // Handle XML response
-                    LOGGER.error("Received XML response instead of JSON: " + s);
-                    throw new RuntimeException("Unexpected XML response when JSON was expected");
-                }
                 JSONObject rawResponse = new JSONObject(s);
 
                 StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(onSuccessUpper, onFailureUpper, rawResponse, date);
@@ -84,7 +73,6 @@ public class TrajectoryNetworkSource {
 
         return new StringRequest(createLayerUri, onCreateLayerSuccess, onFailureUpper);
     }
-
 
     private StringRequest buildGetTrajectoryRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, String date) throws JSONException {
         if (!rawResponse.has("message")) {
@@ -102,12 +90,10 @@ public class TrajectoryNetworkSource {
             throw new RuntimeException("Not able to handle the agent response. Please check the backend");
         }
 
-        String speedIRI = rawResponse.getString("speedIRI").replace(",", "\\,");
-        String bearingIRI = rawResponse.getString("bearingIRI").replace(",", "\\,");
-        String altitudeIRI = rawResponse.getString("altitudeIRI").replace(",", "\\,");
-        String pointIRI = rawResponse.getString("pointIRI").replace(",", "\\,");
-
-        LOGGER.error("Print out speediri: " + speedIRI);
+        String speedIRI = rawResponse.getString("speedIRI");
+        String bearingIRI = rawResponse.getString("bearingIRI");
+        String altitudeIRI = rawResponse.getString("altitudeIRI");
+        String pointIRI = rawResponse.getString("pointIRI");
 
         String getTrajectoryUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_twa_ows))
@@ -121,18 +107,8 @@ public class TrajectoryNetworkSource {
                         pointIRI, speedIRI, altitudeIRI, bearingIRI, date))
                 .build().toString();
 
-        LOGGER.error("Print out uri: " + getTrajectoryUri);
-
         Response.Listener<String> onGetTrajectorySuccess = s1 -> {
             try {
-                // Log the full server response
-                LOGGER.error("Full server response: " + s1);
-
-                if (s1.startsWith("<?xml")) {
-                    // Handle XML response
-                    LOGGER.error("Received XML response instead of JSON: " + s1);
-                    throw new RuntimeException("Unexpected XML response when JSON was expected");
-                }
                 JSONObject trajectoryResponse = new JSONObject(s1);
                 if (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
                         .getJSONArray("features")
@@ -143,7 +119,6 @@ public class TrajectoryNetworkSource {
                     onSuccessUpper.onResponse(trajectoryResponse.toString());
                 }
             } catch (JSONException e) {
-                LOGGER.error("Failed to parse JSON: " + s1, e);
                 throw new RuntimeException(e);
             }
         };
