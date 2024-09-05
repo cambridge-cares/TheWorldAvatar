@@ -66,7 +66,7 @@ export default function GlobalContainer(
           showMap={modules.map}
           showDash={modules.dashboard}
           showHelp={modules.help}
-          navbarLogo={branding.navbarLogo.toString()}
+          logos={branding.navbar}
         />
 
         <div id="contentContainer">{props.children}</div>
