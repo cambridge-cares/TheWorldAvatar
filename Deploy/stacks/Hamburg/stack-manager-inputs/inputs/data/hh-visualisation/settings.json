@@ -1,0 +1,12 @@
+{
+    "start": {
+        "center": [
+            9.98,
+            53.55
+        ],
+        "zoom": 10,
+        "bearing": 0,
+        "pitch": 0
+    },
+    "attribution": "<div style='padding: 10px; text-align: left;'>Building footprint data taken from <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> under the Open Database License.<br><br>All sample other data has been generated specifically for this visualisation.</div>"
+}

@@ -1,0 +1,13 @@
+{
+    "externalDatasets": [
+        "dukes2023",
+        "boundaries",
+        "ukpn",
+        "national-grid",
+        "forestry",
+        "street-light",
+        "traffic-light",
+        "highway",
+        "charging-point"   
+    ]
+}

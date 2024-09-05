@@ -1,7 +1,7 @@
 from decimal import Decimal
 import random
 
-from constants.functions import OBE_NUM_OPS, NumOp
+from constants.functions import BASIC_NUM_OPS, NumOp
 from constants.namespaces import OBE
 from constants.ontobuiltenv import OBE_PROPERTYUSAGE_LABELS, OBEAttrKey
 from locate_then_ask.ontobuiltenv.locate.attr import OBEAttrLocator
@@ -61,7 +61,7 @@ class OBEPropertyUsageLocator(OBEAttrLocator):
                         NumOp.EQUAL,
                     ]
                 else:
-                    sampling_frame = OBE_NUM_OPS
+                    sampling_frame = BASIC_NUM_OPS
                 operator = random.choice(sampling_frame)
                 share_pctg = use.usage_share * 100
 

@@ -1,0 +1,2 @@
+class UnexpectedMethodCallError(AssertionError):
+    pass

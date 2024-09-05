@@ -83,14 +83,20 @@ class pug_api():
         output= 'JSON?heading=Names+and+Identifiers'
         link = pubchem_domain_full+input_domain+input_identifier+output
         data={}
-        data = requests.get(link)
-        data = json.loads(data.text)
-        if 'Information' in data.get('Record').get('Section')[0].get('Section')[0]:
-            for item in data.get('Record').get('Section')[0].get('Section')[0].get('Information'):
-                if item.get('Name') == 'See Also':
-                    a = item.get('Value').get('StringWithMarkup')[0]
-                    if 'preferred' in a.get('String'):
-                        cid = item.get('Value').get('StringWithMarkup')[0].get('Markup')[0].get('URL').partition('compound/')[-1]
+        try:
+            response = requests.get(link)
+            response.raise_for_status()  
+            data = response.json()  
+            if 'Information' in data.get('Record').get('Section')[0].get('Section')[0]:
+                for item in data.get('Record').get('Section')[0].get('Section')[0].get('Information'):
+                    if item.get('Name') == 'See Also':
+                        a = item.get('Value').get('StringWithMarkup')[0]
+                        if 'preferred' in a.get('String'):
+                            new_cid = item.get('Value').get('StringWithMarkup')[0].get('Markup')[0].get('URL').partition('compound/')[-1]
+                            return new_cid
+        except requests.RequestException as e:
+            print(f"Error fetching {link}")
+            return cid  
 
         return cid
     
@@ -771,16 +777,16 @@ if __name__ == "__main__":
     #for el in range(1,118):
     #    data = pug_access.pug_request_element(el)
 
-    for inchi in ['InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3',
-                    'InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H',
-                    "InChI=1S/C23H34BrN3O3/c1-22(2,27-21(29)13-24)16-7-10-23(3,11-8-16)26-14-17(28)15-30-20-6-4-5-19-18(20)9-12-25-19/h4-6,9,12,16-17,25-26,28H,7-8,10-11,13-15H2,1-3H3,(H,27,29)",
-                    'InChI=1/C10H10/c1-2-3-7-10-8-5-4-6-9-10/h4-6,8-9H,2H2,1H3', 
-                    'InChI=1/C10H10/c1-2-8-5-6-9-4-3-7(1)10(8)9/h1-10H']:
+    for inchi in ['InChI=1S/C9H20N.H2O/c1-8-5-9(2)7-10(3,4)6-8;/h8-9H,5-7H2,1-4H3;1H2/q+1;/p-1']:
         data = pug_access.pug_request('InChI', inchi)
         cid, comp_props, identifiers = pug_access.get_props(data)
         spectra = pug_access.pug_request_spectra(cid)
         data_3d = pug_access.pug_request_prop_3d(cid)
-        geometry, bonds = pug_access.get_structure('3d', data_3d)
+        if 'PC_Compounds' in data_3d:
+            geometry, bonds = pug_access.get_structure('3d', data_3d)
+        else:
+            geometry, bonds = pug_access.get_structure('2d', data)
+        #geometry, bonds = pug_access.get_structure('3d', data_3d)
         exp_props = pug_access.pug_request_exp_prop(cid)
         uses = pug_access.pug_request_uses(cid)
         aa=1;   

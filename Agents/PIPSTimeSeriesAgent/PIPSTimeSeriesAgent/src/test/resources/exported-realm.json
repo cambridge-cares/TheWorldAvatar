@@ -1,0 +1,88 @@
+{
+  "realm": "testrealm",
+  "enabled" : true,
+  "clients": [
+    {
+      "clientId": "testclient",
+      "clientAuthenticatorType" : "client-secret",
+      "secret" : "0GricBzRHrk2yjnzMwhM5ULRFKJC0JsR",
+      "directAccessGrantsEnabled" : true,
+      "serviceAccountsEnabled" : true,
+      "authorizationServicesEnabled" : true,
+      "authorizationSettings" : {
+        "allowRemoteResourceManagement" : true,
+        "policyEnforcementMode" : "ENFORCING",
+        "resources" : [ {
+          "name" : "test-resource",
+          "scopes" : [ {
+            "name" : "test-auth-scope"
+          } ]
+        } ],
+        "policies" : [ {
+        "name" : "test-user-policy",
+        "type" : "user",
+        "logic" : "POSITIVE",
+        "decisionStrategy" : "UNANIMOUS",
+        "config" : {
+          "users" : "[\"test\"]"
+        }
+      }, {
+        "name" : "testing-resource-permission",
+        "type" : "resource",
+        "logic" : "POSITIVE",
+        "decisionStrategy" : "UNANIMOUS",
+        "config" : {
+          "resources" : "[\"test-resource\"]",
+          "applyPolicies" : "[\"test-user-policy\"]"
+        }
+      }, {
+        "name" : "test-scope-based-permission",
+        "type" : "scope",
+        "logic" : "POSITIVE",
+        "decisionStrategy" : "UNANIMOUS",
+        "config" : {
+          "scopes" : "[\"test-auth-scope\"]",
+          "applyPolicies" : "[\"test-user-policy\"]"
+        }
+      } ],
+        "scopes" : [ {
+        "name" : "test-auth-scope"
+      } ]
+      }
+    },{
+      "clientId" : "tokenclient",
+      "clientAuthenticatorType" : "client-secret",
+      "secret" : "ckhtvLJJB2GZTOzVkmRgSFCSTN4fayfd",
+      "directAccessGrantsEnabled" : true,
+      "serviceAccountsEnabled" : true
+    }],
+    "users" : [ {
+    "username" : "test",
+    "firstName" : "test",
+    "lastName" : "test",
+    "email" : "test@test.com",
+    "emailVerified" : true,
+    "enabled" : true,
+    "totp" : false,
+    "credentials" : [ {
+      "type" : "password",
+      "userLabel" : "My password",
+      "secretData" : "{\"value\":\"5NCNNQblzh4UoPTTBCelHww9RENzgtvAh/AYY8Sgr5c2tgoeU9lxdKZm//SawMBeymC7fAOC3Q/ayHJaVViPdQ==\",\"salt\":\"wascWMbbwV3NKsKXsPFgIQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+    } ]
+  }, {
+    "username" : "user_02",
+    "firstName" : "user_02",
+    "lastName" : "user_02",
+    "email" : "user_02@test.com",
+    "emailVerified" : true,
+    "enabled" : true,
+    "totp" : false,
+    "credentials" : [ {
+      "type" : "password",
+      "userLabel" : "My password",
+      "secretData" : "{\"value\":\"1FvkobRlkIDBka5NUkSOSYMMzmZGwbLbZEbRL7L3tw/m9LT5ew58gN0R4zPCtaxjktNkjIbF/phSkszzjINUXA==\",\"salt\":\"zKQzO+E7YicOEzN5bv+Fnw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+    } ]
+  }]
+}

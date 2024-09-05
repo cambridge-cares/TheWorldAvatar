@@ -1,0 +1,1 @@
+The extension humao.rest-client on VS code is required to run these files.

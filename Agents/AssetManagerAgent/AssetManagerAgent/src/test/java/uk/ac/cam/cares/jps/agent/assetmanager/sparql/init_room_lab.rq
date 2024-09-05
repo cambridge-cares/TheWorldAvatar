@@ -1,0 +1,18 @@
+
+PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+
+#Inserting mandatory instances such as locations before instantiating
+
+INSERT DATA
+{ 
+    <https://www.theworldavatar.com/kg/caresOffice/IfcRoomRepresentation_OpenLabArea> <http://www.w3.org/2000/01/rdf-schema#label> "Open Lab Area" .
+    <https://www.theworldavatar.com/kg/caresOffice/Room_OpenLabArea> ontobim:hasIfcRepresentation <https://www.theworldavatar.com/kg/caresOffice/IfcRoomRepresentation_OpenLabArea> .
+    <https://www.theworldavatar.com/kg/caresOffice/Room_OpenLabArea> a <https://www.theworldavatar.com/kg/ontobim/Room> .
+    <https://www.theworldavatar.com/kg/caresOffice/Office_CARESLab1>	 ontobim:hasRoom <https://www.theworldavatar.com/kg/caresOffice/Room_OpenLabArea> .
+    <https://www.theworldavatar.com/kg/caresOffice/Office_CARESLab1>	 a <https://www.theworldavatar.com/kg/ontobim/Facility> .
+    <https://www.theworldavatar.com/kg/caresOffice/Office_CARESLab1>	 <http://www.w3.org/2000/01/rdf-schema#label> "CARES Office" .
+    <https://www.theworldavatar.com/kg/caresOffice/Building_CREATEResearchWing> ontobim:hasFacility <https://www.theworldavatar.com/kg/caresOffice/Office_CARESLab1>	 .
+    <https://www.theworldavatar.com/kg/caresOffice/Building_CREATEResearchWing> ontobim:hasIfcRepresentation <https://www.theworldavatar.com/kg/lab/IfcBuildingRepresentation_CREATEResearchWing> .
+    <https://www.theworldavatar.com/kg/lab/IfcBuildingRepresentation_CREATEResearchWing> <http://www.w3.org/2000/01/rdf-schema#label> "CREATE Research Wing" . 
+
+}

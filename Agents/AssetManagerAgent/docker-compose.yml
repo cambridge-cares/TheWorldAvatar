@@ -1,0 +1,15 @@
+version: "1.0"
+
+services:
+  asset-manager-agent:
+    image: asset-manager-agent:1.0.1
+    build: .
+    container_name: asset-manager-agent_1_0_1
+    pull_policy: if_not_present
+    ports:
+      - "1015:8080"
+    volumes:
+    - type: bind 
+      source: ./manuals 
+      target: /root/manuals/
+

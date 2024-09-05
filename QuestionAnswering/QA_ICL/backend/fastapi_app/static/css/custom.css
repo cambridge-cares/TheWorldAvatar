@@ -1,0 +1,362 @@
+/* ========== Common HTML elements========== */
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+	color: #338cea;
+	margin-top: 0em;
+}
+
+/* Lists */
+ol li, ul li {
+	margin-top: 0em;
+}
+
+/* Tables */
+td p {
+	margin-bottom: 0em;
+}
+td img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+/* Horizontal rules */
+hr {
+	color: LightGrey;
+}
+
+p {
+	font-size: 12pt;
+	color: black;
+}
+
+.footer p {
+	font-size: 10pt;
+	color: white;
+}
+
+.grey-link a {
+	color: grey;
+}
+
+/* ===== Navigation ===== */
+
+/* Container for nav menu */
+.container.grid-lg {
+    max-width: 1280px;
+	padding-right: 75px;
+	padding-left: 75px;
+}
+
+/* Height when scrolled */
+body.header-fixed.header-animated #header.scrolled {
+    height: 3rem;
+}
+body.header-fixed.header-animated #header.scrolled .navbar-section {
+    height: 3rem;
+}
+body.header-fixed.header-animated #header.scrolled .logo img, body.header-fixed.header-animated #header.scrolled .logo svg {
+    height: 52px;
+}
+
+/* Site logo in header */
+#header .logo img, #header .logo svg {
+    display: inherit;
+    height: 65px;
+}
+
+/* Link-free elements in nav menu */
+.linkless {
+	display: block;
+    padding: 7px 30px 7px 20px;
+    text-decoration: none;
+}
+
+/* Non-links in the nav menu */
+.dropmenu ul li span {
+    display: block;
+    padding: 7px 30px 7px 20px;
+    text-decoration: none;
+}
+
+/* Prevent drop down symbol */
+.dropmenu ul ul li a:before {
+    content: none !important;
+}
+
+
+/* ===== Introduction Section ===== */
+/* Introduction section of all explore pages */
+
+/* Container used for introduction image and text */
+.intro-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+.intro-container p {
+	font-size: 10pt;
+}
+.intro-container img {
+	width: 250px;
+	height: 250px;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 10%);
+}
+.intro-container img:hover {
+	box-shadow: 0 4px 8px 0 rgb(0 0 0 / 60%), 0 6px 20px 0 rgb(0 0 0 / 40%);
+}
+
+/* Left element of introduction content (image) */
+.intro-left {
+	min-width: 300px;
+	max-width: 300px;
+	float: left;
+	margin-right: 30px;
+		
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Center element of introduction content (text) */
+.intro-center {
+	float: left;
+}
+
+/* Right element of introduction content (optional image) */
+.intro-right {
+	min-width: 300px;
+	max-width: 300px;
+	float: right;
+	margin-left: 30px;
+		
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.thumb-image {
+	margin-top: 20px;
+	width: 150px;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 10%);
+}
+.thumb-image:hover {
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 40%);
+}
+
+
+/* Full width element */
+.full-width {
+  width: 100vw !important;
+  position: relative !important;
+  margin-left: -50vw !important;
+  left: 50% !important;
+}
+
+/* 3/4 element */
+.three-quarter-width {
+  width: 75vw !important;
+  position: relative !important;
+  margin-left: -37.5vw !important;
+  left: 50% !important;
+}
+
+/* Custom buttons */
+.mybutton {
+	outline: 0;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    padding: 0 0 0 0;
+    background-color: rgb(125, 125, 125);
+	border: none !important;
+	 margin-right: 5px;
+}
+.mybutton:hover {
+    background-color: rgb(175, 175, 175);
+}
+
+/* Custom text inputs */
+#input-field {
+    display: inline-block;
+    width: calc(100% - 90px);
+    height: 40px;
+    margin-right: 5px;
+	border: none;
+	padding: 0px 10px;
+}
+#input-field:focus {
+	outline-width: 0;
+} 
+
+/* Autocomplete for input fields */
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 20px;
+} 
+
+/* Accordian buttons */
+.accordion {
+	outline: 0;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #dcdcdc;
+	border-radius: 6px;
+	margin-top: 6px;
+	padding-left: 12px;
+	background-color: white;
+	cursor: pointer;
+	text-align: left;
+	width: 100%;
+	height: 50px;
+	overflow: hidden;
+}
+.accordion.active {
+	border-radius: 6px 6px 0px 0px;
+}
+
+.accordion-panel {
+	border-style: solid;
+	border-width: 0px 1px 1px 1px;
+	border-color: #dcdcdc;
+	border-radius: 0px 0px 6px 6px;
+	
+	padding: 8px 16px;
+	background-color: white;
+	display: none;
+	overflow: hidden;
+}
+
+/* Table for partner logos */
+.partner-table {
+	margin-left: auto;
+	margin-right: auto;
+	table-layout: fixed;
+	width: 75%;
+	text-align: center;
+}
+
+/* Page footers */
+.footer {
+	background-color: black;
+	width: 100vw !important;
+	position: relative !important;
+	margin-left: -50vw !important;
+	left: 50% !important;
+}
+
+
+/* ========== Marie chatbot classes ========== */
+
+/* Container around Marie input fields */
+.marie-input-container {
+	margin-top: 50px;
+	margin-bottom: 50px;
+	height: 240px;
+	background-image: url(../img/chemical-background-green.png);
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+/* Wrapper for Marie buttons */
+.input-group {
+  max-width: 900px;
+  width: 75%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+/* Sample Marie chatbot question */
+.sample-question {
+    color: #0cb4ce;
+}
+.sample-question:hover {
+    color: #ce9e0c;
+    cursor: pointer;
+}
+
+/* Chatbot results table */
+.chatbot-table {
+    margin: auto;
+    width: 90% !important;
+    border: 1px solid #a3a3a3 !important;
+    background-color: white;
+	border-collapse: collapse;
+}
+.chatbot-table  th {
+    font-weight: bold;
+    background-color: rgb(242, 242, 242);
+	border: 1px solid #a3a3a3 !important;
+}
+.chatbot-table  td {
+	border: 1px solid #a3a3a3 !important;
+}
+
+/* Container for results */
+.results-container {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(242, 242, 242);
+    background-color: rgb(252, 252, 252);
+    margin-top: 10px;
+    margin-right: auto;
+    margin-bottom: 10px;
+    margin-left: auto;
+    padding: 10px;
+    width: 90% !important;
+}
+.results-container a {
+    color: #0cb4ce !important;
+}
+
+/* Classes for google results */
+.google_result .main_result {
+    text-align: center;
+    margin-top: 10px;
+    margin-left: 25px;
+    margin-right: 25px;
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    border-color: rgb(242, 242, 242);
+}
+.google_result .sideways-container {
+    width: 50%;
+    text-align: center;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.google_result .extra {
+    margin-top: 10px;
+}
+.google_result .sideways-container .sideways {
+    text-align: center;
+    width: 33% !important;
+    display: inline-block;
+}
+
+/* ========== Contact page classes ========== */
+
+form[name="contact-us-form"] {
+	max-width: 488px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+textarea[name="data[message]"] {
+	height: 175px;
+}
+
+.form-container {
+	padding-top: 50px;
+	padding-bottom: 50px;
+	height: auto;
+	background-image: url('/user/images/chemical-background-blue.png');
+	background-size: cover;
+	background-repeat: no-repeat;
+}

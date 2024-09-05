@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "uk.ac.cam.cares.jps.datastore";
+option java_multiple_files = true;
+
+message PrintItem {
+  string inventoryID = 1;
+  string label = 2;
+  string iri = 3;
+}
+
+message ItemList {
+  repeated PrintItem items = 1;
+}
