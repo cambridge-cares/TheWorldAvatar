@@ -13,4 +13,4 @@ SELECT
   image,
   media_type,
   wkb_geometry as "geometryProperty"
-FROM ps_data
+FROM toilets
