@@ -15,9 +15,7 @@
         <maven.compiler.release>17</maven.compiler.release>
 
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>
-            1.44.2-1318-update-feature-info-agent-to-for-reduced-time-series-tables-SNAPSHOT
-        </jps.base.version>
+        <jps.base.version>1.44.2</jps.base.version>
     </properties>
 
     <!-- Repository locations to deploy to -->
