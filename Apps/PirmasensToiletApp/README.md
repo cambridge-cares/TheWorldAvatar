@@ -129,4 +129,10 @@ If you are running on emulator use `HOST_LOCALHOST` in [`NetworkConfiguration.ja
 
 ### 2.3 Web Visualization
 
-If you run the backend of the android application, you can also see the following web visualization at http://localhost:3838/visualisation/:
+Users can also set up a web visualisation using [The World Avatar's visualisation platform](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform), and its documentation. For the specific requirements for [the data uploaded](#21-backend-services), users will require the following icons:
+
+1. A home icon marker: `https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Home-icon.svg/1200px-Home-icon.svg.png` or other sources
+2. A toilet icon marker: `inputs/icons/toilets.png`
+3. A market icon marker: `inputs/icons/wasgau.png`
+
+The configuration for extracting the relevant visualisation layers can be found at `inputs/web/data.json`.
