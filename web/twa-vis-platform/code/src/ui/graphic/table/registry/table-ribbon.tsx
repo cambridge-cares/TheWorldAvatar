@@ -2,12 +2,13 @@
 
 import styles from './table.ribbon.module.css';
 
-import React from 'react';
+import { useProtectedRole } from 'hooks/useProtectedRole';
 import { useRouter } from 'next/navigation';
+import React from 'react';
 
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
-import { sendGetRequest } from 'utils/server-actions';
 import { DownloadButton } from 'ui/interaction/download/download';
+import { sendGetRequest } from 'utils/server-actions';
 
 interface TableRibbonProps {
   entityType: string;
@@ -24,6 +25,8 @@ interface TableRibbonProps {
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
+  const { authorised } = useProtectedRole();
+
   // Users can only either add or schedule at one time; schedule is expected to add new instances but with restrictions
   const buttonIcon: string = props.schedulerAgentApi ? "schedule_send" : "add";
   const buttonText: string = props.schedulerAgentApi ? "schedule today" : "add " + props.entityType;
@@ -40,15 +43,16 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   return (
     <div className={styles.menu}>
       <div className={styles["ribbon-button-container"]}>
-        <MaterialIconButton
-          iconName={buttonIcon}
-          className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
-          text={{
-            styles: [styles["button-text"]],
-            content: buttonText
-          }}
-          onClick={buttonEvent}
-        />
+        {authorised && (
+          <MaterialIconButton
+            iconName={buttonIcon}
+            className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
+            text={{
+              styles: [styles["button-text"]],
+              content: buttonText
+            }}
+            onClick={buttonEvent}
+          />)};
         <DownloadButton
           agentApi={`${props.registryAgentApi}csv/${props.entityType}`}
           className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
