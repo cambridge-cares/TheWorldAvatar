@@ -6,20 +6,34 @@ import androidx.room.PrimaryKey;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Represents a Sound sensor data entity in the database.
+ * This class extends {@link SensorData} and stores sound-specific attributes.
+ * The data is stored in the "sound" table in the database.
+ */
 @Entity(tableName = "sound")
-public class SoundLevel {
-    @PrimaryKey
-    public long time;
+public class SoundLevel extends SensorData {
 
+    /**
+     * decibels relative to full scale
+     */
     public double dBFS;
 
+    /**
+     * Default constructor
+     */
     public SoundLevel() {}
 
+    /**
+     * Constructs a sound object using a JSONObject
+     * @param jo JSONObject which contains sound data.
+     */
     public SoundLevel(JSONObject jo) {
-        try {
-            // Extract time from the JSONObject
-            this.time = jo.getLong("time");
 
+        // get time from JSONObject from abstract class
+        super(jo);
+
+        try {
             // Extract the nested values JSONObject
             JSONObject values = jo.getJSONObject("values");
 
@@ -28,5 +42,10 @@ public class SoundLevel {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toJSONString() {
+        return "";
     }
 }

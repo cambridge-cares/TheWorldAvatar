@@ -6,8 +6,13 @@ import androidx.room.PrimaryKey;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Represents location sensor data in the database.
+ * This class extends {@link SensorData} and stores location-specific attributes.
+ * The data is stored in the "location" table in the database.
+ */
 @Entity(tableName = "location")
-public class LocationData {
+public class LocationData extends SensorData {
     @PrimaryKey
     public long time;
 
@@ -29,6 +34,20 @@ public class LocationData {
 
     public Float verticalAccuracy;
 
+    /**
+     * Constructs a LocationData object with the specified attributes.
+     *
+     * @param time the timestamp for the location data.
+     * @param latitude the latitude of the location.
+     * @param longitude the longitude of the location.
+     * @param altitude the altitude of the location.
+     * @param speed the speed at the location.
+     * @param bearing the bearing at the location.
+     * @param horizontalAccuracy the horizontal accuracy of the location data.
+     * @param bearingAccuracy the bearing accuracy of the location data.
+     * @param speedAccuracy the speed accuracy of the location data.
+     * @param verticalAccuracy the vertical accuracy of the location data.
+     */
     public LocationData(long time, double latitude, double longitude, double altitude, float speed, float bearing, Float horizontalAccuracy, Float bearingAccuracy, Float speedAccuracy, Float verticalAccuracy) {
         this.time = time;
         this.latitude = latitude;
@@ -42,6 +61,13 @@ public class LocationData {
         this.verticalAccuracy = verticalAccuracy;
     }
 
+    /**
+     * Constructs a LocationData object from a JSON object.
+     * The JSON object should contain time and nested values for latitude, longitude, altitude, speed, etc.
+     *
+     * @param jo the JSON object containing the location data.
+     * @throws RuntimeException if there is an error parsing the JSON object.
+     */
     public LocationData(JSONObject jo) {
         try {
             this.time = jo.getLong("time");
@@ -65,5 +91,10 @@ public class LocationData {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toJSONString() {
+        return "";
     }
 }
