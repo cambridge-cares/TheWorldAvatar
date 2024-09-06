@@ -72,7 +72,6 @@ dependencies {
     kapt 'com.google.dagger:hilt-compiler:2.48.1'
 
     implementation project(path: ':core:ui')
-    implementation project(path: ':feature:locationtracking')
     implementation project(path: ':feature:routing')
 }
 
