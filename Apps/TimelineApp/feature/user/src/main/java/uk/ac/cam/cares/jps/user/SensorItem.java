@@ -1,17 +1,17 @@
 package uk.ac.cam.cares.jps.user;
 
-import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandler;
 
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 
 /**
  * Represents an individual sensor item with its associated state and metadata.
  * This class encapsulates the sensor's name, description, handler, and its toggle state.
  */
 public class SensorItem {
-    private String sensorName;
+    private final String sensorName;
     private boolean isToggled;
-    private SensorHandler sensorHandler;
-    private String sensorDescription;
+    private final String sensorDescription;
+    private SensorType sensorType;
     private boolean isToggleEnabled;
 
     /**
@@ -19,13 +19,13 @@ public class SensorItem {
      *
      * @param sensorName The name of the sensor.
      * @param sensorDescription A brief description of the sensor's functionality.
-     * @param sensorHandler The handler responsible for managing the sensor's data collection.
+     * @param sensorType The type of sensor
      */
-    public SensorItem(String sensorName, String sensorDescription, SensorHandler sensorHandler) {
+    public SensorItem(String sensorName, String sensorDescription, SensorType sensorType) {
         this.sensorName = sensorName;
-        this.sensorHandler = sensorHandler;
         this.sensorDescription = sensorDescription;
-        this.isToggled = sensorHandler.isRunning();
+        this.sensorType = sensorType;
+        this.isToggled = false;
         this.isToggleEnabled = true;
     }
 
@@ -56,14 +56,6 @@ public class SensorItem {
         isToggled = toggled;
     }
 
-    /**
-     * Returns the SensorHandler associated with this sensor.
-     *
-     * @return The SensorHandler managing this sensor.
-     */
-    public SensorHandler getSensorHandler() {
-        return sensorHandler;
-    }
 
     /**
      * Enables or disables the toggle functionality for this sensor.
@@ -90,5 +82,9 @@ public class SensorItem {
      */
     public String getSensorDescription() {
         return sensorDescription;
+    }
+
+    public SensorType getSensorType() {
+        return this.sensorType;
     }
 }

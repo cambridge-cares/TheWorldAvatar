@@ -17,3 +17,16 @@ local.properties
 
 /feature/routing
 /feature/locationtracking
+/core/utils/network_config*
+/core/utils/developer_config
+/core/utils/build
+/core/ui/build
+/core/data/build
+/core/model/build
+/core/login/build
+/core/login/auth_config_*
+/core/network/build
+/core/sensor/build
+/feature/user/build
+/feature/timeline/build
+/app/build

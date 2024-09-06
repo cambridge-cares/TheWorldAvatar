@@ -10,7 +10,6 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.sensor.SensorService;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
-import uk.ac.cam.cares.jps.sensor.source.network.UserPhoneNetworkSource;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 /**

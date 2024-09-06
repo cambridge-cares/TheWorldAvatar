@@ -21,4 +21,6 @@
     <string name="location_permission_explanation">Location data is used for trajectory recording.</string>
     <string name="audio_permission_explanation">Microphone is used for sound level analysis.</string>
     <string name="notification_permission_explanation">Notification is used to indicate the app is currently reading your sensor data.</string>
+    <string name="toggle_all">Toggle All</string>
+    <string name="toggle_off">Toggle Off</string>
 </resources>

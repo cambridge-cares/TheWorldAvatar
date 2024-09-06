@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import kotlin.Pair;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
-import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandler;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;

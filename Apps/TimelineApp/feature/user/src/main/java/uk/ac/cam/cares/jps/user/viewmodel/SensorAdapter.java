@@ -11,28 +11,30 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.user.OnSensorToggleListener;
 import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.SensorItem;
-import uk.ac.cam.cares.jps.user.SensorSettingFragment;
 
 /**
  * Adapter class for managing and displaying a list of sensor items in a RecyclerView.
  * This adapter binds the sensor data to the views and handles user interactions with the sensor toggle switches.
  */
 public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorViewHolder> {
+    private final SensorViewModel sensorViewModel;
     private final OnSensorToggleListener listener;
     private List<SensorItem> sensorItems;
 
     /**
      * Constructor for the SensorAdapter.
      *
-     * @param sensorItems The list of sensor items to be displayed.
+     * @param sensorItems   The list of sensor items to be displayed.
      * @param listener    The listener to handle sensor toggle events.
      */
-    public SensorAdapter(List<SensorItem> sensorItems,  OnSensorToggleListener listener) {
+    public SensorAdapter(List<SensorItem> sensorItems, OnSensorToggleListener listener, SensorViewModel sensorViewModel) {
         this.sensorItems = sensorItems;
         this.listener = listener;
+        this.sensorViewModel = sensorViewModel;
     }
 
     /**
@@ -55,20 +57,21 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
      * @param holder   The ViewHolder that should be updated to represent the contents of the item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
      */
-
     @Override
     public void onBindViewHolder(@NonNull SensorViewHolder holder, int position) {
         SensorItem sensorItem = sensorItems.get(position);
         holder.sensorText.setText(sensorItem.getSensorName());
-        holder.sensorToggleSwitch.setChecked(sensorItem.isToggled());
         holder.sensorDescription.setText(sensorItem.getSensorDescription());
-        holder.sensorToggleSwitch.setEnabled(sensorItem.isToggleEnabled()); // Disable the toggle if needed
 
+        // Temporarily remove the listener to prevent it from being triggered while setting the toggle state
+        holder.sensorToggleSwitch.setOnCheckedChangeListener(null);
+        holder.sensorToggleSwitch.setChecked(sensorItem.isToggled());
+
+        // Reattach the listener
         holder.sensorToggleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (sensorItem.isToggleEnabled()) { // Only allow toggling if enabled
-                sensorItem.setToggled(isChecked);
-                listener.onSensorToggle();
-            }
+            sensorItem.setToggled(isChecked);  // Update the sensor item toggle state
+            sensorViewModel.toggleSensor(sensorItem.getSensorType());  // Update ViewModel with the toggle state
+            listener.onSensorToggle();  // Notify the listener that a sensor has been toggled
         });
     }
 
@@ -119,5 +122,11 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         }
         notifyDataSetChanged();
     }
+
+    public void updateSensorItems(List<SensorItem> newSensorItems) {
+        this.sensorItems.clear();
+        this.sensorItems.addAll(newSensorItems);  // Replace the old items with the new ones
+    }
+
 
 }

@@ -64,7 +64,9 @@ public class SensorLocalSource {
 
     public SensorLocalSource(Context context) {
         this.context = context;
-        AppDatabase appDatabase = Room.databaseBuilder(context, AppDatabase.class, "timeline-database").build();
+        AppDatabase appDatabase = Room.databaseBuilder(context, AppDatabase.class, "timeline-database")
+                .fallbackToDestructiveMigrationOnDowngrade()  // Allows destructive migration on downgrade
+                .build();
         locationDao = appDatabase.locationDao();
         accelerationDao = appDatabase.accelerationDao();
         gravityDao = appDatabase.gravityDao();

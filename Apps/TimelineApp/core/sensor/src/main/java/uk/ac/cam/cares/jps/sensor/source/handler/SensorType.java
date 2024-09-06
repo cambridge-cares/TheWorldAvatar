@@ -68,4 +68,5 @@ public enum SensorType implements Parcelable {
             return new SensorType[size];
         }
     };
+
 }
