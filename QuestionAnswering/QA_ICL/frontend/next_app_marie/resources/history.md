@@ -30,10 +30,10 @@
 
 1. Marie version 2: Ref. [2]
 
-1. [Marie version 3](http://159.223.42.53:5003/): Ref. [3]
+1. Marie version 3: Ref. [3]
 
-1. [Marie version 4](http://159.223.42.53:3838/): Ref. [4]
+1. Marie version 4: Ref. [4]
 
-1. [Marie version 5](http://159.223.42.53:3839/): Ref. [5]
+1. Marie version 5: Ref. [5]
 
-1. [Marie version 6](http://139.59.105.78:3000/demos/marie): Preprint [6]
+1. Marie version 6(current): Preprint [6]
