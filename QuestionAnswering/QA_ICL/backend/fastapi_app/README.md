@@ -27,7 +27,7 @@ These data need to be ingested into the Redis server before the app starts accep
    
 Example execution:
 ```
-python -m ingest --redis_host localhost --text_embedding_backend triton --text_embedding_url localhost:8001 --drop_index --invalidate_cache
+python -m ingest_data --redis_host localhost --text_embedding_backend triton --text_embedding_url localhost:8001 --drop_index --invalidate_cache
 ```
 
 Each resource can also be ingested separately.
