@@ -227,6 +227,20 @@ public class TimeSeriesClientIntegrationBenchmark {
         return values;
     }
 
+    @Setup(Level.Trial)
+    public void startContainers() {
+
+        if (!blazegraph.isRunning()) {
+            // Start Blazegraph container
+            blazegraph.start();
+        }
+
+        if (!postgres.isRunning()) {
+            // Start postgreSQL container
+            postgres.start();
+        }
+    }
+
     // TESTS STARTING FROM A DATABASE WITHOUT ANY EXISTING TIME SERIES
 
     // Clear all tables after each test to ensure clean slate
@@ -257,15 +271,6 @@ public class TimeSeriesClientIntegrationBenchmark {
         public void initialise() {
             RemoteStoreClient kbClient;
             try {
-                if (!blazegraph.isRunning()) {
-                    // Start Blazegraph container
-                    blazegraph.start();
-                }
-
-                if (!postgres.isRunning()) {
-                    // Start postgreSQL container
-                    postgres.start();
-                }
 
                 // Set up a kb client that points to the location of the triple store
                 kbClient = blazegraph.getRemoteStoreClient();
