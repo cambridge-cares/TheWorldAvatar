@@ -13,7 +13,7 @@ Note that this agent serves as the example of a data client that manages the upd
 # 1. Setup
 
 ## 1.1 Agent Configuration
-###1.1.1 Agent Base Configuration
+### 1.1.1 Agent Base Configuration
 Agent base configuration can be modified in [base.cfg].
 ```bash
 [rdb_access] # RDB Access
@@ -35,8 +35,12 @@ agent_iri =
 [output] # BASE URL of triples to create by this agent
 base_url = 
 ```
-###1.1.2 Data Point Configuration
-Mackay Data Agents manage the update and reading of multiple data points, each the result of a chain of derivations. Configuration files one per data point are put under [data config folder]. New data points can easily be added by creating new files in the folder following the syntax below.
+### 1.1.2 Data Point Configuration
+Mackay Data Agents manage the update and reading of multiple data points, each the result of a chain of derivations. Configuration files one per data point are put under [data config folder]. Some examples can be found in `./confs_files/data` folder. 
+
+Before deployment, remove any of the unused data configuration files from `./confs_files/data` folder.
+
+ New data points can easily be added by creating new files in the folder following the syntax below.
 ```bash
 [output]
 steps = forecast # Derivation Step after API download, in [forecast|calculation]
@@ -60,11 +64,10 @@ unitFrequency = year
 Note that this design choice is made as API-downloaded data are supposed to be used by multiple agents; therefore it is conceptually not sound to keep a copy of API meta-information in this one client agent.
 
 
-##1.3. Using the Agent
-
+## 1.3. Using the Agent
 The agent image can be built via:
 ```
-docker compose -f "docker-compose-test-dockerised.yml" up -d --build
+docker compose -f "docker-compose.yml" up -d --build
 ```
 Note that the agent needs 4 other components to work:
 1. Blazegraph.
