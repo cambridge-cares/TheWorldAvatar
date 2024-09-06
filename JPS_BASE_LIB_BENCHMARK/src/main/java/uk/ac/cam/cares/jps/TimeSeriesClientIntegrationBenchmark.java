@@ -87,10 +87,10 @@ public class TimeSeriesClientIntegrationBenchmark {
     String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     // Will create two Docker containers for Blazegraph and postgreSQL
-    @Container
+
     private static final BlazegraphContainer blazegraph = new BlazegraphContainer();
     // Create Docker container with postgres 13.3 image from Docker Hub
-    @Container
+
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 
     public enum RDBBackend {
@@ -99,7 +99,7 @@ public class TimeSeriesClientIntegrationBenchmark {
     }
 
     @Param({ "DEFAULT" })
-    private static RDBBackend RDBMode; // how the relational database should be set up
+    private static RDBBackend rdbMode; // how the relational database should be set up
 
     @Param({ "1" })
     private int numTimeSeries; // number of time series
@@ -277,7 +277,7 @@ public class TimeSeriesClientIntegrationBenchmark {
 
                 // Initialise TimeSeriesClient client with pre-configured kb client
 
-                switch (RDBMode) {
+                switch (rdbMode) {
                     case DEFAULT:
                         tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
                         break;

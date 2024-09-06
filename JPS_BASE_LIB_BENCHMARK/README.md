@@ -39,7 +39,7 @@ java -jar target/benchmarks.jar -p [PARAM1]=[VALUE1],[VALUE2],[VALUE3...] -p [PA
 ### Parameters
 
 * TimeSeriesClientIntegrationBenchmark
-    * RDBMode: this controls how the relational database is set up. It only accepts "DEFAULT" or "REDUCEDTABLE".
+    * rdbMode: this controls how the relational database is set up. It only accepts "DEFAULT" or "REDUCEDTABLE".
     * numTimeSeries: the number of time series to be created for benchmarking.
     * numCol: the number of columns i.e. variables in each time series.
     * numRow: the number of row i.e. entries in each time series.
