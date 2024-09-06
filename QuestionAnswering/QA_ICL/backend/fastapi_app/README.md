@@ -23,7 +23,7 @@ Resources required by this app are:
 
 All data schemas are defined in [../../data_generation/README.md](../../data_generation/README.md#schema-definitions).
 
-These data need to be ingested into the Redis server before the app starts accepting requests from users. The module [`ingest_data`](./ingest_data/) provides the utilities to run automated ingestion. Execute `python -m ingest --help` to see a list of all available command-line options.
+These data need to be ingested into the Redis server before the app starts accepting requests from users. The module [`ingest_data`](./ingest_data/) provides the utilities to run automated ingestion. Execute `python -m ingest_data --help` to see a list of all available command-line options.
    
 Example execution:
 ```
@@ -31,9 +31,9 @@ python -m ingest_data --redis_host localhost --text_embedding_backend triton --t
 ```
 
 Each resource can also be ingested separately.
-- To ingest entity lexicons, `python -m ingest.entities ...`
-- To ingest examples for translating input questions into data requests, `python -m ingest.nlq2datareq_examples ...`
-- To ingest KG relations, `python -m ingest.properties ...`
+- To ingest entity lexicons, `python -m ingest_data.entities ...`
+- To ingest examples for translating input questions into data requests, `python -m ingest_data.nlq2datareq_examples ...`
+- To ingest KG relations, `python -m ingest_data.properties ...`
 
 ### Configurable parameters
 
