@@ -79,3 +79,17 @@ If you are developing in VSCode, please add the following `launch.json` to the `
   ]
 }
 ```
+
+## 2. Agent Route
+
+The agent currently offers the following API route(s):
+
+### 2.1 Status ROUTE: `~url~/vis-backend-agent/status`
+
+This route serves as a health check to confirm that the agent has been successfully initiated and is operating as anticipated. It can be called through a GET request with no parameters, as follows:
+
+```
+curl localhost:3838/vis-backend-agent/status
+```
+
+If successful, the response will return `Agent is ready to receive requests.`.
