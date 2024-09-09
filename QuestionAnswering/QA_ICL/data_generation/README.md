@@ -1,10 +1,17 @@
-# Data generation for QA applications using in-context learening
+# Data Generation for QA_ICL
 
-## Introduction
+## Overview
+The `data_generation` module is essential for preparing data needed by the QA ICL system. It supports the generation of lexicons, graph schema extracts, and examples of data request generation using natural language queries. The module is designed to help transform data from RDF graphs into usable formats for ICL and querying.
+
+## Key Features
 
 This directory contains scripts to generate three kinds of data: lexicon, simplified graph schema, and examples of data request generation.
 
-### Lexicon
+ - Lexicon Generation - Create lexicons for entity linking by extracting labels and text representations 
+ - Schema Extraction - Generate simplified KG schemas by extracting node types, edge types, and relations
+ - Data Request Generation Example - Prepare examples of natural language queries and their corresponding structured data requests (SPARQL queries or function calls) to train LLMs
+
+### Lexicon Generation
 
 Within the context of this project, a lexicon of a class, a predicate, or an entity is defined as a collection of its text representations, which include its canonical label and surface forms. 
 
@@ -15,9 +22,9 @@ In the main application, lexicons are used to perform:
 
 See [JSON schema for lexicons](#data-schema-of-lexicons).
 
-### KG schema extracts
+### Schema Extraction
 
-This directory adopts the terminology used for heterogenous graphs `G=(V, E, τ, φ)`:
+This `simplified_schema` directory adopts the terminology used for heterogenous graphs `G=(V, E, τ, φ)`:
 
 - For each node `v ∈ V`, its node type is `τ(v)`.
 - For each edge `(u, v) ∈ E`,
@@ -28,7 +35,7 @@ The simplified data schema captures only node types, edge types, and relation ty
 
 See [JSON schema for KG schema extracts](#data-schema-of-kg-schema-extracts).
 
-### Examples of data request generation from natural language questions
+### Data Request Generation Example
 
 A question can be answered so long as appropriate data is supplied. The retrieval of pertinent data is carried out by executing structured data requests that correspond to the input questions. By prompting LLMs with pairs of natural language queries and their corresponding data requests, LLMs can perform in-context learning to automatically generate data requests for unseen input questions.
 
@@ -44,47 +51,62 @@ See [JSON schema for examples of data request generation](#data-schema-of-data-r
 
 ### Steps
 
-0. If a virtual environment manager is used, create a new python environment and activate it. In the case of conda:
+1. Create a Virtual Environment (if using conda):
    ```{bash}
    conda create --name data-env python==3.8
    source activate data-env
    ```
-1. Install dependendencies.
+2. Install Dependencies: Navigate to the `data_generation` directory and install the required Python packages:
    ```{bash}
    pip install -r requirements.txt
    ```
 
 ## Usage
 
-For all scripts in this directory, run `python <path_to_script> -h` to view the command line argument options.
+Each task in the `data_generation` module has a dedicated Python script. You can view the available options for any script by running it with the `-h` flag. Below, we break down the main tasks and how to run them.
 
-### Generation of lexicons
+### Lexicon Generation
+
+Lexicons are collections of text representations (canonical labels and surface forms) of classes, predicates, or entities. Lexicons are used to perform entity linking and label lookup for RDF data.
+
+#### Available Scripts:
 
 - Generate lexicon for all entities of a base class using only `rdfs:label` data: [lexicon/lexicon_from_label.py](lexicon/lexicon_from_label.py).
+
 - Generate lexicon for all classes that inherit from a base class using only `rdfs:label` data: [lexicon/lexicon_from_owl.py](lexicon/lexicon_from_owl.py).
+
 - Synthesise lexicon with LLM:
   - Optionally, retrieve all literal data associated with entities of a class first: [lexicon/retrieve_literal_data.py](lexicon/retrieve_literal_data.py).
   - Then, run [lexicon/lexicon_from_llm.py](lexicon/lexicon_from_llm.py).
+
 - Generate lexicon with scripts specific to entity types:
   - Entities of `purl:Element` type: [lexicon/Element_lexicon.py](lexicon/Element_lexicon.py).
   - Entities of `disp:Ship` type: [lexicon/Ship_lexicon.py](lexicon/Ship_lexicon.py).
 
-### Generation of KG schema extracts
+### Simplified Knowledge Graph Schema Extraction
+
+Extract node types, edge types, and relations from RDF graphs and OWL files. This data helps create a simplified view of the graph's schema for use in query generation and entity linking.
 
 - Generate an extract of edge types from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_edgetypes_from_tbox.py](simplified_schema/extract_edgetypes_from_abox.py).
 - Generate an extract of relation types from OWL files: [simplified_schema/extract_relations_from_tbox.py](simplified_schema/extract_schema_from_tbox.py).
 - Generate an extract of relation types from an ABox exposed via a SPARQL endpoint: [simplified_schema/extract_relations_from_abox.py](simplified_schema/extract_schema_from_abox.py)
 
-### Augmentation of data request examples
+### Examples of Data Request Generation
+
+This module generates example data requests from natural language queries. It prepares question-answer pairs where natural language questions are paired with SPARQL queries or function calls. These examples are used to train LLMs for ICL.
 
 Augmentation refers to the process of artificially synthesising new data from existing data. 
 
 - With an OpenAI-compatible API: [make_examples.py](make_examples.py).
 - With a locally hosted Mixtral 8x7B model: [make_examples.sh](make_examples.sh).
 
-## Schema definitions
+## Schema Definitions
+
+The module defines JSON schemas for lexicons, knowledge graph schema extracts, and examples of data request generation. These schema definitions ensure consistency and can be used to validate generated data.
 
 ### Data schema of lexicons
+
+Defines the structure of a lexicon, including IRI, class, and surface forms.
 
 ```{json}
 {
