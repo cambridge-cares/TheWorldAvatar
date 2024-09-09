@@ -1,0 +1,16 @@
+{
+  "ServiceSpec": {
+    "Name": "vis-backend-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cmcl-io/vis-backend-agent:0.0.1-SNAPSHOT"
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/vis-backend-agent/",
+      "externalPath": "/vis-backend-agent/"
+    }
+  }
+}

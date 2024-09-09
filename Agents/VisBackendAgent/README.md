@@ -49,3 +49,9 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 ```
 docker compose -f "./docker/docker-compose.yml" up -d
 ```
+
+The agent can also be deployed as part of [The World Avatar's stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+
+1. Build this agent's image by issuing `docker compose -f './docker/docker-compose.yml' build` within this directory. Do not start the container.
+2. Copy the `./docker/vis-backend-agent.json` file into the `inputs/config/services` directory of the stack manager.
+3. Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
