@@ -4,6 +4,10 @@
         "boundaries",
         "ukpn",
         "national-grid",
-        "forestry"
+        "forestry",
+        "street-light",
+        "traffic-light",
+        "highway",
+        "charging-point"   
     ]
 }

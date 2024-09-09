@@ -12,6 +12,7 @@ import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -134,10 +135,15 @@ public class CityDB extends GeoServerDataSubset {
     }
 
     @Override
+    public String getSchema() {
+        return PostGISClient.DEFAULT_SCHEMA_NAME;
+    }
+
+    @Override
     public void createLayers(String workspaceName, String database) {
         logger.info("Publishing to geoserver...");
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, getTable(), geoServerSettings);
+                .createPostGISLayer(workspaceName, database, getTable(), getSchema(), geoServerSettings);
     }
 
     public void createLayer(String database) {

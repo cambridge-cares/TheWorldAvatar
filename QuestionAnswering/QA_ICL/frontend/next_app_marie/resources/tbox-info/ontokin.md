@@ -21,6 +21,9 @@ OntoKin is an ontology designed to represent reaction mechanisms. It details set
 
 [2] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, ["Linking reaction mechanisms and quantum chemistry: An ontological approach"](https://doi.org/10.1016/j.compchemeng.2020.106813), Computers & Chemical Engineering, 137, 106813, (2020)
 
+[3] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, ["Question-answering system for combustion kinetics"](https://doi.org/10.1016/j.proci.2024.105428), Proceedings of the Combustion Institute, 40, 105428, (2024)
+
+
 ### Preprints
 
 [1] F. Farazi, J. Akroyd, S. Mosbach, P. Buerger, D. Nurkowski, and M. Kraft, "OntoKin: An ontology for chemical kinetic reaction mechanisms", Technical Report 218, c4e-Preprint Series, Cambridge, 2019 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e-preprint-218.pdf))

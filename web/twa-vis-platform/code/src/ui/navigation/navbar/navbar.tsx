@@ -19,7 +19,7 @@ interface NavbarProps {
   showMap?: boolean,
   showDash?: boolean,
   showHelp?: boolean,
-  navbarLogo?: string
+  logos?: string[],
 }
 
 // Default values for navbar properties
@@ -28,7 +28,7 @@ const defaultProps: NavbarProps = {
   showMap: true,
   showDash: true,
   showHelp: true,
-  navbarLogo: null
+  logos: [],
 };
 
 /**
@@ -51,14 +51,21 @@ export default function Navbar(props: Readonly<NavbarProps>) {
   return (
     <div id="navbar" className={styles.navbar}>
       {/* Render navbar logo if set */}
-      {props.navbarLogo != null &&
-        <Link href={Routes.HOME}>
-          <div className="navbarLogo">
-            <IconComponent
-              icon={props.navbarLogo}
-            />
-          </div>
-        </Link>
+      {props.logos.length > 0 &&
+        <div className={styles["logo-ribbon"]}>
+          {
+            props.logos.map(logo => {
+              return (
+                <Link key={logo} href={Routes.HOME}>
+                  <IconComponent
+                    icon={logo}
+                    classes={styles["logo"]}
+                  />
+                </Link>
+              )
+            })
+          }
+        </div>
       }
 
       {/* Render each component as required */}

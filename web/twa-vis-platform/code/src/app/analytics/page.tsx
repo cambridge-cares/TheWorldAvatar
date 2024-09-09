@@ -1,8 +1,27 @@
 import styles from './analytics.module.css';
+
 import React from 'react';
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
+import { PathNames, PageTitles, Modules } from 'io/config/routes';
 import { DefaultSettings } from 'types/settings';
+import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
+
+
+/**
+ * Set page metadata.
+ * 
+ * @returns metadata promise.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === Modules.DASHBOARD);
+  return {
+    title: metadata?.title ?? PageTitles.DASHBOARD,
+  }
+}
 
 /**
  * A page displaying the dashboard.
@@ -17,5 +36,7 @@ export default function DashContainer() {
         <iframe className={styles.dashboard} src={uiSettings.resources.dashboard.url} title="Dashboard"></iframe>
       </div>
     )
+  } else {
+    redirect(PathNames.HOME);
   }
 }
