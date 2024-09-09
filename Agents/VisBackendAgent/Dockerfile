@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 # Copy Maven settings templates and credentials
 COPY /credentials /root/credentials
@@ -46,7 +46,7 @@ CMD mvn test
 
 # Production stage: copy the downloaded dependency from first stage into a new image and build into an app
 #==================================================================================================
-FROM tomcat:10.1.24-jre17-temurin AS agent
+FROM tomcat:10.1.28-jre21-temurin AS agent
 
 # Transfer and rename the war file to scheduler-agent as a page route
 COPY --from=builder /root/agent/target/*.war $CATALINA_HOME/webapps/scheduler-agent.war
