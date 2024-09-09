@@ -1,0 +1,31 @@
+{
+  "ServiceSpec": {
+    "Name": "vis-backend-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cmcl-io/vis-backend-agent:0.0.1-SNAPSHOT",
+        "Env": [
+          "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+        ]
+      }
+    },
+    "EndpointSpec": {
+      "Mode": "vip",
+      "Ports": [
+        {
+          "Name": "debug",
+          "Protocol": "tcp",
+          "TargetPort": 5005,
+          "PublishedPort": 5007,
+          "PublishMode": "ingress"
+        }
+      ]
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/vis-backend-agent/",
+      "externalPath": "/vis-backend-agent/"
+    }
+  }
+}

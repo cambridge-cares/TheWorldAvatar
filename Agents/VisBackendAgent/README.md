@@ -55,3 +55,27 @@ The agent can also be deployed as part of [The World Avatar's stack](https://git
 1. Build this agent's image by issuing `docker compose -f './docker/docker-compose.yml' build` within this directory. Do not start the container.
 2. Copy the `./docker/vis-backend-agent.json` file into the `inputs/config/services` directory of the stack manager.
 3. Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+
+**DEBUGGING ENVIRONMENT**
+Follow the same steps as the **PRODUCTION ENVIRONMENT**, but use the `vis-backend-agent-debug.json` file instead in step 2.
+
+If you are developing in VSCode, please add the following `launch.json` to the `.vscode` directory. Once the agent is running with the debug configuration, the developer can attach the debugger on the debug panel in VSCode.
+
+```json
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug attach",
+      "request": "attach",
+      "port": 5007,
+      "hostName": "localhost",
+      "projectName": "vis-backend-agent"
+    }
+  ]
+}
+```
