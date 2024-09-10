@@ -71,8 +71,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
       </div>
       <div className={styles["form-footer"]}>
         {isSubmitting && <LoadingSpinner isSmall={false} />}
-        {!isSubmitting && response && (<ResponseComponent response={response} />)}
-        {!isSubmitting && !response && (<div></div>)}
+        {!isSubmitting && (<ResponseComponent response={response} />)}
         <MaterialIconButton
           iconName={showReturnButton ? "logout" : "publish"}
           className={styles["form-button"]}
