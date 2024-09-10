@@ -7,5 +7,7 @@ services:
     build:
       context: ..
       target: test
+    environment:
+      NAMESPACE: kb
     ports:
       - "8080:8080"
