@@ -26,3 +26,10 @@ BEGIN
     RETURN CONCAT('https://www.theworldavatar.com/kg/sensorloggerapp/speed_measure_', device_id);
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_device_iri(device_id VARCHAR)
+RETURNS VARCHAR AS $$
+BEGIN
+    RETURN CONCAT('https://www.theworldavatar.com/kg/sensorloggerapp/smartphone_', device_id);
+END;
+$$ LANGUAGE plpgsql;
