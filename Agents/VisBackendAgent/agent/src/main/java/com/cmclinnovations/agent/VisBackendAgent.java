@@ -6,13 +6,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.cmclinnovations.agent.service.GetService;
 
 @RestController
 public class VisBackendAgent {
+  private final GetService getService;
+
   private static final Logger LOGGER = LogManager.getLogger(VisBackendAgent.class);
 
-  public VisBackendAgent() {
+  public VisBackendAgent(GetService getService) {
+    this.getService = getService;
   }
 
   @GetMapping("/status")
@@ -21,5 +27,14 @@ public class VisBackendAgent {
     return new ResponseEntity<>(
         "Agent is ready to receive requests.",
         HttpStatus.OK);
+  }
+
+  /**
+   * Retrieves the form template for the specified type from the knowledge graph.
+   */
+  @GetMapping("/form/{type}")
+  public ResponseEntity<?> getFormTemplate(@PathVariable(name = "type") String type) {
+    LOGGER.info("Received request to get the form template for {}...", type);
+    return this.getService.getForm(type);
   }
 }

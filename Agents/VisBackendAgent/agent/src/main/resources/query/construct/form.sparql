@@ -1,0 +1,54 @@
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+
+CONSTRUCT {
+  [ rdf:type sh:PropertyShape ;
+    sh:name ?name ;
+    sh:description ?description ;
+    sh:order ?order;
+    sh:datatype ?type ;
+    sh:in ?range ;
+    sh:class ?dataclass ;
+    sh:nodeKind ?nodeKind;
+    sh:qualifiedValueShape ?roleshape;
+    sh:group ?groupobj ] .
+  ?groupobj rdf:type sh:PropertyGroup ;
+    rdfs:label ?group ;
+    rdfs:comment ?groupdesc ;
+    sh:order ?grouporder.
+} WHERE {
+  ?shape rdf:type sh:NodeShape ;
+    sh:targetClass [target] ;
+    (sh:and/rdf:first)?/sh:property ?property .
+  ?property sh:name ?propname ;
+    sh:description ?propdesc ;
+    (sh:node/sh:and?/sh:property)* ?subproperty .
+  ?subproperty sh:name ?name ;
+    sh:description ?description .
+  {
+    ?subproperty sh:datatype ?type .
+  }
+  UNION
+  {
+    ?subproperty sh:in ?range .
+  }
+  UNION
+  {
+    ?subproperty sh:class ?dataclass .
+    OPTIONAL {
+      ?subproperty sh:nodeKind ?nodeKind ;
+        sh:class/^sh:targetClass/sh:property/sh:qualifiedValueShape/(sh:and/rdf:first)? ?roleshape .
+    }
+    OPTIONAL {
+      ?subproperty sh:qualifiedValueShape/(sh:and/rdf:first)? ?roleshape .
+    }
+  }
+  OPTIONAL {
+    ?property sh:order ?proporder .
+    ?subproperty sh:order ?order .
+    BIND (IF(?property != ?subproperty, ?proporder, ?null) AS ?grouporder)
+  }
+
+  BIND (IF(?property != ?subproperty, ?propname, ?null) AS ?group)
+  BIND (IF(?property != ?subproperty, ?propdesc, ?null) AS ?groupdesc)
+  BIND (IF(?property != ?subproperty, BNODE(?group), ?null) AS ?groupobj)
+}
