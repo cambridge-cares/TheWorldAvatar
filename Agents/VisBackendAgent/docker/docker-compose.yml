@@ -7,5 +7,9 @@ services:
     build:
       context: ..
       target: agent
+    environment:
+      NAMESPACE: kb
+    volumes:
+      - ../resources/config:/usr/local/tomcat/resources
     ports:
       - "8080:8080"

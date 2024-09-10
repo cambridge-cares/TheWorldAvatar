@@ -3,7 +3,27 @@
     "Name": "vis-backend-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cmcl-io/vis-backend-agent:0.0.1-SNAPSHOT"
+        "Image": "ghcr.io/cmcl-io/vis-backend-agent:0.0.1-SNAPSHOT",
+        "Env": [
+          "NAMESPACE=kb"
+        ],
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "vis-resources",
+            "Target": "/usr/local/tomcat/resources"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "blazegraph_password"
+          }
+        ]
       }
     }
   },

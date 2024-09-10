@@ -5,7 +5,25 @@
       "ContainerSpec": {
         "Image": "ghcr.io/cmcl-io/vis-backend-agent:0.0.1-SNAPSHOT",
         "Env": [
-          "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+          "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005",
+          "NAMESPACE=kb"
+        ],
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "vis-resources",
+            "Target": "/usr/local/tomcat/resources"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "blazegraph_password"
+          }
         ]
       }
     },
