@@ -31,7 +31,7 @@ function initialise() {
  * 
  * @returns generated React nodes.
  */
-export default function RootLayout({ children, }: { children: React.ReactNode }) {
+export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode; }) {
     // Initialise static content
     initialise();
     // Check if the style-overrides.css file is available
@@ -56,6 +56,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
                 <GlobalContainer settings={uiSettings}>
                     <BackgroundImage />
                     {children}
+                    {modal}
                 </GlobalContainer>
                 <ToastContainer />
             </body>
