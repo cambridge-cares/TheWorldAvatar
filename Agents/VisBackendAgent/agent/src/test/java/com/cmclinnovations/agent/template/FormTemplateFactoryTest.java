@@ -4,15 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -20,6 +19,18 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 class FormTemplateFactoryTest {
   private FormTemplateFactory formTemplateFactory;
   private static ObjectMapper objectMapper;
+
+  private static final String XSD_INTEGER_TYPE = "integer";
+  private static final String XSD_STRING_TYPE = "string";
+
+  private static final String STRING_TEST_CASE_ID = "string_id";
+  private static final String STRING_TEST_CASE_NAME = "name";
+  private static final String STRING_TEST_CASE_DESCRIPTION = "The first name of a person";
+  private static final String STRING_TEST_CASE_ORDER = "1";
+  private static final String NUMBER_TEST_CASE_ID = "dec_id";
+  private static final String NUMBER_TEST_CASE_NAME = "age";
+  private static final String NUMBER_TEST_CASE_DESCRIPTION = "The age of a person";
+  private static final String NUMBER_TEST_CASE_ORDER = "2";
 
   @BeforeAll
   static void init() {
@@ -46,7 +57,8 @@ class FormTemplateFactoryTest {
     // Set up
     ArrayNode sample = objectMapper.createArrayNode();
     // Mocking an invalid JSON object that does not have a valid type
-    ObjectNode invalidShape = genPropertyShape("testInvalidShape", "invalidType");
+    ObjectNode invalidShape = genPropertyShape("testInvalidShape", "invalidType", "invalid field",
+        "This shape should fail", FormTemplateFactory.XSD_PREFIX + XSD_STRING_TYPE, "");
     sample.add(invalidShape);
     // Execute & assert
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -55,22 +67,104 @@ class FormTemplateFactoryTest {
     assertEquals("Invalid input node! Only property shape and property group is allowed.", exception.getMessage());
   }
 
+  @Test
+  void testGenTemplate() {
+    // Set up
+    ArrayNode sample = objectMapper.createArrayNode();
+    ObjectNode firstShape = genPropertyShape(STRING_TEST_CASE_ID,
+        FormTemplateFactory.SHACL_PREFIX + FormTemplateFactory.PROPERTY_SHAPE, STRING_TEST_CASE_NAME,
+        STRING_TEST_CASE_DESCRIPTION, FormTemplateFactory.XSD_PREFIX + XSD_STRING_TYPE, STRING_TEST_CASE_ORDER);
+    sample.add(firstShape);
+    ObjectNode secShape = genPropertyShape(NUMBER_TEST_CASE_ID,
+        FormTemplateFactory.SHACL_PREFIX + FormTemplateFactory.PROPERTY_SHAPE, NUMBER_TEST_CASE_NAME,
+        NUMBER_TEST_CASE_DESCRIPTION, FormTemplateFactory.XSD_PREFIX + XSD_INTEGER_TYPE, NUMBER_TEST_CASE_ORDER);
+    sample.add(secShape);
+    // Execute
+    Map<String, Object> result = this.formTemplateFactory.genTemplate(sample);
+    // Assert
+    assertTrue(result.containsKey("@context"), "Context should be added to the form");
+    validatePropertyShape(result, STRING_TEST_CASE_ID, STRING_TEST_CASE_NAME, STRING_TEST_CASE_DESCRIPTION,
+        XSD_STRING_TYPE, STRING_TEST_CASE_ORDER);
+    validatePropertyShape(result, NUMBER_TEST_CASE_ID, NUMBER_TEST_CASE_NAME, NUMBER_TEST_CASE_DESCRIPTION,
+        XSD_INTEGER_TYPE, NUMBER_TEST_CASE_ORDER);
+  }
+
   /**
    * Generate a sample property shape.
    *
-   * @param id        Identifier value
-   * @param typeClass The type of class for this property
+   * @param id          Identifier value
+   * @param typeClass   The type of class for this property
+   * @param name        The name of this property
+   * @param description The description for this property
+   * @param dataType    The data type of the property, which must correspond to an
+   *                    xsd type
+   * @param order       A field to arrange the properties
    */
-  public static ObjectNode genPropertyShape(String id, String typeClass) {
+  public static ObjectNode genPropertyShape(String id, String typeClass, String name, String description,
+      String dataType, String order) {
     // Init empty JSON object
     ObjectNode propertyShape = objectMapper.createObjectNode();
     // Add ID
     propertyShape.put(FormTemplateFactory.ID_KEY, id);
     // Add type as "@type:[class]"
-    ArrayNode typeValueNode = objectMapper.createArrayNode();
-    typeValueNode.add(typeClass);
+    ArrayNode typeValueNode = objectMapper.createArrayNode()
+        .add(typeClass);
     propertyShape.set(FormTemplateFactory.TYPE_KEY, typeValueNode);
+    // Add name as`"sh:name":[{"@value" : "name"}]`
+    ObjectNode nameValueNode = objectMapper.createObjectNode()
+        .put(FormTemplateFactory.VAL_KEY, name);
+    propertyShape.set(FormTemplateFactory.SHACL_PREFIX + FormTemplateFactory.NAME_PROPERTY,
+        objectMapper.createArrayNode().add(nameValueNode));
+    // Add description as `"sh:description":[{"@value" : "description"}]`
+    ObjectNode descriptionValueNode = objectMapper.createObjectNode()
+        .put(FormTemplateFactory.VAL_KEY, description);
+    propertyShape.set(FormTemplateFactory.SHACL_PREFIX + FormTemplateFactory.DESCRIPTION_PROPERTY,
+        objectMapper.createArrayNode().add(descriptionValueNode));
+    // Add datatype as `"sh:datatype":[{"@id" : "data type"}]`
+    ObjectNode dataTypeValueNode = objectMapper.createObjectNode()
+        .put(FormTemplateFactory.ID_KEY, dataType);
+    propertyShape.set(FormTemplateFactory.SHACL_PREFIX + FormTemplateFactory.DATA_TYPE_PROPERTY,
+        objectMapper.createArrayNode().add(dataTypeValueNode));
+    // Add order as`"sh:order":[{"@type": "xsd:type", "@value" : "order"}]`
+    ObjectNode orderValueNode = objectMapper.createObjectNode()
+        .put(FormTemplateFactory.TYPE_KEY, FormTemplateFactory.XSD_PREFIX + XSD_INTEGER_TYPE)
+        .put(FormTemplateFactory.VAL_KEY, order);
+    propertyShape.set(FormTemplateFactory.SHACL_PREFIX + FormTemplateFactory.ORDER_PROPERTY,
+        objectMapper.createArrayNode().add(orderValueNode));
     // Return object
     return propertyShape;
+  }
+
+  /**
+   * Verify the generated shape content.
+   *
+   * @param result      Results for validation
+   * @param id          Identifier value
+   * @param name        The name of this property
+   * @param description The description for this property
+   * @param dataType    The data type of the property, which must correspond to an
+   *                    xsd type
+   * @param order       A field to arrange the properties
+   */
+  public static void validatePropertyShape(Map<String, Object> result, String id, String name, String description,
+      String dataType, String order) {
+    List<Map<String, Object>> propertyShapesList = (List<Map<String, Object>>) result
+        .get(FormTemplateFactory.PROPERTY_PROPERTY);
+    Optional<Map<String, Object>> outputProperty = propertyShapesList.stream()
+        .filter(current -> id.equals(current.get(FormTemplateFactory.ID_KEY)))
+        .findFirst();
+    outputProperty.ifPresentOrElse(
+        property -> {
+          assertEquals(name,
+              ((Map<String, Object>) property.get(FormTemplateFactory.NAME_PROPERTY)).get(FormTemplateFactory.VAL_KEY),
+              "Name should match");
+          assertEquals(description,
+              ((Map<String, Object>) property.get(FormTemplateFactory.DESCRIPTION_PROPERTY))
+                  .get(FormTemplateFactory.VAL_KEY),
+              "Description should match");
+          assertEquals(dataType, property.get(FormTemplateFactory.DATA_TYPE_PROPERTY), "Data type should match");
+          assertEquals(order, property.get(FormTemplateFactory.ORDER_PROPERTY).toString(), "Order should match");
+        },
+        () -> assertTrue(false, "No matching property is found for the id"));
   }
 }

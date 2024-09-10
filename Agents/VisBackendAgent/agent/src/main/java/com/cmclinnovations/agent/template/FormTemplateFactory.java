@@ -34,6 +34,7 @@ public class FormTemplateFactory {
   public static final String BASE_PREFIX = "https://www.theworldavatar.com/kg/";
   public static final String RDFS_PREFIX = "http://www.w3.org/2000/01/rdf-schema#";
   public static final String SHACL_PREFIX = "http://www.w3.org/ns/shacl#";
+  public static final String XSD_PREFIX = "http://www.w3.org/2001/XMLSchema#";
   // SHACL classes
   public static final String PROPERTY_GROUP = "PropertyGroup";
   public static final String PROPERTY_SHAPE = "PropertyShape";
@@ -69,14 +70,14 @@ public class FormTemplateFactory {
    */
   public Map<String, Object> genTemplate(ArrayNode data) {
     LOGGER.debug("Generating template from query results...");
-    sortData(data);
+    this.sortData(data);
 
     // No template should be generated if there are no properties
     if (this.properties.isEmpty()) {
       return new HashMap<>();
     } else {
-      addContext();
-      parseInputs();
+      this.addContext();
+      this.parseInputs();
     }
 
     return this.form;
@@ -125,7 +126,7 @@ public class FormTemplateFactory {
             String dependentIdentifier = field
                 .path(SHACL_PREFIX + NAME_PROPERTY).get(0)
                 .path(VAL_KEY).asText();
-            Map<String, Object> dependentShape = parseInputModel(field
+            Map<String, Object> dependentShape = this.parseInputModel(field
                 .path(SHACL_PREFIX + QUALIFIED_VAL_SHAPE_PROPERTY)
                 .get(0));
             this.dependentShapes.computeIfAbsent(dependentIdentifier, k -> {
@@ -165,7 +166,7 @@ public class FormTemplateFactory {
         // Retrieve existing group in parsed model if available, or else, generate one
         // from the associated group
         Map<String, Object> group = parsedProperties.getOrDefault(groupId,
-            parseInputModel(this.groups.get(groupId)));
+            this.parseInputModel(this.groups.get(groupId)));
         // Retrieve existing group properties in parsed model if available, or else,
         // generate one; Type cast is definitely accurate
         List<Map<String, Object>> groupProperties = (List<Map<String, Object>>) group
@@ -179,7 +180,7 @@ public class FormTemplateFactory {
         parsedProperties.put(groupId, group);
       } else {
         // Without a group, simply use the ID as hash key
-        parsedProperties.put(currentProperty.path(ID_KEY).asText(), parseInputModel(currentProperty));
+        parsedProperties.put(currentProperty.path(ID_KEY).asText(), this.parseInputModel(currentProperty));
       }
     }
     parsedProperties.forEach((key, value) -> {
