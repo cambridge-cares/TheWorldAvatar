@@ -76,7 +76,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
         <MaterialIconButton
           iconName={showReturnButton ? "logout" : "publish"}
           className={styles["form-button"]}
-          iconStyles={[styles["icon-button"]]}
+          iconStyles={[styles["form-button-icon"]]}
           text={{
             styles: [styles["form-button-text"]],
             content: showReturnButton ? "RETURN" : "SUBMIT"
