@@ -11,6 +11,7 @@ import { MapLayer, MapLayerGroup } from 'types/map-layer';
 import IconComponent from 'ui/graphic/icon/icon';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import SimpleDropdownField from 'ui/interaction/dropdown/simple-dropdown';
+import SearchModal from 'ui/interaction/modal/search/search-modal';
 
 // type definition for incoming properties
 interface LayerTreeHeaderProps {
@@ -45,6 +46,7 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   const initialState: boolean = props.parentShowChildren ? group.showChildren : false;
   const [isExpanded, setIsExpanded] = useState<boolean>(initialState);
   const [currentGroupingView, setCurrentGroupingView] = useState<string>(groupings.length > 0 ? groupings[0] : "");
+  const [isSearchOpenState, setIsSearchOpenState] = useState<boolean>(false);
 
   // A function to hide or show the current group's content and its associated layers based on the expansion button
   const toggleExpansion = () => {
@@ -130,6 +132,12 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
     toggleGroupingVisibility(event.target.value);
   };
 
+  /** A method to open the search modal on click.
+  */
+  const openSearchModal = () => {
+    setIsSearchOpenState(true);
+  };
+
   return (
     <div className={styles.treeEntry} key={group.name}>
       <div className={styles.treeEntryHeader}>
@@ -163,6 +171,19 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
             />
           </div>
         )}
+
+        {/* A button to open the search modal when available */}
+        {group.search && <MaterialIconButton
+          iconName={"find_replace"}
+          iconStyles={[iconStyles.hover]}
+          onClick={openSearchModal}
+        />}
+        {group.search && isSearchOpenState && <SearchModal
+          id={group.search}
+          stack={group.stack}
+          show={isSearchOpenState}
+          setShowState={setIsSearchOpenState}
+        />}
       </div>
 
       {/* Conditionally show subgroups when expanded */}
