@@ -14,8 +14,10 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Set work directory
 WORKDIR /root/agent
+RUN mkdir -p /root/agent/WEB-INF
 
 # Copy the pom.xml file
+COPY /agent/parent.pom.xml ./parent.pom.xml
 COPY /agent/pom.xml ./pom.xml
 # Retrieve all of the dependencies
 RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve
@@ -48,8 +50,8 @@ CMD mvn test
 #==================================================================================================
 FROM tomcat:10.1.28-jre21-temurin AS agent
 
-# Transfer and rename the war file to scheduler-agent as a page route
-COPY --from=builder /root/agent/target/*.war $CATALINA_HOME/webapps/scheduler-agent.war
+# Transfer and rename the war file to agent
+COPY --from=builder /root/agent/target/*.war $CATALINA_HOME/webapps/vis-backend-agent.war
 # Expose port
 EXPOSE 8080
 
