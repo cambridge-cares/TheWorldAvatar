@@ -45,9 +45,11 @@ CONSTRUCT {
   OPTIONAL {
     ?property sh:order ?proporder .
     ?subproperty sh:order ?order .
-    BIND (IF(?property != ?subproperty, ?proporder, ?null) AS ?grouporder)
+    BIND (IF(?property != ?subproperty, ?proporder, 0) AS ?grouporder)
   }
-
+  BIND (IF(BOUND(?order), ?order, 0) AS ?order)
+  BIND (IF(BOUND(?grouporder), ?grouporder, 0) AS ?grouporder)
+  
   BIND (IF(?property != ?subproperty, ?propname, ?null) AS ?group)
   BIND (IF(?property != ?subproperty, ?propdesc, ?null) AS ?groupdesc)
   BIND (IF(?property != ?subproperty, BNODE(?group), ?null) AS ?groupobj)
