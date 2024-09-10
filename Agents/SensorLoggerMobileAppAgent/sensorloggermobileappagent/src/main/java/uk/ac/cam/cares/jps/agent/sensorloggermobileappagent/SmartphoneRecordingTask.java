@@ -183,9 +183,11 @@ public class SmartphoneRecordingTask {
         }
 
         sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
-        LOGGER.info("finish instantiating kg, exception above is probably from updating the obda file and is harmless");
+        LOGGER.info(
+                "finish instantiating kg, exception above is probably from updating the obda file and is harmless.");
         // wait 30 seconds for ontop to initialise before allow queries execution
         try {
+            LOGGER.info("Waiting for 30 seconds to allow ontop to intialise");
             Thread.sleep(30000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
