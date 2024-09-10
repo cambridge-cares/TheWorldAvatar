@@ -183,7 +183,7 @@ public class SmartphoneRecordingTask {
         }
 
         sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
-        LOGGER.info("finish instantiating kg");
+        LOGGER.info("finish instantiating kg, exception above is probably from updating the obda file and is harmless");
         // wait 30 seconds for ontop to initialise before allow queries execution
         try {
             Thread.sleep(30000);
@@ -205,7 +205,7 @@ public class SmartphoneRecordingTask {
 
         LOGGER.info("bulk init iris in rdb");
         List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
-        tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits);
+        tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
 
         sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded)
                 .forEach(p -> p.setRbdInstantiationNeeded(false));
