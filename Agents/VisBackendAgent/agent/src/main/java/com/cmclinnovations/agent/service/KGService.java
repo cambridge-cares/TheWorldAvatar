@@ -35,6 +35,8 @@ public class KGService {
   private static final String LD_JSON_MEDIA_TYPE = "application/ld+json";
   private static final String SPARQL_MEDIA_TYPE = "application/sparql-query";
 
+  public static final String INVALID_SHACL_ERROR_MSG = "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.";
+
   private static final Logger LOGGER = LogManager.getLogger(KGService.class);
 
   /**

@@ -2,6 +2,7 @@ package com.cmclinnovations.agent.utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -54,6 +55,18 @@ public class StringResource {
       return parts[parts.length - 1];
     }
     return iri;
+  }
+
+  /**
+   * Parses the IRI for SPARQL queries ie enclosing it with <>.
+   * 
+   * @param iri Target iri input.
+   */
+  public static String parseIriForQuery(String iri) {
+    if (isValidIRI(iri)) {
+      return "<" + iri + ">";
+    }
+    throw new IllegalArgumentException(MessageFormat.format("Invalid IRI for: {0}", iri));
   }
 
   /**

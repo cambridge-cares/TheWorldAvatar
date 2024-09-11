@@ -12,12 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
 public class GetService {
   private final KGService kgService;
   private final FileService fileService;
 
+  private static final String SUCCESSFUL_REQUEST_MSG = "Request has been completed successfully!";
   private static final Logger LOGGER = LogManager.getLogger(GetService.class);
 
   /**
@@ -46,12 +48,10 @@ public class GetService {
     String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, iriResponse.getBody());
     Map<String, Object> results = this.kgService.queryForm(query);
     if (results.isEmpty()) {
-      LOGGER.error(
-          "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.");
-      throw new IllegalStateException(
-          "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.");
+      LOGGER.error(KGService.INVALID_SHACL_ERROR_MSG);
+      throw new IllegalStateException(KGService.INVALID_SHACL_ERROR_MSG);
     } else {
-      LOGGER.info("Request has been completed successfully!");
+      LOGGER.info(SUCCESSFUL_REQUEST_MSG);
       return new ResponseEntity<>(
           results,
           HttpStatus.OK);
@@ -78,7 +78,7 @@ public class GetService {
       LOGGER.info(
           "Request has been completed successfully with no results!");
     } else {
-      LOGGER.info("Request has been completed successfully!");
+      LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     }
     return new ResponseEntity<>(
         results.stream()
@@ -95,15 +95,17 @@ public class GetService {
    * @param targetType The target class type.
    */
   private ResponseEntity<String> getTargetIri(String targetType) {
-    LOGGER.debug("Retrieving the instances for {} ...", targetType);
+    LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", targetType);
     String targetClass = this.fileService.getTargetClass(targetType,
         FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE);
     // Handle invalid target type
     if (targetClass.isEmpty()) {
-      return new ResponseEntity<>(MessageFormat.format("Route is invalid at /{0}! If this route is intended to be enabled, please contact your technical team for assistance.", targetType),
+      return new ResponseEntity<>(MessageFormat.format(
+          "Route is invalid at /{0}! If this route is intended to be enabled, please contact your technical team for assistance.",
+          targetType),
           HttpStatus.BAD_REQUEST);
     }
     // For valid target type, return the associated target class
-    return new ResponseEntity<>("<" + targetClass + ">", HttpStatus.OK);
+    return new ResponseEntity<>(StringResource.parseIriForQuery(targetClass), HttpStatus.OK);
   }
 }

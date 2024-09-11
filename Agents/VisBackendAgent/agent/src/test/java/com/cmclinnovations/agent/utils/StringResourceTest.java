@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -73,6 +74,25 @@ class StringResourceTest {
         StringResource.getLocalName(FileServiceTest.IRI_TEST_CASE2));
     assertEquals(FileServiceTest.IRI_LOCAL_NAME_TEST_CASE3,
         StringResource.getLocalName(FileServiceTest.IRI_TEST_CASE3));
+  }
+
+  @Test
+  void testParseIriForQuery() {
+    assertEquals("<" + FileServiceTest.IRI_TEST_CASE1 + ">",
+        StringResource.parseIriForQuery(FileServiceTest.IRI_TEST_CASE1));
+    assertEquals("<" + FileServiceTest.IRI_TEST_CASE2 + ">",
+        StringResource.parseIriForQuery(FileServiceTest.IRI_TEST_CASE2));
+    assertEquals("<" + FileServiceTest.IRI_TEST_CASE3 + ">",
+        StringResource.parseIriForQuery(FileServiceTest.IRI_TEST_CASE3));
+  }
+
+  @Test
+  void testParseIriForQuery_InvalidIri() {
+    String invalidIri = "Invalid IRI";
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+      StringResource.parseIriForQuery(invalidIri);
+    });
+    assertEquals("Invalid IRI for: " + invalidIri, exception.getMessage());
   }
 
   /**
