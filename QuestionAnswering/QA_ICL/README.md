@@ -10,7 +10,8 @@
   - [Project Structure](#project-structure)
   - [Getting Started](#getting-started)
     - [Prerequisities](#prerequisities)
-    - [Installation](#installation)
+    - [Deployment Setup](#deployment-setup)
+    - [Development Setup](#development-setup)
     - [API Documentation](#api-documentation)
     - [Usage](#usage)
 
@@ -19,16 +20,15 @@
 The Question-Answering System for The World Avatar involves retrieving data from RDF graphs and other data sources such as HTTP endpoints. To do so, input questions need to be converted into SPARQL queries and HTTP requests, whose execution would yield the desired data. The conversion of natural language queries to data requests is facilitated by in-context learning (ICL), which entails engineering a text prompt for Large Language Models (LLMs) to automatically perform the transformation. The prompt may include context information such as parsing examples and the structure of target predictions.
 
 ### Key Features
-- Utilises in-context learning for query transformation
+- Utilises in-context learning for semantic parsing
 - Supports multiple data sources including RDF graphs and HTTP endpoints
 - Employs LLMs for natural language understanding
 - Provides a user-friendly frontend interface
-- Offers efficient backend processing with caching and inference capabilities
 - Includes tools for data generation and preparation
 
 ## Architecture overview
 
-The architecture of the project consists of a frontend (user interface), a backend (handling queries, model inference, and Knowledge Graph access), and additional data generation modules. These components communicate through RESTful APIs and other protocols. 
+The architecture of the project consists of a frontend (user interface), a backend (handling queries, model inference, and Knowledge Graph access), and additional data generation scripts.
 
 ```mermaid
 graph TD
@@ -44,10 +44,13 @@ graph TD
 
     D[(Blazegraph servers)]
 
-    A <--> |HTTP| C
-    D <--> |SPARQL protocol| C
-    C <--> |REST| E
-    C <--> |gRPC| F
+    A[Frontend: Next.js app] -->|Sends requests| C
+    C[Backend: FastAPI app] -->|Responds with data| A
+    C -->|Queries| D
+    D[(Blazegraph servers)] -->|Returns data| C
+    C -->|Stores/retrieves data| E
+    C -->|Sends inference requests| F
+    F[Triton inference server] -->|Returns inferences| C
 
     classDef database fill:#f9f,stroke:#333,stroke-width:2px;
     class D,E database;
@@ -56,7 +59,7 @@ graph TD
 ## Key Components
 1. **Frontend**: A Next.js application serving as the user interface.
 2. **Backend**: A FastAPI application handling core logic and data processing.
-    - **Redis**: Caches frequently accessed data for improved performance.
+    - **Redis**: Used for semantic parsing example retrieval, entity retrieval via fuzzy search, and temporary storage of QA requests for user session management.
     - **Triton Inference Server**: Manages machine learning model inference.
 3. **Blazegraph Servers**: Store and manage RDF data, accessible via SPARQL protocol.
 
@@ -70,7 +73,7 @@ The project is organised into the following main directories:
   - Examples of data request: Pairs of natural language queries and their corresponding data requests for ICL.
 - `backend/`: The backend, called Marie Backend, it contains the FastAPI application serving as the system's backend. It consists of two main components:
   - `fastapi_app`: A FastAPI application.
-  - `triton_inference_server`: Serves the Sentence-BERT model for text embedding and inference.
+  - `triton_inference_server`: Serves the Sentence-BERT model for generating text embedding.
 - `frontend/`: The frontend, called Marie Frontend, serves as the user interface for interacting with the backend services. Built using Next.js, it communicates with the backend to perform operations such as querying chemical species and filtering zeolites, and displays the results to users in a user-friendly manner.
 
 ## Getting Started
@@ -188,6 +191,9 @@ Once the backend is running, you can access the API documentation at: `http://lo
 This interactive documentation provides detailed information about available endpoints, request/response formats, and allows you to test the API directly from your browser.
 
 ### Usage
-1. Start the backend services.
-2. Start the frontend development servers.
-3. Access the application at `http://localhost:3000` (or the port specified in your frontend configuration).
+After completing the deployment setup:
+1. Ensure the backend is running (should be active from step 2 of deployment)
+2. Ensure the frontend is running (should be active from step 3 of deployment)
+3. With both services running, you can now access the application at `http://localhost:3000` (or the port specified in your frontend configuration). Use the interface to submit questions and interact with the system
+
+Note: These usage instructions assume you've followed the deployment setup steps. If you're in a development environment, refer to the Development Setup section for appropriate usage instructions.
