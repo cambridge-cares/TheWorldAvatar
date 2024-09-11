@@ -80,7 +80,57 @@ The project is organised into the following main directories:
  - Python 3.8 or higher
  - Node.js and npm (for frontend development)
 
-### Installation
+### Deployment Setup
+1. Clone the TWA repository and go to the QA_ICL folder
+
+    ```
+    cd TheWorldAvatar/QuestionAnswering/QA_ICL/
+    ```
+2. Backend Setup
+   - Follow steps [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend#docker-deployment-recommended), which covers the following topics
+      - Populate data for `Fastapi App` and `triton`
+      - Ingest data to `Fastapi App` and `triton`
+      - Launch `Fastapi App` and `triton` containers
+   - Configuration
+     - Fastapp Credentials: create file `app.local.yaml` as instructed [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend/fastapi_app#configurable-parameters) and provide credentials
+     - Port mapping: [docker-compose.yaml](./backend/docker-compose.yaml)
+3. Frontend Setup
+   - Follow steps [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/frontend/next_app_marie#deployment-via-docker) to deploy `NextApp` as docker container
+     - Build image
+     - Launch `NextApp` container
+   - Configuration
+     - `BASE_PATH`: [.env.production](./frontend/next_app_marie/.env.production)
+     - Backend endpoint: [.env](./frontend/next_app_marie/.env)
+4. Nginx Redirection Setup
+   - Create redirection for the backend endpoint. Trailing forward slash `/` is allowed.
+      ```
+      location /BACKEND_PATH/ {
+        proxy_pass          http://HOST:PORT/PATH/;
+        ...
+      }
+      ```
+   - Create redirection for the frontend endpoint. Trailing forward slash `/` is **NOT allowed**.
+      ```
+      # correct
+      location /FRONTEND_PATH {
+        proxy_pass          http://HOST:PORT/PATH;
+        ...
+      }
+
+      # wrong
+      location /FRONTEND_PATH/ {
+        proxy_pass          http://HOST:PORT/PATH/;
+        ...
+      }
+      ```
+   - Update backend entpoint configuration in NextApp `.env` file to the redirection address
+   - Rebuild Image for `NextApp` and launch the container
+   - Troubleshoot
+     - CORS error when submitting question: 
+       - This is caused by incorrect setting of the backend redirection
+
+
+### Development Setup
 1. Clone the TWA repository and go to the QA_ICL folder
 
     ```
@@ -88,25 +138,37 @@ The project is organised into the following main directories:
     ```
 
 2. Setup the backend: 
-   - Follow the instructions in `backend/README.md` to prepare required data and configure parameters.
-
-   - For Docker deployment (recommended):
-
-      ```
-      cd backend
-      sh deploy.sh
-      ```
-
-   - For  manual setup, refer to the backend README.
+   - This is a summary of the backend setup instructions. More details can be found in [backend/README.md](./backend/README.md)
+   - Data Preparation
+      - Follow the instructions in `backend/README.md` to prepare required data and configure parameters.
+   - Triton Setup
+      - Follow instructions [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/QuestionAnswering/QA_ICL/backend/triton_inference_server/README.md#development)
+   - FastApi Setup
+      - Create a virtual environment (recommended):
+        ```
+        conda create --name qa_backend python==3.10
+        conda activate qa_backend
+        ```
+        Install relavent dependencies
+        ```
+        pip install -r requirements.txt
+        ```
+      - Provide credentials as stated [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend/fastapi_app#configurable-parameters)
+      - Ingest data to `Redis`
+        ```
+        python -m ingest_data --redis_host localhost --text_embedding_backend triton --text_embedding_url localhost:8001 --drop_index --invalidate_cache
+        ```
+      - Start server as stated [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend/fastapi_app#steps)
 
 3. Set up the frontend:
    - Navigate to the `frontend/next_app_marie` directory.
-   - Install dependencies:
+   - Local Install:
       ```
       npm install
       ```
     - Configure the backend endpoint in the `.env` file.
-4. (Optional) Set up the data generation environment:
+    - More information can be found at [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/frontend/next_app_marie#development)
+4. Set up the data generation environment:
     - Create a virtual environment (recommended):
       ```
       conda create --name data-env python=3.8
@@ -118,6 +180,7 @@ The project is organised into the following main directories:
       cd data_generation
       pip install -r requirements.txt
       ```
+
 
 ### API Documentation
 Once the backend is running, you can access the API documentation at: `http://localhost:5000/docs`.
