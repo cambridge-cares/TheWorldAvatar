@@ -10,7 +10,17 @@ CONSTRUCT {
     sh:class ?dataclass ;
     sh:nodeKind ?nodeKind;
     sh:qualifiedValueShape ?roleshape;
-    sh:group ?groupobj ] .
+    sh:group ?groupobj ;
+    sh:minCount ?mincount ;
+    sh:maxCount ?maxcount ;
+    sh:minInclusive ?mininclusive ;
+    sh:maxInclusive ?maxinclusive ;
+    sh:minExclusive ?minexclusive ;
+    sh:maxExclusive ?maxexclusive ;
+    sh:minLength ?minlength ;
+    sh:maxLength ?maxlength ;
+    sh:pattern ?pattern 
+  ] .
   ?groupobj rdf:type sh:PropertyGroup ;
     rdfs:label ?group ;
     rdfs:comment ?groupdesc ;
@@ -50,6 +60,39 @@ CONSTRUCT {
   BIND (IF(BOUND(?order), ?order, 0) AS ?order)
   BIND (IF(BOUND(?grouporder), ?grouporder, 0) AS ?grouporder)
   
+  # Value constraints
+  OPTIONAL {
+    ?subproperty sh:minCount ?mincount .
+  }
+  OPTIONAL {
+    ?subproperty sh:maxCount ?maxcount .
+  }
+
+  OPTIONAL {
+    ?subproperty sh:minInclusive ?mininclusive .
+  }
+  OPTIONAL {
+    ?subproperty sh:maxInclusive ?maxinclusive .
+  }
+
+  OPTIONAL {
+    ?subproperty sh:minExclusive ?minexclusive .
+  }
+  OPTIONAL {
+    ?subproperty sh:maxExclusive ?maxexclusive .
+  }
+
+  OPTIONAL {
+    ?subproperty sh:minLength ?minlength .
+  }
+  OPTIONAL {
+    ?subproperty sh:maxLength ?maxlength .
+  }
+
+  OPTIONAL {
+    ?subproperty sh:pattern ?pattern .
+  }
+
   BIND (IF(?property != ?subproperty, ?propname, ?null) AS ?group)
   BIND (IF(?property != ?subproperty, ?propdesc, ?null) AS ?groupdesc)
   BIND (IF(?property != ?subproperty, BNODE(?group), ?null) AS ?groupobj)
