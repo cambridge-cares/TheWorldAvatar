@@ -149,7 +149,13 @@ Your mapbox token should be in [`settings.gradle`](./gradle.properties) and also
 
 #### 2.2.2 Phone and stack communication
 
-If you are running on emulator use `HOST_LOCALHOST` in [`NetworkConfiguration.java`](./core/network/src/main/java/uk/ac/cam/cares/jps/network/NetworkConfiguration.java), otherwise you should have android and stack on same network. You can use `ipconfig` or other related commands to find the ip address of your pc.
+Configure the network setting in [`network_config.xml`](./core/utils/src/main/res/values/network_config.xml) with the following format. 
+```xml
+    <string name="host_only">123.123.123.123</string>
+    <string name="host_with_port">https://DOMAIN_NAME/PATH</string> 
+    <!-- or for development use -->
+<!--    <string name="host_with_port">http://123.123.123.123:80/path</string>--> 
+```
 
 ### 2.3 Web Visualization
 
