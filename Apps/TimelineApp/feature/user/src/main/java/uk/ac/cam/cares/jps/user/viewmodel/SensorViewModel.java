@@ -123,11 +123,6 @@ public class SensorViewModel extends ViewModel {
         return allToggledOn;
     }
 
-    public void toggleSensor(SensorItem sensorItem) {
-        List<SensorItem> updatedItems = new ArrayList<>(sensorItems.getValue());
-        sensorItem.setToggled(!sensorItem.isToggled()); // Toggle sensor
-        sensorItems.setValue(updatedItems);
-    }
 
 
     /**
@@ -272,12 +267,14 @@ public class SensorViewModel extends ViewModel {
      * @param toggle boolean t/f value which denotes if a sensor has or has not been toggled
      */
     public void toggleAllSensors(boolean toggle) {
-        List<SensorItem> updatedItems = new ArrayList<>();
+        List<SensorType> updatedSensorTypes = new ArrayList<>();
         for (SensorItem item : sensorItems.getValue()) {
             item.setToggled(toggle);
-            updatedItems.add(item);
+            if (toggle) {
+                updatedSensorTypes.add(item.getSensorType());
+            }
         }
-        sensorItems.setValue(updatedItems);
+        selectedSensors.setValue(updatedSensorTypes);
         allToggledOn.setValue(toggle);
     }
 

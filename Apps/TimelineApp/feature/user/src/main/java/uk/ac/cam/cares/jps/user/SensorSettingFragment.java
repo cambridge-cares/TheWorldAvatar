@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.user;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -118,6 +119,7 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
             adapter.notifyDataSetChanged();
         });
 
+        binding.startRecordTv.setEnabled(true);
         Button toggleAllBtn = view.findViewById(R.id.toggle_all_btn);
         sensorViewModel.getAllToggledOn().observe(getViewLifecycleOwner(), isAllToggledOn -> {
             // Update all the sensor items in the adapter to reflect the "Toggle All" state
@@ -128,8 +130,6 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
 
             binding.toggleAllBtn.setText(isAllToggledOn ? R.string.toggle_off : R.string.toggle_all);
 
-            updateStartRecordingButtonState();
-
         });
 
         toggleAllBtn.setOnClickListener(v -> {
@@ -138,7 +138,7 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
         });
 
 
-        binding.startRecordTv.setEnabled(true);
+
         binding.startRecordTv.setOnClickListener(this::onRecordButtonClicked);
 
         binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
@@ -176,20 +176,6 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
         binding.toggleAllBtn.setText(R.string.toggle_all);
     }
 
-    /**
-     * Updates the state of the "Start Recording" button based on the current sensor toggle states.
-     */
-    private void updateStartRecordingButtonState() {
-        // enable the start recording button only if at least one sensor is toggled on
-        boolean hasToggledOnSensor = false;
-        for (SensorItem item : adapter.getSensorItems()) {
-            if (item.isToggled()) {
-                hasToggledOnSensor = true;
-                break;
-            }
-        }
-        binding.startRecordTv.setEnabled(hasToggledOnSensor);
-    }
 
     /**
      * Handles the logic for starting or stopping sensor recording when the button is clicked.
@@ -197,7 +183,6 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
      * @param view The view that was clicked.
      */
     private void onRecordButtonClicked(View view) {
-        boolean hasToggledOnSensor = false;
         boolean locationToggled = false;
         boolean audioToggled = false;
 
@@ -205,7 +190,6 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
 
         for (SensorItem item : adapter.getSensorItems()) {
             if (item.isToggled()) {
-                hasToggledOnSensor = true;
                 SensorType sensorType = item.getSensorType();
                 selectedSensorTypes.add(sensorType);
 
@@ -217,11 +201,10 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
             }
         }
 
-        if (!hasToggledOnSensor) {
+        if (selectedSensorTypes.isEmpty()) {
             Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         Runnable startRecordingRunnable = () -> startRecording(selectedSensorTypes);
 
@@ -282,7 +265,7 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
             // Start recording only the selected sensors
             sensorViewModel.startRecording();
             adapter.setTogglesEnabled(false);
-            binding.toggleAllBtn.setEnabled(false); // Disable "Toggle All" during recording
+            binding.toggleAllBtn.setEnabled(false);
         }
     }
 
