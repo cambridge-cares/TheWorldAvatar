@@ -13,25 +13,25 @@
   - KIV: [set up a local Nominatim instance](https://nominatim.org/release-docs/latest/admin/Installation/) to remove dependency on external geocoding service.
 
 
-### Required resources
+### Required datasets
 
-Resources required by this app are:
+Datasets required by this app are:
 
 - [data/lexicon](data/lexicon/): to be populated with JSON files containing lexicon data. Each file is an array of lexicon objects.
 - [data/schema/properties](data/schema/properties): to be populated with JSON files containing simplified graph data. Each file is an array of graph schema objects.
-- [data/examples](data/examples/): to be populated with JSON files containing examples of converting natural language questions into structured data requests. Each file is an array of example objects.
+- [data/nlq2datareq_examples](data/nlq2datareq_examples/): to be populated with JSON files containing examples of converting natural language questions into structured data requests. Each file is an array of example objects.
 - [data/qtRecog_examples](data/qtRecog_examples/): to be populated with JSON files containing examples of recognising physical quantities from natural language texts. Each file is an array of example objects.
 
 All JSON schemas are defined in [../../data_generation/README.md](../../data_generation/README.md#schema-definitions).
 
-These data need to be ingested into the Redis server before the app starts accepting requests from users. The module [`ingest_data`](./ingest_data/) provides the utilities to run automated ingestion. Execute `python -m ingest_data --help` to see a list of all available command-line options.
-   
+To facilitate efficient on-demand retrieval, the datasets need to be ingested into the Redis server before the app starts accepting requests from users. The module [`ingest_data`](./ingest_data/) provides the utilities to run automated ingestion. Execute `python -m ingest_data --help` to see a list of all available command-line options.
+
 Example execution:
 ```
 python -m ingest_data --redis_host localhost --text_embedding_backend triton --text_embedding_url localhost:8001 --drop_index --invalidate_cache
 ```
 
-Each resource can also be ingested separately.
+Each dataset can also be ingested separately.
 - To ingest entity lexicons, `python -m ingest_data.entities ...`
 - To ingest examples for translating input questions into data requests, `python -m ingest_data.nlq2datareq_examples ...`
 - To ingest KG relations, `python -m ingest_data.properties ...`
