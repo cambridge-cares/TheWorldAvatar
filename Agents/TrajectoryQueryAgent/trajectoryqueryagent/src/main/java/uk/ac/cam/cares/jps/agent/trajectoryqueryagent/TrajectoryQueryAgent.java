@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import org.apache.commons.io.IOUtils;
 
-@WebServlet(urlPatterns = { "/createlayer", "/getDatesWithData" })
+@WebServlet(urlPatterns = { "/createLayer", "/getDatesWithData" })
 public class TrajectoryQueryAgent extends JPSAgent {
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private static final String USER_ID = "userID";
@@ -48,7 +48,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
                 throw new JPSRuntimeException("Unable to validate request sent to the agent.");
             }
             return getDatesWithData(requestParams);
-        } else if (url.contains("createlayer")) {
+        } else if (url.contains("createLayer")) {
             return createLayer();
         }
 

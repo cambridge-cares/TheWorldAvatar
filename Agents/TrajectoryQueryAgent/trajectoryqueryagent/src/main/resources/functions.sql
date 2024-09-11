@@ -121,14 +121,14 @@ BEGIN
     RETURN QUERY EXECUTE query;
 END $$ LANGUAGE plpgsql;
 
--- used from timeline app
+-- used by timeline app only
 CREATE OR REPLACE FUNCTION get_device_ids(id VARCHAR)
 RETURNS TEXT AS
 $$
 DECLARE
     phone_id_list TEXT[];
 BEGIN
-    -- Aggregate phone_id values into a comma-separated list
+    -- Aggregate phone_id values into an array
     SELECT array_agg(phone_id)
     INTO phone_id_list
     FROM timeline."smartPhone"

@@ -20,37 +20,21 @@ timeseries AS (
 
 line AS (
     SELECT 
-        ST_MakeLine(timeseries.geom) AS geom 
+        ts.time as time,
+        LAG(ts.geom) OVER (ORDER BY ts.time) AS prev_geom,
+        ST_MakeLine(LAG(ts.geom) OVER (ORDER BY ts.time), ts.geom) AS geom,
+        ts.speed AS speed,
+        ts.altitude AS altitude,
+        ts.bearing AS bearing,
+        ts.user_id AS user_id,
+        CONCAT('https://w3id.org/MON/person.owl#person_', ts.user_id) AS iri
     FROM 
-        timeseries
-),
-
-offset_timeseries AS (
-    SELECT
-        LEAD(timeseries.time) OVER (ORDER BY timeseries.time) AS time,
-        LEAD(timeseries.speed) OVER (ORDER BY timeseries.time) AS speed,
-        LEAD(timeseries.altitude) OVER (ORDER BY timeseries.time) AS altitude,
-        LEAD(timeseries.geom) OVER (ORDER BY timeseries.time) AS geom,
-        LEAD(timeseries.bearing) OVER (ORDER BY timeseries.time) AS bearing,
-        LEAD(timeseries.user_id) OVER (ORDER BY timeseries.time) AS user_id
-    FROM
-        timeseries
-),
-
-split_segments AS (
-    SELECT 
-        offset_timeseries.time as time,
-        (ST_Dump(ST_Split(line.geom, offset_timeseries.geom))).geom AS geom,
-        offset_timeseries.speed AS speed,
-        offset_timeseries.altitude AS altitude,
-        offset_timeseries.bearing AS bearing,
-        CONCAT('https://w3id.org/MON/person.owl#person_', offset_timeseries.user_id) AS iri,
-        offset_timeseries.user_id AS user_id
-    FROM 
-        line, offset_timeseries
+        timeseries ts
 )
 
 SELECT 
-    *
+    time, geom, speed, altitude, bearing, user_id, iri
 FROM 
-    split_segments
+    line
+WHERE
+    line.prev_geom IS NOT NULL
