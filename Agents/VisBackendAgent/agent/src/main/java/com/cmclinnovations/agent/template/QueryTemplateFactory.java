@@ -1,7 +1,9 @@
 package com.cmclinnovations.agent.template;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,9 +12,12 @@ import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.utils.StringResource;
 
 public class QueryTemplateFactory implements ShaclTemplateFactory {
-  private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
+  private final Queue<String> optionalLines;
+
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
+  private static final String IS_OPTIONAL_VAR = "isoptional";
+  private static final String SUBJECT_VAR = "subject";
   private static final String PATH_PREFIX = "_proppath";
   private static final String MULTIPATH_FIRST_VAR = "multipath1";
   private static final String MULTIPATH_SEC_VAR = "multipath2";
@@ -30,12 +35,14 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       MULTISUBPATH_THIRD_VAR,
       MULTISUBPATH_FORTH_VAR);
 
+  private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
+
   /**
    * Constructs a new query template factory.
    * 
    */
   public QueryTemplateFactory() {
-    // No initialisers are required
+    this.optionalLines = new ArrayDeque<>();
   }
 
   /**
@@ -60,6 +67,10 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
         .append(whereQueryClause)
         .append(".");
     appendOptionalFilters(query, filterId);
+    // Parse the optional lines
+    while (!this.optionalLines.isEmpty()) {
+      query.append(this.optionalLines.poll());
+    }
     return query.append("}").toString();
   }
 
@@ -116,10 +127,28 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
     // Parse the variable name
     String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
     predSubjectLineBuilder.append(" ?").append(propertyName);
-    // Append an ; as per sparql convention to break up the property from the
-    // previous line
-    query.append(";")
-        .append(predSubjectLineBuilder); // Construct a new line with a new variable for the SPARQL query
+
+    // Verify if these bindings are optional or not to determine what to execute
+    boolean isOptional = Boolean.parseBoolean(binding.getFieldValue(IS_OPTIONAL_VAR));
+    // If it is optional, store the optional lines into a separate queue so that
+    // they can be generated separately at the end of the WHERE clause
+    if (isOptional) {
+      // FORMAT: OPTIONAL{?iri <proppath> ?var}
+      String optionalLine = "OPTIONAL{?iri " + predSubjectLineBuilder + ".";
+      // If the value must conform to a specific subject variable, filter it
+      if (binding.containsField(SUBJECT_VAR)) {
+        // FORMAT: FILTER{?var =<subject>}
+        optionalLine += "FILTER(?" + propertyName + "=<" + binding.getFieldValue(SUBJECT_VAR) + ">)";
+      }
+      this.optionalLines.offer(optionalLine + "}");
+    } else {
+      // If it is non-optional, simply append it to the WHERE clause
+      // Append an ; as per sparql convention to break up the property from the
+      // previous line
+      query.append(";");
+      // Construct a new line with a new variable for the SPARQL query
+      query.append(predSubjectLineBuilder);
+    }
   }
 
   /**

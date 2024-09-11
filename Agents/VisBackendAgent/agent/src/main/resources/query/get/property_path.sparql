@@ -1,6 +1,6 @@
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 
-SELECT DISTINCT ?clazz ?name ?multipath1 ?multipath1_proppath ?multipath2
+SELECT DISTINCT ?clazz ?name ?subject ?isoptional ?multipath1 ?multipath1_proppath ?multipath2
   ?multipath2_proppath ?multipath3 ?multipath3_proppath ?multisubpath1 ?multisubpath1_proppath
   ?multisubpath2 ?multisubpath2_proppath ?multisubpath3 ?multisubpath3_proppath ?multisubpath4
   ?multisubpath4_proppath
@@ -16,6 +16,12 @@ WHERE {
          sh:property ?property .
   ?property sh:name ?propname ;
             sh:path ?predicatepath .
+  OPTIONAL {
+    ?property sh:hasValue ?parentSubjectValue .
+  }
+  OPTIONAL {
+    ?property sh:minCount ?minCount  .
+  }
   # Predicate paths may be stored in a list or not, and use of ? helps to extract the related property
   OPTIONAL {
     ?predicatepath rdf:first? ?multipath1_initial .
@@ -54,6 +60,12 @@ WHERE {
     ?property (sh:node/sh:property)+ ?subproperty .
     ?subproperty sh:name ?subname ;
                  sh:path ?subpath .
+    OPTIONAL {
+      ?subproperty sh:hasValue ?subSubjectValue .
+    }
+    OPTIONAL {
+      ?subproperty sh:minCount ?subMinCount  .
+  	}
     OPTIONAL {
       ?subpath rdf:first? ?multisubpath1_initial .
       OPTIONAL {
@@ -98,4 +110,14 @@ WHERE {
     }
   }
   BIND (COALESCE(?subname, ?propname) AS ?name)
+  # Retrieve sub target value first; Else, attempt to retrieve from parent or return null 
+  BIND (IF(BOUND(?subSubjectValue), ?subSubjectValue, 
+          IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null)
+   		) AS ?subject)
+  # If a sub predicate path exists, it should have a sub min count property that determines if it is optional;
+  # Else, check if the parent path has a min count property to determine if it is optional;
+  # No min count indicates an optional property
+  BIND (IF(BOUND(?subpath) && !isBlank(?subpath),  IF(BOUND(?subMinCount), false, true), 
+          IF(BOUND(?minCount), false, true)
+      ) AS ?isoptional)
 }
