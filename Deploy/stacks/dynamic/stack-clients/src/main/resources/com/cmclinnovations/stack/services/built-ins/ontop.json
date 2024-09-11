@@ -8,6 +8,7 @@
                 "Env": [
                     "ONTOP_MAPPING_FILE=/ontop/ontop.obda",
                     "ONTOP_ONTOLOGY_FILE=/ontop/ontology.ttl",
+                    "ONTOP_FACTS_FILE=/ontop/ontology.ttl",
                     "ONTOP_SPARQL_RULES_FILE=/ontop/rules.toml",
                     "ONTOP_DB_NAME=postgres",
                     "ONTOP_DEV_MODE=true",
