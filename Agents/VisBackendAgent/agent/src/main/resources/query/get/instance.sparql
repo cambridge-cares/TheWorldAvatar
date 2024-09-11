@@ -1,0 +1,26 @@
+PREFIX lcc-cr: <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT DISTINCT ?type ?label ?description
+WHERE {
+  {
+    ?clazz rdfs:subClassOf* [target] ;
+           owl:oneOf ?list .
+    ?list rdf:rest*/rdf:first ?type .
+    ?type rdfs:label ?label ;
+          rdfs:comment ?description .
+  } UNION {
+    ?type rdfs:subClassOf+ [target] ;
+          rdfs:label ?label ;
+          rdfs:comment ?description .
+    FILTER (lang(?label) = "en" || lang(?label) = "")
+  } UNION {
+    ?type a [target] ;
+          lcc-cr:hasEnglishShortName ?label ;
+          skos:definition ?description .
+  }
+}

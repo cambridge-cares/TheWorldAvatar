@@ -37,4 +37,14 @@ public class VisBackendAgent {
     LOGGER.info("Received request to get the form template for {}...", type);
     return this.getService.getForm(type);
   }
+
+  /**
+   * Retrieve the available instances alongside their label and description for
+   * the specified type in the knowledge graph.
+   */
+  @GetMapping("/type/{type}")
+  public ResponseEntity<?> getInstances(@PathVariable(name = "type") String type) {
+    LOGGER.info("Received request to get instances for {}...", type);
+    return this.getService.getInstances(type);
+  }
 }

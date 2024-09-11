@@ -3,10 +3,40 @@ package com.cmclinnovations.agent.utils;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class StringResource {
   // Private constructor to prevent instantiation
   private StringResource() {
-    throw new AssertionError("This class cannot be instantiated!");
+    throw new UnsupportedOperationException("This class cannot be instantiated!");
+  }
+
+  /**
+   * Get a string from the specified field name of the input field.
+   * 
+   * @param field     object containing the string.
+   * @param fieldName target field key.
+   */
+  public static String getNodeString(JsonNode field, String fieldName) {
+    return optNodeString(field, fieldName, null);
+  }
+
+  /**
+   * Get an optional string from the input field.
+   * 
+   * @param field         object containing the string.
+   * @param fieldName     target field key.
+   * @param defaultOption default value if there is no such field.
+   */
+  public static String optNodeString(JsonNode field, String fieldName, String defaultOption) {
+    JsonNode fieldNode = field.path(fieldName);
+    if (fieldNode.isMissingNode()) {
+      if (defaultOption == null) {
+        return "";
+      }
+      return defaultOption;
+    }
+    return fieldNode.asText();
   }
 
   /**
