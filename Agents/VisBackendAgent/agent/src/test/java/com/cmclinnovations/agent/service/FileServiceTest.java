@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.FileSystemNotFoundException;
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.text.MessageFormat;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -26,6 +26,7 @@ public class FileServiceTest {
   private static final String RESOURCE_DIR = "file:";
   private static final String SAMPLE_RESOURCE_DIR_PATH = "path/to/";
   private static final String SAMPLE_RESOURCE_FILE = "resource.sparql";
+  private static final String MISSING_RESOURCE_FILE = "does/not/exist.txt";
 
   public static final String IRI_LOCAL_NAME_TEST_CASE1 = "Concept";
   public static final String IRI_TEST_CASE1 = "http://www.example.com/kg/" + IRI_LOCAL_NAME_TEST_CASE1;
@@ -62,7 +63,18 @@ public class FileServiceTest {
   }
 
   @Test
-  void testFindTargetClass() throws IOException {
+  void testGetContentsWithReplacement_MissingFile() {
+    // Execute and assert
+    FileSystemNotFoundException exception = assertThrows(FileSystemNotFoundException.class, () -> {
+      new FileService(resourceLoader, objectMapper)
+          .getContentsWithReplacement(MISSING_RESOURCE_FILE, IRI_TEST_CASE1);
+    });
+    assertEquals("Resource at " + MISSING_RESOURCE_FILE
+        + " is not found. Please ensure you have a valid resource in the file path.", exception.getMessage());
+  }
+
+  @Test
+  void testGetTargetClass() throws IOException {
     // Set up
     String sampleFilePath = SAMPLE_RESOURCE_DIR_PATH + SAMPLE_RESOURCE_FILE;
     // Set up file contents
@@ -93,7 +105,7 @@ public class FileServiceTest {
   }
 
   @Test
-  void testFindTargetClass_InvalidType() throws IOException {
+  void testGetTargetClass_InvalidType() throws IOException {
     // Set up
     String sampleFilePath = SAMPLE_RESOURCE_DIR_PATH + SAMPLE_RESOURCE_FILE;
     // Set up file contents
@@ -111,6 +123,17 @@ public class FileServiceTest {
     } finally {
       sampleFormApplicationFile.delete();
     }
+  }
+
+  @Test
+  void testGetTargetClass_MissingFile() {
+    // Execute and assert
+    FileSystemNotFoundException exception = assertThrows(FileSystemNotFoundException.class, () -> {
+      new FileService(resourceLoader, objectMapper)
+          .getTargetClass(INVALID_TEST_CASE, MISSING_RESOURCE_FILE);
+    });
+    assertEquals("Resource at " + MISSING_RESOURCE_FILE
+        + " is not found. Please ensure you have a valid resource in the file path.", exception.getMessage());
   }
 
   /**

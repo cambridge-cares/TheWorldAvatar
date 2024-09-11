@@ -1,9 +1,11 @@
 package com.cmclinnovations.agent.service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystemNotFoundException;
 import java.text.MessageFormat;
 
 import org.apache.logging.log4j.LogManager;
@@ -58,6 +60,11 @@ public class FileService {
     try (InputStream inputStream = this.resourceLoader.getResource(resourceFilePath).getInputStream()) {
       contents = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
       contents = contents.replace(REPLACEMENT_TARGET, replacement);
+    } catch (FileNotFoundException e) {
+      LOGGER.info("Resource at {} is not found. Please ensure you have a valid resource in the file path.",
+          resourceFilePath);
+      throw new FileSystemNotFoundException(MessageFormat.format(
+          "Resource at {0} is not found. Please ensure you have a valid resource in the file path.", resourceFilePath));
     } catch (IOException e) {
       LOGGER.error(e);
       throw new UncheckedIOException(e);
@@ -81,6 +88,11 @@ public class FileService {
         return "";
       }
       return this.objectMapper.treeToValue(resourceNode, String.class);
+    } catch (FileNotFoundException e) {
+      LOGGER.info("Resource at {} is not found. Please ensure you have a valid resource in the file path.",
+          resourceFilePath);
+      throw new FileSystemNotFoundException(MessageFormat.format(
+          "Resource at {0} is not found. Please ensure you have a valid resource in the file path.", resourceFilePath));
     } catch (IOException e) {
       LOGGER.info(e.getMessage());
       throw new UncheckedIOException(e);
