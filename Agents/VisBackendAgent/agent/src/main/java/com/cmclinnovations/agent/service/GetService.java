@@ -1,5 +1,6 @@
 package com.cmclinnovations.agent.service;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,8 +23,8 @@ public class GetService {
   /**
    * Constructs a new service with the following dependencies.
    * 
-   * @param resourceLoader ResourceLoader instance for loading file resources.
-   * @param kgService      KG service for performing the query.
+   * @param kgService   KG service for performing the query.
+   * @param fileService File service for accessing file resources.
    */
   public GetService(KGService kgService, FileService fileService) {
     this.kgService = kgService;
@@ -33,17 +34,16 @@ public class GetService {
   /**
    * Retrieve the form template for the target entity and its information.
    * 
-   * @param targetType The target entity type. Valid types include bin, client,
-   *                   contract, and employee.
-   * @param targetId   The target entity identifier.
+   * @param targetType The target entity type.
    */
   public ResponseEntity<?> getForm(String targetType) {
     LOGGER.debug("Retrieving the form template for {} ...", targetType);
-    String replacementIri = "<"
-        + this.fileService.getTargetClass(targetType,
-            FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE)
-        + ">";
-    String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, replacementIri);
+    ResponseEntity<String> iriResponse = this.getTargetIri(targetType);
+    // Return the BAD REQUEST response directly if IRI is invalid
+    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return iriResponse;
+    }
+    String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, iriResponse.getBody());
     Map<String, Object> results = this.kgService.queryForm(query);
     if (results.isEmpty()) {
       LOGGER.error(
@@ -59,19 +59,20 @@ public class GetService {
   }
 
   /**
-   * Retrieve the instances for the target entity alongside its label and description.
+   * Retrieve the instances for the target entity alongside its label and
+   * description.
    * 
-   * @param targetType The target entity type. Valid types include bin, client,
-   *                   contract, and employee.
-   * @param targetId   The target entity identifier.
+   * @param targetType The target entity type.
    */
   public ResponseEntity<?> getInstances(String targetType) {
     LOGGER.debug("Retrieving the instances for {} ...", targetType);
-    String replacementIri = "<"
-        + this.fileService.getTargetClass(targetType,
-            FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE)
-        + ">";
-    String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE, replacementIri);
+    ResponseEntity<String> iriResponse = this.getTargetIri(targetType);
+    // Return the BAD REQUEST response directly if IRI is invalid
+    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return iriResponse;
+    }
+    String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE,
+        iriResponse.getBody());
     List<SparqlBinding> results = this.kgService.query(query);
     if (results.isEmpty()) {
       LOGGER.info(
@@ -83,6 +84,26 @@ public class GetService {
         results.stream()
             .map(SparqlBinding::get)
             .collect(Collectors.toList()),
-        HttpStatus.OK);    
+        HttpStatus.OK);
+  }
+
+  /**
+   * Gets the target IRI as a response entity if there is an associated identifier
+   * in the file resource. This function also validates if the route is enabled
+   * depending on if the user has set an identifier.
+   * 
+   * @param targetType The target class type.
+   */
+  private ResponseEntity<String> getTargetIri(String targetType) {
+    LOGGER.debug("Retrieving the instances for {} ...", targetType);
+    String targetClass = this.fileService.getTargetClass(targetType,
+        FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE);
+    // Handle invalid target type
+    if (targetClass.isEmpty()) {
+      return new ResponseEntity<>(MessageFormat.format("Route is invalid at /{0}! If this route is intended to be enabled, please contact your technical team for assistance.", targetType),
+          HttpStatus.BAD_REQUEST);
+    }
+    // For valid target type, return the associated target class
+    return new ResponseEntity<>("<" + targetClass + ">", HttpStatus.OK);
   }
 }

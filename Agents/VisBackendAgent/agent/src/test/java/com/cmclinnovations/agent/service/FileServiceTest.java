@@ -107,10 +107,7 @@ public class FileServiceTest {
     try {
       FileService service = new FileService(resourceLoader, objectMapper);
       // Execute & Assert
-      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-        service.getTargetClass(INVALID_TEST_CASE, RESOURCE_DIR + sampleFilePath);
-      });
-      assertEquals(MessageFormat.format("Invalid identifier: {0}!", INVALID_TEST_CASE), exception.getMessage());
+      assertEquals("", service.getTargetClass(INVALID_TEST_CASE, RESOURCE_DIR + sampleFilePath));
     } finally {
       sampleFormApplicationFile.delete();
     }

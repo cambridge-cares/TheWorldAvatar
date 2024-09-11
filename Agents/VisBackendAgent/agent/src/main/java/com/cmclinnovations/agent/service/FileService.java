@@ -77,8 +77,8 @@ public class FileService {
     try (InputStream inputStream = resource.getInputStream()) {
       JsonNode resourceNode = this.objectMapper.readTree(inputStream).findValue(target);
       if (resourceNode == null) {
-        LOGGER.error("Invalid identifier: {}!", target);
-        throw new IllegalArgumentException(MessageFormat.format("Invalid identifier: {0}!", target));
+        LOGGER.error("No valid identifier found for {}!", target);
+        return "";
       }
       return this.objectMapper.treeToValue(resourceNode, String.class);
     } catch (IOException e) {
