@@ -17,11 +17,12 @@
 
 Resources required by this app are:
 
-- [data/lexicon](data/lexicon/): to be populated with JSON files containing lexicon data. Each file is a list of lexicon objects.
-- [data/schema/properties](data/schema/properties): to be populated with JSON files containing simplified graph data. Each file is a list of simplified graph schema objects.
-- [data/examples](data/examples/): to be populated with JSON files containing examples of converting natural language questions into structured data requests. Each file is a list of example object.
+- [data/lexicon](data/lexicon/): to be populated with JSON files containing lexicon data. Each file is an array of lexicon objects.
+- [data/schema/properties](data/schema/properties): to be populated with JSON files containing simplified graph data. Each file is an array of graph schema objects.
+- [data/examples](data/examples/): to be populated with JSON files containing examples of converting natural language questions into structured data requests. Each file is an array of example objects.
+- [data/qtRecog_examples](data/qtRecog_examples/): to be populated with JSON files containing examples of recognising physical quantities from natural language texts. Each file is an array of example objects.
 
-All data schemas are defined in [../../data_generation/README.md](../../data_generation/README.md#schema-definitions).
+All JSON schemas are defined in [../../data_generation/README.md](../../data_generation/README.md#schema-definitions).
 
 These data need to be ingested into the Redis server before the app starts accepting requests from users. The module [`ingest_data`](./ingest_data/) provides the utilities to run automated ingestion. Execute `python -m ingest_data --help` to see a list of all available command-line options.
    
@@ -37,7 +38,7 @@ Each resource can also be ingested separately.
 
 ### Configurable parameters
 
-All configurable parameters for the app are indicated in [`app.yaml`](./app.yaml), which have been pre-populated with default values. Environment-specific parameters are also pre-filled in [`app.dev.yaml`](./app.dev.yaml) and [`app.prod.yaml`](./app.prod.yaml), which is automatically selected based on the value `dev` or `prod` of the `APP_ENV` environment variable.
+All configurable parameters for the app are indicated in [`app.yaml`](./app.yaml), which have been pre-populated with default values. Environment-specific parameters are also pre-filled in [`app.dev.yaml`](./app.dev.yaml) and [`app.prod.yaml`](./app.prod.yaml), either of which is automatically selected based on the value `dev` or `prod` of the `APP_ENV` environment variable.
 
 API keys for external services need to be set in the `app.local.yaml` file, which has to be created by the user. Following is a minimal template. Additional fields can be set to override default settings.
 ```{yaml}
@@ -58,7 +59,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
 
 ### Prerequisites
 
-- (recommended) Linux enviroment, including WSL
+- (recommended) Linux enviroment
 - python>=3.8
 - [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
 
