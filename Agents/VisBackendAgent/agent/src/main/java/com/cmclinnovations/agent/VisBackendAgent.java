@@ -30,13 +30,14 @@ public class VisBackendAgent {
   }
 
   /**
-   * Retrieves all instances belonging to the specified type in the knowledge graph.
+   * Retrieves all instances belonging to the specified type in the knowledge
+   * graph.
    */
   @GetMapping("/{type}")
   public ResponseEntity<?> getAllInstances(
       @PathVariable(name = "type") String type) {
-    LOGGER.info("Received request to get all entities for {}...", type);
-    return this.getService.getAll(type);
+    LOGGER.info("Received request to get all instances for {}...", type);
+    return this.getService.getAllInstances(type);
   }
 
   /**
@@ -49,12 +50,12 @@ public class VisBackendAgent {
   }
 
   /**
-   * Retrieve the available instances alongside their label and description for
-   * the specified type in the knowledge graph.
+   * Retrieve the metadata (IRI, label, and description) of the concept associated
+   * with the specified type in the knowledge graph.
    */
   @GetMapping("/type/{type}")
-  public ResponseEntity<?> getInstances(@PathVariable(name = "type") String type) {
-    LOGGER.info("Received request to get instances for {}...", type);
-    return this.getService.getInstances(type);
+  public ResponseEntity<?> getConceptMetadata(@PathVariable(name = "type") String type) {
+    LOGGER.info("Received request to get the metadata for the concept: {}...", type);
+    return this.getService.getConceptMetadata(type);
   }
 }

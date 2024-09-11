@@ -36,11 +36,11 @@ public class GetService {
   /**
    * Retrieve all the target instances and their information.
    * 
-   * @param targetType The target entity type.
+   * @param resourceID The target resource identifier for the instance class.
    */
-  public ResponseEntity<?> getAll(String targetType) {
-    LOGGER.debug("Retrieving all instances of {} ...", targetType);
-    ResponseEntity<String> iriResponse = this.getTargetIri(targetType);
+  public ResponseEntity<?> getAllInstances(String resourceID) {
+    LOGGER.debug("Retrieving all instances of {} ...", resourceID);
+    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -58,11 +58,11 @@ public class GetService {
   /**
    * Retrieve the form template for the target entity and its information.
    * 
-   * @param targetType The target entity type.
+   * @param resourceID The target resource identifier for the instance class.
    */
-  public ResponseEntity<?> getForm(String targetType) {
-    LOGGER.debug("Retrieving the form template for {} ...", targetType);
-    ResponseEntity<String> iriResponse = this.getTargetIri(targetType);
+  public ResponseEntity<?> getForm(String resourceID) {
+    LOGGER.debug("Retrieving the form template for {} ...", resourceID);
+    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -81,14 +81,14 @@ public class GetService {
   }
 
   /**
-   * Retrieve the instances for the target entity alongside its label and
-   * description.
+   * Retrieve the metadata (IRI, label, and description) of the concept associated
+   * with the target resource. This will return their current or sub-classes.
    * 
-   * @param targetType The target entity type.
+   * @param resourceID The target resource identifier for the instance class.
    */
-  public ResponseEntity<?> getInstances(String targetType) {
-    LOGGER.debug("Retrieving the instances for {} ...", targetType);
-    ResponseEntity<String> iriResponse = this.getTargetIri(targetType);
+  public ResponseEntity<?> getConceptMetadata(String resourceID) {
+    LOGGER.debug("Retrieving the instances for {} ...", resourceID);
+    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -114,17 +114,17 @@ public class GetService {
    * in the file resource. This function also validates if the route is enabled
    * depending on if the user has set an identifier.
    * 
-   * @param targetType The target class type.
+   * @param resourceID The target resource identifier for the instance class.
    */
-  private ResponseEntity<String> getTargetIri(String targetType) {
-    LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", targetType);
-    String targetClass = this.fileService.getTargetClass(targetType,
+  private ResponseEntity<String> getTargetIri(String resourceID) {
+    LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", resourceID);
+    String targetClass = this.fileService.getTargetClass(resourceID,
         FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE);
     // Handle invalid target type
     if (targetClass.isEmpty()) {
       return new ResponseEntity<>(MessageFormat.format(
           "Route is invalid at /{0}! If this route is intended to be enabled, please contact your technical team for assistance.",
-          targetType),
+          resourceID),
           HttpStatus.BAD_REQUEST);
     }
     // For valid target type, return the associated target class

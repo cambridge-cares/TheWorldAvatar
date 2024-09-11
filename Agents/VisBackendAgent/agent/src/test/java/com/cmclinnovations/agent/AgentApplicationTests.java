@@ -55,7 +55,7 @@ class AgentApplicationTests {
   }
 
   @Test
-  void testInstanceRoute_MissingFormResource() throws Exception {
+  void testConceptMetadataRoute_MissingFormResource() throws Exception {
     this.mockMvc.perform(get("/type/invalid"))
         .andDo(print())
         .andExpect(status().isInternalServerError())
@@ -65,7 +65,7 @@ class AgentApplicationTests {
   }
 
   @Test
-  void testInstanceRoute_InvalidRoute() throws Exception {
+  void testConceptMetadataRoute_InvalidRoute() throws Exception {
     File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
     try {
       this.mockMvc.perform(get("/type/invalid"))
