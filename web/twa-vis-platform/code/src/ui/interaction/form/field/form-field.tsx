@@ -63,7 +63,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
           break;
         }
         default:
-          concepts = null;
+          concepts = await getAvailableTypes(props.agentApi, field.name[VALUE_KEY].toLowerCase().replace(/\s+/g, ""));
           break;
       }
 
