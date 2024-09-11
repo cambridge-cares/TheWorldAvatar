@@ -814,13 +814,21 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#DustLosses">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#SystemLosses"/>
     </owl:Class>
-    
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Device -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+
 
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+	<rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:comment>ElectricalEquipment is an item that is capable of independently realizing one or more process functionalities in the power network .</rdfs:comment>
     </owl:Class>
     
@@ -1730,6 +1738,15 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentTransformer">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter"/>
 	<rdfs:comment>A device that reduces or steps down the high current in a power line to a lower, more manageable level, suitable for measurement or control.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerAmplifier -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerAmplifier">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+	<rdfs:comment>A device that increases the power of a signal without changing its shape.</rdfs:comment>
     </owl:Class>
 
 
