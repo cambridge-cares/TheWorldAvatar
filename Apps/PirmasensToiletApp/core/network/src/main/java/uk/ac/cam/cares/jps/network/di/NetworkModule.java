@@ -26,31 +26,31 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public VertexNetworkSource provideVertexNetworkSource(Connection connection) {
-        return new VertexNetworkSource(connection);
+    public VertexNetworkSource provideVertexNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new VertexNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public RouteNetworkSource provideRouteNetworkSource(Connection connection) {
-        return new RouteNetworkSource(connection);
+    public RouteNetworkSource provideRouteNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new RouteNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public ToiletNetworkSource provideToiletNetworkSource(Connection connection) {
-        return new ToiletNetworkSource(connection);
+    public ToiletNetworkSource provideToiletNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new ToiletNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public ToiletInfoNetworkSource provideToiletInfoNetworkSource(Connection connection) {
-        return new ToiletInfoNetworkSource(connection);
+    public ToiletInfoNetworkSource provideToiletInfoNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new ToiletInfoNetworkSource(connection, applicationContext);
     }
 
     @Provides
     @Singleton
-    public ToiletBuildingInfoNetworkSource provideToiletBuildingInfoNetworkSource(Connection connection) {
-        return new ToiletBuildingInfoNetworkSource(connection);
+    public ToiletBuildingInfoNetworkSource provideToiletBuildingInfoNetworkSource(Connection connection, @ApplicationContext Context applicationContext) {
+        return new ToiletBuildingInfoNetworkSource(connection, applicationContext);
     }
 }

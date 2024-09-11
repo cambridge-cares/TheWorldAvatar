@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.network.toilet;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.android.volley.Request;
@@ -18,17 +20,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.model.Toilet;
 import uk.ac.cam.cares.jps.network.Connection;
-import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 import uk.ac.cam.cares.jps.network.route.VertexNetworkSource;
 
 public class ToiletNetworkSource {
 
     private static final Logger LOGGER = Logger.getLogger(VertexNetworkSource.class);
 
-    String path = "geoserver/pirmasens/wfs";
     Connection connection;
+    Context context;
 
     String service = "WFS";
     String version = "2.0.0";
@@ -40,14 +42,13 @@ public class ToiletNetworkSource {
     String amenityFilter = "amenity='toilets'";
 
     @Inject
-    public ToiletNetworkSource(Connection connection) {
+    public ToiletNetworkSource(Connection connection, Context context) {
         BasicConfigurator.configure();
         this.connection = connection;
+        this.context = context;
     }
 
     public void getToiletsData(Response.Listener<List<Toilet>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        //https://github.com/cambridge-cares/TheWorldAvatar/blob/fd29120e46068686d4671e6e319fbdfe2666562e/JPS_VIRTUALSENSOR/DispersionInteractor/src/main/resources/pirmasensData.json
-
         String requestUri = getRequestUri();
 
         Response.Listener<String> onSuccess = response -> {
@@ -93,14 +94,13 @@ public class ToiletNetworkSource {
 
     @NonNull
     public String getRequestUri() {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(path)
+        String requestUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_pirmasens_wfs)).newBuilder()
                 .addQueryParameter("service", service)
                 .addQueryParameter("version", version)
                 .addQueryParameter("request", request)
                 .addQueryParameter("typeName", typeName)
                 .addQueryParameter("outputFormat", outputFormat)
                 .addQueryParameter("cql_filter", amenityFilter)
-//                .addQueryParameter("viewparams", "source:" + startId + ";target:" + endId)
                 .build().toString();
         LOGGER.info(requestUri);
         return requestUri;

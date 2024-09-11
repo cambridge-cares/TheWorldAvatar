@@ -1,37 +1,26 @@
 package uk.ac.cam.cares.jps.routing.bottomsheet;
 
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.PicassoProvider;
 
 import org.apache.log4j.Logger;
 
 import java.util.Map;
 
-import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 import uk.ac.cam.cares.jps.routing.R;
 import uk.ac.cam.cares.jps.routing.RoutingFragment;
-import uk.ac.cam.cares.jps.routing.ui.manager.ToiletMarkerManager;
 import uk.ac.cam.cares.jps.routing.viewmodel.LocationViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.RoutingViewModel;
 import uk.ac.cam.cares.jps.routing.viewmodel.ToiletViewModel;
@@ -109,9 +98,9 @@ public class ToiletBottomSheet {
 
             if (toilet.getImage() != null && toilet.getImage().isEmpty() == false) {
                 bottomSheetView.findViewById(R.id.cover_image).setVisibility(View.VISIBLE);
-                LOGGER.debug("LOAD IMAGE TOILET " + toilet.getImage().replace("localhost", "192.168.0.12"));
+                LOGGER.debug("LOAD IMAGE TOILET " + toilet.getImage().replace("localhost", hostFragment.getString(uk.ac.cam.cares.jps.utils.R.string.host_only)));
                 Picasso.get()
-                        .load(toilet.getImage().replace("localhost", NetworkConfiguration.HOST))
+                        .load(toilet.getImage().replace("localhost", hostFragment.getString(uk.ac.cam.cares.jps.utils.R.string.host_only)))
                         .into(((ImageView) bottomSheetView.findViewById(R.id.cover_image)));
             } else {
                 bottomSheetView.findViewById(R.id.cover_image).setVisibility(View.GONE);

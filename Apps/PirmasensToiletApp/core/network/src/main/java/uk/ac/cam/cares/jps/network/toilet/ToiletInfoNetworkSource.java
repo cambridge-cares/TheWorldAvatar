@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.network.toilet;
 
+import android.content.Context;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
@@ -12,42 +14,31 @@ import org.json.JSONObject;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.model.Price;
 import uk.ac.cam.cares.jps.model.Toilet;
 import uk.ac.cam.cares.jps.network.Connection;
-import uk.ac.cam.cares.jps.network.NetworkConfiguration;
-import uk.ac.cam.cares.jps.network.route.VertexNetworkSource;
 
 public class ToiletInfoNetworkSource {
 
     private static final Logger LOGGER = Logger.getLogger(ToiletInfoNetworkSource.class);
     Connection connection;
-
-    // geoserver setting
-    String geoServerPath = "geoserver/pirmasens/wfs";
-
-    String service = "WFS";
-    String version = "1.0.0";
-    String request = "GetFeature";
-    String typeName = "pirmasens:ps_data";
-    String outputFormat = "application/json";
+    Context context;
 
     // feature info agent setting
-
-    String fiaPath = "feature-info-agent/get";
     String toiletIriPrefix = "https://www.theworldavatar.com/kg/ontocitytoilets/poi_";
     String kgEndpoint = "http://pirmasens-blazegraph:8080/blazegraph/namespace/pirmasens/sparql";
 
     @Inject
-    public ToiletInfoNetworkSource(Connection connection) {
+    public ToiletInfoNetworkSource(Connection connection, Context context) {
         BasicConfigurator.configure();
         this.connection = connection;
+        this.context = context;
     }
 
     public void getToiletInfoData(String id, Response.Listener<Toilet> onSuccessUpper, Response.ErrorListener onFailureUpper) {
@@ -152,7 +143,7 @@ public class ToiletInfoNetworkSource {
 
     private String getFIARequestUri(String toiletId) {
         String iri = toiletIriPrefix + toiletId;
-        String requestUri = NetworkConfiguration.constructUrlBuilder(fiaPath)
+        String requestUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.feature_info_agent_get)).newBuilder()
                 .addQueryParameter("iri", iri)
                 .addQueryParameter("endpoint", kgEndpoint)
                 .build().toString();

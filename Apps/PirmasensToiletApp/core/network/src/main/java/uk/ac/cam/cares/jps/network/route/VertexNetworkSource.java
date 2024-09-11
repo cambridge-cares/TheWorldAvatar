@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.network.route;
 
+import android.content.Context;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
@@ -11,14 +13,14 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.network.Connection;
-import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 
 public class VertexNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(VertexNetworkSource.class);
 
-    String path = "geoserver/wfs";
     Connection connection;
+    Context context;
 
     String service = "WFS";
     String version = "1.0.0";
@@ -28,13 +30,14 @@ public class VertexNetworkSource {
 
 
     @Inject
-    public VertexNetworkSource(Connection connection) {
+    public VertexNetworkSource(Connection connection, Context context) {
         BasicConfigurator.configure();
         this.connection = connection;
+        this.context = context;
     }
 
     public void getVertexId(double lng, double lat, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
-        String requestUri = NetworkConfiguration.constructUrlBuilder(path)
+        String requestUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_wfs)).newBuilder()
                 .addQueryParameter("service", service)
                 .addQueryParameter("version", version)
                 .addQueryParameter("request", request)
