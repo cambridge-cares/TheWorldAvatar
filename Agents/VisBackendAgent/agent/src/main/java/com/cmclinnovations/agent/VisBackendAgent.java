@@ -41,6 +41,15 @@ public class VisBackendAgent {
   }
 
   /**
+   * Retrieve the target instance of the specified type in the knowledge graph.
+   */
+  @GetMapping("/{type}/{id}")
+  public ResponseEntity<?> getInstance(@PathVariable String type, @PathVariable String id) {
+    LOGGER.info("Received request to get a specific instance of {}...", type);
+    return this.getService.getInstance(type, id);
+  }
+
+  /**
    * Retrieves the form template for the specified type from the knowledge graph.
    */
   @GetMapping("/form/{type}")

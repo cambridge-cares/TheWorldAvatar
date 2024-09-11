@@ -35,6 +35,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * 
    */
   public QueryTemplateFactory() {
+    // No initialisers are required
   }
 
   /**
@@ -49,11 +50,17 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * 
    * @param bindings The bindings queried from SHACL restrictions that should
    *                 be in the template.
+   * @param filterId An optional field to target the query at a specific instance.
    */
-  public String genGetTemplate(List<SparqlBinding> bindings) {
+  public String genGetTemplate(List<SparqlBinding> bindings, String filterId) {
     LOGGER.info("Generating a query template for getting data...");
     String whereQueryClause = this.parseBindingsToWhereClause(bindings);
-    return "SELECT * WHERE {" + whereQueryClause + ".}";
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT * WHERE {")
+        .append(whereQueryClause)
+        .append(".");
+    appendOptionalFilters(query, filterId);
+    return query.append("}").toString();
   }
 
   /**
@@ -131,6 +138,21 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
           .equals(SHACL_PREFIX + "inversePath")) {
         builder.append("^");
       }
+    }
+  }
+
+  /**
+   * Appends optional filters to the query if required.
+   * 
+   * @param query    Builder for the query template.
+   * @param filterId An optional field to target the query at a specific instance.
+   */
+  private void appendOptionalFilters(StringBuilder query, String filterId) {
+    if (filterId != null) {
+      // Add filter clause if there is a valid filter ID
+      query.append("FILTER STRENDS(STR(?id), \"")
+          .append(filterId)
+          .append("\")");
     }
   }
 }

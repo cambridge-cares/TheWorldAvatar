@@ -47,12 +47,43 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
         iriResponse.getBody());
-    List<SparqlBinding> results = this.kgService.queryInstances(query);
+    List<SparqlBinding> results = this.kgService.queryInstances(query, null);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
             .collect(Collectors.toList()),
         HttpStatus.OK);
+  }
+
+  /**
+   * Retrieve only the specific instance and its information.
+   * 
+   * @param resourceID The target resource identifier for the instance class.
+   * @param targetId   The target instance IRI.
+   */
+  public ResponseEntity<?> getInstance(String resourceID, String targetId) {
+    LOGGER.debug("Retrieving all instances of {} ...", resourceID);
+    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    // Return the BAD REQUEST response directly if IRI is invalid
+    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return iriResponse;
+    }
+    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
+        iriResponse.getBody());
+    List<SparqlBinding> results = this.kgService.queryInstances(query, targetId);
+    if (results.size() == 1) {
+      return new ResponseEntity<>(
+          results.get(0).get(),
+          HttpStatus.OK);
+    } else if (results.isEmpty()) {
+      return new ResponseEntity<>(
+          "Invalid ID! There is no entity associated with this id in the knowledge graph.",
+          HttpStatus.NOT_FOUND);
+    } else {
+      return new ResponseEntity<>(
+          "Invalid knowledge model! Detected multiple entities with this id.",
+          HttpStatus.CONFLICT);
+    }
   }
 
   /**
