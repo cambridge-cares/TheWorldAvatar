@@ -7,6 +7,7 @@ This directory contains Python and shell scripts to prepare three kinds of data 
 - Lexicons: help with entity linking
 - Graph schemas: help with predicting SPARQL queries that look for information needed by users
 - Examples of data request generation: provide demonstrations for how user queries ought to be mapped to structured data requests.
+- Examples of physical quantity recognition: provide demonstrations for how to extract mentions of physical quantities from input texts.
  
 Specifically, the scripts in this directory provide the following functionalities:
 
@@ -14,9 +15,9 @@ Specifically, the scripts in this directory provide the following functionalitie
 
 - Extract schema elements from ABoxes or TBoxes.
 
-- Convert the format of data request generation examples from CSV to JSON.
+- Convert the format of labelled examples, including examples for data request generation and physical quantity recognition, from CSV to JSON.
   
-  When data request generation examples are hand-crafted by human developers, it is more convenient to do so in a spreadsheet than crafting a JSON file from scratch. The spreadsheet can then be exported into the CSV format and converted to JSON so that it can be loaded into the backend application.
+  When labelled examples are hand-crafted by human developers, it is more convenient to do so in a spreadsheet than crafting a JSON file from scratch. The spreadsheet can then be exported into the CSV format and converted to JSON so that it can be loaded into the backend application.
 
 - Augment data request generation examples with synthetic entries.
 
@@ -49,6 +50,12 @@ See [JSON schema for KG schema elements](#json-schema-of-kg-schema-elements).
 A question can be answered so long as appropriate data is supplied. The retrieval of pertinent data is carried out by executing structured data requests that correspond to the input questions. By prompting LLMs with pairs of natural language queries and their corresponding data requests, LLMs can perform in-context learning to automatically generate data requests for unseen input questions.
 
 Data requests come in two variants: SPARQL query and function call. See [JSON schema for examples of data request generation](#json-schema-of-data-request-generation-examples).
+
+### Physical Quantity Recognition Examples
+
+For science and engineering, the units of physical quantities must be handled properly to ensure sound reasoning. In the context of a QA system, any physical quantities mentioned by the user must align with the unit system of the machine system. To this end, physical quantities in user inputs need to be extracted and parsed into their constituent magnitudes and units for further processing. Using the in-context learning method, an LLM can be instructed to recognise physical quantities based on labelled examples.
+
+See [JSON schema for examples of physical quantity recognition](#json-schema-of-physical-quantity-recognition-examples).
 
 
 ## Installation
@@ -101,6 +108,11 @@ Most scripts in this directory are in Python. The command line arguments support
 
 - With an OpenAI-compatible API: [make_examples.py](make_examples.py).
 - With a locally hosted Mixtral 8x7B model: [make_examples.sh](make_examples.sh).
+
+### CSV-to-JSON Conversion of Physical Quantity Detection Examples
+
+[qtRecog_examples/csv2json.py](qtRecog_examples/csv2json.py)
+
 
 ## JSON Schema Definitions
 
@@ -268,33 +280,33 @@ Schema definition of data requests:
   "$id": "/schemas/data_request",
   "title": "DataRequest",
   "properties": {
+    "var2cls": {
+      "description": "Mappings of variables to their class labels",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "entity_bindings": {
+      "description": "",
       "type": "object",
       "additionalProperties": { 
-        "type": "object",
-        "properties": {
-          "cls": {
-            "description": "Class tag",
-            "type": "string"
-          },
-          "values": {
-            "type": "array",
-            "items": {
+        "type": "array",
+        "items": {
+          "anyOf": [
+            { 
+              "description": "Surface form",
+              "type": "string" 
+            },
+            { 
+              "description": "Key-value pairs of specific entity identifiers",
               "type": "object",
-              "properties": {
-                "text": {
-                  "description": "Surface form",
-                  "type": "string"
-                },
-                "identifier": {
-                  "description": "Key-value pairs of specific entity identifiers",
-                  "type": "object"
-                }
+              "additionalProperties": {
+                "type": "string"
               }
             }
-          }
+          ]
         }
-      }
     },
     "const_bindings": {
       "type": "object",
@@ -306,8 +318,7 @@ Schema definition of data requests:
         { "$ref": "/schemas/func_data_request" }
       ]
     }
-  },
-  "required": ["req_form"]
+  }
 }
 ```
 
@@ -329,5 +340,55 @@ Schema definition of data request generation examples:
     }
   },
   "required": ["nlq", "data_req"]
+}
+```
+
+### JSON Schema of Physical Quantity Recognition Examples
+
+```{json}
+{
+  "$id": "/schemas/qtRecog_example",
+  "title": "QtRecogExample",
+  "type": "object",
+  "properties": {
+    "text": {
+      "description": "Natural language text",
+      "type": "string"
+    },
+    "prediction": {
+      "type": "object",
+      "properties": {
+        "template": {
+          "description": "The natural language text with all physical quantities replaces with \{\}",
+          "type": "string"
+        },
+        "quantities": {
+          "description": "Detected physical quantities",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": "Physical quantity",
+              "type": {
+                "description": "Physical quantity type e.g. molecular_weight, boiling_point",
+                "type": "string"
+              },
+              "value": {
+                "description": "Magnitude of the physical quantity",
+                "type": "number"
+              },
+              "unit": {
+                "description": "Unit of the physical quantity e.g. degC",
+                "type": "string"
+              }
+            }
+            "required": ["value"]
+          }
+        }
+      },
+      "required": ["template", "quantities"]
+    },
+    "required": ["text"]
+  }
 }
 ```
