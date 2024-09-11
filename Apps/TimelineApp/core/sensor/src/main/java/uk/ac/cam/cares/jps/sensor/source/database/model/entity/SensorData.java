@@ -19,6 +19,7 @@ public abstract class SensorData {
      */
     @PrimaryKey
     public long time;
+    public int uploaded;
 
     /**
      * Default constructor
@@ -32,6 +33,7 @@ public abstract class SensorData {
      * @param jo JSONObject which contains time data.
      */
     public SensorData(JSONObject jo) {
+        this.uploaded = 0;
         try {
             this.time = jo.getLong("time");
         } catch (JSONException e) {
@@ -40,4 +42,11 @@ public abstract class SensorData {
     }
 
     public abstract String toJSONString();
+
+    /**
+     * Converts the current sensor data object into a {@link JSONObject} representation.
+     * The resulting JSON object contains the sensor's name, its values, and the timestamp.
+     * @return A {@link JSONObject} representation of the sensor data, with sensor name, values, and time.
+     */
+    public abstract JSONObject toJson();
 }

@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,7 +34,10 @@ import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.user.SensorItem;
+
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
+import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorAdapter;
@@ -45,12 +50,15 @@ import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 @AndroidEntryPoint
 public class SensorSettingFragment extends Fragment implements OnSensorToggleListener {
 
+    private Logger LOGGER = org.apache.log4j.Logger.getLogger(SensorCollectionStateManager .class);
     private FragmentSensorSettingBinding binding;
     private SensorViewModel sensorViewModel;
     private AccountViewModel accountViewModel;
     private Map<Permission.PermissionType, Permission> permissionsMap = new HashMap<>();
     private List<Permission.PermissionType> criticalPermissionType = Arrays.asList(Permission.PermissionType.LOCATION_FINE, Permission.PermissionType.AUDIO);
     private SensorAdapter adapter;
+    private Runnable pendingPermissionCallback;
+
 
 
     /**
@@ -90,6 +98,8 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        sensorViewModel.checkRecordingStatusAndUpdateUI(requireContext());
+
         RecyclerView recyclerView = view.findViewById(R.id.sensors_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -119,6 +129,7 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
             binding.toggleAllBtn.setText(isAllToggledOn ? R.string.toggle_off : R.string.toggle_all);
 
             updateStartRecordingButtonState();
+
         });
 
         toggleAllBtn.setOnClickListener(v -> {
@@ -127,22 +138,35 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
         });
 
 
+        binding.startRecordTv.setEnabled(true);
+        binding.startRecordTv.setOnClickListener(this::onRecordButtonClicked);
+
         binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
 
-        binding.startRecordTv.setOnClickListener(this::onRecordButtonClicked);
         sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
             if (isRecording) {
-                binding.startRecordTv.setText(R.string.stop_recording);
-                adapter.setTogglesEnabled(false);
-                binding.toggleAllBtn.setEnabled(false);
+                stopRecording();
             } else {
-                binding.startRecordTv.setText(R.string.start_recording);
-                adapter.setTogglesEnabled(true);
-                updateStartRecordingButtonState();
-                resetToggleAllButton();
-                binding.toggleAllBtn.setEnabled(true);
+                startRecording();
             }
         });
+    }
+
+
+
+    // Helper method to start recording the selected sensors
+    private void startRecording() {
+        binding.startRecordTv.setText(R.string.start_recording);
+        adapter.setTogglesEnabled(true);
+        resetToggleAllButton();
+        binding.toggleAllBtn.setEnabled(true);
+    }
+
+    // Helper method to stop recording and reset the sensors
+    private void stopRecording() {
+        binding.startRecordTv.setText(R.string.stop_recording);
+        adapter.setTogglesEnabled(false);
+        binding.toggleAllBtn.setEnabled(false);
     }
 
     /**
@@ -173,26 +197,46 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
      * @param view The view that was clicked.
      */
     private void onRecordButtonClicked(View view) {
-        // check permission
-        for (Permission permission : permissionsMap.values()) {
-            checkFineLocationPermission(permission);
+        boolean hasToggledOnSensor = false;
+        boolean locationToggled = false;
+        boolean audioToggled = false;
+
+        List<SensorType> selectedSensorTypes = new ArrayList<>();
+
+        for (SensorItem item : adapter.getSensorItems()) {
+            if (item.isToggled()) {
+                hasToggledOnSensor = true;
+                SensorType sensorType = item.getSensorType();
+                selectedSensorTypes.add(sensorType);
+
+                if (sensorType == SensorType.LOCATION) {
+                    locationToggled = true;
+                } else if (sensorType == SensorType.SOUND) {
+                    audioToggled = true;
+                }
+            }
         }
 
-        String permissionNotGranted = permissionsMap.values().stream()
-                .filter(permission -> criticalPermissionType.contains(permission.type) && !permission.isGranted)
-                .map(permission -> permission.type.toString())
-                .collect(Collectors.joining(" "));
-        if (!permissionNotGranted.isEmpty()) {
-            Toast.makeText(requireContext(), permissionNotGranted + " not granted. Not able to start recording.", Toast.LENGTH_LONG).show();
+        if (!hasToggledOnSensor) {
+            Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Gather selected sensor types
-        List<SensorItem> selectedSensorTypes = new ArrayList<>();
-        for (SensorItem item : adapter.getSensorItems()) {
-            if (item.isToggled()) {
-                selectedSensorTypes.add(item);
+
+        Runnable startRecordingRunnable = () -> startRecording(selectedSensorTypes);
+
+        if (locationToggled) {
+            Permission permission = permissionsMap.get(Permission.PermissionType.LOCATION_FINE);
+            if (permission != null) {
+                checkFineLocationPermission(permission, startRecordingRunnable);
             }
+        } else if (audioToggled) {
+            Permission permission = permissionsMap.get(Permission.PermissionType.AUDIO);
+            if (permission != null) {
+                checkFineLocationPermission(permission, startRecordingRunnable);
+            }
+        } else {
+            startRecordingRunnable.run();
         }
 
 
@@ -225,6 +269,23 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
         });
     }
 
+    private void startRecording(List<SensorType> selectedSensorTypes) {
+        if (sensorViewModel.getIsRecording().getValue() != null && sensorViewModel.getIsRecording().getValue()) {
+            // Stop recording and reset sensors
+            sensorViewModel.stopRecording();
+            for (SensorItem item : adapter.getSensorItems()) {
+                item.setToggled(false); // Reset toggles
+            }
+            adapter.setTogglesEnabled(true);
+            binding.toggleAllBtn.setEnabled(true);
+        } else {
+            // Start recording only the selected sensors
+            sensorViewModel.startRecording();
+            adapter.setTogglesEnabled(false);
+            binding.toggleAllBtn.setEnabled(false); // Disable "Toggle All" during recording
+        }
+    }
+
     private void initPermissions() {
         permissionsMap.put(Permission.PermissionType.LOCATION_FINE, new Permission(Permission.PermissionType.LOCATION_FINE, requestFineLocationPermissionLauncher));
         permissionsMap.put(Permission.PermissionType.AUDIO, new Permission(Permission.PermissionType.AUDIO, requestAudioPermissionLauncher));
@@ -232,9 +293,10 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
     }
 
 
-    private void checkFineLocationPermission(Permission permission) {
+    private void checkFineLocationPermission(Permission permission, Runnable onPermissionGranted) {
         if (ContextCompat.checkSelfPermission(requireContext(), permission.permissionString) == PackageManager.PERMISSION_GRANTED) {
             permission.isGranted = true;
+            onPermissionGranted.run();
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permission.permissionString)) {
             new MaterialAlertDialogBuilder(requireContext())
                     .setMessage(permission.explanation)
@@ -242,16 +304,20 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
                         // some permissions (eg. notification) may be auto granted in lower sdk version
                         if (permission.permissionString.isEmpty()) {
                             permission.isGranted = true;
+                            onPermissionGranted.run();
                             return;
                         }
+                        pendingPermissionCallback = onPermissionGranted;
                         permission.launcher.launch(permission.permissionString);
                     })
                     .create().show();
         } else {
             if (permission.permissionString.isEmpty()) {
                 permission.isGranted = true;
+                onPermissionGranted.run();
                 return;
             }
+            pendingPermissionCallback = onPermissionGranted;
             permission.launcher.launch(permission.permissionString);
         }
     }
@@ -259,12 +325,20 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
     private final ActivityResultLauncher<String> requestFineLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             permissionsMap.get(Permission.PermissionType.LOCATION_FINE).isGranted = true;
+            if (pendingPermissionCallback != null) {
+                pendingPermissionCallback.run();
+                pendingPermissionCallback = null;
+            }
         }
     });
 
     private final ActivityResultLauncher<String> requestAudioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             permissionsMap.get(Permission.PermissionType.AUDIO).isGranted = true;
+            if (pendingPermissionCallback != null) {
+                pendingPermissionCallback.run();
+                pendingPermissionCallback = null;
+            }
         }
     });
 
@@ -279,7 +353,9 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
      */
     @Override
     public void onSensorToggle() {
-        updateStartRecordingButtonState();
+
     }
+
+
 
 }

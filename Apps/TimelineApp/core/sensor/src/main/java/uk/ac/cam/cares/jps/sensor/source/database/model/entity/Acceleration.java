@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.sensor.source.database.model.entity;
 
 import androidx.room.Entity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 /**
  * Represents an Acceleration sensor data entity in the database.
@@ -27,4 +28,24 @@ public class Acceleration extends BaseVector{
     public Acceleration(JSONObject jo) {
         super(jo);
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", "accelerometer");
+
+            JSONObject values = new JSONObject();
+            values.put("x", this.x);
+            values.put("y", this.y);
+            values.put("z", this.z);
+
+            json.put("values", values);
+            json.put("time", this.time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }
