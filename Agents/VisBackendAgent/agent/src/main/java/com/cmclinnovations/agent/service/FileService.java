@@ -34,6 +34,7 @@ public class FileService {
   private static final String QUERY_GET_DIR = QUERY_DIR + "get/";
   public static final String FORM_QUERY_RESOURCE = QUERY_CONSTR_DIR + "form.sparql";
   public static final String INSTANCE_QUERY_RESOURCE = QUERY_GET_DIR + "instance.sparql";
+  public static final String SHACL_PATH_QUERY_RESOURCE = QUERY_GET_DIR + "property_path.sparql";
 
   public static final String REPLACEMENT_TARGET = "[target]";
 

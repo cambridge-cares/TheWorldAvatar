@@ -34,6 +34,28 @@ public class GetService {
   }
 
   /**
+   * Retrieve all the target instances and their information.
+   * 
+   * @param targetType The target entity type.
+   */
+  public ResponseEntity<?> getAll(String targetType) {
+    LOGGER.debug("Retrieving all instances of {} ...", targetType);
+    ResponseEntity<String> iriResponse = this.getTargetIri(targetType);
+    // Return the BAD REQUEST response directly if IRI is invalid
+    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return iriResponse;
+    }
+    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
+        iriResponse.getBody());
+    List<SparqlBinding> results = this.kgService.queryInstances(query);
+    return new ResponseEntity<>(
+        results.stream()
+            .map(SparqlBinding::get)
+            .collect(Collectors.toList()),
+        HttpStatus.OK);
+  }
+
+  /**
    * Retrieve the form template for the target entity and its information.
    * 
    * @param targetType The target entity type.

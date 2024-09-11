@@ -9,12 +9,16 @@ import java.util.stream.StreamSupport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
+import com.cmclinnovations.agent.template.QueryTemplateFactory;
+import com.cmclinnovations.agent.utils.StringResource;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,6 +34,7 @@ public class KGService {
   private final RestClient client;
   private final ObjectMapper objectMapper;
   private final FormTemplateFactory formTemplateFactory;
+  private final QueryTemplateFactory queryTemplateFactory;
 
   private static final String JSON_MEDIA_TYPE = "application/json";
   private static final String LD_JSON_MEDIA_TYPE = "application/ld+json";
@@ -46,6 +51,7 @@ public class KGService {
     this.client = RestClient.create();
     this.objectMapper = new ObjectMapper();
     this.formTemplateFactory = new FormTemplateFactory();
+    this.queryTemplateFactory = new QueryTemplateFactory();
   }
 
   /**
@@ -114,6 +120,25 @@ public class KGService {
     ArrayNode results = queryJsonLd(query);
     LOGGER.debug("Query is successfully executed. Parsing the results...");
     return this.formTemplateFactory.genTemplate(results);
+  }
+
+  /**
+   * Queries for all instances.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   */
+  public List<SparqlBinding> queryInstances(String shaclPathQuery) {
+    LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
+    List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
+    if (variablesAndPropertyPaths.isEmpty()) {
+      LOGGER.error(INVALID_SHACL_ERROR_MSG);
+      throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
+    }
+    LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
+    String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths);
+    LOGGER.debug("Querying the knowledge graph for the instances...");
+    return query(instanceQuery);
   }
 
   /**
