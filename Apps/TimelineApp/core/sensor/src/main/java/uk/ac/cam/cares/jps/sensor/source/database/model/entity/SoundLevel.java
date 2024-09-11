@@ -48,4 +48,21 @@ public class SoundLevel extends SensorData {
     public String toJSONString() {
         return "";
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", "microphone");
+            JSONObject values = new JSONObject();
+            values.put("dBFS", this.dBFS);
+
+            json.put("values", values);
+            json.put("time", this.time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }

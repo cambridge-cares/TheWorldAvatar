@@ -49,26 +49,76 @@ public class SensorCollectionStateManager {
     public void initSensorCollectionState(String userId) {
         String sharedPrefFileName = getHashedPrefsFileName(userId);
         File sharedPrefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + sharedPrefFileName + ".xml");
+        String taskId;
         if (sharedPrefsFile.exists()) {
             SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
             String deviceId = sharedPreferences.getString(DEVICE_ID_KEY, "");
             Boolean recordingState = sharedPreferences.getBoolean(RECORDING_STATE_KEY, false);
+            taskId = sharedPreferences.getString("task_id", UUID.randomUUID().toString());
 
-            sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));
+
+            sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState, taskId));
             return;
         }
 
         String deviceId = UUID.randomUUID().toString();
         boolean recordingState = false;
+        taskId = UUID.randomUUID().toString();
         // todo: check this sync block
-        sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState));
+        sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState, taskId));
         SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
         sharedPreferences.edit()
                 .putString(USER_ID_KEY, userId)
                 .putString(DEVICE_ID_KEY, deviceId)
                 .putBoolean(RECORDING_STATE_KEY, recordingState)
+                .putString("task_id", taskId)
                 .apply();
     }
+
+    /**
+     * Sets the task ID for the current sensor collection state and stores it in the encrypted SharedPreferences.
+     *
+     * @param taskId The unique identifier for the current recording task. This value will be stored
+     *               both in memory and in the encrypted SharedPreferences for persistence.
+     *
+     * If the sensor collection state has not been initialized (i.e., it is null), the method will return immediately
+     * without performing any operations.
+     *
+     */
+    public void setTaskId(String taskId) {
+        if (sensorCollectionState.get() == null) {
+            return;
+        }
+
+        synchronized (sensorCollectionState.get()) {
+            sensorCollectionState.get().setTaskId(taskId);
+
+            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(sensorCollectionState.get().getUserId()));
+            sharedPreferences.edit()
+                    .putString("task_id", taskId)
+                    .apply();
+        }
+    }
+
+    /**
+     * Retrieves the current task ID from the sensor collection state.
+     *
+     * @return The unique task ID associated with the current recording session.
+     *
+     * @throws SensorCollectionStateException if the sensor collection state has not been initialized.
+     *                                        This exception indicates that the task ID cannot be retrieved
+     *                                        until the sensor collection state is properly initialized.
+     *
+     *Task ID is accessible only if the sensor collection state is initialized and available.
+     */
+    public String getTaskId() throws SensorCollectionStateException {
+        if (sensorCollectionState.get() == null) {
+            throw new SensorCollectionStateException("SensorCollectionState is null. Need to reinitialize with userId.");
+        }
+
+        return sensorCollectionState.get().getTaskId();
+    }
+
 
     /**
      * Get the current SensorCollectionState object

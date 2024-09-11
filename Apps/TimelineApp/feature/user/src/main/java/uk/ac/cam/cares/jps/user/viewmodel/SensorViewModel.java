@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.user.viewmodel;
 
+import android.app.ActivityManager;
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -13,6 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import uk.ac.cam.cares.jps.sensor.SensorService;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandler;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
@@ -89,7 +93,81 @@ public class SensorViewModel extends ViewModel {
     public void stopRecording() {
         sensorRepository.stopRecording();
         _isRecording.setValue(false);
+        sensorCollectionStateManagerRepository.setTaskId(null);
     }
+
+
+    /**
+     * Checks the current recording status by verifying if a task with a given ID is running and updates the UI accordingly.
+     *
+     * @param context The context in which this method is called. It is used to check the status of the service
+     *                associated with the recording task.
+     *
+     * This method retrieves the task ID from the sensor collection state manager repository. It then checks whether
+     * the task is currently running by calling {@link #isTaskRunning(String, Context)}. Based on the result, it updates
+     * the `_isRecording` LiveData, which in turn triggers the UI to update the recording status.
+     *
+     * If the task ID retrieval fails, the `_isRecording` LiveData is set to `false`, ensuring that the UI reflects that no
+     * recording is in progress.
+     */
+    public void checkRecordingStatusAndUpdateUI(Context context) {
+        sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<String>() {
+            @Override
+            public void onSuccess(String taskId) {
+                if (isTaskRunning(taskId, context)) {
+                    _isRecording.setValue(true);
+                } else {
+                    _isRecording.setValue(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                _isRecording.setValue(false);
+            }
+        });
+    }
+
+    /**
+     * Checks if a task with the given task ID is currently running.
+     *
+     * @param taskId  The unique identifier for the task that needs to be checked.
+     * @param context The context in which this method is called. It is used to determine the status of the service
+     *                associated with the task.
+     * @return `true` if the task with the given ID is running, `false` otherwise.
+     *
+     * This method first checks if the task ID is valid (i.e., not null or empty). If so, the method proceeds
+     * to check if the service associated with the task is currently running by calling {@link #isServiceRunning(Class, Context)}.
+     */
+    private boolean isTaskRunning(String taskId, Context context) {
+        if (taskId == null || taskId.isEmpty()) {
+            return false;
+        }
+        return isServiceRunning(SensorService.class, context);
+    }
+
+    /**
+     * Checks if a specified service is currently running in the background.
+     *
+     * @param serviceClass The class of the service that needs to be checked.
+     * @param context      The context in which this method is called. It is used to access the system's activity manager
+     *                     to query the running services.
+     * @return `true` if the specified service is currently running, `false` otherwise.
+     *
+     * This method uses the {@link ActivityManager} to query the system's running services. It iterates through the list of
+     * running services and checks if the specified service class is among them. If the service is found, the method returns `true`.
+     * Otherwise, it returns `false`.
+     */
+    private boolean isServiceRunning(Class<?> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public LiveData<Boolean> getIsRecording() {
         return isRecording;
@@ -119,4 +197,6 @@ public class SensorViewModel extends ViewModel {
             }
         });
     }
+
+
 }

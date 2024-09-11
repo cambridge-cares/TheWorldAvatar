@@ -9,11 +9,17 @@
             type="uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel" />
     </data>
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.AppBarLayout
+
+    <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,8 +45,6 @@
                 android:text="Toggle All"
                 android:background="@android:color/transparent"
                 android:textColor="?attr/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold"
                 android:layout_gravity="end"
                 android:padding="0dp"
                 android:minWidth="0dp"
@@ -62,15 +66,13 @@
             android:clickable="true"
             android:text="@string/start_recording"
             android:textColor="?attr/colorPrimary"
-            android:textSize="24sp"
-            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
             tools:layout_editor_absoluteX="0dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sensors_recycler_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -80,5 +82,14 @@
             app:layout_constraintVertical_bias="0.0"
             tools:listitem="@layout/sensor_item" />
 
+        <View
+            android:id="@+id/bottom_spacer_view"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sensors_recycler_view" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

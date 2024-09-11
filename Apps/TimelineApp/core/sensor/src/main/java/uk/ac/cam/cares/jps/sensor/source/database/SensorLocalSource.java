@@ -12,6 +12,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import uk.ac.cam.cares.jps.sensor.source.database.model.entity.RelativeHumidity;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SensorData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 
 
 /**
@@ -198,6 +201,144 @@ public class SensorLocalSource {
         soundLevelDao.delete(cutoffTime);
         relativeHumidityDao.delete(cutoffTime);
     }
+
+
+    /**
+     * Retrieves unsent sensor data from the local database for the specified sensor types,
+     * paginates the results using limit and offset, and prepares the data for upload.
+     * Also, marks the retrieved data's timestamps for later marking as uploaded.
+     *
+     * @param selectedSensors A list of {@link SensorType} representing the sensors for which to retrieve data.
+     * @param limit The maximum number of records to retrieve for each sensor.
+     * @param offset The starting point for retrieving records (for pagination).
+     * @return A {@link JSONArray} containing the unsent sensor data for all specified sensors.
+     */
+    public JSONArray retrieveUnsentSensorData(List<SensorType> selectedSensors, int limit, int offset) {
+        List<SensorData> allSensorData = new ArrayList<>();
+        Map<String, List<Long>> timesToMarkAsUploaded = new HashMap<>();
+
+        // Check each selected sensor and retrieve data accordingly
+        for (SensorType sensor : selectedSensors) {
+            switch(sensor) {
+                case LOCATION:
+                    List<LocationData> locationDataList = Arrays.asList(locationDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(locationDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(locationDataList));
+                    break;
+                case ACCELEROMETER:
+                    List<Acceleration> accelerationDataList = Arrays.asList(accelerationDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(accelerationDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(accelerationDataList));
+                    break;
+                case GRAVITY:
+                    List<Gravity> gravityDataList = Arrays.asList(gravityDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(gravityDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(gravityDataList));
+                    break;
+                case GYROSCOPE:
+                    List<GyroData> gyroDataList = Arrays.asList(gyroDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(gyroDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(gyroDataList));
+                    break;
+                case LIGHT:
+                    List<LightData> lightDataList = Arrays.asList(lightDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(lightDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(lightDataList));
+                    break;
+                case MAGNETOMETER:
+                    List<MagnetFieldStrength> magnetDataList = Arrays.asList(magnetFieldStrengthDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(magnetDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(magnetDataList));
+                    break;
+                case PRESSURE:
+                    List<Pressure> pressureDataList = Arrays.asList(pressureDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(pressureDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(pressureDataList));
+                    break;
+                case SOUND:
+                    List<SoundLevel> soundDataList = Arrays.asList(soundLevelDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(soundDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(soundDataList));
+                    break;
+                case HUMIDITY:
+                    List<RelativeHumidity> humidityDataList = Arrays.asList(relativeHumidityDao.getAllUnsent(limit, offset));
+                    allSensorData.addAll(humidityDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(humidityDataList));
+                    break;
+            }
+        }
+        JSONArray allSensorDataArray = new JSONArray();
+
+        for(SensorData sensorData : allSensorData) {
+            allSensorDataArray.put(sensorData.toJson());
+        }
+
+        // Mark each type of data as being sent to get uploaded
+        for (Map.Entry<String, List<Long>> entry : timesToMarkAsUploaded.entrySet()) {
+            markDataAsBeingUploaded(SensorType.valueOf(entry.getKey()), entry.getValue());
+        }
+
+
+
+        return allSensorDataArray;
+    }
+
+    /**
+     * Marks sensor data as uploaded for a specific sensor type by updating the 'uploaded' field
+     * for the provided timestamps.
+     *
+     * @param sensorType The {@link SensorType} for which the data is being marked as uploaded.
+     * @param times A list of timestamps representing the data that should be marked as uploaded.
+     */
+    public void markDataAsBeingUploaded(SensorType sensorType, List<Long> times) {
+        switch(sensorType) {
+            case LOCATION:
+                locationDao.markAsUploaded(times);
+                break;
+            case ACCELEROMETER:
+                accelerationDao.markAsUploaded(times);
+                break;
+            case GRAVITY:
+                gravityDao.markAsUploaded(times);
+                break;
+            case GYROSCOPE:
+                gyroDao.markAsUploaded(times);
+                break;
+            case LIGHT:
+                lightDao.markAsUploaded(times);
+                break;
+            case MAGNETOMETER:
+                magnetFieldStrengthDao.markAsUploaded(times);
+                break;
+            case PRESSURE:
+                pressureDao.markAsUploaded(times);
+                break;
+            case SOUND:
+                soundLevelDao.markAsUploaded(times);
+                break;
+            case HUMIDITY:
+                relativeHumidityDao.markAsUploaded(times);
+                break;
+        }
+    }
+
+
+    /**
+     * Extracts the timestamps from a list of sensor data objects.
+     *
+     * @param sensorDataList The list of sensor data from which to extract timestamps.
+     * @return A list of timestamps extracted from the sensor data.
+     */
+    private List<Long> extractTimes(List<? extends SensorData> sensorDataList) {
+        List<Long> times = new ArrayList<>();
+        for (SensorData data : sensorDataList) {
+            times.add(data.time);
+        }
+        return times;
+    }
+
+
+
 }
 
 

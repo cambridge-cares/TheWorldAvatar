@@ -21,11 +21,12 @@
     <application>
         <service
             android:name=".SensorService"
-            android:foregroundServiceType="location|specialUse"
+            android:foregroundServiceType="specialUse|location"
             android:exported="false">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="for other sensors foreground data collection"/>
+                android:value="for location sensors foreground data collection"/>
         </service>
+
     </application>
 
 </manifest>

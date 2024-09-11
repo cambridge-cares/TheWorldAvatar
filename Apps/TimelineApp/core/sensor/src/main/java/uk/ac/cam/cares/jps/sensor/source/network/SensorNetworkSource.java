@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.sensor.source.network;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -12,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +22,9 @@ import java.util.Random;
 import java.util.UUID;
 
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
 
@@ -39,27 +45,36 @@ public class SensorNetworkSource {
     }
 
     /**
-     * Sends a POST request to upload sensor data to the server.
-     * If the network request fails, the data is stored locally as unsent data to be retried later.
+     * Sends a POST request to upload compressed sensor data to the server.
+     * If the network request fails, the data is stored locally as unsent data for future retries.
+     * The method also logs the size of the compressed data before uploading.
      *
-     * @param deviceId the ID of the device from which the data is being uploaded.
-     * @param sensorData a {@link JSONArray} containing the sensor data to be uploaded.
+     * @param deviceId The ID of the device from which the data is being uploaded.
+     * @param compressedData A byte array containing the GZIP-compressed sensor data.
+     * @param sensorData A {@link JSONArray} containing the sensor data in uncompressed form,
+     *                   used for local storage if the network request fails.
+     * @throws UnsupportedEncodingException If the encoding is not supported during conversion to UTF-8.
      */
-    public void sendPostRequest(String deviceId, JSONArray sensorData) {
+    public void sendPostRequest(String deviceId, byte[] compressedData, JSONArray sensorData) throws UnsupportedEncodingException {
         String url = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.sensorloggeragent_update))
                 .build().toString();
         String sessionId = UUID.randomUUID().toString();
         int messageId = generateMessageId();
 
-        // Create a JSONObject to structure the data according to the required format
+        String compressedDataString = Base64.encodeToString(compressedData, Base64.NO_WRAP);
+        LOGGER.info("Size of compressed data string: " + compressedDataString.getBytes("UTF-8").length + " bytes");
+
+
+
+        // Create a JSON object to include both metadata and the compressed data
         JSONObject postData = new JSONObject();
         try {
             postData.put("deviceId", deviceId);
             postData.put("messageId", messageId);
-            postData.put("payload", sensorData);
             postData.put("sessionId", sessionId);
-            LOGGER.info("Send sensor data to agent: " + postData);
+            postData.put("compressedData", compressedDataString); // Include compressed data as a string
+            LOGGER.info("Sending sensor data with metadata and compressed data.");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -69,7 +84,8 @@ public class SensorNetworkSource {
 
         Log.e("network source", "data =" + sensorData);
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-                response -> Log.d("Response", response),
+                response ->  Log.d("Response", response),
+
                 error -> {
                 Log.d("Error.Response", error.toString());
                 LOGGER.info("Failed to send data to the server");

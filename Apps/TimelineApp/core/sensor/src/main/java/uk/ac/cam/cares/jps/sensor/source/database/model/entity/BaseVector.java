@@ -88,4 +88,29 @@ public class BaseVector extends SensorData {
         }
         return "";
     }
+
+    /**
+     * Converts the current sensor data object into a {@link JSONObject} representation.
+     * The resulting JSON object contains the sensor's name, its x, y, z values, and the timestamp.
+     * @return A {@link JSONObject} representation of the sensor data, with sensor name, values, and time.
+     */
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", this.sensorName);
+
+            JSONObject values = new JSONObject();
+            values.put("x", this.x);
+            values.put("y", this.y);
+            values.put("z", this.z);
+
+            json.put("values", values);
+            json.put("time", this.time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }

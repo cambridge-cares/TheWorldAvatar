@@ -65,7 +65,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      * to process the audio stream.
      */
     @Override
-    public void start() {
+    public void start(Integer integer) {
         if (!isInitialized) {
             return;
         }

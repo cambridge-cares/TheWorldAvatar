@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.user;
 
+
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,27 +24,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import uk.ac.cam.cares.jps.sensor.source.handler.AccelerometerHandler;
-import uk.ac.cam.cares.jps.sensor.source.handler.GravitySensorHandler;
-import uk.ac.cam.cares.jps.sensor.source.handler.GyroscopeHandler;
-import uk.ac.cam.cares.jps.sensor.source.handler.LightSensorHandler;
-import uk.ac.cam.cares.jps.sensor.source.handler.LocationHandler;
-import uk.ac.cam.cares.jps.sensor.source.handler.MagnetometerHandler;
-import uk.ac.cam.cares.jps.sensor.source.handler.PressureSensorHandler;
-import uk.ac.cam.cares.jps.sensor.source.handler.RelativeHumiditySensorHandler;
+
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
-import uk.ac.cam.cares.jps.sensor.source.handler.SoundLevelHandler;
+import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.user.databinding.FragmentSensorSettingBinding;
 import uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel;
 import uk.ac.cam.cares.jps.user.viewmodel.SensorAdapter;
@@ -56,6 +51,7 @@ import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
 @AndroidEntryPoint
 public class SensorSettingFragment extends Fragment implements OnSensorToggleListener {
 
+    private Logger LOGGER = org.apache.log4j.Logger.getLogger(SensorCollectionStateManager .class);
     private FragmentSensorSettingBinding binding;
     private SensorViewModel sensorViewModel;
     private AccountViewModel accountViewModel;
@@ -65,6 +61,8 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
     SensorManager sensorManager;
     private SensorAdapter adapter;
     private boolean allToggledOn = false;
+    private Runnable pendingPermissionCallback;
+
 
 
     /**
@@ -104,6 +102,8 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        sensorViewModel.checkRecordingStatusAndUpdateUI(requireContext());
+
         RecyclerView recyclerView = view.findViewById(R.id.sensors_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -112,15 +112,15 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         List<SensorItem> sensorItems = new ArrayList<>();
-        sensorItems.add(new SensorItem("Accelerometer", "Measures acceleration.", sensorManager.getSensorHandler(SensorType.ACCELEROMETER)));
-        sensorItems.add(new SensorItem("Gyroscope", "Tracks rotation rate.", sensorManager.getSensorHandler(SensorType.GYROSCOPE)));
-        sensorItems.add(new SensorItem("Magnetometer", "Detects magnetic fields.", sensorManager.getSensorHandler(SensorType.MAGNETOMETER)));
-        sensorItems.add(new SensorItem("Light", "Senses light levels.", sensorManager.getSensorHandler(SensorType.LIGHT)));
-        sensorItems.add(new SensorItem("Humidity", "Monitors air moisture.", sensorManager.getSensorHandler(SensorType.HUMIDITY)));
-        sensorItems.add(new SensorItem("Pressure", "Gauges atmospheric pressure.", sensorManager.getSensorHandler(SensorType.PRESSURE)));
-        sensorItems.add(new SensorItem("Gravity", "Detects gravity vector.", sensorManager.getSensorHandler(SensorType.GRAVITY)));
-        sensorItems.add(new SensorItem("Location", "Tracks GPS position.", sensorManager.getSensorHandler(SensorType.LOCATION)));
-        sensorItems.add(new SensorItem("Microphone", "Capture sound levels.", sensorManager.getSensorHandler(SensorType.SOUND)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_accelerometer), getString(R.string.sensor_description_accelerometer), sensorManager.getSensorHandler(SensorType.ACCELEROMETER)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_gyroscope), getString(R.string.sensor_description_gyroscope), sensorManager.getSensorHandler(SensorType.GYROSCOPE)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_magnetometer), getString(R.string.sensor_description_magnetometer), sensorManager.getSensorHandler(SensorType.MAGNETOMETER)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_light), getString(R.string.sensor_description_light), sensorManager.getSensorHandler(SensorType.LIGHT)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_humidity), getString(R.string.sensor_description_humidity), sensorManager.getSensorHandler(SensorType.HUMIDITY)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_pressure), getString(R.string.sensor_description_pressure), sensorManager.getSensorHandler(SensorType.PRESSURE)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_gravity), getString(R.string.sensor_description_gravity), sensorManager.getSensorHandler(SensorType.GRAVITY)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_location), getString(R.string.sensor_description_location), sensorManager.getSensorHandler(SensorType.LOCATION)));
+        sensorItems.add(new SensorItem(getString(R.string.sensor_name_microphone), getString(R.string.sensor_description_microphone), sensorManager.getSensorHandler(SensorType.SOUND)));
 
         adapter = new SensorAdapter(sensorItems, this);
         recyclerView.setAdapter(adapter);
@@ -142,28 +142,40 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
 
             toggleAllBtn.setText(allToggledOn ? "Toggle Off" : "Toggle All");
 
-            // check if at least one sensor is toggled on to enable/disable Start Recording button
-            updateStartRecordingButtonState();
         });
 
+
+        binding.startRecordTv.setEnabled(true);
+        binding.startRecordTv.setOnClickListener(this::onRecordButtonClicked);
 
         binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
 
-        binding.startRecordTv.setOnClickListener(this::onRecordButtonClicked);
         sensorViewModel.getIsRecording().observe(getViewLifecycleOwner(), isRecording -> {
             if (isRecording) {
-                binding.startRecordTv.setText(R.string.stop_recording);
-                adapter.setTogglesEnabled(false);
-                binding.toggleAllBtn.setEnabled(false);
+                stopRecording();
             } else {
-                binding.startRecordTv.setText(R.string.start_recording);
-                adapter.setTogglesEnabled(true);
-                updateStartRecordingButtonState();
-                resetToggleAllButton();
-                binding.toggleAllBtn.setEnabled(true);
+                startRecording();
             }
         });
     }
+
+
+
+    // Helper method to start recording the selected sensors
+    private void startRecording() {
+        binding.startRecordTv.setText(R.string.start_recording);
+        adapter.setTogglesEnabled(true);
+        resetToggleAllButton();
+        binding.toggleAllBtn.setEnabled(true);
+    }
+
+    // Helper method to stop recording and reset the sensors
+    private void stopRecording() {
+        binding.startRecordTv.setText(R.string.stop_recording);
+        adapter.setTogglesEnabled(false);
+        binding.toggleAllBtn.setEnabled(false);
+    }
+
 
     /**
      * Resets the state of the "Toggle All" button to its default state.
@@ -173,20 +185,6 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
         binding.toggleAllBtn.setText("Toggle All");
     }
 
-    /**
-     * Updates the state of the "Start Recording" button based on the current sensor toggle states.
-     */
-    private void updateStartRecordingButtonState() {
-        // enable the start recording button only if at least one sensor is toggled on
-        boolean hasToggledOnSensor = false;
-        for (SensorItem item : adapter.getSensorItems()) {
-            if (item.isToggled()) {
-                hasToggledOnSensor = true;
-                break;
-            }
-        }
-        binding.startRecordTv.setEnabled(hasToggledOnSensor);
-    }
 
     /**
      * Handles the logic for starting or stopping sensor recording when the button is clicked.
@@ -194,29 +192,52 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
      * @param view The view that was clicked.
      */
     private void onRecordButtonClicked(View view) {
-        // check permission
-        for (Permission permission : permissionsMap.values()) {
-            checkFineLocationPermission(permission);
-        }
+        boolean hasToggledOnSensor = false;
+        boolean locationToggled = false;
+        boolean audioToggled = false;
 
-        String permissionNotGranted = permissionsMap.values().stream()
-                .filter(permission -> criticalPermissionType.contains(permission.type) && !permission.isGranted)
-                .map(permission -> permission.type.toString())
-                .collect(Collectors.joining(" "));
-        if (!permissionNotGranted.isEmpty()) {
-            Toast.makeText(requireContext(), permissionNotGranted + " not granted. Not able to start recording.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // Gather selected sensor types
         List<SensorType> selectedSensorTypes = new ArrayList<>();
+
         for (SensorItem item : adapter.getSensorItems()) {
             if (item.isToggled()) {
-                selectedSensorTypes.add(item.getSensorHandler().getSensorType());
+                hasToggledOnSensor = true;
+                SensorType sensorType = item.getSensorHandler().getSensorType();
+                selectedSensorTypes.add(sensorType);
+
+                if (sensorType == SensorType.LOCATION) {
+                    locationToggled = true;
+                } else if (sensorType == SensorType.SOUND) {
+                    audioToggled = true;
+                }
             }
         }
 
+        if (!hasToggledOnSensor) {
+            Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+
+        Runnable startRecordingRunnable = () -> startRecording(selectedSensorTypes);
+
+        if (locationToggled) {
+            Permission permission = permissionsMap.get(Permission.PermissionType.LOCATION_FINE);
+            if (permission != null) {
+                checkFineLocationPermission(permission, startRecordingRunnable);
+            }
+        } else if (audioToggled) {
+            Permission permission = permissionsMap.get(Permission.PermissionType.AUDIO);
+            if (permission != null) {
+                checkFineLocationPermission(permission, startRecordingRunnable);
+            }
+        } else {
+            startRecordingRunnable.run();
+        }
+
+    }
+
+
+    private void startRecording(List<SensorType> selectedSensorTypes) {
         if (sensorViewModel.getIsRecording().getValue() != null && sensorViewModel.getIsRecording().getValue()) {
             // Stop recording and reset sensors
             sensorViewModel.stopRecording();
@@ -226,14 +247,11 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
             }
             adapter.setTogglesEnabled(true);
             binding.toggleAllBtn.setEnabled(true);
-            updateStartRecordingButtonState();
         } else {
-
             // Start recording only the selected sensors
             sensorViewModel.startRecording(selectedSensorTypes);
             adapter.setTogglesEnabled(false);
             binding.toggleAllBtn.setEnabled(false); // Disable "Toggle All" during recording
-
         }
     }
 
@@ -244,9 +262,10 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
     }
 
 
-    private void checkFineLocationPermission(Permission permission) {
+    private void checkFineLocationPermission(Permission permission, Runnable onPermissionGranted) {
         if (ContextCompat.checkSelfPermission(requireContext(), permission.permissionString) == PackageManager.PERMISSION_GRANTED) {
             permission.isGranted = true;
+            onPermissionGranted.run();
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permission.permissionString)) {
             new MaterialAlertDialogBuilder(requireContext())
                     .setMessage(permission.explanation)
@@ -254,16 +273,20 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
                         // some permissions (eg. notification) may be auto granted in lower sdk version
                         if (permission.permissionString.isEmpty()) {
                             permission.isGranted = true;
+                            onPermissionGranted.run();
                             return;
                         }
+                        pendingPermissionCallback = onPermissionGranted;
                         permission.launcher.launch(permission.permissionString);
                     })
                     .create().show();
         } else {
             if (permission.permissionString.isEmpty()) {
                 permission.isGranted = true;
+                onPermissionGranted.run();
                 return;
             }
+            pendingPermissionCallback = onPermissionGranted;
             permission.launcher.launch(permission.permissionString);
         }
     }
@@ -271,12 +294,20 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
     private final ActivityResultLauncher<String> requestFineLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             permissionsMap.get(Permission.PermissionType.LOCATION_FINE).isGranted = true;
+            if (pendingPermissionCallback != null) {
+                pendingPermissionCallback.run();
+                pendingPermissionCallback = null;
+            }
         }
     });
 
     private final ActivityResultLauncher<String> requestAudioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             permissionsMap.get(Permission.PermissionType.AUDIO).isGranted = true;
+            if (pendingPermissionCallback != null) {
+                pendingPermissionCallback.run();
+                pendingPermissionCallback = null;
+            }
         }
     });
 
@@ -291,7 +322,9 @@ public class SensorSettingFragment extends Fragment implements OnSensorToggleLis
      */
     @Override
     public void onSensorToggle() {
-        updateStartRecordingButtonState();
+
     }
+
+
 
 }
