@@ -2,7 +2,9 @@
 
 ## Initial setup
 
-If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDPOINT` in [`.env`](.env), create a new file named `.env.local` and set its value here. Please note that the endpoint MUST have a trailing forward slash e.g. `http://123.123.123.123:3000/api/`, so that all URLs created relative to this base path are resolved correctly.
+If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDPOINT` in [`.env`](.env), create a new file named `.env.local` and set its value here. Please note the following:
+- The endpoint is used by JavaScript code that runs in the browser client. Therefore, it must be identifiable from the client's network.
+- The endpoint must be specified with a trailing forward slash e.g. `http://123.123.123.123:3000/api/`, so that all URLs created relative to this base path are resolved correctly.
 
 ## Local installation
 
