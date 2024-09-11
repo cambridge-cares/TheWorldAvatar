@@ -10,7 +10,8 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [1.2 Docker Deployment](#12-docker-deployment)
   - [2. Agent Route](#2-agent-route)
     - [2.1 Status ROUTE](#21-status-route-urlvis-backend-agentstatus)
-    - [2.1 Form ROUTE](#22-form-route-urlvis-backend-agentformtype)
+    - [2.2 Form ROUTE](#22-form-route-urlvis-backend-agentformtype)
+    - [2.3 Instance ROUTE](#23-instance-route-urlvis-backend-agenttypetype)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
 
 ## 1. Agent Deployment
@@ -153,6 +154,35 @@ If successful, the response will return a form template in the following (minima
       ]
     }
   ]
+}
+```
+
+### 2.3 Instance ROUTE: `~url~/vis-backend-agent/type/{type}`
+
+This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a GET request to `~url~/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+
+If successful, the response will return an array of objects in the following format:
+
+```json
+{
+  "type": {
+    "type": "uri",
+    "value": "instance IRI",
+    "dataType": "http://www.w3.org/2001/XMLSchema#string",
+    "lang": "Optional language field"
+  },
+  "label": {
+    "type": "literal",
+    "value": "Label of the class instance",
+    "dataType": "http://www.w3.org/2001/XMLSchema#string",
+    "lang": "Optional language field"
+  },
+  "description": {
+    "type": "literal",
+    "value": "Description for the class instance",
+    "dataType": "http://www.w3.org/2001/XMLSchema#string",
+    "lang": "Optional language field"
+  }
 }
 ```
 
