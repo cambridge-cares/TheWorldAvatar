@@ -131,7 +131,7 @@ sequenceDiagram
   deactivate fastapi
   nginx-->>browser: Forwards response data
   deactivate nginx
-  browser->>user: Display response
+  browser->>user: Displays response
   deactivate browser
 ```
 
