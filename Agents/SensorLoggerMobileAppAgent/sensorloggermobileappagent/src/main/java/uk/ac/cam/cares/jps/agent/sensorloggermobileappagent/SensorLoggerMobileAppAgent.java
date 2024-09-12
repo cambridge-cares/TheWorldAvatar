@@ -20,6 +20,18 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.zip.GZIPInputStream;
 
 @WebServlet(urlPatterns = "/update")
 
@@ -87,22 +99,34 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             result.put("message", "one or more of the request params is missing");
         }
 
+        // extract the compressed data string from the request
         String deviceId = requestParams.getString("deviceId");
         LOGGER.info(deviceId + ": receive request");
+        JSONObject result = new JSONObject();
+        result.put("message", deviceId + ": receive request");
 
         SmartphoneRecordingTask task = getSmartphoneRecordingTask(deviceId);
         addDataExecutor.submit(() -> {
             try {
+                String compressedDataString = requestParams.getString("compressedData");
+
                 LOGGER.info(deviceId + " is fetched and start to add data");
-                HashMap<String, List<?>> dataHashmap = processRequestQueue(requestParams.getJSONArray("payload"));
+
+                byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
+                String decompressedData = decompressGzip(compressedData);
+                JSONArray payload = new JSONArray(decompressedData);
+                HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+
                 task.addData(dataHashmap);
             } catch (JsonProcessingException jsonError) {
-                // todo: error handle
+                // handle JsonProcessingException
+            } catch (IOException ioError) {
+                // handle IOException
             }
         });
 
-        JSONObject result = new JSONObject();
-        result.put("message", "data added");
+        LOGGER.info(deviceId + " data being added");
+        result.put("message", "data being processed");
         return result;
     }
 
@@ -113,6 +137,21 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                 || !requestParams.has("deviceId")
                 || !requestParams.has("payload"));
     }
+
+    private String decompressGzip(byte[] compressedData) throws IOException {
+        try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(compressedData));
+             InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+
+            StringBuilder outStr = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                outStr.append(line);
+            }
+            return outStr.toString();
+        }
+    }
+
 
     private SmartphoneRecordingTask getSmartphoneRecordingTask(String deviceId) {
         synchronized (smartphoneHashmap) {
