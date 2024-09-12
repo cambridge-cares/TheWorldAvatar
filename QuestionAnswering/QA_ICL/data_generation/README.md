@@ -61,6 +61,7 @@ See [JSON schema for examples of physical quantity recognition](#json-schema-of-
 ## Installation
 
 ### Prerequisites
+
 - python>=3.8
 - (optional but recommended) [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
 
@@ -75,6 +76,7 @@ See [JSON schema for examples of physical quantity recognition](#json-schema-of-
    ```{bash}
    pip install -r requirements.txt
    ```
+
 
 ## Usage
 
@@ -307,6 +309,7 @@ Schema definition of data requests:
             }
           ]
         }
+      }
     },
     "const_bindings": {
       "type": "object",

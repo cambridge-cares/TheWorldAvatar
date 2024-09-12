@@ -10,17 +10,16 @@
 - (Optional) LocationIQ geocoding service. 
   - Context: Some of Zaha's features require geocoding i.e. the determination of geographical coordinates based on a location name. These include functionalities such as finding pollutant concentrations or the nearest carpark given a location name. By default the app will preferentially use the [API key-free geocoding service by Nominatim](https://nominatim.org/release-docs/latest/api/Search/). However, Nominatim does impose a rate limit (read more about [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/)). 
   - To avoid having geocoding requests denied, the app will also make requests to [LocationIQ](https://locationiq.com/), which requires an API key. At the time of writing, LocationIQ does offer a free plan for API access.
-  - KIV: [set up a local Nominatim instance](https://nominatim.org/release-docs/latest/admin/Installation/) to remove dependency on external geocoding service.
-
+  - KIV: [set up a local Nominatim instance](https://nominatim.org/release-docs/latest/admin/Installation/) to remove dependency on external geocoding services.
 
 ### Required datasets
 
 Datasets required by this app are:
 
-- [data/lexicon](data/lexicon/): to be populated with JSON files containing lexicon data. Each file is an array of lexicon objects.
-- [data/schema/properties](data/schema/properties): to be populated with JSON files containing simplified graph data. Each file is an array of graph schema objects.
-- [data/nlq2datareq_examples](data/nlq2datareq_examples/): to be populated with JSON files containing examples of converting natural language questions into structured data requests. Each file is an array of example objects.
-- [data/qtRecog_examples](data/qtRecog_examples/): to be populated with JSON files containing examples of recognising physical quantities from natural language texts. Each file is an array of example objects.
+- [`data/lexicon`](data/lexicon/): JSON files for lexicons of entities that require linking with Redis. Each file is an array of `Lexicon` objects.
+- [`data/schema/properties`](data/schema/properties): JSON files for information on KG predicates. Each file is an array of `GraphItemType` objects.
+- [`data/nlq2datareq_examples`](data/nlq2datareq_examples/): JSON files for semantic parsing examples. Each file is an array of `Nlq2DataReqExample` objects.
+- [`data/qtRecog_examples`](data/qtRecog_examples/): JSON files for quantity recognition examples. Each file is an array of `QtRecogExample` objects.
 
 All JSON schemas are defined in [../../data_generation/README.md](../../data_generation/README.md#schema-definitions).
 
@@ -55,6 +54,7 @@ ontomops_fileserver:
 
 Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
 
+
 ## Native installation
 
 ### Prerequisites
@@ -62,7 +62,6 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
 - (recommended) Linux enviroment
 - python>=3.8
 - [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
-
   
 ### Steps
 
@@ -82,10 +81,11 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
 4. Start the server:
    - In debug mode (app is automatically reloaded upon code changes), `uvicorn main:app --reload --log-config=log_conf.yaml`.
    - In production mode, `uvicorn main:app --host=0.0.0.0 --log-config log_conf.yaml --workers 4`.
-   - The app will be available at `localhost:8000`. 
+   - The app will be available at `localhost:8000`.  
+   <!-- TODO: add a health check endpoint -->
    - To expose the app at a different port, use the command line argument `--port {port}` e.g. `uvicorn main:app --reload --log-config=log_conf.yaml --port 5000`.
 
-5. Whenever any resource needs to be updated, re-run the ingestion script for that specific resource with the argument `--drop_index --invalidate_cache` to (1) trigger Redis to flush the old index and create a new one, and (2) re-create on-disk cache for the processed resource. KIV: allow user to add new resource entries without processing everything again and recreatng the index.
+5. Whenever any dataset needs to be updated, re-run the ingestion script for that specific dataset with the argument `--drop_index --invalidate_cache` to (1) trigger Redis to flush the old index and create a new one, and (2) re-create on-disc cache for the processed datasets. KIV: allow user to add new resource entries without processing everything again and recreatng the index.
 
 ## Dockerised installation
 
@@ -102,6 +102,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
    - `-p 5000:8000` instructs Docker to map port 5000 on Docker host to port 8000 in the container, which is the default FastAPI port. 
    - `-v "$(pwd)/data:/code/data"` mounts the `data` directory in the host machine into the container.
 1. To ingest the required resources, one may open a `bash` terminal in the container by executing `docker exec -it fastapi_app bash` and then run the ingestion command as introduced in section ['Required resources'](#required-resources).
+
 
 ## Usage
 

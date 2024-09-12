@@ -1,27 +1,32 @@
 # Self-hosting ML models for QA applications
 
-This directory contains resources to serve ML models with Triton Inference Server. The following models are included:
-
-- mpnet: text embedding model
+This directory contains the configuration to serve the Sentence-BERT model for generating text embedding.
 
 ## Installation
 
 ### Prerequisites
 
-- [Docker](https://docs.docker.com/engine/install/)
+- Docker
 
 ### Required resources
 
-ONNX weights for mpnet model should be placed in [model_repository/mpnet/1](model_repository/mpnet/1/).
-- PyTorch weights: [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2)
-- See [Exporting a Transformers model to ONNX with CLI](https://huggingface.co/docs/transformers/en/serialization#exporting-a--transformers-model-to-onnx-with-cli)
+The ONNX weights for Sentence-BERT model should be placed in [model_repository/mpnet/1](model_repository/mpnet/1/). 
+
+This ONNX file can be obtained by using HuggingFace's [utility](https://huggingface.co/docs/transformers/en/serialization#exporting-a--transformers-model-to-onnx-with-cli) to convert the [Pytorch weights](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) to the ONNX format. Please note that there are several [variants](https://sbert.net/docs/sentence_transformer/pretrained_models.html) to Sentence-BERT. The `all-mpnet-base-v2` variant is recommended.
 
 ### Steps
 
-```
-docker build -t triton:0.1.0 .
-docker run -d -p 8000:8000 -p 8001:8001 -p 8002:8002 --shm-size=256m --name inference_server_mpnet triton:0.1.0
-```
+1. Build the image: `docker build -t triton:0.1.0 .`.
+2. Run the container.
+   ```
+   docker run -d \
+     -p 8000:8000 \
+     -p 8001:8001 \
+     -p 8002:8002 \
+     --shm-size=256m \
+     --name inference_server_mpnet \ 
+     triton:0.1.0
+   ```
 
 ### Usage
 

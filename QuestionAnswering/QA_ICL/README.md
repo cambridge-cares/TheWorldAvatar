@@ -1,199 +1,210 @@
 # Question-Answering System for The World Avatar
 
 ## Table of Contents
+
 - [Question-Answering System for The World Avatar](#question-answering-system-for-the-world-avatar)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
-    - [Key Features](#key-features)
-  - [Architecture overview](#architecture-overview)
-  - [Key Components](#key-components)
+  - [Architecture](#architecture)
   - [Project Structure](#project-structure)
-  - [Getting Started](#getting-started)
+  - [Deployment with NGINX Configuration](#deployment-with-nginx-configuration)
+    - [Overview of the target state of the deployed system](#overview-of-the-target-state-of-the-deployed-system)
     - [Prerequisities](#prerequisities)
-    - [Deployment Setup](#deployment-setup)
-    - [Development Setup](#development-setup)
-    - [API Documentation](#api-documentation)
-    - [Usage](#usage)
+    - [Required resources](#required-resources)
+    - [Steps](#steps)
+  - [Usage](#usage)
 
 ## Introduction
 
 The Question-Answering System for The World Avatar involves retrieving data from RDF graphs and other data sources such as HTTP endpoints. To do so, input questions need to be converted into SPARQL queries and HTTP requests, whose execution would yield the desired data. The conversion of natural language queries to data requests is facilitated by in-context learning (ICL), which entails engineering a text prompt for Large Language Models (LLMs) to automatically perform the transformation. The prompt may include context information such as parsing examples and the structure of target predictions.
 
-### Key Features
+Key Features
+
 - Utilises in-context learning for semantic parsing
 - Supports multiple data sources including RDF graphs and HTTP endpoints
 - Employs LLMs for natural language understanding
 - Provides a user-friendly frontend interface
-- Includes tools for data generation and preparation
+- Includes utilities for data preparation
 
-## Architecture overview
 
-The architecture of the project consists of a frontend (user interface), a backend (handling queries, model inference, and Knowledge Graph access), and additional data generation scripts.
+## Architecture
+
+1. Frontend: **Next.js app** serves as the web interface.
+2. Backend: 
+    - **FastAPI app**: handles requests from Next.js app with the help of other services.
+    - **Redis**: helps with
+      - search, including vector similarity and text-based search for retrieving LLM inference contexts and entity linking;
+      - expirable storage of QA requests and responses.
+    - **Triton server**: serves Sentence-BERT model for text embedding generation via gRPC.
+3. External services:
+   - **Blazegraph servers**: store and expose RDF data via SPARQL.
+   - **OpenAI API server**: provides chat completions API.
 
 ```mermaid
 graph TD
     subgraph Frontend
-    A[Next.js app]
+    next[<b>Next.js app</b><br/>Web interface]
     end
 
     subgraph Backend
-    C[FastAPI app]
-    E[(Redis)]
-    F[Triton inference server]
+    fastapi[<b>FastAPI app</b>]
+    redis[(<b>Redis server</b><br/>Search &<br/>expirable storage)]
+    triton[<b>Triton server</b><br/>Text embedding<br/>generation]
     end
 
-    D[(Blazegraph servers)]
+    bg[(<b>Blazegraph servers</b><br/>RDF data storage)]
 
-    A[Frontend: Next.js app] -->|Sends requests| C
-    C[Backend: FastAPI app] -->|Responds with data| A
-    C -->|Queries| D
-    D[(Blazegraph servers)] -->|Returns data| C
-    C -->|Stores/retrieves data| E
-    C -->|Sends inference requests| F
-    F[Triton inference server] -->|Returns inferences| C
+    openai[<b>OpenAI API server</b><br/>Chat completions]
 
-    classDef database fill:#f9f,stroke:#333,stroke-width:2px;
-    class D,E database;
+    next -->|HTTP| fastapi
+    fastapi -->|RESP| redis
+    fastapi -->|gRPC| triton
+    fastapi -->|SPARQL| bg
+    fastapi -->|HTTP| openai
+
+    note(Arrow direction and label denotes dependency and the protocol of communication)
+    style note stroke-dasharray: 5 5
 ```
 
-## Key Components
-1. **Frontend**: A Next.js application serving as the user interface.
-2. **Backend**: A FastAPI application handling core logic and data processing.
-    - **Redis**: Used for semantic parsing example retrieval, entity retrieval via fuzzy search, and temporary storage of QA requests for user session management.
-    - **Triton Inference Server**: Manages machine learning model inference.
-3. **Blazegraph Servers**: Store and manage RDF data, accessible via SPARQL protocol.
 
 ## Project Structure
 
-The project is organised into the following main directories:
+The project is organised into the following directories:
 
-- `data_generation/`: Python scripts for entity linking and ICL data preparation. The scripts generate three kinds of data:
-  - Lexicon: A collection of ontology representations in texts for classes, predicates, or entities.
-  - Simplified graph schema: Captures node types, edge types, and relation types.
-  - Examples of data request: Pairs of natural language queries and their corresponding data requests for ICL.
-- `backend/`: The backend, called Marie Backend, it contains the FastAPI application serving as the system's backend. It consists of two main components:
-  - `fastapi_app`: A FastAPI application.
-  - `triton_inference_server`: Serves the Sentence-BERT model for generating text embedding.
-- `frontend/`: The frontend, called Marie Frontend, serves as the user interface for interacting with the backend services. Built using Next.js, it communicates with the backend to perform operations such as querying chemical species and filtering zeolites, and displays the results to users in a user-friendly manner.
+- `data_generation/`: contains utility scripts to help with preparing datasets required by the backend.
+- `backend/`
+  - `fastapi_app/`: source code for FastAPI application.
+  - `triton_inference_server/`: contains the config to serve the Sentence-BERT model.
+- `frontend/` 
+  - `mock_backend/`: source code for Express server to mock backend API.
+  - `next_app_marie/`: source code for Marie's Next.js app.
 
-## Getting Started
+
+## Deployment with NGINX Configuration
+
+This section outlines how the entire application can be deployed in a single remote server with NGINX reverse proxy.
+
+**Deployment outcome**: Users can access the web interface of the application at https://theworldavatar.io/demos/marie.
+
+### Overview of the target state of the deployed system
+
+Throughout this section, we assume that the IP address of the remote server hosting the application is `123.123.123.123`.
+
+The desired state of the deployed system is as follows. 
+- FastAPI server running at http://123.123.123.123:5000.
+- Next.js server running at http://123.123.123.123:3000.
+- NGINX server redirects:
+  - https://theworldavatar.io/demos/marie to http://123.123.123.123:3000.
+  - https://theworldavatar.io/demos/marie/api to http://123.123.123.123:5000.
+- Next.js server is configured with the SSL-encrypted public address of the backend server https://theworldavatar.io/demos/marie/api.
+
+Please note that this target state necessitates that the FastAPI endpoint be exposed over HTTPS so that the HTML/JS code in the client browser loaded from an secure origin, i.e. https://theworldavatar.io/demos/marie, can safely make requests to the backend without getting blocked by the browser due to [mixed content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content).
+
+```mermaid
+sequenceDiagram
+  actor user as User
+  participant browser as Client browser
+  participant nginx as NGINX server at<br/>theworldavatar.io
+  participant next as Next.js server at<br/>123.123.123.123:3000
+  participant fastapi as FastAPI server at<br/>123.123.123.123:5000
+
+  user->>browser: Navigates to<br/>https://theworldavatar.io/demos/marie
+  activate browser
+  browser->>nginx: Requests HTML at<br/>https://theworldavatar.io/demos/marie
+  activate nginx
+  nginx->>next: Forwards HTML request to<br/>http://123.123.123.123:3000
+  activate next
+  next-->>nginx: Returns HTML
+  deactivate next
+  nginx-->>browser: Forwards HTML response
+  deactivate nginx
+  browser-->>user: Displays HTML page
+  deactivate browser
+
+  user->>browser: Submits a query
+  activate browser
+  browser->>nginx: HTML page makes API call at<br/>https://theworldavatar.io/demos/marie/api
+  activate nginx
+  nginx->>fastapi: Forwards API call to<br/>http://123.123.123.123:5000
+  activate fastapi
+  fastapi-->>nginx: Returns requested data
+  deactivate fastapi
+  nginx-->>browser: Forwards response data
+  browser->>user: Display response
+  deactivate browser
+```
 
 ### Prerequisities
- - Docker (recommended for deployment)
- - Python 3.8 or higher
- - Node.js and npm (for frontend development)
 
-### Deployment Setup
-1. Clone the TWA repository and go to the QA_ICL folder
+ - Docker (Docker Engine, Docker CLI, and Docker Compose) installed in the remote server for hosting the application.
+ - Edit rights to the NGINX server's configuration.
 
-    ```
-    cd TheWorldAvatar/QuestionAnswering/QA_ICL/
-    ```
-2. Backend Setup
-   - Follow steps [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend#docker-deployment-recommended), which covers the following topics
-      - Populate data for `Fastapi App` and `triton`
-      - Ingest data to `Fastapi App` and `triton`
-      - Launch `Fastapi App` and `triton` containers
-   - Configuration
-     - Fastapp Credentials: create file `app.local.yaml` as instructed [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend/fastapi_app#configurable-parameters) and provide credentials
-     - Port mapping: [docker-compose.yaml](./backend/docker-compose.yaml)
-3. Frontend Setup
-   - Follow steps [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/frontend/next_app_marie#deployment-via-docker) to deploy `NextApp` as docker container
-     - Build image
-     - Launch `NextApp` container
-   - Configuration
-     - `BASE_PATH`: [.env.production](./frontend/next_app_marie/.env.production)
-     - Backend endpoint: [.env](./frontend/next_app_marie/.env)
-4. Nginx Redirection Setup
-   - Create redirection for the backend endpoint. Trailing forward slash `/` is allowed.
+### Required resources
+
+- ONNX file for Sentence-BERT model weights:
+  - To be placed in [`backend/triton_inference_server/model_repository/mpnet/1/`](backend/triton_inference_server/model_repository/mpnet/1/).
+  - See `triton_inference_server`'s [README](backend/triton_inference_server/README.md#required-resources) for how to obtain this ONNX file.
+- Datasets to be ingested into Redis need to be placed in the following directories.
+  - [`backend/fastapi_app/data/lexicon`](backend/fastapi_app/data/lexicon/): JSON files for lexicons of entities that require linking with Redis. Each file is an array of `Lexicon` objects.
+  - [`backend/fastapi_app/data/schema/properties`](backend/fastapi_app/data/schema/properties): JSON files for information on KG predicates. Each file is an array of `GraphItemType` objects.
+  - [`backend/fastapi_app/data/nlq2datareq_examples`](backend/fastapi_app/data/nlq2datareq_examples/): JSON files for semantic parsing examples. Each file is an array of `Nlq2DataReqExample` objects.
+  - [`backend/fastapi_app/data/qtRecog_examples`](backend/fastapi_app/data/qtRecog_examples/): JSON files for quantity recognition examples. Each file is an array of `QtRecogExample` objects.
+  - See `data_generation`'s [README](./data_generation/README.md#json-schema-definitions) for the JSON schemas.
+
+### Steps
+
+1. SSH into the remote server that will host the application.
+
+2. Clone TWA repository and navigate to the `QA_ICL` directory.
+   
+   ```bash
+   cd TheWorldAvatar/QuestionAnswering/QA_ICL/
+   ```
+
+3. Spin up the backend services and ingest relevant data into Redis by executing the following command.
+
+   ```bash
+   sh deploy.sh
+   ```
+
+   The FastAPI app should be listening at http://123.123.123.123:5000. To verify that it is running, visit http://123.123.123.123:5000/docs in a browser and check if a Swagger UI for API documentation is shown.
+
+4. Configure NGINX redirect for the backend endpoint. Trailing forward slash `/` is allowed.
       ```
-      location /BACKEND_PATH/ {
-        proxy_pass          http://HOST:PORT/PATH/;
+      location /demos/marie/api/ {
+        proxy_pass    http://123.123.123.123:5000/;
         ...
       }
       ```
-   - Create redirection for the frontend endpoint. Trailing forward slash `/` is **NOT allowed**.
+
+5. Frontend setup:
+   1. Configure the backend endpoint for the Next.js app by creating a `.env.local` file under `frontend/next_marie_app/` with the following content (note the trailing forward slash).
+      ```
+      NEXT_PUBLIC_BACKEND_ENDPOINT=https://theworldavatar.io/demos/marie/api/
+      ```
+   2. Verify that the `BASE_PATH` value in [`.env.production`](frontend/next_app_marie/.env.production) is set to `/demos/marie`.
+   3. Build the image and launch the container.
+      ```bash
+      docker build -t next-app-marie .
+      docker run --name next-app-marie -p 3000:3000 next-app-marie
+      ```
+      The Next.js server should be listening at http://123.123.123.123:3000/demos/marie. To verify that it is running, visit http://123.123.123.123:3000/demos/marie in a browser and check if the home page is displayed.
+
+6. Configure NGINX redirect for the frontend endpoint. Trailing forward slash `/` is **NOT ALLOWED**.
       ```
       # correct
-      location /FRONTEND_PATH {
-        proxy_pass          http://HOST:PORT/PATH;
+      location /demos/marie {
+        proxy_pass    http://123.123.123.123:3000/demos/marie;
         ...
       }
 
       # wrong
-      location /FRONTEND_PATH/ {
-        proxy_pass          http://HOST:PORT/PATH/;
+      location /demos/marie/ {
+        proxy_pass    http://123.123.123.123:3000/demos/marie/;
         ...
       }
       ```
-   - Update backend entpoint configuration in NextApp `.env` file to the redirection address
-   - Rebuild Image for `NextApp` and launch the container
-   - Troubleshoot
-     - CORS error when submitting question: 
-       - This is caused by incorrect setting of the backend redirection
 
+## Usage
 
-### Development Setup
-1. Clone the TWA repository and go to the QA_ICL folder
-
-    ```
-    cd TheWorldAvatar/QuestionAnswering/QA_ICL/
-    ```
-
-2. Setup the backend: 
-   - This is a summary of the backend setup instructions. More details can be found in [backend/README.md](./backend/README.md)
-   - Data Preparation
-      - Follow the instructions in `backend/README.md` to prepare required data and configure parameters.
-   - Triton Setup
-      - Follow instructions [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/QuestionAnswering/QA_ICL/backend/triton_inference_server/README.md#development)
-   - FastApi Setup
-      - Create a virtual environment (recommended):
-        ```
-        conda create --name qa_backend python==3.10
-        conda activate qa_backend
-        ```
-        Install relavent dependencies
-        ```
-        pip install -r requirements.txt
-        ```
-      - Provide credentials as stated [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend/fastapi_app#configurable-parameters)
-      - Ingest data to `Redis`
-        ```
-        python -m ingest_data --redis_host localhost --text_embedding_backend triton --text_embedding_url localhost:8001 --drop_index --invalidate_cache
-        ```
-      - Start server as stated [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/backend/fastapi_app#steps)
-
-3. Set up the frontend:
-   - Navigate to the `frontend/next_app_marie` directory.
-   - Local Install:
-      ```
-      npm install
-      ```
-    - Configure the backend endpoint in the `.env` file.
-    - More information can be found at [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/QuestionAnswering/QA_ICL/frontend/next_app_marie#development)
-4. Set up the data generation environment:
-    - Create a virtual environment (recommended):
-      ```
-      conda create --name data-env python=3.8
-      conda activate data-env
-      ``` 
-
-    - Install dependecies:
-      ```
-      cd data_generation
-      pip install -r requirements.txt
-      ```
-
-
-### API Documentation
-Once the backend is running, you can access the API documentation at: `http://localhost:5000/docs`.
-
-This interactive documentation provides detailed information about available endpoints, request/response formats, and allows you to test the API directly from your browser.
-
-### Usage
-After completing the deployment setup:
-1. Ensure the backend is running (should be active from step 2 of deployment)
-2. Ensure the frontend is running (should be active from step 3 of deployment)
-3. With both services running, you can now access the application at `http://localhost:3000` (or the port specified in your frontend configuration). Use the interface to submit questions and interact with the system
-
-Note: These usage instructions assume you've followed the deployment setup steps. If you're in a development environment, refer to the Development Setup section for appropriate usage instructions.
+Visit `https://theworldavatar.io/demos/marie` or `http://123.123.123.123:3000` to access the web interface and start interacting with the system.
