@@ -1,6 +1,6 @@
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 
-SELECT DISTINCT ?clazz ?name ?subject ?isparent ?isoptional ?multipath1 ?multipath1_proppath ?multipath2
+SELECT DISTINCT ?clazz ?name ?subject ?isparent ?isoptional ?isnumber ?multipath1 ?multipath1_proppath ?multipath2
   ?multipath2_proppath ?multipath3 ?multipath3_proppath ?multisubpath1 ?multisubpath1_proppath
   ?multisubpath2 ?multisubpath2_proppath ?multisubpath3 ?multisubpath3_proppath ?multisubpath4
   ?multisubpath4_proppath
@@ -24,6 +24,10 @@ WHERE {
   }
   OPTIONAL {
     ?property sh:minCount ?minCount  .
+  }
+  # Verify numerical value
+  OPTIONAL {
+    ?property sh:datatype ?datatype.
   }
   # Predicate paths may be stored in a list or not, and use of ? helps to extract the related property
   OPTIONAL {
@@ -71,6 +75,10 @@ WHERE {
   	}
     OPTIONAL {
       ?subproperty sh:minCount ?subMinCount  .
+  	}
+    # Verify numerical value
+    OPTIONAL {
+      ?subproperty sh:datatype ?subdatatype  .
   	}
     OPTIONAL {
       ?subpath rdf:first? ?multisubpath1_initial .
@@ -126,4 +134,7 @@ WHERE {
   # Else, check if the parent path has a min count property to determine if it is optional;
   # No min count indicates an optional property
   BIND (IF(BOUND(?subpath) && !isBlank(?subpath), !BOUND(?subMinCount), !BOUND(?minCount)) AS ?isoptional)
+  # Verify if the data type is a number (integer/decimal), and subpath should take precedence
+  BIND (IF(BOUND(?subdatatype), ?subdatatype = xsd:integer || ?subdatatype = xsd:decimal , 
+         BOUND(?datatype) && (?datatype = xsd:integer || ?datatype =xsd:decimal)) AS ?isnumber)
 }
