@@ -117,7 +117,7 @@ WHERE {
   }
   BIND (COALESCE(?subname, ?propname) AS ?name)
   # If there is a parent indicator, the property should be a parent
-  BIND (IF(BOUND(?parent) || BOUND(?subparent), true, false) AS ?isparent)
+  BIND (BOUND(?parent) || BOUND(?subparent) AS ?isparent)
   # Retrieve sub target value first; Else, attempt to retrieve from parent or return null 
   BIND (IF(BOUND(?subSubjectValue), ?subSubjectValue, 
           IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null)
@@ -125,7 +125,5 @@ WHERE {
   # If a sub predicate path exists, it should have a sub min count property that determines if it is optional;
   # Else, check if the parent path has a min count property to determine if it is optional;
   # No min count indicates an optional property
-  BIND (IF(BOUND(?subpath) && !isBlank(?subpath),  IF(BOUND(?subMinCount), false, true), 
-          IF(BOUND(?minCount), false, true)
-      ) AS ?isoptional)
+  BIND (IF(BOUND(?subpath) && !isBlank(?subpath), !BOUND(?subMinCount), !BOUND(?minCount)) AS ?isoptional)
 }
