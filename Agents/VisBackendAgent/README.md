@@ -100,7 +100,7 @@ The agent currently offers the following API route(s):
 
 ### 2.1 Status ROUTE: `~url~/vis-backend-agent/status`
 
-This route serves as a health check to confirm that the agent has been successfully initiated and is operating as anticipated. It can be called through a GET request with no parameters, as follows:
+This route serves as a health check to confirm that the agent has been successfully initiated and is operating as anticipated. It can be called through a `GET` request with no parameters, as follows:
 
 ```
 curl localhost:3838/vis-backend-agent/status
@@ -110,7 +110,7 @@ If successful, the response will return `Agent is ready to receive requests.`.
 
 ### 2.2 Form ROUTE: `~url~/vis-backend-agent/form/{type}`
 
-This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a GET request to `~url~/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a `GET` request to `~url~/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
 If successful, the response will return a form template in the following (minimal) JSON-LD format. Please note that the template does not follow any valid ontology rules at the root level, and is merely a schema for the frontend. However, its nested values complies with `SHACL` ontological rules.
 
@@ -162,7 +162,7 @@ If successful, the response will return a form template in the following (minima
 
 ### 2.3 Concept Metadata ROUTE: `~url~/vis-backend-agent/type/{type}`
 
-This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a GET request to `~url~/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `~url~/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
 If successful, the response will return an array of objects in the following format:
 
@@ -194,38 +194,56 @@ If successful, the response will return an array of objects in the following for
 There are several routes for retrieving instances associated with a specific `type` to populate the records in the registry. The agent will automatically generate the query and parameters based on the SHACL restrictions developed. The agent will return **EITHER** a `JSON` array containing entities as their corresponding `JSON` object **OR** one Entity `JSON` object depending on which `GET` route is executed.
 
 1. Get all instances
-2. Get all instances associated with a specific parent instance
-3. Get a specific instance
+2. Get a specific instance
+3. Get all instances associated with a specific parent instance
+4. Get all instances matching the search criteria
 
 #### Get all instances
 
-Users can send a GET request to
+Users can send a `GET` request to
 
 ```
-~url~/vis-backend-agent/type/{type}
+~url~/vis-backend-agent/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
 
-#### Get all instances associated with a specific parent instance
+#### Get a instance
 
-Users can send a GET request to:
+Users can send a `GET` request to
 
 ```
-~url~/vis-backend-agent/type/{parent}/{id}/{type}
+~url~/vis-backend-agent/{type}/{id}
+```
+
+where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
+
+#### Get all instances associated with a specific parent instance
+
+Users can send a `GET` request to:
+
+```
+~url~/vis-backend-agent/{parent}/{id}/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, `{parent}` is the requested parent identifier that is linked to the type, and `{id}` is the specific parent instance's identifier to retrieve all instances associated with.
 
-#### Get a instance
+#### Get all instances matching the search criteria
 
-Users can send a GET request to
+Users can send a `POST` request with search criterias to:
 
 ```
-~url~/vis-backend-agent/type/{type}/{id}
+~url~/vis-backend-agent/{type}/search
 ```
 
-where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
+where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`. The search criterias should be sent as a `JSON` request body:
+
+```json
+{
+  "parameter": "criteria",
+  "parameter-two": "criteria-two"
+}
+```
 
 ## 3. SHACL Restrictions
 
