@@ -66,9 +66,10 @@ class QueryTemplateFactoryTest {
     assertNotNull(result);
     assertTrue(result.startsWith("SELECT * WHERE {"));
     assertEquals(
-        genExpectedQueryStart(SAMPLE_CONCEPT) + StringResource.parseIriForQuery(SAMPLE_PRED_PATH) + "/"
-            + StringResource.parseIriForQuery(SAMPLE_NESTED_PRED_PATH)
-            + " ?" + SAMPLE_FIELD + ".}",
+        genExpectedQueryStart(SAMPLE_CONCEPT) + genQueryLine(
+            StringResource.parseIriForQuery(SAMPLE_PRED_PATH) + "/"
+                + StringResource.parseIriForQuery(SAMPLE_NESTED_PRED_PATH),
+            "?" + SAMPLE_FIELD) + "}",
         result);
   }
 
@@ -85,9 +86,10 @@ class QueryTemplateFactoryTest {
     // Assert
     assertNotNull(result);
     assertTrue(result.startsWith(
-        genExpectedQueryStart(SAMPLE_CONCEPT) + StringResource.parseIriForQuery(SAMPLE_PRED_PATH) + "/"
-            + StringResource.parseIriForQuery(SAMPLE_NESTED_PRED_PATH)
-            + " ?" + SAMPLE_FIELD + "."));
+        genExpectedQueryStart(SAMPLE_CONCEPT) + genQueryLine(
+            StringResource.parseIriForQuery(SAMPLE_PRED_PATH) + "/"
+                + StringResource.parseIriForQuery(SAMPLE_NESTED_PRED_PATH),
+            "?" + SAMPLE_FIELD)));
     // Additional filter clause
     assertTrue(result.endsWith("FILTER STRENDS(STR(?id), \"" + SAMPLE_FILTER + "\")}"));
   }
@@ -121,9 +123,10 @@ class QueryTemplateFactoryTest {
     String parentVariable = SAMPLE_PARENT_FIELD.replaceAll("\\s+", "_");
     assertNotNull(result);
     assertTrue(result.startsWith(
-        genExpectedQueryStart(SAMPLE_CONCEPT) + StringResource.parseIriForQuery(SAMPLE_PARENT_PATH) + "/"
-            + StringResource.parseIriForQuery(SAMPLE_SUB_PATH)
-            + " ?" + parentVariable + "."));
+        genExpectedQueryStart(SAMPLE_CONCEPT) + genQueryLine(
+            StringResource.parseIriForQuery(SAMPLE_PARENT_PATH) + "/"
+                + StringResource.parseIriForQuery(SAMPLE_SUB_PATH),
+            "?" + parentVariable)));
     // Additional parent filter
     assertTrue(result.endsWith("FILTER STRENDS(STR(?" + parentVariable + "), \"" + SAMPLE_FILTER + "\")}"));
   }
@@ -147,7 +150,7 @@ class QueryTemplateFactoryTest {
     assertNotNull(result);
     // Additional optional field
     assertTrue(result.endsWith(
-        "OPTIONAL{?iri " + StringResource.parseIriForQuery(SAMPLE_OPTIONAL_PATH) + " ?" + optVariable + ".}}"));
+        "OPTIONAL{" + genQueryLine(StringResource.parseIriForQuery(SAMPLE_OPTIONAL_PATH), "?" + optVariable) + "}}"));
   }
 
   /**
@@ -156,7 +159,17 @@ class QueryTemplateFactoryTest {
    * @param clazz Class restriction in query
    */
   private String genExpectedQueryStart(String clazz) {
-    return "SELECT * WHERE {?iri a <" + clazz + ">;";
+    return "SELECT * WHERE {?iri a <" + clazz + ">.";
+  }
+
+  /**
+   * Generate each query line.
+   * 
+   * @param predicatePath Predicate path(s)
+   * @param objectVar     Object variable to replace
+   */
+  private String genQueryLine(String predicatePath, String objectVar) {
+    return "?iri " + predicatePath + " " + objectVar + ".";
   }
 
   /**

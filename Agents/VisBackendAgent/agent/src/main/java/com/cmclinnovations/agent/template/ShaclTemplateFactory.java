@@ -26,4 +26,6 @@ public interface ShaclTemplateFactory {
   public static final String DATA_TYPE_PROPERTY = "datatype";
   public static final String IN_PROPERTY = "in";
   public static final String QUALIFIED_VAL_SHAPE_PROPERTY = "qualifiedValueShape";
+  // Query string elements
+  public static final String FULL_STOP = ".";
 }
