@@ -130,6 +130,7 @@ sequenceDiagram
   fastapi-->>nginx: Returns requested data
   deactivate fastapi
   nginx-->>browser: Forwards response data
+  deactivate nginx
   browser->>user: Display response
   deactivate browser
 ```
@@ -169,13 +170,14 @@ sequenceDiagram
 
    The FastAPI app should be listening at http://123.123.123.123:5000. To verify that it is running, visit http://123.123.123.123:5000/docs in a browser and check if a Swagger UI for API documentation is shown.
 
-4. Configure NGINX redirect for the backend endpoint. Trailing forward slash `/` is allowed.
-      ```
-      location /demos/marie/api/ {
-        proxy_pass    http://123.123.123.123:5000/;
-        ...
-      }
-      ```
+4. Configure NGINX redirect for the backend endpoint. Trailing forward slashes `/` are allowed.
+   ```
+   location /demos/marie/api/ {
+     proxy_pass    http://123.123.123.123:5000/;
+     ...
+   }
+   ```
+   KIV: Implement a health endpoint GET `/health` and so that the redirect can be verified by checking that GET `https://theworldavatar.io/demos/marie/api/health` returns 200.
 
 5. Frontend setup:
    1. Configure the backend endpoint for the Next.js app by creating a `.env.local` file under `frontend/next_marie_app/` with the following content (note the trailing forward slash).
@@ -190,21 +192,22 @@ sequenceDiagram
       ```
       The Next.js server should be listening at http://123.123.123.123:3000/demos/marie. To verify that it is running, visit http://123.123.123.123:3000/demos/marie in a browser and check if the home page is displayed.
 
-6. Configure NGINX redirect for the frontend endpoint. Trailing forward slash `/` is **NOT ALLOWED**.
-      ```
-      # correct
-      location /demos/marie {
-        proxy_pass    http://123.123.123.123:3000/demos/marie;
-        ...
-      }
+6. Configure NGINX redirect for the frontend endpoint. Trailing forward slashes `/` are **NOT ALLOWED**.
+   ```
+   # correct
+   location /demos/marie {
+     proxy_pass    http://123.123.123.123:3000/demos/marie;
+     ...
+   }
 
-      # wrong
-      location /demos/marie/ {
-        proxy_pass    http://123.123.123.123:3000/demos/marie/;
-        ...
-      }
-      ```
+   # wrong
+   location /demos/marie/ {
+     proxy_pass    http://123.123.123.123:3000/demos/marie/;
+       ...
+   }
+   ```
+   To verify that the redirect works, visit https://theworldavatar.io/demos/marie in a browser and check if the home page is displayed.
 
 ## Usage
 
-Visit `https://theworldavatar.io/demos/marie` or `http://123.123.123.123:3000` to access the web interface and start interacting with the system.
+Visit https://theworldavatar.io/demos/marie or http://123.123.123.123:3000 to access the web interface and start interacting with the system.
