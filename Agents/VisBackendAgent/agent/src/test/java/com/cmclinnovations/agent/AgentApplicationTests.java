@@ -3,7 +3,6 @@ package com.cmclinnovations.agent;
 import java.io.File;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,7 +24,6 @@ class AgentApplicationTests {
   @Test
   void testStatusRoute() throws Exception {
     this.mockMvc.perform(get("/status"))
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string("Agent is ready to receive requests."));
   }
@@ -33,7 +31,6 @@ class AgentApplicationTests {
   @Test
   void testFormRoute_MissingFormResource() throws Exception {
     this.mockMvc.perform(get("/form/invalid"))
-        .andDo(print())
         .andExpect(status().isInternalServerError())
         .andExpect(TestUtils.contentContains("Error encountered at"))
         .andExpect(TestUtils.contentContains(
@@ -45,7 +42,6 @@ class AgentApplicationTests {
     File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
     try {
       this.mockMvc.perform(get("/form/invalid"))
-          .andDo(print())
           .andExpect(status().isBadRequest())
           .andExpect(content().string(
               "Route is invalid at /invalid! If this route is intended to be enabled, please contact your technical team for assistance."));
@@ -57,7 +53,6 @@ class AgentApplicationTests {
   @Test
   void testConceptMetadataRoute_MissingFormResource() throws Exception {
     this.mockMvc.perform(get("/type/invalid"))
-        .andDo(print())
         .andExpect(status().isInternalServerError())
         .andExpect(TestUtils.contentContains("Error encountered at"))
         .andExpect(TestUtils.contentContains(
@@ -69,7 +64,72 @@ class AgentApplicationTests {
     File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
     try {
       this.mockMvc.perform(get("/type/invalid"))
-          .andDo(print())
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string(
+              "Route is invalid at /invalid! If this route is intended to be enabled, please contact your technical team for assistance."));
+    } finally {
+      sampleFile.delete();
+    }
+  }
+
+  @Test
+  void testGetAllInstancesRoute_MissingFormResource() throws Exception {
+    this.mockMvc.perform(get("/invalid"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(TestUtils.contentContains("Error encountered at"))
+        .andExpect(TestUtils.contentContains(
+            "Resource at file:/usr/local/tomcat/resources/application-form.json is not found. Please ensure you have a valid resource in the file path."));
+  }
+
+  @Test
+  void testGetAllInstancesRoute_InvalidRoute() throws Exception {
+    File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
+    try {
+      this.mockMvc.perform(get("/invalid"))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string(
+              "Route is invalid at /invalid! If this route is intended to be enabled, please contact your technical team for assistance."));
+    } finally {
+      sampleFile.delete();
+    }
+  }
+
+  @Test
+  void testGetAllInstancesWithParentRoute_MissingFormResource() throws Exception {
+    this.mockMvc.perform(get("/parent/id/invalid"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(TestUtils.contentContains("Error encountered at"))
+        .andExpect(TestUtils.contentContains(
+            "Resource at file:/usr/local/tomcat/resources/application-form.json is not found. Please ensure you have a valid resource in the file path."));
+  }
+
+  @Test
+  void testGetAllInstancesWithParentRoute_InvalidRoute() throws Exception {
+    File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
+    try {
+      this.mockMvc.perform(get("/parent/id/invalid"))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string(
+              "Route is invalid at /invalid! If this route is intended to be enabled, please contact your technical team for assistance."));
+    } finally {
+      sampleFile.delete();
+    }
+  }
+
+  @Test
+  void testGetInstanceRoute_MissingFormResource() throws Exception {
+    this.mockMvc.perform(get("/invalid/12sa"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(TestUtils.contentContains("Error encountered at"))
+        .andExpect(TestUtils.contentContains(
+            "Resource at file:/usr/local/tomcat/resources/application-form.json is not found. Please ensure you have a valid resource in the file path."));
+  }
+
+  @Test
+  void testGetInstanceRoute_InvalidRoute() throws Exception {
+    File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
+    try {
+      this.mockMvc.perform(get("/invalid/12sa"))
           .andExpect(status().isBadRequest())
           .andExpect(content().string(
               "Route is invalid at /invalid! If this route is intended to be enabled, please contact your technical team for assistance."));
