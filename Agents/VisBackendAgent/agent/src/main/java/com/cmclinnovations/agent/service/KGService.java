@@ -129,8 +129,10 @@ public class KGService {
    *                       the SHACL restrictions.
    * @param targetId       An optional field to target the query at a specific
    *                       instance.
+   * @param hasParent      Indicates if the query needs to filter out parent
+   *                       entities.
    */
-  public List<SparqlBinding> queryInstances(String shaclPathQuery, String targetId) {
+  public List<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
     List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
     if (variablesAndPropertyPaths.isEmpty()) {
@@ -138,7 +140,7 @@ public class KGService {
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths, targetId);
+    String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths, targetId, hasParent);
     LOGGER.debug("Querying the knowledge graph for the instances...");
     return query(instanceQuery);
   }

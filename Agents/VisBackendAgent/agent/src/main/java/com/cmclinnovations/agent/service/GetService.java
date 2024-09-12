@@ -34,11 +34,14 @@ public class GetService {
   }
 
   /**
-   * Retrieve all the target instances and their information.
+   * Retrieve all the target instances and their information. This method can also
+   * retrieve instances associated with a specific parent instance if declared.
    * 
-   * @param resourceID The target resource identifier for the instance class.
+   * @param resourceID       The target resource identifier for the instance
+   *                         class.
+   * @param parentInstanceId Optional parent instance identifier.
    */
-  public ResponseEntity<?> getAllInstances(String resourceID) {
+  public ResponseEntity<?> getAllInstances(String resourceID, String parentInstanceId) {
     LOGGER.debug("Retrieving all instances of {} ...", resourceID);
     ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
@@ -47,7 +50,8 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
         iriResponse.getBody());
-    List<SparqlBinding> results = this.kgService.queryInstances(query, null);
+    // If no parent instance ID is supplied, hasParent should be true
+    List<SparqlBinding> results = this.kgService.queryInstances(query, parentInstanceId, parentInstanceId != null);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
@@ -70,7 +74,7 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
         iriResponse.getBody());
-    List<SparqlBinding> results = this.kgService.queryInstances(query, targetId);
+    List<SparqlBinding> results = this.kgService.queryInstances(query, targetId, false);
     if (results.size() == 1) {
       return new ResponseEntity<>(
           results.get(0).get(),

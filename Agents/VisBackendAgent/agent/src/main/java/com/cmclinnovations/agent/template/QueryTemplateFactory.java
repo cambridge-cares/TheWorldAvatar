@@ -12,11 +12,13 @@ import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.utils.StringResource;
 
 public class QueryTemplateFactory implements ShaclTemplateFactory {
+  private String parentField;
   private final Queue<String> optionalLines;
 
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
   private static final String IS_OPTIONAL_VAR = "isoptional";
+  private static final String IS_PARENT_VAR = "isparent";
   private static final String SUBJECT_VAR = "subject";
   private static final String PATH_PREFIX = "_proppath";
   private static final String MULTIPATH_FIRST_VAR = "multipath1";
@@ -55,18 +57,26 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * <prop_path>/<prop_path2> ?property2.
    * }
    * 
-   * @param bindings The bindings queried from SHACL restrictions that should
-   *                 be in the template.
-   * @param filterId An optional field to target the query at a specific instance.
+   * @param bindings  The bindings queried from SHACL restrictions that should
+   *                  be in the template.
+   * @param filterId  An optional field to target the query at a specific
+   *                  instance.
+   * @param hasParent Indicates if the query needs to filter out parent entities.
    */
-  public String genGetTemplate(List<SparqlBinding> bindings, String filterId) {
+  public String genGetTemplate(List<SparqlBinding> bindings, String filterId, boolean hasParent) {
+    // Validate inputs
+    if (hasParent && filterId == null) {
+      LOGGER.error("Detected a parent without a valid filter ID!");
+      throw new IllegalArgumentException("Detected a parent without a valid filter ID!");
+    }
+
     LOGGER.info("Generating a query template for getting data...");
-    String whereQueryClause = this.parseBindingsToWhereClause(bindings);
+    String whereQueryClause = this.parseBindingsToWhereClause(bindings, hasParent);
     StringBuilder query = new StringBuilder();
     query.append("SELECT * WHERE {")
         .append(whereQueryClause)
         .append(".");
-    appendOptionalFilters(query, filterId);
+    appendOptionalFilters(query, filterId, hasParent);
     // Parse the optional lines
     while (!this.optionalLines.isEmpty()) {
       query.append(this.optionalLines.poll());
@@ -82,10 +92,11 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * <prop_path>/<sub_path> ?property1;
    * <prop_path>/<prop_path2> ?property2.
    * 
-   * @param bindings The bindings queried from SHACL restrictions that should
-   *                 be queried in template.
+   * @param bindings  The bindings queried from SHACL restrictions that should
+   *                  be queried in template.
+   * @param hasParent Indicates if the query needs to filter out parent entities.
    */
-  private String parseBindingsToWhereClause(List<SparqlBinding> bindings) {
+  private String parseBindingsToWhereClause(List<SparqlBinding> bindings, boolean hasParent) {
     // Set up the first line with an IRI variable, along with the target class
     StringBuilder query = new StringBuilder("?iri a ");
     // Retrieve the target class from the first binding
@@ -94,7 +105,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
 
     // Iterate through each binding and create a new line for each binding to reach
     // the field via SPARQL ie path1/part2/subpath1/subpath2 fieldName
-    bindings.forEach(binding -> genPredSubjectLine(query, binding));
+    bindings.forEach(binding -> genPredSubjectLine(query, binding, hasParent));
     return query.toString();
   }
 
@@ -102,11 +113,12 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * A helper function to generate the predicate subject parts ie
    * <prop_path>/<sub_path> ?property1
    * 
-   * @param query   The query template builder
-   * @param binding An individual binding queried from SHACL restrictions that
-   *                should be queried in template.
+   * @param query     The query template builder
+   * @param binding   An individual binding queried from SHACL restrictions that
+   *                  should be queried in template.
+   * @param hasParent Indicates if the query needs to filter out parent entities.
    */
-  private void genPredSubjectLine(StringBuilder query, SparqlBinding binding) {
+  private void genPredSubjectLine(StringBuilder query, SparqlBinding binding, boolean hasParent) {
     // Parse predicate path
     StringBuilder predSubjectLineBuilder = new StringBuilder();
     propertyPathParts.forEach(propertyPathPart -> {
@@ -127,6 +139,12 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
     // Parse the variable name
     String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
     predSubjectLineBuilder.append(" ?").append(propertyName);
+
+    // If the field is a parent field, and the template requires a parent, store the
+    // parent field
+    if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
+      this.parentField = propertyName;
+    }
 
     // Verify if these bindings are optional or not to determine what to execute
     boolean isOptional = Boolean.parseBoolean(binding.getFieldValue(IS_OPTIONAL_VAR));
@@ -173,11 +191,23 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
   /**
    * Appends optional filters to the query if required.
    * 
-   * @param query    Builder for the query template.
-   * @param filterId An optional field to target the query at a specific instance.
+   * @param query     Builder for the query template.
+   * @param filterId  An optional field to target the query at a specific
+   *                  instance.
+   * @param hasParent Indicates if the query needs to filter out parent entities.
    */
-  private void appendOptionalFilters(StringBuilder query, String filterId) {
-    if (filterId != null) {
+  private void appendOptionalFilters(StringBuilder query, String filterId, boolean hasParent) {
+    if (hasParent) {
+      if (this.parentField == null) {
+        LOGGER.error("Detected a parent but no valid parent fields are available!");
+        throw new IllegalArgumentException("Detected a parent but no valid parent fields are available!");
+      }
+      query.append("FILTER STRENDS(STR(?")
+          .append(this.parentField)
+          .append("), \"")
+          .append(filterId)
+          .append("\")");
+    } else if (filterId != null) {
       // Add filter clause if there is a valid filter ID
       query.append("FILTER STRENDS(STR(?id), \"")
           .append(filterId)

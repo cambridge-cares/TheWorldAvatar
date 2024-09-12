@@ -1,6 +1,6 @@
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 
-SELECT DISTINCT ?clazz ?name ?subject ?isoptional ?multipath1 ?multipath1_proppath ?multipath2
+SELECT DISTINCT ?clazz ?name ?subject ?isparent ?isoptional ?multipath1 ?multipath1_proppath ?multipath2
   ?multipath2_proppath ?multipath3 ?multipath3_proppath ?multisubpath1 ?multisubpath1_proppath
   ?multisubpath2 ?multisubpath2_proppath ?multisubpath3 ?multisubpath3_proppath ?multisubpath4
   ?multisubpath4_proppath
@@ -18,6 +18,9 @@ WHERE {
             sh:path ?predicatepath .
   OPTIONAL {
     ?property sh:hasValue ?parentSubjectValue .
+  }
+  OPTIONAL {
+    ?property sh:qualifiedValueShape ?parent  .
   }
   OPTIONAL {
     ?property sh:minCount ?minCount  .
@@ -63,6 +66,9 @@ WHERE {
     OPTIONAL {
       ?subproperty sh:hasValue ?subSubjectValue .
     }
+    OPTIONAL {
+      ?subproperty sh:qualifiedValueShape ?subparent  .
+  	}
     OPTIONAL {
       ?subproperty sh:minCount ?subMinCount  .
   	}
@@ -110,6 +116,8 @@ WHERE {
     }
   }
   BIND (COALESCE(?subname, ?propname) AS ?name)
+  # If there is a parent indicator, the property should be a parent
+  BIND (IF(BOUND(?parent) || BOUND(?subparent), true, false) AS ?isparent)
   # Retrieve sub target value first; Else, attempt to retrieve from parent or return null 
   BIND (IF(BOUND(?subSubjectValue), ?subSubjectValue, 
           IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null)
