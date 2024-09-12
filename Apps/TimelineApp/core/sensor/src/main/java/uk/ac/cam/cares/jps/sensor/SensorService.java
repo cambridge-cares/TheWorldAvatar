@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.sensor;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -22,16 +20,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
-import androidx.core.content.ContextCompat;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +36,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import kotlin.Pair;
-import okhttp3.MediaType;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SensorData;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
-import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandler;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
