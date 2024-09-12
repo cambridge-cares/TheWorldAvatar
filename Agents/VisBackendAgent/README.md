@@ -1,6 +1,6 @@
 # Vis Backend Agent
 
-The Vis-Backend Agent is a supporting service to The World Avatar's [visualisation platform (ViP)](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform). It is designed to manage all visualisation-related requests from a single point of access to for example, filter map layers or generate dynamic controls. By abstracting the backend implementation details (such as which other agents to call), it provides a unified access point to the data within its specific stack. This design allows the ViP to be deployed on a separate stack while retaining the capability to ingest data from multiple stacks seamlessly.
+The Vis-Backend Agent is a supporting service to The World Avatar's [visualisation platform (ViP)](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform). It is designed to manage all visualisation-related requests from a single point of access to for example, filter map layers, generate dynamic controls, or query instances to populate the registry. By abstracting the backend implementation details (such as which other agents to call), it provides a unified access point to the data within its specific stack. This design allows the ViP to be deployed on a separate stack while retaining the capability to ingest data from multiple stacks seamlessly.
 
 ## Table of Contents
 
@@ -11,8 +11,11 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
   - [2. Agent Route](#2-agent-route)
     - [2.1 Status ROUTE](#21-status-route-urlvis-backend-agentstatus)
     - [2.2 Form ROUTE](#22-form-route-urlvis-backend-agentformtype)
-    - [2.3 Instance ROUTE](#23-instance-route-urlvis-backend-agenttypetype)
+    - [2.3 Concept Metadata ROUTE](#23-concept-metadata-route-urlvis-backend-agenttypetype)
+    - [2.4 Instance ROUTE](#24-instance-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
+    - [3.1 Form Generation](#31-form-generation)
+    - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
 
 ## 1. Agent Deployment
 
@@ -157,7 +160,7 @@ If successful, the response will return a form template in the following (minima
 }
 ```
 
-### 2.3 Instance ROUTE: `~url~/vis-backend-agent/type/{type}`
+### 2.3 Concept Metadata ROUTE: `~url~/vis-backend-agent/type/{type}`
 
 This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a GET request to `~url~/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
@@ -186,9 +189,51 @@ If successful, the response will return an array of objects in the following for
 }
 ```
 
+### 2.4 Instance ROUTE
+
+There are several routes for retrieving instances associated with a specific `type` to populate the records in the registry. The agent will automatically generate the query and parameters based on the SHACL restrictions developed. The agent will return **EITHER** a `JSON` array containing entities as their corresponding `JSON` object **OR** one Entity `JSON` object depending on which `GET` route is executed.
+
+1. Get all instances
+2. Get all instances associated with a specific parent instance
+3. Get a specific instance
+
+#### Get all instances
+
+Users can send a GET request to
+
+```
+~url~/vis-backend-agent/type/{type}
+```
+
+where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
+
+#### Get all instances associated with a specific parent instance
+
+Users can send a GET request to:
+
+```
+~url~/vis-backend-agent/type/{parent}/{id}/{type}
+```
+
+where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, `{parent}` is the requested parent identifier that is linked to the type, and `{id}` is the specific parent instance's identifier to retrieve all instances associated with.
+
+#### Get a instance
+
+Users can send a GET request to
+
+```
+~url~/vis-backend-agent/type/{type}/{id}
+```
+
+where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
+
 ## 3. SHACL Restrictions
 
-[SHACL](https://www.w3.org/TR/shacl/) is generally a language for validating RDF graphs against a set of conditions. The World Avatar incorporates these restrictions into our workflow to populate form structure and fields. The query to generate the form template is available at `resources/query/construct/form.sparql`. Please read the documentation available on the [Visualisation Platform](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/doc/form.md) to understand how the form template generated from this agent should look like.
+[SHACL](https://www.w3.org/TR/shacl/) is generally a language for validating RDF graphs against a set of conditions. The World Avatar incorporates these restrictions into our workflow to populate form structure and fields, as well as enabling automated data retrieval.
+
+### 3.1 Form Generation
+
+The query to generate the form template is available at `resources/query/construct/form.sparql`. Please read the documentation available on the [Visualisation Platform](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform/doc/form.md) to understand how the form template generated from this agent should look like.
 
 A sample SHACL format in (TTL) is described below:
 
@@ -255,3 +300,43 @@ base:NestedConceptShape
     sh:maxCount 1 ;
   ] .
 ```
+
+### 3.2 Automated Data Retrieval
+
+This agent can dynamically query fields for different instances based on the `SHACL` restrictions in three steps:
+
+1. Retrieve all the predicate paths set in `SHACL` to reach the field of interest
+2. Generate a dynamic query based on these paths queried in (1)
+3. Query the knowledge graph with the query generated in (2)
+
+The query in (1) is available at `resources/query/get/property_path.sparql`. This path specifically requires the following `SHACL` properties in order to function:
+
+1. `sh:path`: REQUIRED to generate the `SPARQL` query template. The subject of this predicate can either be one path IRI or a list of path IRI. An example in `TTL` is also available below:
+
+```
+base:ConceptShape
+  a sh:NodeShape ;
+  sh:targetClass ontoexample:Concept ;
+  sh:property [
+    ...
+    sh:path ontoexample:onePath ;
+    ...
+  ];
+  sh:property [
+    ...
+    sh:path (ontoexample:nestedPath rdfs:label);
+    ...
+  ];
+  sh:property [
+    ...
+    sh:path (
+      [sh:inversePath ontoexample:inversePath]
+      ontoexample:inverseNestedPath
+    );
+    ...
+  ].
+```
+
+2. `sh:hasValue`: Optional parameter to restrict the output of the query to a specific instance. This is useful if the same predicate path points to multiple instances as a subject and cannot be differentiated otherwise. For example: `fibo-fnd-dt-fd:RegularSchedule` has predicates `fibo-fnd-dt-fd:hasRecurrenceInterval` that may target Monday to Sunday as their subject values.
+3. `sh:minCount`: Optional parameter to indicate that the variable is required in the template if set above one.
+4. `sh:qualifiedValueShape`: Optional parameter to indicate that the variable is a parent variable that the instance is dependent on.
