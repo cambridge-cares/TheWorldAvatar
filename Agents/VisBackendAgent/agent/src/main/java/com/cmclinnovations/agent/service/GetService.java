@@ -66,7 +66,7 @@ public class GetService {
    * @param targetId   The target instance IRI.
    */
   public ResponseEntity<?> getInstance(String resourceID, String targetId) {
-    LOGGER.debug("Retrieving all instances of {} ...", resourceID);
+    LOGGER.debug("Retrieving an instance of {} ...", resourceID);
     ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
@@ -137,6 +137,30 @@ public class GetService {
     } else {
       LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     }
+    return new ResponseEntity<>(
+        results.stream()
+            .map(SparqlBinding::get)
+            .collect(Collectors.toList()),
+        HttpStatus.OK);
+  }
+
+  /**
+   * Retrieve the matching instances of the search criterias.
+   * 
+   * @param resourceID The target resource identifier for the instance class.
+   * @param criterias  All the available search criteria inputs.
+   */
+  public ResponseEntity<?> getMatchingInstances(String resourceID, Map<String, String> criterias) {
+    LOGGER.debug("Retrieving the form template for {} ...", resourceID);
+    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    // Return the BAD REQUEST response directly if IRI is invalid
+    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return iriResponse;
+    }
+    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
+        iriResponse.getBody());
+    List<SparqlBinding> results = this.kgService.queryInstancesWithCriteria(query, criterias);
+    LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)

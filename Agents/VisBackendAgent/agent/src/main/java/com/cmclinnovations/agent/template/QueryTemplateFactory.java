@@ -1,20 +1,23 @@
 package com.cmclinnovations.agent.template;
 
+import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.model.SparqlQueryLine;
 import com.cmclinnovations.agent.utils.StringResource;
 
 public class QueryTemplateFactory implements ShaclTemplateFactory {
   private String parentField;
-  private final Queue<String> queryLines;
-  private final Queue<String> optionalQueryLines;
+  private final Queue<SparqlQueryLine> queryLines;
+  private final Queue<SparqlQueryLine> optionalQueryLines;
 
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
@@ -79,16 +82,59 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
         .append(genIriClassLine(bindings));
     // Parse the query lines
     while (!this.queryLines.isEmpty()) {
-      query.append(this.queryLines.poll());
+      query.append(this.queryLines.poll().contents());
     }
     // Parse the optional lines
     while (!this.optionalQueryLines.isEmpty()) {
-      String currentLine = this.optionalQueryLines.poll();
-      query.append(genOptionalLine(currentLine));
+      SparqlQueryLine currentLine = this.optionalQueryLines.poll();
+      query.append(genOptionalLine(currentLine.contents()));
     }
     appendOptionalIdFilters(query, filterId, hasParent);
     // Close the query
     return query.append("}").toString();
+  }
+
+  /**
+   * Generate a SPARQL query template to get the data that meets the search
+   * criteria. It will typically be in the following format:
+   * 
+   * SELECT ?iri WHERE {
+   * ?iri a <clazz_iri>.
+   * ?iri <prop_path>/<sub_path> ?string_property.
+   * FILTER(STR(?string_property) = STR("string criteria"))
+   * }
+   * 
+   * @param bindings  The bindings queried from SHACL restrictions that should
+   *                  be in the template.
+   * @param criterias All the required search criteria.
+   */
+  public String genSearchTemplate(List<SparqlBinding> bindings, Map<String, String> criterias) {
+    LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
+    this.sortBindings(bindings, false);
+    StringBuilder query = new StringBuilder();
+    StringBuilder filters = new StringBuilder();
+    query.append("SELECT ?iri WHERE {")
+        .append(genIriClassLine(bindings));
+    while (!this.queryLines.isEmpty()) {
+      SparqlQueryLine currentLine = this.queryLines.poll();
+      String variable = currentLine.property();
+      // note that if no criteria is passed in the API, the filter will not be added
+      if (criterias.containsKey(variable)) {
+        filters.append(genSearchCriteria(variable, criterias.get(variable)));
+      }
+      query.append(currentLine.contents());
+    }
+    while (!this.optionalQueryLines.isEmpty()) {
+      SparqlQueryLine currentLine = this.optionalQueryLines.poll();
+      String variable = currentLine.property();
+      if (criterias.containsKey(variable)) {
+        filters.append(genSearchCriteria(variable, criterias.get(variable)));
+      }
+      query.append(genOptionalLine(currentLine.contents()));
+    }
+
+    // Close the query
+    return query.append(filters).append("}").toString();
   }
 
   /**
@@ -113,6 +159,17 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    */
   private String genOptionalLine(String content) {
     return "OPTIONAL{" + content + "}";
+  }
+
+  /**
+   * Generates the search criteria query line of a query ie:
+   * FILTER(STR(?var) = STR(string_criteria))
+   * 
+   * @param variable The name of the variable.
+   * @param criteria The criteria to be met.
+   */
+  private String genSearchCriteria(String variable, String criteria) {
+    return " FILTER(STR(?" + variable + ") = \"" + criteria + "\")";
   }
 
   /**
@@ -197,18 +254,18 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    */
   private void categoriseQueryLine(String inputLine, SparqlBinding binding) {
     boolean isOptional = Boolean.parseBoolean(binding.getFieldValue(IS_OPTIONAL_VAR));
+    String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
     if (isOptional) {
       // If the value must conform to a specific subject variable,
       // a filter needs to be added directly to the same optional clause
       if (binding.containsField(SUBJECT_VAR)) {
-        String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
         // FORMAT: FILTER{?var =<subject>}
-        inputLine += "FILTER(?" + propertyName + "="
-            + StringResource.parseIriForQuery(binding.getFieldValue(SUBJECT_VAR)) + ")";
+        inputLine += genSearchCriteria(propertyName,
+            StringResource.parseIriForQuery(binding.getFieldValue(SUBJECT_VAR)));
       }
-      this.optionalQueryLines.offer(inputLine);
+      this.optionalQueryLines.offer(new SparqlQueryLine(propertyName, inputLine));
     } else {
-      this.queryLines.offer(inputLine);
+      this.queryLines.offer(new SparqlQueryLine(propertyName, inputLine));
     }
   }
 

@@ -143,6 +143,26 @@ public class KGService {
   }
 
   /**
+   * Queries for all instances that matches the search criteria.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   * @param criterias      All the available search criteria inputs.
+   */
+  public List<SparqlBinding> queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
+    LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
+    List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
+    if (variablesAndPropertyPaths.isEmpty()) {
+      LOGGER.error(INVALID_SHACL_ERROR_MSG);
+      throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
+    }
+    LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
+    String searchQuery = this.queryTemplateFactory.genSearchTemplate(variablesAndPropertyPaths, criterias);
+    LOGGER.debug("Querying the knowledge graph for the matching instances...");
+    return query(searchQuery);
+  }
+
+  /**
    * Parses the results into the required data model.
    * 
    * @param results Results retrieved from the knowledge graph.
