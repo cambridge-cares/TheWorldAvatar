@@ -123,7 +123,7 @@ sequenceDiagram
 
   user->>browser: Submits a query
   activate browser
-  browser->>nginx: HTML page makes API call at<br/>https://theworldavatar.io/demos/marie/api
+  browser->>nginx: Makes API call to<br/>https://theworldavatar.io/demos/marie/api
   activate nginx
   nginx->>fastapi: Forwards API call to<br/>http://123.123.123.123:5000
   activate fastapi
