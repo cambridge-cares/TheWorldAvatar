@@ -1,8 +1,8 @@
 package com.cmclinnovations.agent.template;
 
-import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.Map;
@@ -101,7 +101,9 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * SELECT ?iri WHERE {
    * ?iri a <clazz_iri>.
    * ?iri <prop_path>/<sub_path> ?string_property.
+   * ?iri <prop_path>/<sub_number_path> ?number_property.
    * FILTER(STR(?string_property) = STR("string criteria"))
+   * FILTER(?number_property >= min_value && ?number_property <= max_value)
    * }
    * 
    * @param bindings  The bindings queried from SHACL restrictions that should
@@ -120,7 +122,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       String variable = currentLine.property();
       // note that if no criteria is passed in the API, the filter will not be added
       if (criterias.containsKey(variable)) {
-        filters.append(genSearchCriteria(variable, criterias.get(variable)));
+        filters.append(genSearchCriteria(variable, criterias));
       }
       query.append(currentLine.contents());
     }
@@ -128,7 +130,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       SparqlQueryLine currentLine = this.optionalQueryLines.poll();
       String variable = currentLine.property();
       if (criterias.containsKey(variable)) {
-        filters.append(genSearchCriteria(variable, criterias.get(variable)));
+        filters.append(genSearchCriteria(variable, criterias));
       }
       query.append(genOptionalLine(currentLine.contents()));
     }
@@ -168,8 +170,33 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * @param variable The name of the variable.
    * @param criteria The criteria to be met.
    */
-  private String genSearchCriteria(String variable, String criteria) {
-    return " FILTER(STR(?" + variable + ") = \"" + criteria + "\")";
+  private String genSearchCriteria(String variable, Map<String, String> criterias) {
+    String criteriaVal = criterias.get(variable);
+    if (criteriaVal.isEmpty()) {
+      return criteriaVal;
+    }
+    // The front end will return a range value if range parsing is required
+    if (criteriaVal.equals("range")) {
+      String rangeQuery = "";
+      String minCriteriaVal = criterias.get("min " + variable);
+      String maxCriteriaVal = criterias.get("max " + variable);
+      // Append min filter if available
+      if (!minCriteriaVal.isEmpty()) {
+        rangeQuery += " FILTER(?" + variable + " >= " + criterias.get("min " + variable);
+      }
+      // Append max filter if available
+      if (!maxCriteriaVal.isEmpty()) {
+        // Prefix should be a conditional && if the min filter is already present
+        rangeQuery += rangeQuery.isEmpty() ? " FILTER(?" : " && ?";
+        rangeQuery += variable + " <= " + maxCriteriaVal;
+      }
+      if (!rangeQuery.isEmpty()) {
+        rangeQuery += ")";
+      }
+      // Return empty string otherwise
+      return rangeQuery;
+    }
+    return " FILTER(STR(?" + variable + ") = \"" + criteriaVal + "\")";
   }
 
   /**
@@ -259,9 +286,9 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       // If the value must conform to a specific subject variable,
       // a filter needs to be added directly to the same optional clause
       if (binding.containsField(SUBJECT_VAR)) {
-        // FORMAT: FILTER{?var =<subject>}
-        inputLine += genSearchCriteria(propertyName,
-            StringResource.parseIriForQuery(binding.getFieldValue(SUBJECT_VAR)));
+        Map<String, String> searchCriteria = new HashMap<>();
+        searchCriteria.put(propertyName, binding.getFieldValue(SUBJECT_VAR));
+        inputLine += genSearchCriteria(propertyName, searchCriteria);
       }
       this.optionalQueryLines.offer(new SparqlQueryLine(propertyName, inputLine));
     } else {

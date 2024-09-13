@@ -358,3 +358,4 @@ base:ConceptShape
 2. `sh:hasValue`: Optional parameter to restrict the output of the query to a specific instance. This is useful if the same predicate path points to multiple instances as a subject and cannot be differentiated otherwise. For example: `fibo-fnd-dt-fd:RegularSchedule` has predicates `fibo-fnd-dt-fd:hasRecurrenceInterval` that may target Monday to Sunday as their subject values.
 3. `sh:minCount`: Optional parameter to indicate that the variable is required in the template if set above one.
 4. `sh:qualifiedValueShape`: Optional parameter to indicate that the variable is a parent variable that the instance is dependent on.
+5. `sh:datatype`: Required parameter to generate min-max search criteria based on integer or decimal settings
