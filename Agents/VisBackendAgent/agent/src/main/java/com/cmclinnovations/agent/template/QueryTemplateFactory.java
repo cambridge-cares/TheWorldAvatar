@@ -124,7 +124,10 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       if (criterias.containsKey(variable)) {
         filters.append(genSearchCriteria(variable, criterias));
       }
-      query.append(currentLine.contents());
+      // Do not generate any id query lines
+      if (!variable.equals("id")) {
+        query.append(currentLine.contents());
+      }
     }
     while (!this.optionalQueryLines.isEmpty()) {
       SparqlQueryLine currentLine = this.optionalQueryLines.poll();
@@ -132,7 +135,10 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       if (criterias.containsKey(variable)) {
         filters.append(genSearchCriteria(variable, criterias));
       }
-      query.append(genOptionalLine(currentLine.contents()));
+      // Do not generate any id query lines
+      if (!variable.equals("id")) {
+        query.append(genOptionalLine(currentLine.contents()));
+      }
     }
 
     // Close the query
