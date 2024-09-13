@@ -1,17 +1,11 @@
 package uk.ac.cam.cares.jps.sensor.source.database.model.dao;
 
 import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.GyroData;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.LightData;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.RelativeHumidity;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 
 /**
  * Data Access Object (DAO) for the Gyro sensor data.
@@ -45,7 +39,7 @@ public interface GyroDao extends SensorDao<GyroData> {
      * @return An array of {@link GyroData} objects that have not been uploaded.
      */
     @Query("SELECT * FROM gyro WHERE uploaded = 0 LIMIT :limit OFFSET :offset")
-    GyroData[] getAllUnsent(int limit, int offset);
+    GyroData[] getAllUnUploadedData(int limit, int offset);
 
     /**
      * Marks the gyro records as uploaded in the database by updating the 'uploaded' field.

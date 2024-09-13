@@ -1,16 +1,11 @@
 package uk.ac.cam.cares.jps.sensor.source.database.model.dao;
 
 import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Pressure;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.RelativeHumidity;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 
 /**
  * Data Access Object (DAO) for the Pressure sensor data.
@@ -44,7 +39,7 @@ public interface PressureDao extends SensorDao<Pressure> {
      * @return An array of {@link Pressure} objects that have not been uploaded.
      */
     @Query("SELECT * FROM pressure WHERE uploaded = 0 LIMIT :limit OFFSET :offset")
-    Pressure[] getAllUnsent(int limit, int offset);
+    Pressure[] getAllUnUploadedData(int limit, int offset);
 
     /**
      * Marks the pressure records as uploaded in the database by updating the 'uploaded' field.

@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.sensor;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -20,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
+import androidx.core.content.ContextCompat;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -182,7 +185,7 @@ public class SensorService extends Service {
                 boolean hasMoreData = true;
 
                 while (hasMoreData) {
-                JSONArray allSensorData = sensorLocalSource.retrieveUnsentSensorData(selectedSensors, PAGE_SIZE, offset);
+                JSONArray allSensorData = sensorLocalSource.retrieveUnUploadedSensorData(selectedSensors, PAGE_SIZE, offset);
                 LOGGER.info("Retrieved " + allSensorData.length() + " items from local storage.");
 
                 if (allSensorData.length() < PAGE_SIZE) {
@@ -239,12 +242,19 @@ public class SensorService extends Service {
         Notification notification = getNotification();
 
         if (isLocationSensorToggled && type != 0) {
-            ServiceCompat.startForeground(this, FOREGROUND_ID, notification, type);
+            // make sure that the permissions are actually enabled before recording so app doesn't crash
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                ServiceCompat.startForeground(this, FOREGROUND_ID, notification, type);
+            } else {
+                LOGGER.warn("Location permission not granted. Unable to start service with location type.");
+                stopSelf();
+            }
         } else {
             // For non-location sensors or if no specific type is required
             ServiceCompat.startForeground(this, FOREGROUND_ID, notification, type);
-
         }
+
 
 
 

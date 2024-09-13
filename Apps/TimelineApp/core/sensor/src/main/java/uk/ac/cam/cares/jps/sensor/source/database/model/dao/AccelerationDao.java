@@ -1,15 +1,11 @@
 package uk.ac.cam.cares.jps.sensor.source.database.model.dao;
 
 import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
 
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Gravity;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 
 /**
  * Data Access Object (DAO) for the Acceleration sensor data.
@@ -43,7 +39,7 @@ public interface AccelerationDao extends SensorDao<Acceleration> {
      * @return An array of {@link Acceleration} objects that have not been uploaded.
      */
     @Query("SELECT * FROM acceleration WHERE uploaded = 0 LIMIT :limit OFFSET :offset")
-    Acceleration[] getAllUnsent(int limit, int offset);
+    Acceleration[] getAllUnUploadedData(int limit, int offset);
 
     /**
      * Marks the acceleration records as uploaded in the database by updating the 'uploaded' field.

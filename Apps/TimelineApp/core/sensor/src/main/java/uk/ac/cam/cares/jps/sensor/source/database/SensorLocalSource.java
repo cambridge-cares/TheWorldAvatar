@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.sensor.source.database;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.lifecycle.LiveDataKt;
 import androidx.room.Room;
 
 import org.apache.log4j.Logger;
@@ -215,7 +214,7 @@ public class SensorLocalSource {
      * @param offset The starting point for retrieving records (for pagination).
      * @return A {@link JSONArray} containing the unsent sensor data for all specified sensors.
      */
-    public JSONArray retrieveUnsentSensorData(List<SensorType> selectedSensors, int limit, int offset) {
+    public JSONArray retrieveUnUploadedSensorData(List<SensorType> selectedSensors, int limit, int offset) {
         List<SensorData> allSensorData = new ArrayList<>();
         Map<String, List<Long>> timesToMarkAsUploaded = new HashMap<>();
 
@@ -223,47 +222,47 @@ public class SensorLocalSource {
         for (SensorType sensor : selectedSensors) {
             switch(sensor) {
                 case LOCATION:
-                    List<LocationData> locationDataList = Arrays.asList(locationDao.getAllUnsent(limit, offset));
+                    List<LocationData> locationDataList = Arrays.asList(locationDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(locationDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(locationDataList));
                     break;
                 case ACCELEROMETER:
-                    List<Acceleration> accelerationDataList = Arrays.asList(accelerationDao.getAllUnsent(limit, offset));
+                    List<Acceleration> accelerationDataList = Arrays.asList(accelerationDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(accelerationDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(accelerationDataList));
                     break;
                 case GRAVITY:
-                    List<Gravity> gravityDataList = Arrays.asList(gravityDao.getAllUnsent(limit, offset));
+                    List<Gravity> gravityDataList = Arrays.asList(gravityDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(gravityDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(gravityDataList));
                     break;
                 case GYROSCOPE:
-                    List<GyroData> gyroDataList = Arrays.asList(gyroDao.getAllUnsent(limit, offset));
+                    List<GyroData> gyroDataList = Arrays.asList(gyroDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(gyroDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(gyroDataList));
                     break;
                 case LIGHT:
-                    List<LightData> lightDataList = Arrays.asList(lightDao.getAllUnsent(limit, offset));
+                    List<LightData> lightDataList = Arrays.asList(lightDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(lightDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(lightDataList));
                     break;
                 case MAGNETOMETER:
-                    List<MagnetFieldStrength> magnetDataList = Arrays.asList(magnetFieldStrengthDao.getAllUnsent(limit, offset));
+                    List<MagnetFieldStrength> magnetDataList = Arrays.asList(magnetFieldStrengthDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(magnetDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(magnetDataList));
                     break;
                 case PRESSURE:
-                    List<Pressure> pressureDataList = Arrays.asList(pressureDao.getAllUnsent(limit, offset));
+                    List<Pressure> pressureDataList = Arrays.asList(pressureDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(pressureDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(pressureDataList));
                     break;
                 case SOUND:
-                    List<SoundLevel> soundDataList = Arrays.asList(soundLevelDao.getAllUnsent(limit, offset));
+                    List<SoundLevel> soundDataList = Arrays.asList(soundLevelDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(soundDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(soundDataList));
                     break;
                 case HUMIDITY:
-                    List<RelativeHumidity> humidityDataList = Arrays.asList(relativeHumidityDao.getAllUnsent(limit, offset));
+                    List<RelativeHumidity> humidityDataList = Arrays.asList(relativeHumidityDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(humidityDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(humidityDataList));
                     break;

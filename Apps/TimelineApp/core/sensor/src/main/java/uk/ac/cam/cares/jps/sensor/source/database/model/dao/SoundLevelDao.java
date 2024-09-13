@@ -40,7 +40,7 @@ public interface SoundLevelDao extends SensorDao<SoundLevel> {
      * @return An array of {@link SoundLevel} objects that have not been uploaded.
      */
     @Query("SELECT * FROM sound WHERE uploaded = 0 LIMIT :limit OFFSET :offset")
-    SoundLevel[] getAllUnsent(int limit, int offset);
+    SoundLevel[] getAllUnUploadedData(int limit, int offset);
 
 
     /**

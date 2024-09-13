@@ -1,13 +1,7 @@
 package uk.ac.cam.cares.jps.sensor.source.database.model;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.room.Database;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.migration.Migration;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.AccelerationDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GravityDao;
@@ -32,7 +26,6 @@ import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
 
 @Database(entities = {LocationData.class, Acceleration.class, LightData.class, MagnetFieldStrength.class, Gravity.class, GyroData.class, Pressure.class, RelativeHumidity.class, SoundLevel.class, UnsentData.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
-    private static volatile AppDatabase INSTANCE;
     public abstract LocationDao locationDao();
     public abstract AccelerationDao accelerationDao();
     public abstract GravityDao gravityDao();

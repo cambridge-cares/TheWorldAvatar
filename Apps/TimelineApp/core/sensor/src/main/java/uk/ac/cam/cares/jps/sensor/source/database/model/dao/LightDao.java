@@ -1,16 +1,11 @@
 package uk.ac.cam.cares.jps.sensor.source.database.model.dao;
 
 import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.LightData;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.LocationData;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 
 /**
  * Data Access Object (DAO) for the Light sensor data.
@@ -44,7 +39,7 @@ public interface LightDao extends SensorDao<LightData> {
      * @return An array of {@link LightData} objects that have not been uploaded.
      */
     @Query("SELECT * FROM light WHERE uploaded = 0 LIMIT :limit OFFSET :offset")
-    LightData[] getAllUnsent(int limit, int offset);
+    LightData[] getAllUnUploadedData(int limit, int offset);
 
     /**
      * Marks the light records as uploaded in the database by updating the 'uploaded' field.

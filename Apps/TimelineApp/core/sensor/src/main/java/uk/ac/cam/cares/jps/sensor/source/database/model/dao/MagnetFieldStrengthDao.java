@@ -1,17 +1,11 @@
 package uk.ac.cam.cares.jps.sensor.source.database.model.dao;
 
 import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.GyroData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.MagnetFieldStrength;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.RelativeHumidity;
-import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 
 /**
  * Data Access Object (DAO) for the Magnet sensor data.
@@ -45,7 +39,7 @@ public interface MagnetFieldStrengthDao extends SensorDao<MagnetFieldStrength> {
      * @return An array of {@link MagnetFieldStrength} objects that have not been uploaded.
      */
     @Query("SELECT * FROM magnet WHERE uploaded = 0 LIMIT :limit OFFSET :offset")
-    MagnetFieldStrength[] getAllUnsent(int limit, int offset);
+    MagnetFieldStrength[] getAllUnUploadedData(int limit, int offset);
 
     /**
      * Marks the magnet records as uploaded in the database by updating the 'uploaded' field.
