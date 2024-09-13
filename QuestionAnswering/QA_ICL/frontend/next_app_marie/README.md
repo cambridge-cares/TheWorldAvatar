@@ -50,7 +50,7 @@ The app will be available at `localhost:3000/demos/marie`.
 Note that by default, the base path `/demos/marie` is set via the environment variable `BASE_PATH` in [`.env.production`](./.env.production). This can be overridden by setting a different value in `.env.local`.
 
 
-## Development
+## Developer's Documentation
 
 ### Overview of tech stack
 
@@ -70,3 +70,38 @@ This repository makes extensive use of boilerplates provided by [shadcn](https:/
 ### Image components
 
 For rendering images bundled together with the app, please use [static imports](https://nextjs.org/docs/app/building-your-application/optimizing/images#local-images) for the `src` attribute. This ensures that images are rendered properly even when the app is deployed behind an NGINX reverse proxy.
+
+### Query submission handling
+
+```mermaid
+sequenceDiagram
+  actor user as User
+  participant browser as Client browser
+  participant next as Next.js server
+  participant fastapi as FastAPI server
+
+  user->>browser: Navigates to frontend endpoint
+  activate browser
+  browser->>next: Requests HTML
+  activate next
+  next-->>browser: Returns HTML
+  deactivate next
+  browser-->>user: Displays HTML page
+  deactivate browser
+
+  user->>browser: Submits a query
+  activate browser
+  browser->>fastapi: Sends query to /qa endpoint
+  activate fastapi
+  fastapi-->>browser: Returns data for answering and visualisation
+  deactivate fastapi
+  browser-->>user: Displays data in structured formats<br/>and creates visualisations
+  
+  browser->>fastapi: Requests natural language response<br/>at /chat endpoint
+  activate fastapi
+  fastapi-->>browser: Returns text stream
+  deactivate fastapi
+
+  browser-->>user: Dynamically renders text stream
+  deactivate browser
+```
