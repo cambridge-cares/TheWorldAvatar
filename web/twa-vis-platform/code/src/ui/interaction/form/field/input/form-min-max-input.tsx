@@ -13,7 +13,6 @@ export interface FormInputMinMaxFieldProps {
   form: UseFormReturn;
   styles?: {
     label?: string[],
-    input?: string[],
   };
 }
 
@@ -23,18 +22,19 @@ export interface FormInputMinMaxFieldProps {
  * @param {PropertyShape} field The SHACL shape property for this field. 
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
  * @param {string[]} styles.label Optional styles for the label element.
- * @param {string[]} styles.input Optional styles for the input element.
  */
 export default function FormInputMinMaxField(props: Readonly<FormInputMinMaxFieldProps>) {
   const label: string = props.field.name[VALUE_KEY];
-  // Disabled inputs should provide only text input
-  const minFieldId: string = "min " + props.field.fieldId;
-  const maxFieldId: string = "max " + props.field.fieldId;
+  const originalField: string = props.field.fieldId;
+  const minFieldId: string = "min " + originalField;
+  const maxFieldId: string = "max " + originalField;
+  // Set the original value to range so that the backend will detect and ingest the min and max parameters instead
+  props.form.setValue(originalField, "range");
 
   return (
     <FormInputContainer
       field={props.field}
-      error={props.form.formState.errors[props.field.fieldId] as FieldError}
+      error={props.form.formState.errors[originalField] as FieldError}
       labelStyles={props.styles?.label}
     >
       <div className={styles["min-max-container"]}>

@@ -106,7 +106,6 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
               form={props.form}
               styles={{
                 label: [styles["form-input-label"]],
-                input: [styles["form-input-value"]],
               }}
             /> :
             <FormInputField
