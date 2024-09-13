@@ -178,6 +178,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    */
   private String genSearchCriteria(String variable, Map<String, String> criterias) {
     String criteriaVal = criterias.get(variable);
+    String formattedVar = variable.replaceAll("\\s+", "_");
     if (criteriaVal.isEmpty()) {
       return criteriaVal;
     }
@@ -188,13 +189,13 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       String maxCriteriaVal = criterias.get("max " + variable);
       // Append min filter if available
       if (!minCriteriaVal.isEmpty()) {
-        rangeQuery += " FILTER(?" + variable + " >= " + criterias.get("min " + variable);
+        rangeQuery += " FILTER(?" + formattedVar + " >= " + criterias.get("min " + variable);
       }
       // Append max filter if available
       if (!maxCriteriaVal.isEmpty()) {
         // Prefix should be a conditional && if the min filter is already present
         rangeQuery += rangeQuery.isEmpty() ? " FILTER(?" : " && ?";
-        rangeQuery += variable + " <= " + maxCriteriaVal;
+        rangeQuery += formattedVar + " <= " + maxCriteriaVal;
       }
       if (!rangeQuery.isEmpty()) {
         rangeQuery += ")";
@@ -202,7 +203,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       // Return empty string otherwise
       return rangeQuery;
     }
-    return " FILTER(STR(?" + variable + ") = \"" + criteriaVal + "\")";
+    return " FILTER(STR(?" + formattedVar + ") = \"" + criteriaVal + "\")";
   }
 
   /**
@@ -296,9 +297,11 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
         searchCriteria.put(propertyName, binding.getFieldValue(SUBJECT_VAR));
         inputLine += genSearchCriteria(propertyName, searchCriteria);
       }
-      this.optionalQueryLines.offer(new SparqlQueryLine(propertyName, inputLine));
+      // Sparql query line should use original name var without the replaced _
+      this.optionalQueryLines.offer(new SparqlQueryLine(binding.getFieldValue(NAME_VAR), inputLine));
     } else {
-      this.queryLines.offer(new SparqlQueryLine(propertyName, inputLine));
+      // Sparql query line should use original name var without the replaced _
+      this.queryLines.offer(new SparqlQueryLine(binding.getFieldValue(NAME_VAR), inputLine));
     }
   }
 
