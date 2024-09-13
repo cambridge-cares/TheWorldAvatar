@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 import { PathNames } from 'io/config/routes';
-import { OntologyConcept, PropertyShape, VALUE_KEY } from 'types/form';
+import { defaultSearchOption, OntologyConcept, PropertyShape, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { reorderConcepts, sortConcepts } from 'utils/client-utils';
 import { getAvailableTypes } from 'utils/server-actions';
@@ -37,7 +37,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
   const effectRan = useRef(false);
   const [dropdownValues, setDropdownValues] = useState<OntologyConcept[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
-
+  
   // A hook that fetches all concepts for select input on first render
   useEffect(() => {
     // Declare an async function that retrieves all entity concepts for specific attributes
@@ -71,6 +71,10 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
         let sortedConcepts: OntologyConcept[] = sortConcepts(concepts);
         sortedConcepts = reorderConcepts(sortedConcepts, form.getValues(field.fieldId));
         if (field.name[VALUE_KEY].toLowerCase() === "country") { sortedConcepts = reorderConcepts(sortedConcepts, "Singapore"); }
+        // Add the default search option only if this is the search form
+        if (form.getValues(FORM_STATES.FORM_TYPE) === PathNames.SEARCH) {
+          sortedConcepts.unshift(defaultSearchOption);
+        }
         setDropdownValues(sortedConcepts);
         form.setValue(field.fieldId, sortedConcepts[0].type.value);
       }

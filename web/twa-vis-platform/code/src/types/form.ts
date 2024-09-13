@@ -68,3 +68,24 @@ interface JsonLdLiteral {
   "@value": string;
   "@type"?: string;
 }
+
+export const defaultSearchOption: OntologyConcept = {
+  type: {
+    value: "",
+    type: "literal",
+    dataType: "http://www.w3.org/2001/XMLSchema#string",
+    lang: "",
+  },
+  label: {
+    value: "Select All",
+    type: "literal",
+    dataType: "http://www.w3.org/2001/XMLSchema#string",
+    lang: "",
+  },
+  description: {
+    value: "This option allows you to select all available criteria at once.",
+    type: "literal",
+    dataType: "http://www.w3.org/2001/XMLSchema#string",
+    lang: "",
+  }
+}
