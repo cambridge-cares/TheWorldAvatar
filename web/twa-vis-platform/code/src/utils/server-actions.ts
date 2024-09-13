@@ -80,6 +80,21 @@ export async function sendGetRequest(agentApi: string): Promise<string> {
 
 
 /**
+ * Retrieves the form template for the associated entity type.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {string} entityType Type of the entity.
+ * @param {FieldValues} form Form storing the input data.
+ */
+export async function getMatchingInstances(agentApi: string, entityType: string, form: FieldValues): Promise<HttpResponse> {
+  const url: string = `${agentApi}/${entityType}/search`;
+  const reqBody: string = JSON.stringify(form);
+  const response = await sendRequest(url, "POST", "application/json", reqBody);
+  const responseBody: string = await response.text();
+  return { success: response.ok, message: responseBody };
+}
+
+/**
  * Add the entity to the knowledge graph.
  * 
  * @param {string} agentApi API endpoint.

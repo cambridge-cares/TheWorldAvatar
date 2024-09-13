@@ -6,7 +6,7 @@ import { PathNames } from 'io/config/routes';
 import { FormTemplate, ID_KEY, PROPERTY_GROUP_TYPE, PropertyGroup, PropertyShape, PropertyShapeOrGroup, TYPE_KEY, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
-import { HttpResponse, addEntity, deleteEntity, getFormTemplate, updateEntity } from 'utils/server-actions';
+import { HttpResponse, addEntity, deleteEntity, getFormTemplate, getMatchingInstances, updateEntity } from 'utils/server-actions';
 import { FORM_STATES, initFormField } from './form-utils';
 import FormFieldComponent from './field/form-field';
 import FormSection from './section/form-section';
@@ -128,7 +128,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         break;
       }
       case PathNames.SEARCH: {
-        console.log(formData)
+        pendingResponse = await getMatchingInstances(props.agentApi, props.entityType, formData);
         break;
       }
       default:
