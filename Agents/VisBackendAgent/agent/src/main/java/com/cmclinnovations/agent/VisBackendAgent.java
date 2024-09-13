@@ -72,7 +72,7 @@ public class VisBackendAgent {
    */
   @PostMapping("/{type}/search")
   public ResponseEntity<?> getMatchingInstances(@PathVariable String type, @RequestBody Map<String, String> criterias) {
-    LOGGER.info("Received request to get a specific instance of {}...", type);
+    LOGGER.info("Received request to get matching instances of {}...", type);
     return this.getService.getMatchingInstances(type, criterias);
   }
 
