@@ -1,5 +1,30 @@
 # Data Generation for QA_ICL
 
+## Table of Contents
+
+- [Data Generation for QA\_ICL](#data-generation-for-qa_icl)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Terminologies](#terminologies)
+    - [Lexicon](#lexicon)
+    - [Schema Elements](#schema-elements)
+    - [Data Request Generation Examples](#data-request-generation-examples)
+    - [Physical Quantity Recognition Examples](#physical-quantity-recognition-examples)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Steps](#steps)
+  - [Usage](#usage)
+    - [Lexicon Generation](#lexicon-generation)
+    - [KG Schema Extraction](#kg-schema-extraction)
+    - [CSV-to-JSON Conversion of Data Request Generation Examples](#csv-to-json-conversion-of-data-request-generation-examples)
+    - [Augmentation of Data Request Generation](#augmentation-of-data-request-generation)
+    - [CSV-to-JSON Conversion of Physical Quantity Detection Examples](#csv-to-json-conversion-of-physical-quantity-detection-examples)
+  - [JSON Schema Definitions](#json-schema-definitions)
+    - [JSON Schema of Lexicons](#json-schema-of-lexicons)
+    - [JSON schema of KG schema elements](#json-schema-of-kg-schema-elements)
+    - [JSON Schema of Data Request Generation Examples](#json-schema-of-data-request-generation-examples)
+    - [JSON Schema of Physical Quantity Recognition Examples](#json-schema-of-physical-quantity-recognition-examples)
+  
 ## Overview
 
 This directory contains Python and shell scripts to prepare three kinds of data required by Marie's backend: lexicons, graph schemas, and examples of data request generation.
@@ -34,14 +59,14 @@ See [JSON schema for lexicons](#json-schema-of-lexicons).
 
 ### Schema Elements
 
-The `simplified_schema` directory adopts the terminology used for heterogenous graphs `G=(V, E, τ, φ)`:
+The `simplified_schema` directory adopts the terminology used for heterogeneous graphs `G=(V, E, τ, φ)`, where G is the entire graph, V is the set of all vertices (nodes) in the graph, E is the set of all edges in the graph, τ is a function that assigns types to nodes, and φ is a function that assigns types to edges. The following relationships can be derived:
 
-- For each node `v ∈ V`, its node type is `τ(v)`.
-- For each edge `(u, v) ∈ E`,
-  - its edge type is `φ(u, v)`, which is equivalent to 'predicate' or 'property' in RDF terms;
-  - its relation type is tuple `(τ(u), φ(u, v), τ(v))`.
+- For each node v in the set of vertices V (i.e. `v ∈ V`), `τ(v)` represents the node type of v.
+- For each edge (u, v) in the set of edges E (i.e. `(u, v)∈ E`),
+  - Its edge type is `φ(u, v)`, which is equivalent to 'predicate' or 'property' in RDF terms;
+  - Its relation type is tuple `(τ(u), φ(u, v), τ(v))`, representing the type of the source node, the edge type, and the type of the target node, respectively.
 
-The simplified data schema captures only node types, edge types, and relation types, and disregard other schema information such as RDFS class hierarchy. 
+The simplified data schema captures only node types, edge types, and relation types, and disregards other schema information such as RDFS class hierarchy.
 
 See [JSON schema for KG schema elements](#json-schema-of-kg-schema-elements).
 
