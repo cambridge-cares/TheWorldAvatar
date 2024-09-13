@@ -13,6 +13,7 @@ import FormInputField from './form-input';
 import FormDateTimePicker from './form-date-time-picker';
 import FormSelector from './form-selector';
 import { FORM_STATES } from '../form-utils';
+import FormInputMinMaxField from './input/form-min-max-input';
 
 interface FormFieldProps {
   entityType: string;
@@ -34,10 +35,11 @@ interface FormFieldProps {
  * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.
  */
 export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
+  const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const effectRan = useRef(false);
   const [dropdownValues, setDropdownValues] = useState<OntologyConcept[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
-  
+
   // A hook that fetches all concepts for select input on first render
   useEffect(() => {
     // Declare an async function that retrieves all entity concepts for specific attributes
@@ -81,7 +83,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
       setIsFetching(false);
     }
 
-    if ((props.form.getValues(FORM_STATES.FORM_TYPE) != PathNames.REGISTRY || props.form.getValues(FORM_STATES.FORM_TYPE) != PathNames.REGISTRY_DELETE)
+    if ((formType != PathNames.REGISTRY || formType != PathNames.REGISTRY_DELETE)
       && props.field.in && !effectRan.current) {
       getEntityConcepts(props.field, props.form);
     }
@@ -97,17 +99,28 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
     return (
       <div className={styles["form-field-container"]}>
         <div className={styles["form-input-container"]}>
-          <FormInputField
-            field={props.field}
-            form={props.form}
-            options={{
-              disabled: props.options?.disabled,
-            }}
-            styles={{
-              label: [styles["form-input-label"]],
-              input: [styles["form-input-value"]],
-            }}
-          />
+          {/** Display input min max range only if this is the search form and a numerical value */}
+          {formType == PathNames.SEARCH && ["integer", "decimal"].includes(props.field.datatype)
+            ? <FormInputMinMaxField
+              field={props.field}
+              form={props.form}
+              styles={{
+                label: [styles["form-input-label"]],
+                input: [styles["form-input-value"]],
+              }}
+            /> :
+            <FormInputField
+              field={props.field}
+              form={props.form}
+              options={{
+                disabled: props.options?.disabled,
+              }}
+              styles={{
+                label: [styles["form-input-label"]],
+                input: [styles["form-input-value"]],
+              }}
+            />
+          }
         </div>
       </div>
     );
