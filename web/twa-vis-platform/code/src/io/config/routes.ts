@@ -10,7 +10,7 @@ export const Modules: {
 export const PathNames: {
   [key: string]: string;
 } = {
-  HOME: "./",
+  HOME: "/",
   MAP: "map",
   DASHBOARD: "analytics",
   REGISTRY: "view",
