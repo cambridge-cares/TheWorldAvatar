@@ -65,30 +65,33 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
   
 ### Steps
 
+1. Follow the points in the section [Initial setup](initial-setup) to ensure that the required services and resources are properly configured.
+
 1. Create conda environment and activate it.
    ```{bash}
    conda create --name qa_backend python==3.10
    conda activate qa_backend
    ```
 
-2. Install dependencies.
+1. Install dependencies.
    ```{bash}
    pip install -r requirements.txt
    ```
 
-3. Ingest required resources into Redis server, as per the section ['Required resources'](#required-resources).
+1. Ingest required resources into Redis server, as per the section ['Required resources'](#required-resources).
 
-4. Start the server:
+1. Start the server:
    - In debug mode (app is automatically reloaded upon code changes), `uvicorn main:app --reload --log-config=log_conf.yaml`.
    - In production mode, `uvicorn main:app --host=0.0.0.0 --log-config log_conf.yaml --workers 4`.
    - The app will be available at `localhost:8000`.  
    <!-- TODO: add a health check endpoint -->
    - To expose the app at a different port, use the command line argument `--port {port}` e.g. `uvicorn main:app --reload --log-config=log_conf.yaml --port 5000`.
 
-5. Whenever any dataset needs to be updated, re-run the ingestion script for that specific dataset with the argument `--drop_index --invalidate_cache` to (1) trigger Redis to flush the old index and create a new one, and (2) re-create on-disc cache for the processed datasets. KIV: allow user to add new resource entries without processing everything again and recreatng the index.
+1. Whenever any dataset needs to be updated, re-run the ingestion script for that specific dataset with the argument `--drop_index --invalidate_cache` to (1) trigger Redis to flush the old index and create a new one, and (2) re-create on-disc cache for the processed datasets. KIV: allow user to add new resource entries without processing everything again and recreatng the index.
 
-## Dockerised installation
+## Docker installation
 
+1. Follow the points in the section [Initial setup](initial-setup) to ensure that the required services and resources are properly configured.
 1. Build the image, `docker build -t fastapi_app .`.
 1. Spin up the container as follows. The app will be available at `localhost:5000` on Docker host.
    ```{bash}
@@ -121,3 +124,168 @@ Overview:
 ### Frontend (to be deprecated)
 
 Zaha's frontend can be accessed at `localhost:5000` in the browser.
+
+
+## Developer's documentation
+
+### Application breakdown
+
+```mermaid
+classDiagram
+   class DataSupporter {
+      query(query)
+   }
+   DataSupporter ..> NlqRewriter
+   DataSupporter ..> Nlq2DataReqContextRetriever
+   DataSupporter ..> Nlq2DataReqLLMCaller
+   DataSupporter ..> CentralEntityLinker
+   DataSupporter ..> DataReqExecutor
+   DataSupporter ..> QARequestArtifactStore
+   DataSupporter ..> VisualisationDataStore
+
+   NlqRewriter ..> QtNormaliser
+
+   class QtNormaliser {
+      openai_client
+      normalise(text)
+   }
+   QtNormaliser ..> QtRecogExampleStore
+
+   class QtRecogExampleStore {
+      examples
+      retrieve()
+   }
+
+   class Nlq2DataReqContextRetriever {
+      example_num
+      relation_num
+      retrieve(nlq)
+   }
+   Nlq2DataReqContextRetriever ..> Nlq2DataReqExampleStore
+   Nlq2DataReqContextRetriever ..> SchemaStore
+
+   class Nlq2DataReqExampleStore {
+      retrieve_examples(nlq, k)
+   }
+   Nlq2DataReqExampleStore ..> Redis
+   Nlq2DataReqExampleStore ..> IEmbedder
+
+   <<interface>> IEmbedder
+   IEmbedder: __call__(documents)
+
+   class SchemaStore {
+      retrieve_relations(nlq, k)
+   }
+   SchemaStore ..> Redis
+   SchemaStore ..> IEmbedder
+
+   class Nlq2DataReqLLMCaller {
+      openai_client
+      forward(nlq, translation_context)
+   }
+
+   class CentralEntityLinker {
+      vss_threshold
+      cls2elconfig
+      link_exact(surface_form, cls)
+      link_semantic(surface_form, cls, k)
+      link_fuzzy(surface_form, cls, k)
+   }
+   CentralEntityLinker ..> Redis
+   CentralEntityLinker ..> IEmbedder
+   CentralEntityLinker "1" --o "many" LinkEntity
+
+   <<interface>> LinkEntity
+   LinkEntity: __call__(text)
+
+   class DataReqExecutor {
+      exec(req_form, ...)
+   }
+   DataReqExecutor ..> SparqlDataReqExecutor
+   DataReqExecutor ..> FuncDataReqExecutor
+   DataReqExecutor ..> FallbackDataReqExecutor
+
+   class SparqlDataReqExecutor {
+      ns2kg
+      exec(req_form, ...)
+   }
+   SparqlDataReqExecutor ..> SparqlQueryProcessor
+   SparqlDataReqExecutor ..> SparqlResponseTransformer
+
+   class SparqlQueryProcessor {
+      process(sparql, ...)
+   }
+
+   class SparqlResponseTransformer {
+      transform(vars, bindings, ...)
+   }
+
+   class FuncDataReqExecutor {
+      name2func
+      exec(req_form, ...)
+   }
+
+   class FallbackDataReqExecutor {
+      exec(...)
+   }
+
+   class QARequestArtifactStore {
+      save(artifact)
+      load(id)
+   }
+   QARequestArtifactStore ..> Redis
+
+   class VisualisationDataStore {
+      get(cls, iris)
+   }
+```
+
+### /qa endpoint handling
+
+```mermaid
+sequenceDiagram
+   participant client as API consumer
+   participant controller as DataSupporter
+   participant nlq_rewriter as NlqRewriter
+   participant context_retriever as Nlq2DataReqContextRetriver
+   participant llm_caller as Nlq2DataReqLLMCaller
+   participant entity_store as CentralEntityLinker
+   participant executor as DataReqExecutor
+   participant vis_data_store as VisualisationDataStore
+
+   client->>controller: Submits natural language<br/>query to /qa endpoint
+   activate controller
+   
+   controller->>nlq_rewriter: Requests query rewrite
+   activate nlq_rewriter
+   nlq_rewriter->>controller: Returns rewritten query
+   deactivate nlq_rewriter
+
+   controller->>context_retriever: Requests relevant semantic parsing<br/>examples and KG schema elements
+   activate context_retriever
+   context_retriever->>controller: Returns requested resources
+   deactivate context_retriever
+
+   controller->>llm_caller: Feeds input query, semantic parsing examples, and<br/>KG schema elements into LLM to perform semantic parsing
+   activate llm_caller
+   llm_caller->>controller: Returns parsed data request
+   deactivate llm_caller
+
+   controller->>entity_store: Requests entity linking for ungrounded nodes
+   activate entity_store
+   entity_store->>controller: Returns IRIs for each ungrounded node
+   deactivate entity_store
+
+   controller->>executor: Forwards data request to execution engine
+   activate executor
+   executor->>controller: Returns execution results
+   deactivate executor
+
+   controller->>vis_data_store: Requests data for visualisation
+   activate vis_data_store
+   vis_data_store->>controller: Returns data for visualisation
+   deactivate vis_data_store
+
+   controller->>client: Returns data for answering<br/>and visualisation
+   deactivate controller
+```
