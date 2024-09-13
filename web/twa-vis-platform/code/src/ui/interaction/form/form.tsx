@@ -49,7 +49,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
       // Retrieve template from APIs
       let template: FormTemplate;
       // For add form, get a blank template
-      if (props.formType == PathNames.REGISTRY_ADD) {
+      if (props.formType == PathNames.REGISTRY_ADD || props.formType == PathNames.SEARCH) {
         template = await getFormTemplate(props.agentApi, props.entityType);
       } else {
         // For edit and view, get template with values
@@ -125,6 +125,10 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
       }
       case PathNames.REGISTRY_EDIT: {
         pendingResponse = await updateEntity(props.agentApi, formData, props.entityType);
+        break;
+      }
+      case PathNames.SEARCH: {
+        console.log(formData)
         break;
       }
       default:

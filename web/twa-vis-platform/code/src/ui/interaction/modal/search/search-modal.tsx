@@ -57,7 +57,7 @@ export default function SearchModal(props: Readonly<SearchModalProps>) {
           <FormComponent
             formRef={formRef}
             entityType={props.id}
-            formType={PathNames.REGISTRY_ADD}
+            formType={PathNames.SEARCH}
             agentApi={`${props.stack}/vis-backend-agent`}
             setResponse={setResponse}
             onSubmittingChange={handleFormSubmittingChange}

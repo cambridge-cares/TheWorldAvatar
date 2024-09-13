@@ -4,7 +4,7 @@ import React from 'react';
 import { Control, FieldError, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 
 import { OntologyConcept, PropertyShape, VALUE_KEY } from 'types/form';
-import { getRegisterOptions } from 'ui/interaction/form/form-utils';
+import { FORM_STATES, getRegisterOptions } from 'ui/interaction/form/form-utils';
 import FormInputContainer from './form-input-container';
 
 interface FormSelectorProps {
@@ -45,7 +45,7 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
         id={props.field.fieldId}
         className={styles["selector"]}
         aria-label={label}
-        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
+        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field, props.form.getValues(FORM_STATES.FORM_TYPE)))}
       >
         {props.selectOptions.map((option, index) => (
           <option key={option.label.value + index} value={option.type.value}>

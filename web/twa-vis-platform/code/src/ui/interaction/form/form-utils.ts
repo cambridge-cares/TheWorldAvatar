@@ -45,7 +45,7 @@ export function initFormField(field: PropertyShape, outputState: FieldValues, fi
 export function getDefaultVal(field: string, defaultValue: string, formType: string): boolean | number | string {
   if (field == FORM_STATES.ID) {
     // ID property should only be randomised for the add form type, else, use the default value
-    if (formType == PathNames.REGISTRY_ADD) {
+    if (formType == PathNames.REGISTRY_ADD || formType == PathNames.SEARCH) {
       return Math.random().toString(16).slice(2);
     }
     // Retrieve only the ID without any prefix
@@ -54,7 +54,7 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 
   if (field == FORM_STATES.RECURRENCE) {
     // Recurrence property should have a value of 1 for the add form type, else, use the default value
-    if (formType == PathNames.REGISTRY_ADD) {
+    if (formType == PathNames.REGISTRY_ADD || formType == PathNames.SEARCH) {
       return 1;
     }
     // Retrieve and parse the recurrent digit based on default value
@@ -66,7 +66,7 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 
   if ([FORM_STATES.SUN, FORM_STATES.MON, FORM_STATES.TUES, FORM_STATES.WED, FORM_STATES.THURS, FORM_STATES.FRI, FORM_STATES.SAT].includes(field)) {
     // Any day of week property should default to false for add form type, else, use the default value
-    if (formType == PathNames.REGISTRY_ADD) {
+    if (formType == PathNames.REGISTRY_ADD || formType == PathNames.SEARCH) {
       return false;
     }
     // Default value can be null, and should return false if null
@@ -84,12 +84,13 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
  * Generate the RegisterOptions required for react-hook-form inputs based on user requirements.
  * 
  * @param {PropertyShape} field The SHACL restrictions for the specific property
+ * @param {string} formType The type of form.
  */
-export function getRegisterOptions(field: PropertyShape): RegisterOptions {
+export function getRegisterOptions(field: PropertyShape, formType: string): RegisterOptions {
   const options: RegisterOptions = {};
 
-  // Add options if the field is required
-  if (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1) {
+  // The field is required if this is currently not the search form and SHACL defines them as optional
+  if (formType!= PathNames.SEARCH && (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1)) {
     options.required = "Required";
   }
 
