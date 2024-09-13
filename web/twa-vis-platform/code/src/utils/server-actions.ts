@@ -29,10 +29,7 @@ export async function getData(agentApi: string, entityType: string, identifier?:
       url += `/${subEntityType}`;
     }
   }
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
+  const res = await sendRequest(url, "GET");
   const responseData = await res.json();
   let parsedResponse: RegistryFieldValues[];
   // If response is a single object, store it as an array
@@ -51,10 +48,7 @@ export async function getData(agentApi: string, entityType: string, identifier?:
  * @param {string} entityType Type of the entity.
  */
 export async function getAvailableTypes(agentApi: string, entityType: string): Promise<OntologyConcept[]> {
-  const res = await fetch(`${agentApi}/type/${entityType}`);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
+  const res = await sendRequest(`${agentApi}/type/${entityType}`, "GET");
   return await res.json();
 }
 
@@ -70,10 +64,7 @@ export async function getFormTemplate(agentApi: string, entityType: string, iden
   if (identifier) {
     url += `/${identifier}`;
   }
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
+  const res = await sendRequest(url, "GET");
   return await res.json();
 }
 
@@ -83,10 +74,7 @@ export async function getFormTemplate(agentApi: string, entityType: string, iden
  * @param {string} agentApi API endpoint.
  */
 export async function sendGetRequest(agentApi: string): Promise<string> {
-  const res = await fetch(agentApi);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
+  const res = await sendRequest(agentApi, "GET");
   return res.text();
 }
 
@@ -99,22 +87,13 @@ export async function sendGetRequest(agentApi: string): Promise<string> {
  * @param {string} entityType Target entity type.
  */
 export async function addEntity(agentApi: string, form: FieldValues, entityType: string): Promise<HttpResponse> {
-  try {
-    const response = await fetch(`${agentApi}/${entityType}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...form,
-        entity: entityType,
-      })
-    });
-    const responseBody: string = await response.text();
-    return { success: response.ok, message: responseBody };
-  } catch (error) {
-    console.error("Error occurred while adding entity.", error);
-  }
+  const reqBody: string = JSON.stringify({
+    ...form,
+    entity: entityType,
+  });
+  const response = await sendRequest(`${agentApi}/${entityType}`, "POST", "application/json", reqBody);
+  const responseBody: string = await response.text();
+  return { success: response.ok, message: responseBody };
 }
 
 /**
@@ -125,22 +104,13 @@ export async function addEntity(agentApi: string, form: FieldValues, entityType:
  * @param {string} entityType Target entity type.
  */
 export async function updateEntity(agentApi: string, form: FieldValues, entityType: string): Promise<HttpResponse> {
-  try {
-    const response = await fetch(`${agentApi}/${entityType}/${form.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...form,
-        entity: entityType,
-      })
-    });
-    const responseBody: string = await response.text();
-    return { success: response.ok, message: responseBody };
-  } catch (error) {
-    console.error("Error occurred while updating entity.", error);
-  }
+  const reqBody: string = JSON.stringify({
+    ...form,
+    entity: entityType,
+  });
+  const response = await sendRequest(`${agentApi}/${entityType}/${form.id}`, "PUT", "application/json", reqBody);
+  const responseBody: string = await response.text();
+  return { success: response.ok, message: responseBody };
 }
 
 /**
@@ -151,16 +121,34 @@ export async function updateEntity(agentApi: string, form: FieldValues, entityTy
  * @param {string} entityType Target entity type.
  */
 export async function deleteEntity(agentApi: string, id: string, entityType: string): Promise<HttpResponse> {
-  try {
-    const response = await fetch(`${agentApi}/${entityType}/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const responseBody: string = await response.text();
-    return { success: response.ok, message: responseBody };
-  } catch (error) {
-    console.error("Error occurred when deleting entity.", error);
+  const response = await sendRequest(`${agentApi}/${entityType}/${id}`, "DELETE", "application/json");
+  const responseBody: string = await response.text();
+  return { success: response.ok, message: responseBody };
+}
+
+/**
+ * This function is a reusable method to send a request to the specified endpoint with any optional values.
+ * 
+ * @param {string} endpoint The target endpoint for sending the request
+ * @param {string} methodType Type of request method - DELETE, GET, PUT, POST
+ * @param {string} contentType Type of request content - application/json - Optional for GET request
+ * @param {string} jsonBody Optional body parameter to be passed in request
+ */
+async function sendRequest(endpoint: string, methodType: string, contentType?: string, jsonBody?: string): Promise<Response> {
+  const options: RequestInit = {
+    method: methodType,
+    headers: {
+      "Content-Type": contentType,
+    },
+  };
+
+  if (jsonBody) {
+    options.body = jsonBody;
   }
+
+  const response = methodType === "GET" ? await fetch(endpoint) : await fetch(endpoint, options);
+  if (!response.ok) {
+    console.error("Failed to complete request: ", response);
+  }
+  return response;
 }
