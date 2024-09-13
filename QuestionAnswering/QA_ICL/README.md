@@ -71,13 +71,13 @@ graph TD
 
 The project is organised into the following directories:
 
-- `data_generation/`: contains utility scripts to help with preparing datasets required by the backend.
-- `backend/`
-  - `fastapi_app/`: source code for FastAPI application.
-  - `triton_inference_server/`: contains the config to serve the Sentence-BERT model.
-- `frontend/` 
-  - `mock_backend/`: source code for Express server to mock backend API.
-  - `next_app_marie/`: source code for Marie's Next.js app.
+- [`data_generation/`](data_generation/): contains utility scripts to help with preparing datasets required by the backend.
+- [`backend/`](backend/)
+  - [`fastapi_app/`](backend/fastapi_app/): source code for FastAPI application.
+  - [`triton_inference_server/`](backend/triton_inference_server/): contains the config to serve the Sentence-BERT model.
+- [`frontend/`](frontend/)
+  - [`mock_backend/`](frontend/mock_backend/): source code for Express server to mock backend API.
+  - [`next_app_marie/`](frontend/next_app_marie/): source code for Marie's Next.js app.
 
 
 ## Deployment with NGINX Configuration
@@ -188,7 +188,7 @@ sequenceDiagram
    3. Build the image and launch the container.
       ```bash
       docker build -t next-app-marie .
-      docker run --name next-app-marie -p 3000:3000 next-app-marie
+      docker run -d --name next-app-marie -p 3000:3000 next-app-marie
       ```
       The Next.js server should be listening at http://123.123.123.123:3000/demos/marie. To verify that it is running, visit http://123.123.123.123:3000/demos/marie in a browser and check if the home page is displayed.
 

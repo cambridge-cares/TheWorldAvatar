@@ -43,7 +43,7 @@ If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDP
 
 1. [Configure the backend endpoint](#backend-endpoint-configuration).
 2. Build the image: `docker build -t next-app-marie .`
-3. Launch the container: `docker run --name next-app-marie -p 3000:3000 next-app-marie`
+3. Launch the container: `docker run -d --name next-app-marie -p 3000:3000 next-app-marie`
 
 The app will be available at `localhost:3000/demos/marie`. 
 
