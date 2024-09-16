@@ -140,7 +140,6 @@ Figure 3: TBox representation of the contractual obligations for a service
     "ontoservice:ServiceCommitment" {
         rdfs-subClassOf fibo-fnd-agr-ctr-ContractualCommitment
         rdfs-comments remarks_string
-        ontoservice-hasPreferredTime xsd_time
     }
 
     "ontoservice:ServiceCommitment" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
@@ -151,7 +150,12 @@ Figure 3: TBox representation of the contractual obligations for a service
     "cmns-dt:Date" {
         cmns-dt-hasDateValue xsd-date
     }
-
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "ontoservice:hasTimeSlot"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
+    "cmns-dt:TimeOfDay" {
+        cmns-dt_hasTimeValue xsd_time_string
+    }
     "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
     "fibo-fnd-dt-fd:RecurrenceInterval" {
         hasSubClass fibo-fnd-dt-fd-Monday
