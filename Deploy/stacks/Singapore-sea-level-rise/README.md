@@ -105,7 +105,17 @@ Once the stack-manager is fully spin up. In the [stack-data-uploader](stack-data
 ./stack.sh start sea-level
 ```
 
+### Landplot layer
+Execute [landplot_matching.http] to match buildings with landplot. This should create a table public.landplot_buildings, mapping ogc_fid of landplots to building_uuid. Required to highlight buildings with GFA exceeded.
+
+Execute [landplot_layer.sql], and update SQL view of twa:landplot in GeoServer GUI manually to
+```
+SELECT * FROM landplot_layer
+```
+
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
 
 [sea-level.json]: ./stack-manager/inputs/config/sea-level.json
+[landplot_matching.http]: ./http_requests/landplot_matching.http
+[landplot_layer.sql]: ./additional_sql_scripts/landplot_layer.sql
