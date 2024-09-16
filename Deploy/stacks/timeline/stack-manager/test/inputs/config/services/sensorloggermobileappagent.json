@@ -20,6 +20,9 @@
           },
           {
             "ConfigName": "geoserver"
+          },
+          {
+            "ConfigName": "ontop"
           }
         ],
         "Secrets": [
@@ -35,7 +38,7 @@
   },
   "endpoints": {
     "isochroneagent": {
-      "url": "http://localhost:8080/sensorloggermobileappagent/",
+      "url": "http://localhost:8080/SensorLoggerMobileAppAgent/",
       "externalPath": "/sensorloggermobileappagent/"
     }
   }

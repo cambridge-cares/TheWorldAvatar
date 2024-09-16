@@ -1,15 +1,19 @@
 {
-  "services": {
-    "includes": [
-      "access-agent-test",
-      "sensorloggermobileappagent",
-      "user-agent",
-      "trajectoryqueryagent",
-      "keycloak-test"
-    ],
-    "excludes": [
-      "citydbimpexp",
-      "citytiler"
-    ]
-  }
+    "services": {
+        "includes": [
+            "sensorloggermobileappagent",
+            "user-agent",
+            "trajectoryqueryagent",
+            "visualisation",
+            "feature-info-agent"
+        ],
+        "excludes": [
+            "citydbimpexp",
+            "citytiler"
+        ]
+    },
+    "volumes": {
+        "vis-files": "visualisation",
+        "fia-queries": "fia"
+    }
 }
