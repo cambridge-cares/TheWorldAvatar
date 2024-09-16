@@ -236,6 +236,7 @@ public final class TestUtils {
         ).thenReturn(
             new ArrayList<>(Arrays.asList(
                 new StackEndpoint("https://test-stack/blazegraph-one", null, null, StackEndpointType.BLAZEGRAPH),
+                new StackEndpoint("https://test-stack/kb/default", null, null, StackEndpointType.BLAZEGRAPH),
                 new StackEndpoint("https://test-stack/blazegraph-two", null, null, StackEndpointType.BLAZEGRAPH)
             ))
         );

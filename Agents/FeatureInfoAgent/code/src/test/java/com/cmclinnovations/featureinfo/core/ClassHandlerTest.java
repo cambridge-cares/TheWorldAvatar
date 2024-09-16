@@ -95,6 +95,7 @@ public class ClassHandlerTest {
         ).thenReturn(
             new ArrayList<>(Arrays.asList(
                 new StackEndpoint("https://test-stack/blazegraph-one", null, null, StackEndpointType.BLAZEGRAPH),
+                new StackEndpoint("https://test-stack/kb/default", null, null, StackEndpointType.BLAZEGRAPH),
                 new StackEndpoint("https://test-stack/blazegraph-two", null, null, StackEndpointType.BLAZEGRAPH)
             ))
         );
@@ -104,8 +105,7 @@ public class ClassHandlerTest {
 
         // Respond to the non-ONTOP query with nothing
         when(
-            kgClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            kgClient.executeQuery(
                 ArgumentMatchers.anyString()
             )
         ).thenReturn(
