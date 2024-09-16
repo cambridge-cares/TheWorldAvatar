@@ -110,6 +110,7 @@ app.prepare().then(() => {
     const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
     roleProtectedPages.forEach(page => {
       server.get(page, keycloak.protect(process.env.ROLE));
+      console.log('protecting page', page, 'with role', process.env.ROLE);
     });
   }
 
