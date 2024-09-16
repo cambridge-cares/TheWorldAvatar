@@ -126,6 +126,10 @@ public class ContainerService extends AbstractService {
         dockerClient.sendFilesContent(containerId, files, remoteDirPath);
     }
 
+    public boolean fileExists(String filePath) {
+        return dockerClient.fileExists(containerId, filePath);
+    }
+
     public final void executeCommand(String... cmd) {
         dockerClient.executeSimpleCommand(containerId, cmd);
     }
