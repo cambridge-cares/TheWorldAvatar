@@ -232,19 +232,19 @@ class DispersionHandler {
     }
 
     plotData() {
-        MapHandler.MAP.setFilter('0.2.dispersion-layer', ["all",
+        MapHandler.MAP.setFilter('0.9.dispersion-layer', ["all",
             ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri],
             ['==', ['to-number', ['get', 'time']], this.selectedTimestep],
             ['==', ['to-number', ['get', 'z']], this.selectedHeight],
             ['==', ['string', ['get', 'pollutant']], this.selectedPollutant]
         ]);
 
-        MapHandler.MAP.setFilter('0.2.ships-layer', ["all",
+        MapHandler.MAP.setFilter('0.9.ships-layer', ["all",
             ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri],
             ['==', ['to-number', ['get', 'time']], this.selectedTimestep]
         ]);
 
-        MapHandler.MAP.setFilter('0.2.weather-layer', ["all",
+        MapHandler.MAP.setFilter('0.9.weather-layer', ["all",
             ['==', ['string', ['get', 'derivation']], this.dispersions[this.selectedSimulation].derivationIri]
         ]);
 

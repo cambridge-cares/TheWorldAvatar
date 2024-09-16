@@ -1749,32 +1749,6 @@
             ]
         },
         {
-            "name": "Digital elevation model",
-            "expanded": false,
-            "sources": [
-                {
-                    "id": "dem",
-                    "type": "raster",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa%3Adem&bbox={bbox-epsg-3857}&width=768&height=474&srs=EPSG:3857&styles=&format=image%2Fpng"
-                    ]
-                }
-            ],
-            "layers": [
-                {
-                    "id": "dem",
-                    "type": "raster",
-                    "name": "SRTM",
-                    "source": "dem",
-                    "minzoom": 10,
-                    "order": 4,
-                    "layout": {
-                        "visibility": "none"
-                    }
-                }
-            ]
-        },
-        {
             "name": "Estimated construction cost",
             "expanded": false,
             "sources": [
