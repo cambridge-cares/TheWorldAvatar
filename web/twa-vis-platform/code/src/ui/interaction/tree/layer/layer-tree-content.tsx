@@ -5,6 +5,7 @@ import styles from './layer-tree.module.css';
 
 import { Map } from 'mapbox-gl';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import SVG from 'react-inlinesvg';
 
 import { MapLayer, MapLayerGroup } from 'types/map-layer';
@@ -12,6 +13,7 @@ import IconComponent from 'ui/graphic/icon/icon';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import SimpleDropdownField from 'ui/interaction/dropdown/simple-dropdown';
 import SearchModal from 'ui/interaction/modal/search/search-modal';
+import { setFilterFeatureIris, setFilterLayerIds } from 'state/map-feature-slice';
 
 // type definition for incoming properties
 interface LayerTreeHeaderProps {
@@ -44,6 +46,7 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   const group: MapLayerGroup = props.group;
   const groupings: string[] = props.group.groupings;
   const initialState: boolean = props.parentShowChildren ? group.showChildren : false;
+  const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState<boolean>(initialState);
   const [currentGroupingView, setCurrentGroupingView] = useState<string>(groupings.length > 0 ? groupings[0] : "");
   const [isSearchOpenState, setIsSearchOpenState] = useState<boolean>(false);
@@ -135,6 +138,11 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   /** A method to open the search modal on click.
   */
   const openSearchModal = () => {
+    const layerIds: string[] = group.layers.map(layer => layer.ids)
+    // Add filter layer IDs
+    dispatch(setFilterLayerIds(layerIds));
+    // Reset filtered features state when opened
+    dispatch(setFilterFeatureIris([]));
     setIsSearchOpenState(true);
   };
 

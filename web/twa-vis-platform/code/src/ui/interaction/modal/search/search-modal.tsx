@@ -1,7 +1,7 @@
 "use client";
 import styles from './search.modal.module.css';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
 
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
@@ -36,6 +36,12 @@ export default function SearchModal(props: Readonly<SearchModalProps>) {
       formRef.current.requestSubmit();
     }
   };
+
+  useEffect(() => {
+    if (response?.success) {
+      setTimeout(() => props.setShowState(false), 2000);
+    }
+  }, [response]);
 
   return (
     <Modal

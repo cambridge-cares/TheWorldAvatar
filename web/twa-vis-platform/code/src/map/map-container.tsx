@@ -3,7 +3,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import { Map } from 'mapbox-gl';
+import { FilterSpecification, Map } from 'mapbox-gl';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -12,7 +12,7 @@ import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import { selectDimensionSliderValue } from 'state/dimension-slider-slice';
-import { getScenarioID } from 'state/map-feature-slice';
+import { getFilterFeatureIris, getFilterLayerIds, getScenarioID } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import { MapSettings } from 'types/settings';
 import ScenarioModal from 'ui/interaction/modal/scenario';
@@ -43,7 +43,8 @@ export default function MapContainer(props: MapContainerProps) {
   const selectedScenario = useSelector(getScenarioID);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
   const dimensionSliderValue = useSelector(selectDimensionSliderValue);
-
+  const filterLayerIds: string[] = useSelector(getFilterLayerIds);
+  const filterFeatureIris: string[] = useSelector(getFilterFeatureIris);
 
   useEffect(() => {
     if (mapData && currentScenario && selectedScenario) {
@@ -90,10 +91,18 @@ export default function MapContainer(props: MapContainerProps) {
         // The same event listeners can be reused given the same underlying data
         map.on("style.load", function () {
           addData(map, mapSettings, mapData);
-        });
+        }); 
       }
     }
   }, [dispatch, map, mapData, mapEventManager, mapSettings, showDialog]);
+
+  // Update the filters for the specific layers if search is required
+  useEffect(() => {
+    if (map && mapData && filterLayerIds?.length > 0 && filterFeatureIris?.length > 0) {
+      // WIP extend the existing filter rather than overwrite
+      filterLayerIds.map(layerId => map.setFilter(layerId, ["in", ["get", "iri"], ...filterFeatureIris]));
+    }
+  }, [map, mapData, filterLayerIds, filterFeatureIris]);
 
   return (
     <>
