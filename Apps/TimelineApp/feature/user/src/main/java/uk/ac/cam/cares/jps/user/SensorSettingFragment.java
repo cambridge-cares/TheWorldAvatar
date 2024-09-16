@@ -104,6 +104,12 @@ public class SensorSettingFragment extends Fragment {
 
     }
 
+    /**
+     * Sets up the RecyclerView for displaying sensor items, initializes the adapter,
+     * and configures the layout and item decorations for the RecyclerView.
+     *
+     * @param view The root view of the fragment where the RecyclerView is located.
+     */
     private void setupRecyclerView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.sensors_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -115,6 +121,10 @@ public class SensorSettingFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * Sets up observers to monitor changes in the sensor items, the toggle-all state, and
+     * the recording state. Updates the UI and RecyclerView based on the observed data.
+     */
     @SuppressLint("NotifyDataSetChanged")
     private void setupObservers() {
         sensorViewModel.getSensorItems().observe(getViewLifecycleOwner(), sensorItems -> {
@@ -126,11 +136,22 @@ public class SensorSettingFragment extends Fragment {
 
     }
 
+    /**
+     * Updates the "Toggle All" button state based on whether all sensors are toggled on.
+     *
+     * @param isAllToggledOn A Boolean indicating if all sensors are toggled on.
+     */
     private void updateToggleAllState(Boolean isAllToggledOn) {
         binding.toggleAllBtn.setText(isAllToggledOn ? R.string.toggle_off : R.string.toggle_all);
         adapter.setTogglesEnabled(isAllToggledOn);
     }
 
+    /**
+     * Updates the UI to reflect the current recording state.
+     * Disables toggling sensors while recording and re-enables it when recording stops.
+     *
+     * @param isRecording A Boolean indicating whether sensor recording is active.
+     */
     @SuppressLint("NotifyDataSetChanged")
     private void updateRecordingUI(Boolean isRecording) {
         binding.startRecordTv.setText(isRecording ? R.string.stop_recording : R.string.start_recording);
@@ -143,7 +164,10 @@ public class SensorSettingFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Sets up UI interactions, including the "Toggle All" button functionality and
+     * navigation back to the previous screen.
+     */
     private void setupUIInteractions() {
         binding.toggleAllBtn.setOnClickListener(v -> {
             boolean currentToggleState = sensorViewModel.getAllToggledOn().getValue() != null && sensorViewModel.getAllToggledOn().getValue();
@@ -194,6 +218,12 @@ public class SensorSettingFragment extends Fragment {
 
     }
 
+    /**
+     * Prompts the user to toggle on a sensor if they haven't yet.
+     *
+     * @param selectedSensorTypes list of sensors the user has selected.
+     *                            Empty if the user has not selected any sensors.
+     */
     private void promptSelectSensors(List<SensorType> selectedSensorTypes) {
         if (selectedSensorTypes == null || selectedSensorTypes.isEmpty()) {
             Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All", Toast.LENGTH_SHORT).show();
@@ -201,6 +231,9 @@ public class SensorSettingFragment extends Fragment {
         }
     }
 
+    /**
+     * Prompts the user to enable permissions if the haven't yet.
+     */
     private void promptGrantPermissions() {
         StringBuilder permissionNotGranted = new StringBuilder();
 
@@ -217,6 +250,11 @@ public class SensorSettingFragment extends Fragment {
         }
     }
 
+    /**
+     * Starts or stops recording based on the current recording state.
+     * If recording is active, stops it and resets all sensors.
+     * If recording is not active, starts recording only for the selected sensors.
+     */
     @SuppressLint("NotifyDataSetChanged")
     private void startRecording() {
         Boolean isRecording = sensorViewModel.getIsRecording().getValue();
@@ -235,6 +273,11 @@ public class SensorSettingFragment extends Fragment {
         }
     }
 
+    /**
+     * Requests fine location permission if it hasn't been granted. If granted, runs the provided callback.
+     *
+     * @param onGranted A {@link Runnable} that is executed if the permission is granted.
+     */
     private void requestLocationPermission(Runnable onGranted) {
         if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             onGranted.run();
@@ -244,6 +287,11 @@ public class SensorSettingFragment extends Fragment {
         }
     }
 
+    /**
+     * Requests audio recording permission if it hasn't been granted. If granted, runs the provided callback.
+     *
+     * @param onGranted A {@link Runnable} that is executed if the permission is granted.
+     */
     private void requestAudioPermission(Runnable onGranted) {
         if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             onGranted.run();
