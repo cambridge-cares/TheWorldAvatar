@@ -1,0 +1,13 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "District",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "subdirectory": "boundary",
+            "skip": false,
+            "name": "District_boundary"
+        } 
+    ]   
+}

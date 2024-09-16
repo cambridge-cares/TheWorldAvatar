@@ -1,0 +1,13 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "parking",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "subdirectory": "garage",
+            "skip": false,
+            "name": "parking_garage"
+        } 
+    ]   
+}
