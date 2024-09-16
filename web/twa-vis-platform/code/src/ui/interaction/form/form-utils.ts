@@ -1,7 +1,7 @@
 import { FieldValues, RegisterOptions } from "react-hook-form";
 
 import { PropertyShape, VALUE_KEY } from "types/form";
-import { PathNames } from "io/config/routes";
+import { Paths } from "io/config/routes";
 
 export const FORM_STATES: Record<string, string> = {
   ID: "id",
@@ -45,7 +45,7 @@ export function initFormField(field: PropertyShape, outputState: FieldValues, fi
 export function getDefaultVal(field: string, defaultValue: string, formType: string): boolean | number | string {
   if (field == FORM_STATES.ID) {
     // ID property should only be randomised for the add form type, else, use the default value
-    if (formType == PathNames.REGISTRY_ADD) {
+    if (formType == Paths.REGISTRY_ADD) {
       return Math.random().toString(16).slice(2);
     }
     // Retrieve only the ID without any prefix
@@ -54,7 +54,7 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 
   if (field == FORM_STATES.RECURRENCE) {
     // Recurrence property should have a value of 1 for the add form type, else, use the default value
-    if (formType == PathNames.REGISTRY_ADD) {
+    if (formType == Paths.REGISTRY_ADD) {
       return 1;
     }
     // Retrieve and parse the recurrent digit based on default value
@@ -66,7 +66,7 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 
   if ([FORM_STATES.SUN, FORM_STATES.MON, FORM_STATES.TUES, FORM_STATES.WED, FORM_STATES.THURS, FORM_STATES.FRI, FORM_STATES.SAT].includes(field)) {
     // Any day of week property should default to false for add form type, else, use the default value
-    if (formType == PathNames.REGISTRY_ADD) {
+    if (formType == Paths.REGISTRY_ADD) {
       return false;
     }
     // Default value can be null, and should return false if null

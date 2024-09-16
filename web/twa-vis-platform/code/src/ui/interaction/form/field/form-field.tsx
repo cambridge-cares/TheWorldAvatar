@@ -4,7 +4,7 @@ import generalStyles from '../form.module.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { OntologyConcept, PropertyShape, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { reorderConcepts, sortConcepts } from 'utils/client-utils';
@@ -77,7 +77,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
       setIsFetching(false);
     }
 
-    if ((props.form.getValues(FORM_STATES.FORM_TYPE) != PathNames.REGISTRY || props.form.getValues(FORM_STATES.FORM_TYPE) != PathNames.REGISTRY_DELETE)
+    if ((props.form.getValues(FORM_STATES.FORM_TYPE) != Paths.REGISTRY || props.form.getValues(FORM_STATES.FORM_TYPE) != Paths.REGISTRY_DELETE)
       && props.field.in && !effectRan.current) {
       getEntityConcepts(props.field, props.form);
     }

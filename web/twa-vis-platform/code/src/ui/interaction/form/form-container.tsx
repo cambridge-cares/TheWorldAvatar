@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { setIsOpen } from 'state/modal-slice';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
@@ -51,7 +51,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     router.back();
   };
 
-  const showReturnButton: boolean = props.formType === PathNames.REGISTRY || !!response;
+  const showReturnButton: boolean = props.formType === Paths.REGISTRY || !!response;
 
   return (
     <div className={styles["container"]}>
