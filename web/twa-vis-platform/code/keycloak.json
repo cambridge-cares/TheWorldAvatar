@@ -1,8 +1,8 @@
 {
-  "realm": "twa-test",
-  "auth-server-url": "http://host.docker.internal:8080/",
+  "realm": "BNL",
+  "auth-server-url": "https://bnl.theworldavatar.io/authorisation/",
   "ssl-required": "external",
-  "resource": "viz",
+  "resource": "job-portal",
   "public-client": true,
   "confidential-port": 8443
 }

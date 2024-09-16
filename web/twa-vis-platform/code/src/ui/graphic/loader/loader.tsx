@@ -5,7 +5,7 @@ import AppImage from 'ui/graphic/image/image';
 
 export default function Loader() {
   return <div className={styles.loadingContainer}>
-    <AppImage url="./images/defaults/loading.gif"
+    <AppImage url="/images/defaults/loading.gif"
       width={500}
       height={500} 
       alt ="Loading animation"/>

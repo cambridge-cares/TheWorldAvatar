@@ -64,7 +64,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={mapLinkProps?.title ?? "Explore"}
             caption={mapLinkProps?.caption ?? "Discover geospatial relationships in our environment"}
-            icon={mapLinkProps?.icon ?? "./images/defaults/icons/map.svg"}
+            icon={mapLinkProps?.icon ?? "/images/defaults/icons/map.svg"}
             url={Routes.MAP}
           />
         )}
@@ -72,7 +72,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={dashboardLinkProps?.title ?? "Analyse"}
             caption={dashboardLinkProps?.caption ?? "Discover trends and insights at a glance"}
-            icon={dashboardLinkProps?.icon ?? "./images/defaults/icons/dash.svg"}
+            icon={dashboardLinkProps?.icon ?? "/images/defaults/icons/dash.svg"}
             url={Routes.DASHBOARD}
           />
         )}
@@ -80,7 +80,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={registryLinkProps?.title ?? "Registry"}
             caption={registryLinkProps?.caption ?? "Manage and view your records"}
-            icon={registryLinkProps?.icon ?? "./images/defaults/icons/glossary.svg"}
+            icon={registryLinkProps?.icon ?? "/images/defaults/icons/glossary.svg"}
             url={`${Routes.REGISTRY}/${props.settings.resources?.registry?.data}`}
           />
         )}
@@ -89,7 +89,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={"Scheduler"}
             caption={"Plan and organise upcoming tasks"}
-            icon={"./images/defaults/icons/schedule.svg"}
+            icon={"/images/defaults/icons/schedule.svg"}
             url={`${Routes.REGISTRY}/${props.settings.resources?.scheduler?.data}`}
           />
         )}
@@ -97,7 +97,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
         <DefaultPageThumbnail
           title={helpLinkProps?.title ?? "Help Centre"}
           caption={helpLinkProps?.caption ?? "Get help for this web platform"}
-          icon={helpLinkProps?.icon ?? "./images/defaults/icons/help.svg"}
+          icon={helpLinkProps?.icon ?? "/images/defaults/icons/help.svg"}
           url={Routes.HELP}
         />
 
