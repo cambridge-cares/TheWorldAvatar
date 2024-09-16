@@ -3,6 +3,9 @@ package com.cmclinnovations.featureinfo;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
@@ -18,6 +21,7 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.core.ClassHandler;
 import com.cmclinnovations.featureinfo.core.meta.MetaHandler;
 import com.cmclinnovations.featureinfo.core.time.TimeHandler;
+import com.cmclinnovations.featureinfo.core.trajectory.TrajectoryHandler;
 import com.cmclinnovations.featureinfo.objects.Request;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -28,7 +32,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * the agent's /get route.
  */
 public class QueryManager {
-    
+
     /**
      * Logger for reporting info/errors.
      */
@@ -48,7 +52,6 @@ public class QueryManager {
      * Internal time series handling.
      */
     private TimeSeriesClient<Instant> tsClient;
-    
 
     /**
      * Initialise a new QueryManager instance.
@@ -65,8 +68,8 @@ public class QueryManager {
      * @param kgClient Connection to the KG(s).
      */
     public void setClients(
-        RemoteStoreClient kgClient,
-        TimeSeriesClient<Instant> tsClient) {
+            RemoteStoreClient kgClient,
+            TimeSeriesClient<Instant> tsClient) {
 
         this.kgClient = kgClient;
         this.tsClient = tsClient;
@@ -97,8 +100,8 @@ public class QueryManager {
      * - Get time series data from the relational database.
      * - Format and return as JSON.
      * 
-     * @param request   Request object containing parameters.
-     * @param response  HTTP response to write back to.
+     * @param request  Request object containing parameters.
+     * @param response HTTP response to write back to.
      * 
      * @return resulting JSON of discovered meta and time series data.
      * 
@@ -125,23 +128,39 @@ public class QueryManager {
         // Get time data
         JSONArray timedata = getTime(request, classMatches, response);
 
+        // Get trajectory data
+        JSONArray trajectoryData = getTrajectory(request, classMatches, response);
+
         // Combine into a single JSON structure
         JSONObject result = new JSONObject();
 
-        if(metadata != null && !metadata.isEmpty()) {
+        if (metadata != null && !metadata.isEmpty()) {
             result.put("meta", metadata);
         }
-         if(timedata != null && !timedata.isEmpty()) {
+        if (timedata != null && !timedata.isEmpty()) {
             result.put("time", timedata);
         }
+        if (trajectoryData != null && !trajectoryData.isEmpty()) {
+            result.put("meta", trajectoryData);
+            // hack
+            try {
+                Path path = Paths.get("/app", "queries", "converted_time_series.json");
+                JSONArray timedata2 = new JSONArray(Files.readString(path));
+                result.put("time", timedata2);
+            } catch (Exception e) {
+
+            }
+        }
+
         return result;
-    }    
+    }
 
     /**
-     * Runs a ClassHandler instance to determine the class IRIs of the instance IRI and which
+     * Runs a ClassHandler instance to determine the class IRIs of the instance IRI
+     * and which
      * configuration entries match said classes.
      * 
-     * @param iri feature IRI.
+     * @param iri      feature IRI.
      * @param response HTTP response to write to.
      * 
      * @return Set of matching configuration entries.
@@ -150,14 +169,14 @@ public class QueryManager {
      */
     private List<ConfigEntry> determineClasses(Request request, HttpServletResponse response) throws IOException {
         ClassHandler classHandler = new ClassHandler(this.configStore, this.kgClient);
-        
+
         try {
             return classHandler.determineClassMatches(request);
-        } catch(IllegalStateException exception) {
+        } catch (IllegalStateException exception) {
             response.setStatus(Response.Status.NO_CONTENT.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
 
-        } catch(InternalServerErrorException exception) {
+        } catch (InternalServerErrorException exception) {
             response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
             response.getWriter().write("{\"description\":\"" + exception.getMessage() + "\"}");
         }
@@ -166,12 +185,13 @@ public class QueryManager {
     }
 
     /**
-     * Runs a MetaHandler instance to loop through the input class matches, query the KG for
+     * Runs a MetaHandler instance to loop through the input class matches, query
+     * the KG for
      * meta data, the formats the result before returning.
      * 
-     * @param iri feature IRI.
+     * @param iri          feature IRI.
      * @param classMatches discovered configuration entries will class matches.
-     * @param response HTTP response to write to.
+     * @param response     HTTP response to write to.
      * 
      * @return formatted meta data.
      */
@@ -182,12 +202,13 @@ public class QueryManager {
     }
 
     /**
-     * Runs a TimeHandler instance to loop through the input class matches, query the KG for
+     * Runs a TimeHandler instance to loop through the input class matches, query
+     * the KG for
      * measurement IRIs, then contact the RDB to get time series values.
      * 
-     * @param iri feature IRI.
+     * @param iri          feature IRI.
      * @param classMatches discovered configuration entries will class matches.
-     * @param response HTTP response to write to.
+     * @param response     HTTP response to write to.
      * 
      * @return formatted time series data.
      */
@@ -197,5 +218,11 @@ public class QueryManager {
         return timeHandler.getData(classMatches, response);
     }
 
+    private JSONArray getTrajectory(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
+        TrajectoryHandler trajectoryHandler = new TrajectoryHandler(request.getIri(), request.getEndpoint(),
+                this.configStore);
+        trajectoryHandler.setClients(kgClient, tsClient);
+        return trajectoryHandler.getData(classMatches);
+    }
 }
 // End of class.
