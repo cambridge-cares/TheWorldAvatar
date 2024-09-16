@@ -1,4 +1,3 @@
-
 # Kaiserslautern
 
 This is a collection of stack input configuration files to spin up a basic visualisation of some data of the city of Kaiserslautern.
@@ -48,12 +47,8 @@ Visualisation will be available at http://localhost:3838/visualisation locally.
 Make sure to have mapbox_api_key and mapbox_username in the `TWA-VIS-PLATFORM` folder.
 
 
-
 Navigate to the `Web->TWA-VIS-PLATFORM` directory. Ensure that the `CODE->PUBLIC->CONFIG` folder contains the four JSON files: `data-settings.json`, `data.json`, `map-settings.json`, and `ui-settings.json`. Copy the GeoJSON link from GeoServer and paste the link in the "data" attribute of the  `data.json` file.
 
 Additionally, verify that the `OPTIONAL-PAGES` folder includes a `landing-page.md` file. Lastly, update the `docker-compose.yml` file by setting `KEYCLOAK` to `false`.
 
 For more information: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform
-
-
-
