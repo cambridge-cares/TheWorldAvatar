@@ -45,6 +45,12 @@ class JobSender:
     def get_metadata(self):
         return self.call_di('GetDispersionSimulations', 'get').json()
     
+    def find_label_by_derivation_iri(self,derivation_iri):
+        metadata = self.get_metadata()
+        for k, v in metadata.items():
+            if v['derivationIri'] == derivation_iri:
+                return k
+    
     def get_derivation_iri(self,label,scope):
         metadata = self.get_metadata()
         try:
@@ -57,7 +63,6 @@ class JobSender:
             for z in LIST_Z:
                 url_init = url_init+f'&z={z}'
             response = self.call_di(url_init, 'post')
-            print(f"Created new simulation for {label}.")
             return response.json()['derivation']
     
     def add_ship_data(self,mmsi,df_ship):
@@ -110,10 +115,14 @@ class JobSender:
     
     def run_simulation(self,label,scope,num_step):
         derivation_iri = self.get_derivation_iri(label,scope)
+        label = self.find_label_by_derivation_iri(derivation_iri)
+        print(f'Running simulation {label}...')
         self.generate_data(derivation_iri,num_step)
         return "Complete."
     
     def run_simulation_without_ship(self,label,scope,list_timestep,num_step):
         derivation_iri = self.get_derivation_iri(label,scope)
+        label = self.find_label_by_derivation_iri(derivation_iri)
+        print(f'Running simulation {label}...')
         self.generate_data_without_ship(derivation_iri,label,list_timestep,num_step)
         return "Complete."
