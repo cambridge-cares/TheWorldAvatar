@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="host_only"></string>
+    <string name="host_with_port"></string>
+
+    <string name="geoserver_wfs">geoserver/wfs</string>
+    <string name="geoserver_pirmasens_wfs">geoserver/pirmasens/wfs</string>
+    <string name="feature_info_agent_get">feature-info-agent/get</string>
+</resources>
