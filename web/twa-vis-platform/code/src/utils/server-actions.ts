@@ -42,6 +42,18 @@ export async function getData(agentApi: string, entityType: string, identifier?:
 }
 
 /**
+ * Retrieves all data of the specified type with human-readable labels for the fields.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {string} entityType Type of entity to retrieve.
+ */
+export async function getLabelledData(agentApi: string, entityType: string): Promise<RegistryFieldValues[]> { 
+  const res = await sendRequest(`${agentApi}/${entityType}/label`, "GET");
+  const responseData = await res.json();
+  return responseData;
+}
+
+/**
  * Retrieves all available ontology types for the associated entity type.
  * 
  * @param {string} agentApi API endpoint.
