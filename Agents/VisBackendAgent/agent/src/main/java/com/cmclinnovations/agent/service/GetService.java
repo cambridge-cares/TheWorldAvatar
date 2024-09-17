@@ -51,14 +51,20 @@ public class GetService {
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
     }
-    // Default query resource does not require any labels as it increase query time
-    String queryPath = requireLabel ? FileService.SHACL_PATH_LABEL_QUERY_RESOURCE
-        : FileService.SHACL_PATH_QUERY_RESOURCE;
+    String queryPath = FileService.SHACL_PATH_QUERY_RESOURCE;
+    String parentId = parentInstanceId;
+    // If no parent instance ID is supplied, hasParent should be true
+    boolean hasParent = parentInstanceId != null;
+    if (requireLabel) {
+      // Only use the label query if required due to the associated slower query
+      // performance
+      queryPath = FileService.SHACL_PATH_LABEL_QUERY_RESOURCE;
+      // Parent related parameters should be disabled
+      parentId = null;
+      hasParent = false;
+    }
     String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
-    // Query for labels if required
-    List<SparqlBinding> results = requireLabel ? this.kgService.queryInstancesWithLabel(query)
-        // If no parent instance ID is supplied, hasParent should be true
-        : this.kgService.queryInstances(query, parentInstanceId, parentInstanceId != null);
+    List<SparqlBinding> results = this.kgService.queryInstances(query, parentId, hasParent);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
