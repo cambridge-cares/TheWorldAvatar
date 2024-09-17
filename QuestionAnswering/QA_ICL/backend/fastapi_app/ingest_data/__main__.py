@@ -1,4 +1,5 @@
 import time
+import traceback
 
 from services.ingest import load_insert_then_index_args
 import ingest_data.entities as entities
@@ -21,7 +22,7 @@ if __name__ == "__main__":
             properties.main(args)
             break
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             time.sleep(WAIT_INTERVAL)
 
     if i >= ATTEMPT_LIMIT:

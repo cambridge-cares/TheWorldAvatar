@@ -16,6 +16,7 @@ from services.rdf_stores.ontozeolite import (
     OntozeoliteRDFStore,
     get_ontozeolite_rdfStore,
 )
+from services.rdf_stores.sg_plot import SGPlotRDFStore, get_sgPlot_rdfStore
 
 
 def get_rdfStores(
@@ -30,6 +31,7 @@ def get_rdfStores(
         OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
     ],
     ontomops_store: Annotated[OntomopsRDFStore, Depends(get_ontomops_rdfStore)],
+    sgPlot_store: Annotated[SGPlotRDFStore, Depends(get_sgPlot_rdfStore)]
 ):
     return (
         ontospecies_store,
@@ -37,4 +39,5 @@ def get_rdfStores(
         ontocompchem_store,
         ontozeolite_store,
         ontomops_store,
+        sgPlot_store
     )

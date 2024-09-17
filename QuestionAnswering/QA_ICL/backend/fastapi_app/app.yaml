@@ -50,7 +50,7 @@ entity_linking:
     - cls: os:Use
       strategy: "semantic"
       k: 3
-    - cls: LandUseType
+    - cls: ontozoning:LandUseType
       strategy: semantic
       k: 5
     - cls: Ship
