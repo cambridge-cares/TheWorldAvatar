@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="host_with_port">http://10.0.2.2:3838</string>
+    <string name="host_with_port"></string>
 
     <string name="trajectoryqueryagent_createlayer">trajectoryqueryagent/createlayer</string>
     <string name="trajectoryqueryagent_getDatesWithData">trajectoryqueryagent/getDatesWithData</string>
