@@ -210,13 +210,15 @@ public class GDALClient extends ContainerClient {
     private Multimap<String, String> findGeoFiles(String containerId, String dirPath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+        // NB In contrast to what the GDAL documentation claims, this applies not only to raster files
+        // but also vector files. -fr returns both directories and files.
         String execId = createComplexCommand(containerId, "gdalmanage", "identify", "-fr", dirPath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
 
-        // -fr returns both directories and files. Directories are filtered out
+        // Directories are filtered out from the result
 
         return outputStream.toString().lines()
                 .map(entry -> entry.split(": "))
