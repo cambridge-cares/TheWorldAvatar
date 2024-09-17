@@ -2032,6 +2032,59 @@
                     "minzoom": 4
                 }
             ]
+        },
+        {
+            "name": "Trajectory Data",
+            "expanded": false,
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:trajectoryDeviceId&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ],
+                    "id": "trajectory"
+                },
+                {
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:bufferedLine&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ],
+                    "id": "buffered_trajectory"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "trajectory",
+                    "name": "Trajectory",
+                    "source": "trajectory",
+                    "source-layer": "trajectoryDeviceId",
+                    "type": "line",
+                    "order": 2,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#000000",
+                        "line-width": 3
+                    }
+                },
+                {
+                    "id": "buffered_trajectory",
+                    "name": "Buffered trajectory",
+                    "source": "buffered_trajectory",
+                    "source-layer": "bufferedLine",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#808080",
+                        "fill-opacity": 0.5
+                    }
+                }
+            ]
         }
     ]
 }
