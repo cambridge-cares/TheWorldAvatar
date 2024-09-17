@@ -55,6 +55,15 @@
                 "reference": "latest",
                 "database": "postgres"
             }
+        },
+        {
+            "id": "trajectory",
+            "class": "https://www.theworldavatar.com/kg/ontodevice/Smartphone",
+			"trajectory": {
+                "featureIriQuery": "closest_buildings.sql",
+                "metaQuery": "trajectory_meta.sparql",
+                "database": "postgres"
+			}
         }
     ]
 }
