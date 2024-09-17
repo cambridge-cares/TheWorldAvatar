@@ -5,7 +5,7 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT DISTINCT ?type ?label ?description
+SELECT DISTINCT ?type ?label ?description ?parent
 WHERE {
   BIND([target] AS ?root_class)
   {
@@ -14,11 +14,19 @@ WHERE {
     ?list rdf:rest*/rdf:first ?type .
     ?type rdfs:label ?label ;
           rdfs:comment ?description .
+    OPTIONAL{
+      ?type rdfs:subClassOf ?parent .
+      FILTER(isIri(?parent) && ?parent != ?root_class)
+	  }
   } UNION {
     ?type rdfs:subClassOf+ ?root_class ;
           rdfs:label ?label ;
           rdfs:comment ?description .
-    FILTER (lang(?label) = "en" || lang(?label) = "")
+    OPTIONAL{
+      ?type rdfs:subClassOf ?parent .
+      FILTER(isIri(?parent) && ?parent != ?root_class)
+	  }
+    FILTER(lang(?label) = "en" || lang(?label) = "")
   } UNION {
     ?type a ?root_class ;
           lcc-cr:hasEnglishShortName ?label ;
