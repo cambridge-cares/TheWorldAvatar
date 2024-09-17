@@ -98,7 +98,6 @@ public class GDALClient extends ContainerClient {
             Multimap<String, String> foundGeoFiles = findGeoFiles(gdalContainerId, tmpDir.toString());
             for (var entry : foundGeoFiles.asMap().entrySet()) {
                 Collection<String> filesOfType = entry.getValue();
-
                 switch (entry.getKey()) {
                     case "XLSX":
                     case "XLS":
@@ -211,14 +210,17 @@ public class GDALClient extends ContainerClient {
     private Multimap<String, String> findGeoFiles(String containerId, String dirPath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        String execId = createComplexCommand(containerId, "gdalmanage", "identify", "-r", dirPath)
+        String execId = createComplexCommand(containerId, "gdalmanage", "identify", "-fr", dirPath)
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
 
+        // -fr returns both directories and files. Directories are filtered out
+
         return outputStream.toString().lines()
                 .map(entry -> entry.split(": "))
+                .filter(a -> Files.isRegularFile(Path.of(a[0])))
                 .collect(ArrayListMultimap::create,
                         (m, pair) -> m.put(pair[1], pair[0]),
                         Multimap::putAll);
