@@ -14,7 +14,8 @@
             "python-service",
             "virtual-sensor-agent",
             "ship-input-agent",
-            "ship-data-agent"
+            "ship-data-agent",
+            "carpark-agent"
         ],
         "excludes": []
     },

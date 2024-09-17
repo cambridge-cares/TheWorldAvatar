@@ -40,7 +40,7 @@
 	},
 	"endpoints": {
 		"ui": {
-			"url": "http://localhost:8080/feature-info-agent/",
+			"url": "http://localhost:8080/FeatureInfoAgent/",
 			"externalPath": "/feature-info-agent/"
 		}
 	}
