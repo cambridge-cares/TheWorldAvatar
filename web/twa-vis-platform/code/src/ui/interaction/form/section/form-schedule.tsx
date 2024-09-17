@@ -7,6 +7,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { PropertyGroup, VALUE_KEY } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
 import FormCheckboxField from '../field/form-checkbox-field';
+import FormDateTimePicker from '../field/form-date-time-picker';
 import { FORM_STATES } from '../form-utils';
 
 interface FormScheduleProps {
@@ -60,6 +61,49 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
               />
             </div>
           })}
+        </div>
+        <div className={styles["time-slot-container"]}>
+          <h1 className={fieldStyles["field-text"]} style={{ margin: "0.5rem 0.75rem" }}>Time Slot</h1>
+          <div className={styles["form-fieldset-contents"]}>
+            <div className={fieldStyles["form-field-container"]}>
+              <div className={fieldStyles["form-input-container"]}>
+                <FormDateTimePicker
+                  field={{
+                    "@id": "string",
+                    "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+                    name: { "@value": "from" },
+                    fieldId: FORM_STATES.TIME_SLOT_START,
+                    datatype: "time",
+                    description: { "@value": "" },
+                    order: 0,
+                  }}
+                  form={props.form}
+                  styles={{
+                    label: [fieldStyles["form-input-label"]],
+                  }}
+                />
+              </div>
+            </div>
+            <div className={fieldStyles["form-field-container"]}>
+              <div className={fieldStyles["form-input-container"]}>
+                <FormDateTimePicker
+                  field={{
+                    "@id": "string",
+                    "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+                    name: { "@value": "to" },
+                    fieldId: FORM_STATES.TIME_SLOT_END,
+                    datatype: "time",
+                    description: { "@value": "" },
+                    order: 0,
+                  }}
+                  form={props.form}
+                  styles={{
+                    label: [fieldStyles["form-input-label"]],
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </fieldset>);

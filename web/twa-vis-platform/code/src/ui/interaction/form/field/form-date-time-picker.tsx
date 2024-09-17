@@ -4,7 +4,7 @@ import React from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
 
 import { PropertyShape, VALUE_KEY } from 'types/form';
-import { getRegisterOptions } from 'ui/interaction/form/form-utils';
+import { FORM_STATES, getRegisterOptions } from 'ui/interaction/form/form-utils';
 import FormInputContainer from './form-input-container';
 
 interface FormDateTimePickerProps {
@@ -69,7 +69,7 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
         className={styles["dtpicker"]}
         type={inputType}
         aria-label={props.field.name[VALUE_KEY]}
-        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
+        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field, props.form.getValues(FORM_STATES.FORM_TYPE)))}
       />
     </FormInputContainer>
   );

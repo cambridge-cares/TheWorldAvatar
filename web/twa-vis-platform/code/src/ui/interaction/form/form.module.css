@@ -108,6 +108,10 @@
   width: 90%;
 }
 
+.time-slot-container {
+  width: 100%;
+}
+
 .loader-container {
   margin-right: 0.5rem;
 }
