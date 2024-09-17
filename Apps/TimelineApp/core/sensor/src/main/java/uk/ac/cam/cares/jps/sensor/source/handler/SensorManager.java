@@ -130,31 +130,18 @@ public class SensorManager {
      * Local format: a Map
      * @return pair (network data, local data)
      */
-    public Pair<JSONArray, Map<String, JSONArray>> collectSensorData() {
-        JSONArray allSensorData = new JSONArray();
+    public Map<String, JSONArray> collectSensorData() {
         Map<String, JSONArray> localStorageData = new HashMap<>();
-        try {
-            // Directly add all elements of each sensor's data to the single array
-            for(SensorHandler handler : sensorHandlersMap.values()) {
-                if (handler.isRunning()) {
-                    JSONArray sensorData = handler.getSensorData();
-                    addAllSensorData(allSensorData, sensorData);
-                    localStorageData.put(handler.getSensorName(), sensorData);
-                }
+        // Directly add all elements of each sensor's data to the single array
+        for(SensorHandler handler : sensorHandlersMap.values()) {
+            if (handler.isRunning()) {
+                JSONArray sensorData = handler.getSensorData();
+                localStorageData.put(handler.getSensorName(), sensorData);
             }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
 
         clearAllSensorData();
-        return new Pair<>(allSensorData, localStorageData);
-    }
-
-    private void addAllSensorData(JSONArray allSensorData, JSONArray sensorData) throws JSONException {
-        for (int i = 0; i < sensorData.length(); i++) {
-            allSensorData.put(sensorData.get(i));
-        }
+        return localStorageData;
     }
 
     /**

@@ -137,9 +137,7 @@ public class SensorService extends Service {
         Runnable bufferAndFlushData = new Runnable() {
             @Override
             public void run() {
-                Pair<JSONArray, Map<String, JSONArray>> pair = sensorManager.collectSensorData();
-
-                Map<String, JSONArray> localData = pair.getSecond();
+                Map<String, JSONArray> localData = sensorManager.collectSensorData();
 
                 // add data to memory buffer
                 for (Map.Entry<String, JSONArray> entry : localData.entrySet()) {

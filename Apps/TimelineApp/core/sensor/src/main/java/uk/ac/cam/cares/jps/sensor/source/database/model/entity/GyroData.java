@@ -33,24 +33,9 @@ public class GyroData extends BaseVector{
     }
 
     @Override
-    public JSONObject toJson() {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("name", "gyroscope");
-
-            JSONObject values = new JSONObject();
-            values.put("x", this.x);
-            values.put("y", this.y);
-            values.put("z", this.z);
-
-            json.put("values", values);
-            json.put("time", this.time);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return json;
+    protected String getSensorName() {
+        return "gyroscope";
     }
-
 
 
 }
