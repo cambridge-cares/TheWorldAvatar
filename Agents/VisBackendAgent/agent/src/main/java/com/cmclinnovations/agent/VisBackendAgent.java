@@ -89,6 +89,16 @@ public class VisBackendAgent {
   }
 
   /**
+   * Retrieves all instances belonging to the specified type in the knowledge
+   * graph in the csv format.
+   */
+  @GetMapping("/csv/{type}")
+  public ResponseEntity<String> getAllInstancesInCSV(@PathVariable(name = "type") String type) {
+    LOGGER.info("Received request to get all instances of {} type in the CSV format...", type);
+    return this.getService.getAllInstancesInCSV(type);
+  }
+
+  /**
    * Retrieves the form template for the specified type from the knowledge graph.
    */
   @GetMapping("/form/{type}")

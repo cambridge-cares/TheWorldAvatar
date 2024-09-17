@@ -36,6 +36,7 @@ public class KGService {
   private static final String JSON_MEDIA_TYPE = "application/json";
   private static final String LD_JSON_MEDIA_TYPE = "application/ld+json";
   private static final String SPARQL_MEDIA_TYPE = "application/sparql-query";
+  private static final String CSV_MEDIA_TYPE = "text/csv";
 
   public static final String INVALID_SHACL_ERROR_MSG = "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.";
 
@@ -79,6 +80,24 @@ public class KGService {
       return this.parseResults((ArrayNode) jsonResults);
     }
     return new ArrayList<>();
+  }
+
+  /**
+   * Executes the query at the target endpoint to retrieve results in the CSV
+   * format.
+   * 
+   * @param query the query for execution.
+   * 
+   * @return the query results in the CSV format.
+   */
+  public String queryCSV(String query) {
+    return this.client.post()
+        .uri(BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint())
+        .accept(MediaType.valueOf(CSV_MEDIA_TYPE))
+        .contentType(MediaType.valueOf(SPARQL_MEDIA_TYPE))
+        .body(query)
+        .retrieve()
+        .body(String.class);
   }
 
   /**
@@ -140,6 +159,25 @@ public class KGService {
     String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths, targetId, hasParent);
     LOGGER.debug("Querying the knowledge graph for the instances...");
     return query(instanceQuery);
+  }
+
+  /**
+   * Queries for all instances in the csv format.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   */
+  public String queryInstancesInCsv(String shaclPathQuery) {
+    LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
+    List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
+    if (variablesAndPropertyPaths.isEmpty()) {
+      LOGGER.error(INVALID_SHACL_ERROR_MSG);
+      throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
+    }
+    LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
+    String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths, null, false);
+    LOGGER.debug("Querying the knowledge graph for the instances in csv format...");
+    return this.queryCSV(instanceQuery);
   }
 
   /**

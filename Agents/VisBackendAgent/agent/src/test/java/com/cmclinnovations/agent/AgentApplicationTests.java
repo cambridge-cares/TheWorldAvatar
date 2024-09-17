@@ -181,4 +181,26 @@ class AgentApplicationTests {
       sampleFile.delete();
     }
   }
+
+  @Test
+  void testGetAllInstancesInCsvRoute_MissingFormResource() throws Exception {
+    this.mockMvc.perform(get("/csv/missing"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(TestUtils.contentContains("Error encountered at"))
+        .andExpect(TestUtils.contentContains(
+            "Resource at file:/usr/local/tomcat/resources/application-form.json is not found. Please ensure you have a valid resource in the file path."));
+  }
+
+  @Test
+  void testGetAllInstancesInCsvRoute_InvalidRoute() throws Exception {
+    File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
+    try {
+      this.mockMvc.perform(get("/csv/invalid"))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string(
+              "Route is invalid at /invalid! If this route is intended to be enabled, please contact your technical team for assistance."));
+    } finally {
+      sampleFile.delete();
+    }
+  }
 }

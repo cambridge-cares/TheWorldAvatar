@@ -73,6 +73,26 @@ public class GetService {
   }
 
   /**
+   * Retrieve all target instances and their information in the CSV format.
+   * 
+   * @param resourceID The target resource identifier for the instance
+   *                   class.
+   */
+  public ResponseEntity<String> getAllInstancesInCSV(String resourceID) {
+    LOGGER.info("Retrieving all instances of {} in csv...", resourceID);
+    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    // Return the BAD REQUEST response directly if IRI is invalid
+    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return iriResponse;
+    }
+    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_LABEL_QUERY_RESOURCE,
+        iriResponse.getBody());
+    return new ResponseEntity<>(
+        this.kgService.queryInstancesInCsv(query),
+        HttpStatus.OK);
+  }
+
+  /**
    * Retrieve only the specific instance and its information.
    * 
    * @param resourceID The target resource identifier for the instance class.
