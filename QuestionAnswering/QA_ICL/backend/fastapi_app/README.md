@@ -91,7 +91,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
 
 ## Docker installation
 
-1. Follow the points in the section [Initial setup](initial-setup) to ensure that the required services and resources are properly configured.
+1. Follow the points in the section [Initial setup](#initial-setup) to ensure that the required services and resources are properly configured.
 1. Build the image, `docker build -t fastapi_app .`.
 1. Spin up the container as follows. The app will be available at `localhost:5000` on Docker host.
    ```{bash}
