@@ -11,6 +11,9 @@ interface FormDateTimePickerProps {
   field: PropertyShape;
   form: UseFormReturn;
   defaultDateTime?: string;
+  options?: {
+    disabled?: boolean;
+  };
   styles?: {
     label?: string[],
   };
@@ -22,6 +25,7 @@ interface FormDateTimePickerProps {
  * @param {PropertyShape} field The form field data model. 
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
  * @param {string} defaultDateTime Optional default date time value for the input. Typically used for existing values.
+ * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.
  * @param {string[]} styles.label Optional styles for the label element.
  */
 export default function FormDateTimePicker(props: Readonly<FormDateTimePickerProps>) {
@@ -66,8 +70,9 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
     >
       <input
         id={props.field.fieldId}
-        className={styles["dtpicker"]}
+        className={`${styles["dtpicker"]} ${props.options?.disabled && (styles["input-disabled"] + " " + styles["field-disabled"])}`}
         type={inputType}
+        readOnly={props.options?.disabled}
         aria-label={props.field.name[VALUE_KEY]}
         {...props.form.register(props.field.fieldId, getRegisterOptions(props.field, props.form.getValues(FORM_STATES.FORM_TYPE)))}
       />

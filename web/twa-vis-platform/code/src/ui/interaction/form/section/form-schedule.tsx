@@ -78,6 +78,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
                     order: 0,
                   }}
                   form={props.form}
+                  options={props.options}
                   styles={{
                     label: [fieldStyles["form-input-label"]],
                   }}
@@ -97,6 +98,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
                     order: 0,
                   }}
                   form={props.form}
+                  options={props.options}
                   styles={{
                     label: [fieldStyles["form-input-label"]],
                   }}
