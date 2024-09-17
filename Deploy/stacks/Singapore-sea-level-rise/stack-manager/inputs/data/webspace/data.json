@@ -1965,13 +1965,6 @@
                     ],
                     "id": "sensor-source",
                     "type": "vector"
-                },
-                {
-                    "id": "AQMesh-source",
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/aqmesh/wms?service=WMS&version=1.1.0&request=GetMap&layers=aqmesh%3Aaqmesh&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
                 }
             ],
             "layers": [
@@ -2037,30 +2030,6 @@
                     "source-layer": "sensors",
                     "type": "circle",
                     "minzoom": 4
-                },
-                {
-                    "id": "AQMesh-layer",
-                    "name": "AQMesh sensor",
-                    "source": "AQMesh-source",
-                    "source-layer": "aqmesh",
-                    "type": "symbol",
-                    "order": 50,
-                    "layout": {
-                        "visibility": "none",
-                        "icon-image": "aqmesh_image",
-                        "icon-size": [
-                            "interpolate",
-                            [
-                                "linear"
-                            ],
-                            [
-                                "zoom"
-                            ],
-                            12,
-                            0.1
-                        ],
-                        "icon-anchor": "bottom"
-                    }
                 }
             ]
         }
