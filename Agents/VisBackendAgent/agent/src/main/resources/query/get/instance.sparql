@@ -7,19 +7,20 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT DISTINCT ?type ?label ?description
 WHERE {
+  BIND([target] AS ?root_class)
   {
-    ?clazz rdfs:subClassOf* [target] ;
+    ?clazz rdfs:subClassOf* ?root_class ;
            owl:oneOf ?list .
     ?list rdf:rest*/rdf:first ?type .
     ?type rdfs:label ?label ;
           rdfs:comment ?description .
   } UNION {
-    ?type rdfs:subClassOf+ [target] ;
+    ?type rdfs:subClassOf+ ?root_class ;
           rdfs:label ?label ;
           rdfs:comment ?description .
     FILTER (lang(?label) = "en" || lang(?label) = "")
   } UNION {
-    ?type a [target] ;
+    ?type a ?root_class ;
           lcc-cr:hasEnglishShortName ?label ;
           skos:definition ?description .
   }
