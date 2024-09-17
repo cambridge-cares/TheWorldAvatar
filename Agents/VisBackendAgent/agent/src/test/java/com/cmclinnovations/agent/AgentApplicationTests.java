@@ -95,6 +95,28 @@ class AgentApplicationTests {
   }
 
   @Test
+  void testGetAllInstancesWithLabelRoute_MissingFormResource() throws Exception {
+    this.mockMvc.perform(get("/missing/label"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(TestUtils.contentContains("Error encountered at"))
+        .andExpect(TestUtils.contentContains(
+            "Resource at file:/usr/local/tomcat/resources/application-form.json is not found. Please ensure you have a valid resource in the file path."));
+  }
+
+  @Test
+  void testGetAllInstancesWithLabelRoute_InvalidRoute() throws Exception {
+    File sampleFile = FileServiceTest.genSampleFile("/" + FileService.APPLICATION_FORM_RESOURCE, "{}");
+    try {
+      this.mockMvc.perform(get("/invalid/label"))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string(
+              "Route is invalid at /invalid! If this route is intended to be enabled, please contact your technical team for assistance."));
+    } finally {
+      sampleFile.delete();
+    }
+  }
+
+  @Test
   void testGetAllInstancesWithParentRoute_MissingFormResource() throws Exception {
     this.mockMvc.perform(get("/parent/id/invalid"))
         .andExpect(status().isInternalServerError())

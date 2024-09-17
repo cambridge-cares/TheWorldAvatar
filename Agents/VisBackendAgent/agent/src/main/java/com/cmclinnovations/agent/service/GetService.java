@@ -40,18 +40,24 @@ public class GetService {
    * @param resourceID       The target resource identifier for the instance
    *                         class.
    * @param parentInstanceId Optional parent instance identifier.
+   * @param requireLabel     Indicates if labels should be returned for all the
+   *                         fields that are IRIs.
    */
-  public ResponseEntity<?> getAllInstances(String resourceID, String parentInstanceId) {
+  public ResponseEntity<?> getAllInstances(String resourceID, String parentInstanceId, boolean requireLabel) {
     LOGGER.debug("Retrieving all instances of {} ...", resourceID);
     ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
     }
-    String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
-        iriResponse.getBody());
-    // If no parent instance ID is supplied, hasParent should be true
-    List<SparqlBinding> results = this.kgService.queryInstances(query, parentInstanceId, parentInstanceId != null);
+    // Default query resource does not require any labels as it increase query time
+    String queryPath = requireLabel ? FileService.SHACL_PATH_LABEL_QUERY_RESOURCE
+        : FileService.SHACL_PATH_QUERY_RESOURCE;
+    String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
+    // Query for labels if required
+    List<SparqlBinding> results = requireLabel ? this.kgService.queryInstancesWithLabel(query)
+        // If no parent instance ID is supplied, hasParent should be true
+        : this.kgService.queryInstances(query, parentInstanceId, parentInstanceId != null);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)

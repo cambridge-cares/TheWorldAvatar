@@ -42,7 +42,19 @@ public class VisBackendAgent {
       @PathVariable(name = "type") String type) {
     LOGGER.info("Received request to get all instances for {}...", type);
     // This route does not require further restriction on parent instances
-    return this.getService.getAllInstances(type, null);
+    return this.getService.getAllInstances(type, null, false);
+  }
+
+  /**
+   * Retrieves all instances belonging to the specified type in the knowledge
+   * graph, and include human readable labels for all properties.
+   */
+  @GetMapping("/{type}/label")
+  public ResponseEntity<?> getAllInstancesWithLabel(
+      @PathVariable(name = "type") String type) {
+    LOGGER.info("Received request to get all instances with labels for {}...", type);
+    // This route does not require further restriction on parent instances
+    return this.getService.getAllInstances(type, null, true);
   }
 
   /**
@@ -55,7 +67,7 @@ public class VisBackendAgent {
       @PathVariable(name = "type") String type) {
     LOGGER.info("Received request to get all instances of target {} associated with the parent type {}...", type,
         parent);
-    return this.getService.getAllInstances(type, id);
+    return this.getService.getAllInstances(type, id, false);
   }
 
   /**

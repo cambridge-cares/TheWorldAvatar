@@ -1,0 +1,225 @@
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+
+SELECT DISTINCT ?clazz ?name ?subject ?isparent ?isoptional ?isnumber ?multipath1 ?multipath1_proppath ?multipath2
+  ?multipath2_proppath ?multipath3 ?multipath3_proppath ?multisubpath1 ?multisubpath1_proppath
+  ?multisubpath2 ?multisubpath2_proppath ?multisubpath3 ?multisubpath3_proppath ?multisubpath4
+  ?multisubpath4_proppath ?name_multipath1 ?name_multipath2 ?name_multipath3
+WHERE {
+  BIND([target] as ?clazz)
+  ?shape rdf:type sh:NodeShape ;
+         sh:targetClass ?clazz ;
+         sh:property ?property .
+  ?property sh:name ?propname ;
+            sh:path ?predicatepath .
+  OPTIONAL {
+    ?property sh:hasValue ?parentSubjectValue .
+  }
+  OPTIONAL {
+    ?property sh:qualifiedValueShape ?parent  .
+  }
+  OPTIONAL {
+    ?property sh:minCount ?minCount  .
+  }
+  # Verify numerical value
+  OPTIONAL {
+    ?property sh:datatype ?datatype.
+  }
+  # Optional query for name property label for the property
+  OPTIONAL {
+    ?property sh:class/^sh:targetClass/sh:property ?name_property .
+    ?name_property sh:name ?name_field;
+                   sh:path ?name_predpath.
+    FILTER(?name_field = "name")
+    
+    OPTIONAL {
+      ?name_predpath rdf:first? ?name_multipath1_initial .
+      # If the property path is a nested blank node, extract both the shacl path restriction eg sh:inversePath and path name
+      OPTIONAL {
+        ?name_multipath1_initial ?name_multipath1_proppath ?name_multipath1_listitem .
+        FILTER STRSTARTS(STR(?name_multipath1_proppath), STR(sh:))
+      }
+      # Extract the required path variable
+      BIND (IF(?name_multipath1_proppath != "" && isBlank(?name_multipath1_initial), ?name_multipath1_listitem, ?name_multipath1_initial) AS ?name_multipath1)
+      FILTER (BOUND(?name_multipath1))
+      # Continue to second multipath for the name field
+      OPTIONAL {
+        ?name_predpath rdf:rest/rdf:first ?name_multipath2_initial .
+        # If the property path is a nested blank node, extract both the shacl path restriction eg sh:inversePath and path name
+        OPTIONAL {
+          ?name_multipath2_initial ?name_multipath2_proppath ?name_multipath2_listitem .
+          FILTER STRSTARTS(STR(?name_multipath2_proppath), STR(sh:))
+        }
+        # Extract the required path variable
+        BIND (IF(?name_multipath2_proppath != "" && isBlank(?name_multipath2_initial), ?name_multipath2_listitem, ?name_multipath2_initial) AS ?name_multipath2)
+        FILTER (BOUND(?name_multipath2))
+
+        # Continue to third multipath for the name field
+        OPTIONAL {
+          ?name_predpath rdf:rest/rdf:rest/rdf:first ?name_multipath3_initial .
+          # If the property path is a nested blank node, extract both the shacl path restriction eg sh:inversePath and path name
+          OPTIONAL {
+            ?name_multipath3_initial ?name_multipath3_proppath ?name_multipath3_listitem .
+            FILTER STRSTARTS(STR(?name_multipath3_proppath), STR(sh:))
+          }
+          # Extract the required path variable
+          BIND (IF(?name_multipath3_proppath != "" && isBlank(?name_multipath3_initial), ?name_multipath3_listitem, ?name_multipath3_initial) AS ?name_multipath3)
+          FILTER (BOUND(?name_multipath3))
+        }
+      }
+    }
+   }
+
+  # Predicate paths may be stored in a list or not, and use of ? helps to extract the related property
+  OPTIONAL {
+    ?predicatepath rdf:first? ?multipath1_initial .
+    # If the property path is a nested blank node, extract both the shacl path restriction eg sh:inversePath and path name
+    OPTIONAL {
+      ?multipath1_initial ?multipath1_proppath ?multipath1_listitem .
+      FILTER STRSTARTS(STR(?multipath1_proppath), STR(sh:))
+    }
+    # Extract the required path variable
+    BIND (IF(?multipath1_proppath != "" && isBlank(?multipath1_initial), ?multipath1_listitem, ?multipath1_initial) AS ?multipath1)
+    FILTER (BOUND(?multipath1))
+
+    # Continue to second multipath
+    OPTIONAL {
+      ?predicatepath rdf:rest/rdf:first ?multipath2_initial .
+      OPTIONAL {
+        ?multipath2_initial ?multipath2_proppath ?multipath2_listitem .
+        FILTER STRSTARTS(STR(?multipath2_proppath), STR(sh:))
+      }
+      BIND (IF(?multipath2_proppath != "" && isBlank(?multipath2_initial), ?multipath2_listitem, ?multipath2_initial) AS ?multipath2)
+      FILTER (BOUND(?multipath2))
+
+      # Continue to third multipath
+      OPTIONAL {
+        ?predicatepath rdf:rest/rdf:rest/rdf:first ?multipath3_initial .
+        OPTIONAL {
+          ?multipath3_initial ?multipath3_proppath ?multipath3_listitem .
+          FILTER STRSTARTS(STR(?multipath3_proppath), STR(sh:))
+        }
+        BIND (IF(?multipath3_proppath != "" && isBlank(?multipath3_initial), ?multipath3_listitem, ?multipath3_initial) AS ?multipath3)
+        FILTER (BOUND(?multipath3))
+      }
+    }
+  }
+  OPTIONAL {
+    ?property (sh:node/sh:property)+ ?subproperty .
+    ?subproperty sh:name ?subname ;
+                 sh:path ?subpath .
+    OPTIONAL {
+      ?subproperty sh:hasValue ?subSubjectValue .
+    }
+    OPTIONAL {
+      ?subproperty sh:qualifiedValueShape ?subparent  .
+  	}
+    OPTIONAL {
+      ?subproperty sh:minCount ?subMinCount  .
+  	}
+    # Verify numerical value
+    OPTIONAL {
+      ?subproperty sh:datatype ?subdatatype  .
+  	}
+    # Optional query for name property label for the subproperty
+    OPTIONAL {
+      ?subproperty sh:class/^sh:targetClass/sh:property ?name_property .
+      ?name_property sh:name ?name_field;
+                     sh:path ?name_predpath.
+      FILTER(?name_field = "name")
+
+      OPTIONAL {
+        ?name_predpath rdf:first? ?name_multipath1_initial .
+        # If the property path is a nested blank node, extract both the shacl path restriction eg sh:inversePath and path name
+        OPTIONAL {
+          ?name_multipath1_initial ?name_multipath1_proppath ?name_multipath1_listitem .
+          FILTER STRSTARTS(STR(?name_multipath1_proppath), STR(sh:))
+        }
+        # Extract the required path variable
+        BIND (IF(?name_multipath1_proppath != "" && isBlank(?name_multipath1_initial), ?name_multipath1_listitem, ?name_multipath1_initial) AS ?name_multipath1)
+        FILTER (BOUND(?name_multipath1))
+        # Continue to second multipath for the name field
+        OPTIONAL {
+          ?name_predpath rdf:rest/rdf:first ?name_multipath2_initial .
+          # If the property path is a nested blank node, extract both the shacl path restriction eg sh:inversePath and path name
+          OPTIONAL {
+            ?name_multipath2_initial ?name_multipath2_proppath ?name_multipath2_listitem .
+            FILTER STRSTARTS(STR(?name_multipath2_proppath), STR(sh:))
+          }
+          # Extract the required path variable
+          BIND (IF(?name_multipath2_proppath != "" && isBlank(?name_multipath2_initial), ?name_multipath2_listitem, ?name_multipath2_initial) AS ?name_multipath2)
+          FILTER (BOUND(?name_multipath2))
+
+          # Continue to third multipath for the name field
+          OPTIONAL {
+            ?name_predpath rdf:rest/rdf:rest/rdf:first ?name_multipath3_initial .
+            # If the property path is a nested blank node, extract both the shacl path restriction eg sh:inversePath and path name
+            OPTIONAL {
+              ?name_multipath3_initial ?name_multipath3_proppath ?name_multipath3_listitem .
+              FILTER STRSTARTS(STR(?name_multipath3_proppath), STR(sh:))
+            }
+            # Extract the required path variable
+            BIND (IF(?name_multipath3_proppath != "" && isBlank(?name_multipath3_initial), ?name_multipath3_listitem, ?name_multipath3_initial) AS ?name_multipath3)
+            FILTER (BOUND(?name_multipath3))
+          }
+        }
+      }
+     }
+
+    OPTIONAL {
+      ?subpath rdf:first? ?multisubpath1_initial .
+      OPTIONAL {
+        ?multisubpath1_initial ?multisubpath1_proppath ?multisubpath1_listitem .
+        FILTER STRSTARTS(STR(?multisubpath1_proppath), STR(sh:))
+      }
+      BIND (IF(?multisubpath1_proppath != "" && isBlank(?multisubpath1_initial), ?multisubpath1_listitem, ?multisubpath1_initial) AS ?multisubpath1)
+      FILTER (BOUND(?multisubpath1))
+
+      # Continue to second multisubpath
+      OPTIONAL {
+        ?subpath rdf:rest/rdf:first ?multisubpath2_initial .
+        OPTIONAL {
+          ?multisubpath2_initial ?multisubpath2_proppath ?multisubpath2_listitem .
+          FILTER STRSTARTS(STR(?multisubpath2_proppath), STR(sh:))
+        }
+        BIND (IF(?multisubpath2_proppath != "" && isBlank(?multisubpath2_initial), ?multisubpath2_listitem, ?multisubpath2_initial) AS ?multisubpath2)
+        FILTER (BOUND(?multisubpath2))
+
+        # Continue to third multisubpath
+        OPTIONAL {
+          ?subpath rdf:rest/rdf:rest/rdf:first ?multisubpath3_initial .
+          OPTIONAL {
+            ?multisubpath3_initial ?multisubpath3_proppath ?multisubpath3_listitem .
+            FILTER STRSTARTS(STR(?multisubpath3_proppath), STR(sh:))
+          }
+          BIND (IF(?multisubpath3_proppath != "" && isBlank(?multisubpath3_initial), ?multisubpath3_listitem, ?multisubpath3_initial) AS ?multisubpath3)
+          FILTER (BOUND(?multisubpath3))
+          OPTIONAL {
+            ?subpath rdf:rest/rdf:rest/rdf:rest/rdf:first ?multisubpath4_initial .
+
+            # Continue to forth multisubpath
+            OPTIONAL {
+              ?multisubpath4_initial ?multisubpath4_proppath ?multisubpath4_listitem .
+              FILTER STRSTARTS(STR(?multisubpath4_proppath), STR(sh:))
+            }
+            BIND (IF(?multisubpath4_proppath != "" && isBlank(?multisubpath4_initial), ?multisubpath4_listitem, ?multisubpath4_initial) AS ?multisubpath4)
+            FILTER (BOUND(?multisubpath4))
+          }
+        }
+      }
+    }
+  }
+  BIND (COALESCE(?subname, ?propname) AS ?name)
+  # If there is a parent indicator, the property should be a parent
+  BIND (BOUND(?parent) || BOUND(?subparent) AS ?isparent)
+  # Retrieve sub target value first; Else, attempt to retrieve from parent or return null 
+  BIND (IF(BOUND(?subSubjectValue), ?subSubjectValue, 
+          IF(BOUND(?parentSubjectValue), ?parentSubjectValue, ?null)
+   		) AS ?subject)
+  # If a sub predicate path exists, it should have a sub min count property that determines if it is optional;
+  # Else, check if the parent path has a min count property to determine if it is optional;
+  # No min count indicates an optional property
+  BIND (IF(BOUND(?subpath) && !isBlank(?subpath), !BOUND(?subMinCount), !BOUND(?minCount)) AS ?isoptional)
+  # Verify if the data type is a number (integer/decimal), and subpath should take precedence
+  BIND (IF(BOUND(?subdatatype), ?subdatatype = xsd:integer || ?subdatatype = xsd:decimal , 
+         BOUND(?datatype) && (?datatype = xsd:integer || ?datatype =xsd:decimal)) AS ?isnumber)
+}

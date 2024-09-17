@@ -195,8 +195,9 @@ There are several routes for retrieving instances associated with a specific `ty
 
 1. Get all instances
 2. Get a specific instance
-3. Get all instances associated with a specific parent instance
-4. Get all instances matching the search criteria
+3. Get all instances with human readable fields
+4. Get all instances associated with a specific parent instance
+5. Get all instances matching the search criteria
 
 #### Get all instances
 
@@ -217,6 +218,16 @@ Users can send a `GET` request to
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
+
+#### Get all instances with human readable fields
+
+This route retrieves all instances with human-readable fields. Users can send a `GET` request to
+
+```
+~url~/vis-backend-agent/{type}/label
+```
+
+where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
 
 #### Get all instances associated with a specific parent instance
 
@@ -359,3 +370,4 @@ base:ConceptShape
 3. `sh:minCount`: Optional parameter to indicate that the variable is required in the template if set above one.
 4. `sh:qualifiedValueShape`: Optional parameter to indicate that the variable is a parent variable that the instance is dependent on.
 5. `sh:datatype`: Required parameter to generate min-max search criteria based on integer or decimal settings
+6. `sh:property/sh:name "name"`: Optional `SHACL` property that provides property path(s) to the human-readable label of the field. This is required for any IRIs returned by any property if human-readable labels are necessary.

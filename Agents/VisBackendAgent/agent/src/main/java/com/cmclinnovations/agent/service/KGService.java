@@ -143,6 +143,26 @@ public class KGService {
   }
 
   /**
+   * Queries for all instances and their information which must be in human
+   * readable formats.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   */
+  public List<SparqlBinding> queryInstancesWithLabel(String shaclPathQuery) {
+    LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
+    List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
+    if (variablesAndPropertyPaths.isEmpty()) {
+      LOGGER.error(INVALID_SHACL_ERROR_MSG);
+      throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
+    }
+    LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
+    String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths, null, false);
+    LOGGER.debug("Querying the knowledge graph for the instances...");
+    return query(instanceQuery);
+  }
+
+  /**
    * Queries for all instances that matches the search criteria.
    * 
    * @param shaclPathQuery The query to retrieve the required predicate paths in

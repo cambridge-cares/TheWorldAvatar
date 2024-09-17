@@ -32,6 +32,9 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
   private static final String MULTISUBPATH_SEC_VAR = "multisubpath2";
   private static final String MULTISUBPATH_THIRD_VAR = "multisubpath3";
   private static final String MULTISUBPATH_FORTH_VAR = "multisubpath4";
+  private static final String MULTI_NAME_PATH_FIRST_VAR = "name_multipath1";
+  private static final String MULTI_NAME_PATH_SEC_VAR = "name_multipath2";
+  private static final String MULTI_NAME_PATH_THIRD_VAR = "name_multipath3";
   private static final List<String> propertyPathParts = Arrays.asList(
       MULTIPATH_FIRST_VAR,
       MULTIPATH_SEC_VAR,
@@ -39,7 +42,10 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       MULTISUBPATH_FIRST_VAR,
       MULTISUBPATH_SEC_VAR,
       MULTISUBPATH_THIRD_VAR,
-      MULTISUBPATH_FORTH_VAR);
+      MULTISUBPATH_FORTH_VAR,
+      MULTI_NAME_PATH_FIRST_VAR,
+      MULTI_NAME_PATH_SEC_VAR,
+      MULTI_NAME_PATH_THIRD_VAR);
 
   private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
 
