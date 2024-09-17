@@ -38,9 +38,8 @@ import java.util.zip.GZIPOutputStream;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import kotlin.Pair;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
-import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
@@ -57,7 +56,7 @@ public class SensorService extends Service {
     @Inject
     SensorNetworkSource sensorNetworkSource;
     @Inject
-    SensorManager sensorManager;
+    SensorHandlerManager sensorHandlerManager;
     @Inject SensorLocalSource sensorLocalSource;
     @Inject
     SensorCollectionStateManager sensorCollectionStateManager;
@@ -129,7 +128,7 @@ public class SensorService extends Service {
             taskId = UUID.randomUUID().toString();
             sensorCollectionStateManager.setTaskId(taskId);  // Store task ID using SensorCollectionStateManager
         }
-        sensorManager.startSelectedSensors(selectedSensors);
+        sensorHandlerManager.startSelectedSensors(selectedSensors);
 
 
 
@@ -137,7 +136,7 @@ public class SensorService extends Service {
         Runnable bufferAndFlushData = new Runnable() {
             @Override
             public void run() {
-                Map<String, JSONArray> localData = sensorManager.collectSensorData();
+                Map<String, JSONArray> localData = sensorHandlerManager.collectSensorData();
 
                 // add data to memory buffer
                 for (Map.Entry<String, JSONArray> entry : localData.entrySet()) {
@@ -328,7 +327,7 @@ public class SensorService extends Service {
 
         LOGGER.info("Stopping sensor service");
         try {
-            sensorManager.stopSensors();
+            sensorHandlerManager.stopSensors();
             String taskId = sensorCollectionStateManager.getTaskId();
             LOGGER.info("Stopping sensor service with Task ID: " + taskId);
 

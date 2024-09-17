@@ -6,7 +6,6 @@ import android.content.Context;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -15,23 +14,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kotlin.Pair;
-
 /**
  * A class to manage sensor handlers. It is considered as a data source level component.
  * Functionalities:
  * 1. Start/stop all sensor handlers
  * 2. Collect all sensor data and prepare them for network upload (by SensorNetworkSource) and local storage (by SensorLocalSource) and clear the in memory accumulated data
  */
-public class SensorManager {
+public class SensorHandlerManager {
 
-    private Logger LOGGER = Logger.getLogger(SensorManager.class);
+    private Logger LOGGER = Logger.getLogger(SensorHandlerManager.class);
     private final SensorHandler[] sensorHandlers;
     private Map<SensorType, SensorHandler> sensorHandlersMap;
     private Map<SensorType, Integer> samplingRatesMap;
 
 
-    public SensorManager(Context applicationContext) {
+    public SensorHandlerManager(Context applicationContext) {
         android.hardware.SensorManager sensorManager = (android.hardware.SensorManager) applicationContext.getSystemService(SENSOR_SERVICE);
         sensorHandlers = new SensorHandler[]{
                 new AccelerometerHandler(sensorManager),
