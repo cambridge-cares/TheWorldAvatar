@@ -16,8 +16,9 @@ This ONNX file can be obtained by using HuggingFace's [utility](https://huggingf
 
 ### Steps
 
+1. Deposit the model weights in the relevant directories as per the section [Required resources](#required-resources).
 1. Build the image: `docker build -t triton:0.1.0 .`.
-2. Run the container.
+1. Run the container.
    ```
    docker run -d \
      -p 8000:8000 \

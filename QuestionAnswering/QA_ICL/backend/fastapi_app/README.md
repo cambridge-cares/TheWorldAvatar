@@ -65,7 +65,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
   
 ### Steps
 
-1. Follow the points in the section [Initial setup](initial-setup) to ensure that the required services and resources are properly configured.
+1. Follow the points in the section [Initial setup](#initial-setup) to ensure that the required services and resources are properly configured.
 
 1. Create conda environment and activate it.
    ```{bash}

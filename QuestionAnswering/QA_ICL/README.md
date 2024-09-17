@@ -7,16 +7,16 @@
   - [Introduction](#introduction)
   - [Architecture](#architecture)
   - [Project Structure](#project-structure)
-  - [Deployment with NGINX Configuration](#deployment-with-nginx-configuration)
-    - [Overview of the target state of the deployed system](#overview-of-the-target-state-of-the-deployed-system)
+  - [Production deployment guide](#production-deployment-guide)
     - [Prerequisities](#prerequisities)
     - [Required resources](#required-resources)
     - [Steps](#steps)
+    - [Outcome](#outcome)
   - [Usage](#usage)
 
 ## Introduction
 
-The Question-Answering System for The World Avatar involves retrieving data from RDF graphs and other data sources such as HTTP endpoints. To do so, input questions need to be converted into SPARQL queries and HTTP requests, whose execution would yield the desired data. The conversion of natural language queries to data requests is facilitated by in-context learning (ICL), which entails engineering a text prompt for Large Language Models (LLMs) to automatically perform the transformation. The prompt may include context information such as parsing examples and the structure of target predictions.
+In this iteration, The World Avatar's Question-Answering System converts natural language queries asked by users into executable SPARQL queries to retrieve data from triplestores and virtual triplestores. The technique involved is in-context learning (ICL), which entails engineering a text prompt for Large Language Models (LLMs) to automatically perform the transformation. The prompt may include context information such as parsing examples and the structure of target predictions.
 
 Key Features
 
@@ -29,9 +29,11 @@ Key Features
 
 ## Architecture
 
+The architecture involve the interaction between a frontend interface and the backend agent service, encapsulated by the FastAPI app. Users asking questions on the frontend will trigger a request to the FastAPI agent, which will contact the other backend and external services to generate a response
+
 1. Frontend: **Next.js app** serves as the web interface.
 2. Backend: 
-    - **FastAPI app**: handles requests from Next.js app with the help of other services.
+    - **FastAPI app**: Core QA application agent that receives and answers questions through HTTP requests from the frontend; Questions are answered with the support of other external services as well.
     - **Redis**: helps with
       - search, including vector similarity and text-based search for retrieving LLM inference contexts and entity linking;
       - expirable storage of QA requests and responses.
@@ -80,60 +82,9 @@ The project is organised into the following directories:
   - [`next_app_marie/`](frontend/next_app_marie/): source code for Marie's Next.js app.
 
 
-## Deployment with NGINX Configuration
+## Production deployment guide
 
-This section outlines how the entire application can be deployed in a single remote server with NGINX reverse proxy.
-
-**Deployment outcome**: Users can access the web interface of the application at https://theworldavatar.io/demos/marie.
-
-### Overview of the target state of the deployed system
-
-Throughout this section, we assume that the IP address of the remote server hosting the application is `123.123.123.123`.
-
-The desired state of the deployed system is as follows. 
-- FastAPI server running at http://123.123.123.123:5000.
-- Next.js server running at http://123.123.123.123:3000.
-- NGINX server redirects:
-  - https://theworldavatar.io/demos/marie to http://123.123.123.123:3000.
-  - https://theworldavatar.io/demos/marie/api to http://123.123.123.123:5000.
-- Next.js server is configured with the SSL-encrypted public address of the backend server https://theworldavatar.io/demos/marie/api.
-
-Please note that this target state necessitates that the FastAPI endpoint be exposed over HTTPS so that the HTML/JS code in the client browser loaded from an secure origin, i.e. https://theworldavatar.io/demos/marie, can safely make requests to the backend without getting blocked by the browser due to [mixed content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content).
-
-```mermaid
-sequenceDiagram
-  actor user as User
-  participant browser as Client browser
-  participant nginx as NGINX server at<br/>theworldavatar.io
-  participant next as Next.js server at<br/>123.123.123.123:3000
-  participant fastapi as FastAPI server at<br/>123.123.123.123:5000
-
-  user->>browser: Navigates to<br/>https://theworldavatar.io/demos/marie
-  activate browser
-  browser->>nginx: Requests HTML at<br/>https://theworldavatar.io/demos/marie
-  activate nginx
-  nginx->>next: Forwards HTML request to<br/>http://123.123.123.123:3000
-  activate next
-  next-->>nginx: Returns HTML
-  deactivate next
-  nginx-->>browser: Forwards HTML response
-  deactivate nginx
-  browser-->>user: Displays HTML page
-  deactivate browser
-
-  user->>browser: Submits a query
-  activate browser
-  browser->>nginx: Makes API call to<br/>https://theworldavatar.io/demos/marie/api
-  activate nginx
-  nginx->>fastapi: Forwards API call to<br/>http://123.123.123.123:5000
-  activate fastapi
-  fastapi-->>nginx: Returns requested data
-  deactivate fastapi
-  nginx-->>browser: Forwards response data
-  deactivate nginx
-  browser-->>user: Displays response
-  deactivate browser
-```
+This entire application must be deployed on a production server with a NGINX server set up in order to function.
 
 ### Prerequisities
 
@@ -162,11 +113,15 @@ sequenceDiagram
    cd TheWorldAvatar/QuestionAnswering/QA_ICL/
    ```
 
-3. Spin up the backend services and ingest relevant data into Redis by executing the following command.
+3. Spin up the backend services by executing the following command.
 
    ```bash
-   sh deploy.sh
+   sh backend/deploy.sh
    ```
+
+  The script involves two steps:
+  1. Deploy the backend services in Docker
+  2. Ingest relevant data into Redis
 
    The FastAPI app should be listening at http://123.123.123.123:5000. To verify that it is running, visit http://123.123.123.123:5000/docs in a browser and check if a Swagger UI for API documentation is shown.
 
@@ -177,12 +132,12 @@ sequenceDiagram
      ...
    }
    ```
-   KIV: Implement a health endpoint GET `/health` and so that the redirect can be verified by checking that GET `https://theworldavatar.io/demos/marie/api/health` returns 200.
+   KIV: Implement a health endpoint GET `/health` and so that the redirect can be verified by checking that GET `https://abc.xyz/demos/marie/api/health` returns 200.
 
 5. Frontend setup:
    1. Configure the backend endpoint for the Next.js app by creating a `.env.local` file under `frontend/next_marie_app/` with the following content (note the trailing forward slash).
       ```
-      NEXT_PUBLIC_BACKEND_ENDPOINT=https://theworldavatar.io/demos/marie/api/
+      NEXT_PUBLIC_BACKEND_ENDPOINT=https://abc.xyz/demos/marie/api/
       ```
    2. Verify that the `BASE_PATH` value in [`.env.production`](frontend/next_app_marie/.env.production) is set to `/demos/marie`.
    3. Build the image and launch the container.
@@ -206,8 +161,58 @@ sequenceDiagram
        ...
    }
    ```
-   To verify that the redirect works, visit https://theworldavatar.io/demos/marie in a browser and check if the home page is displayed.
+   To verify that the redirect works, visit https://abc.xyz/demos/marie in a browser and check if the home page is displayed.
+
+### Outcome
+
+Throughout this section, we assume that the IP address of the remote server hosting the application is `123.123.123.123`.
+
+The desired state of the deployed system is as follows. 
+- FastAPI server running at http://123.123.123.123:5000.
+- Next.js server running at http://123.123.123.123:3000.
+- NGINX server redirects:
+  - https://abc.xyz/demos/marie to http://123.123.123.123:3000.
+  - https://abc.xyz/demos/marie/api to http://123.123.123.123:5000.
+- Next.js server is configured with the SSL-encrypted public address of the backend server https://abc.xyz/demos/marie/api.
+
+Please note that this target state necessitates that the FastAPI endpoint be exposed over HTTPS so that the HTML/JS code in the client browser loaded from an secure origin, i.e. https://abc.xyz/demos/marie, can safely make requests to the backend without getting blocked by the browser due to [mixed content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content).
+
+```mermaid
+sequenceDiagram
+  actor user as User
+  participant browser as Client browser
+  participant nginx as NGINX server at<br/>abc.xyz
+  participant next as Next.js server at<br/>123.123.123.123:3000
+  participant fastapi as FastAPI server at<br/>123.123.123.123:5000
+
+  user->>browser: Navigates to<br/>https://abc.xyz/demos/marie
+  activate browser
+  browser->>nginx: Requests HTML at<br/>https://abc.xyz/demos/marie
+  activate nginx
+  nginx->>next: Forwards HTML request to<br/>http://123.123.123.123:3000
+  activate next
+  next-->>nginx: Returns HTML
+  deactivate next
+  nginx-->>browser: Forwards HTML response
+  deactivate nginx
+  browser-->>user: Displays HTML page
+  deactivate browser
+
+  user->>browser: Submits a query
+  activate browser
+  browser->>nginx: Makes API call to<br/>https://abc.xyz/demos/marie/api
+  activate nginx
+  nginx->>fastapi: Forwards API call to<br/>http://123.123.123.123:5000
+  activate fastapi
+  fastapi-->>nginx: Returns requested data
+  deactivate fastapi
+  nginx-->>browser: Forwards response data
+  deactivate nginx
+  browser-->>user: Displays response
+  deactivate browser
+```
+
 
 ## Usage
 
-Visit https://theworldavatar.io/demos/marie or http://123.123.123.123:3000 to access the web interface and start interacting with the system.
+Visit https://abc.xyz/demos/marie or http://123.123.123.123:3000 to access the web interface and start interacting with the system.
