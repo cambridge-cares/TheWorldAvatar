@@ -49,12 +49,12 @@ public class SensorCollectionStateManager {
     public void initSensorCollectionState(String userId) {
         String sharedPrefFileName = getHashedPrefsFileName(userId);
         File sharedPrefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + sharedPrefFileName + ".xml");
-        String taskId;
+
         if (sharedPrefsFile.exists()) {
             SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
             String deviceId = sharedPreferences.getString(DEVICE_ID_KEY, "");
             Boolean recordingState = sharedPreferences.getBoolean(RECORDING_STATE_KEY, false);
-            taskId = sharedPreferences.getString("task_id", UUID.randomUUID().toString());
+            String taskId = sharedPreferences.getString("task_id", UUID.randomUUID().toString());
 
 
             sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState, taskId));
@@ -63,7 +63,7 @@ public class SensorCollectionStateManager {
 
         String deviceId = UUID.randomUUID().toString();
         boolean recordingState = false;
-        taskId = UUID.randomUUID().toString();
+        String taskId = UUID.randomUUID().toString();
         // todo: check this sync block
         sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState, taskId));
         SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);

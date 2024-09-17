@@ -37,7 +37,7 @@ public class SensorViewModel extends ViewModel {
     private final UserPhoneRepository userPhoneRepository;
     private final MutableLiveData<List<SensorType>> selectedSensors = new MutableLiveData<>();
     private final MutableLiveData<Boolean> allToggledOn = new MutableLiveData<>(false);
-    private final MutableLiveData<List<SensorItem>> sensorItems = new MutableLiveData<>();
+    private final List<SensorItem> sensorItems;
 
 
     private final MutableLiveData<Boolean> _isRecording = new MutableLiveData<>();
@@ -60,9 +60,10 @@ public class SensorViewModel extends ViewModel {
     ) {
         BasicConfigurator.configure();
         this.sensorRepository = repository;
-        selectedSensors.setValue(new ArrayList<>());
+        this.selectedSensors.setValue(new ArrayList<>());
         this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
         this.userPhoneRepository = userPhoneRepository;
+        this.sensorItems = new ArrayList<>();
 
         sensorCollectionStateManagerRepository.getRecordingStatus(new RepositoryCallback<>() {
             @Override
@@ -91,7 +92,7 @@ public class SensorViewModel extends ViewModel {
         items.add(new SensorItem("Location", "Tracks GPS position.", SensorType.LOCATION));
         items.add(new SensorItem("Microphone", "Captures sound levels.", SensorType.SOUND));
 
-        sensorItems.setValue(items);
+        sensorItems.addAll(items);
     }
 
 
@@ -113,16 +114,6 @@ public class SensorViewModel extends ViewModel {
     public LiveData<List<SensorType>> getSelectedSensors() {
         return selectedSensors;
     }
-
-
-    public LiveData<Boolean> isRecording() {
-        return isRecording;
-    }
-
-    public LiveData<Boolean> isAllToggledOn() {
-        return allToggledOn;
-    }
-
 
 
     /**
@@ -164,7 +155,7 @@ public class SensorViewModel extends ViewModel {
      *                associated with the recording task.
      *
      * This method retrieves the task ID from the sensor collection state manager repository. It then checks whether
-     * the task is currently running by calling {@link #isTaskRunning(String, Context)}. Based on the result, it updates
+     * the task is currently running by calling isTaskRunning. Based on the result, it updates
      * the `_isRecording` LiveData, which in turn triggers the UI to update the recording status.
      *
      * If the task ID retrieval fails, the `_isRecording` LiveData is set to `false`, ensuring that the UI reflects that no
@@ -174,7 +165,7 @@ public class SensorViewModel extends ViewModel {
         sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<String>() {
             @Override
             public void onSuccess(String taskId) {
-                if (isTaskRunning(taskId, context)) {
+                if (sensorRepository.isTaskRunning(taskId)) {
                     _isRecording.setValue(true);
                 } else {
                     _isRecording.setValue(false);
@@ -187,47 +178,6 @@ public class SensorViewModel extends ViewModel {
             }
         });
     }
-
-    /**
-     * Checks if a task with the given task ID is currently running.
-     *
-     * @param taskId  The unique identifier for the task that needs to be checked.
-     * @param context The context in which this method is called. It is used to determine the status of the service
-     *                associated with the task.
-     * @return `true` if the task with the given ID is running, `false` otherwise.
-     *
-     * This method first checks if the task ID is valid (i.e., not null or empty). If so, the method proceeds
-     * to check if the service associated with the task is currently running by calling {@link #isServiceRunning(Class, Context)}.
-     */
-    private boolean isTaskRunning(String taskId, Context context) {
-        if (taskId == null || taskId.isEmpty()) {
-            return false;
-        }
-        return isServiceRunning(SensorService.class, context);
-    }
-
-    /**
-     * Checks if a specified service is currently running in the background.
-     *
-     * @param serviceClass The class of the service that needs to be checked.
-     * @param context      The context in which this method is called. It is used to access the system's activity manager
-     *                     to query the running services.
-     * @return `true` if the specified service is currently running, `false` otherwise.
-     *
-     * This method uses the {@link ActivityManager} to query the system's running services. It iterates through the list of
-     * running services and checks if the specified service class is among them. If the service is found, the method returns `true`.
-     * Otherwise, it returns `false`.
-     */
-    private boolean isServiceRunning(Class<?> serviceClass, Context context) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     public LiveData<Boolean> getIsRecording() {
         return isRecording;
@@ -268,7 +218,7 @@ public class SensorViewModel extends ViewModel {
      */
     public void toggleAllSensors(boolean toggle) {
         List<SensorType> updatedSensorTypes = new ArrayList<>();
-        for (SensorItem item : sensorItems.getValue()) {
+        for (SensorItem item : sensorItems) {
             item.setToggled(toggle);
             if (toggle) {
                 updatedSensorTypes.add(item.getSensorType());
@@ -278,7 +228,7 @@ public class SensorViewModel extends ViewModel {
         allToggledOn.setValue(toggle);
     }
 
-    public LiveData<List<SensorItem>> getSensorItems() {
+    public List<SensorItem> getSensorItems() {
         return sensorItems;
     }
 
