@@ -112,6 +112,8 @@ If successful, the response will return `Agent is ready to receive requests.`.
 
 This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a `GET` request to `~url~/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
+Users can also retrieve a form template for a specific instance by appending the associated `id` at the end eg `~url~/vis-backend-agent/form/{type}/{id}`. 
+
 If successful, the response will return a form template in the following (minimal) JSON-LD format. Please note that the template does not follow any valid ontology rules at the root level, and is merely a schema for the frontend. However, its nested values complies with `SHACL` ontological rules.
 
 ```json

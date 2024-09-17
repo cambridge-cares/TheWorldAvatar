@@ -112,11 +112,11 @@ public class KGService {
    * @param query the query for execution.
    * @return the form template as a JSON object.
    */
-  public Map<String, Object> queryForm(String query) {
+  public Map<String, Object> queryForm(String query, Map<String, Object> defaultVals) {
     LOGGER.info("Querying the knowledge graph for the form template...");
     ArrayNode results = queryJsonLd(query);
     LOGGER.debug("Query is successfully executed. Parsing the results...");
-    return this.formTemplateFactory.genTemplate(results);
+    return this.formTemplateFactory.genTemplate(results, defaultVals);
   }
 
   /**

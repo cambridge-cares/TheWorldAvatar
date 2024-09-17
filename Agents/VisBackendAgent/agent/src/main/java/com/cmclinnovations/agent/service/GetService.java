@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent.service;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -100,16 +101,25 @@ public class GetService {
    * Retrieve the form template for the target entity and its information.
    * 
    * @param resourceID The target resource identifier for the instance class.
+   * @param targetId   The target instance IRI.
    */
-  public ResponseEntity<?> getForm(String resourceID) {
+  public ResponseEntity<?> getForm(String resourceID, String targetId) {
     LOGGER.debug("Retrieving the form template for {} ...", resourceID);
     ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
     }
+    Map<String, Object> currentEntity = new HashMap<>();
+    if (targetId != null) {
+      LOGGER.debug("Detected specific entity ID! Retrieving relevant entity information for {} ...", resourceID);
+      ResponseEntity<?> currentEntityResponse = this.getInstance(resourceID, targetId);
+      if (currentEntityResponse.getStatusCode() == HttpStatus.OK) {
+        currentEntity = (Map<String, Object>) currentEntityResponse.getBody();
+      }
+    }
     String query = this.fileService.getContentsWithReplacement(FileService.FORM_QUERY_RESOURCE, iriResponse.getBody());
-    Map<String, Object> results = this.kgService.queryForm(query);
+    Map<String, Object> results = this.kgService.queryForm(query, currentEntity);
     if (results.isEmpty()) {
       LOGGER.error(KGService.INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(KGService.INVALID_SHACL_ERROR_MSG);

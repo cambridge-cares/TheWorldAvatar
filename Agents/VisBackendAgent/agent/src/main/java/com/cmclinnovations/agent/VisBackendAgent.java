@@ -94,7 +94,17 @@ public class VisBackendAgent {
   @GetMapping("/form/{type}")
   public ResponseEntity<?> getFormTemplate(@PathVariable(name = "type") String type) {
     LOGGER.info("Received request to get the form template for {}...", type);
-    return this.getService.getForm(type);
+    return this.getService.getForm(type, null);
+  }
+
+  /**
+   * Retrieves the form template for the target entity of the specified type from
+   * the knowledge graph.
+   */
+  @GetMapping("/form/{type}/{id}")
+  public ResponseEntity<?> retrieveFormTemplate(@PathVariable String type, @PathVariable String id) {
+    LOGGER.info("Received request to get specific form template for {} ...", type);
+    return this.getService.getForm(type, id);
   }
 
   /**

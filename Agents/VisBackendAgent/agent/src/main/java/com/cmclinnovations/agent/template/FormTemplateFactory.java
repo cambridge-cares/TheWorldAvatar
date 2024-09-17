@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class FormTemplateFactory implements ShaclTemplateFactory{
+public class FormTemplateFactory implements ShaclTemplateFactory {
   // Data stores
   private Queue<JsonNode> properties;
   private Map<String, Object> form;
@@ -41,9 +41,11 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
   /**
    * Generate form template in JSON object format.
    * 
-   * @param data Data to be parsed for form template.
+   * @param data        Data to be parsed for form template.
+   * @param defaultVals Default values for the form template if there is an
+   *                    existing entity.
    */
-  public Map<String, Object> genTemplate(ArrayNode data) {
+  public Map<String, Object> genTemplate(ArrayNode data, Map<String, Object> defaultVals) {
     LOGGER.debug("Generating template from query results...");
     this.sortData(data);
 
@@ -52,7 +54,7 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
       return new HashMap<>();
     } else {
       this.addContext();
-      this.parseInputs();
+      this.parseInputs(defaultVals);
     }
 
     return this.form;
@@ -103,7 +105,7 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
                 .path(VAL_KEY).asText();
             Map<String, Object> dependentShape = this.parseInputModel(field
                 .path(SHACL_PREFIX + QUALIFIED_VAL_SHAPE_PROPERTY)
-                .get(0));
+                .get(0), null);
             this.dependentShapes.computeIfAbsent(dependentIdentifier, k -> {
               // When there is no existing shape, add a new property for sorting
               // as well as a new empty queue
@@ -127,8 +129,11 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
 
   /**
    * Parse the property inputs into Spring Boot compliant JSON response format.
+   * 
+   * @param defaultVals Default values for the form template if there is an
+   *                    existing entity.
    */
-  private void parseInputs() {
+  private void parseInputs(Map<String, Object> defaultVals) {
     Map<String, Map<String, Object>> parsedProperties = new HashMap<>();
     List<Map<String, Object>> results = new ArrayList<>();
 
@@ -141,13 +146,13 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
         // Retrieve existing group in parsed model if available, or else, generate one
         // from the associated group
         Map<String, Object> group = parsedProperties.getOrDefault(groupId,
-            this.parseInputModel(this.groups.get(groupId)));
+            this.parseInputModel(this.groups.get(groupId), defaultVals));
         // Retrieve existing group properties in parsed model if available, or else,
         // generate one; Type cast is definitely accurate
         List<Map<String, Object>> groupProperties = (List<Map<String, Object>>) group
             .getOrDefault(PROPERTY_PROPERTY, new ArrayList<>());
         // Add new property
-        groupProperties.add(parseInputModel(currentProperty));
+        groupProperties.add(parseInputModel(currentProperty, defaultVals));
         // Sort the properties based on order
         groupProperties.sort(Comparator.comparingInt(map -> (int) map.get(ORDER_PROPERTY)));
         // Update the results
@@ -155,7 +160,7 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
         parsedProperties.put(groupId, group);
       } else {
         // Without a group, simply use the ID as hash key
-        parsedProperties.put(currentProperty.path(ID_KEY).asText(), this.parseInputModel(currentProperty));
+        parsedProperties.put(currentProperty.path(ID_KEY).asText(), this.parseInputModel(currentProperty, defaultVals));
       }
     }
     parsedProperties.forEach((key, value) -> {
@@ -169,9 +174,11 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
   /**
    * Parse the input into a suitable JSON model.
    * 
-   * @param input Input of interest.
+   * @param input       Input of interest.
+   * @param defaultVals Default values for the form template if there is an
+   *                    existing entity.
    */
-  private Map<String, Object> parseInputModel(JsonNode input) {
+  private Map<String, Object> parseInputModel(JsonNode input, Map<String, Object> defaultVals) {
     Map<String, Object> inputModel = new HashMap<>();
     // Transform each field into a suitable JSON format
     Iterator<Map.Entry<String, JsonNode>> iterator = input.fields();
@@ -188,6 +195,10 @@ public class FormTemplateFactory implements ShaclTemplateFactory{
       } else if (shapeField.equals(SHACL_PREFIX + NAME_PROPERTY)) {
         Map<String, Object> nameLiteral = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
         inputModel.put(StringResource.getLocalName(shapeField), nameLiteral);
+        if (!defaultVals.isEmpty()) {
+          String parsedField = nameLiteral.get(VAL_KEY).toString().replace(" ", "_");
+          inputModel.put("defaultValue", defaultVals.get(parsedField));
+        }
       } else if (shapeField.equals(SHACL_PREFIX + ORDER_PROPERTY)) {
         Map<String, Object> orderMap = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
         inputModel.put(StringResource.getLocalName(shapeField), Integer.valueOf(orderMap.get(VAL_KEY).toString()));

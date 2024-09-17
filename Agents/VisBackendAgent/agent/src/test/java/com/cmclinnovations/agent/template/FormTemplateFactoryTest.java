@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +48,7 @@ class FormTemplateFactoryTest {
     // Set up
     ArrayNode emptyData = objectMapper.createArrayNode();
     // Execute
-    Map<String, Object> result = this.formTemplateFactory.genTemplate(emptyData);
+    Map<String, Object> result = this.formTemplateFactory.genTemplate(emptyData, new HashMap<>());
     // Assert
     assertTrue(result.isEmpty(), "Template should be empty when input data is empty");
   }
@@ -62,7 +63,7 @@ class FormTemplateFactoryTest {
     sample.add(invalidShape);
     // Execute & assert
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-      this.formTemplateFactory.genTemplate(sample);
+      this.formTemplateFactory.genTemplate(sample, new HashMap<>());
     });
     assertEquals("Invalid input node! Only property shape and property group is allowed.", exception.getMessage());
   }
@@ -80,7 +81,7 @@ class FormTemplateFactoryTest {
         NUMBER_TEST_CASE_DESCRIPTION, FormTemplateFactory.XSD_PREFIX + XSD_INTEGER_TYPE, NUMBER_TEST_CASE_ORDER);
     sample.add(secShape);
     // Execute
-    Map<String, Object> result = this.formTemplateFactory.genTemplate(sample);
+    Map<String, Object> result = this.formTemplateFactory.genTemplate(sample, new HashMap<>());
     // Assert
     assertTrue(result.containsKey("@context"), "Context should be added to the form");
     validatePropertyShape(result, STRING_TEST_CASE_ID, STRING_TEST_CASE_NAME, STRING_TEST_CASE_DESCRIPTION,
