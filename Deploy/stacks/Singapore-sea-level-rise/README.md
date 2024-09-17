@@ -108,9 +108,21 @@ Once the stack-manager is fully spin up. In the [stack-data-uploader](stack-data
 ### Landplot layer
 Execute [landplot_matching.http] to match buildings with landplot. This should create a table public.landplot_buildings, mapping ogc_fid of landplots to building_uuid. Required to highlight buildings with GFA exceeded.
 
-Execute [landplot_layer.sql], and update SQL view of twa:landplot in GeoServer GUI manually to
+Execute [landplot_layer.sql] to create a new materialised view, and update SQL view of twa:landplot in GeoServer GUI manually to
 ```
 SELECT * FROM landplot_layer
+```
+
+### Carpark
+Create carpark namespace in Blazegraph and carpark database in PostGIS.
+Add postgis password to db.password in [client.properties].
+Run the following requests from the command line or use the convenience file [carpark.http]:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/carpark-agent/retrieve
+```
+
+```
+curl -X POST http://localhost:3838/carpark-agent/create
 ```
 
 ## Authors
