@@ -11,11 +11,6 @@ WHERE {
          sh:property ?property .
   ?property sh:name ?propname ;
             sh:path ?predicatepath .
-  ?shape rdf:type sh:NodeShape ;
-         sh:targetClass ?clazz ;
-         sh:property ?property .
-  ?property sh:name ?propname ;
-            sh:path ?predicatepath .
   OPTIONAL {
     ?property sh:hasValue ?parentSubjectValue .
   }
