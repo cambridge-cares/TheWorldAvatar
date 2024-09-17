@@ -8,7 +8,7 @@
 - A text embedding service exposed via either OpenAI-compatible or NVIDIA's Triton API. For running a local Triton server in Docker, see [triton_inference_server](../triton_inference_server/).
 - A chat completion service exposed via OpenAI-compatible API.
 - (Optional) LocationIQ geocoding service. 
-  - Context: Some of Zaha's features require geocoding i.e. the determination of geographical coordinates based on a location name. These include functionalities such as finding pollutant concentrations or the nearest carpark given a location name. By default the app will preferentially use the [API key-free geocoding service by Nominatim](https://nominatim.org/release-docs/latest/api/Search/). However, Nominatim does impose a rate limit (read more about [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/)). 
+  - Context: Some of Zaha's features require geocoding i.e. the determination of geographical coordinates based on a location name. These apply for use cases such as finding pollutant concentrations or the nearest carpark given a location name. By default the app will preferentially use the [API key-free geocoding service by Nominatim](https://nominatim.org/release-docs/latest/api/Search/). However, Nominatim does impose a rate limit (read more about [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/)). 
   - To avoid having geocoding requests denied, the app will also make requests to [LocationIQ](https://locationiq.com/), which requires an API key. At the time of writing, LocationIQ does offer a free plan for API access.
   - KIV: [set up a local Nominatim instance](https://nominatim.org/release-docs/latest/admin/Installation/) to remove dependency on external geocoding services.
 
@@ -21,7 +21,7 @@ Datasets required by this app are:
 - [`data/nlq2datareq_examples`](data/nlq2datareq_examples/): JSON files for semantic parsing examples. Each file is an array of `Nlq2DataReqExample` objects.
 - [`data/qtRecog_examples`](data/qtRecog_examples/): JSON files for quantity recognition examples. Each file is an array of `QtRecogExample` objects.
 
-All JSON schemas are defined in [../../data_generation/README.md](../../data_generation/README.md#schema-definitions).
+The specifications of these datasets are outlined in [../../data_generation/README.md](../../data_generation/README.md#terminologies).
 
 To facilitate efficient on-demand retrieval, the datasets need to be ingested into the Redis server before the app starts accepting requests from users. The module [`ingest_data`](./ingest_data/) provides the utilities to run automated ingestion. Execute `python -m ingest_data --help` to see a list of all available command-line options.
 
@@ -78,7 +78,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
    pip install -r requirements.txt
    ```
 
-1. Ingest required resources into Redis server, as per the section ['Required resources'](#required-resources).
+1. Ingest required datasets into Redis server, as per the section ['Required datasets'](#required-datasets).
 
 1. Start the server:
    - In debug mode (app is automatically reloaded upon code changes), `uvicorn main:app --reload --log-config=log_conf.yaml`.
@@ -104,7 +104,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
    Notes:
    - `-p 5000:8000` instructs Docker to map port 5000 on Docker host to port 8000 in the container, which is the default FastAPI port. 
    - `-v "$(pwd)/data:/code/data"` mounts the `data` directory in the host machine into the container.
-1. To ingest the required resources, one may open a `bash` terminal in the container by executing `docker exec -it fastapi_app bash` and then run the ingestion command as introduced in section ['Required resources'](#required-resources).
+1. To ingest the required datasets, one may open a `bash` terminal in the container by executing `docker exec -it fastapi_app bash` and then run the ingestion command as introduced in section ['Required datasets'](#required-datasets).
 
 
 ## Usage
