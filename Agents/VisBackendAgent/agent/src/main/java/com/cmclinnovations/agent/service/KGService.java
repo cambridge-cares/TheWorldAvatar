@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -50,6 +51,21 @@ public class KGService {
     this.objectMapper = new ObjectMapper();
     this.formTemplateFactory = new FormTemplateFactory();
     this.queryTemplateFactory = new QueryTemplateFactory();
+  }
+
+  /**
+   * Add the target triples in JSON-LD format into the KG.
+   * 
+   * @param contents the contents to add
+   */
+  public ResponseEntity<String> add(String contents) {
+    return this.client.post()
+        .uri(BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint())
+        .accept(MediaType.valueOf(LD_JSON_MEDIA_TYPE))
+        .contentType(MediaType.valueOf(LD_JSON_MEDIA_TYPE))
+        .body(contents)
+        .retrieve()
+        .toEntity(String.class);
   }
 
   /**

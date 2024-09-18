@@ -27,6 +27,8 @@ public class FileService {
   public static final String SPRING_FILE_PATH_PREFIX = "file:/";
   private static final String RESOURCE_DIR = "usr/local/tomcat/resources/";
   public static final String APPLICATION_FORM_RESOURCE = RESOURCE_DIR + "application-form.json";
+  public static final String APPLICATION_SERVICE_RESOURCE = RESOURCE_DIR + "application-service.json";
+  public static final String JSON_LD_DIR = RESOURCE_DIR + "jsonld/";
 
   private static final String CLASS_PATH_DIR = "classpath:";
   private static final String QUERY_DIR = CLASS_PATH_DIR + "query/";
@@ -75,7 +77,30 @@ public class FileService {
   }
 
   /**
-   * Find the resource target value within a JSON file associated with the identifier.
+   * Retrieve the target file contents as a JSON object.
+   * 
+   * @param resourceFilePath File path to resource.
+   */
+  public JsonNode getJsonContents(String resourceFilePath) {
+    LOGGER.debug("Retrieving the JSON contents at {}...", resourceFilePath);
+    JsonNode resourceNode;
+    try (InputStream inputStream = this.resourceLoader.getResource(resourceFilePath).getInputStream()) {
+      resourceNode = this.objectMapper.readTree(inputStream);
+    } catch (FileNotFoundException e) {
+      LOGGER.info("Resource at {} is not found. Please ensure you have a valid resource in the file path.",
+          resourceFilePath);
+      throw new FileSystemNotFoundException(MessageFormat.format(
+          "Resource at {0} is not found. Please ensure you have a valid resource in the file path.", resourceFilePath));
+    } catch (IOException e) {
+      LOGGER.error(e);
+      throw new UncheckedIOException(e);
+    }
+    return resourceNode;
+  }
+
+  /**
+   * Find the resource target value within a JSON file associated with the
+   * identifier.
    * 
    * @param target           The identifier for the target class.
    * @param resourceFilePath File path to resource.

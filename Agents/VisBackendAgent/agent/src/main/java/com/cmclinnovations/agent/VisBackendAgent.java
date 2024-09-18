@@ -13,15 +13,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.GetService;
 
 @RestController
 public class VisBackendAgent {
+  private final AddService addService;
   private final GetService getService;
-
   private static final Logger LOGGER = LogManager.getLogger(VisBackendAgent.class);
 
-  public VisBackendAgent(GetService getService) {
+  public VisBackendAgent(AddService addService, GetService getService) {
+    this.addService = addService;
     this.getService = getService;
   }
 
@@ -125,5 +127,23 @@ public class VisBackendAgent {
   public ResponseEntity<?> getConceptMetadata(@PathVariable(name = "type") String type) {
     LOGGER.info("Received request to get the metadata for the concept: {}...", type);
     return this.getService.getConceptMetadata(type);
+  }
+
+  /**
+   * Instantiates a new entity in the knowledge graph using the Bin parameters.
+   * 
+   * @param type   Entity type. Valid type include bin.
+   * @param entity Contains the required Entity data model.
+   */
+  @PostMapping("/{type}")
+  public ResponseEntity<String> addInstance(@PathVariable String type, @RequestBody Map<String, Object> instance) {
+    LOGGER.info("Received request to add one {}...", type);
+    ResponseEntity<String> response = this.addService.instantiate(type, instance);
+    if (response.getStatusCode() == HttpStatus.OK) {
+      LOGGER.info(type + " has been successfully instantiated!");
+      return new ResponseEntity<>(type + " has been successfully instantiated!", HttpStatus.CREATED);
+    } else {
+      return response;
+    }
   }
 }

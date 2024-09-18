@@ -1,0 +1,24 @@
+{
+  "@context": {
+    "base": "https://www.example.com/kg/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": {
+    "@replace": "id",
+    "type": "iri",
+    "prefix": "base:person/"
+  },
+  "@type": "https://www.example.com/kg/person/Person",
+  "person:hasName": {
+    "@id": {
+      "@replace": "id",
+      "type": "iri",
+      "prefix": "https://www.example.com/kg/person/name/"
+    },
+    "@type": "https://www.example.com/kg/person/PersonName",
+    "rdfs:label": {
+      "@replace": "name",
+      "type": "literal"
+    }
+  }
+}
