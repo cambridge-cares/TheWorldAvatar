@@ -3,7 +3,7 @@
   "workspace": "twa",
   "skip": false,
   "datasetDirectory": "companies",
-  "namespace": "company",
+  "namespace": "kb",
   "dataSubsets": [
     {
       "type": "vector",

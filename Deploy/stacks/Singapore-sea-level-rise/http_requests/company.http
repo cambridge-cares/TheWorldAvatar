@@ -68,3 +68,27 @@ content-type: application/json
     "oneToMany": "false",
     "mapping": "industry_buildings.obda"
 }
+
+###
+POST http://localhost:3838/buildingidentificationagent/postgis
+content-type: application/json
+
+{
+    "maxDistance": "100.0",
+    "table": "chemicals",
+    "column": "wkb_geometry",
+    "oneToMany": "false",
+    "mapping": "industry_buildings.obda"
+}
+
+###
+POST http://localhost:3838/buildingidentificationagent/postgis
+content-type: application/json
+
+{
+    "maxDistance": "100.0",
+    "table": "semiconductors",
+    "column": "wkb_geometry",
+    "oneToMany": "false",
+    "mapping": "industry_buildings.obda"
+}
