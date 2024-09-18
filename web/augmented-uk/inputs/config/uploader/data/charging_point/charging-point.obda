@@ -1,0 +1,23 @@
+[PrefixDeclaration]
+: https://theworldavatar.io/kg/CReDo/StreetFurniture/
+om: http://www.ontology-of-units-of-measure.org/resource/om-2/
+geo: http://www.opengis.net/ont/geosparql#
+core:   https://theworldavatar.io/kg/CReDo/OntoCore.owl#
+pow:    https://theworldavatar.io/kg/CReDo/OntoPower.owl#
+
+[MappingDeclaration] @collection [[
+mappingId       electric-vehicle-charging-point-kingslynn
+target          :ChargingPoint/{id} a :ChargingPoint ;
+                    geo:hasDefaultGeometry :ChargingPoint/{id}/defaultGeometry. 
+                :ChargingPoint/{id}/defaultGeometry geo:asWKT "{wkt}"^^geo:wktLiteral .
+                :ChargingPoint/{id} core:hasInternalState :ChargingPoint/{id}/internalPowerState/{state} .
+                :ChargingPoint/{id}/internalPowerState a pow:PowerState ;
+                    om:hasValue :ChargingPoint/{id}/internalPowerState/measure/{state} .
+                :ChargingPoint/{id} om:hasValue pow:mpan/{mpan} .
+source          SELECT
+                "wkb_geometry" as wkt,
+                "id" as id,
+                "status" as state,
+                "mpan" as mpan
+            FROM charging_point_kl_table
+]]
