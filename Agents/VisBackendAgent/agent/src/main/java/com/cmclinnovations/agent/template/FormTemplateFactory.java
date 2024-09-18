@@ -211,7 +211,7 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
       } else if (shapeField.equals(SHACL_PREFIX + QUALIFIED_VAL_SHAPE_PROPERTY)) {
         // For qualified value shape, retrieve the parsed ID and its associated queue
         // from the mapping. Note that there should be no duplicate shapes
-        String dependentId = shapeFieldNode.get(0).path(VAL_KEY).asText();
+        String dependentId = input.get(SHACL_PREFIX + NAME_PROPERTY).get(0).path(VAL_KEY).asText();
         Queue<Map<String, Object>> dependentGroup = this.dependentShapes.get(dependentId);
         inputModel.put(StringResource.getLocalName(shapeField), dependentGroup);
       } else {
