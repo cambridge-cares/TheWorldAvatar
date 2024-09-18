@@ -4,7 +4,6 @@ import traceback
 from services.ingest import load_insert_then_index_args
 import ingest_data.entities as entities
 import ingest_data.nlq2datareq_examples as nlq2datareq_examples
-import ingest_data.relations as relations
 import ingest_data.properties as properties
 
 ATTEMPT_LIMIT = 5
@@ -18,7 +17,6 @@ if __name__ == "__main__":
         try:
             entities.main(args)
             nlq2datareq_examples.main(args)
-            # relations.main(args)
             properties.main(args)
             break
         except Exception as e:

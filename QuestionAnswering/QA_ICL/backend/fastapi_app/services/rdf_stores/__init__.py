@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from services.rdf_stores.sg_ontop import SGOntopRDFStore, get_sgOntop_rdfStore
 from services.rdf_stores.ontocompchem import (
     OntocompchemRDFStore,
     get_ontocompchem_rdfStore,
@@ -31,7 +32,8 @@ def get_rdfStores(
         OntozeoliteRDFStore, Depends(get_ontozeolite_rdfStore)
     ],
     ontomops_store: Annotated[OntomopsRDFStore, Depends(get_ontomops_rdfStore)],
-    sgPlot_store: Annotated[SGPlotRDFStore, Depends(get_sgPlot_rdfStore)]
+    sgPlot_store: Annotated[SGPlotRDFStore, Depends(get_sgPlot_rdfStore)],
+    sgOntop_store:  Annotated[SGOntopRDFStore, Depends(get_sgOntop_rdfStore)],
 ):
     return (
         ontospecies_store,
@@ -39,5 +41,6 @@ def get_rdfStores(
         ontocompchem_store,
         ontozeolite_store,
         ontomops_store,
-        sgPlot_store
+        sgPlot_store,
+        sgOntop_store
     )
