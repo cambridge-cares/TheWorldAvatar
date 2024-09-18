@@ -19,4 +19,6 @@ dependencies {
 //    implementation project(path: ':feature:routing')
     implementation project(path: ':feature:timeline')
     implementation project(path: ':feature:user')
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 }
