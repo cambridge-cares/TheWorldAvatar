@@ -75,12 +75,12 @@ public class FileService {
   }
 
   /**
-   * Find the target class within a JSON file associated with the identifier.
+   * Find the resource target value within a JSON file associated with the identifier.
    * 
    * @param target           The identifier for the target class.
    * @param resourceFilePath File path to resource.
    */
-  public String getTargetClass(String target, String resourceFilePath) {
+  public String getResourceTarget(String target, String resourceFilePath) {
     LOGGER.debug("Finding the target class for the identifier {}...", target);
     Resource resource = this.resourceLoader.getResource(resourceFilePath);
     try (InputStream inputStream = resource.getInputStream()) {

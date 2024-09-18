@@ -219,7 +219,7 @@ public class GetService {
    */
   private ResponseEntity<String> getTargetIri(String resourceID) {
     LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", resourceID);
-    String targetClass = this.fileService.getTargetClass(resourceID,
+    String targetClass = this.fileService.getResourceTarget(resourceID,
         FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE);
     // Handle invalid target type
     if (targetClass.isEmpty()) {

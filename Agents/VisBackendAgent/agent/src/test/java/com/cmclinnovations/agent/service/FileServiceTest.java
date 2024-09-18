@@ -74,7 +74,7 @@ public class FileServiceTest {
   }
 
   @Test
-  void testGetTargetClass() throws IOException {
+  void testGetResourceTarget() throws IOException {
     // Set up
     String sampleFilePath = SAMPLE_RESOURCE_DIR_PATH + SAMPLE_RESOURCE_FILE;
     // Set up file contents
@@ -94,18 +94,18 @@ public class FileServiceTest {
       FileService service = new FileService(resourceLoader, objectMapper);
       // Execute & Assert
       assertEquals(IRI_TEST_CASE1,
-          service.getTargetClass(IRI_LOCAL_NAME_TEST_CASE1.toLowerCase(), RESOURCE_DIR + sampleFilePath));
+          service.getResourceTarget(IRI_LOCAL_NAME_TEST_CASE1.toLowerCase(), RESOURCE_DIR + sampleFilePath));
       assertEquals(IRI_TEST_CASE2,
-          service.getTargetClass(IRI_LOCAL_NAME_TEST_CASE2.toLowerCase(), RESOURCE_DIR + sampleFilePath));
+          service.getResourceTarget(IRI_LOCAL_NAME_TEST_CASE2.toLowerCase(), RESOURCE_DIR + sampleFilePath));
       assertEquals(IRI_TEST_CASE3,
-          service.getTargetClass(IRI_LOCAL_NAME_TEST_CASE3.toLowerCase(), RESOURCE_DIR + sampleFilePath));
+          service.getResourceTarget(IRI_LOCAL_NAME_TEST_CASE3.toLowerCase(), RESOURCE_DIR + sampleFilePath));
     } finally {
       sampleFormApplicationFile.delete();
     }
   }
 
   @Test
-  void testGetTargetClass_InvalidType() throws IOException {
+  void testGetResourceTarget_InvalidType() throws IOException {
     // Set up
     String sampleFilePath = SAMPLE_RESOURCE_DIR_PATH + SAMPLE_RESOURCE_FILE;
     // Set up file contents
@@ -119,18 +119,18 @@ public class FileServiceTest {
     try {
       FileService service = new FileService(resourceLoader, objectMapper);
       // Execute & Assert
-      assertEquals("", service.getTargetClass(INVALID_TEST_CASE, RESOURCE_DIR + sampleFilePath));
+      assertEquals("", service.getResourceTarget(INVALID_TEST_CASE, RESOURCE_DIR + sampleFilePath));
     } finally {
       sampleFormApplicationFile.delete();
     }
   }
 
   @Test
-  void testGetTargetClass_MissingFile() {
+  void testGetResourceTarget_MissingFile() {
     // Execute and assert
     FileSystemNotFoundException exception = assertThrows(FileSystemNotFoundException.class, () -> {
       new FileService(resourceLoader, objectMapper)
-          .getTargetClass(INVALID_TEST_CASE, MISSING_RESOURCE_FILE);
+          .getResourceTarget(INVALID_TEST_CASE, MISSING_RESOURCE_FILE);
     });
     assertEquals("Resource at " + MISSING_RESOURCE_FILE
         + " is not found. Please ensure you have a valid resource in the file path.", exception.getMessage());
