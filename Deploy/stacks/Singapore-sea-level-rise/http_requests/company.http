@@ -56,3 +56,15 @@ content-type: application/json
     "oneToMany": "false",
     "mapping": "industry_buildings.obda"
 }
+
+###
+POST http://localhost:3838/buildingidentificationagent/postgis
+content-type: application/json
+
+{
+    "maxDistance": "100.0",
+    "table": "pharmaceuticals",
+    "column": "wkb_geometry",
+    "oneToMany": "false",
+    "mapping": "industry_buildings.obda"
+}
