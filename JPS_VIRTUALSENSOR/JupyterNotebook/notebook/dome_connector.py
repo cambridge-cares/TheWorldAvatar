@@ -57,7 +57,7 @@ class ShipConnector(Connector):
             dict_ship[mmsi]=pd.DataFrame(dict_ship[mmsi])
         return dict_ship
 
-    def get_scope(self, df_ship):
+    def get_scope(self, df_ship, min_d=0.01):
         
         # Calculate MBR
         min_lat, max_lat = min(df_ship['lat']), max(df_ship['lat'])
@@ -68,43 +68,45 @@ class ShipConnector(Connector):
         centroid_lon = (min_lon + max_lon) / 2
         
         return {"LAT": centroid_lat, "LON": centroid_lon,
-                "dLAT": max((max_lat - min_lat) * 0.5 + 0.05, 0.05),
-                "dLON": max((max_lon - min_lon) * 0.5 + 0.05, 0.05)}
+                "dLAT": max((max_lat - min_lat) * 0.5 + min_d, min_d*2),
+                "dLON": max((max_lon - min_lon) * 0.5 + min_d, min_d*2)}
 
     def plot_ship(self, dict_ship_all, scope_all, list_mmsi):
         # Create a map
         m = folium.Map()
         colormap = plt.get_cmap('autumn')
-        min_bound_lat = 200
-        min_bound_lon = 200
-        max_bound_lat = -200
-        max_bound_lon = -200
+        min_scope_lat = 200
+        min_scope_lon = 200
+        max_scope_lat = -200
+        max_scope_lon = -200
         
+        # prepare combined scope
         for mmsi in list_mmsi:
-            
-            df_ship = dict_ship_all[mmsi]
             scope = scope_all[mmsi]
-
-            trajectory = list(zip(df_ship['lat'],df_ship['lon']))
-            
-            # Calculate MBR
             min_lon = scope['LON']-scope['dLON']
             max_lon = scope['LON']+scope['dLON']
             min_lat = scope['LAT']-scope['dLAT']
             max_lat = scope['LAT']+scope['dLAT']
+            
+            min_scope_lat = min(min_scope_lat, min_lat)
+            min_scope_lon = min(min_scope_lon, min_lon)
+            max_scope_lat = max(max_scope_lat, max_lat)
+            max_scope_lon = max(max_scope_lon, max_lon)
+        
+        mbr_corners = [(min_scope_lat, min_scope_lon),
+                    (min_scope_lat, max_scope_lon),
+                    (max_scope_lat, max_scope_lon),
+                    (max_scope_lat, min_scope_lon),
+                    (min_scope_lat, min_scope_lon)]
 
-            # MBR corners
-            dlat = (max_lat - min_lat) * 0.02
-            dlon = (max_lon - min_lon) * 0.02
-            mbr_corners = [(min_lat, min_lon),
-                        (min_lat, max_lon),
-                        (max_lat, max_lon),
-                        (max_lat, min_lon),
-                        (min_lat, min_lon)]
+        folium.Polygon(locations=mbr_corners,color="none",fill=True,fill_color="blue",fill_opacity=0.2,weight=0).add_to(m)
+        
+        for mmsi in list_mmsi:
+            
+            df_ship = dict_ship_all[mmsi]
 
-            # Add filled MBR to the map
-            folium.Polygon(locations=mbr_corners,color="none",fill=True,fill_color="blue",fill_opacity=0.3,weight=0).add_to(m)
-
+            trajectory = list(zip(df_ship['lat'],df_ship['lon']))
+            
             # Add points to the map
             for i in range(len(trajectory)):
                 point = trajectory[i]
@@ -118,15 +120,8 @@ class ShipConnector(Connector):
                 folium.PolyLine(locations=[trajectory[i], trajectory[i + 1]],
                                 color=mpl.colors.to_hex(colors[i]),  # Convert RGBA to hex
                                 weight=2.5,opacity=1).add_to(m)
-        
-            #update bounds
-            min_bound_lat = min(min_bound_lat, min_lat-dlat)
-            min_bound_lon = min(min_bound_lon, min_lon-dlon)
-            max_bound_lat = max(max_bound_lat, max_lat+dlat)
-            max_bound_lon = max(max_bound_lon, max_lon+dlon)
-            
-            
+
         # Fit bounds to ensure everything is visible
-        m.fit_bounds([[min_bound_lat, min_bound_lon], [max_bound_lat, max_bound_lon]])
+        m.fit_bounds([[min_scope_lat, min_scope_lon], [max_scope_lat, max_scope_lon]])
         
         return m._repr_html_()
