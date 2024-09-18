@@ -3,6 +3,7 @@ export const ID_KEY = "@id";
 export const TYPE_KEY = "@type";
 export const VALUE_KEY = "@value";
 export const PROPERTY_GROUP_TYPE = "PropertyGroup";
+export const ONTOLOGY_CONCEPT_ROOT = "root";
 
 interface RegistryFieldValue {
   value: string;
@@ -13,10 +14,13 @@ interface RegistryFieldValue {
 
 export type RegistryFieldValues = Record<string, RegistryFieldValue>;
 
+export type OntologyConceptMappings = Record<string, OntologyConcept[]>;
+
 export type OntologyConcept = {
   type: RegistryFieldValue;
   label: RegistryFieldValue;
   description: RegistryFieldValue;
+  parent?: RegistryFieldValue;
 };
 
 export type FormTemplate = {
@@ -42,13 +46,13 @@ export interface PropertyShape {
   in?: JsonLdInstance;
   minCount?: JsonLdLiteral;
   maxCount?: JsonLdLiteral;
-  minInclusive?: JsonLdLiteral ;
-  maxInclusive?: JsonLdLiteral ;
-  minExclusive?: JsonLdLiteral ;
-  maxExclusive?: JsonLdLiteral ;
-  minLength?: JsonLdLiteral ;
-  maxLength?: JsonLdLiteral ;
-  pattern?: JsonLdLiteral 
+  minInclusive?: JsonLdLiteral;
+  maxInclusive?: JsonLdLiteral;
+  minExclusive?: JsonLdLiteral;
+  maxExclusive?: JsonLdLiteral;
+  minLength?: JsonLdLiteral;
+  maxLength?: JsonLdLiteral;
+  pattern?: JsonLdLiteral
 }
 
 export interface PropertyGroup {

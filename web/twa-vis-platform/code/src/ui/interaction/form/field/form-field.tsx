@@ -5,14 +5,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 import { PathNames } from 'io/config/routes';
-import { defaultSearchOption, OntologyConcept, PropertyShape, VALUE_KEY } from 'types/form';
+import { defaultSearchOption, ONTOLOGY_CONCEPT_ROOT, OntologyConcept, OntologyConceptMappings, PropertyShape, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
-import { reorderConcepts, sortConcepts } from 'utils/client-utils';
 import { getAvailableTypes } from 'utils/server-actions';
 import FormInputField from './form-input';
 import FormDateTimePicker from './form-date-time-picker';
 import FormSelector from './form-selector';
-import { FORM_STATES } from '../form-utils';
+import { parseConcepts, FORM_STATES } from '../form-utils';
 import FormInputMinMaxField from './input/form-min-max-input';
 
 interface FormFieldProps {
@@ -37,7 +36,7 @@ interface FormFieldProps {
 export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
   const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const effectRan = useRef(false);
-  const [dropdownValues, setDropdownValues] = useState<OntologyConcept[]>([]);
+  const [dropdownValues, setDropdownValues] = useState<OntologyConceptMappings>({});
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
   // A hook that fetches all concepts for select input on first render
@@ -70,15 +69,22 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
       }
 
       if (concepts && concepts.length > 0 && !props.options.disabled) {
-        let sortedConcepts: OntologyConcept[] = sortConcepts(concepts);
-        sortedConcepts = reorderConcepts(sortedConcepts, form.getValues(field.fieldId));
-        if (field.name[VALUE_KEY].toLowerCase() === "country") { sortedConcepts = reorderConcepts(sortedConcepts, "Singapore"); }
+        let firstOption: string = form.getValues(field.fieldId);
+        if (field.name[VALUE_KEY].toLowerCase() === "country") {
+          firstOption = "Singapore";
+        }
         // Add the default search option only if this is the search form
         if (form.getValues(FORM_STATES.FORM_TYPE) === PathNames.SEARCH) {
-          sortedConcepts.unshift(defaultSearchOption);
+          firstOption = defaultSearchOption.label.value;
+          concepts.unshift(defaultSearchOption);
         }
-        setDropdownValues(sortedConcepts);
-        form.setValue(field.fieldId, sortedConcepts[0].type.value);
+        const sortedConceptMappings: OntologyConceptMappings = parseConcepts(concepts, firstOption);
+        setDropdownValues(sortedConceptMappings);
+        // First option should be set if available, else the first parent value should be prioritised
+        const firstRootOption: OntologyConcept = sortedConceptMappings[ONTOLOGY_CONCEPT_ROOT][0];
+        form.setValue(field.fieldId,
+          sortedConceptMappings[firstRootOption.type.value] ? sortedConceptMappings[firstRootOption.type.value][0]?.type?.value
+            : firstRootOption?.type?.value);
       }
       setIsFetching(false);
     }
