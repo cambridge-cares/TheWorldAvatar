@@ -4,6 +4,7 @@ import folium
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from datetime import datetime
+import re
 class Connector:
     def __init__(self, dome_url, api_key, provider_id):
         self.dome_url = dome_url
@@ -25,21 +26,36 @@ class Connector:
             return res_conn_query.content
 
 class ShipConnector(Connector):
+    
+    def find_mmsi(self,text):
+        match = re.search(r'MMSI:\s*(\d+)', text)
+        if match:
+            return match.group(1)
+        return None
         
     def parse_ship_data(self, json_ship):
+        metadata = json_ship['metadata']
         data = json_ship['data']
-        dict_mmsi = {
-            "date": [datetime.fromisoformat(data[0][j]["date"]) for j in range(len(data[0]))],
-            "lat": [float(data[0][j]["lat"]) for j in range(len(data[0]))],
-            "lon": [float(data[0][j]["lon"]) for j in range(len(data[0]))],
-            "speed": [float(data[0][j]["speed"]) for j in range(len(data[0]))],
-            "course": [float(data[0][j]["course"]) for j in range(len(data[0]))]
-        }
-        return dict_mmsi
+        num_ship = len(metadata)
+        dict_ship = {}
+        for i in range(num_ship):
+            dict_mmsi = {
+                "date": [datetime.fromisoformat(data[i][j]["date"]) for j in range(len(data[i]))],
+                "lat": [float(data[i][j]["lat"]) for j in range(len(data[i]))],
+                "lon": [float(data[i][j]["lon"]) for j in range(len(data[i]))],
+                "speed": [float(data[i][j]["speed"]) for j in range(len(data[i]))],
+                "course": [float(data[i][j]["course"]) for j in range(len(data[i]))]
+            }
+            mmsi = self.find_mmsi(metadata[i]['keyword'])
+            if mmsi:
+                dict_ship[mmsi] = dict_mmsi
+        return dict_ship
 
     def get_ship(self, search_string="AIS"):
         dict_ship = self.parse_ship_data(self.get_data(search_string))
-        return pd.DataFrame(dict_ship)
+        for mmsi in dict_ship:
+            dict_ship[mmsi]=pd.DataFrame(dict_ship[mmsi])
+        return dict_ship
 
     def get_scope(self, df_ship):
         
