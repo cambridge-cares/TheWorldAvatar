@@ -39,7 +39,7 @@ content-type: application/json
 
 {
     "maxDistance": "300.0",
-    "table": "factories",
+    "table": "food_beverages",
     "column": "wkb_geometry",
     "oneToMany": "false",
     "mapping": "industry_buildings.obda"
