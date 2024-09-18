@@ -44,8 +44,7 @@ source          SELECT
                     "address",
                     "postal_code"
                 FROM
-                    "factories" 
-                WHERE "infrastructure_type" = 'Chemical Plant'
+                    "chemicals" 
 
 mappingId       semiconductorbuildings
 target          building:{building_uuid} ontobim:hasFacility :waferPlant/{facility_uuid}.
@@ -58,8 +57,7 @@ source          SELECT
                     "address",
                     "postal_code"
                 FROM
-                    "factories" 
-                WHERE "infrastructure_type" = 'Semiconductor Plant'
+                    "semiconductors" 
 
 mappingId       foodbuildings
 target          building:{building_uuid} ontobim:hasFacility :foodPlant/{facility_uuid}.
@@ -72,8 +70,7 @@ source          SELECT
                     "address",
                     "postal_code"
                 FROM
-                    "factories" 
-                WHERE "infrastructure_type" = 'Food Plant'
+                    "food_beverages"
 
 mappingId       pharmaceuticalbuildings
 target          building:{building_uuid} ontobim:hasFacility :pharmaPlant/{facility_uuid}.
@@ -86,8 +83,7 @@ source          SELECT
                     "address",
                     "postal_code"
                 FROM
-                    "factories" 
-                WHERE "infrastructure_type" = 'Pharmaceutical Plant'
+                    "pharmaceuticals"
 
 mappingId       precisionbuildings
 target          building:{building_uuid} ontobim:hasFacility :precisionPlant/{facility_uuid}.
