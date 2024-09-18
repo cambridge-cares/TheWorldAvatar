@@ -20,6 +20,7 @@ import android.os.Process;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
@@ -39,12 +40,20 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
+import uk.ac.cam.cares.jps.sensor.source.database.model.activity.ActivityRecognitionService;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
+
+
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.ActivityRecognitionClient;
+
+import android.app.PendingIntent;
+import android.content.Intent;
 
 /**
  * A foreground service that keeps sensor recording running even when the app is terminated by user or the system.
@@ -57,10 +66,10 @@ public class SensorService extends Service {
     SensorNetworkSource sensorNetworkSource;
     @Inject
     SensorHandlerManager sensorHandlerManager;
-    @Inject SensorLocalSource sensorLocalSource;
+    @Inject
+    SensorLocalSource sensorLocalSource;
     @Inject
     SensorCollectionStateManager sensorCollectionStateManager;
-
 
 
     private final int FOREGROUND_ID = 100;
@@ -73,6 +82,7 @@ public class SensorService extends Service {
     private static final long THIRTY_DAYS_IN_MILLIS = 30L * 24 * 60 * 60 * 1000;
     private static final long BUFFER_FLUSH_INTERVAL = 60000; // Flush buffer every 60 seconds
     private static final long NETWORK_SEND_INTERVAL = 60000; // 300000 - five minutes for non-tests
+    private ActivityRecognitionClient activityRecognitionClient;
 
     private Map<String, JSONArray> memoryBuffer = new HashMap<>();
 
@@ -131,6 +141,17 @@ public class SensorService extends Service {
         sensorHandlerManager.startSelectedSensors(selectedSensors);
 
 
+        // registering the activity recognition client
+        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(this);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0,
+                new Intent(this, ActivityRecognitionService.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // requesting activity updates every three seconds
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+            activityRecognitionClient.requestActivityUpdates(3000, pendingIntent);
+        } else {
+            LOGGER.warn("Activity Recognition permission not granted. Unable to start service.");
+        }
+
 
         Handler handler = new Handler(thread.getLooper());
         Runnable bufferAndFlushData = new Runnable() {
@@ -177,39 +198,40 @@ public class SensorService extends Service {
         Runnable sendDataToNetwork = new Runnable() {
             private static final int PAGE_SIZE = 100; // # of records per page
             private int offset = 0; // Initial offset
+
             @Override
             public void run() {
                 boolean hasMoreData = true;
 
                 while (hasMoreData) {
-                JSONArray allSensorData = sensorLocalSource.retrieveUnUploadedSensorData(selectedSensors, PAGE_SIZE, offset);
-                LOGGER.info("Retrieved " + allSensorData.length() + " items from local storage.");
+                    JSONArray allSensorData = sensorLocalSource.retrieveUnUploadedSensorData(selectedSensors, PAGE_SIZE, offset);
+                    LOGGER.info("Retrieved " + allSensorData.length() + " items from local storage.");
 
-                if (allSensorData.length() < PAGE_SIZE) {
-                    hasMoreData = false; // No more data to fetch
-                }
+                    if (allSensorData.length() < PAGE_SIZE) {
+                        hasMoreData = false; // No more data to fetch
+                    }
 
-                String jsonString = allSensorData.toString();
+                    String jsonString = allSensorData.toString();
 
 
                     // Compress the JSON string
-                try {
-                    byte[] compressedData = compressData(jsonString);
+                    try {
+                        byte[] compressedData = compressData(jsonString);
 
-                    LOGGER.info("Size of data after compression: " + compressedData.length + " bytes");
+                        LOGGER.info("Size of data after compression: " + compressedData.length + " bytes");
 
-                    // Send the accumulated data to the network
-                    if (allSensorData.length() > 0) {
-                        LOGGER.info("Attempting to send " + allSensorData.length() + " items to the network.");
-                        LOGGER.info("All sensor data " + allSensorData);
-                        sensorNetworkSource.sendPostRequest(deviceId, compressedData, allSensorData);
-                        LOGGER.info("Accumulated data sent to network.");
-                    } else {
-                        LOGGER.info("No accumulated data to send to the network.");
+                        // Send the accumulated data to the network
+                        if (allSensorData.length() > 0) {
+                            LOGGER.info("Attempting to send " + allSensorData.length() + " items to the network.");
+                            LOGGER.info("All sensor data " + allSensorData);
+                            sensorNetworkSource.sendPostRequest(deviceId, compressedData, allSensorData);
+                            LOGGER.info("Accumulated data sent to network.");
+                        } else {
+                            LOGGER.info("No accumulated data to send to the network.");
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
                     offset += PAGE_SIZE;
                 }
 
@@ -253,8 +275,6 @@ public class SensorService extends Service {
         }
 
 
-
-
         //  buffer and flush process
         handler.post(bufferAndFlushData);
         handler.post(sendDataToNetwork);
@@ -262,6 +282,7 @@ public class SensorService extends Service {
 
         return START_STICKY;
     }
+
 
     /**
      * Compresses a given string into a GZIP-compressed byte array.
@@ -272,16 +293,16 @@ public class SensorService extends Service {
      * @throws IOException If an I/O error occurs during the compression process.
      */
     public static byte[] compressData(String data) throws IOException {
-        try {        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-        gzipOutputStream.write(data.getBytes("UTF-8"));
-        gzipOutputStream.close();
-        return byteArrayOutputStream.toByteArray();
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+            gzipOutputStream.write(data.getBytes("UTF-8"));
+            gzipOutputStream.close();
+            return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 
 
     /**
@@ -303,7 +324,7 @@ public class SensorService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 SENSOR_FRAGMENT_REQUEST_CODE,
                 sensorFragmentIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification notification =
                 new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
@@ -323,6 +344,23 @@ public class SensorService extends Service {
         if (networkChangeReceiver != null) {
             unregisterReceiver(networkChangeReceiver);
             networkChangeReceiver = null;
+        }
+
+        // Stop activity recognition updates
+        if (activityRecognitionClient != null) {
+            PendingIntent pendingIntent = PendingIntent.getService(this, 0,
+                    new Intent(this, ActivityRecognitionService.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            activityRecognitionClient.removeActivityUpdates(pendingIntent);
         }
 
         LOGGER.info("Stopping sensor service");
