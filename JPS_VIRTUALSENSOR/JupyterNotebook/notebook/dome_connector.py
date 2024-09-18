@@ -71,52 +71,62 @@ class ShipConnector(Connector):
                 "dLAT": max((max_lat - min_lat) * 0.5 + 0.05, 0.05),
                 "dLON": max((max_lon - min_lon) * 0.5 + 0.05, 0.05)}
 
-    def plot_ship(self, df_ship,scope):
-        # Sample data: list of (latitude, longitude) tuples
-        trajectory = list(zip(df_ship['lat'],df_ship['lon']))
-        
-        # Calculate MBR
-        min_lon = scope['LON']-scope['dLON']
-        max_lon = scope['LON']+scope['dLON']
-        min_lat = scope['LAT']-scope['dLAT']
-        max_lat = scope['LAT']+scope['dLAT']
-
-        # Calculate Centroid
-        centroid_lat = (min_lat + max_lat) / 2
-        centroid_lon = (min_lon + max_lon) / 2
-        centroid = (centroid_lat, centroid_lon)
-
-        # MBR corners
-        dlat = (max_lat - min_lat) * 0.02
-        dlon = (max_lon - min_lon) * 0.02
-        mbr_corners = [(min_lat, min_lon),
-                    (min_lat, max_lon),
-                    (max_lat, max_lon),
-                    (max_lat, min_lon),
-                    (min_lat, min_lon)]
-
-        # Create a map centered around the first point
-        m = folium.Map(location=centroid)
-        
-        # Add filled MBR to the map
-        folium.Polygon(locations=mbr_corners,color="none",fill=True,fill_color="blue",fill_opacity=0.3,weight=0).add_to(m)
-
-        # Add points to the map
-        for i in range(len(trajectory)):
-            point = trajectory[i]
-            folium.CircleMarker(location=point,radius=5,popup=folium.Popup(str(df_ship['date'][i])),
-                                color='none', fill=True, fill_color='black', fill_opacity=0.7).add_to(m)
-            
+    def plot_ship(self, dict_ship_all, scope_all, list_mmsi):
+        # Create a map
+        m = folium.Map()
         colormap = plt.get_cmap('autumn')
-        colors = [colormap(i / len(trajectory)) for i in range(len(trajectory))]
-
-        # Add segments to the map with different colors
-        for i in range(len(trajectory) - 1):
-            folium.PolyLine(locations=[trajectory[i], trajectory[i + 1]],
-                            color=mpl.colors.to_hex(colors[i]),  # Convert RGBA to hex
-                            weight=2.5,opacity=1).add_to(m)
+        min_bound_lat = 200
+        min_bound_lon = 200
+        max_bound_lat = -200
+        max_bound_lon = -200
         
+        for mmsi in list_mmsi:
+            
+            df_ship = dict_ship_all[mmsi]
+            scope = scope_all[mmsi]
+
+            trajectory = list(zip(df_ship['lat'],df_ship['lon']))
+            
+            # Calculate MBR
+            min_lon = scope['LON']-scope['dLON']
+            max_lon = scope['LON']+scope['dLON']
+            min_lat = scope['LAT']-scope['dLAT']
+            max_lat = scope['LAT']+scope['dLAT']
+
+            # MBR corners
+            dlat = (max_lat - min_lat) * 0.02
+            dlon = (max_lon - min_lon) * 0.02
+            mbr_corners = [(min_lat, min_lon),
+                        (min_lat, max_lon),
+                        (max_lat, max_lon),
+                        (max_lat, min_lon),
+                        (min_lat, min_lon)]
+
+            # Add filled MBR to the map
+            folium.Polygon(locations=mbr_corners,color="none",fill=True,fill_color="blue",fill_opacity=0.3,weight=0).add_to(m)
+
+            # Add points to the map
+            for i in range(len(trajectory)):
+                point = trajectory[i]
+                folium.CircleMarker(location=point,radius=5,popup=folium.Popup(f"MMSI:{mmsi}, {df_ship['date'][i]}"),
+                                    color='none', fill=True, fill_color='black', fill_opacity=0.7).add_to(m)
+
+            colors = [colormap(i / len(trajectory)) for i in range(len(trajectory))]
+
+            # Add segments to the map with different colors
+            for i in range(len(trajectory) - 1):
+                folium.PolyLine(locations=[trajectory[i], trajectory[i + 1]],
+                                color=mpl.colors.to_hex(colors[i]),  # Convert RGBA to hex
+                                weight=2.5,opacity=1).add_to(m)
+        
+            #update bounds
+            min_bound_lat = min(min_bound_lat, min_lat-dlat)
+            min_bound_lon = min(min_bound_lon, min_lon-dlon)
+            max_bound_lat = max(max_bound_lat, max_lat+dlat)
+            max_bound_lon = max(max_bound_lon, max_lon+dlon)
+            
+            
         # Fit bounds to ensure everything is visible
-        m.fit_bounds([[min_lat-dlat, min_lon-dlon], [max_lat+dlat, max_lon+dlon]])
+        m.fit_bounds([[min_bound_lat, min_bound_lon], [max_bound_lat, max_bound_lon]])
         
         return m._repr_html_()
