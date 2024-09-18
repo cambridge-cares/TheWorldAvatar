@@ -11,9 +11,7 @@ from services.embed import IEmbedder, get_embedder
 from services.redis import get_redis_client
 from model.rdf_schema import (
     PROPERTIES_INDEX_NAME,
-    RELATIONS_INDEX_NAME,
     RDFProperty,
-    RDFRelation,
 )
 
 
@@ -28,22 +26,6 @@ class SchemaStore:
     ):
         self.redis_client = redis_client
         self.embedder = embedder
-
-    def retrieve_relations(self, nlq: str, k: int = 5):
-        encoded_nlq = self.embedder([nlq])[0].astype(np.float32)
-        knn_query = (
-            Query("(*)=>[KNN {k} @vector $query_vector AS vector_score]".format(k=k))
-            .sort_by("vector_score")
-            .return_field("$.s", as_field="s")
-            .return_field("$.p", as_field="p")
-            .return_field("$.o", as_field="o")
-            .dialect(2)
-        )
-        res = self.redis_client.ft(RELATIONS_INDEX_NAME).search(
-            knn_query, {"query_vector": encoded_nlq.tobytes()}
-        )
-
-        return [RDFRelation(s=doc.s, p=doc.p, o=doc.o) for doc in res.docs]
 
     def retrieve_properties(self, nlq: str, k: int = 5):
         encoded_nlq = self.embedder([nlq])[0].astype(np.float32)
