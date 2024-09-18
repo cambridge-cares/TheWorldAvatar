@@ -13,8 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.template.ShaclTemplateFactory;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -22,18 +24,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class AddService {
   private final KGService kgService;
   private final FileService fileService;
+  private final ObjectMapper objectMapper;
 
   private static final Logger LOGGER = LogManager.getLogger(AddService.class);
 
   /**
    * Constructs a new service with the following dependencies.
    * 
-   * @param resourceLoader ResourceLoader instance for loading file resources.
-   * @param kgService      KG service for performing the query.
+   * @param kgService    KG service for performing the query.
+   * @param fileService  File service for accessing file resources.
+   * @param objectMapper The JSON object mapper.
    */
-  public AddService(KGService kgService, FileService fileService) {
+  public AddService(KGService kgService, FileService fileService, ObjectMapper objectMapper) {
     this.kgService = kgService;
     this.fileService = fileService;
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -123,7 +128,12 @@ public class AddService {
     // replacement value
     if (currentNode.has("@replace")) {
       if (parentNode != null) {
-        parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
+        // Add a different interaction for schedule types
+        if (currentNode.path("type").asText().equals("schedule")) {
+          this.replaceDayOfWeekSchedule(parentNode, parentField, replacements);
+        } else {
+          parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
+        }
       } else {
         LOGGER.error("Invalid parent node for replacement!");
         throw new IllegalArgumentException("Invalid parent node for replacement!");
@@ -185,5 +195,58 @@ public class AddService {
       throw new IllegalArgumentException(
           MessageFormat.format("Invalid replacement type {0} for {1}!", replacementType, replacementId));
     }
+  }
+
+  /**
+   * Replaces the json model for the day of week schedules depending on the
+   * indication in the request parameters.
+   * 
+   * @param parentNode   Parent node holding the day of week schedule
+   *                     representation.
+   * @param parentField  Field name of the parent containing the current node.
+   * @param replacements Mappings of the replacement value with their
+   *                     corresponding node.
+   */
+  public void replaceDayOfWeekSchedule(ObjectNode parentNode, String parentField, Map<String, Object> replacements) {
+    // Note that this method assumes that the explicit recurrence interval will
+    // always contain an array of items
+    ArrayNode results = this.objectMapper.createArrayNode(); // Empty array to store values
+    // First iterate through the schedule array and retrieve all items that are not
+    // the replacement object
+    JsonNode scheduleNode = parentNode.path(parentField);
+    if (scheduleNode.isArray()) {
+      ArrayNode nodes = (ArrayNode) scheduleNode;
+      for (int i = 0; i < nodes.size(); i++) {
+        JsonNode currentScheduleNode = nodes.get(i);
+        if (currentScheduleNode.isObject() && !((ObjectNode) currentScheduleNode).has("@replace")) {
+          results.add(currentScheduleNode);
+        }
+      }
+    }
+
+    // Generate a queue of days of week
+    Queue<String> daysOfWeek = new ArrayDeque<>();
+    daysOfWeek.offer("Monday");
+    daysOfWeek.offer("Tuesday");
+    daysOfWeek.offer("Wednesday");
+    daysOfWeek.offer("Thursday");
+    daysOfWeek.offer("Friday");
+    daysOfWeek.offer("Saturday");
+    daysOfWeek.offer("Sunday");
+
+    // Iterate over the queue
+    while (!daysOfWeek.isEmpty()) {
+      String currentDay = daysOfWeek.poll();
+      // Parameter name is in lowercase based on the frontend
+      if ((boolean) replacements.get(currentDay.toLowerCase())) {
+        // Only include the selected day if it has been selected on the frontend
+        ObjectNode currentDayNode = this.objectMapper.createObjectNode();
+        currentDayNode.put(ShaclTemplateFactory.ID_KEY,
+            "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/"
+                + currentDay + "");
+        results.add(currentDayNode);
+      }
+    }
+    parentNode.set(parentField, results);
   }
 }
