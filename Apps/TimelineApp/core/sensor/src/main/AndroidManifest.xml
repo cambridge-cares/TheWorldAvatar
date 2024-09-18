@@ -28,6 +28,10 @@
                 android:value="for other sensors foreground data collection"/>
         </service>
 
+        <service
+            android:name=".ActivityRecognitionService"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
