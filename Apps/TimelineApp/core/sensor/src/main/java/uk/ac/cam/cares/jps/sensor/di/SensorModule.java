@@ -12,9 +12,9 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.login.LoginRepository;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
-import uk.ac.cam.cares.jps.sensor.source.handler.SensorManager;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
 import uk.ac.cam.cares.jps.sensor.data.SensorRepository;
 import uk.ac.cam.cares.jps.sensor.source.network.UserPhoneNetworkSource;
@@ -50,8 +50,8 @@ public class SensorModule {
 
     @Provides
     @Singleton
-    public SensorManager provideSensorManager(@ApplicationContext Context applicationContext) {
-        return new SensorManager(applicationContext);
+    public SensorHandlerManager provideSensorManager(@ApplicationContext Context applicationContext) {
+        return new SensorHandlerManager(applicationContext);
     }
 
     @Provides

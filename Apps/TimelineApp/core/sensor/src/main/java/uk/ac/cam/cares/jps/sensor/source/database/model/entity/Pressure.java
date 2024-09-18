@@ -49,4 +49,23 @@ public class Pressure extends SensorData {
     public String toJSONString() {
         return "";
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", "barometer");
+
+            JSONObject values = new JSONObject();
+            values.put("pressure", this.pressure);
+
+
+            json.put("values", values);
+            json.put("time", this.time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }

@@ -47,4 +47,22 @@ public class RelativeHumidity extends SensorData {
     public String toJSONString() {
         return "";
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", "humidity");
+
+            JSONObject values = new JSONObject();
+            values.put("humidity", this.humidity);
+
+            json.put("values", values);
+            json.put("time", this.time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }

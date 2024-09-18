@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.sensor.source.database.model.entity;
 
 import androidx.room.Entity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -28,4 +29,10 @@ public class MagnetFieldStrength extends BaseVector {
     public MagnetFieldStrength() {
         super();
     }
-}
+
+    @Override
+    protected String getSensorName() {
+        return "magnetometer";
+    }
+
+    }

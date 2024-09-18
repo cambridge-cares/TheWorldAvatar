@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+
 /**
  * Abstract class for handling sensor data from various sensors provided by the Android platform.
  * This class provides a framework for registering with the sensor service, collecting sensor data,
@@ -49,10 +50,16 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
      * Initializes the start time for tracking sensor data recording duration.
      */
     @Override
-    public void start() {
-        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+    public void start(Integer samplingRate) {
+        sensorManager.registerListener(this, sensor, samplingRate);
         startTime = System.currentTimeMillis() * 1000000;
         isRunning = true;
+    }
+
+    @Override
+    public void start() {
+        // Default to SENSOR_DELAY_NORMAL if no sampling rate is specified
+        start(SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     /**
@@ -130,4 +137,5 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     public Boolean isRunning() {
         return isRunning;
     }
+
 }

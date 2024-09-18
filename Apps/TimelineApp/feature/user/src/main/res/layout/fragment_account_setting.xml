@@ -8,6 +8,12 @@
             type="uk.ac.cam.cares.jps.user.viewmodel.AccountViewModel" />
     </data>
 
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -64,9 +70,11 @@
             android:layout_marginTop="@dimen/component_margin"
             android:orientation="vertical"
             android:theme="@style/Theme.TWA.UserPage"
-            app:layout_constraintTop_toBottomOf="@id/placeholder">
+            app:layout_constraintTop_toBottomOf="@id/placeholder"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <LinearLayout
+
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -166,8 +174,13 @@
                     android:textColor="?attr/colorError" />
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
         </LinearLayout>
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

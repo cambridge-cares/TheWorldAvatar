@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
@@ -22,20 +23,18 @@ import uk.ac.cam.cares.jps.user.SensorItem;
  */
 public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorViewHolder> {
     private final SensorViewModel sensorViewModel;
-    private final OnSensorToggleListener listener;
     private List<SensorItem> sensorItems;
 
     /**
      * Constructor for the SensorAdapter.
      *
      * @param sensorItems   The list of sensor items to be displayed.
-     * @param listener    The listener to handle sensor toggle events.
      */
-    public SensorAdapter(List<SensorItem> sensorItems, OnSensorToggleListener listener, SensorViewModel sensorViewModel) {
+    public SensorAdapter(List<SensorItem> sensorItems, SensorViewModel sensorViewModel) {
         this.sensorItems = sensorItems;
-        this.listener = listener;
         this.sensorViewModel = sensorViewModel;
     }
+
 
     /**
      * Creates a new ViewHolder object for a sensor item.
@@ -71,7 +70,6 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         holder.sensorToggleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             sensorItem.setToggled(isChecked);  // Update the sensor item toggle state
             sensorViewModel.toggleSensor(sensorItem.getSensorType());  // Update ViewModel with the toggle state
-            listener.onSensorToggle();  // Notify the listener that a sensor has been toggled
         });
     }
 
