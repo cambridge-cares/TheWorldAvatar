@@ -83,7 +83,7 @@ class ShipConnector(Connector):
         m = folium.Map(location=centroid)
         
         # Add filled MBR to the map
-        folium.Polygon(locations=mbr_corners,color="green",fill=True,fill_color="green",fill_opacity=0.3,weight=0).add_to(m)
+        folium.Polygon(locations=mbr_corners,color="none",fill=True,fill_color="blue",fill_opacity=0.3,weight=0).add_to(m)
 
         # Add points to the map
         for i in range(len(trajectory)):

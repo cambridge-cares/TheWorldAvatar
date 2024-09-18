@@ -63,6 +63,7 @@ class JobSender:
             for z in LIST_Z:
                 url_init = url_init+f'&z={z}'
             response = self.call_di(url_init, 'post')
+            print(f"Created new simulation {label}.")
             return response.json()['derivation']
     
     def add_ship_data(self,mmsi,df_ship):
