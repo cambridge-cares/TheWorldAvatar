@@ -114,12 +114,6 @@ app.prepare().then(() => {
     });
   }
 
-  // Serve static files from the 'uploads' directory, allowing for runtime configuration via the environment variable
-  server.use(
-    "/uploads",
-    express.static(process.env.UPLOADS_PATH || "../uploads")
-  );
-
   // Handle all other requests using Next.js
   server.all("*", (req, res) => {
     return handle(req, res);
