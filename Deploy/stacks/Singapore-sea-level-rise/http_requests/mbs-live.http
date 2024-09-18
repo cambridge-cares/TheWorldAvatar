@@ -8,5 +8,5 @@ POST http://localhost:3838/dispersion-interactor/ScheduledDispersion
 &z=50
 &label=Singapore
 &delayMinutes=0
-&intervalMinutes=30
-&maxTimeMinutes=20
+&intervalMinutes=60
+&maxTimeMinutes=50
