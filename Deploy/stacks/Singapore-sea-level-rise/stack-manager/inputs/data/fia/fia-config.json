@@ -64,6 +64,20 @@
                 "metaQuery": "trajectory_meta.sparql",
                 "database": "postgres"
 			}
+        },
+        {
+            "id": "Carpark",
+            "class": "https://www.theworldavatar.com/kg/ontocarpark/Carpark",
+            "meta": {
+                "queryFile": "carpark_meta.sparql"
+            },
+            "time": {
+                "queryFile": "carpark_time.sparql",
+                "database": "carpark",
+                "limit": 1,
+                "unit": "hours",
+                "reference": "latest"
+            }
         }
     ]
 }
