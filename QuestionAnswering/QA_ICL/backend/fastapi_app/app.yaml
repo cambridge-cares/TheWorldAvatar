@@ -53,7 +53,7 @@ entity_linking:
     - cls: ontozoning:LandUseType
       strategy: semantic
       k: 5
-    - cls: Ship
+    - cls: disp:Ship
       strategy": fuzzy
 semantic_parsing:
   context_augmentation:

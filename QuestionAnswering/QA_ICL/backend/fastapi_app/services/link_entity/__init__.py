@@ -61,7 +61,7 @@ class CentralEntityLinker:
         Note: This does not work if either the surface form or stored label contains forward slash.
         """
         match_label = '@label:"{label}"'.format(
-            label=regex.escape(surface_form, special_only=False, literal_spaces=True)
+            label=regex.escape(self._remove_stop_words(surface_form), special_only=False, literal_spaces=True)
         )
         match_cls = self._match_cls_query(cls) if cls else None
 
@@ -237,6 +237,17 @@ class CentralEntityLinker:
         ).return_field("$.cls", as_field="cls")
         res = self.redis_client.ft(ENTITIES_INDEX_NAME).search(query)
         return res.docs[0].cls if len(res.docs) > 0 else None
+    
+    def _remove_stop_words(self, label: str):
+        # Stop words in redis text search can cause errors, so they are removed. Please refer to https://redis.io/docs/latest/develop/interact/search-and-query/advanced-concepts/stopwords/#avoiding-stop-word-detection-in-search-queries for more information
+        stop_words_list = set([
+            'a', 'is', 'the', 'an', 'and', 'are', 'as', 'at', 'be', 'but', 'by', 
+            'for', 'if', 'in', 'into', 'it', 'no', 'not', 'of', 'on', 'or', 
+            'such', 'that', 'their', 'then', 'there', 'these', 'they', 'this', 
+            'to', 'was', 'will', 'with'
+        ])
+        
+        return " ".join(word for word in label.split() if word not in stop_words_list)
 
 
 def get_el_configs(app_settings: Annotated[AppSettings, Depends(get_app_settings)]):

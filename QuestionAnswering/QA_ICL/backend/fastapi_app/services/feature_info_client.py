@@ -1,6 +1,9 @@
 from functools import cache
 import os
-from typing import Generic, Type, TypeVar
+from typing import Annotated, Generic, Type, TypeVar
+
+from fastapi import Depends
+from config import AppSettings, get_app_settings
 from pydantic import BaseModel
 
 from services.requests import request_get_obj
@@ -38,5 +41,5 @@ class FeatureInfoClient(Generic[EntityMetaT]):
 
 
 @cache
-def get_featureInfoAgent_url():
-    return os.getenv("ENDPOINT_FEATURE_INFO_AGENT")
+def get_featureInfoAgent_url(app_settings: Annotated[AppSettings, Depends(get_app_settings)]):
+    return app_settings.singapore_endpoints.feature_info_agent
