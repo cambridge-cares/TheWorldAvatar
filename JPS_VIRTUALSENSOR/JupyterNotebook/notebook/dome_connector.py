@@ -103,4 +103,4 @@ class ShipConnector(Connector):
         # Fit bounds to ensure everything is visible
         m.fit_bounds([[min_lat-dlat, min_lon-dlon], [max_lat+dlat, max_lon+dlon]])
         
-        return m
+        return m._repr_html_()

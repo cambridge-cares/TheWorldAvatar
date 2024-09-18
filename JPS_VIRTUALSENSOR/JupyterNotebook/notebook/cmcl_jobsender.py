@@ -87,13 +87,7 @@ class JobSender:
                                  data=json.dumps({"shipData": shipData, "tsData": tsData}), headers=headers)
 
         return response
-    
-    def generate_data(self,derivation_iri,num_step):
-        for i in range(num_step):
 
-            pause()
-            self.call_di(f'GenerateDataWithShips?derivation={derivation_iri}&numsteps=1', 'post', quiet = False)
-    
     def generate_data_without_ship(self,derivation_iri,label,list_timestep,num_step):
         req = f'GenerateDataWithoutShips?derivation={derivation_iri}'
         if num_step == 0: num_step = 1000000
@@ -112,14 +106,7 @@ class JobSender:
                 else:
                     print(
                         f'Skipping {t} for {label} because it has already been simulated.')
-    
-    def run_simulation(self,label,scope,num_step):
-        derivation_iri = self.get_derivation_iri(label,scope)
-        label = self.find_label_by_derivation_iri(derivation_iri)
-        print(f'Running simulation {label}...')
-        self.generate_data(derivation_iri,num_step)
-        return "Complete."
-    
+
     def run_simulation_without_ship(self,label,scope,list_timestep,num_step):
         derivation_iri = self.get_derivation_iri(label,scope)
         label = self.find_label_by_derivation_iri(derivation_iri)
