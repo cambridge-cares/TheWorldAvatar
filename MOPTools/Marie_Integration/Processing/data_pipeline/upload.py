@@ -98,28 +98,135 @@ def upload_predefined():
     instances                           = [vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_day, duration_h, duration_s, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA]
     push_component_to_kg(instances, client)
 
-def extract_numbers_and_units(text, pattern_type):
-    """patterns:
-    add:        r'(\d*\.?\d+)\s*([a-zA-Z]+)'
-    temp:       r'(\d*\.?\d+)\s*([^\d\s]+)', also used for rate
+def find_patterns_and_divide_multiply(text, multiplier_flag):
     """
-    match pattern_type:
-        case "add":
-            pattern              = r'(\d*\.?\d+)\s*([a-zA-Z]+)'
-        case "temp":
-            pattern              = r'(\d*\.?\d+)\s*([^\d\s]+)'
+    multiplier_flag:
+        - 0: Multiply the result by `number1`
+        - 1: Multiply the result by `number2`
+    """
+    
+    # Define patterns
+    patterns = {
+        'add': r'(\d*\.?\d+)\s*([a-zA-Z]+)',  # Pattern for numbers with units
+        'range': r'\((\d+):(\d+)\)'  # Pattern for (number1:number2)
+    }
+    
+    # Find 'add' pattern matches (numbers with units)
+    add_matches = re.findall(patterns['add'], text)
 
-    # Find all matches in the text
-    matches             = re.findall(pattern, text)
+    # If 'add' pattern is found, extract the numbers and units
+    numbers = [float(match[0]) for match in add_matches]
+    units = [match[1] for match in add_matches]
+    
+    # Now that 'add' matches exist, check for 'range' pattern
+    range_matches = re.findall(patterns['range'], text)
+    
+    if range_matches:
+        # If 'range' pattern is found, extract number1 and number2
+        number1_list = [int(match[0]) for match in range_matches]
+        number2_list = [int(match[1]) for match in range_matches]
+        
+        # Calculate the sum of number1 and number2 for each match
+        divisors = [n1 + n2 for n1, n2 in zip(number1_list, number2_list)]
+    else:
+        # Default divisor if no 'range' is found but 'add' is present
+        divisors = [1] * len(numbers)
+        number1_list, number2_list = [1] * len(numbers), [1] * len(numbers)
 
+    # Now divide each number by the corresponding sum of range values
+    divisor = divisors[0]  # Using the first divisor for all numbers for simplicity
+    numbers_divided = [num / divisor for num in numbers]
+
+    # Multiply the result of division by number1 or number2 depending on multiplier_flag
+    if multiplier_flag == 0:
+        # Multiply by number1
+        numbers_final = [num_div * number1_list[0] for num_div in numbers_divided]
+    else:
+        # Multiply by number2
+        numbers_final = [num_div * number2_list[0] for num_div in numbers_divided]
+    
+    # Return the modified numbers, units, and range information
+    return numbers_final, units, divisors
+
+def extract_numbers_and_units(text, pattern_type, multiplier_flag=2):
+    """
+    Extracts numbers and units based on pattern type ("add" or "temp").
+    If "add" is matched, it also processes the range pattern (number1:number2).
+    If "temp" is matched, range processing is skipped.
+
+    Parameters:
+        - text: The input text containing numbers and units.
+        - pattern_type: "add" for regular units, "temp" for temperature or rates.
+        - multiplier_flag: 0 to multiply by number1 from range, 1 to multiply by number2.
+    """
+    
+    # Define patterns
+    patterns = {
+        'add': r'(\d*\.?\d+)\s*([a-zA-Z]+)',   # Pattern for numbers with units
+        'temp': r'(\d*\.?\d+)\s*([^\d\s]+)',   # Pattern for temperature or rates
+        'range': r'\((\d+):(\d+)\)'            # Pattern for (number1:number2)
+    }
+
+    # Determine the pattern based on pattern_type
+    if pattern_type == "add":
+        pattern = patterns['add']
+    elif pattern_type == "temp":
+        pattern = patterns['temp']
+    else:
+        return [0], ["N/A"], [1]  # Return default values if no valid pattern_type
+
+    # Find all matches based on the selected pattern
+    matches = re.findall(pattern, text)
+    
     # Separate numbers and units
-    numbers             = [float(match[0]) for match in matches]
-    units               = [match[1] for match in matches]
-    if numbers == []:
-        numbers         = [0] 
-    if units == []:
-        units         = ["N/A"] 
-    return numbers, units
+    numbers = [float(match[0]) for match in matches]
+    units = [match[1] for match in matches]
+    
+    if not numbers:
+        numbers = [0] 
+    if not units:
+        units = ["N/A"] 
+    
+    # If the pattern is "add", we process the range pattern
+    if pattern_type == "add" and matches:
+        # Find 'range' pattern matches (number1:number2)
+        range_matches = re.findall(patterns['range'], text)
+        
+        if range_matches:
+            print("range matched: ", range_matches)
+            # If 'range' pattern is found, extract number1 and number2
+            number1_list = [int(match[0]) for match in range_matches]
+            number2_list = [int(match[1]) for match in range_matches]
+            
+            # Calculate the sum of number1 and number2 for each match
+            divisors = [n1 + n2 for n1, n2 in zip(number1_list, number2_list)]
+        else:
+            # Default divisor if no 'range' is found but 'add' is present
+            divisors = [1] * len(numbers)
+            number1_list, number2_list = [1] * len(numbers), [1] * len(numbers)
+    
+        # Now divide each number by the corresponding sum of range values
+        divisor = divisors[0]  # Using the first divisor for all numbers for simplicity
+        numbers_divided = [num / divisor for num in numbers]
+    
+        # Multiply the result of division by number1 or number2 depending on multiplier_flag
+        if multiplier_flag == 0:
+            # Multiply by number1
+            numbers_final = [num_div * number1_list[0] for num_div in numbers_divided]
+        else:
+            # Multiply by number2
+            numbers_final = [num_div * number2_list[0] for num_div in numbers_divided]
+    
+    # If the pattern is "temp", skip range processing
+    elif pattern_type == "temp":
+        # Return numbers directly without dividing or multiplying by range values
+        numbers_final = numbers
+        divisors = [1] * len(numbers)
+    else: 
+        numbers_final = numbers
+    
+    return numbers_final, units
+
 
 class TextToCSV:
     def __init__(self, input_filename):
@@ -359,40 +466,93 @@ def add_upload(add_step, synthesis_client, species_client):
     added_amount                                        = add_step["addedChemicalAmount"]
     add_value, add_unit                                 = extract_numbers_and_units(added_amount, "add")
     vessel                                              = match_vessel(add_step['usedVessel'], synthesis_client)
-    pattern = r'(?<!\d),(?!\d)'
-
-    # Split the input string based on the pattern
-    parts = re.split(pattern, add_step['addedChemicalName'])
-    
-    # Remove leading/trailing whitespace from each part
-    parts = [part.strip() for part in parts]
-    chemical_name                                       = []   
-    # write comma separated values to individual strings: 
-    for part in parts:
-        if part:  # Only print non-empty parts
-            chemical_name.append(part)
-    # Vessel:
+    individual_chemicals                                = add_step['addedChemicalName'].split("/")
+    print("individual chemicals: ", individual_chemicals)
+    for chem in individual_chemicals:
+        pattern = r'(?<!\d),(?!\d)'
+        
+        # Split the input string based on the pattern
+        parts = re.split(pattern, add_step['addedChemicalName'])
+        
+        # Remove leading/trailing whitespace from each part
+        parts = [part.strip() for part in parts]
+        chemical_name                                  = []   
+        # write comma separated values to individual strings: 
+        for part in parts:
+            if part:  # Only print non-empty parts
+                chemical_name.append(part)
     species_name                                        = chemical_name     
     species                                             = instantiate_input(species_name[0], species_name, client_species=species_client, client_synthesis=synthesis_client) 
     # Initialize an empty list to hold `ScalarValue` instances
-    scalar_values = []
+    scalar_values                       = []
+    phase_components                    = []
+    phase_component_concentrations      = [] 
     # Iterate over each pair of unit and value
     for unit, value in zip(add_unit, add_value):
         # Get the unit using the `get_unit` function
         print("unit and value: ", unit, value)
         unit_instance                                   = get_unit(unit, synthesis_client)
-        
         # Create a `ScalarValue` instance and add it to the list
         scalar_value_instance                           = ScalarValue(hasNumericalValue=value, hasUnitOfMeasure=unit_instance)
         scalar_values.append(scalar_value_instance)
+        phase_component_concentration                       = PhaseComponentConcentration(hasValue=set(scalar_values))
+        phase_component_concentrations.append(phase_component_concentration)
+        phase_component                                     = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
+        phase_components.append(phase_component)
 
-    phase_component_concentration                       = PhaseComponentConcentration(hasValue=set(scalar_values))
-    phase_component                                     = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
-    composition                                         = Composition(comprisesDirectly=phase_component_concentration)
-    single_phase                                        = SinglePhase(isComposedOfSubsystem=phase_component, hasComposition=composition)     
-    material                                            = Material(thermodynamicBehaviour=single_phase)
-    chemical_input                                      = ChemicalInput(referencesMaterial=material)
-    add_class                                           = Add(hasOrder=add_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input)
+    composition                                             = Composition(comprisesDirectly=phase_component_concentrations)
+    single_phase                                            = SinglePhase(isComposedOfSubsystem=phase_components, hasComposition=composition)     
+    material                                                = Material(thermodynamicBehaviour=single_phase)
+    chemical_input                                          = ChemicalInput(referencesMaterial=material)
+    add_class                                               = Add(hasOrder=add_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input)
+    components = [phase_component_concentration, phase_component, composition, single_phase, material, chemical_input, add_class]
+    push_component_to_kg(components, synthesis_client)
+    return add_class, chemical_input
+
+def add_upload_new(add_step, synthesis_client, species_client):
+    print("add step inside: ", add_step)
+    vessel                                                  = match_vessel(add_step['usedVessel'], synthesis_client)
+    individual_chemicals                                    = add_step['addedChemicalName'].split("/")
+    phase_components                                        = []
+    phase_component_concentrations                          = [] 
+    for it, chem in enumerate(individual_chemicals):
+        added_amount                                        = add_step["addedChemicalAmount"]
+        add_value, add_unit                                 = extract_numbers_and_units(added_amount, "add", it)
+        print("chemuoal:", chem)
+        pattern = r'(?<![A-Z]),(?![A-Z])'
+        # Split the input string based on the pattern
+        parts = re.split(pattern, chem)
+        
+        # Remove leading/trailing whitespace from each part
+        parts = [part.strip() for part in parts]
+        chemical_name                                       = []   
+        # write comma separated values to individual strings: 
+        for part in parts:
+            if part:  # Only print non-empty parts
+                chemical_name.append(part)
+        species_name                                        = chemical_name     
+        species                                             = instantiate_input(species_name[0], species_name, client_species=species_client, client_synthesis=synthesis_client) 
+    # Initialize an empty list to hold `ScalarValue` instances
+        scalar_values                                       = []
+
+        # Iterate over each pair of unit and value
+        for unit, value in zip(add_unit, add_value):
+            # Get the unit using the `get_unit` function
+            print("unit and value: ", unit, value)
+            unit_instance                                   = get_unit(unit, synthesis_client)
+            # Create a `ScalarValue` instance and add it to the list
+            scalar_value_instance                           = ScalarValue(hasNumericalValue=value, hasUnitOfMeasure=unit_instance)
+            # make sure to instantiate new phase component for each species in the mixture
+            scalar_values.append(scalar_value_instance)
+        phase_component_concentration                       = PhaseComponentConcentration(hasValue=set(scalar_values))
+        phase_component_concentrations.append(phase_component_concentration)
+        phase_component                                     = PhaseComponent(representsOccurenceOf=species, hasProperty=phase_component_concentration)
+        phase_components.append(phase_component)
+    composition                                             = Composition(comprisesDirectly=phase_component_concentrations)
+    single_phase                                            = SinglePhase(isComposedOfSubsystem=phase_components, hasComposition=composition)     
+    material                                                = Material(thermodynamicBehaviour=single_phase)
+    chemical_input                                          = ChemicalInput(referencesMaterial=material)
+    add_class                                               = Add(hasOrder=add_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input)  
     components = [phase_component_concentration, phase_component, composition, single_phase, material, chemical_input, add_class]
     push_component_to_kg(components, synthesis_client)
     return add_class, chemical_input
@@ -599,23 +759,23 @@ def chemicals_upload_json(input_path, output_path):
             push_component_to_kg(components_input, client_synthesis)
             # putting it together as transformation and synthesis (input chemicals needed for synthesis)
             # check if product already exists:
-            syn_prod                                            = transformation_querying(client_synthesis, output_chemical["names"])  
-            # no entry => make a new one
-            if syn_prod == []:
-                chemical_synthesis                              = ChemicalSynthesis(retrievedFrom=document, hasChemicalInput=chemical_list) 
-                chemical_transformation                         = ChemicalTransformation(hasChemicalOutput=chemical_output, isDescribedBy=chemical_synthesis)
-            # otherwise use existing one
-            else: 
-                chemical_transformation                         = ChemicalTransformation.pull_from_kg(syn_prod[0]["chemicalTrans"], sparql_client=client_synthesis, recursive_depth=-1) 
-                chemical_synthesis_set                          = chemical_transformation[0].isDescribedBy  
-                # get IRI from set
-                for synthesis in chemical_synthesis_set:
-                    instance_iri = synthesis.instance_iri
-                chemical_synthesis                              = ChemicalSynthesis.pull_from_kg(instance_iri, sparql_client=client_synthesis, recursive_depth=-1)[0]
-                for input_chem in chemical_list:
-                    chemical_synthesis.hasChemicalInput.add(input_chem)
-            components_output                                   = [chemical_output, mop, chemical_transformation, yield_value, yield_instance, chemical_synthesis]
-            push_component_to_kg(components_output, client_synthesis)
+        syn_prod                                            = transformation_querying(client_synthesis, output_chemical["names"])  
+        # no entry => make a new one
+        if syn_prod == []:
+            chemical_synthesis                              = ChemicalSynthesis(retrievedFrom=document, hasChemicalInput=chemical_list) 
+            chemical_transformation                         = ChemicalTransformation(hasChemicalOutput=chemical_output, isDescribedBy=chemical_synthesis)
+        # otherwise use existing one
+        else: 
+            chemical_transformation                         = ChemicalTransformation.pull_from_kg(syn_prod[0]["chemicalTrans"], sparql_client=client_synthesis, recursive_depth=-1) 
+            chemical_synthesis_set                          = chemical_transformation[0].isDescribedBy  
+            # get IRI from set
+            for synthesis in chemical_synthesis_set:
+                instance_iri = synthesis.instance_iri
+            chemical_synthesis                              = ChemicalSynthesis.pull_from_kg(instance_iri, sparql_client=client_synthesis, recursive_depth=-1)[0]
+            for input_chem in chemical_list:
+                chemical_synthesis.hasChemicalInput.add(input_chem)
+        components_output                                   = [chemical_output, mop, chemical_transformation, yield_value, yield_instance, chemical_synthesis]
+        push_component_to_kg(components_output, client_synthesis)
 
 def chemicals_upload(input_path, output_path):
     client_synthesis                            = get_client("OntoSynthesisConnection")
@@ -839,8 +999,9 @@ def push_component_to_kg(instances:list, client, recursive_depth=-1):
 
 def upload_steps(input_path, output_path):
     filename_noext, sparql_client_synthesis, sparql_client_species, sparql_client_mop  = start_upload(input_path)
-    synthesis_json                                              = read_json_file(f"../Data/first10_prompt54/{filename_noext}.json")["Synthesis"]
+    synthesis_json                                              = read_json_file(f"../Data/first10_steps/{filename_noext}.json")["Synthesis"]
     print("actual full data: ", synthesis_json)
+
     for entry in synthesis_json:
         print("entry: ", entry)
         data2                                                   = entry
@@ -866,38 +1027,36 @@ def upload_steps(input_path, output_path):
         print("doi: ", doi)
         document                                                = Document(doi=doi)
         for step_dat in step_data:
+            print("step data: ", step_dat)
+            
             if 'Add' in step_dat:
-                add_class, chemical_input                       = add_upload(add_step=step_dat["Add"], synthesis_client=sparql_client_synthesis, species_client=sparql_client_species)
+                add_class, chemical_input                       = add_upload_new(add_step=step_dat["Add"], synthesis_client=sparql_client_synthesis, species_client=sparql_client_species)
                 step_list.append(add_class)
                 chemicals_list.append(chemical_input)
 
             elif 'HeatChill' in step_dat:
-                heatchill_step                          = step_dat["HeatChill"]
+                heatchill_step                                  = step_dat["HeatChill"]
                 print("heatchill step: ", heatchill_step)
                 if heatchill_step["targetTemperature"] == "—" or heatchill_step["targetTemperature"] == "N/A":
                     continue
-                heat_class                              = heatchill_upload(sparql_client_synthesis, heatchill_step)
+                heat_class                                      = heatchill_upload(sparql_client_synthesis, heatchill_step)
                 step_list.append(heat_class)
 
             elif 'Filter' in step_dat:
-                filter_class, chemical_input            = filter_upload(step_dat["Filter"], sparql_client_synthesis, sparql_client_species)
+                filter_class, chemical_input                    = filter_upload(step_dat["Filter"], sparql_client_synthesis, sparql_client_species)
                 step_list.append(filter_class)
                 chemicals_list.append(chemical_input)
 
             elif 'Stir' in step_dat:
-                stir_class                              = standard_upload(step_dat["Stir"], "Stir", sparql_client_synthesis)
-                print("stir class: ", stir_class)
+                stir_class                                      = standard_upload(step_dat["Stir"], "Stir", sparql_client_synthesis)
                 step_list.append(stir_class)
             
             elif 'Sonicate' in step_dat:
-                sonication_class                        = standard_upload(step_dat["Sonicate"], "Sonicate", sparql_client_synthesis)
-                print("sonication class: ", sonication_class)
+                sonication_class                                = standard_upload(step_dat["Sonicate"], "Sonicate", sparql_client_synthesis)
                 step_list.append(sonication_class)
 
         print("pulling transformation iri: ", transformation_iri[0]["chemicalTrans"])
         chemical_transformation                         = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=-1)   
-        print("chemical list: ", chemicals_list)
-        print("step list: ", chemicals_list)
         chemical_synthesis                              = ChemicalSynthesis(hasSynthesisStep=step_list, retrievedFrom=document, hasChemicalInput=chemicals_list) 
         chemical_transformation[0].isDescribedBy.add(chemical_synthesis)
         components                                      = [chemical_synthesis, chemical_transformation]
@@ -912,14 +1071,14 @@ def start_upload(input_path):
     return filename_noext, sparql_client_synthesis, sparql_client_species, sparql_client_mop  
 def upload(input_path, output_path):
     # predefined instances. 
-    upload_predefined()
+    #upload_predefined()
     # chemical instances 
     chemicals_upload_json(input_path, "")
     #raise Exception("stop")
     # uploadd steps
-    upload_steps(input_path, "")
+    #upload_steps(input_path, "")
     # characterisation
-    characterisation_upload(input_path, "")
+    #characterisation_upload(input_path, "")
 
 def main():
     #input_path                                                  = "../Data/first10_prompt54/10.1021_ja803783c.json"
@@ -927,11 +1086,11 @@ def main():
     #OntoSyn         = "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl"
     upload_predefined()
     
-    input_path                                              = f"../Data/first10_chemicals2/10.1021_jacs.8b10866.json"
-    #chemicals_upload_json(input_path=input_path, output_path="")
+    input_path                                              = f"../Data/first10_chemicals2/10.1002_chem.201700798.json"
+    chemicals_upload_json(input_path=input_path, output_path="")
     #upload(input_path, "")
     #characterisation_upload(input_path, sparql_client_synthesis)
-
+    upload_steps(input_path=input_path, output_path="")
 
 
 if __name__ == "__main__":
