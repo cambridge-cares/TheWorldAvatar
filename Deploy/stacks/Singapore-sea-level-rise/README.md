@@ -115,7 +115,7 @@ SELECT * FROM landplot_layer
 
 ### Carpark
 Create carpark namespace in Blazegraph and carpark database in PostGIS.
-Add postgis password to db.password in [client.properties].
+Add postgis password to db.password in [client.properties] and carpark API token in ./carpark_config/api.properties.
 Run the following requests from the command line or use the convenience file [carpark.http]:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/carpark-agent/retrieve
