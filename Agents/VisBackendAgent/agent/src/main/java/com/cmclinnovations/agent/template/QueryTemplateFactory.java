@@ -54,6 +54,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * 
    */
   public QueryTemplateFactory() {
+    // Queues are populated and emptied within each method call and does not need to be reset
     this.queryLines = new ArrayDeque<>();
     this.optionalQueryLines = new ArrayDeque<>();
   }

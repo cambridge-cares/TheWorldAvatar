@@ -31,10 +31,6 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
    * Constructs a new form template factory.
    */
   public FormTemplateFactory() {
-    this.form = new HashMap<>();
-    this.groups = new HashMap<>();
-    this.dependentShapes = new HashMap<>();
-    this.properties = new ArrayDeque<>();
     this.objectMapper = new ObjectMapper();
   }
 
@@ -46,6 +42,7 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
    *                    existing entity.
    */
   public Map<String, Object> genTemplate(ArrayNode data, Map<String, Object> defaultVals) {
+    this.reset(); // Reset each time method is called to prevent any data storage
     LOGGER.debug("Generating template from query results...");
     this.sortData(data);
 
@@ -58,6 +55,16 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
     }
 
     return this.form;
+  }
+
+  /**
+   * Resets the factory.
+   */
+  private void reset() {
+    this.form = new HashMap<>();
+    this.groups = new HashMap<>();
+    this.dependentShapes = new HashMap<>();
+    this.properties = new ArrayDeque<>();
   }
 
   /**
