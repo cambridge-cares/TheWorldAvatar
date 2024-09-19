@@ -125,18 +125,27 @@ curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"in
 curl -X POST http://localhost:3838/carpark-agent/create
 ```
 
+### City furniture
+Execute [cityfurniture-footprint-height.sql] first to add city furniture footprint into the cityobject_genericattrib table.
+
 ### Company
-Execute [cityfurniture-footprint-height.sql] first to add city furniture footprint into the cityobject_genericattrib table. Then run the data uploader for the "company" dataset, which is not in the list of datasets in sea-level.json.
+Then run the data uploader for the "company" and "" dataset, which is not in the list of datasets in sea-level.json.
 
 Not run together with data uploader due to the SQL script requiring the city furniture footprint first.
 
-Finally run [company.http] to match company to the closest buildings.
+Finally run [company.http] to match entities to the closest buildings.
+
+### Update buildings layer
+Previously the stack data uploader executed a script to create the GeoServer layer for buildings, but it does not have city furniture and company data. Execute [geoserver_layer.sql] to update the layer.
+
 
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
+Kok Foong Lee
 
 [sea-level.json]: ./stack-manager/inputs/config/sea-level.json
 [landplot_matching.http]: ./http_requests/landplot_matching.http
 [landplot_layer.sql]: ./additional_sql_scripts/landplot_layer.sql
 [cityfurniture-footprint-height.sql]: ./additional_sql_scripts/cityfurniture-footprint-height.sql
 [company.http]: ./http_requests/company.http
+[geoserver_layer.sql]: ./additional_sql_scripts/geoserver_layer.sql
