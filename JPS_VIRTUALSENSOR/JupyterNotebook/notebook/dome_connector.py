@@ -5,6 +5,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from datetime import datetime
 import re
+from shapely.geometry import Polygon
 
 
 class Connector:
@@ -97,12 +98,7 @@ class ShipConnector(Connector):
                 "dLAT": max((max_lat - min_lat) * 0.5 + min_d, min_d*2),
                 "dLON": max((max_lon - min_lon) * 0.5 + min_d, min_d*2)}
 
-    def plot_ship(self, dict_ship_all, scope, list_mmsi):
-        # Create a map
-        m = folium.Map()
-        colormap = plt.get_cmap('autumn')
-
-        # draw scope
+    def get_scope_corners(self, scope):
 
         min_lon = scope['LON']-scope['dLON']
         max_lon = scope['LON']+scope['dLON']
@@ -114,6 +110,29 @@ class ShipConnector(Connector):
                        (max_lat, max_lon),
                        (max_lat, min_lon),
                        (min_lat, min_lon)]
+
+        return mbr_corners
+
+    def check_scope_overlap(self, scope1, scope2):
+
+        poly1 = Polygon(self.get_scope_corners(scope1))
+        poly2 = Polygon(self.get_scope_corners(scope2))
+
+        return poly1.intersects(poly2)
+
+    def plot_ship(self, dict_ship_all, scope, mmsi_to_id, list_mmsi):
+        # Create a map
+        m = folium.Map()
+        colormap = plt.get_cmap('autumn')
+
+        # draw scope
+
+        min_lon = scope['LON']-scope['dLON']
+        max_lon = scope['LON']+scope['dLON']
+        min_lat = scope['LAT']-scope['dLAT']
+        max_lat = scope['LAT']+scope['dLAT']
+
+        mbr_corners = self.get_scope_corners(scope)
 
         folium.Polygon(locations=mbr_corners, color="none", fill=True,
                        fill_color="blue", fill_opacity=0.2, weight=0).add_to(m)
@@ -129,7 +148,9 @@ class ShipConnector(Connector):
             # Add points to the map
             for i in range(len(trajectory)):
                 point = trajectory[i]
-                folium.CircleMarker(location=point, radius=5, popup=folium.Popup(f"MMSI:{mmsi}, {df_ship['date'][i]}"),
+                folium.CircleMarker(location=point, radius=5,
+                                    popup=folium.Popup(
+                                        f"MMSI:{mmsi} (Ship {mmsi_to_id[mmsi]}), {df_ship['date'][i]}"),
                                     color='none', fill=True, fill_color='black', fill_opacity=0.7).add_to(m)
 
             colors = [colormap(i / len(trajectory))
