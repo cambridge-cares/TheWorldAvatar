@@ -8,13 +8,13 @@ import { PropertyTable } from './_components/property-table'
 import { NotFoundError } from '@/lib/api'
 
 interface SpeciesPageInterface {
-  params: { iriEncoded: string }
+  searchParams: { iri: string }
 }
 
-export default async function SpeciesPage({ params }: SpeciesPageInterface) {
+export default async function SpeciesPage({ searchParams: {iri} }: SpeciesPageInterface) {
   const [data, xyz] = await Promise.all([
-    getSpeciesOne(params.iriEncoded),
-    getSpeciesXYZ(params.iriEncoded).catch(err =>
+    getSpeciesOne(iri),
+    getSpeciesXYZ(iri).catch(err =>
       err instanceof NotFoundError
         ? Promise.resolve(undefined)
         : Promise.reject(err)
