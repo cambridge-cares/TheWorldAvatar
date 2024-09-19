@@ -70,6 +70,8 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
 
       if (concepts && concepts.length > 0 && !props.options.disabled) {
         let firstOption: string = form.getValues(field.fieldId);
+        // WIP: Set default value Singapore for any Country Field temporarily
+        // Default values should not be hardcoded here but retrieved in a config instead
         if (field.name[VALUE_KEY].toLowerCase() === "country") {
           firstOption = "Singapore";
         }

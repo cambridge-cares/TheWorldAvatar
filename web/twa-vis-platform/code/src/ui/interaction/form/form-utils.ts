@@ -168,6 +168,7 @@ export function parseConcepts(concepts: OntologyConcept[], priority: string): On
     if (concept.label.value === priority || concept.type.value === priority) {
       priorityConcept = concept;
     }
+
     // If it has a parent, the concept should be appended to its parent key
     if (concept.parent) {
       const parentInstance = concept.parent.value;
@@ -201,12 +202,14 @@ function sortRootConcepts(mappings: OntologyConceptMappings, priority: OntologyC
   // Process the concepts to map them
   mappings[ONTOLOGY_CONCEPT_ROOT].map(concept => {
     // Priority may either be a child or parent concept and we should store the right concept
-    if (priority && (concept.type.value == priority.parent?.value || concept.type.value == priority.label?.value)) {
-      // If this is the priority concept, store it directly, and do not sort it out
+    if (priority && (concept.type.value == priority.parent?.value || concept.label.value == priority.parent?.value
+      || concept.label.value == priority.label?.value
+    )) {
+      // If this is the priority concept, store it directly, and do not sort it out as it will be appended to the first of the array
       priorityConcept = concept;
     } else {
       // If this is a parent concept with children
-      if (parentNodes.includes(concept.label.value)) {
+      if (parentNodes.includes(concept.type.value)) {
         parentConcepts.push(concept);
       } else {
         childlessConcepts.push(concept);
