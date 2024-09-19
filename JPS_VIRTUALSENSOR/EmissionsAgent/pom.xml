@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cmclinnovations</groupId>
     <artifactId>EmissionsAgent</artifactId>
-    <version>1.5-ship-timeseries-SNAPSHOT</version>
+    <version>1.5</version>
     <packaging>war</packaging>
     
     <!-- Parent POM -->
