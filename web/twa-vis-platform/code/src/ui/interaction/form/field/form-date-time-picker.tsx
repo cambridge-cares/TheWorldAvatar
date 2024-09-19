@@ -1,6 +1,6 @@
 import styles from './field.module.css';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
 
 import { PropertyShape, VALUE_KEY } from 'types/form';
@@ -57,9 +57,11 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
   }
 
   // Initialise default form state value if there are no default values
-  if (props.form.getValues(props.field.fieldId) === "") {
-    props.form.setValue(props.field.fieldId, currentDateTime);
-  }
+  useEffect(() => {
+    if (props.form.getValues(props.field.fieldId) === "") {
+      props.form.setValue(props.field.fieldId, currentDateTime);
+    }
+  }, []);
 
   return (
     <FormInputContainer
