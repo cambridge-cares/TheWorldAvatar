@@ -12,12 +12,13 @@ import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class FormTemplateFactory implements ShaclTemplateFactory {
+public class FormTemplateFactory {
   // Data stores
   private Queue<JsonNode> properties;
   private Map<String, Object> form;
@@ -72,21 +73,22 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
    */
   private void addContext() {
     Map<String, String> context = new HashMap<>();
-    context.put(COMMENT_PROPERTY, RDFS_PREFIX + COMMENT_PROPERTY);
-    context.put(LABEL_PROPERTY, RDFS_PREFIX + LABEL_PROPERTY);
+    context.put(ShaclResource.COMMENT_PROPERTY, ShaclResource.RDFS_PREFIX + ShaclResource.COMMENT_PROPERTY);
+    context.put(ShaclResource.LABEL_PROPERTY, ShaclResource.RDFS_PREFIX + ShaclResource.LABEL_PROPERTY);
 
-    context.put(PROPERTY_GROUP, SHACL_PREFIX + PROPERTY_GROUP);
-    context.put(PROPERTY_SHAPE, SHACL_PREFIX + PROPERTY_SHAPE);
-    context.put(NAME_PROPERTY, SHACL_PREFIX + NAME_PROPERTY);
-    context.put(DESCRIPTION_PROPERTY, SHACL_PREFIX + DESCRIPTION_PROPERTY);
-    context.put(ORDER_PROPERTY, SHACL_PREFIX + ORDER_PROPERTY);
-    context.put(GROUP_PROPERTY, SHACL_PREFIX + GROUP_PROPERTY);
-    context.put(PROPERTY_PROPERTY, SHACL_PREFIX + PROPERTY_PROPERTY);
-    context.put(DEFAULT_VAL_PROPERTY, SHACL_PREFIX + DEFAULT_VAL_PROPERTY);
-    context.put(CLASS_PROPERTY, SHACL_PREFIX + CLASS_PROPERTY);
-    context.put(DATA_TYPE_PROPERTY, SHACL_PREFIX + DATA_TYPE_PROPERTY);
-    context.put(IN_PROPERTY, SHACL_PREFIX + IN_PROPERTY);
-    context.put(QUALIFIED_VAL_SHAPE_PROPERTY, SHACL_PREFIX + QUALIFIED_VAL_SHAPE_PROPERTY);
+    context.put(ShaclResource.PROPERTY_GROUP, ShaclResource.SHACL_PREFIX + ShaclResource.PROPERTY_GROUP);
+    context.put(ShaclResource.PROPERTY_SHAPE, ShaclResource.SHACL_PREFIX + ShaclResource.PROPERTY_SHAPE);
+    context.put(ShaclResource.NAME_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.NAME_PROPERTY);
+    context.put(ShaclResource.DESCRIPTION_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.DESCRIPTION_PROPERTY);
+    context.put(ShaclResource.ORDER_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.ORDER_PROPERTY);
+    context.put(ShaclResource.GROUP_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.GROUP_PROPERTY);
+    context.put(ShaclResource.PROPERTY_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.PROPERTY_PROPERTY);
+    context.put(ShaclResource.DEFAULT_VAL_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.DEFAULT_VAL_PROPERTY);
+    context.put(ShaclResource.CLASS_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.CLASS_PROPERTY);
+    context.put(ShaclResource.DATA_TYPE_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.DATA_TYPE_PROPERTY);
+    context.put(ShaclResource.IN_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.IN_PROPERTY);
+    context.put(ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY,
+        ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY);
     this.form.put("@context", context);
   }
 
@@ -99,19 +101,19 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
     // All array nodes will be followed up with a get(index) if they are arrays,
     // else, path are used for object nodes
     for (JsonNode field : fields) {
-      if (field.has(TYPE_KEY)) {
-        String type = field.path(TYPE_KEY).get(0).asText();
-        if (type.equals(SHACL_PREFIX + PROPERTY_SHAPE)) {
+      if (field.has(ShaclResource.TYPE_KEY)) {
+        String type = field.path(ShaclResource.TYPE_KEY).get(0).asText();
+        if (type.equals(ShaclResource.SHACL_PREFIX + ShaclResource.PROPERTY_SHAPE)) {
           // This checker is added as the SPARQL query might provide a response with
           // multiple duplicate property shapes due to the presence of different nested
           // value shapes
-          if (field.has(SHACL_PREFIX + QUALIFIED_VAL_SHAPE_PROPERTY)) {
+          if (field.has(ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY)) {
             // Check if there is an existing shape with another qualifier name
             String dependentIdentifier = field
-                .path(SHACL_PREFIX + NAME_PROPERTY).get(0)
-                .path(VAL_KEY).asText();
+                .path(ShaclResource.SHACL_PREFIX + ShaclResource.NAME_PROPERTY).get(0)
+                .path(ShaclResource.VAL_KEY).asText();
             Map<String, Object> dependentShape = this.parseInputModel(field
-                .path(SHACL_PREFIX + QUALIFIED_VAL_SHAPE_PROPERTY)
+                .path(ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY)
                 .get(0), null);
             this.dependentShapes.computeIfAbsent(dependentIdentifier, k -> {
               // When there is no existing shape, add a new property for sorting
@@ -123,8 +125,8 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
             // Otherwise, the simplest use case is to add a new property
             this.properties.offer(field);
           }
-        } else if (type.equals(SHACL_PREFIX + PROPERTY_GROUP)) {
-          this.groups.put(field.path(ID_KEY).asText(), field);
+        } else if (type.equals(ShaclResource.SHACL_PREFIX + ShaclResource.PROPERTY_GROUP)) {
+          this.groups.put(field.path(ShaclResource.ID_KEY).asText(), field);
         } else {
           LOGGER.error("Invalid input node! Only property shape and property group is allowed.");
           throw new IllegalArgumentException(
@@ -147,9 +149,9 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
     while (!this.properties.isEmpty()) {
       JsonNode currentProperty = this.properties.poll();
       // When there is a group
-      if (currentProperty.has(SHACL_PREFIX + GROUP_PROPERTY)) {
-        String groupId = currentProperty.path(SHACL_PREFIX + GROUP_PROPERTY)
-            .get(0).path(ID_KEY).asText();
+      if (currentProperty.has(ShaclResource.SHACL_PREFIX + ShaclResource.GROUP_PROPERTY)) {
+        String groupId = currentProperty.path(ShaclResource.SHACL_PREFIX + ShaclResource.GROUP_PROPERTY)
+            .get(0).path(ShaclResource.ID_KEY).asText();
         // Retrieve existing group in parsed model if available, or else, generate one
         // from the associated group
         Map<String, Object> group = parsedProperties.getOrDefault(groupId,
@@ -157,25 +159,26 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
         // Retrieve existing group properties in parsed model if available, or else,
         // generate one; Type cast is definitely accurate
         List<Map<String, Object>> groupProperties = (List<Map<String, Object>>) group
-            .getOrDefault(PROPERTY_PROPERTY, new ArrayList<>());
+            .getOrDefault(ShaclResource.PROPERTY_PROPERTY, new ArrayList<>());
         // Add new property
         groupProperties.add(parseInputModel(currentProperty, defaultVals));
         // Sort the properties based on order
-        groupProperties.sort(Comparator.comparingInt(map -> (int) map.get(ORDER_PROPERTY)));
+        groupProperties.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
         // Update the results
-        group.put(PROPERTY_PROPERTY, groupProperties);
+        group.put(ShaclResource.PROPERTY_PROPERTY, groupProperties);
         parsedProperties.put(groupId, group);
       } else {
         // Without a group, simply use the ID as hash key
-        parsedProperties.put(currentProperty.path(ID_KEY).asText(), this.parseInputModel(currentProperty, defaultVals));
+        parsedProperties.put(currentProperty.path(ShaclResource.ID_KEY).asText(),
+            this.parseInputModel(currentProperty, defaultVals));
       }
     }
     parsedProperties.forEach((key, value) -> {
       results.add(value);
     });
     // Sort the results based on order
-    results.sort(Comparator.comparingInt(map -> (int) map.get(ORDER_PROPERTY)));
-    this.form.put(PROPERTY_PROPERTY, results);
+    results.sort(Comparator.comparingInt(map -> (int) map.get(ShaclResource.ORDER_PROPERTY)));
+    this.form.put(ShaclResource.PROPERTY_PROPERTY, results);
   }
 
   /**
@@ -194,31 +197,33 @@ public class FormTemplateFactory implements ShaclTemplateFactory {
       String shapeField = shapeFieldEntry.getKey();
       JsonNode shapeFieldNode = shapeFieldEntry.getValue();
       // Id will always be a string
-      if (shapeField.equals(ID_KEY)) {
+      if (shapeField.equals(ShaclResource.ID_KEY)) {
         inputModel.put(shapeField, shapeFieldNode.asText());
-      } else if (shapeField.equals(TYPE_KEY)) {
+      } else if (shapeField.equals(ShaclResource.TYPE_KEY)) {
         // Type will always be enclosed in a string array of one item
         inputModel.put(shapeField, shapeFieldNode.get(0).asText());
-      } else if (shapeField.equals(SHACL_PREFIX + NAME_PROPERTY)) {
+      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.NAME_PROPERTY)) {
         Map<String, Object> nameLiteral = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
         inputModel.put(StringResource.getLocalName(shapeField), nameLiteral);
         if (!defaultVals.isEmpty()) {
-          String parsedField = nameLiteral.get(VAL_KEY).toString().replace(" ", "_");
+          String parsedField = nameLiteral.get(ShaclResource.VAL_KEY).toString().replace(" ", "_");
           inputModel.put("defaultValue", defaultVals.get(parsedField));
         }
-      } else if (shapeField.equals(SHACL_PREFIX + ORDER_PROPERTY)) {
+      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.ORDER_PROPERTY)) {
         Map<String, Object> orderMap = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
-        inputModel.put(StringResource.getLocalName(shapeField), Integer.valueOf(orderMap.get(VAL_KEY).toString()));
-      } else if (shapeField.equals(SHACL_PREFIX + DATA_TYPE_PROPERTY)) {
+        inputModel.put(StringResource.getLocalName(shapeField),
+            Integer.valueOf(orderMap.get(ShaclResource.VAL_KEY).toString()));
+      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.DATA_TYPE_PROPERTY)) {
         // Data types are stored in @id key with xsd namespace
         // But we are only interested in the local name and extract it accordingly
         Map<String, Object> dataType = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
         inputModel.put(StringResource.getLocalName(shapeField),
-            StringResource.getLocalName(dataType.get(ID_KEY).toString()));
-      } else if (shapeField.equals(SHACL_PREFIX + QUALIFIED_VAL_SHAPE_PROPERTY)) {
+            StringResource.getLocalName(dataType.get(ShaclResource.ID_KEY).toString()));
+      } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY)) {
         // For qualified value shape, retrieve the parsed ID and its associated queue
         // from the mapping. Note that there should be no duplicate shapes
-        String dependentId = input.get(SHACL_PREFIX + NAME_PROPERTY).get(0).path(VAL_KEY).asText();
+        String dependentId = input.get(ShaclResource.SHACL_PREFIX + ShaclResource.NAME_PROPERTY).get(0)
+            .path(ShaclResource.VAL_KEY).asText();
         Queue<Map<String, Object>> dependentGroup = this.dependentShapes.get(dependentId);
         inputModel.put(StringResource.getLocalName(shapeField), dependentGroup);
       } else {

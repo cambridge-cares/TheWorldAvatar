@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.cmclinnovations.agent.template.ShaclTemplateFactory;
+import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -220,7 +220,7 @@ public class AddService {
       if ((boolean) replacements.get(currentDay.toLowerCase())) {
         // Only include the selected day if it has been selected on the frontend
         ObjectNode currentDayNode = this.objectMapper.createObjectNode();
-        currentDayNode.put(ShaclTemplateFactory.ID_KEY,
+        currentDayNode.put(ShaclResource.ID_KEY,
             "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/"
                 + currentDay + "");
         results.add(currentDayNode);

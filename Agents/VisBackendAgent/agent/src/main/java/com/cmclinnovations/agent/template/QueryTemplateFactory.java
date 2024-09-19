@@ -12,9 +12,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlQueryLine;
+import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 
-public class QueryTemplateFactory implements ShaclTemplateFactory {
+public class QueryTemplateFactory {
   private String parentField;
   private final Queue<SparqlQueryLine> queryLines;
   private final Queue<SparqlQueryLine> optionalQueryLines;
@@ -54,7 +55,8 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
    * 
    */
   public QueryTemplateFactory() {
-    // Queues are populated and emptied within each method call and does not need to be reset
+    // Queues are populated and emptied within each method call and does not need to
+    // be reset
     this.queryLines = new ArrayDeque<>();
     this.optionalQueryLines = new ArrayDeque<>();
   }
@@ -162,7 +164,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
   private String genIriClassLine(List<SparqlBinding> bindings) {
     // Retrieve the target class from the first binding
     String targetClass = bindings.get(0).getFieldValue(CLAZZ_VAR);
-    return "?iri a " + StringResource.parseIriForQuery(targetClass) + FULL_STOP;
+    return "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP;
   }
 
   /**
@@ -264,7 +266,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       this.parentField = propertyName;
     }
     // Close with the variable
-    tripleQueryBuilder.append(predObjectQueryBuilder).append(" ?").append(propertyName).append(FULL_STOP);
+    tripleQueryBuilder.append(predObjectQueryBuilder).append(" ?").append(propertyName).append(ShaclResource.FULL_STOP);
     return tripleQueryBuilder.toString();
   }
 
@@ -281,7 +283,7 @@ public class QueryTemplateFactory implements ShaclTemplateFactory {
       // Separate the clauses as there may be other path prefixes in future
       // For inverse paths, simply append a ^ before
       if (binding.getFieldValue(propertyPathPart + PATH_PREFIX)
-          .equals(SHACL_PREFIX + "inversePath")) {
+          .equals(ShaclResource.SHACL_PREFIX + "inversePath")) {
         builder.append("^");
       }
     }

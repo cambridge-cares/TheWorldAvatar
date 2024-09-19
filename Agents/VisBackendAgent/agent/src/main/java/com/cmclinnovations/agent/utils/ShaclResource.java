@@ -1,6 +1,6 @@
-package com.cmclinnovations.agent.template;
+package com.cmclinnovations.agent.utils;
 
-public interface ShaclTemplateFactory {
+public class ShaclResource {
   // JSON LD keys
   public static final String ID_KEY = "@id";
   public static final String TYPE_KEY = "@type";
@@ -28,4 +28,7 @@ public interface ShaclTemplateFactory {
   public static final String QUALIFIED_VAL_SHAPE_PROPERTY = "qualifiedValueShape";
   // Query string elements
   public static final String FULL_STOP = ".";
+
+  private ShaclResource(){
+  }
 }
