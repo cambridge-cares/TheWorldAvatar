@@ -63,7 +63,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
         return "facility";
       } else if (entityClass.endsWith("ServiceProvider")) {
         return "serviceprovider";
-      } else if (entityClass.endsWith("Employee")) {
+      } else if (entityClass.endsWith("Employee") || entityClass.endsWith("Person")) {
         return "employee";
       }
     }
