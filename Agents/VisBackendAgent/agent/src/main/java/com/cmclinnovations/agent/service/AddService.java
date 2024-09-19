@@ -64,7 +64,7 @@ public class AddService {
    */
   public ResponseEntity<String> instantiate(String resourceID, String targetId, Map<String, Object> param) {
     LOGGER.info("Instantiating an instance of {} ...", resourceID);
-    ResponseEntity<String> fileNameResponse = this.getTargetFileName(resourceID);
+    ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
     // Return the BAD REQUEST response directly if the file is invalid
     if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return fileNameResponse;
@@ -87,27 +87,6 @@ public class AddService {
     String jsonString = instantiationBody.toString();
     LOGGER.info(jsonString);
     return this.kgService.add(jsonString);
-  }
-
-  /**
-   * Gets the target file name as a response entity if there is an associated
-   * identifier
-   * in the file resource, or else, return a bad response.
-   * 
-   * @param resourceID The target resource identifier for the instance class.
-   */
-  private ResponseEntity<String> getTargetFileName(String resourceID) {
-    LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", resourceID);
-    String targetFileName = this.fileService.getResourceTarget(resourceID,
-        FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_SERVICE_RESOURCE);
-    // Handle invalid target type
-    if (targetFileName.isEmpty()) {
-      return new ResponseEntity<>(MessageFormat.format(
-          "Invalid or missing resource for {0}! Please contact your technical team for assistance.",
-          resourceID),
-          HttpStatus.BAD_REQUEST);
-    }
-    return new ResponseEntity<>(targetFileName, HttpStatus.OK);
   }
 
   /**

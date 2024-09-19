@@ -12,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
@@ -96,6 +98,26 @@ public class FileService {
       throw new UncheckedIOException(e);
     }
     return resourceNode;
+  }
+
+  /**
+   * Gets the target file name as a response entity if there is an associated
+   * identifier in the file resource, or else, return a bad response.
+   * 
+   * @param resourceID The target resource identifier for the instance class.
+   */
+  public ResponseEntity<String> getTargetFileName(String resourceID) {
+    LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", resourceID);
+    String targetFileName = this.getResourceTarget(resourceID,
+        FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_SERVICE_RESOURCE);
+    // Handle invalid target type
+    if (targetFileName.isEmpty()) {
+      return new ResponseEntity<>(MessageFormat.format(
+          "Invalid or missing resource for {0}! Please contact your technical team for assistance.",
+          resourceID),
+          HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(targetFileName, HttpStatus.OK);
   }
 
   /**
