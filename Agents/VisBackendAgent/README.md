@@ -436,8 +436,8 @@ It is expected that we should create a new ID and name for the person instance. 
 {
   "@replace": "parameter name", # this may be a subset of the parameter name
   "@type": "iri", # expected request parameter type - iri or literal
-  "prefix": "prefix:me/" # optional prefix for IRI types if we require only the identifier but not the entire IRI of the request parameter
+  "prefix": "http://example.org/prefix/me/" # optional prefix for IRI types if we require only the identifier but not the entire IRI of the request parameter
 }
 ```
 
-A sample file can be found at `./resources/example.jsonld`.
+A sample file can be found at `./resources/example.jsonld`. **WARNING:** Please do not use short prefixes and include the full IRI in order for the agent to function as expected.
