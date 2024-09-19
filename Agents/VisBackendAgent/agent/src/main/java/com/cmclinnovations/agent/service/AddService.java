@@ -105,10 +105,10 @@ public class AddService {
       Map<String, Object> replacements) {
     // If the current node is a replacement object, replace current node with
     // replacement value
-    if (currentNode.has("@replace")) {
+    if (currentNode.has(ShaclResource.REPLACE_KEY)) {
       if (parentNode != null) {
         // Add a different interaction for schedule types
-        if (currentNode.path("type").asText().equals("schedule")) {
+        if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("schedule")) {
           this.replaceDayOfWeekSchedule(parentNode, parentField, replacements);
         } else {
           parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
@@ -146,9 +146,9 @@ public class AddService {
    *                        corresponding node.
    */
   private String getReplacementValue(ObjectNode replacementNode, Map<String, Object> replacements) {
-    String replacementType = replacementNode.path("type").asText();
+    String replacementType = replacementNode.path(ShaclResource.TYPE_KEY).asText();
     // Iterate through the replacements and find the relevant key for replacement
-    String replacementId = replacementNode.path("@replace").asText();
+    String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
     String targetKey = "";
     for (String key : replacements.keySet()) {
       if (key.contains(replacementId)) {
@@ -197,7 +197,7 @@ public class AddService {
       ArrayNode nodes = (ArrayNode) scheduleNode;
       for (int i = 0; i < nodes.size(); i++) {
         JsonNode currentScheduleNode = nodes.get(i);
-        if (currentScheduleNode.isObject() && !((ObjectNode) currentScheduleNode).has("@replace")) {
+        if (currentScheduleNode.isObject() && !((ObjectNode) currentScheduleNode).has(ShaclResource.REPLACE_KEY)) {
           results.add(currentScheduleNode);
         }
       }

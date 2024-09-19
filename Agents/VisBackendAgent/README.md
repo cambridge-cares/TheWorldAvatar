@@ -435,7 +435,7 @@ It is expected that we should create a new ID and name for the person instance. 
 ```json
 {
   "@replace": "parameter name", # this may be a subset of the parameter name
-  "type": "iri", # expected request parameter type - iri or literal
+  "@type": "iri", # expected request parameter type - iri or literal
   "prefix": "prefix:me/" # optional prefix for IRI types if we require only the identifier but not the entire IRI of the request parameter
 }
 ```

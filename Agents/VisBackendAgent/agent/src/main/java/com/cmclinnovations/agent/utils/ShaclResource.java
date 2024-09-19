@@ -5,6 +5,7 @@ public class ShaclResource {
   public static final String ID_KEY = "@id";
   public static final String TYPE_KEY = "@type";
   public static final String VAL_KEY = "@value";
+  public static final String REPLACE_KEY = "@replace";
   // Namespaces
   public static final String BASE_PREFIX = "https://www.theworldavatar.com/kg/";
   public static final String RDFS_PREFIX = "http://www.w3.org/2000/01/rdf-schema#";
