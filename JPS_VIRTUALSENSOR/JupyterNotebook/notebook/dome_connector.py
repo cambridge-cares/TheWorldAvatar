@@ -70,36 +70,52 @@ class ShipConnector(Connector):
         return {"LAT": centroid_lat, "LON": centroid_lon,
                 "dLAT": max((max_lat - min_lat) * 0.5 + min_d, min_d*2),
                 "dLON": max((max_lon - min_lon) * 0.5 + min_d, min_d*2)}
-
-    def plot_ship(self, dict_ship_all, scope_all, list_mmsi):
-        # Create a map
-        m = folium.Map()
-        colormap = plt.get_cmap('autumn')
-        min_scope_lat = 200
-        min_scope_lon = 200
-        max_scope_lat = -200
-        max_scope_lon = -200
+    
+    def combine_scope(self, scope_all, list_mmsi, min_d=0.01):
+        
+        min_lon = 200
+        min_lat = 200
+        max_lon = -200
+        max_lat = -200
         
         # prepare combined scope
         for mmsi in list_mmsi:
             scope = scope_all[mmsi]
-            min_lon = scope['LON']-scope['dLON']
-            max_lon = scope['LON']+scope['dLON']
-            min_lat = scope['LAT']-scope['dLAT']
-            max_lat = scope['LAT']+scope['dLAT']
-            
-            min_scope_lat = min(min_scope_lat, min_lat)
-            min_scope_lon = min(min_scope_lon, min_lon)
-            max_scope_lat = max(max_scope_lat, max_lat)
-            max_scope_lon = max(max_scope_lon, max_lon)
+            min_lon = min(min_lon, scope['LON']-scope['dLON'])
+            max_lon = max(max_lon, scope['LON']+scope['dLON'])
+            min_lat = min(min_lat, scope['LAT']-scope['dLAT'])
+            max_lat = max(max_lat, scope['LAT']+scope['dLAT'])
         
-        mbr_corners = [(min_scope_lat, min_scope_lon),
-                    (min_scope_lat, max_scope_lon),
-                    (max_scope_lat, max_scope_lon),
-                    (max_scope_lat, min_scope_lon),
-                    (min_scope_lat, min_scope_lon)]
+        # Calculate Centroid
+        centroid_lat = (min_lat + max_lat) / 2
+        centroid_lon = (min_lon + max_lon) / 2
+        
+        return {"LAT": centroid_lat, "LON": centroid_lon,
+                "dLAT": max((max_lat - min_lat) * 0.5 + min_d, min_d*2),
+                "dLON": max((max_lon - min_lon) * 0.5 + min_d, min_d*2)}
+        
+
+    def plot_ship(self, dict_ship_all, scope, list_mmsi):
+        # Create a map
+        m = folium.Map()
+        colormap = plt.get_cmap('autumn')
+        
+        # draw scope
+        
+        min_lon = scope['LON']-scope['dLON']
+        max_lon = scope['LON']+scope['dLON']
+        min_lat = scope['LAT']-scope['dLAT']
+        max_lat = scope['LAT']+scope['dLAT']
+            
+        mbr_corners = [(min_lat, min_lon),
+                    (min_lat, max_lon),
+                    (max_lat, max_lon),
+                    (max_lat, min_lon),
+                    (min_lat, min_lon)]
 
         folium.Polygon(locations=mbr_corners,color="none",fill=True,fill_color="blue",fill_opacity=0.2,weight=0).add_to(m)
+        
+        # draw ship
         
         for mmsi in list_mmsi:
             
@@ -122,6 +138,6 @@ class ShipConnector(Connector):
                                 weight=2.5,opacity=1).add_to(m)
 
         # Fit bounds to ensure everything is visible
-        m.fit_bounds([[min_scope_lat, min_scope_lon], [max_scope_lat, max_scope_lon]])
+        m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
         
         return m._repr_html_()
