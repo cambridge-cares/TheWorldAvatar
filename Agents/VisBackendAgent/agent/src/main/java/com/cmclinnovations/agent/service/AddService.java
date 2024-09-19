@@ -207,7 +207,7 @@ public class AddService {
    * @param replacements Mappings of the replacement value with their
    *                     corresponding node.
    */
-  public void replaceDayOfWeekSchedule(ObjectNode parentNode, String parentField, Map<String, Object> replacements) {
+  private void replaceDayOfWeekSchedule(ObjectNode parentNode, String parentField, Map<String, Object> replacements) {
     // Note that this method assumes that the explicit recurrence interval will
     // always contain an array of items
     ArrayNode results = this.objectMapper.createArrayNode(); // Empty array to store values
