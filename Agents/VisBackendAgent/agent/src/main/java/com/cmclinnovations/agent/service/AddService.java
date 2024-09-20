@@ -69,14 +69,14 @@ public class AddService {
     if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return fileNameResponse;
     }
-    JsonNode instantiationBody = this.fileService
-        .getJsonContents(
-            FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld");
     // Update ID value to target ID
     param.put("id", targetId);
-    // Attempt to replace all placeholders
-    if (instantiationBody.isObject()) {
-      this.recursiveReplacePlaceholders((ObjectNode) instantiationBody, null, null, param);
+    // Retrieve the instantiation JSON schema
+    JsonNode addJsonSchema = this.fileService.getJsonContents(
+        FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld");
+    // Attempt to replace all placeholders in the JSON schema
+    if (addJsonSchema.isObject()) {
+      this.recursiveReplacePlaceholders((ObjectNode) addJsonSchema, null, null, param);
     } else {
       LOGGER.info("Invalid JSON-LD format for replacement!");
       return new ResponseEntity<>(
@@ -84,8 +84,7 @@ public class AddService {
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
     LOGGER.debug("Adding instance to endpoint...");
-    String jsonString = instantiationBody.toString();
-    LOGGER.info(jsonString);
+    String jsonString = addJsonSchema.toString();
     return this.kgService.add(jsonString);
   }
 
