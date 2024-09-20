@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,16 +15,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmclinnovations.agent.service.AddService;
+import com.cmclinnovations.agent.service.DeleteService;
 import com.cmclinnovations.agent.service.GetService;
 
 @RestController
 public class VisBackendAgent {
   private final AddService addService;
+  private final DeleteService deleteService;
   private final GetService getService;
   private static final Logger LOGGER = LogManager.getLogger(VisBackendAgent.class);
 
-  public VisBackendAgent(AddService addService, GetService getService) {
+  public VisBackendAgent(AddService addService, DeleteService deleteService, GetService getService) {
     this.addService = addService;
+    this.deleteService = deleteService;
     this.getService = getService;
   }
 
@@ -130,20 +134,26 @@ public class VisBackendAgent {
   }
 
   /**
-   * Instantiates a new entity in the knowledge graph using the Bin parameters.
-   * 
-   * @param type   Entity type. Valid type include bin.
-   * @param entity Contains the required Entity data model.
+   * Instantiates a new instance in the knowledge graph.
    */
   @PostMapping("/{type}")
   public ResponseEntity<String> addInstance(@PathVariable String type, @RequestBody Map<String, Object> instance) {
     LOGGER.info("Received request to add one {}...", type);
     ResponseEntity<String> response = this.addService.instantiate(type, instance);
     if (response.getStatusCode() == HttpStatus.OK) {
-      LOGGER.info(type + " has been successfully instantiated!");
+      LOGGER.info("{} has been successfully instantiated!", type);
       return new ResponseEntity<>(type + " has been successfully instantiated!", HttpStatus.CREATED);
     } else {
       return response;
     }
+  }
+
+  /**
+   * Removes the specified instance from the knowledge graph.
+   */
+  @DeleteMapping("/{type}/{id}")
+  public ResponseEntity<String> removeEntity(@PathVariable String type, @PathVariable String id) {
+    LOGGER.info("Received request to delete {}...", type);
+    return this.deleteService.delete(type, id);
   }
 }

@@ -3,6 +3,7 @@ package com.cmclinnovations.agent.template;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Map;
@@ -14,12 +15,16 @@ import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlQueryLine;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class QueryTemplateFactory {
   private String parentField;
   private final Queue<SparqlQueryLine> queryLines;
   private final Queue<SparqlQueryLine> optionalQueryLines;
-
+  private final ObjectMapper objectMapper;
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
   private static final String IS_OPTIONAL_VAR = "isoptional";
@@ -54,7 +59,8 @@ public class QueryTemplateFactory {
    * Constructs a new query template factory.
    * 
    */
-  public QueryTemplateFactory() {
+  public QueryTemplateFactory(ObjectMapper objectMapper) {
+    this.objectMapper = new ObjectMapper();
     // Queues are populated and emptied within each method call and does not need to
     // be reset
     this.queryLines = new ArrayDeque<>();
@@ -152,6 +158,19 @@ public class QueryTemplateFactory {
 
     // Close the query
     return query.append(filters).append("}").toString();
+  }
+
+  /**
+   * Generate a SPARQL query template to delete the target instance.
+   * 
+   * @param rootNode The root node of contents to parse into a template
+   * @param targetId The target instance IRI.
+   */
+  public String genDeleteQueryTemplate(ObjectNode rootNode, String targetId) {
+    String query = "DELETE WHERE {";
+    StringBuilder whereBuilder = new StringBuilder();
+    this.recursiveParseNode(whereBuilder, rootNode, targetId, false);
+    return query + whereBuilder.toString() + "}";
   }
 
   /**
@@ -339,5 +358,135 @@ public class QueryTemplateFactory {
           .append(filterId)
           .append("\")");
     }
+  }
+
+  /**
+   * Replace the placeholders in the current node and recursively for its children
+   * nodes based on the corresponding value in the replacement mappings if
+   * available.
+   * 
+   * @param whereBuilder A query builder for the WHERE clause.
+   * @param currentNode  Input contents to perform operation on.
+   * @param targetId     The target instance IRI.
+   * @param isReverse    Indicates if the variable should be inverse or not.
+   */
+  private void recursiveParseNode(StringBuilder whereBuilder, ObjectNode currentNode, String targetId,
+      boolean isReverse) {
+    // First retrieve the ID value as a subject of the triple
+    String idTripleSubject = this.getFormattedQueryVariable((ObjectNode) currentNode.path(ShaclResource.ID_KEY),
+        targetId);
+    Iterator<Map.Entry<String, JsonNode>> iterator = currentNode.fields();
+    while (iterator.hasNext()) {
+      Map.Entry<String, JsonNode> field = iterator.next();
+      JsonNode fieldNode = field.getValue();
+      // Create the following query line for all @type fields
+      if (field.getKey().equals(ShaclResource.TYPE_KEY)) {
+        // If it is an object, it is definitely a replacement object, and retriving the
+        // @replace key is sufficient; Otherwise, default to text
+        String typeTripleObject = fieldNode.isObject()
+            ? this.getFormattedQueryVariable((ObjectNode) fieldNode, targetId)
+            : StringResource.parseIriForQuery(fieldNode.asText());
+
+        whereBuilder.append(idTripleSubject)
+            .append(" rdf:type ")
+            .append(typeTripleObject)
+            .append(ShaclResource.FULL_STOP);
+        // For all @reverse fields
+      } else if (field.getKey().equals(ShaclResource.REVERSE_KEY)) {
+        // If this is an object
+        if (fieldNode.isObject()) {
+          // A JSON object for "@reverse" should only have one predicate value to parse
+          if (fieldNode.size() > 1) {
+            LOGGER.error(
+                "Invalid reverse predicate JSON-LD schema for {}! Detected multiple fields but they are not stored as an array!",
+                idTripleSubject);
+            throw new IllegalArgumentException(
+                "Invalid reverse predicate JSON-LD schema! Detected multiple fields but they are not stored as an array!");
+          }
+          String reversePredicate = fieldNode.fieldNames().next();
+          this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
+              reversePredicate, whereBuilder, targetId, true);
+        } else if (fieldNode.isArray()) {
+          ArrayNode fieldArray = (ArrayNode) fieldNode;
+          for (JsonNode revPropertyNode : fieldArray) {
+            String reversePredicate = revPropertyNode.fieldNames().next();
+            this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), revPropertyNode.path(reversePredicate),
+                reversePredicate, whereBuilder, targetId, true);
+          }
+        }
+        // The @id and @context field should be ignored but continue parsing for
+        // everything else
+      } else if (!field.getKey().equals(ShaclResource.ID_KEY) && !field.getKey().equals(ShaclResource.CONTEXT_KEY)) {
+        if (fieldNode.isObject()) {
+          JsonNode targetTripleObjectNode = this.isReplacementObject(fieldNode)
+              ? fieldNode
+              : fieldNode.path(ShaclResource.ID_KEY);
+          whereBuilder.append(idTripleSubject)
+              .append(" ");
+          if (isReverse) {
+            whereBuilder.append("^");
+          }
+          whereBuilder.append(StringResource.parseIriForQuery(field.getKey()))
+              .append(" ")
+              .append(this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId))
+              .append(ShaclResource.FULL_STOP);
+          if (!this.isReplacementObject(fieldNode)) {
+            this.recursiveParseNode(whereBuilder, (ObjectNode) fieldNode, targetId, isReverse);
+          }
+          // For arrays, create a new object node containing the ID of the current node
+          // and the same field property, and parse it as per normal
+        } else if (fieldNode.isArray()) {
+          ArrayNode fieldArray = (ArrayNode) fieldNode;
+          for (JsonNode tripleObjNode : fieldArray) {
+            this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), tripleObjNode, field.getKey(), whereBuilder,
+                targetId, isReverse);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Checks if the target node is a replacement object with a @replace key.
+   * 
+   * @param targetNode Target for retrieval.
+   */
+  private boolean isReplacementObject(JsonNode targetNode) {
+    return targetNode.isObject() && targetNode.has(ShaclResource.REPLACE_KEY);
+  }
+
+  /**
+   * Retrieves the query variable from the replacement node as either an IRI or
+   * query variable.
+   * 
+   * @param replacementNode Target for retrieval.
+   * @param targetId        The target instance IRI.
+   */
+  private String getFormattedQueryVariable(ObjectNode replacementNode, String targetId) {
+    String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
+    String replacementType = replacementNode.path(ShaclResource.TYPE_KEY).asText();
+    // Only the id replacement field with prefixes will be returned as an IRI
+    if (replacementType.equals("iri") && replacementId.equals("id")) {
+      return StringResource.parseIriForQuery(replacementNode.path("prefix").asText() + targetId);
+    }
+    return ShaclResource.VARIABLE_MARK + replacementId;
+  }
+
+  /**
+   * Parses a nested node (two layers down) with the required parameters.
+   * 
+   * @param idNode        The ID node of the current top level node.
+   * @param objectNode    The node acting as the object of the triple.
+   * @param predicatePath The predicate path of the triple.
+   * @param whereBuilder  A query builder for the WHERE clause.
+   * @param targetId      The target instance IRI.
+   * @param isReverse     Indicates if the variable should be inverse or not.
+   */
+  private void parseNestedNode(JsonNode idNode, JsonNode objectNode, String predicatePath, StringBuilder whereBuilder,
+      String targetId, boolean isReverse) {
+    ObjectNode tempTripleObj = this.objectMapper.createObjectNode();
+    tempTripleObj.set(ShaclResource.ID_KEY, idNode);
+    tempTripleObj.set(predicatePath, objectNode);
+    this.recursiveParseNode(whereBuilder, tempTripleObj, targetId, isReverse);
   }
 }

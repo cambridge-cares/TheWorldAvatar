@@ -2,10 +2,12 @@ package com.cmclinnovations.agent.utils;
 
 public class ShaclResource {
   // JSON LD keys
+  public static final String CONTEXT_KEY = "@context";
   public static final String ID_KEY = "@id";
   public static final String TYPE_KEY = "@type";
   public static final String VAL_KEY = "@value";
   public static final String REPLACE_KEY = "@replace";
+  public static final String REVERSE_KEY = "@reverse";
   // Namespaces
   public static final String BASE_PREFIX = "https://www.theworldavatar.com/kg/";
   public static final String RDFS_PREFIX = "http://www.w3.org/2000/01/rdf-schema#";
@@ -29,6 +31,7 @@ public class ShaclResource {
   public static final String QUALIFIED_VAL_SHAPE_PROPERTY = "qualifiedValueShape";
   // Query string elements
   public static final String FULL_STOP = ".";
+  public static final String VARIABLE_MARK = "?";
 
   private ShaclResource(){
   }

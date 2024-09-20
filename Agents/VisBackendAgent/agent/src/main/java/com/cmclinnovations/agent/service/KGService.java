@@ -1,14 +1,17 @@
 package com.cmclinnovations.agent.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 @Service
 public class KGService {
@@ -50,7 +55,7 @@ public class KGService {
     this.client = RestClient.create();
     this.objectMapper = new ObjectMapper();
     this.formTemplateFactory = new FormTemplateFactory();
-    this.queryTemplateFactory = new QueryTemplateFactory();
+    this.queryTemplateFactory = new QueryTemplateFactory(this.objectMapper);
   }
 
   /**
@@ -214,6 +219,48 @@ public class KGService {
     String searchQuery = this.queryTemplateFactory.genSearchTemplate(variablesAndPropertyPaths, criterias);
     LOGGER.debug("Querying the knowledge graph for the matching instances...");
     return query(searchQuery);
+  }
+
+  /**
+   * Executes the update query at the target endpoint.
+   * 
+   * @param query the query for execution.
+   * 
+   * @return the status code.
+   */
+  public int executeUpdate(String query) {
+    RemoteStoreClient kgClient = BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace);
+    // Execute the request
+    try (CloseableHttpResponse response = kgClient.executeUpdateByPost(query)) {
+      return response.getStatusLine().getStatusCode();
+    } catch (IOException e) {
+      LOGGER.error(e);
+    }
+    return 500;
+  }
+
+  /**
+   * Deletes the target instance and its associated properties from the KG.
+   * 
+   * @param addJsonSchema The JSON schema for adding a new instance
+   * @param targetId      The target instance IRI.
+   */
+  public ResponseEntity<String> delete(ObjectNode addJsonSchema, String targetId) {
+    // Parse the JSON schema into the corresponding delete query
+    String query = this.queryTemplateFactory.genDeleteQueryTemplate(addJsonSchema, targetId);
+    LOGGER.debug("Deleting instances...");
+
+    int statusCode = this.executeUpdate(query);
+    if (statusCode == 200) {
+      LOGGER.info("Instance has been successfully deleted!");
+      return new ResponseEntity<>(
+          "Instance has been successfully deleted!",
+          HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(
+          "Error deleting instances from the KG. Please read the logs for more information!",
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**
