@@ -1,10 +1,13 @@
 package com.cmclinnovations.stack.services;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.grafana.GrafanaEndpointConfig;
+import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 
 public class GrafanaService extends ContainerService {
+    private static final String DEFAULT_ROOT_URL = "%(protocol)s://%(domain)s:%(http_port)s/";
     public static final String TYPE = "grafana";
     private static final String PASSWORD_FILE_KEY = "GRAFANA_PASSWORD_FILE";
     private static final String PASSWORD_SECRET_NAME = "grafana_password";
@@ -26,7 +29,9 @@ public class GrafanaService extends ContainerService {
         // Set default password
         setEnvironmentVariableIfAbsent("GF_SECURITY_ADMIN_PASSWORD__FILE", getEnvironmentVariable(PASSWORD_FILE_KEY));
         // Configure the container's url
-        setEnvironmentVariableIfAbsent("GF_SERVER_ROOT_URL", "%(protocol)s://%(domain)s:%(http_port)s/analytics/");
+        String hostPath = StackClient.getHostPath();
+        setEnvironmentVariableIfAbsent("GF_SERVER_ROOT_URL",
+                ((null != hostPath) ? FileUtils.fixSlashs(hostPath, true, true) : DEFAULT_ROOT_URL) + "analytics/");
         setEnvironmentVariableIfAbsent("GF_SERVER_SERVE_FROM_SUB_PATH", "false");
         // Enable public access without credentials
         setEnvironmentVariableIfAbsent("GF_AUTH_ANONYMOUS_ENABLED", "true");
