@@ -41,6 +41,21 @@ public class StringResource {
   }
 
   /**
+   * Appends the triples as a query line in the builder.
+   * 
+   * @param queryBuilder A query builder for any clause.
+   * @param subject      Subject node value for triple.
+   * @param predicate    Predicate node value for triple.
+   * @param object       Object node value for triple.
+   */
+  public static void appendTriple(StringBuilder queryBuilder, String subject, String predicate, String object) {
+    queryBuilder.append(subject)
+        .append(" ").append(predicate).append(" ")
+        .append(object)
+        .append(ShaclResource.FULL_STOP);
+  }
+
+  /**
    * Get local name of the IRI for namespaces containing # or /.
    * 
    * @param iri Input.
