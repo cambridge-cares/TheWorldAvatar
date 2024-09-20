@@ -406,14 +406,14 @@ public class QueryTemplateFactory {
         // everything else
       } else if (!field.getKey().equals(ShaclResource.ID_KEY) && !field.getKey().equals(ShaclResource.CONTEXT_KEY)) {
         if (fieldNode.isObject()) {
-          JsonNode targetTripleObjectNode = this.isReplacementObject(fieldNode)
+          JsonNode targetTripleObjectNode = fieldNode.has(ShaclResource.REPLACE_KEY)
               ? fieldNode
               : fieldNode.path(ShaclResource.ID_KEY);
           StringResource.appendTriple(deleteBuilder, idTripleSubject, StringResource.parseIriForQuery(field.getKey()),
               this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId));
           StringResource.appendTriple(whereBuilder, idTripleSubject, StringResource.parseIriForQuery(field.getKey()),
               this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId));
-          if (!this.isReplacementObject(fieldNode)) {
+          if (!fieldNode.has(ShaclResource.REPLACE_KEY) && !fieldNode.has(ShaclResource.VAL_KEY)) {
             this.recursiveParseNode(deleteBuilder, whereBuilder, (ObjectNode) fieldNode, targetId);
           }
           // For arrays, create a new object node containing the ID of the current node
@@ -427,15 +427,6 @@ public class QueryTemplateFactory {
         }
       }
     }
-  }
-
-  /**
-   * Checks if the target node is a replacement object with a @replace key.
-   * 
-   * @param targetNode Target for retrieval.
-   */
-  private boolean isReplacementObject(JsonNode targetNode) {
-    return targetNode.isObject() && targetNode.has(ShaclResource.REPLACE_KEY);
   }
 
   /**
