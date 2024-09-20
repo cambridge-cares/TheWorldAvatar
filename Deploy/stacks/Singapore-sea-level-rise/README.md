@@ -138,6 +138,16 @@ Finally run [company.http] to match entities to the closest buildings.
 ### Update buildings layer
 Previously the stack data uploader executed a script to create the GeoServer layer for buildings, but it does not have city furniture and company data. Execute [geoserver_layer.sql] to update the layer.
 
+### CARES weather station
+Create `caresweather` namespace in Blazegraph. 
+
+Modify [api.properties (weather)] with credentials from https://www.dropbox.com/scl/fo/24gyly40ezoyx04i6xomi/AHLZ6DHl_IVFNXy6Ym2-oFc?rlkey=xpvzka6b5smg53cppe3f98zt8&st=mleraqpx&dl=0
+
+Update db.password in [client.properties (weather)].
+
+Time series data for CARES weather station is stored in the main database (postgres) due to it sharing the same rdf type with virtual weather station and virtual sensors.
+
+Execute [cares_weather.http] to instantiate and start periodic updates.
 
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024

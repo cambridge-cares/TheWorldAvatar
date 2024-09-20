@@ -15,7 +15,8 @@
             "virtual-sensor-agent",
             "ship-input-agent",
             "ship-data-agent",
-            "carpark-agent"
+            "carpark-agent",
+            "cares-weather-station-agent"
         ],
         "excludes": []
     },
