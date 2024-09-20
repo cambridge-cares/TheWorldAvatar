@@ -25,12 +25,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import org.apache.commons.io.IOUtils;
 
-@WebServlet(urlPatterns = { "/createLayer", "/getDatesWithData" })
+@WebServlet(urlPatterns = { TrajectoryQueryAgent.CREATE_LAYER_ROUTE, "/getDatesWithData", "/feature-info-agent/get" })
 public class TrajectoryQueryAgent extends JPSAgent {
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private static final String USER_ID = "userID";
     private static final String TIMEZONE = "timezone";
     private static final Logger LOGGER = LogManager.getLogger(TrajectoryQueryAgent.class);
+    public static final String CREATE_LAYER_ROUTE = "/createLayer";
+    public static final String GET_DATES_ROUTE = "/getDatesWithData";
 
     @Override
     public void init() {
@@ -43,12 +45,12 @@ public class TrajectoryQueryAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         String url = request.getRequestURI();
 
-        if (url.contains("getDatesWithData")) {
+        if (request.getServletPath().contentEquals(GET_DATES_ROUTE)) {
             if (!validateInput(requestParams, url)) {
                 throw new JPSRuntimeException("Unable to validate request sent to the agent.");
             }
             return getDatesWithData(requestParams);
-        } else if (url.contains("createLayer")) {
+        } else if (request.getServletPath().contentEquals(CREATE_LAYER_ROUTE)) {
             return createLayer();
         }
 
@@ -169,6 +171,26 @@ public class TrajectoryQueryAgent extends JPSAgent {
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
             geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserId", geoServerVectorSettings);
+        }
+
+        String bufferedLine = null;
+        try (InputStream is = new ClassPathResource("buffered_line_layer.sql").getInputStream()) {
+            bufferedLine = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read buffered_line_layer.sql");
+            LOGGER.error(e.getMessage());
+        }
+
+        if (bufferedLine != null) {
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(bufferedLine);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("buffered_line_table");
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "bufferedLine", geoServerVectorSettings);
         }
     }
 
