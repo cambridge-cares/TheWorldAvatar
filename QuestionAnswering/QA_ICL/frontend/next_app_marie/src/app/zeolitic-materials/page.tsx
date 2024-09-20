@@ -10,15 +10,15 @@ import { MolViewer } from '@/components/ui/mol-viewer'
 import { CrystalInfoAccordion } from '@/components/crystal-info-accordion'
 
 interface ZeoMaterialPageInterface {
-  params: { iriEncoded: string }
+  searchParams: { iri: string }
 }
 
 export default async function ZeoMaterialPage({
-  params,
+  searchParams,
 }: ZeoMaterialPageInterface) {
   const [data, cif] = await Promise.all([
-    getZeoliticMaterialOne(params.iriEncoded),
-    getZeoliticMaterialCIF(params.iriEncoded),
+    getZeoliticMaterialOne(searchParams.iri),
+    getZeoliticMaterialCIF(searchParams.iri),
   ])
 
   return (
@@ -45,7 +45,7 @@ export default async function ZeoMaterialPage({
                 <p>
                   <Link
                     href={
-                      '/zeolite-frameworks/' +
+                      '/zeolite-frameworks?iri=' +
                       encodeURIComponent(data.framework.IRI)
                     }
                     className='hover:underline'
