@@ -3,7 +3,7 @@
     "groups": [
         {
             
-            "name": "Cam-Ely-Wisbech Buildings",
+            "name": "Cambridge, Ely and Wisbech",
             "stack": "http://174.138.27.240:3838",
             "sources": [
                 {
@@ -17,7 +17,7 @@
             "layers": [
                 {
                     "id": "cambridge-layer",
-                    "name": "Cambridge-Ely-Wisbech Building",
+                    "name": "Buildings",
                     "treeable": false,
                     "source": "cambridge-source",
                     "source-layer": "cambridge_gsl",
@@ -51,7 +51,7 @@
             ]
         },
         {
-            "name": "Kings-Lynn Buildings",
+            "name": "Kings-Lynn",
             "stack": "http://165.232.172.16:3838",
             "sources": [
                 {
@@ -144,7 +144,7 @@
                 },
                 {
                     "id": "obe_buildings-layer-usage",
-                    "name": "Buildings with usage information",
+                    "name": "Buildings",
                     "source": "obe_buildings",
                     "source-layer": "buildings",
                     "type": "fill-extrusion",
@@ -309,7 +309,7 @@
                     "id": "Recorded_Points_Sources",
                     "type": "vector",
                     "tiles": [
-                      "https://theworldavatar.io/demos/fenland/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                   },
                   {
@@ -328,12 +328,12 @@
                     "source": "Recorded_Points_Sources",
                     "source-layer": "gps_data",
                     "type": "symbol",
-                    "minzoom": 6,
+                    "minzoom": 12,
                     "order": 24,
                     "layout": {
                       "visibility": "none",
                       "icon-image": "gpslocation2",
-                      "icon-size": 0.37,
+                      "icon-size": 0.27,
                       "icon-allow-overlap": true,
                       "icon-ignore-placement": true
                     }
@@ -368,10 +368,11 @@
                   },
                   {
                     "id": "Movement_Trajectory_Sources",
-                    "type": "raster",
-                    "tiles": [
-                      "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016_line&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
-                    ]
+                    "type": "geojson",
+					"cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Agps_tra_2016_line&&outputFormat=application%2Fjson"
                   }
                 ],
                 "layers": [
@@ -381,7 +382,7 @@
                     "source": "Recorded_Points_Sources",
                     "source-layer": "gps_tra_2016",
                     "type": "symbol",
-                    "minzoom": 6,
+                    "minzoom": 12,
                     "order": 24,
                     "layout": {
                       "visibility": "none",
@@ -395,12 +396,16 @@
                     "id": "Movement_Trajectory_layer",
                     "name": "Interpolated movement",
                     "source": "Movement_Trajectory_Sources",
-                    "type": "raster",
-                    "minzoom": 4,
-                    "order": 3,
+                    "type": "line",
+                    "minzoom": 12,
+                    "order": 100,
                     "layout": {
                       "visibility": "none"
-                    }
+                    },
+					"paint": {
+						"line-color": "#326578",
+						"line-width": 3
+					}
                   }
                 ]
               }
@@ -1071,7 +1076,7 @@
                         "minzoom": 4,
                         "order": 1,
                         "layout": {
-                            "visibility": "visible"
+                            "visibility": "none"
                         }
                     },
                     {
@@ -1082,7 +1087,7 @@
                         "minzoom": 4,
                         "order": 1,
                         "layout": {
-                            "visibility": "visible"
+                            "visibility": "none"
                         }
                     }
                 ]
