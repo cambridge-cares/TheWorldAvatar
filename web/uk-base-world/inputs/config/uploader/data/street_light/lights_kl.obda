@@ -1,0 +1,28 @@
+[PrefixDeclaration]
+: https://theworldavatar.io/kg/CReDo/ukpn_base/
+om: http://www.ontology-of-units-of-measure.org/resource/om-2/
+geo: http://www.opengis.net/ont/geosparql#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+core:   https://theworldavatar.io/kg/CReDo/OntoCore.owl#
+pow:    https://theworldavatar.io/kg/CReDo/OntoPower.owl#
+
+[MappingDeclaration] @collection [[
+mappingId       street-lights-kingslynn
+target          :StreetLight/{id} a :StreetLight .
+                :StreetLight/{id}/defaultGeometry geo:asWKT "{wkt}"^^geo:wktLiteral .
+                :StreetLight/{id} om:hasValue core:id .
+                :operator/{operator} a :opPara ;
+                    om:hasValue :operator/{operator}/measure .
+                :operator/{operator}/measure om:hasNumericalValue {operator}^^xsd:string .
+                :StreetLight/{id} core:hasInternalState :StreetLight/{id}/internalPowerState/{state} .
+                :StreetLight/{id}/internalPowerState a pow:PowerState ;
+                    om:hasValue :StreetLight/{id}/internalPowerState/measure/{state} .
+                :StreetLight/{id} om:hasValue pow:mpan/{mpan} .
+source          SELECT
+                "OWNER" as operator,
+                "wkb_geometry" as wkt,
+                "IDENTIFIER" as id,
+                "status" as state,
+                "mpan" as mpan
+            FROM street_lighting_kl_table
+]]

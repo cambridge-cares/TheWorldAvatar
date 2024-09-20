@@ -9,7 +9,7 @@ import markdownit from 'markdown-it';
 import React from 'react';
 
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
-import { Routes } from 'io/config/routes';
+import { Modules, Routes } from 'io/config/routes';
 import LandingImage from 'ui/graphic/image/landing';
 import { DefaultPageThumbnail, DefaultPageThumbnailProps, MarkdownPageThumbnail } from './page-thumbnail';
 import { DefaultSettings } from 'types/settings';
@@ -36,9 +36,11 @@ interface LandingPageProps {
 export default function LandingPage(props: Readonly<LandingPageProps>) {
   // CSS class names
   const introClasses = ["markdown-body", styles.introInner].join(" ");
-  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "dashboard");
-  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "help");
-  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "map");
+  // Retrieve links
+  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.DASHBOARD);
+  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.HELP);
+  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.MAP);
+  const registryLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.REGISTRY);
 
   return (
     <div className={styles.container}>
@@ -53,10 +55,11 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
 
       <div className={`${styles.thumbnailContainer} hidden-scrollbar`}>
         {props.settings.branding.landing && (<LandingImage
-          lightUrl={props.settings.branding.landing}
-          darkUrl={props.settings.branding.landingDark}
+          lightUrl={props.settings.branding?.landing?.[0]}
+          darkUrl={props.settings.branding?.landingDark?.[0]}
         />)}
         {getThumbnails()}
+
         {props.settings.modules.map && (
           <DefaultPageThumbnail
             title={mapLinkProps?.title ?? "Explore"}
@@ -73,6 +76,23 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
             url={Routes.DASHBOARD}
           />
         )}
+        {props.settings.modules.registry && (
+          <DefaultPageThumbnail
+            title={registryLinkProps?.title ?? "Registry"}
+            caption={registryLinkProps?.caption ?? "Manage and view your records"}
+            icon={registryLinkProps?.icon ?? "./images/defaults/icons/glossary.svg"}
+            url={`${Routes.REGISTRY}/${props.settings.resources?.registry?.data}`}
+          />
+        )}
+
+        {props.settings.modules.scheduler && (
+          <DefaultPageThumbnail
+            title={"Scheduler"}
+            caption={"Plan and organise upcoming tasks"}
+            icon={"./images/defaults/icons/schedule.svg"}
+            url={`${Routes.REGISTRY}/${props.settings.resources?.scheduler?.data}`}
+          />
+        )}
 
         <DefaultPageThumbnail
           title={helpLinkProps?.title ?? "Help Centre"}
@@ -82,7 +102,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
         />
 
         {props.settings.links?.map((externalLink, index) => {
-          if (!["map", "dashboard", "help"].includes(externalLink.url)) {
+          if (![Modules.MAP, Modules.DASHBOARD, Modules.HELP, Modules.REGISTRY].includes(externalLink.url)) {
             return <DefaultPageThumbnail
               key={externalLink.title + index}
               title={externalLink.title}

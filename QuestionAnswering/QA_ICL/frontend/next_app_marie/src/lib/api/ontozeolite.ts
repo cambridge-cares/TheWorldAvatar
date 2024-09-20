@@ -70,14 +70,22 @@ export function getZeoliteFrameworksMany(searchParams?: URLSearchParams) {
   return getJson<ZeoliteFrameworkBase[]>(url)
 }
 
+const GET_ZEOLITE_FRAMEWORKS_ONE_ENDPOINT = new URL(
+  './ontozeolite/zeolite-frameworks/one',
+  BACKEND_ENDPOINT
+)
 export function getZeoliteFrameworkOne(iriEncoded: string) {
   return getJson<ZeoliteFramework>(
-    `${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}`
+    `${GET_ZEOLITE_FRAMEWORKS_ONE_ENDPOINT}/?iri=${iriEncoded}`
   )
 }
 
+const GET_ZEOLITE_FRAMEWORKS_CIF_ENDPOINT = new URL(
+  './ontozeolite/zeolite-frameworks/cif',
+  BACKEND_ENDPOINT
+)
 export function getZeoliteFrameworkCIF(iriEncoded: string) {
-  return fetch(`${GET_ZEOLITE_FRAMEWORKS_ENDPOINT}/${iriEncoded}/cif`, {
+  return fetch(`${GET_ZEOLITE_FRAMEWORKS_CIF_ENDPOINT}/?iri=${iriEncoded}`, {
     method: 'GET',
   }).then(res => res.text())
 }
@@ -102,14 +110,22 @@ export function getZeoliticMaterialsMany(searchParams: URLSearchParams) {
   )
 }
 
+const GET_ZEOLITIC_MATERIALS_ONE_ENDPOINT = new URL(
+  './ontozeolite/zeolitic-materials/one',
+  BACKEND_ENDPOINT
+)
 export function getZeoliticMaterialOne(iriEncoded: string) {
   return getJson<ZeoliticMaterial>(
-    `${GET_ZEOLITIC_MATERIALS_ENDPOINT}/${iriEncoded}`
+    `${GET_ZEOLITIC_MATERIALS_ONE_ENDPOINT}?iri=${iriEncoded}`
   )
 }
 
+const GET_ZEOLITIC_MATERIALS_cif_ENDPOINT = new URL(
+  './ontozeolite/zeolitic-materials/cif',
+  BACKEND_ENDPOINT
+)
 export function getZeoliticMaterialCIF(iriEncoded: string) {
-  return fetch(`${GET_ZEOLITIC_MATERIALS_ENDPOINT}/${iriEncoded}/cif`, {
+  return fetch(`${GET_ZEOLITIC_MATERIALS_cif_ENDPOINT}?iri=${iriEncoded}`, {
     method: 'GET',
   }).then(res => res.text())
 }
