@@ -397,7 +397,7 @@ public class QueryTemplateFactory {
           throw new IllegalArgumentException(
               "Invalid reverse predicate JSON-LD schema! Fields must be stored in an object!");
         } else if (fieldNode.isObject()) {
-          // Reverse fields must be an object that contains multiple fields
+          // Reverse fields must be an object that may contain one or multiple fields
           String reversePredicate = fieldNode.fieldNames().next();
           this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
               reversePredicate, deleteBuilder, whereBuilder, targetId, true);
@@ -405,26 +405,8 @@ public class QueryTemplateFactory {
         // The @id and @context field should be ignored but continue parsing for
         // everything else
       } else if (!field.getKey().equals(ShaclResource.ID_KEY) && !field.getKey().equals(ShaclResource.CONTEXT_KEY)) {
-        if (fieldNode.isObject()) {
-          JsonNode targetTripleObjectNode = fieldNode.has(ShaclResource.REPLACE_KEY)
-              ? fieldNode
-              : fieldNode.path(ShaclResource.ID_KEY);
-          StringResource.appendTriple(deleteBuilder, idTripleSubject, StringResource.parseIriForQuery(field.getKey()),
-              this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId));
-          StringResource.appendTriple(whereBuilder, idTripleSubject, StringResource.parseIriForQuery(field.getKey()),
-              this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId));
-          if (!fieldNode.has(ShaclResource.REPLACE_KEY) && !fieldNode.has(ShaclResource.VAL_KEY)) {
-            this.recursiveParseNode(deleteBuilder, whereBuilder, (ObjectNode) fieldNode, targetId);
-          }
-          // For arrays, create a new object node containing the ID of the current node
-          // and the same field property, and parse it as per normal
-        } else if (fieldNode.isArray()) {
-          ArrayNode fieldArray = (ArrayNode) fieldNode;
-          for (JsonNode tripleObjNode : fieldArray) {
-            this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), tripleObjNode, field.getKey(), deleteBuilder,
-                whereBuilder, targetId, false);
-          }
-        }
+        this.parseFieldNode(currentNode.path(ShaclResource.ID_KEY), fieldNode, idTripleSubject, field.getKey(),
+            deleteBuilder, whereBuilder, targetId);
       }
     }
   }
@@ -444,6 +426,40 @@ public class QueryTemplateFactory {
       return StringResource.parseIriForQuery(replacementNode.path("prefix").asText() + targetId);
     }
     return ShaclResource.VARIABLE_MARK + replacementId.replaceAll("\\s+", "_");
+  }
+
+  /**
+   * Parses any field node.
+   * 
+   * @param idNode        The ID node of the current node.
+   * @param fieldNode     The field node of the current node.
+   * @param subject       The node acting as the subbject of the triple.
+   * @param predicate     The predicate path of the triple.
+   * @param deleteBuilder A query builder for the DELETE clause.
+   * @param whereBuilder  A query builder for the WHERE clause.
+   * @param targetId      The target instance IRI.
+   */
+  private void parseFieldNode(JsonNode idNode, JsonNode fieldNode, String subject, String predicate,
+      StringBuilder deleteBuilder, StringBuilder whereBuilder, String targetId) {
+    // For object field node
+    if (fieldNode.isObject()) {
+      JsonNode targetTripleObjectNode = fieldNode.has(ShaclResource.REPLACE_KEY)
+          ? fieldNode
+          : fieldNode.path(ShaclResource.ID_KEY);
+      String formattedPredicate = StringResource.parseIriForQuery(predicate);
+      String formattedObjVar = this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId);
+      StringResource.appendTriple(deleteBuilder, subject, formattedPredicate, formattedObjVar);
+      StringResource.appendTriple(whereBuilder, subject, formattedPredicate, formattedObjVar);
+      if (!fieldNode.has(ShaclResource.REPLACE_KEY) && !fieldNode.has(ShaclResource.VAL_KEY)) {
+        this.recursiveParseNode(deleteBuilder, whereBuilder, (ObjectNode) fieldNode, targetId);
+      }
+      // For arrays,iterate through each object and parse the nested node
+    } else if (fieldNode.isArray()) {
+      ArrayNode fieldArray = (ArrayNode) fieldNode;
+      for (JsonNode tripleObjNode : fieldArray) {
+        this.parseNestedNode(idNode, tripleObjNode, predicate, deleteBuilder, whereBuilder, targetId, false);
+      }
+    }
   }
 
   /**
