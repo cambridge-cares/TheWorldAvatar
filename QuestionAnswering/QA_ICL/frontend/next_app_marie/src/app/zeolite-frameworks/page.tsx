@@ -73,7 +73,7 @@ export default async function ZeoliteFrameworkPage({
               {data.ZeoliticMaterial.map(({ ChemicalFormula, IRI }, i) => (
                 <li key={i}>
                   <Link
-                    href={'/zeolitic-materials/' + encodeURIComponent(IRI)}
+                    href={'/zeolitic-materials?iri=' + encodeURIComponent(IRI)}
                     className='hover:underline'
                   >
                     {ChemicalFormula}

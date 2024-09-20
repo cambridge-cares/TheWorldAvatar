@@ -45,7 +45,7 @@ export default async function ZeoMaterialPage({
                 <p>
                   <Link
                     href={
-                      '/zeolite-frameworks/' +
+                      '/zeolite-frameworks?iri=' +
                       encodeURIComponent(data.framework.IRI)
                     }
                     className='hover:underline'
