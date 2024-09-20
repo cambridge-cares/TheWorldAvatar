@@ -4,6 +4,9 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/dome-interactor:0.1-dev-DOME-SNAPSHOT",
+                "Env": [
+                    "NB_PW=dome-showcase-1"
+                ],
                 "Mounts": [
 					{
                         "Type": "bind",
