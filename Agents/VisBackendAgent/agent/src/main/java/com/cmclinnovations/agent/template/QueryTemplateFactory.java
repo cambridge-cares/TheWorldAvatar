@@ -169,7 +169,7 @@ public class QueryTemplateFactory {
   public String genDeleteQueryTemplate(ObjectNode rootNode, String targetId) {
     String query = "DELETE WHERE {";
     StringBuilder whereBuilder = new StringBuilder();
-    this.recursiveParseNode(whereBuilder, rootNode, targetId, false);
+    this.recursiveParseNode(whereBuilder, rootNode, targetId);
     return query + whereBuilder.toString() + "}";
   }
 
@@ -368,10 +368,8 @@ public class QueryTemplateFactory {
    * @param whereBuilder A query builder for the WHERE clause.
    * @param currentNode  Input contents to perform operation on.
    * @param targetId     The target instance IRI.
-   * @param isReverse    Indicates if the variable should be inverse or not.
    */
-  private void recursiveParseNode(StringBuilder whereBuilder, ObjectNode currentNode, String targetId,
-      boolean isReverse) {
+  private void recursiveParseNode(StringBuilder whereBuilder, ObjectNode currentNode, String targetId) {
     // First retrieve the ID value as a subject of the triple
     String idTripleSubject = this.getFormattedQueryVariable((ObjectNode) currentNode.path(ShaclResource.ID_KEY),
         targetId);
@@ -386,33 +384,23 @@ public class QueryTemplateFactory {
         String typeTripleObject = fieldNode.isObject()
             ? this.getFormattedQueryVariable((ObjectNode) fieldNode, targetId)
             : StringResource.parseIriForQuery(fieldNode.asText());
-
         whereBuilder.append(idTripleSubject)
             .append(" rdf:type ")
             .append(typeTripleObject)
             .append(ShaclResource.FULL_STOP);
         // For all @reverse fields
       } else if (field.getKey().equals(ShaclResource.REVERSE_KEY)) {
-        // If this is an object
-        if (fieldNode.isObject()) {
-          // A JSON object for "@reverse" should only have one predicate value to parse
-          if (fieldNode.size() > 1) {
-            LOGGER.error(
-                "Invalid reverse predicate JSON-LD schema for {}! Detected multiple fields but they are not stored as an array!",
-                idTripleSubject);
-            throw new IllegalArgumentException(
-                "Invalid reverse predicate JSON-LD schema! Detected multiple fields but they are not stored as an array!");
-          }
+        if (fieldNode.isArray()) {
+          LOGGER.error(
+              "Invalid reverse predicate JSON-LD schema for {}! Fields must be stored in an object!",
+              idTripleSubject);
+          throw new IllegalArgumentException(
+              "Invalid reverse predicate JSON-LD schema! Fields must be stored in an object!");
+        } else if (fieldNode.isObject()) {
+          // Reverse fields must be an object that contains multiple fields
           String reversePredicate = fieldNode.fieldNames().next();
           this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
               reversePredicate, whereBuilder, targetId, true);
-        } else if (fieldNode.isArray()) {
-          ArrayNode fieldArray = (ArrayNode) fieldNode;
-          for (JsonNode revPropertyNode : fieldArray) {
-            String reversePredicate = revPropertyNode.fieldNames().next();
-            this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), revPropertyNode.path(reversePredicate),
-                reversePredicate, whereBuilder, targetId, true);
-          }
         }
         // The @id and @context field should be ignored but continue parsing for
         // everything else
@@ -421,17 +409,15 @@ public class QueryTemplateFactory {
           JsonNode targetTripleObjectNode = this.isReplacementObject(fieldNode)
               ? fieldNode
               : fieldNode.path(ShaclResource.ID_KEY);
+          // Reverse the subject and object value if required
           whereBuilder.append(idTripleSubject)
-              .append(" ");
-          if (isReverse) {
-            whereBuilder.append("^");
-          }
-          whereBuilder.append(StringResource.parseIriForQuery(field.getKey()))
+              .append(" ")
+              .append(StringResource.parseIriForQuery(field.getKey()))
               .append(" ")
               .append(this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId))
               .append(ShaclResource.FULL_STOP);
           if (!this.isReplacementObject(fieldNode)) {
-            this.recursiveParseNode(whereBuilder, (ObjectNode) fieldNode, targetId, isReverse);
+            this.recursiveParseNode(whereBuilder, (ObjectNode) fieldNode, targetId);
           }
           // For arrays, create a new object node containing the ID of the current node
           // and the same field property, and parse it as per normal
@@ -439,7 +425,7 @@ public class QueryTemplateFactory {
           ArrayNode fieldArray = (ArrayNode) fieldNode;
           for (JsonNode tripleObjNode : fieldArray) {
             this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), tripleObjNode, field.getKey(), whereBuilder,
-                targetId, isReverse);
+                targetId, false);
           }
         }
       }
@@ -469,7 +455,7 @@ public class QueryTemplateFactory {
     if (replacementType.equals("iri") && replacementId.equals("id")) {
       return StringResource.parseIriForQuery(replacementNode.path("prefix").asText() + targetId);
     }
-    return ShaclResource.VARIABLE_MARK + replacementId;
+    return ShaclResource.VARIABLE_MARK + replacementId.replaceAll("\\s+", "_");
   }
 
   /**
@@ -484,9 +470,28 @@ public class QueryTemplateFactory {
    */
   private void parseNestedNode(JsonNode idNode, JsonNode objectNode, String predicatePath, StringBuilder whereBuilder,
       String targetId, boolean isReverse) {
-    ObjectNode tempTripleObj = this.objectMapper.createObjectNode();
-    tempTripleObj.set(ShaclResource.ID_KEY, idNode);
-    tempTripleObj.set(predicatePath, objectNode);
-    this.recursiveParseNode(whereBuilder, tempTripleObj, targetId, isReverse);
+    if (isReverse) {
+      if (objectNode.isObject()) {
+        // A reverse node indicates that the original object should now be the subject
+        // And the Id Node should become the object
+        ObjectNode nestedReverseNode = (ObjectNode) objectNode;
+        nestedReverseNode.set(predicatePath, idNode);
+        this.recursiveParseNode(whereBuilder, nestedReverseNode, targetId);
+      } else if (objectNode.isArray()) {
+        // For reverse arrays, iterate and recursively parse each object as a reverse node
+        ArrayNode objArray = (ArrayNode) objectNode;
+        for (JsonNode nestedReverseObjNode : objArray) {
+          this.parseNestedNode(idNode, nestedReverseObjNode, predicatePath, whereBuilder,
+              targetId, true);
+        }
+      }
+    } else {
+      // This aspect is used for parsing arrays without any reversion
+      // Creating a new node where the ID node is the parent is sufficient
+      ObjectNode nestedNode = this.objectMapper.createObjectNode();
+      nestedNode.set(ShaclResource.ID_KEY, idNode);
+      nestedNode.set(predicatePath, objectNode);
+      this.recursiveParseNode(whereBuilder, nestedNode, targetId);
+    }
   }
 }
