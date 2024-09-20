@@ -89,7 +89,7 @@ public class FormTemplateFactory {
     context.put(ShaclResource.IN_PROPERTY, ShaclResource.SHACL_PREFIX + ShaclResource.IN_PROPERTY);
     context.put(ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY,
         ShaclResource.SHACL_PREFIX + ShaclResource.QUALIFIED_VAL_SHAPE_PROPERTY);
-    this.form.put("@context", context);
+    this.form.put(ShaclResource.CONTEXT_KEY, context);
   }
 
   /**
