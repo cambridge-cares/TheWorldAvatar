@@ -57,7 +57,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     <div className={styles["container"]}>
       <div className={styles["form-title"]}>
         <ReturnButton />
-        <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase()}`}</span>
+        <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase().replace("_", " ")}`}</span>
       </div>
       <div className={styles["form-contents"]}>
         <FormComponent
