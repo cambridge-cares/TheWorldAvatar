@@ -51,7 +51,7 @@ class XYZResponse(Response):
 
 
 @router.get(
-    "/{iri:path}/xyz",
+    "/xyz",
     summary="Get species' XYZ geometry file",
     response_class=XYZResponse,
 )
@@ -70,7 +70,7 @@ async def getSpeciesXYZ(
 
 
 @router.get(
-    "/{iri:path}",
+    "/one",
     summary="Get species",
     response_model_exclude_none=True,
     response_model=OntospeciesSpecies,
