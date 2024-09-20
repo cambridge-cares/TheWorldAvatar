@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -155,5 +156,26 @@ public class VisBackendAgent {
   public ResponseEntity<String> removeEntity(@PathVariable String type, @PathVariable String id) {
     LOGGER.info("Received request to delete {}...", type);
     return this.deleteService.delete(type, id);
+  }
+
+  /**
+   * Update the target instance in the knowledge graph.
+   */
+  @PutMapping("/{type}/{id}")
+  public ResponseEntity<String> updateEntity(@PathVariable String type, @PathVariable String id,
+      @RequestBody Map<String, Object> updatedEntity) {
+    LOGGER.info("Received request to update {}...", type);
+    ResponseEntity<String> deleteResponse = this.deleteService.delete(type, id);
+    if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
+      ResponseEntity<String> addResponse = this.addService.instantiate(type, id, updatedEntity);
+      if (addResponse.getStatusCode() == HttpStatus.OK) {
+        LOGGER.info("{} has been successfully updated for {}", type, id);
+        return new ResponseEntity<>(type + " has been successfully updated for " + id, HttpStatus.CREATED);
+      } else {
+        return addResponse;
+      }
+    } else {
+      return deleteResponse;
+    }
   }
 }
