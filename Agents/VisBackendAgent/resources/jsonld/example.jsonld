@@ -27,7 +27,19 @@
           "@replace": "father",
           "type": "iri"
         },
-        "@type": "https://www.example.com/kg/person/Father"
+        "@type": "https://www.example.com/kg/person/Father",
+        "person:hasName": {
+          "@id": {
+            "@replace": "father",
+            "type": "iri"
+          },
+          "@type": "https://www.example.com/kg/person/PersonName",
+          "rdfs:label": {
+            "@replace": "name",
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string"
+          }
+        }
       },
       {
         "@id": {

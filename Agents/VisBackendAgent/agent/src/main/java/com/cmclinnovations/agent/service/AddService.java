@@ -109,6 +109,13 @@ public class AddService {
         // Add a different interaction for schedule types
         if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("schedule")) {
           this.replaceDayOfWeekSchedule(parentNode, parentField, replacements);
+          // Parse literal with data types differently
+        } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("literal")
+            && currentNode.has(ShaclResource.DATA_TYPE_PROPERTY)) {
+          ObjectNode literalNode = this.objectMapper.createObjectNode()
+              .put(ShaclResource.VAL_KEY, this.getReplacementValue(currentNode, replacements))
+              .put(ShaclResource.TYPE_KEY, currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
+          parentNode.set(parentField, literalNode);
         } else {
           parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
         }
