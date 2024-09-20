@@ -32,6 +32,8 @@ public class GrafanaService extends ContainerService {
         setEnvironmentVariableIfAbsent("GF_AUTH_ANONYMOUS_ENABLED", "true");
         // Allow users to embed the dashboard and panel outside of Grafana
         setEnvironmentVariableIfAbsent("GF_SECURITY_ALLOW_EMBEDDING", "true");
+        // Install some default plugins
+        setEnvironmentVariableIfAbsent("GF_INSTALL_PLUGINS", "volkovlabs-echarts-panel,flandersmake-sparql-datasource");
 
         // Write and expose the config within the stack for other agents to employ
         // Set up an endpoint config for Grafana with a default username of admin
