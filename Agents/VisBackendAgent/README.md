@@ -14,7 +14,9 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [2.3 Concept Metadata ROUTE](#23-concept-metadata-route-urlvis-backend-agenttypetype)
     - [2.4 Instance ROUTE](#24-instance-route)
       - [2.4.1 Add route](#241-add-route)
-      - [2.4.2 Get route](#242-get-route)
+      - [2.4.2 Delete route](#242-delete-route)
+      - [2.4.3 Update route](#243-update-route)
+      - [2.4.4 Get route](#244-get-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -214,7 +216,7 @@ This route serves as a `RESTful` endpoint to perform `CRUD` operations for any r
 
 #### 2.4.1 Add route
 
-Users must send a POST request with their corresponding parameters to
+To add a new instance, users must send a POST request with their corresponding parameters to
 
 ```
 ~url~/vis-backend-agent/{type}
@@ -222,7 +224,27 @@ Users must send a POST request with their corresponding parameters to
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`. The request parameters will depend on the `JSON-LD` file defined. More information on the required schema can be found in [this section](#41-instantiation).
 
-#### 2.4.2 Get route
+#### 2.4.2 Delete route
+
+To delete an instance, users must send a DELETE request to
+
+```
+~url~/vis-backend-agent/{type}/{id}
+```
+
+where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The instance representation will be deleted according to the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
+
+#### 2.4.3 Update route
+
+To update an instance, users must send a PUT request with their corresponding parameters to
+
+```
+~url~/vis-backend-agent/{type}/{id}
+```
+
+where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The request parameters will depend on the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
+
+#### 2.4.4 Get route
 
 There are several routes for retrieving instances associated with a specific `type` to populate the records in the registry. The agent will automatically generate the query and parameters based on the SHACL restrictions developed. The agent will return **EITHER** a `JSON` array containing entities as their corresponding `JSON` object **OR** one Entity `JSON` object depending on which `GET` route is executed.
 
@@ -440,4 +462,4 @@ It is expected that we should create a new ID and name for the person instance. 
 }
 ```
 
-A sample file can be found at `./resources/example.jsonld`. **WARNING:** Please do not use short prefixes and include the full IRI in order for the agent to function as expected.
+A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.

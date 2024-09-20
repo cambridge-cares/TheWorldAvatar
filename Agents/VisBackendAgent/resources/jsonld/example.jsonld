@@ -19,5 +19,23 @@
       "@replace": "name",
       "type": "literal"
     }
+  },
+  "@reverse": {
+    "person:hasChild": [
+      {
+        "@id": {
+          "@replace": "father",
+          "type": "iri"
+        },
+        "@type": "https://www.example.com/kg/person/Father"
+      },
+      {
+        "@id": {
+          "@replace": "mother",
+          "type": "iri"
+        },
+        "@type": "https://www.example.com/kg/person/Mother"
+      }
+    ]
   }
 }
