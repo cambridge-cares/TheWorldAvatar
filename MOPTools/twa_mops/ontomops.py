@@ -25,7 +25,6 @@ HasPolyhedralShape = ObjectProperty.create_from_base('HasPolyhedralShape', OntoM
 HasProvenance = ObjectProperty.create_from_base('HasProvenance', OntoMOPs)
 IsFunctioningAs = ObjectProperty.create_from_base('IsFunctioningAs', OntoMOPs)
 IsNumberOf = ObjectProperty.create_from_base('IsNumberOf', OntoMOPs)
-HasGeometry = ObjectProperty.create_from_base('HasGeometry', OntoMOPs)
 
 
 # data properties

@@ -12,7 +12,7 @@ class OntoSpecies(BaseOntology):
 # object properties
 HasMolecularWeight = ObjectProperty.create_from_base('HasMolecularWeight', OntoSpecies)
 HasCharge = ObjectProperty.create_from_base('HasCharge', OntoSpecies)
-
+HasGeometry = ObjectProperty.create_from_base('HasGeometry', OntoSpecies)
 
 # data properties
 HasGeometryFile = DatatypeProperty.create_from_base('HasGeometryFile', OntoSpecies)
