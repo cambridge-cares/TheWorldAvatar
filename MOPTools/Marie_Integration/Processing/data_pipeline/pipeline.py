@@ -125,7 +125,7 @@ class ChatGPTAPI:
         self.api_key    = self.read_api_key_from_file()
         self.client     = OpenAI(api_key=self.api_key)
 
-    def send_request(self, pdf_text: str, prompt: str, model_name: str, json_out: bool) -> str:
+    def send_request(self, pdf_text: str, prompt: str, model_name: str, json_out: int) -> str:
         """
         Sends a request to the OpenAI API with the given text and prompt.
 
@@ -138,154 +138,429 @@ class ChatGPTAPI:
         str:                    The response from the OpenAI API.
         """
         full_prompt       = f"{prompt}\n\n{pdf_text}"
-        if json_out:
-          messages    =[
-          {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
-          {"role": "user", "content": full_prompt} 
-          ]
+        match  json_out:
+            case 12:
+              messages    =[
+              {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
+              {"role": "user", "content": full_prompt} 
+              ]
 
-          response = self.client.chat.completions.create(
-              model=model_name,
-              response_format={
-                  "type": "json_schema",
-                  "json_schema": {
-                      "name": "synthesis",
+              response = self.client.chat.completions.create(
+                  model=model_name,
+                  response_format={
+                      "type": "json_schema",
+                      "json_schema": {
+                          "name": "synthesis",
+                          "schema": {
+                              "type": "object",
+                              "properties": {
+                                  "Synthesis": {
+                                      "type": "array",
+                                      "items": {
+                                          "type": "object",
+                                          "properties": {
+                                              "productNames": { "type": "array",
+                                                      "items":{"type":"string"}},
+                                              "productCCDCNumber": {"type": "string"},
+                                              "steps": {
+                                                  "type": "array",
+                                                  "items": {
+                                                      "type": "object",
+                                                      "anyOf": [
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Add": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "usedVessel": {"type": "string"},
+                                                                          "addedChemicalName": {"type": "string"},
+                                                                          "addedChemicalAmount": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["usedVessel", "addedChemicalName", "addedChemicalAmount", "stepNumber"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Add"],
+                                                              "additionalProperties": False
+                                                          },
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "HeatChill": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "heatCoolingTime": {"type": "string"},
+                                                                          "usedDevice": {"type": "string"},
+                                                                          "targetTemperature": {"type": "string"},
+                                                                          "heatingCoolingRate": {"type": "string"},
+                                                                          "heatingCoolingRateComment": {"type": "string"},
+                                                                          "underVacuum": {"type": "boolean"},
+                                                                          "usedVessel": {"type": "string"},
+                                                                          "sealedVessel": {"type": "boolean"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["heatCoolingTime", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVessel", "sealedVessel", "stepNumber", "heatingCoolingRateComment"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["HeatChill"],
+                                                              "additionalProperties": False
+                                                          },
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Filter": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "washingSolventName": {"type": "string"},
+                                                                          "washingSolventAmount": {"type": "string"},
+                                                                          "repetitions": {"type": "integer"},
+                                                                          "usedVessel": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "filterComment": {"type": "string"}
+                                                                      },
+                                                                      "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVessel", "stepNumber", "filterComment"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Filter"],
+                                                              "additionalProperties": False
+                                                          },
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Crystallization": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "usedVessel": {"type": "string"},
+                                                                          "targetTemperature": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "crystallizationTime": {"type": "string"},
+                                                                          "crystallizationComment": {"type": "string"}
+                                                                      },
+                                                                      "required": ["usedVessel", "targetTemperature", "crystallizationTime", "crystallizationComment", "stepNumber"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Crystallization"],
+                                                              "additionalProperties": False
+                                                          },
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Stir": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "stirringTime": {"type": "string"},
+                                                                          "usedVessel": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["stirringTime", "usedVessel", "stepNumber"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Stir"],
+                                                              "additionalProperties": False
+                                                          },
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Sonicate": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "sonicationTime": {"type": "string"},
+                                                                          "usedVessel": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["sonicationTime", "usedVessel", "stepNumber"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Sonicate"],
+                                                              "additionalProperties": False
+                                                          }
+                                                      ]
+                                                  }
+                                              }
+                                          },
+                                          "required": ["productNames", "productCCDCNumber", "steps"],
+                                          "additionalProperties": False
+                                      }
+                                  }
+                              },
+                              "required": ["Synthesis"],
+                              "additionalProperties": False
+                          },
+                          "strict": True
+                      }
+                  },
+                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
+              )
+
+
+            case 11:
+              messages    =[
+              {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
+              {"role": "user", "content": full_prompt} 
+              ]
+
+              response = self.client.chat.completions.create(
+                  model=model_name,
+                  response_format={
+                      "type": "json_schema",
+                      "json_schema": {
+                          "name": "characterisation",
+                          "schema": {
+                              "type": "object",
+                              "properties": {
+                                  "Characterisation": {
+                                      "type": "array",
+                                      "items": {
+                                          "type": "object",
+                                          "properties": {
+                                              "productNames": { "type": "array",
+                                                      "items":{"type":"string"}},
+                                              "productCCDCNumber": { "type": "string" },
+                                              "HNMR": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                      "shifts": { "type": "string" },
+                                                      "solvent": { "type": "string" },
+                                                      "temperature": { "type": "string" }
+                                                  },
+                                                  "required": ["shifts", "solvent", "temperature"],
+                                                  "additionalProperties": False
+                                              },
+                                              "ElementalAnalysis": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                      "weightPercentageCalculated": { "type": "string" },
+                                                      "weightPercentageExperimental": { "type": "string" },
+                                                      "chemicalFormula": { "type": "string" },
+                                                      "measurementDevice": { "type": "string" }
+                                                  },
+                                                  "required": ["weightPercentageCalculated", "weightPercentageExperimental", "chemicalFormula", "measurementDevice"],
+                                                  "additionalProperties": False
+                                              },
+                                              "InfraredSpectroscopy": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                      "material": { "type": "string" },
+                                                      "bands": { "type": "string" }
+                                                  },
+                                                  "required": ["material", "bands"],
+                                                  "additionalProperties": False
+                                              }
+                                          },
+                                          "required": ["productName", "productCCDCNumber", "HNMR", "ElementalAnalysis", "InfraredSpectroscopy"],
+                                          "additionalProperties": False
+                                      }
+                                  }
+                              },
+                              "required": ["Characterisation"],
+                              "additionalProperties": False
+                          },
+                          "strict": True
+                      }
+                  },
+                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
+              )
+            case 13:
+              messages    =[
+              {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
+              {"role": "user", "content": full_prompt} 
+              ]
+              response = self.client.chat.completions.create(
+                  model=model_name,
+                  response_format={    
+                      "type": "json_schema",
+                      "json_schema": {
+                          "name": "characterisationDevices",
+                          "schema": {
+                      "type": "object",
+                      "properties": {
+                        "Devices": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "HNMRDevice": {
+                                "type": "object",
+                                "properties": {
+                                  "deviceName": { "type": "string" },
+                                  "frequency": { "type": "string" }
+                                },
+                                "required": ["deviceName", "frequency", "solventNames"],
+                                "additionalProperties": False
+                              },
+                              "ElementalAnalysisDevice": {
+                                "type": "object",
+                                "properties": {
+                                  "deviceName": { "type": "string" }
+                                },
+                                "required": ["deviceName"],
+                                "additionalProperties": False
+                              },
+                              "InfraredSpectroscopyDevice": {
+                                "type": "object",
+                                "properties": {
+                                  "deviceName": { "type": "string" }
+                                },
+                                "required": ["deviceName", "solventNames"],
+                                "additionalProperties": False
+                              },
+
+                                  "Characterisation": {
+                                      "type": "array",
+                                      "items": {
+                                          "type": "object",
+                                          "properties": {
+                                              "productNames": { "type": "array",
+                                                      "items":{"type":"string"}},
+                                              "productCCDCNumber": { "type": "string" },
+                                              "HNMR": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                      "shifts": { "type": "string" },
+                                                      "solvent": { "type": "string" },
+                                                      "temperature": { "type": "string" }
+                                                  },
+                                                  "required": ["shifts", "solvent", "temperature"],
+                                                  "additionalProperties": False
+                                              },
+                                              "ElementalAnalysis": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                      "weightPercentageCalculated": { "type": "string" },
+                                                      "weightPercentageExperimental": { "type": "string" },
+                                                      "chemicalFormula": { "type": "string" }
+                                                  },
+                                                  "required": ["weightPercentageCalculated", "weightPercentageExperimental", "chemicalFormula", "measurementDevice"],
+                                                  "additionalProperties": False
+                                              },
+                                              "InfraredSpectroscopy": {
+                                                  "type": "object",
+                                                  "properties": {
+                                                      "material": { "type": "string" },
+                                                      "bands": { "type": "string" }
+                                                  },
+                                                  "required": ["material", "bands"],
+                                                  "additionalProperties": False
+                                              }
+                                          },
+                                          "required": ["productNames", "productCCDCNumber", "HNMR", "ElementalAnalysis", "InfraredSpectroscopy"],
+                                          "additionalProperties": False
+                                      }
+                                  }
+                             
+                            },
+                            "required": ["HNMRDevice", "ElementalAnalysisDevice", "InfraredSpectroscopyDevice", "Characterisation"],
+                            "additionalProperties": False
+                          }
+                        }
+                      },
+                      "required": ["Devices"],
+                      "additionalProperties": False
+                    }}
+
+                  },
+                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
+              )
+            case 14:
+              messages    =[
+              {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
+              {"role": "user", "content": full_prompt} 
+              ]
+              response = self.client.chat.completions.create(
+                  model=model_name,
+                  response_format=   {
+                    "type": "json_schema",
+                    "json_schema": {
+                      "name": "chemicalSynthesis",
                       "schema": {
-                          "type": "object",
-                          "properties": {
-                              "Synthesis": {
+                        "type": "object",
+                        "properties": {
+                          "synthesisProcedures": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "procedureName": { "type": "string" },
+                                "steps": {
                                   "type": "array",
                                   "items": {
-                                      "type": "object",
-                                      "properties": {
-                                          "productName": {"type": "string"},
-                                          "productCCDCNumber": {"type": "string"},
-                                          "steps": {
-                                              "type": "array",
-                                              "items": {
-                                                  "type": "object",
-                                                  "anyOf": [
-                                                      {
-                                                          "type": "object",
-                                                          "properties": {
-                                                              "Add": {
-                                                                  "type": "object",
-                                                                  "properties": {
-                                                                      "usedVessel": {"type": "string"},
-                                                                      "addedChemicalName": {"type": "string"},
-                                                                      "addedChemicalAmount": {"type": "string"},
-                                                                      "stepNumber": {"type": "integer"}
-                                                                  },
-                                                                  "required": ["usedVessel", "addedChemicalName", "addedChemicalAmount", "stepNumber"],
-                                                                  "additionalProperties": False
-                                                              }
-                                                          },
-                                                          "required": ["Add"],
-                                                          "additionalProperties": False
-                                                      },
-                                                      {
-                                                          "type": "object",
-                                                          "properties": {
-                                                              "HeatChill": {
-                                                                  "type": "object",
-                                                                  "properties": {
-                                                                      "heatCoolingTime": {"type": "string"},
-                                                                      "usedDevice": {"type": "string"},
-                                                                      "targetTemperature": {"type": "string"},
-                                                                      "heatingCoolingRate": {"type": "string"},
-                                                                      "underVacuum": {"type": "boolean"},
-                                                                      "usedVessel": {"type": "string"},
-                                                                      "sealedVessel": {"type": "boolean"},
-                                                                      "stepNumber": {"type": "integer"}
-                                                                  },
-                                                                  "required": ["heatCoolingTime", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVessel", "sealedVessel", "stepNumber"],
-                                                                  "additionalProperties": False
-                                                              }
-                                                          },
-                                                          "required": ["HeatChill"],
-                                                          "additionalProperties": False
-                                                      },
-                                                      {
-                                                          "type": "object",
-                                                          "properties": {
-                                                              "Filter": {
-                                                                  "type": "object",
-                                                                  "properties": {
-                                                                      "washingSolventName": {"type": "string"},
-                                                                      "washingSolventAmount": {"type": "string"},
-                                                                      "repetitions": {"type": "integer"},
-                                                                      "usedVessel": {"type": "string"},
-                                                                      "stepNumber": {"type": "integer"}
-                                                                  },
-                                                                  "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVessel", "stepNumber"],
-                                                                  "additionalProperties": False
-                                                              }
-                                                          },
-                                                          "required": ["Filter"],
-                                                          "additionalProperties": False
-                                                      },
-                                                      {
-                                                          "type": "object",
-                                                          "properties": {
-                                                              "Stir": {
-                                                                  "type": "object",
-                                                                  "properties": {
-                                                                      "stirringTime": {"type": "string"},
-                                                                      "usedVessel": {"type": "string"},
-                                                                      "stepNumber": {"type": "integer"}
-                                                                  },
-                                                                  "required": ["stirringTime", "usedVessel", "stepNumber"],
-                                                                  "additionalProperties": False
-                                                              }
-                                                          },
-                                                          "required": ["Stir"],
-                                                          "additionalProperties": False
-                                                      },
-                                                      {
-                                                          "type": "object",
-                                                          "properties": {
-                                                              "Sonicate": {
-                                                                  "type": "object",
-                                                                  "properties": {
-                                                                      "sonicationTime": {"type": "string"},
-                                                                      "usedVessel": {"type": "string"},
-                                                                      "stepNumber": {"type": "integer"}
-                                                                  },
-                                                                  "required": ["sonicationTime", "usedVessel", "stepNumber"],
-                                                                  "additionalProperties": False
-                                                              }
-                                                          },
-                                                          "required": ["Sonicate"],
-                                                          "additionalProperties": False
-                                                      }
-                                                  ]
-                                              }
-                                          }
+                                    "type": "object",
+                                    "properties": {
+                                      "inputChemicals": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "chemicalFormula": {"type": "string"},
+                                            "names": { "type": "array",
+                                                      "items":{"type":"string"}},
+                                            "amountOfChemical": {"type":"string"},
+                                            "supplierName": {"type": "string"},
+                                            "purity": { "type": "string" }
+                                          },
+                                          "required": ["chemicalFormula", "names", "amountOfChemical", "supplierName", "purity"],
+                                          "additionalProperties": False
+                                        }
                                       },
-                                      "required": ["productName", "productCCDCNumber", "steps"],
-                                      "additionalProperties": False
+                                      "outputChemical": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "chemicalFormula": { "type": "string" },
+                                            "names": { "type": "array",
+                                                      "items":{"type":"string"}},
+                                            "yield": { "type": "string" },
+                                            "CCDCNumber": { "type": "string" }
+                                          },
+                                          "required": ["chemicalFormula", "names", "yield", "CCDCNumber"],
+                                          "additionalProperties": False
+                                        }
+                                      }
+                                    },
+                                    "required": ["inputChemicals", "outputChemical"],
+                                    "additionalProperties": False
                                   }
-                              }
-                          },
-                          "required": ["Synthesis"],
-                          "additionalProperties": False
+                                }
+                              },
+                              "required": ["procedureName", "steps"],
+                              "additionalProperties": False
+                            }
+                          }
+                        },
+                        "required": ["synthesisProcedures"],
+                        "additionalProperties": False
                       },
                       "strict": True
-                  }
-              },
-              messages=messages
-          )
+                    }
+                  },
+                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
+              )
 
-
-
-        else:
-          messages    =[
-          {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into csv format."},
-          {"role": "user", "content": full_prompt} ]
-          response        = self.client.chat.completions.create(
-                              model=model_name,
-                              messages=messages
-          )
+            case _:
+              print("default prompt")
+              messages    =[
+              {"role": "system","content": "You will be provided with synthesis text and your task is to extract text based on the instruction."},
+              {"role": "user", "content": full_prompt} ]
+              response        = self.client.chat.completions.create(
+                                  model=model_name,
+                                  messages=messages
+              )
         return response.choices[0].message.content
 
     @staticmethod
@@ -435,18 +710,18 @@ def chemicals(doi:str) -> dict:
     PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-    SELECT ?Species (GROUP_CONCAT(?label; SEPARATOR=", ") AS ?labels) (COUNT(?label) AS ?labelCount)
+    SELECT (GROUP_CONCAT(DISTINCT ?label; SEPARATOR=", ") AS ?labels) 
     WHERE {{	
         ?Species skos:altLabel ?label .
         ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
         ?SinglePhase <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
         ?Material <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehaviour> ?SinglePhase .
         ?InputChemical osyn:referencesMaterial ?Material .   
+      	?ChemicalSynthesis osyn:hasChemicalInput ?InputChemical .
         ?ChemicalSynthesis osyn:retrievedFrom ?doc .
         ?doc <http://purl.org/ontology/bibo/doi> "{doi}" .
     }}
-    GROUP BY ?Species
-    HAVING (?labelCount > 2)
+group by ?Species
                                               """        
     species_labels                        = updater.sparql_client.performQuery(query) 
     print("species labels: ", species_labels)
@@ -462,6 +737,47 @@ def chemicals(doi:str) -> dict:
             if literature_doi["DOI"]=="Not in OntoMOPs KG":
                 continue
             GetPaper.GetPapers.get_paper(literature_doi["DOI"])
+def query_mop_names(doi:str):
+    script_dir                          = os.path.dirname(os.path.abspath(__file__))
+    # make file path dependent on script location
+    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoSynthesisConnection.env"))
+    # instantiate class
+    updater = KG.UpdateKG(
+        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
+        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
+        kg_user                         = a_box_updates_config.KG_USERNAME,
+        kg_password                     = a_box_updates_config.KG_PASSWORD )
+    #where_lit                   = """   ?Provenance	om:hasReferenceDOI      ?DOI     . """
+    #select_variables            = """ DISTINCT  ?DOI"""
+    #literature_dois             = sparql_point.query_triple(where_lit, select_variables)
+    #lit_doi                     = literature_dois[0]
+    query                               = f"""
+    PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+            PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+            PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
+    PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
+    SELECT ?mopformula ?lab
+    WHERE {{
+      ?chemicalOutput	osyn:isRepresentedBy 	?mop .
+      ?chemicalTransformation   osyn:hasChemicalOutput 	      ?chemicalOutput 	;
+                                osyn:isDescribedBy		        ?chemicalSynthesis 	.
+      ?chemicalSynthesis	      osyn:retrievedFrom 		          ?document			        . 
+      ?document 			          <http://purl.org/ontology/bibo/doi>   "{doi}"		      .
+      ?mop  a mops:MetalOrganicPolyhedron	 	;
+              mops:hasMOPFormula	?mopformula	;
+              mops:mopAltLabel			?lab	.
+          }}
+                                              """        
+    species_labels                        = updater.sparql_client.performQuery(query) 
+    print("species labels: ", species_labels)
+    species_list                          = []
+    for species in species_labels:
+      species_list.append(species["mopformula"])
+      species_list.append(species["lab"])
+    return species_list
+    
 def process_papers():
     script_dir              = os.path.dirname(os.path.abspath(__file__))
     #processor               = XYZFileProcessor(os.path.abspath(os.path.join(script_dir, "../../Data/papers_with_si")), os.path.join(script_dir, "../../Data/"))
@@ -559,8 +875,6 @@ if __name__ == "__main__":
                                     Answer the question as truthfully as possible using the provided context. If any information is not provided 
                                     or you are unsure, use "N/A".
 
-                                     
-       
                                     Synthesis text: """
     prompt3_2               = f"""For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
                                     clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
