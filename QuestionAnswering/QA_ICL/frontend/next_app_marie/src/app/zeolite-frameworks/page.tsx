@@ -18,15 +18,15 @@ import { Button } from '@/components/ui/button'
 import { TopoPropsDiv } from './_components/topo-props-div'
 
 interface ZeoliteFrameworkPageInterface {
-  params: { iriEncoded: string }
+  searchParams: { iri: string }
 }
 
 export default async function ZeoliteFrameworkPage({
-  params,
+  searchParams,
 }: ZeoliteFrameworkPageInterface) {
   const [data, cif] = await Promise.all([
-    getZeoliteFrameworkOne(params.iriEncoded),
-    getZeoliteFrameworkCIF(params.iriEncoded),
+    getZeoliteFrameworkOne(searchParams.iri),
+    getZeoliteFrameworkCIF(searchParams.iri),
   ])
 
   return (
@@ -73,7 +73,7 @@ export default async function ZeoliteFrameworkPage({
               {data.ZeoliticMaterial.map(({ ChemicalFormula, IRI }, i) => (
                 <li key={i}>
                   <Link
-                    href={'/zeolitic-materials/' + encodeURIComponent(IRI)}
+                    href={'/zeolitic-materials?iri=' + encodeURIComponent(IRI)}
                     className='hover:underline'
                   >
                     {ChemicalFormula}
