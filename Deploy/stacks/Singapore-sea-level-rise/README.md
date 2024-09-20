@@ -159,3 +159,6 @@ Kok Foong Lee
 [cityfurniture-footprint-height.sql]: ./additional_sql_scripts/cityfurniture-footprint-height.sql
 [company.http]: ./http_requests/company.http
 [geoserver_layer.sql]: ./additional_sql_scripts/geoserver_layer.sql
+[api.properties (weather)]: ./cares_weather_config/api.properties
+[client.properties (weather)]: ./cares_weather_config/client.properties
+[cares_weather.http]: ./http_requests/cares_weather.http

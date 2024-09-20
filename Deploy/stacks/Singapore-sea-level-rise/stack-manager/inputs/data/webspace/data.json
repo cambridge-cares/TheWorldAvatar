@@ -3131,6 +3131,45 @@
             ]
         },
         {
+            "name": "Weather",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "cares-weather-station-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:caresweather&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Cares-weather-station-layer",
+                    "name": "CARES weather station",
+                    "source": "cares-weather-station-source",
+                    "source-layer": "caresweather",
+                    "type": "symbol",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "weather_station_image",
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ],
+                        "icon-anchor": "bottom"
+                    }
+                }
+            ]
+        },
+        {
             "name": "Buildings in Bukit Merah",
             "expanded": false,
             "sources": [
