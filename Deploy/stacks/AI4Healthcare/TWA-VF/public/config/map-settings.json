@@ -24,6 +24,26 @@
                 "pitch": 45
             },
             {
+                "name": "Ely",
+                "center": [
+                    0.26196,
+                    52.39964
+                ],
+                "zoom": 16,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "Wisbech",
+                "center": [
+                    0.1593800,
+                    52.666220
+                ],
+                "zoom": 16,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
                 "name": "London",
                 "center": [
                     -0.12794,
@@ -32,41 +52,11 @@
                 "zoom": 18,
                 "bearing": 0,
                 "pitch": 45
-            },
-            {
-                "name": "Paris",
-                "center": [
-                    2.29448,
-                    48.85826
-                ],
-                "zoom": 16,
-                "bearing": 0,
-                "pitch": 45
-            },
-            {
-                "name": "New York",
-                "center": [
-                    -73.98568,
-                    40.74845
-                ],
-                "zoom": 16,
-                "bearing": 0,
-                "pitch": 45
-            },
-            {
-                "name": "Tokyo",
-                "center": [
-                    139.74544,
-                    35.65858
-                ],
-                "zoom": 16,
-                "bearing": 0,
-                "pitch": 45
             }
         ]
     },
     "imagery": {
-        "default": "Auto",
+        "default": "3D (Night)",
         "options": [
             {
                 "name": "Light",
