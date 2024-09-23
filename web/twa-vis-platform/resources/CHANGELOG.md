@@ -3,6 +3,20 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.6.0
+
+### Features
+
+* Extension of the form UI for search capabilities
+* Addition of initial search capabilities for the map visualisation
+* Addition of time slots for the form schedule section
+* Modify the registry to work with the new vis backend agent
+* Consolidation of the urls of assets as constants in one file
+
+### Bug Fixes
+
+* Fix the form's css
+
 ## 5.5.0
 
 ### Features
