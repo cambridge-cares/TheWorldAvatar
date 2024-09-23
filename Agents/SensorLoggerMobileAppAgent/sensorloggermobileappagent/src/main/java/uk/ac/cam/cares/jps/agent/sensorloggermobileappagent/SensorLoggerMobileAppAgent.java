@@ -112,16 +112,24 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         SmartphoneRecordingTask task = getSmartphoneRecordingTask(deviceId);
         addDataExecutor.submit(() -> {
             try {
-                String compressedDataString = requestParams.getString("compressedData");
+                if (requestParams.has("compressedData")) {
+                    String compressedDataString = requestParams.getString("compressedData");
 
-                LOGGER.info(deviceId + " is fetched and start to add data");
+                    LOGGER.info(deviceId + " is fetched and start to add data");
 
-                byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
-                String decompressedData = decompressGzip(compressedData);
-                JSONArray payload = new JSONArray(decompressedData);
-                HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+                    byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
+                    String decompressedData = decompressGzip(compressedData);
+                    JSONArray payload = new JSONArray(decompressedData);
+                    HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
 
-                task.addData(dataHashmap);
+                    task.addData(dataHashmap);
+                } else {
+                    // retrieving non-compressed data
+                    JSONArray payload = new JSONArray(requestParams.getString("payload"));
+                    HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+                    LOGGER.info(deviceId + " is fetched and start to add data");
+                    task.addData(dataHashmap);
+                }
             } catch (JsonProcessingException jsonError) {
                 // handle JsonProcessingException
             } catch (IOException ioError) {
@@ -136,10 +144,10 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        return !(!requestParams.has("messageId")
-                || !requestParams.has("sessionId")
-                || !requestParams.has("deviceId")
-                || !requestParams.has("payload"));
+        return requestParams.has("messageId")
+                && requestParams.has("sessionId")
+                && requestParams.has("deviceId")
+                && (requestParams.has("payload") || requestParams.has("compressedData"));
     }
 
     private String decompressGzip(byte[] compressedData) throws IOException {
