@@ -83,18 +83,18 @@ public class QueryTemplateFactory {
    *                  instance.
    * @param hasParent Indicates if the query needs to filter out parent entities.
    */
-  public String genGetTemplate(List<SparqlBinding> bindings, String filterId, boolean hasParent) {
+  public String genGetTemplate(Queue<SparqlBinding> bindings, String filterId, boolean hasParent) {
     // Validate inputs
     if (hasParent && filterId == null) {
       LOGGER.error("Detected a parent without a valid filter ID!");
       throw new IllegalArgumentException("Detected a parent without a valid filter ID!");
     }
-
-    LOGGER.info("Generating a query template for getting data...");
-    this.sortBindings(bindings, hasParent);
     StringBuilder query = new StringBuilder();
     query.append("SELECT * WHERE {")
-        .append(genIriClassLine(bindings));
+        .append(genIriClassLine(bindings.peek()));
+    this.sortBindings(bindings, hasParent);
+
+    LOGGER.info("Generating a query template for getting data...");
     // Parse the query lines
     while (!this.queryLines.isEmpty()) {
       query.append(this.queryLines.poll().contents());
@@ -125,13 +125,13 @@ public class QueryTemplateFactory {
    *                  be in the template.
    * @param criterias All the required search criteria.
    */
-  public String genSearchTemplate(List<SparqlBinding> bindings, Map<String, String> criterias) {
+  public String genSearchTemplate(Queue<SparqlBinding> bindings, Map<String, String> criterias) {
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
-    this.sortBindings(bindings, false);
     StringBuilder query = new StringBuilder();
     StringBuilder filters = new StringBuilder();
     query.append("SELECT ?iri WHERE {")
-        .append(genIriClassLine(bindings));
+        .append(genIriClassLine(bindings.peek()));
+    this.sortBindings(bindings, false);
     while (!this.queryLines.isEmpty()) {
       SparqlQueryLine currentLine = this.queryLines.poll();
       String variable = currentLine.property();
@@ -177,12 +177,12 @@ public class QueryTemplateFactory {
    * Generates the class restriction line of a query ie:
    * ?iri a <clazz_iri>.
    * 
-   * @param bindings The bindings queried from SHACL restrictions that should
-   *                 be queried in template.
+   * @param binding The SPARQL response queried from SHACL restrictions containing
+   *                the class.
    */
-  private String genIriClassLine(List<SparqlBinding> bindings) {
+  private String genIriClassLine(SparqlBinding binding) {
     // Retrieve the target class from the first binding
-    String targetClass = bindings.get(0).getFieldValue(CLAZZ_VAR);
+    String targetClass = binding.getFieldValue(CLAZZ_VAR);
     return "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP;
   }
 
@@ -242,11 +242,12 @@ public class QueryTemplateFactory {
    *                  be queried in template.
    * @param hasParent Indicates if the query needs to filter out parent entities.
    */
-  private void sortBindings(List<SparqlBinding> bindings, boolean hasParent) {
-    bindings.forEach(binding -> {
+  private void sortBindings(Queue<SparqlBinding> bindings, boolean hasParent) {
+    while (!bindings.isEmpty()) {
+      SparqlBinding binding = bindings.poll();
       String predSubjectLine = this.genTripleQueryLine(binding, hasParent);
       this.categoriseQueryLine(predSubjectLine, binding);
-    });
+    }
   }
 
   /**

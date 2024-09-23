@@ -8,17 +8,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.utils.StringResource;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 class QueryTemplateFactoryTest {
+  private static ObjectMapper TEST_MAPPER;
+  private static QueryTemplateFactory TEMPLATE_FACTORY;
+
   private static final String SAMPLE_PREFIX = "http://example.com/";
   private static final String SAMPLE_CONCEPT = SAMPLE_PREFIX + "Concept";
   private static final String SAMPLE_PRED_PATH = SAMPLE_PREFIX + "propPath1";
@@ -52,16 +56,21 @@ class QueryTemplateFactoryTest {
       MULTISUBPATH_THIRD_VAR,
       MULTISUBPATH_FORTH_VAR);
 
+  @BeforeAll
+  static void setup() {
+    TEST_MAPPER = new ObjectMapper();
+    TEMPLATE_FACTORY = new QueryTemplateFactory(TEST_MAPPER);
+  }
+
   @Test
   void testGenGetTemplate() {
     // Set up
-    List<SparqlBinding> bindings = new ArrayList<>();
+    Queue<SparqlBinding> bindings = new ArrayDeque<>();
     Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PRED_PATH, SAMPLE_NESTED_PRED_PATH, "",
         "", "", "", "");
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, paths, false, false);
-    QueryTemplateFactory sampleTemplate = new QueryTemplateFactory();
     // Execute
-    String result = sampleTemplate.genGetTemplate(bindings, null, false);
+    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, null, false);
     // Assert
     assertNotNull(result);
     assertTrue(result.startsWith("SELECT * WHERE {"));
@@ -76,13 +85,12 @@ class QueryTemplateFactoryTest {
   @Test
   void testGenGetTemplate_FilterId() {
     // Set up
-    List<SparqlBinding> bindings = new ArrayList<>();
+    Queue<SparqlBinding> bindings = new ArrayDeque<>();
     Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PRED_PATH, SAMPLE_NESTED_PRED_PATH, "",
         "", "", "", "");
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, paths, false, false);
-    QueryTemplateFactory sampleTemplate = new QueryTemplateFactory();
     // Execute
-    String result = sampleTemplate.genGetTemplate(bindings, SAMPLE_FILTER, false);
+    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, SAMPLE_FILTER, false);
     // Assert
     assertNotNull(result);
     assertTrue(result.startsWith(
@@ -96,15 +104,14 @@ class QueryTemplateFactoryTest {
 
   @Test
   void testGenGetTemplate_HasParent_MissingFilter() {
-    List<SparqlBinding> bindings = new ArrayList<>();
+    Queue<SparqlBinding> bindings = new ArrayDeque<>();
     Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PARENT_PATH, "", "",
         SAMPLE_SUB_PATH, "", "", "");
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_PARENT_FIELD, paths, false, true);
-    QueryTemplateFactory sampleTemplate = new QueryTemplateFactory();
     // The method should throw an exception because filterId is required when
     // hasParent is true
     IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-      sampleTemplate.genGetTemplate(bindings, null, true);
+      TEMPLATE_FACTORY.genGetTemplate(bindings, null, true);
     });
     assertTrue(thrown.getMessage().contains("Detected a parent without a valid filter ID!"));
   }
@@ -112,13 +119,12 @@ class QueryTemplateFactoryTest {
   @Test
   void testGenGetTemplate_HasParent() {
     // Set up
-    List<SparqlBinding> bindings = new ArrayList<>();
+    Queue<SparqlBinding> bindings = new ArrayDeque<>();
     Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PARENT_PATH, "", "",
         SAMPLE_SUB_PATH, "", "", "");
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_PARENT_FIELD, paths, false, true);
-    QueryTemplateFactory sampleTemplate = new QueryTemplateFactory();
     // Execute
-    String result = sampleTemplate.genGetTemplate(bindings, SAMPLE_FILTER, true);
+    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, SAMPLE_FILTER, true);
     // Assert
     String parentVariable = SAMPLE_PARENT_FIELD.replaceAll("\\s+", "_");
     assertNotNull(result);
@@ -134,7 +140,7 @@ class QueryTemplateFactoryTest {
   @Test
   void testGenGetTemplate_OptionalFields() {
     // Set up
-    List<SparqlBinding> bindings = new ArrayList<>();
+    Queue<SparqlBinding> bindings = new ArrayDeque<>();
     Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PRED_PATH, SAMPLE_NESTED_PRED_PATH, "",
         "", "", "", "");
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, paths, false, false);
@@ -142,9 +148,8 @@ class QueryTemplateFactoryTest {
     paths = genSPARQLBindingPaths(SAMPLE_OPTIONAL_PATH, "", "",
         "", "", "", "");
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_OPTIONAL_FIELD, paths, true, false);
-    QueryTemplateFactory sampleTemplate = new QueryTemplateFactory();
     // Execute
-    String result = sampleTemplate.genGetTemplate(bindings, null, false);
+    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, null, false);
     // Assert
     String optVariable = SAMPLE_OPTIONAL_FIELD.replaceAll("\\s+", "_");
     assertNotNull(result);
@@ -215,7 +220,7 @@ class QueryTemplateFactoryTest {
    * @param isOptional     Indicates if the field is optional
    * @param isParent       Indicates if the field is the parent field
    */
-  private static void genMockSPARQLBinding(List<SparqlBinding> resultBindings, String clazz, String varName,
+  private static void genMockSPARQLBinding(Queue<SparqlBinding> resultBindings, String clazz, String varName,
       Queue<String> paths, boolean isOptional, boolean isParent) {
     if (PROPERTY_PATH_VARIABLES.size() != paths.size()) {
       throw new IllegalArgumentException("Invalid size of paths parameter");
@@ -235,6 +240,6 @@ class QueryTemplateFactoryTest {
     });
     when(binding.getFieldValue(IS_OPTIONAL_VAR)).thenReturn(String.valueOf(isOptional));
     when(binding.getFieldValue(IS_PARENT_VAR)).thenReturn(String.valueOf(isParent));
-    resultBindings.add(binding);
+    resultBindings.offer(binding);
   }
 }

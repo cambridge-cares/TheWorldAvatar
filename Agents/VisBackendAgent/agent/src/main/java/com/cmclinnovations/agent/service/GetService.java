@@ -2,8 +2,8 @@ package com.cmclinnovations.agent.service;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +64,7 @@ public class GetService {
       hasParent = false;
     }
     String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
-    List<SparqlBinding> results = this.kgService.queryInstances(query, parentId, hasParent);
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, parentId, hasParent);
     return new ResponseEntity<>(
         results.stream()
             .map(SparqlBinding::get)
@@ -107,10 +107,10 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
         iriResponse.getBody());
-    List<SparqlBinding> results = this.kgService.queryInstances(query, targetId, false);
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, targetId, false);
     if (results.size() == 1) {
       return new ResponseEntity<>(
-          results.get(0).get(),
+          results.poll().get(),
           HttpStatus.OK);
     } else if (results.isEmpty()) {
       return new ResponseEntity<>(
@@ -172,7 +172,7 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE,
         iriResponse.getBody());
-    List<SparqlBinding> results = this.kgService.query(query);
+    Queue<SparqlBinding> results = this.kgService.query(query);
     if (results.isEmpty()) {
       LOGGER.info(
           "Request has been completed successfully with no results!");
@@ -201,7 +201,7 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
         iriResponse.getBody());
-    List<SparqlBinding> results = this.kgService.queryInstancesWithCriteria(query, criterias);
+    Queue<SparqlBinding> results = this.kgService.queryInstancesWithCriteria(query, criterias);
     LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     return new ResponseEntity<>(
         results.stream()

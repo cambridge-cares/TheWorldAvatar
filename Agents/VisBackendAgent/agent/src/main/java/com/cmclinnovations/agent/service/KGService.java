@@ -1,9 +1,9 @@
 package com.cmclinnovations.agent.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
 import java.util.Map;
+import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -81,7 +81,7 @@ public class KGService {
    * 
    * @return the query results.
    */
-  public List<SparqlBinding> query(String query) {
+  public Queue<SparqlBinding> query(String query) {
     String results = this.client.post()
         .uri(BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint())
         .accept(MediaType.valueOf(JSON_MEDIA_TYPE))
@@ -100,7 +100,7 @@ public class KGService {
     if (jsonResults.isArray()) {
       return this.parseResults((ArrayNode) jsonResults);
     }
-    return new ArrayList<>();
+    return new ArrayDeque<>();
   }
 
   /**
@@ -169,9 +169,9 @@ public class KGService {
    * @param hasParent      Indicates if the query needs to filter out parent
    *                       entities.
    */
-  public List<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
+  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
+    Queue<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
     if (variablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
@@ -190,7 +190,7 @@ public class KGService {
    */
   public String queryInstancesInCsv(String shaclPathQuery) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
+    Queue<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
     if (variablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
@@ -208,9 +208,9 @@ public class KGService {
    *                       the SHACL restrictions.
    * @param criterias      All the available search criteria inputs.
    */
-  public List<SparqlBinding> queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
+  public Queue<SparqlBinding> queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    List<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
+    Queue<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
     if (variablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
@@ -268,11 +268,11 @@ public class KGService {
    * 
    * @param results Results retrieved from the knowledge graph.
    */
-  private List<SparqlBinding> parseResults(ArrayNode results) {
+  private Queue<SparqlBinding> parseResults(ArrayNode results) {
     LOGGER.debug("Parsing the results...");
     return StreamSupport.stream(results.spliterator(), false)
         .filter(JsonNode::isObject) // Ensure they are object node so that we can type cast
         .map(row -> new SparqlBinding((ObjectNode) row))
-        .collect(Collectors.toList());
+        .collect(Collectors.toCollection(ArrayDeque::new));
   }
 }
