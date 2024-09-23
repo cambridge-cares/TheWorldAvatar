@@ -118,6 +118,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
             /> :
             <FormInputField
               field={props.field}
+              instanceType={props.entityType}
               form={props.form}
               options={{
                 disabled: props.options?.disabled,
