@@ -5,14 +5,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 import { Paths } from 'io/config/routes';
-import { OntologyConcept, PropertyShape, VALUE_KEY } from 'types/form';
+import { defaultSearchOption, ONTOLOGY_CONCEPT_ROOT, OntologyConcept, OntologyConceptMappings, PropertyShape, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
-import { reorderConcepts, sortConcepts } from 'utils/client-utils';
 import { getAvailableTypes } from 'utils/server-actions';
 import FormInputField from './form-input';
 import FormDateTimePicker from './form-date-time-picker';
 import FormSelector from './form-selector';
-import { FORM_STATES } from '../form-utils';
+import { parseConcepts, FORM_STATES } from '../form-utils';
+import FormInputMinMaxField from './input/form-min-max-input';
 
 interface FormFieldProps {
   entityType: string;
@@ -34,8 +34,9 @@ interface FormFieldProps {
  * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.
  */
 export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
+  const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const effectRan = useRef(false);
-  const [dropdownValues, setDropdownValues] = useState<OntologyConcept[]>([]);
+  const [dropdownValues, setDropdownValues] = useState<OntologyConceptMappings>({});
   const [isFetching, setIsFetching] = useState<boolean>(true);
 
   // A hook that fetches all concepts for select input on first render
@@ -63,16 +64,29 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
           break;
         }
         default:
-          concepts = null;
+          concepts = await getAvailableTypes(props.agentApi, field.name[VALUE_KEY].toLowerCase().replace(/\s+/g, ""));
           break;
       }
 
       if (concepts && concepts.length > 0 && !props.options.disabled) {
-        let sortedConcepts: OntologyConcept[] = sortConcepts(concepts);
-        sortedConcepts = reorderConcepts(sortedConcepts, form.getValues(field.fieldId));
-        if (field.name[VALUE_KEY].toLowerCase() === "country") { sortedConcepts = reorderConcepts(sortedConcepts, "Singapore"); }
-        setDropdownValues(sortedConcepts);
-        form.setValue(field.fieldId, sortedConcepts[0].type.value);
+        let firstOption: string = form.getValues(field.fieldId);
+        // WIP: Set default value Singapore for any Country Field temporarily
+        // Default values should not be hardcoded here but retrieved in a config instead
+        if (field.name[VALUE_KEY].toLowerCase() === "country") {
+          firstOption = "Singapore";
+        }
+        // Add the default search option only if this is the search form
+        if (form.getValues(FORM_STATES.FORM_TYPE) === Paths.SEARCH) {
+          firstOption = defaultSearchOption.label.value;
+          concepts.unshift(defaultSearchOption);
+        }
+        const sortedConceptMappings: OntologyConceptMappings = parseConcepts(concepts, firstOption);
+        setDropdownValues(sortedConceptMappings);
+        // First option should be set if available, else the first parent value should be prioritised
+        const firstRootOption: OntologyConcept = sortedConceptMappings[ONTOLOGY_CONCEPT_ROOT][0];
+        form.setValue(field.fieldId,
+          sortedConceptMappings[firstRootOption.type.value] ? sortedConceptMappings[firstRootOption.type.value][0]?.type?.value
+            : firstRootOption?.type?.value);
       }
       setIsFetching(false);
     }
@@ -93,17 +107,28 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
     return (
       <div className={styles["form-field-container"]}>
         <div className={styles["form-input-container"]}>
-          <FormInputField
-            field={props.field}
-            form={props.form}
-            options={{
-              disabled: props.options?.disabled,
-            }}
-            styles={{
-              label: [styles["form-input-label"]],
-              input: [styles["form-input-value"]],
-            }}
-          />
+          {/** Display input min max range only if this is the search form and a numerical value */}
+          {formType == Paths.SEARCH && ["integer", "decimal"].includes(props.field.datatype)
+            ? <FormInputMinMaxField
+              field={props.field}
+              form={props.form}
+              styles={{
+                label: [styles["form-input-label"]],
+              }}
+            /> :
+            <FormInputField
+              field={props.field}
+              instanceType={props.entityType}
+              form={props.form}
+              options={{
+                disabled: props.options?.disabled,
+              }}
+              styles={{
+                label: [styles["form-input-label"]],
+                input: [styles["form-input-value"]],
+              }}
+            />
+          }
         </div>
       </div>
     );

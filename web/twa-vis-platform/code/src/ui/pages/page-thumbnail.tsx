@@ -5,6 +5,7 @@ import styles from './page-thumbnail.module.css';
 import React from 'react';
 import { Tooltip } from '@mui/material';
 
+import { Assets } from 'io/config/assets';
 import { OptionalPage } from 'io/config/optional-pages';
 import AppImage from 'ui/graphic/image/image';
 import Link from 'next/link';
@@ -35,7 +36,7 @@ interface PageThumbnailTemplateProps {
  * @param {OptionalPage} page Markdown page content.
  */
 export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailProps>) {
-  const thumbnail = page.thumbnail ?? "/images/defaults/icons/info.svg";
+  const thumbnail = page.thumbnail ?? Assets.INFO;
   const url = `./${page.slug}`;
 
   return (

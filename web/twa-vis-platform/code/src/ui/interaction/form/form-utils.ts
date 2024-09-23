@@ -1,7 +1,7 @@
 import { FieldValues, RegisterOptions } from "react-hook-form";
 
-import { PropertyShape, VALUE_KEY } from "types/form";
 import { Paths } from "io/config/routes";
+import { PropertyShape, VALUE_KEY, ONTOLOGY_CONCEPT_ROOT, OntologyConcept, OntologyConceptMappings } from "types/form";
 
 export const FORM_STATES: Record<string, string> = {
   ID: "id",
@@ -14,6 +14,8 @@ export const FORM_STATES: Record<string, string> = {
   FRI: "friday",
   SAT: "saturday",
   SUN: "sunday",
+  TIME_SLOT_START: "time slot start",
+  TIME_SLOT_END: "time slot end",
 };
 
 /**
@@ -45,7 +47,7 @@ export function initFormField(field: PropertyShape, outputState: FieldValues, fi
 export function getDefaultVal(field: string, defaultValue: string, formType: string): boolean | number | string {
   if (field == FORM_STATES.ID) {
     // ID property should only be randomised for the add form type, else, use the default value
-    if (formType == Paths.REGISTRY_ADD) {
+    if (formType == PathNames.REGISTRY_ADD || formType == PathNames.SEARCH) {
       return Math.random().toString(16).slice(2);
     }
     // Retrieve only the ID without any prefix
@@ -54,7 +56,7 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 
   if (field == FORM_STATES.RECURRENCE) {
     // Recurrence property should have a value of 1 for the add form type, else, use the default value
-    if (formType == Paths.REGISTRY_ADD) {
+    if (formType == PathNames.REGISTRY_ADD || formType == PathNames.SEARCH) {
       return 1;
     }
     // Retrieve and parse the recurrent digit based on default value
@@ -66,7 +68,7 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
 
   if ([FORM_STATES.SUN, FORM_STATES.MON, FORM_STATES.TUES, FORM_STATES.WED, FORM_STATES.THURS, FORM_STATES.FRI, FORM_STATES.SAT].includes(field)) {
     // Any day of week property should default to false for add form type, else, use the default value
-    if (formType == Paths.REGISTRY_ADD) {
+    if (formType == PathNames.REGISTRY_ADD || formType == PathNames.SEARCH) {
       return false;
     }
     // Default value can be null, and should return false if null
@@ -84,12 +86,13 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
  * Generate the RegisterOptions required for react-hook-form inputs based on user requirements.
  * 
  * @param {PropertyShape} field The SHACL restrictions for the specific property
+ * @param {string} formType The type of form.
  */
-export function getRegisterOptions(field: PropertyShape): RegisterOptions {
+export function getRegisterOptions(field: PropertyShape, formType: string): RegisterOptions {
   const options: RegisterOptions = {};
 
-  // Add options if the field is required
-  if (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1) {
+  // The field is required if this is currently not the search form and SHACL defines them as optional
+  if (formType != PathNames.SEARCH && (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1)) {
     options.required = "Required";
   }
 
@@ -146,16 +149,117 @@ export function getRegisterOptions(field: PropertyShape): RegisterOptions {
 }
 
 /**
- * Searches for the required field based on the existing fields in the form.
+ * Parse the concepts into the mappings required for display.
  * 
- * @param {FieldValues} fields Mapping of all form fields.
- * @param {string} targetKey Substring for searching the required field.
+ * @param {OntologyConcept[]} concepts Array of concepts for sorting.
+ * @param {string} priority The priority concept that we must find and separate.
  */
-export function searchField(fields: FieldValues, targetKey: string): string {
-  const targetField: string[] = Object.keys(fields)
-    .filter(field => field.toLowerCase().replace(/\s+/g, "").includes(targetKey.toLowerCase().replace(/\s+/g, "")));
-  if (targetField.length != 1) {
-    console.warn(`There is no field containing the target key: ${targetKey}!`);
-  }
-  return targetField[0];
+export function parseConcepts(concepts: OntologyConcept[], priority: string): OntologyConceptMappings {
+  const results: OntologyConceptMappings = {};
+  // Ensure that there is a root mapping to collect all parent's information
+  results[ONTOLOGY_CONCEPT_ROOT] = [];
+  // For handling the priority concept
+  let priorityConcept: OntologyConcept;
+  // Store the parent key value
+  const parentNodes: string[] = [];
+
+  concepts.map(concept => {
+    // Store the priority option if found
+    if (concept.label.value === priority || concept.type.value === priority) {
+      priorityConcept = concept;
+    }
+
+    // If it has a parent, the concept should be appended to its parent key
+    if (concept.parent) {
+      const parentInstance = concept.parent.value;
+      // Add a new array if the mapping does not exist
+      if (!results[parentInstance]) {
+        results[parentInstance] = [];
+        parentNodes.push(parentInstance);
+      }
+      results[parentInstance].push(concept);
+    } else {
+      // Else if it is a parent, push it to the root mapping
+      results[ONTOLOGY_CONCEPT_ROOT].push(concept);
+    }
+  });
+  sortRootConcepts(results, priorityConcept, parentNodes);
+  sortChildrenConcepts(results, priorityConcept);
+  return results;
+}
+
+/**
+  * Sorts the root/parents concepts.
+  * 
+  * @param {OntologyConceptMappings} mappings Newly parsed mappings from the inputs.
+  * @param {OntologyConcept} priority The priority concept that we must find and separate.
+  * @param {string[]} parentNodes A list of parent nodes for sorting.
+  */
+function sortRootConcepts(mappings: OntologyConceptMappings, priority: OntologyConcept, parentNodes: string[]): void {
+  let priorityConcept: OntologyConcept;
+  let parentConcepts: OntologyConcept[] = [];
+  let childlessConcepts: OntologyConcept[] = [];
+  // Process the concepts to map them
+  mappings[ONTOLOGY_CONCEPT_ROOT].map(concept => {
+    // Priority may either be a child or parent concept and we should store the right concept
+    if (priority && (concept.type.value == priority.parent?.value || concept.label.value == priority.parent?.value
+      || concept.label.value == priority.label?.value
+    )) {
+      // If this is the priority concept, store it directly, and do not sort it out as it will be appended to the first of the array
+      priorityConcept = concept;
+    } else {
+      // If this is a parent concept with children
+      if (parentNodes.includes(concept.type.value)) {
+        parentConcepts.push(concept);
+      } else {
+        childlessConcepts.push(concept);
+      }
+    }
+  });
+  // Sort the various concepts
+  parentConcepts = parentConcepts.sort((a, b) => a.label.value.localeCompare(b.label.value));
+  childlessConcepts = childlessConcepts.sort((a, b) => a.label.value.localeCompare(b.label.value));
+  // The final sequence should be the prioritised concept if available, followed by childless and then parent concepts.
+  mappings[ONTOLOGY_CONCEPT_ROOT] = priorityConcept ? [priorityConcept, ...childlessConcepts, ...parentConcepts] :
+    [...childlessConcepts, ...parentConcepts];
+}
+
+/**
+  * Sorts the children concepts.
+  * 
+  * @param {OntologyConceptMappings} mappings Newly parsed mappings from the inputs.
+  * @param {OntologyConcept} priority The priority concept that we must find and separate.
+  */
+function sortChildrenConcepts(mappings: OntologyConceptMappings, priority: OntologyConcept): void {
+  Object.keys(mappings).map(parentKey => {
+    // Ensure that this is not the root
+    if (parentKey != ONTOLOGY_CONCEPT_ROOT) {
+      // Attempt to find the match concept
+      const matchedConcept: OntologyConcept = mappings[parentKey].find(concept => concept.type?.value == priority?.label?.value);
+      // Filter out the matching concept if it is present, and sort the children out
+      const sortedChildren: OntologyConcept[] = mappings[parentKey].filter(concept => concept.type?.value != priority?.label?.value)
+        .sort((a, b) => a.label.value.localeCompare(b.label.value));
+      // Append the matching concept to the start if it is present
+      if (matchedConcept) { sortedChildren.unshift(matchedConcept); }
+      // Overwrite the mappings with the sorted mappings
+      mappings[parentKey] = sortedChildren;
+    }
+  })
+}
+
+/**
+ * Retrieve the concept that matches the target value in the input mappings.
+ * 
+ * @param {OntologyConceptMappings} mappings The mappings of option values for the dropdown.
+ * @param {string} targetValue The target value for matching with in the concept's type.
+ */
+export function getMatchingConcept(mappings: OntologyConceptMappings, targetValue: string): OntologyConcept {
+  let match: OntologyConcept;
+  Object.keys(mappings).map(key => {
+    const matchedConcept: OntologyConcept = mappings[key].find(concept => concept.type?.value == targetValue);
+    if (matchedConcept) {
+      match = matchedConcept;
+    }
+  });
+  return match;
 }

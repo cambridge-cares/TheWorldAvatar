@@ -8,6 +8,7 @@ import styles from './landing.module.css';
 import markdownit from 'markdown-it';
 import React from 'react';
 
+import { Assets } from 'io/config/assets';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 import { Modules, Routes } from 'io/config/routes';
 import LandingImage from 'ui/graphic/image/landing';
@@ -64,7 +65,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={mapLinkProps?.title ?? "Explore"}
             caption={mapLinkProps?.caption ?? "Discover geospatial relationships in our environment"}
-            icon={mapLinkProps?.icon ?? "/images/defaults/icons/map.svg"}
+            icon={mapLinkProps?.icon ?? Assets.MAP}
             url={Routes.MAP}
           />
         )}
@@ -72,7 +73,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={dashboardLinkProps?.title ?? "Analyse"}
             caption={dashboardLinkProps?.caption ?? "Discover trends and insights at a glance"}
-            icon={dashboardLinkProps?.icon ?? "/images/defaults/icons/dash.svg"}
+            icon={dashboardLinkProps?.icon ?? Assets.DASHBOARD}
             url={Routes.DASHBOARD}
           />
         )}
@@ -80,7 +81,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={registryLinkProps?.title ?? "Registry"}
             caption={registryLinkProps?.caption ?? "Manage and view your records"}
-            icon={registryLinkProps?.icon ?? "/images/defaults/icons/glossary.svg"}
+            icon={registryLinkProps?.icon ?? Assets.REGISTRY}
             url={`${Routes.REGISTRY}/${props.settings.resources?.registry?.data}`}
           />
         )}
@@ -89,7 +90,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={"Scheduler"}
             caption={"Plan and organise upcoming tasks"}
-            icon={"/images/defaults/icons/schedule.svg"}
+            icon={Assets.SCHEDULE}
             url={`${Routes.REGISTRY}/${props.settings.resources?.scheduler?.data}`}
           />
         )}
@@ -97,7 +98,7 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
         <DefaultPageThumbnail
           title={helpLinkProps?.title ?? "Help Centre"}
           caption={helpLinkProps?.caption ?? "Get help for this web platform"}
-          icon={helpLinkProps?.icon ?? "/images/defaults/icons/help.svg"}
+          icon={helpLinkProps?.icon ?? Assets.HELP}
           url={Routes.HELP}
         />
 

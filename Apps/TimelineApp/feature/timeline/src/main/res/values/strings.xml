@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="last_date_button">Last date button</string>
+    <string name="next_date_button">Next date button</string>
+    <string name="date_picker_button">Date picker button</string>
+    <string name="user">user page</string>
+    <string name="no_connection_please_check_internet_connection_and_try_again">No connection. Please check internet connection and try again.</string>
+    <string name="encountered_error">Oops, we have encountered some errors. Please try again later.</string>
+    <string name="try_again">Try again</string>
+    <string name="more_information_about_the_trajectory_will_be_shown_here">More information about the trajectory will be shown here.</string>
+    <string name="select_date">Select date</string>
+</resources>
