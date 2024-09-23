@@ -17,6 +17,7 @@ export const PathNames: {
   REGISTRY_ADD: "add",
   REGISTRY_EDIT: "edit",
   REGISTRY_DELETE: "delete",
+  SEARCH: "search",
   HELP: "help",
 };
 

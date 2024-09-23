@@ -38,18 +38,22 @@ export default function FormInputContainer(props: Readonly<FormInputContainerPro
   return (
     <>
       <label className={labelClassNames} htmlFor={props.field.fieldId}>
-        <Icon className={`${styles["info-icon"]} material-symbols-outlined`} onClick={toggleDescription}>info</Icon>
+        {props.field.description[VALUE_KEY] != "" &&
+          <Icon className={`${styles["info-icon"]} material-symbols-outlined`} onClick={toggleDescription}>info</Icon>
+        }
         <span className={styles["field-text"]}>{parseWordsForLabels(label)}{props.error && "*"}</span>
         {props.formatLabel && <span className={styles["format-label"]}>{props.formatLabel}</span>}
       </label>
       {props.children}
-      <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
-        <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
-        {props.selectedOption && (<>
-          <br /><br />
-          <b className={styles["field-text"]}>{props.selectedOption?.label.value}:</b> {props.selectedOption?.description.value}
-        </>)}
-      </p>
+      {props.field.description[VALUE_KEY] != "" &&
+        <p className={`${styles["info-text"]} ${showDescription ? styles["info-text-show"] : styles["info-text-hidden"]}`}>
+          <b className={styles["field-text"]}>Description:</b> {props.field.description[VALUE_KEY]}
+          {props.selectedOption && (<>
+            <br /><br />
+            <b className={styles["field-text"]}>{props.selectedOption?.label.value}:</b> {props.selectedOption?.description.value}
+          </>)}
+        </p>
+      }
       {/* Return error for failed validation */}
       <FormErrorComponent
         error={props.error}

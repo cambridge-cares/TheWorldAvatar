@@ -57,7 +57,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     <div className={styles["container"]}>
       <div className={styles["form-title"]}>
         <ReturnButton />
-        <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase()}`}</span>
+        <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase().replace("_", " ")}`}</span>
       </div>
       <div className={styles["form-contents"]}>
         <FormComponent
@@ -71,12 +71,11 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
       </div>
       <div className={styles["form-footer"]}>
         {isSubmitting && <LoadingSpinner isSmall={false} />}
-        {!isSubmitting && response && (<ResponseComponent response={response} />)}
-        {!isSubmitting && !response && (<div></div>)}
+        {!isSubmitting && (<ResponseComponent response={response} />)}
         <MaterialIconButton
           iconName={showReturnButton ? "logout" : "publish"}
           className={styles["form-button"]}
-          iconStyles={[styles["icon-button"]]}
+          iconStyles={[styles["form-button-icon"]]}
           text={{
             styles: [styles["form-button-text"]],
             content: showReturnButton ? "RETURN" : "SUBMIT"
