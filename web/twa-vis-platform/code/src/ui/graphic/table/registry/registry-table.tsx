@@ -87,7 +87,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
               </div>
             </td>
             {headers.map((column, colIndex) => {
-              const columnVal: string = parseWordsForLabels(row[column].value);
+              const columnVal: string = row[column] ? parseWordsForLabels(row[column].value) : "";
               return colIndex == statusCol ?
                 (<td key={column + colIndex}><StatusComponent status={columnVal} /> </td>) :
                 (<td key={column + colIndex} >{columnVal}</td>)

@@ -33,7 +33,7 @@
                 <https://theworldavatar.io/kg/fa2d6338-0986-4a31-bc65-405a253b5d73> .
 
 <https://theworldavatar.io/kg/fa2d6338-0986-4a31-bc65-405a253b5d73>
-        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox>;
+        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox> , <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "Dataset for testing2";
         <http://purl.org/dc/terms/issued>

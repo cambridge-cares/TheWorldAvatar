@@ -1,6 +1,6 @@
 services:
   stack-client:
-    image: ghcr.io/cambridge-cares/stack-client${IMAGE_SUFFIX}:1.36.1-944-replace-superset-with-grafana-SNAPSHOT
+    image: ghcr.io/cambridge-cares/stack-client${IMAGE_SUFFIX}:1.37.1-944-replace-superset-with-grafana-SNAPSHOT
     secrets:
       - blazegraph_password
       - postgis_password

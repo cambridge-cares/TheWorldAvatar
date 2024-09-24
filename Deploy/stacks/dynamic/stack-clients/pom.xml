@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-clients</artifactId>
-    <version>1.36.1-944-replace-superset-with-grafana-SNAPSHOT</version>
+    <version>1.37.1-944-replace-superset-with-grafana-SNAPSHOT</version>
 
     <name>Stack Clients</name>
     <url>https://theworldavatar.io</url>
@@ -186,6 +186,12 @@
             <artifactId>mockserver-client-java</artifactId>
             <version>5.15.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.moandjiezana.toml</groupId>
+            <artifactId>toml4j</artifactId>
+            <version>0.7.2</version>
         </dependency>
 
     </dependencies>

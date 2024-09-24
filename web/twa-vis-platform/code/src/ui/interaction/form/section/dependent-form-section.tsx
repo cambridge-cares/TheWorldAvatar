@@ -1,7 +1,7 @@
 import styles from '../form.module.css';
 import fieldStyles from '../field/field.module.css';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
@@ -31,6 +31,7 @@ interface DependentFormSectionProps {
 export function DependentFormSection(props: Readonly<DependentFormSectionProps>) {
   const router = useRouter();
   const label: string = props.dependentProp.name[VALUE_KEY];
+  const queryEntityType: string = label.trim().replace(/\s+/g, "_"); // Ensure that all spaces are replaced with _
   const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const control: Control = props.form.control;
   const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -54,27 +55,6 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
     name: props.dependentProp.fieldId,
   });
 
-  // Retrieve the query entity type based on the class input
-  const getQueryEntityType = (entityClass: string): string => {
-    if (entityClass) {
-      if (entityClass.endsWith("FormalOrganization")) {
-        return "client";
-      } else if (entityClass.endsWith("Facility")) {
-        return "facility";
-      } else if (entityClass.endsWith("ServiceProvider")) {
-        return "serviceprovider";
-      } else if (entityClass.endsWith("Employee")) {
-        return "employee";
-      }
-    }
-    return "";
-  };
-
-  // Cache the result to reduce rerender calls
-  const queryEntityType: string = useMemo(
-    () => getQueryEntityType(props.dependentProp.class[ID_KEY]),
-    [props.dependentProp.class[ID_KEY]]
-  );
 
   // A hook that fetches the list of dependent entities for the dropdown selector
   // If parent options are available, the list will be refetched on parent option change
