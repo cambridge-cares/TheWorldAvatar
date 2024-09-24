@@ -1,6 +1,8 @@
 from __future__ import annotations
+from typing import List
 from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
 import om
+import geo
 
 
 # NOTE TODO this script is incomplete
@@ -30,3 +32,4 @@ class MolecularWeight(BaseClass):
 class Geometry(BaseClass):
     rdfs_isDefinedBy = OntoSpecies
     hasGeometryFile: HasGeometryFile[str]
+    hasPoints: List[geo.Point]
