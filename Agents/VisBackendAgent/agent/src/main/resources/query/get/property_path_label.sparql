@@ -24,7 +24,7 @@ WHERE {
   }
   # Optional query for name property label for the property
   OPTIONAL {
-    ?property sh:class/^sh:targetClass/sh:property ?name_property .
+    ?property (sh:class|sh:in)/^sh:targetClass/sh:property ?name_property .
     ?name_property sh:name ?name_field;
                    sh:path ?name_predpath.
     FILTER(?name_field = "name")
@@ -73,7 +73,7 @@ WHERE {
   	}
     # Optional query for name property label for the subproperty
     OPTIONAL {
-      ?subproperty sh:class/^sh:targetClass/sh:property ?name_property .
+      ?subproperty (sh:class|sh:in)/^sh:targetClass/sh:property ?name_property .
       ?name_property sh:name ?name_field;
                      sh:path ?name_predpath.
       FILTER(?name_field = "name")
