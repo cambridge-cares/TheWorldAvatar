@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trajectoryagent_no_trajectory_found">No trajectory retrieved</string>
+    <string name="useragent_phone_has_already_been_registered">Phone has already been registered</string>
+    <string name="trajectoryagent_measurement_iri_missing">Measurement IRI is missing</string>
+    <string name="trajectoryagent_no_phone_id_on_the_user">No phone id on this user.</string>
+    <string name="rtajectoryagent_layer_created">Layer created</string>
+</resources>

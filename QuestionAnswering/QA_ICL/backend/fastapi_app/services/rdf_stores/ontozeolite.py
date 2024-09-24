@@ -227,7 +227,7 @@ WHERE {{
             frameworkIRI_to_crystalInfo = dict()
 
         if return_fields.topo_props:
-            query = f"""PREFIX zeo: {ONTOZEOLITE}
+            query = f"""PREFIX zeo: <{ONTOZEOLITE}>
 
 SELECT *
 WHERE {{
@@ -257,7 +257,7 @@ WHERE {{
             frameworkIRI_to_topoProps = dict()
 
         if return_fields.material:
-            query = f"""PREFIX zeo: {ONTOZEOLITE}
+            query = f"""PREFIX zeo: <{ONTOZEOLITE}>
 
 SELECT *
 WHERE {{
@@ -275,7 +275,7 @@ WHERE {{
             materials = (
                 x
                 for x in self.get_zeolitic_material_base_many(
-                    iris=itertools.chain(*frameworkIRI_to_materialIRIs.values())
+                    iris=list(itertools.chain(*frameworkIRI_to_materialIRIs.values()))
                 )
             )
             frameworkIRI_to_materials = {

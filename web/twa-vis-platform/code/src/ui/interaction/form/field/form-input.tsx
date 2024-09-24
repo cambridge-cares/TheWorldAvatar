@@ -4,11 +4,12 @@ import React from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
 
 import { PropertyShape, VALUE_KEY } from 'types/form';
-import { getRegisterOptions } from 'ui/interaction/form/form-utils';
+import { FORM_STATES, getRegisterOptions } from 'ui/interaction/form/form-utils';
 import FormInputContainer from './form-input-container';
 
 export interface InputFieldProps {
   field: PropertyShape;
+  instanceType: string;
   form: UseFormReturn;
   options?: {
     disabled?: boolean;
@@ -30,10 +31,9 @@ export interface InputFieldProps {
  */
 export default function FormInputField(props: Readonly<InputFieldProps>) {
   const inputClassNames: string = props.styles?.input?.join(" ");
-  const label: string = props.field.name[VALUE_KEY];
+  const label: string = `${props.field.name[VALUE_KEY]} of ${props.instanceType.replace("_", " ")}`;
   // Disabled inputs should provide only text input
   const inputType: string = props.options?.disabled || props.field.datatype === "string" ? "text" : "number";
-
   return (
     <FormInputContainer
       field={props.field}
@@ -48,7 +48,7 @@ export default function FormInputField(props: Readonly<InputFieldProps>) {
         placeholder={`Add ${label} here`}
         readOnly={props.options?.disabled}
         aria-label={label}
-        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
+        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field, props.form.getValues(FORM_STATES.FORM_TYPE)))}
       />
     </FormInputContainer>
   );

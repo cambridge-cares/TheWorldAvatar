@@ -54,7 +54,7 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
             onClick={buttonEvent}
           />)}
         <DownloadButton
-          agentApi={`${props.registryAgentApi}csv/${props.entityType}`}
+          agentApi={`${props.registryAgentApi}/csv/${props.entityType}`}
           className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
         />
       </div>

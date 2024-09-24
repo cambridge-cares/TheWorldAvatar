@@ -621,8 +621,16 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BlueBattery">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Battery"/>
     </owl:Class>
-    
 
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NickelMetalHydrideBattery -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NickelMetalHydrideBattery">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Battery"/>
+    </owl:Class>
+
+    
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Building -->
 
@@ -806,13 +814,21 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#DustLosses">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#SystemLosses"/>
     </owl:Class>
-    
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Device -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+
 
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+	<rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:comment>ElectricalEquipment is an item that is capable of independently realizing one or more process functionalities in the power network .</rdfs:comment>
     </owl:Class>
     
@@ -1636,6 +1652,33 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+        <rdfs:comment>A device that changes the characteristics of an electric current.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentTransformer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentTransformer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter"/>
+	<rdfs:comment>A device that reduces or steps down the high current in a power line to a lower, more manageable level, suitable for measurement or control.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerAmplifier -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerAmplifier">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+	<rdfs:comment>A device that increases the power of a signal without changing its shape.</rdfs:comment>
+    </owl:Class>
+
+
+
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerConverter -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerConverter">
@@ -1714,7 +1757,7 @@
         </rdfs:subClassOf>
         <rdfs:comment>a device that converts electric energy from one form to another</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator -->
@@ -2332,6 +2375,60 @@
         <rdfs:comment>electronic circuit that provides a stable DC voltage independent of the load current, temperature and AC line voltage variations</rdfs:comment>
     </owl:Class>
     
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentBooster -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentBooster">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#CurrentConverter"/>
+        <rdfs:comment>A device or system designed to increase the current flowing through a circuit.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+        <rdfs:comment>A specialized device used to monitor and analyze the quality of electrical power in a given system.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ACPowerQualityAnalyzer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ACPowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer"/>
+        <rdfs:comment>A specialized device used to monitor and analyze the quality of electrical power for an AC system or power line.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#DCPowerQualityAnalyzer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#DCPowerQualityAnalyzer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerQualityAnalyzer"/>
+        <rdfs:comment>A specialized device used to monitor and analyze the quality of electrical power for a DC system or power line.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhasorMeasurementUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhasorMeasurementUnit">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment"/>
+        <rdfs:comment>A device used in power systems to measure and provide synchronized phasor information, particularly voltage and current phasors.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#microPhasorMeasurementUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#microPhasorMeasurementUnit">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhasorMeasurementUnit"/>
+        <rdfs:comment>A type of advanced measurement device used in power systems to provide precise and time-synchronized measurements of electrical quantities.</rdfs:comment>
+    </owl:Class>
+
 
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WeakIrradiationLosses -->

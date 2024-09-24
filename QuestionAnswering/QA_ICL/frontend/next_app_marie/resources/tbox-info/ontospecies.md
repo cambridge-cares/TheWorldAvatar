@@ -9,7 +9,6 @@ OntoSpecies serves as core ontology within TWA chemistry domain. It is an ontolo
 ### Download
 
 - [OntoSpecies_v2.owl](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies/OntoSpecies_v2.owl)
-- [OntoSpecies.owl](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies/OntoSpecies.owl)
 
 ### Access
 
@@ -21,6 +20,8 @@ OntoSpecies serves as core ontology within TWA chemistry domain. It is an ontolo
 [1] F. Farazi, N. Krdzavac, J. Akroyd, S. Mosbach, A. Menon, D. Nurkowski, and M. Kraft, ["Linking reaction mechanisms and quantum chemistry: An ontological approach"](https://doi.org/10.1016/j.compchemeng.2020.106813), Computers & Chemical Engineering, 137, 106813, (2020)
 
 [2] L. Pascazio, S. D. Rihm, A. Naseri, S. Mosbach, J. Akroyd, and M. Kraft, ["A chemical species ontology for data integration and knowledge discovery"](https://doi.org/10.1021/acs.jcim.3c00820), Journal of Chemical Information and Modeling, (2023)
+
+[3] L. Pascazio, D. Tran, S. D. Rihm, Jiaru Bai, J. Akroyd, S. Mosbach, and M. Kraft, ["Question-answering system for combustion kinetics"](https://doi.org/10.1016/j.proci.2024.105428), Proceedings of the Combustion Institute, 40, 105428, (2024)
 
 ### Preprints
 

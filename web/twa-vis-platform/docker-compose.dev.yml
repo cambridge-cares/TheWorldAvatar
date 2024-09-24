@@ -14,7 +14,7 @@ services:
       UUID: 1000 # or your user. Run `id` in bash to find out these two
       GUID: 1000 # or your guid. This is so you own node modules that the container makes on your host machine
 
-      KEYCLOAK: true ## whether or not to use kc authentication on the server
+      KEYCLOAK: false ## whether or not to use kc authentication on the server
       PROTECTED_PAGES: / ## pages that a user must be logged in to see
       ROLE_PROTECTED_PAGES: /add/* ## pages that require a user to have a given REALM or CLIENT role
       ROLE: protected ## the role required for the above list
