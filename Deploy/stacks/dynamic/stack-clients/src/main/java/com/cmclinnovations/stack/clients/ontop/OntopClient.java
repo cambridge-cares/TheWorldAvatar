@@ -55,10 +55,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
     public void updateOBDA(Path newMappingFilePath) {
         String containerId = getContainerId(getContainerName());
-        Path ontopMappingFilePath = getEnvironmentVariable(containerId, ONTOP_MAPPING_FILE)
-                .map(Path::of)
-                .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_MAPPING_FILE
-                        + " not set through Docker for '" + "ontop" + "' container."));
+        Path ontopMappingFilePath = getFilePath(containerId, ONTOP_MAPPING_FILE);
 
         try {
             SQLPPMappingImplementation mapping = new SQLPPMappingImplementation();
@@ -84,10 +81,8 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
                     .createTempOBDAFile(ontopMappingFilePath)) {
                 mapping.serialize(localTempOntopMappingFilePath.getPath());
 
-                sendFilesContent(containerId,
-                        Map.of(ontopMappingFilePath.getFileName().toString(),
-                                Files.readAllBytes(localTempOntopMappingFilePath.getPath())),
-                        ontopMappingFilePath.getParent().toString());
+                sendFile(containerId, ontopMappingFilePath,
+                        Files.readAllBytes(localTempOntopMappingFilePath.getPath()));
             }
         } catch (IOException ex) {
             throw new RuntimeException(
@@ -97,10 +92,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
     public void uploadRules(List<Path> rules) {
         String containerId = getContainerId(getContainerName());
-        Path sparqlRulesFilePath = getEnvironmentVariable(containerId, ONTOP_SPARQL_RULES_FILE)
-                .map(Path::of)
-                .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_SPARQL_RULES_FILE
-                        + " not set through Docker for '" + "ontop" + "' container."));
+        Path sparqlRulesFilePath = getFilePath(containerId, ONTOP_SPARQL_RULES_FILE);
         SparqlRulesFile sparqlRules = new SparqlRulesFile();
 
         rules.forEach(file -> {
@@ -111,9 +103,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             TomlWriter tomlWriter = new TomlWriter();
             tomlWriter.write(sparqlRules, outputStream);
-            sendFilesContent(containerId,
-                    Map.of(sparqlRulesFilePath.getFileName().toString(), outputStream.toByteArray()),
-                    sparqlRulesFilePath.getParent().toString());
+            sendFile(containerId, sparqlRulesFilePath, outputStream.toByteArray());
         } catch (IOException ex) {
             throw new RuntimeException(
                     "Failed to write SPARQL Rules file.", ex);
@@ -122,19 +112,26 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
     private void writeTurtleToFile(Model model) {
         String containerId = getContainerId(getContainerName());
-        Path ontopOntologyFilePath = getEnvironmentVariable(containerId, ONTOP_ONTOLOGY_FILE)
-                .map(Path::of)
-                .orElseThrow(() -> new RuntimeException("Environment variable '" + ONTOP_ONTOLOGY_FILE
-                        + " not set through Docker for '" + "ontop" + "' container."));
+        Path ontopOntologyFilePath = getFilePath(containerId, ONTOP_ONTOLOGY_FILE);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             model.write(outputStream, "TURTLE");
-            sendFilesContent(containerId,
-                    Map.of(ontopOntologyFilePath.getFileName().toString(), outputStream.toByteArray()),
-                    ontopOntologyFilePath.getParent().toString());
+            sendFile(containerId, ontopOntologyFilePath, outputStream.toByteArray());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
 
+    }
+
+    private Path getFilePath(String containerId, String filenameKey) {
+        return getEnvironmentVariable(containerId, filenameKey)
+                .map(Path::of)
+                .orElseThrow(() -> new RuntimeException("Environment variable '" + filenameKey
+                        + " not set through Docker for '" + getContainerName() + "' container."));
+    }
+
+    private void sendFile(String containerId, Path filePath, byte[] content) {
+        sendFilesContent(containerId, Map.of(filePath.getFileName().toString(), content),
+                filePath.getParent().toString());
     }
 }
