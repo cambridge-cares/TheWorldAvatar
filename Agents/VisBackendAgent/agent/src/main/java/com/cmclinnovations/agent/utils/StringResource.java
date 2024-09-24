@@ -56,6 +56,15 @@ public class StringResource {
   }
 
   /**
+   * Wraps the content into an OPTIONAL clause
+   * 
+   * @param content Content of the optional clause
+   */
+  public static String genOptionalClause(String content) {
+    return "OPTIONAL{" + content + "}";
+  }
+
+  /**
    * Get local name of the IRI for namespaces containing # or /.
    * 
    * @param iri Input.

@@ -42,6 +42,7 @@ public class FileService {
   public static final String SHACL_PATH_LABEL_QUERY_RESOURCE = QUERY_GET_DIR + "property_path_label.sparql";
 
   public static final String REPLACEMENT_TARGET = "[target]";
+  public static final String REPLACEMENT_PATH = "[path]";
 
   /**
    * Constructs a new service with the following dependencies.

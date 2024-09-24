@@ -46,6 +46,8 @@ public class KGService {
 
   public static final String INVALID_SHACL_ERROR_MSG = "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.";
 
+  private static final String RDF_LIST_PATH_PREFIX = "/rdf:rest";
+
   private static final Logger LOGGER = LogManager.getLogger(KGService.class);
 
   /**
@@ -170,14 +172,13 @@ public class KGService {
    *                       entities.
    */
   public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
-    LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    Queue<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
-    if (variablesAndPropertyPaths.isEmpty()) {
-      LOGGER.error(INVALID_SHACL_ERROR_MSG);
-      throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
-    }
+    // Initialise a new queue to store all variables and add the first level right
+    // away
+    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = queryNestedPredicates(shaclPathQuery);
+
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths, targetId, hasParent);
+    String instanceQuery = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, targetId,
+        hasParent);
     LOGGER.debug("Querying the knowledge graph for the instances...");
     return query(instanceQuery);
   }
@@ -190,13 +191,13 @@ public class KGService {
    */
   public String queryInstancesInCsv(String shaclPathQuery) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    Queue<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
-    if (variablesAndPropertyPaths.isEmpty()) {
+    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = queryNestedPredicates(shaclPathQuery);
+    if (nestedVariablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    String instanceQuery = this.queryTemplateFactory.genGetTemplate(variablesAndPropertyPaths, null, false);
+    String instanceQuery = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, false);
     LOGGER.debug("Querying the knowledge graph for the instances in csv format...");
     return this.queryCSV(instanceQuery);
   }
@@ -210,13 +211,13 @@ public class KGService {
    */
   public Queue<SparqlBinding> queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    Queue<SparqlBinding> variablesAndPropertyPaths = query(shaclPathQuery);
-    if (variablesAndPropertyPaths.isEmpty()) {
+    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = queryNestedPredicates(shaclPathQuery);
+    if (nestedVariablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    String searchQuery = this.queryTemplateFactory.genSearchTemplate(variablesAndPropertyPaths, criterias);
+    String searchQuery = this.queryTemplateFactory.genSearchTemplate(nestedVariablesAndPropertyPaths, criterias);
     LOGGER.debug("Querying the knowledge graph for the matching instances...");
     return query(searchQuery);
   }
@@ -274,5 +275,44 @@ public class KGService {
         .filter(JsonNode::isObject) // Ensure they are object node so that we can type cast
         .map(row -> new SparqlBinding((ObjectNode) row))
         .collect(Collectors.toCollection(ArrayDeque::new));
+  }
+
+  /**
+   * Queries for the nested predicates as a queue of responses based on their
+   * current nested level.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   */
+  private Queue<Queue<SparqlBinding>> queryNestedPredicates(String shaclPathQuery) {
+    LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
+    String firstExecutableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, "");
+
+    LOGGER.debug("Executing for the first level of predicate paths and variables...");
+    Queue<SparqlBinding> variablesAndPropertyPaths = query(firstExecutableQuery);
+    if (variablesAndPropertyPaths.isEmpty()) {
+      LOGGER.error(INVALID_SHACL_ERROR_MSG);
+      throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
+    }
+    // Initialise a new queue to store all variables and add the first level right
+    // away
+    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = new ArrayDeque<>();
+    nestedVariablesAndPropertyPaths.offer(variablesAndPropertyPaths);
+
+    LOGGER.debug("Executing for level {} of predicate paths and variables...",
+        nestedVariablesAndPropertyPaths.size() + 1);
+    String replacementPath = RDF_LIST_PATH_PREFIX + "/rdf:first";
+    // Iterating for the next level of predicates if current level exists
+    while (!variablesAndPropertyPaths.isEmpty()) {
+      // First replace the [path] in the original query with the current replacement
+      // path
+      String executableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, replacementPath);
+      // Execute and store the current level of predicate paths and variables
+      variablesAndPropertyPaths = query(executableQuery);
+      nestedVariablesAndPropertyPaths.offer(variablesAndPropertyPaths);
+      // Extend the replacement path with an /rdf:rest prefix for the next level
+      replacementPath = RDF_LIST_PATH_PREFIX + replacementPath;
+    }
+    return nestedVariablesAndPropertyPaths;
   }
 }

@@ -8,8 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Queue;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -40,21 +38,8 @@ class QueryTemplateFactoryTest {
   private static final String NAME_VAR = "name";
   private static final String IS_OPTIONAL_VAR = "isoptional";
   private static final String IS_PARENT_VAR = "isparent";
-  private static final String MULTIPATH_FIRST_VAR = "multipath1";
-  private static final String MULTIPATH_SEC_VAR = "multipath2";
-  private static final String MULTIPATH_THIRD_VAR = "multipath3";
-  private static final String MULTISUBPATH_FIRST_VAR = "multisubpath1";
-  private static final String MULTISUBPATH_SEC_VAR = "multisubpath2";
-  private static final String MULTISUBPATH_THIRD_VAR = "multisubpath3";
-  private static final String MULTISUBPATH_FORTH_VAR = "multisubpath4";
-  private static final List<String> PROPERTY_PATH_VARIABLES = Arrays.asList(
-      MULTIPATH_FIRST_VAR,
-      MULTIPATH_SEC_VAR,
-      MULTIPATH_THIRD_VAR,
-      MULTISUBPATH_FIRST_VAR,
-      MULTISUBPATH_SEC_VAR,
-      MULTISUBPATH_THIRD_VAR,
-      MULTISUBPATH_FORTH_VAR);
+  private static final String MULTIPATH_VAR = "multipath";
+  private static final String MULTISUBPATH_VAR = "multisubpath";
 
   @BeforeAll
   static void setup() {
@@ -65,12 +50,15 @@ class QueryTemplateFactoryTest {
   @Test
   void testGenGetTemplate() {
     // Set up
+    Queue<Queue<SparqlBinding>> nestedBindings = new ArrayDeque<>();
     Queue<SparqlBinding> bindings = new ArrayDeque<>();
-    Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PRED_PATH, SAMPLE_NESTED_PRED_PATH, "",
-        "", "", "", "");
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, paths, false, false);
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_PRED_PATH, "", false, false);
+    nestedBindings.offer(bindings);
+    bindings = new ArrayDeque<>();
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_NESTED_PRED_PATH, "", false, false);
+    nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, null, false);
+    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, null, false);
     // Assert
     assertNotNull(result);
     assertTrue(result.startsWith("SELECT * WHERE {"));
@@ -85,12 +73,15 @@ class QueryTemplateFactoryTest {
   @Test
   void testGenGetTemplate_FilterId() {
     // Set up
+    Queue<Queue<SparqlBinding>> nestedBindings = new ArrayDeque<>();
     Queue<SparqlBinding> bindings = new ArrayDeque<>();
-    Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PRED_PATH, SAMPLE_NESTED_PRED_PATH, "",
-        "", "", "", "");
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, paths, false, false);
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_PRED_PATH, "", false, false);
+    nestedBindings.offer(bindings);
+    bindings = new ArrayDeque<>();
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_NESTED_PRED_PATH, "", false, false);
+    nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, SAMPLE_FILTER, false);
+    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, SAMPLE_FILTER, false);
     // Assert
     assertNotNull(result);
     assertTrue(result.startsWith(
@@ -104,27 +95,29 @@ class QueryTemplateFactoryTest {
 
   @Test
   void testGenGetTemplate_HasParent_MissingFilter() {
+    // Set up
+    Queue<Queue<SparqlBinding>> nestedBindings = new ArrayDeque<>();
     Queue<SparqlBinding> bindings = new ArrayDeque<>();
-    Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PARENT_PATH, "", "",
-        SAMPLE_SUB_PATH, "", "", "");
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_PARENT_FIELD, paths, false, true);
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_PARENT_PATH, SAMPLE_SUB_PATH, false, true);
+    nestedBindings.offer(bindings);
     // The method should throw an exception because filterId is required when
     // hasParent is true
     IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-      TEMPLATE_FACTORY.genGetTemplate(bindings, null, true);
+      TEMPLATE_FACTORY.genGetTemplate(nestedBindings, null, true);
     });
     assertTrue(thrown.getMessage().contains("Detected a parent without a valid filter ID!"));
   }
 
+  // Mock isParent doesnt work at nested level
   @Test
   void testGenGetTemplate_HasParent() {
     // Set up
+    Queue<Queue<SparqlBinding>> nestedBindings = new ArrayDeque<>();
     Queue<SparqlBinding> bindings = new ArrayDeque<>();
-    Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PARENT_PATH, "", "",
-        SAMPLE_SUB_PATH, "", "", "");
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_PARENT_FIELD, paths, false, true);
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_PARENT_FIELD, SAMPLE_SUB_PATH, false, true);
+    nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, SAMPLE_FILTER, true);
+    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, SAMPLE_FILTER, true);
     // Assert
     String parentVariable = SAMPLE_PARENT_FIELD.replaceAll("\\s+", "_");
     assertNotNull(result);
@@ -137,19 +130,16 @@ class QueryTemplateFactoryTest {
     assertTrue(result.endsWith("FILTER STRENDS(STR(?" + parentVariable + "), \"" + SAMPLE_FILTER + "\")}"));
   }
 
+  // Mock isOptional doesnt work at nested level
   @Test
   void testGenGetTemplate_OptionalFields() {
     // Set up
+    Queue<Queue<SparqlBinding>> nestedBindings = new ArrayDeque<>();
     Queue<SparqlBinding> bindings = new ArrayDeque<>();
-    Queue<String> paths = genSPARQLBindingPaths(SAMPLE_PRED_PATH, SAMPLE_NESTED_PRED_PATH, "",
-        "", "", "", "");
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, paths, false, false);
-    // Generate optional path
-    paths = genSPARQLBindingPaths(SAMPLE_OPTIONAL_PATH, "", "",
-        "", "", "", "");
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_OPTIONAL_FIELD, paths, true, false);
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_OPTIONAL_PATH, "", true, false);
+    nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(bindings, null, false);
+    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, null, false);
     // Assert
     String optVariable = SAMPLE_OPTIONAL_FIELD.replaceAll("\\s+", "_");
     assertNotNull(result);
@@ -178,66 +168,32 @@ class QueryTemplateFactoryTest {
   }
 
   /**
-   * Generates the SPARQL binding paths
-   * 
-   * @param multipath1    Value of binding path. Use an empty string if it should
-   *                      be optional.
-   * @param multipath2    Value of binding path. Use an empty string if it should
-   *                      be optional.
-   * @param multipath3    Value of binding path. Use an empty string if it should
-   *                      be optional.
-   * @param multisubpath1 Value of binding path. Use an empty string if it should
-   *                      be optional.
-   * @param multisubpath2 Value of binding path. Use an empty string if it should
-   *                      be optional.
-   * @param multisubpath3 Value of binding path. Use an empty string if it should
-   *                      be optional.
-   * @param multisubpath4 Value of binding path. Use an empty string if it should
-   *                      be optional.
-   */
-  private static Queue<String> genSPARQLBindingPaths(String multipath1, String multipath2, String multipath3,
-      String multisubpath1, String multisubpath2, String multisubpath3, String multisubpath4) {
-    Queue<String> results = new ArrayDeque<>();
-    results.offer(multipath1);
-    results.offer(multipath2);
-    results.offer(multipath3);
-    results.offer(multisubpath1);
-    results.offer(multisubpath2);
-    results.offer(multisubpath3);
-    results.offer(multisubpath4);
-    return results;
-  }
-
-  /**
    * Generates a mock version of one SPARQL binding.
    * 
-   * @param resultBindings Stores the binding generated
-   * @param clazz          The target class of the query
-   * @param paths          A queue of paths corresponding to the length of
-   *                       available property path variables. If it does not
-   *                       exist, pass an empty string ""
-   * @param varName        The variable name
-   * @param isOptional     Indicates if the field is optional
-   * @param isParent       Indicates if the field is the parent field
+   * @param resultBindings   Stores the binding generated
+   * @param clazz            The target class of the query
+   * @param multiPathPred    The multi path for the predicate
+   * @param multiSubPathPred The multi sub path for the predicate
+   * @param varName          The variable name
+   * @param isOptional       Indicates if the field is optional
+   * @param isParent         Indicates if the field is the parent field
    */
   private static void genMockSPARQLBinding(Queue<SparqlBinding> resultBindings, String clazz, String varName,
-      Queue<String> paths, boolean isOptional, boolean isParent) {
-    if (PROPERTY_PATH_VARIABLES.size() != paths.size()) {
-      throw new IllegalArgumentException("Invalid size of paths parameter");
-    }
-
+      String multiPathPred, String multiSubPathPred, boolean isOptional, boolean isParent) {
     SparqlBinding binding = mock(SparqlBinding.class);
     when(binding.getFieldValue(CLAZZ_VAR)).thenReturn(clazz);
     when(binding.getFieldValue(NAME_VAR)).thenReturn(varName);
+    // Only create mock interactions if there are values
 
-    PROPERTY_PATH_VARIABLES.forEach((pathVarName) -> {
-      String pathValue = paths.poll();
-      // Only create mock interactions if there are values
-      if (!pathValue.isEmpty()) {
-        when(binding.containsField(pathVarName)).thenReturn(true);
-        when(binding.getFieldValue(pathVarName)).thenReturn(pathValue);
-      }
-    });
+    if (!multiPathPred.isEmpty()) {
+      when(binding.containsField(MULTIPATH_VAR)).thenReturn(true);
+      when(binding.getFieldValue(MULTIPATH_VAR)).thenReturn(multiPathPred);
+    }
+    // Only create mock interactions if there are values
+    if (!multiSubPathPred.isEmpty()) {
+      when(binding.containsField(MULTISUBPATH_VAR)).thenReturn(true);
+      when(binding.getFieldValue(MULTISUBPATH_VAR)).thenReturn(multiSubPathPred);
+    }
     when(binding.getFieldValue(IS_OPTIONAL_VAR)).thenReturn(String.valueOf(isOptional));
     when(binding.getFieldValue(IS_PARENT_VAR)).thenReturn(String.valueOf(isParent));
     resultBindings.offer(binding);

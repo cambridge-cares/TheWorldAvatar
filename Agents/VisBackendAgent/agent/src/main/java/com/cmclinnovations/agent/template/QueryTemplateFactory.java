@@ -1,10 +1,7 @@
 package com.cmclinnovations.agent.template;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 import java.util.Map;
 
@@ -22,8 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class QueryTemplateFactory {
   private String parentField;
-  private final Queue<SparqlQueryLine> queryLines;
-  private final Queue<SparqlQueryLine> optionalQueryLines;
+  private Map<String, String> queryLines;
   private final ObjectMapper objectMapper;
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
@@ -31,28 +27,9 @@ public class QueryTemplateFactory {
   private static final String IS_PARENT_VAR = "isparent";
   private static final String SUBJECT_VAR = "subject";
   private static final String PATH_PREFIX = "_proppath";
-  private static final String MULTIPATH_FIRST_VAR = "multipath1";
-  private static final String MULTIPATH_SEC_VAR = "multipath2";
-  private static final String MULTIPATH_THIRD_VAR = "multipath3";
-  private static final String MULTISUBPATH_FIRST_VAR = "multisubpath1";
-  private static final String MULTISUBPATH_SEC_VAR = "multisubpath2";
-  private static final String MULTISUBPATH_THIRD_VAR = "multisubpath3";
-  private static final String MULTISUBPATH_FORTH_VAR = "multisubpath4";
-  private static final String MULTI_NAME_PATH_FIRST_VAR = "name_multipath1";
-  private static final String MULTI_NAME_PATH_SEC_VAR = "name_multipath2";
-  private static final String MULTI_NAME_PATH_THIRD_VAR = "name_multipath3";
-  private static final List<String> propertyPathParts = Arrays.asList(
-      MULTIPATH_FIRST_VAR,
-      MULTIPATH_SEC_VAR,
-      MULTIPATH_THIRD_VAR,
-      MULTISUBPATH_FIRST_VAR,
-      MULTISUBPATH_SEC_VAR,
-      MULTISUBPATH_THIRD_VAR,
-      MULTISUBPATH_FORTH_VAR,
-      MULTI_NAME_PATH_FIRST_VAR,
-      MULTI_NAME_PATH_SEC_VAR,
-      MULTI_NAME_PATH_THIRD_VAR);
-
+  private static final String MULTIPATH_VAR = "multipath";
+  private static final String MULTISUBPATH_VAR = "multisubpath";
+  private static final String MULTI_NAME_PATH_VAR = "name_multipath";
   private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
 
   /**
@@ -60,11 +37,7 @@ public class QueryTemplateFactory {
    * 
    */
   public QueryTemplateFactory(ObjectMapper objectMapper) {
-    this.objectMapper = new ObjectMapper();
-    // Queues are populated and emptied within each method call and does not need to
-    // be reset
-    this.queryLines = new ArrayDeque<>();
-    this.optionalQueryLines = new ArrayDeque<>();
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -83,28 +56,26 @@ public class QueryTemplateFactory {
    *                  instance.
    * @param hasParent Indicates if the query needs to filter out parent entities.
    */
-  public String genGetTemplate(Queue<SparqlBinding> bindings, String filterId, boolean hasParent) {
+  public String genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent) {
     // Validate inputs
     if (hasParent && filterId == null) {
       LOGGER.error("Detected a parent without a valid filter ID!");
       throw new IllegalArgumentException("Detected a parent without a valid filter ID!");
     }
+    // Reset from previous iterations
+    this.parentField = "";
+    this.queryLines = new HashMap<>();
+
+    // Code starts after reset and validation
+    LOGGER.info("Generating a query template for getting data...");
     StringBuilder query = new StringBuilder();
     query.append("SELECT * WHERE {")
-        .append(genIriClassLine(bindings.peek()));
+        // Extract the first binding class but it should not be removed from the queue
+        .append(genIriClassLine(bindings.peek().peek()));
     this.sortBindings(bindings, hasParent);
 
-    LOGGER.info("Generating a query template for getting data...");
-    // Parse the query lines
-    while (!this.queryLines.isEmpty()) {
-      query.append(this.queryLines.poll().contents());
-    }
-    // Parse the optional lines
-    while (!this.optionalQueryLines.isEmpty()) {
-      SparqlQueryLine currentLine = this.optionalQueryLines.poll();
-      query.append(genOptionalLine(currentLine.contents()));
-    }
-    appendOptionalIdFilters(query, filterId, hasParent);
+    this.queryLines.values().forEach(queryLine -> query.append(queryLine));
+    this.appendOptionalIdFilters(query, filterId, hasParent);
     // Close the query
     return query.append("}").toString();
   }
@@ -125,37 +96,31 @@ public class QueryTemplateFactory {
    *                  be in the template.
    * @param criterias All the required search criteria.
    */
-  public String genSearchTemplate(Queue<SparqlBinding> bindings, Map<String, String> criterias) {
+  public String genSearchTemplate(Queue<Queue<SparqlBinding>> bindings, Map<String, String> criterias) {
+    // Reset from previous iterations
+    this.parentField = "";
+    this.queryLines = new HashMap<>();
+
+    // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
     StringBuilder query = new StringBuilder();
     StringBuilder filters = new StringBuilder();
     query.append("SELECT ?iri WHERE {")
-        .append(genIriClassLine(bindings.peek()));
+        // Extract the first binding class but it should not be removed from the queue
+        .append(genIriClassLine(bindings.peek().peek()));
     this.sortBindings(bindings, false);
-    while (!this.queryLines.isEmpty()) {
-      SparqlQueryLine currentLine = this.queryLines.poll();
-      String variable = currentLine.property();
-      // note that if no criteria is passed in the API, the filter will not be added
-      if (criterias.containsKey(variable)) {
-        filters.append(genSearchCriteria(variable, criterias));
-      }
-      // Do not generate any id query lines
-      if (!variable.equals("id")) {
-        query.append(currentLine.contents());
-      }
-    }
-    while (!this.optionalQueryLines.isEmpty()) {
-      SparqlQueryLine currentLine = this.optionalQueryLines.poll();
-      String variable = currentLine.property();
-      if (criterias.containsKey(variable)) {
-        filters.append(genSearchCriteria(variable, criterias));
-      }
-      // Do not generate any id query lines
-      if (!variable.equals("id")) {
-        query.append(genOptionalLine(currentLine.contents()));
-      }
-    }
 
+    this.queryLines.entrySet().forEach(currentLine -> {
+      String variable = currentLine.getKey();
+      // Do not generate or act on any id query lines
+      if (!variable.equals("id")) {
+        // note that if no criteria is passed in the API, the filter will not be added
+        if (criterias.containsKey(variable)) {
+          filters.append(genSearchCriteria(variable, criterias));
+        }
+        query.append(currentLine.getValue());
+      }
+    });
     // Close the query
     return query.append(filters).append("}").toString();
   }
@@ -187,14 +152,185 @@ public class QueryTemplateFactory {
   }
 
   /**
-   * Generates the optional query line of a query ie:
-   * OPTIONAL{?iri <proppath> ?var.}
+   * Sort and categorise the bindings into the default and optional queues for
+   * processing.
    * 
-   * @param bindings The bindings queried from SHACL restrictions that should
-   *                 be queried in template.
+   * @param nestedBindings The bindings queried from SHACL restrictions that
+   *                       should
+   *                       be queried in template.
+   * @param hasParent      Indicates if the query needs to filter out parent
+   *                       entities.
    */
-  private String genOptionalLine(String content) {
-    return "OPTIONAL{" + content + "}";
+  private void sortBindings(Queue<Queue<SparqlBinding>> nestedBindings, boolean hasParent) {
+    Map<String, SparqlQueryLine> queryLineMappings = new HashMap<>();
+    while (!nestedBindings.isEmpty()) {
+      Queue<SparqlBinding> bindings = nestedBindings.poll();
+      while (!bindings.isEmpty()) {
+        SparqlBinding binding = bindings.poll();
+        String multiPartPredicate = this.getPredicate(binding, MULTIPATH_VAR);
+        String multiPartSubPredicate = this.getPredicate(binding, MULTISUBPATH_VAR);
+        String multiPartLabelPredicate = this.getPredicate(binding, MULTI_NAME_PATH_VAR);
+        this.genQueryLine(binding, multiPartPredicate, multiPartSubPredicate, multiPartLabelPredicate, hasParent,
+            queryLineMappings);
+      }
+    }
+    this.parseQueryLines(queryLineMappings);
+  }
+
+  /**
+   * Gets the predicate associated with the input variable. Returns an empty
+   * string if not found.
+   * 
+   * @param binding              An individual binding queried from SHACL
+   *                             restrictions that should be queried in template.
+   * @param propertyPathVariable The current property path part variable name.
+   */
+  private String getPredicate(SparqlBinding binding, String propertyPathVariable) {
+    if (binding.containsField(propertyPathVariable)) {
+      String predPath = binding.getFieldValue(propertyPathVariable);
+      // Do not process any paths without the http protocol as it is likely to be a
+      // blank node
+      if (predPath.startsWith("http")) {
+        String parsedPredPath = StringResource.parseIriForQuery(predPath);
+        // Check if there are path prefixes in the SHACL restrictions
+        // Each clause should be separated as we may use other path prefixes in future
+        if (binding.containsField(propertyPathVariable + PATH_PREFIX)) {
+          // For inverse paths, simply append a ^ before the parsed IRI
+          if (binding.getFieldValue(propertyPathVariable + PATH_PREFIX)
+              .equals(ShaclResource.SHACL_PREFIX + "inversePath")) {
+            return "^" + parsedPredPath;
+          }
+        }
+        // If no path prefixes are available, simply return the <predicate>
+        return parsedPredPath;
+      }
+    }
+    return "";
+  }
+
+  /**
+   * Generates a query line from the input binding and store it within the target
+   * mappings.
+   * 
+   * @param binding                 An individual binding queried from SHACL
+   *                                restrictions that should be queried in
+   *                                template.
+   * @param multiPartPredicate      The current predicate part value for the main
+   *                                property.
+   * @param multiPartSubPredicate   The current predicate part value for the sub
+   *                                property.
+   * @param multiPartLabelPredicate The current predicate part value to reach the
+   *                                label of the property.
+   * @param hasParent               Indicates if there is supposed to be a parent
+   *                                field.
+   * @param queryLineMappings       The target mappings storing the generated
+   *                                query
+   *                                lines.
+   */
+  private void genQueryLine(SparqlBinding binding, String multiPartPredicate,
+      String multiPartSubPredicate, String multiPartLabelPredicate, boolean hasParent,
+      Map<String, SparqlQueryLine> queryLineMappings) {
+    String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
+    // For existing mappings,
+    if (queryLineMappings.containsKey(propertyName)) {
+      SparqlQueryLine currentQueryLine = queryLineMappings.get(propertyName);
+      // Update the mapping with the extended predicates
+      queryLineMappings.put(propertyName,
+          new SparqlQueryLine(propertyName,
+              parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
+              parsePredicate(currentQueryLine.subPredicate(), multiPartSubPredicate),
+              parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
+              currentQueryLine.subjectFilter(), currentQueryLine.isOptional()));
+    } else {
+      // When initialising a new query line
+      String subjectVar = binding.containsField(SUBJECT_VAR) ? binding.getFieldValue(SUBJECT_VAR) : "";
+      boolean isOptional = Boolean.parseBoolean(binding.getFieldValue(IS_OPTIONAL_VAR));
+
+      // If the field is a parent field, and the template requires a parent, store the
+      // parent field
+      if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
+        this.parentField = propertyName;
+      }
+      queryLineMappings.put(propertyName,
+          new SparqlQueryLine(propertyName, multiPartPredicate, multiPartSubPredicate, multiPartLabelPredicate,
+              subjectVar, isOptional));
+    }
+  }
+
+  /**
+   * Parses the predicate to concatenante the current and next predicate in a
+   * SPARQL compliant format.
+   * 
+   * @param currentPredicate Current predicate in the existing mapping
+   * @param nextPredicate    Next predicate for appending.
+   */
+  private String parsePredicate(String currentPredicate, String nextPredicate) {
+    if (nextPredicate.isEmpty()) {
+      return currentPredicate;
+    }
+    if (currentPredicate.isEmpty()) {
+      return nextPredicate;
+    } else {
+      return currentPredicate + "/" + nextPredicate;
+    }
+  }
+
+  /**
+   * Parses the triple query line into the mappings at the class level.
+   * 
+   * @param queryLineMappings The input unparsed query lines
+   */
+  private void parseQueryLines(Map<String, SparqlQueryLine> queryLineMappings) {
+    queryLineMappings.values().forEach(queryLine -> {
+      // Parse and generate a query line for the current line
+      StringBuilder currentLine = new StringBuilder();
+      String jointPredicate = parsePredicate(queryLine.predicate(), queryLine.subPredicate());
+      jointPredicate = parsePredicate(jointPredicate, queryLine.labelPredicate());
+      StringResource.appendTriple(currentLine, "?iri", jointPredicate,
+          ShaclResource.VARIABLE_MARK + queryLine.property());
+
+      // Optional lines should be parsed differently
+      if (queryLine.isOptional()) {
+        // If the value must conform to a specific subject variable,
+        // a filter needs to be added directly to the same optional clause
+        if (!queryLine.subjectFilter().isEmpty()) {
+          Map<String, String> searchCriteria = new HashMap<>();
+          searchCriteria.put(queryLine.property(), queryLine.subjectFilter());
+          currentLine.append(genSearchCriteria(queryLine.property(), searchCriteria));
+        }
+        StringResource.genOptionalClause(currentLine.toString());
+      } else {
+        // Non-optional lines does not require special effects
+        this.queryLines.put(queryLine.property(), currentLine.toString());
+      }
+    });
+  }
+
+  /**
+   * Appends optional filters related to IDs to the query if required.
+   * 
+   * @param query     Builder for the query template.
+   * @param filterId  An optional field to target the query at a specific
+   *                  instance.
+   * @param hasParent Indicates if the query needs to filter out parent entities.
+   */
+  private void appendOptionalIdFilters(StringBuilder query, String filterId, boolean hasParent) {
+    if (hasParent) {
+      if (this.parentField == null) {
+        LOGGER.error("Detected a parent but no valid parent fields are available!");
+        throw new IllegalArgumentException("Detected a parent but no valid parent fields are available!");
+      }
+      query.append("FILTER STRENDS(STR(?")
+          .append(this.parentField)
+          .append("), \"")
+          .append(filterId)
+          .append("\")");
+    } else if (filterId != null) {
+      // Add filter clause if there is a valid filter ID
+      query.append("FILTER STRENDS(STR(?id), \"")
+          .append(filterId)
+          .append("\")");
+    }
   }
 
   /**
@@ -232,133 +368,6 @@ public class QueryTemplateFactory {
       return rangeQuery;
     }
     return " FILTER(STR(?" + formattedVar + ") = \"" + criteriaVal + "\")";
-  }
-
-  /**
-   * Sort and categorise the bindings into the default and optional queues for
-   * processing.
-   * 
-   * @param bindings  The bindings queried from SHACL restrictions that should
-   *                  be queried in template.
-   * @param hasParent Indicates if the query needs to filter out parent entities.
-   */
-  private void sortBindings(Queue<SparqlBinding> bindings, boolean hasParent) {
-    while (!bindings.isEmpty()) {
-      SparqlBinding binding = bindings.poll();
-      String predSubjectLine = this.genTripleQueryLine(binding, hasParent);
-      this.categoriseQueryLine(predSubjectLine, binding);
-    }
-  }
-
-  /**
-   * Generate the subject predicate object line
-   * ie ?iri <prop_path>/<sub_path> ?property1.
-   * 
-   * @param binding   An individual binding queried from SHACL restrictions that
-   *                  should be queried in template.
-   * @param hasParent Indicates if the query needs to filter out parent entities.
-   */
-  private String genTripleQueryLine(SparqlBinding binding, boolean hasParent) {
-    // Generate an IRI variable at the start
-    StringBuilder tripleQueryBuilder = new StringBuilder("?iri ");
-    StringBuilder predObjectQueryBuilder = new StringBuilder();
-
-    // Iterate through the nested predicate paths
-    propertyPathParts.forEach(propertyPathPart -> {
-      if (binding.containsField(propertyPathPart)) {
-        String predPath = binding.getFieldValue(propertyPathPart);
-        // Do not process any paths without the http protocol as it is likely to be a
-        // blank node
-        if (predPath.startsWith("http")) {
-          // If this is not the first part, there should be a / to denote a sequence path
-          if (predObjectQueryBuilder.length() > 0) {
-            predObjectQueryBuilder.append("/");
-          }
-          this.appendPropertyPathExpressionIfAvailable(predObjectQueryBuilder, propertyPathPart, binding);
-          predObjectQueryBuilder.append(StringResource.parseIriForQuery(predPath));
-        }
-      }
-    });
-    String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
-    // If the field is a parent field, and the template requires a parent, store the
-    // parent field
-    if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
-      this.parentField = propertyName;
-    }
-    // Close with the variable
-    tripleQueryBuilder.append(predObjectQueryBuilder).append(" ?").append(propertyName).append(ShaclResource.FULL_STOP);
-    return tripleQueryBuilder.toString();
-  }
-
-  /**
-   * Appends an additional property path expression only if it is available
-   * 
-   * @param builder          Builder for the query template.
-   * @param propertyPathPart The current property path part variable name.
-   * @param binding          An individual binding queried from SHACL restrictions
-   */
-  private void appendPropertyPathExpressionIfAvailable(StringBuilder builder, String propertyPathPart,
-      SparqlBinding binding) {
-    if (binding.containsField(propertyPathPart + PATH_PREFIX)) {
-      // Separate the clauses as there may be other path prefixes in future
-      // For inverse paths, simply append a ^ before
-      if (binding.getFieldValue(propertyPathPart + PATH_PREFIX)
-          .equals(ShaclResource.SHACL_PREFIX + "inversePath")) {
-        builder.append("^");
-      }
-    }
-  }
-
-  /**
-   * Categorises the triple query line into optional or default queues.
-   * 
-   * @param inputLine The line of interest
-   * @param binding   An individual binding queried from SHACL restrictions
-   */
-  private void categoriseQueryLine(String inputLine, SparqlBinding binding) {
-    boolean isOptional = Boolean.parseBoolean(binding.getFieldValue(IS_OPTIONAL_VAR));
-    String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
-    if (isOptional) {
-      // If the value must conform to a specific subject variable,
-      // a filter needs to be added directly to the same optional clause
-      if (binding.containsField(SUBJECT_VAR)) {
-        Map<String, String> searchCriteria = new HashMap<>();
-        searchCriteria.put(propertyName, binding.getFieldValue(SUBJECT_VAR));
-        inputLine += genSearchCriteria(propertyName, searchCriteria);
-      }
-      // Sparql query line should use original name var without the replaced _
-      this.optionalQueryLines.offer(new SparqlQueryLine(binding.getFieldValue(NAME_VAR), inputLine));
-    } else {
-      // Sparql query line should use original name var without the replaced _
-      this.queryLines.offer(new SparqlQueryLine(binding.getFieldValue(NAME_VAR), inputLine));
-    }
-  }
-
-  /**
-   * Appends optional filters related to IDs to the query if required.
-   * 
-   * @param query     Builder for the query template.
-   * @param filterId  An optional field to target the query at a specific
-   *                  instance.
-   * @param hasParent Indicates if the query needs to filter out parent entities.
-   */
-  private void appendOptionalIdFilters(StringBuilder query, String filterId, boolean hasParent) {
-    if (hasParent) {
-      if (this.parentField == null) {
-        LOGGER.error("Detected a parent but no valid parent fields are available!");
-        throw new IllegalArgumentException("Detected a parent but no valid parent fields are available!");
-      }
-      query.append("FILTER STRENDS(STR(?")
-          .append(this.parentField)
-          .append("), \"")
-          .append(filterId)
-          .append("\")");
-    } else if (filterId != null) {
-      // Add filter clause if there is a valid filter ID
-      query.append("FILTER STRENDS(STR(?id), \"")
-          .append(filterId)
-          .append("\")");
-    }
   }
 
   /**
