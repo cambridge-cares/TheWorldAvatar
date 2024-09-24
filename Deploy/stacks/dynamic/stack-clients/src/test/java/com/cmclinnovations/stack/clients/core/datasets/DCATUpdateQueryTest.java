@@ -106,6 +106,28 @@ class DCATUpdateQueryTest {
     }
 
     @Test
+    void testAddOntologyDataset() {
+        Assertions.assertAll(() -> {
+            Assertions.assertAll(Stream.of("A", "B", "C").map(name -> () -> {
+                Dataset dataset = new DatasetBuilder(name).build();
+                buildAndRunQuery(dataset);
+            }));
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing")
+                    .withDatasetDirectory("test1").withOntologyDataset(List.of("A", "B")).build();
+            buildAndRunQuery(dataset);
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset").withDescription("Dataset for testing2")
+                    .withDatasetDirectory("test2").withOntologyDataset(List.of("B", "C")).build();
+            buildAndRunQuery(dataset);
+        }, () -> {
+            Dataset dataset = new DatasetBuilder("testDataset3").withDescription("Dataset for testing3")
+                    .withDatasetDirectory("test3").withOntologyDataset(List.of("A", "B")).build();
+            buildAndRunQuery(dataset);
+        });
+    }
+
+    @Test
     void testAddBlazegraph() {
         writeBlazegraphConfig();
         Assertions.assertAll(() -> {

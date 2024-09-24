@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-data-uploader</artifactId>
-    <version>1.36.0</version>
+    <version>1.37.0</version>
 
     <name>Stack Data Uploader</name>
     <url>https://theworldavatar.io</url>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.36.0</version>
+            <version>1.37.0</version>
         </dependency>
 
         <dependency>
@@ -58,7 +58,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <!-- These properties add the copied dependencies to the classpath so the .jar can
+                            <!-- These properties add the copied dependencies to the classpath so
+                            the .jar can
               find them at runtime. -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>.</classpathPrefix>
@@ -71,7 +72,8 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target
+                <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the
+                target
         directory. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

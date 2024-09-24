@@ -10,15 +10,24 @@
 @prefix sesame: <http://www.openrdf.org/schema/sesame#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
-<http://p/a>  rdfs:label  "Hello" .
-
-<https://theworldavatar.io/kg/e7c1ebb3-0d80-4080-9cb8-60ee08404121>
-        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox> , <http://www.w3.org/ns/dcat#Catalog>;
+<https://theworldavatar.io/kg/7433473c-9eab-4cc8-bfae-af316463b7b5>
+        rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
-                "Dataset for testing";
+                "B";
         <http://purl.org/dc/terms/issued>
-                "2024-07-02T14:50:07.473Z"^^xsd:dateTime;
+                "2024-08-28T16:04:14.205Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/modified>
-                "2024-07-02T14:50:07.473Z"^^xsd:dateTime;
+                "2024-08-28T16:04:14.205Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
-                "testDataset" .
+                "B" .
+
+<https://theworldavatar.io/kg/e042e800-af44-4781-a846-f18dd1a1eb85>
+        rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
+        <http://purl.org/dc/terms/description>
+                "A";
+        <http://purl.org/dc/terms/issued>
+                "2024-08-28T16:04:13.891Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/modified>
+                "2024-08-28T16:04:13.891Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/title>
+                "A" .

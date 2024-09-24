@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-clients</artifactId>
-    <version>1.36.0</version>
+    <version>1.37.0</version>
 
     <name>Stack Clients</name>
     <url>https://theworldavatar.io</url>
@@ -47,7 +47,8 @@
             <version>${jackson.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
+        <!--
+        https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
@@ -87,7 +88,8 @@
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java-transport-httpclient5 -->
+        <!--
+        https://mvnrepository.com/artifact/com.github.docker-java/docker-java-transport-httpclient5 -->
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java-transport-httpclient5</artifactId>
@@ -188,6 +190,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.moandjiezana.toml</groupId>
+            <artifactId>toml4j</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -200,7 +208,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <!-- These properties add the copied dependencies to the classpath so the .jar can
+                            <!-- These properties add the copied dependencies to the classpath so
+                            the .jar can
         find them at runtime. -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>./lib/</classpathPrefix>
@@ -213,7 +222,8 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target
+                <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the
+                target
     directory. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
