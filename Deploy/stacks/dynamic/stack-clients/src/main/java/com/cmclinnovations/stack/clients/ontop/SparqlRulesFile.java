@@ -1,35 +1,37 @@
 package com.cmclinnovations.stack.clients.ontop;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-class SparqlRulesFile {
+import com.moandjiezana.toml.Toml;
+import com.moandjiezana.toml.TomlWriter;
 
-    private List<String> rules;
+final class SparqlRulesFile {
 
-    public SparqlRulesFile() {
-        this(List.of());
+    private final List<String> rules;
+
+    SparqlRulesFile() {
+        rules = new ArrayList<>();
     }
 
-    public SparqlRulesFile(List<String> rules) {
-        this.rules = rules;
+    SparqlRulesFile(Path file) {
+        Toml tomlRules = new Toml().read(file.toFile());
+        rules = tomlRules.to(SparqlRulesFile.class).rules;
     }
 
-    public List<String> getRules() {
-        return rules;
+    void addRules(Path file) {
+        addRules(new SparqlRulesFile(file));
     }
 
-    public void setRules(List<String> rules) {
-        this.rules = rules;
+    void addRules(SparqlRulesFile other) {
+        rules.addAll(other.rules);
     }
 
-    public void addRules(SparqlRulesFile rules) {
-        addRules(rules.getRules());
+    void write(OutputStream outputStream) throws IOException {
+        TomlWriter tomlWriter = new TomlWriter();
+        tomlWriter.write(this, outputStream);
     }
-
-    public void addRules(List<String> rules) {
-        this.rules = Stream.concat(this.rules.stream(), rules.stream()).collect(Collectors.toList());
-    }
-
 }

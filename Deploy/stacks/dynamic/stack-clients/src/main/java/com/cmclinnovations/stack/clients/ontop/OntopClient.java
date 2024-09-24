@@ -19,8 +19,6 @@ import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.datasets.CopyDatasetQuery;
 import com.cmclinnovations.stack.clients.utils.TempFile;
-import com.moandjiezana.toml.Toml;
-import com.moandjiezana.toml.TomlWriter;
 
 public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
 
@@ -90,19 +88,15 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
         }
     }
 
-    public void uploadRules(List<Path> rules) {
+    public void uploadRules(List<Path> ruleFiles) {
         String containerId = getContainerId(getContainerName());
         Path sparqlRulesFilePath = getFilePath(containerId, ONTOP_SPARQL_RULES_FILE);
         SparqlRulesFile sparqlRules = new SparqlRulesFile();
 
-        rules.forEach(file -> {
-            Toml tomlRules = new Toml().read(file.toFile());
-            sparqlRules.addRules(tomlRules.to(SparqlRulesFile.class));
-        });
+        ruleFiles.forEach(sparqlRules::addRules);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            TomlWriter tomlWriter = new TomlWriter();
-            tomlWriter.write(sparqlRules, outputStream);
+            sparqlRules.write(outputStream);
             sendFile(containerId, sparqlRulesFilePath, outputStream.toByteArray());
         } catch (IOException ex) {
             throw new RuntimeException(
