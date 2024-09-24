@@ -10,7 +10,7 @@ import org.json.JSONObject;
  * This class is extended by specific sensor data entities like {@link Acceleration}.
  * It provides common properties and methods for handling sensor data.
  */
-public class BaseVector extends SensorData {
+public abstract class BaseVector extends SensorData {
     @PrimaryKey
     public long time;
 
@@ -88,4 +88,35 @@ public class BaseVector extends SensorData {
         }
         return "";
     }
+
+    /**
+     * Abstract method to be implemented by subclasses to provide the specific sensor name.
+     * @return The sensor name for the specific type of sensor.
+     */
+    protected abstract String getSensorName();
+
+    /**
+     * Converts the current sensor data object into a {@link JSONObject} representation.
+     * The resulting JSON object contains the sensor's name, its x, y, z values, and the timestamp.
+     * @return A {@link JSONObject} representation of the sensor data, with sensor name, values, and time.
+     */
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", getSensorName());
+
+            JSONObject values = new JSONObject();
+            values.put("x", this.x);
+            values.put("y", this.y);
+            values.put("z", this.z);
+
+            json.put("values", values);
+            json.put("time", this.time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }

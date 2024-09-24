@@ -8,11 +8,13 @@ public class SensorCollectionState {
     private String userId;
     private String deviceId;
     private Boolean recordingState;
+    private String taskId;
 
-    public SensorCollectionState(String userId, String deviceId, Boolean recordingState) {
+    public SensorCollectionState(String userId, String deviceId, Boolean recordingState, String taskId) {
         this.userId = userId;
         this.deviceId = deviceId;
         this.recordingState = recordingState;
+        this.taskId = taskId;
     }
 
     public String getUserId() {
@@ -29,5 +31,13 @@ public class SensorCollectionState {
 
     public void setRecordingState(Boolean isRecording) {
         this.recordingState = isRecording;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 }

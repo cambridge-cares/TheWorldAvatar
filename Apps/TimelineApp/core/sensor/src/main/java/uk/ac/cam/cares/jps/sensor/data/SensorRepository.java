@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.sensor.data;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 
@@ -66,5 +67,42 @@ public class SensorRepository {
         LOGGER.info("stop recording");
         context.stopService(serviceIntent);
         sensorCollectionStateManagerRepository.setRecordingState(false);
+    }
+
+    /**
+     * Checks if a task with the given task ID is currently running.
+     *
+     * @param taskId  The unique identifier for the task that needs to be checked.
+     * @return `true` if the task with the given ID is running, `false` otherwise.
+     *
+     * This method first checks if the task ID is valid (i.e., not null or empty). If so, the method proceeds
+     * to check if the service associated with the task is currently running by calling {@link #isServiceRunning(Class)}.
+     */
+    public boolean isTaskRunning(String taskId) {
+        if (taskId == null || taskId.isEmpty()) {
+            return false;
+        }
+        return isServiceRunning(SensorService.class);
+    }
+
+
+    /**
+     * Checks if a specified service is currently running in the background.
+     *
+     * @param serviceClass The class of the service that needs to be checked.
+     * @return `true` if the specified service is currently running, `false` otherwise.
+     *
+     * This method uses the {@link ActivityManager} to query the system's running services. It iterates through the list of
+     * running services and checks if the specified service class is among them. If the service is found, the method returns `true`.
+     * Otherwise, it returns `false`.
+     */
+    public boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (SensorService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

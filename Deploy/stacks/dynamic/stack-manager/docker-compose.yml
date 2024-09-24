@@ -1,6 +1,6 @@
 services:
   stack-manager:
-    image: ghcr.io/cambridge-cares/stack-manager${IMAGE_SUFFIX}:1.36.0-onto-ontop-SNAPSHOT
+    image: ghcr.io/cambridge-cares/stack-manager${IMAGE_SUFFIX}:1.37.0-onto-ontop-SNAPSHOT
     environment:
       EXTERNAL_PORT: "${EXTERNAL_PORT-3838}"
       STACK_BASE_DIR: "${STACK_BASE_DIR}"

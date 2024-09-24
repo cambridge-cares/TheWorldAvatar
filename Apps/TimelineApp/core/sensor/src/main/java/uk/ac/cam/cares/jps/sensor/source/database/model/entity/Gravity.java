@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.sensor.source.database.model.entity;
 
 import androidx.room.Entity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -30,4 +31,11 @@ public class Gravity extends BaseVector{
     public Gravity(JSONObject jo) {
         super(jo);
     }
+
+    @Override
+    protected String getSensorName() {
+        return "gravity";
+    }
+
+
 }

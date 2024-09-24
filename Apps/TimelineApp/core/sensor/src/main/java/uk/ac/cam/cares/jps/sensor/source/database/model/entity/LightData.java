@@ -47,4 +47,23 @@ public class LightData extends SensorData {
     public String toJSONString() {
         return "";
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", "light");
+
+
+            JSONObject values = new JSONObject();
+            values.put("lux", this.lux);
+
+            json.put("values", values);
+            json.put("time", this.time);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }

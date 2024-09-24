@@ -48,6 +48,14 @@
   color: var(--text-color-links-hover);
 }
 
+.form-button-icon {
+  color: var(--text-color-links);
+}
+
+.form-button-icon:hover {
+  color: var(--text-color-links-hover);
+}
+
 .form-fieldset {
   border-width: 1px 0 0;
 }
@@ -98,6 +106,10 @@
   justify-content: space-evenly;
   row-gap: 0.5rem;
   width: 90%;
+}
+
+.time-slot-container {
+  width: 100%;
 }
 
 .loader-container {
