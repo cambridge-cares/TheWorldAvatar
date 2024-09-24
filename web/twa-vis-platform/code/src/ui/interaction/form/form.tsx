@@ -130,7 +130,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         pendingResponse = await updateEntity(props.agentApi, formData, props.entityType);
         break;
       }
-      case PathNames.SEARCH: {
+      case Paths.SEARCH: {
         pendingResponse = await getMatchingInstances(props.agentApi, props.entityType, formData);
         if (pendingResponse.success) {
           const matchingInstances: string[] = pendingResponse.message.slice(1, -1)  // Remove the brackets '[' and ']'
