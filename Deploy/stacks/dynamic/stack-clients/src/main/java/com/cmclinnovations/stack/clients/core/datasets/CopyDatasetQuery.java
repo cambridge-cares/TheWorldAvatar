@@ -30,6 +30,9 @@ public class CopyDatasetQuery {
     private static final Variable serviceUrlVar = SparqlBuilder.var("serviceUrl");
     private static final Variable ontologyDatasetVar = SparqlBuilder.var("ontologyDataset");
 
+    private CopyDatasetQuery() {
+    }
+
     public static ConstructQuery getConstructQuery(Collection<String> datasetNames) {
         return getConstructQuery(datasetNames, null);
     }
