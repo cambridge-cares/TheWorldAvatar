@@ -56,6 +56,17 @@ def remove_digits_followed_by_spaces(text):
     # Use regular expression to remove digits followed by one or more spaces
     return re.sub(r'\d+\s+', '', text)
 
+# Function to extract digits from a string and return as an integer
+def extract_digits(text):
+    # Use regular expression to find all digits in the string
+    digits = re.findall(r'\d+(?=\s+)', text)
+    
+    # Join the digits into a single string and convert to integer
+    if digits:
+        return ''.join(digits)
+    else:
+        return None  # In case no digits are found
+
 def is_category(line):
     # Check if the line matches the pattern
     if re.match(r'^\d{2} ', line):
@@ -65,26 +76,10 @@ def is_category(line):
 
 # Function to clean extracted text
 def clean_extracted_text(text):
-    # Correct common OCR errors
-    # corrections = {
-    #     'dri nking': 'drinking',
-    #     'service s': 'services',
-    #     't oiletries':'toiletries',
-    #     'Or e':'Ore',
-    #     'Mixe d': 'Mixed',
-    # }
-
-    # for error, correction in corrections.items():
-    #     text = text.replace(error, correction)
-
     # Refine regex to avoid merging valid separate words like 'Eating and'
     def smart_merge(match):
         first_word, second_word = match.groups()
         merged_word = first_word + second_word
-
-        # Use specific corrections from the dictionary if they exist
-        # if match.group(0) in corrections:
-        #     return corrections[match.group(0)]
 
         # Only merge if the merged word is valid and both words aren't valid individually
         if is_valid_word(merged_word) and not (is_valid_word(first_word) and is_valid_word(second_word)):
@@ -104,6 +99,46 @@ def clean_extracted_text(text):
     # Remove spaces between a prefix and a hyphen (e.g., "pre -" -> "pre-")
     text = re.sub(r'(\b\w+)\s+-', r'\1-', text)
 
+    return text
+
+# Function to clean extracted class
+def clean_ocr_errors(text):
+    # Correct common OCR errors
+    corrections = {
+        'Plastere rs': 'Plasterers',
+        'Electri cal': 'Electrical',
+        'Aircra ft': 'Aircraft',
+        'Conce rt/': 'Concert or ',
+        'publ ishers': 'publishers',
+        '  ': ' ',
+        'pal mists': 'palmists',
+        'Servi ces': 'Services',
+        'servi ces': 'services',
+        'clot hing': 'clothing',
+        'Tes ting': 'Testing',
+        'hi re': 'hire',
+        'Aquari a': 'Aquaria',
+        'Farm- based': 'Farm-based',
+        'obse rvatories': 'observatories',
+        'lochan s': 'lochans',
+        'Children\'sactivity': 'Children\'s activity',
+        'children’sclothes': 'children’s clothes',
+        'Ho spices': 'Hospices',
+        'surge ries': 'surgeries',
+        'Coast al': 'Coastal',
+        'organ isations': 'organisations',
+        'Or emining': 'Ore mining',
+        'Mixe dor': 'Mixed or',
+        'supplie s': 'supplies',
+        'telecomm unications': 'telecommunications',
+        'Stati onery': 'Stationery',
+        'Stat ionery': 'Stationery',
+        'inclu ding': 'including',
+        'st ores': 'stores'
+    }
+
+    for error, correction in corrections.items():
+        text = text.replace(error, correction)
     return text
 
 # Improved function to extract categories and classes
@@ -191,6 +226,34 @@ def is_pdf_file(pdf_path):
         else:
             return False
 
+def form_complete_code(cls, class_category_map, class_code_map):
+    # Initialise a list to store the complete code
+    complete_code = []
+    
+    # Start with the given class and include its code
+    current_class = cls
+    if current_class in class_code_map:
+        complete_code.append(class_code_map[current_class])
+    
+    # Traverse the parent hierarchy until no more parents are found
+    while current_class in class_category_map:
+        parent = class_category_map[current_class]
+
+        # Retrieve the code for the parent from class_code_map
+        if parent in class_code_map:
+            complete_code.append(class_code_map[parent])
+
+        # Move to the parent for the next iteration
+        current_class = parent
+    
+    # Reverse the order of codes to get them in the correct order (root code to child code)
+    complete_code.reverse()
+
+    # Combine the codes to form the complete concatenated code
+    final_code = ''.join(complete_code)
+
+    return final_code
+
 # If you are calling from another Python script, call this function
 def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path):
     # Check if the file exists and is a file
@@ -219,13 +282,18 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
     # Add pre-defined ontology entries to the data list
     data.extend(ontology_entries)
 
-
+    class_code_map = {}
+    class_category_map = {}
     for category, classes in category_dict.items():
         for cls in classes:
             cls = clean_extracted_text(cls)
+            cls_code = extract_digits(cls)
             cls = remove_digits_followed_by_spaces(cls)
+            cls = clean_ocr_errors(cls)
             category = clean_extracted_text(category)
+            category_code = extract_digits (category)
             category = remove_digits_followed_by_spaces(category)
+            category = clean_ocr_errors(category)
             comment = cls + " is a subcategory of " + category
             comment = comment.capitalize()
             data.append([
@@ -240,6 +308,26 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
                 "https://www.theworldavatar.com/kg/ontopoi",           # Defined By (empty)
                 cls            # Label (empty)
             ])
+            if cls_code is not None:
+                class_code_map[cls] = cls_code
+            if category_code is not None:
+                class_code_map[category] = category_code
+            class_category_map[cls] = category
+    
+    class_complete_code_map = {}
+    
+    # Create the class versus complete code map
+    for cls in class_category_map:
+        # Form the complete code for the current class
+        complete_code = form_complete_code(cls, class_category_map, class_code_map)
+        
+        # Check if the complete code is exactly 8 digits long
+        if len(complete_code) == 8:
+            # Strip the leading zeros from the complete code
+            complete_code = complete_code.lstrip('0')
+            
+            # Store the result in the class_complete_code_map
+            class_complete_code_map[cls] = complete_code
 
     columns = ["Source", "Type", "Target", "Relation", "Domain", "Range", "Quantifier", "Comment", "Defined By", "Label"]
     df = pd.DataFrame(data, columns=columns)
@@ -248,6 +336,14 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
 
     # Save the DataFrame to a CSV file
     df.to_csv(output_csv_path, index=False)
+
+    # Convert the class_complete_code_map into a DataFrame
+    df = pd.DataFrame(list(class_complete_code_map.items()), columns=["Class", "Code"])
+
+    # Save the DataFrame to a CSV file
+    df.to_csv('class_complete_code_map.csv', index=False)
+
+    print("class_code_map saved to 'class_complete_code_map.csv'")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
