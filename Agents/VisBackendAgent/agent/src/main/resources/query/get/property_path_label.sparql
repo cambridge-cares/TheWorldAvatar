@@ -1,14 +1,15 @@
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 
-SELECT DISTINCT ?clazz ?name ?subject ?isparent ?isoptional ?multipath ?multipath_proppath ?multisubpath ?multisubpath_proppath
- ?name_multipath ?name_multipath_proppath
+SELECT DISTINCT ?clazz ?name ?order ?suborder ?subject ?isparent ?isoptional 
+ ?multipath ?multipath_proppath ?multisubpath ?multisubpath_proppath ?name_multipath ?name_multipath_proppath
 WHERE {
   BIND([target] as ?clazz)
   ?shape rdf:type sh:NodeShape ;
          sh:targetClass ?clazz ;
          sh:property ?property .
   ?property sh:name ?propname ;
-            sh:path ?predicatepath .
+            sh:path ?predicatepath ;
+            sh:order ?order .
   OPTIONAL {
     ?property sh:hasValue ?parentSubjectValue .
   }
@@ -57,7 +58,8 @@ WHERE {
   OPTIONAL {
     ?property (sh:node/sh:property)+ ?subproperty .
     ?subproperty sh:name ?subname ;
-                 sh:path ?subpath .
+                 sh:path ?subpath ;
+                 sh:order ?suborder .
     OPTIONAL {
       ?subproperty sh:hasValue ?subSubjectValue .
     }

@@ -1,7 +1,10 @@
 package com.cmclinnovations.agent.template;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Queue;
 import java.util.Map;
 
@@ -10,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlQueryLine;
+import com.cmclinnovations.agent.model.SparqlVariableOrder;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,9 +24,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class QueryTemplateFactory {
   private String parentField;
   private Map<String, String> queryLines;
+  private List<SparqlVariableOrder> varSequence;
   private final ObjectMapper objectMapper;
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
+  private static final String ORDER_VAR = "order";
+  private static final String SUBORDER_VAR = "suborder";
   private static final String IS_OPTIONAL_VAR = "isoptional";
   private static final String IS_PARENT_VAR = "isparent";
   private static final String SUBJECT_VAR = "subject";
@@ -65,16 +72,31 @@ public class QueryTemplateFactory {
     // Reset from previous iterations
     this.parentField = "";
     this.queryLines = new HashMap<>();
-
+    this.varSequence = new ArrayList<>();
     // Code starts after reset and validation
     LOGGER.info("Generating a query template for getting data...");
     StringBuilder query = new StringBuilder();
-    query.append("SELECT * WHERE {")
-        // Extract the first binding class but it should not be removed from the queue
-        .append(genIriClassLine(bindings.peek().peek()));
+    // Extract the first binding class but it should not be removed from the queue
+    String iriClassLine = genIriClassLine(bindings.peek().peek());
     this.sortBindings(bindings, hasParent);
 
-    this.queryLines.values().forEach(queryLine -> query.append(queryLine));
+    query.append("SELECT ");
+    // Retrieve all variables if no sequence of variable is present
+    if (this.varSequence.isEmpty()) {
+      query.append("*");
+    } else {
+      // Else sort the variable and add them to the query
+      // Sort by order first, but if the order are equal, sort by subOrder
+      this.varSequence.sort(Comparator.comparing(SparqlVariableOrder::order)
+          .thenComparing(SparqlVariableOrder::subOrder));
+      // Append a ? before the property
+      this.varSequence.forEach(variable -> query.append(ShaclResource.VARIABLE_MARK)
+          .append(variable.property())
+          .append(" "));
+    }
+    query.append(" WHERE {")
+        .append(iriClassLine);
+    this.queryLines.values().forEach(query::append);
     this.appendOptionalIdFilters(query, filterId, hasParent);
     // Close the query
     return query.append("}").toString();
@@ -100,6 +122,7 @@ public class QueryTemplateFactory {
     // Reset from previous iterations
     this.parentField = "";
     this.queryLines = new HashMap<>();
+    this.varSequence = new ArrayList<>();
 
     // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
@@ -245,7 +268,14 @@ public class QueryTemplateFactory {
       // When initialising a new query line
       String subjectVar = binding.containsField(SUBJECT_VAR) ? binding.getFieldValue(SUBJECT_VAR) : "";
       boolean isOptional = Boolean.parseBoolean(binding.getFieldValue(IS_OPTIONAL_VAR));
-
+      // Parse ordering only for label query, as we require the heading order in csv
+      // Order field will not exist for non-label query
+      if (binding.containsField(ORDER_VAR)) {
+        int order = Integer.parseInt(binding.getFieldValue(ORDER_VAR));
+        // suborder may not be available and should default to 0
+        int subOrder = binding.containsField(SUBORDER_VAR) ? Integer.parseInt(binding.getFieldValue(SUBORDER_VAR)) : 0;
+        this.varSequence.add(new SparqlVariableOrder(propertyName, order, subOrder));
+      }
       // If the field is a parent field, and the template requires a parent, store the
       // parent field
       if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
