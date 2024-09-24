@@ -1,0 +1,1123 @@
+{
+    "name": "All Layers",
+    "groups": [
+        {
+            
+            "name": "Cambridge, Ely and Wisbech",
+            "stack": "http://174.138.27.240:3838",
+            "sources": [
+                {
+                    "id": "cambridge-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://174.138.27.240:3838/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar%3Acambridge_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "cambridge-layer",
+                    "name": "Buildings",
+                    "treeable": false,
+                    "source": "cambridge-source",
+                    "source-layer": "cambridge_gsl",
+                    "type": "fill-extrusion",
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "step",
+                            ["get", "building_height"],
+                            "#FF0000",       
+                            3.57, "#0769AD", 
+                            7.14, "#0769AD", 
+                            10.71, "#0769AD",
+                            14.28, "#0769AD",
+                            17.85, "#AD0202",
+                            21.42, "#AD0202"
+                        ],
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building_height"],
+                            ["*", 1.0, ["to-number", ["get", "building_height"]]],
+                            200
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Kings-Lynn",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "ocgml_buildings",
+                    "type": "geojson",
+                    "data": "data/buildings/os_bha_buildings.geojson"
+                },
+                {
+                    "id": "obe_buildings",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "building_sales",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:transactions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "building_values",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:marketvalues&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "buildings-layer-value",
+                    "name": "Property Value Estimates",
+                    "source": "building_values",
+                    "source-layer": "marketvalues",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "price"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "price"]],
+                            50000, "#0769AD",
+                            1200000, "#AD0202"
+                        ]],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "buildings-layer-sales",
+                    "name": "Actual Property Sales",
+                    "source": "building_sales",
+                    "source-layer": "transactions",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 22,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "price"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "price"]],
+                            50000, "#0769AD",
+                            1200000, "#AD0202"
+                        ]],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "obe_buildings-layer-usage",
+                    "name": "Buildings",
+                    "source": "obe_buildings",
+                    "source-layer": "buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 21,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "match",
+                            ["get", "primary_usage_category"],
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Domestic", "#808080",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyServices", "#D62728",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare", "#FF7F0E",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Education", "#2CA02C",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic", "#1F77B4",
+                            "#808080"
+                          ],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Air quality simulations",
+            "stack": "http://174.138.27.240:10102",
+            "expanded": true,
+            "sources": [
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                    ],
+                    "id": "dispersion-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                    ],
+                    "id": "weather-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                    ],
+                    "id": "ship-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                    ],
+                    "id": "sensor-source",
+                    "type": "vector"
+                },
+                {
+                    "tiles": [
+                        "http://174.138.27.240:10102/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:building-pirmasens_gsl"
+                    ],
+                    "id": "building-source",
+                    "type": "vector"
+                }
+            ],
+            "layers": [
+                {
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "name": "NOx",
+                    "paint": {
+                        "fill-outline-color": [
+                            "get",
+                            "stroke"
+                        ],
+                        "fill-color": [
+                            "get",
+                            "fill"
+                        ],
+                        "fill-opacity": 0.3
+                    },
+                    "id": "dispersion-layer",
+                    "source": "dispersion-source",
+                    "source-layer": "dispersion_contours",
+                    "type": "fill",
+                    "minzoom": 4
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Weather stations",
+                    "paint": {
+                        "circle-color": "blue"
+                    },
+                    "id": "weather-layer",
+                    "source": "weather-source",
+                    "source-layer": "weather",
+                    "type": "circle"
+                },
+                {
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "name": "Virtual sensors",
+                    "paint": {
+                        "circle-color": "red"
+                    },
+                    "id": "sensor-layer",
+                    "source": "sensor-source",
+                    "source-layer": "sensors",
+                    "type": "circle",
+                    "minzoom": 4
+                },
+                {
+                    "id": "buildings",
+                    "source-layer": "building-pirmasens_gsl",
+                    "name": "Buildings",
+                    "source": "building-source",
+                    "type": "fill-extrusion",
+                    "minzoom": 8,
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#8D99AE",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            [
+                                "has",
+                                "building_height"
+                            ],
+                            [
+                                "get",
+                                "building_height"
+                            ],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Example GPS trajectories",
+            "groups": [
+            {
+                "name": "Example trajectory (2015)",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
+                    "id": "Recorded_Points_Sources",
+                    "type": "vector",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_data&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                  },
+                  {
+                    "id": "Movement_Trajectory_Sources",
+                    "type": "geojson",
+					"cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Agps_line&&outputFormat=application%2Fjson"
+                  }
+                ],
+                "layers": [
+                  {
+                    "id": "Recorded_Points_layer",
+                    "name": "Raw data",
+                    "source": "Recorded_Points_Sources",
+                    "source-layer": "gps_data",
+                    "type": "symbol",
+                    "minzoom": 12,
+                    "order": 24,
+                    "layout": {
+                      "visibility": "none",
+                      "icon-image": "gpslocation2",
+                      "icon-size": 0.27,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
+                    }
+                  },
+                  {
+                    "id": "Movement_Trajectory_layer",
+                    "name": "Interpolated movement",
+                    "source": "Movement_Trajectory_Sources",
+                    "type": "line",
+                    "minzoom": 12,
+                    "order": 100,
+                    "layout": {
+                      "visibility": "none"
+                    },
+					"paint": {
+						"line-color": "#326578",
+						"line-width": 3
+					}
+                  }
+                ]
+              },
+              {
+                "name": "Example trajectory (2016)",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
+                    "id": "Recorded_Points_Sources",
+                    "type": "vector",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:gps_tra_2016&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                  },
+                  {
+                    "id": "Movement_Trajectory_Sources",
+                    "type": "geojson",
+					"cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Agps_tra_2016_line&&outputFormat=application%2Fjson"
+                  }
+                ],
+                "layers": [
+                  {
+                    "id": "Recorded_Points_layer",
+                    "name": "Raw data",
+                    "source": "Recorded_Points_Sources",
+                    "source-layer": "gps_tra_2016",
+                    "type": "symbol",
+                    "minzoom": 12,
+                    "order": 24,
+                    "layout": {
+                      "visibility": "none",
+                      "icon-image": "gpslocation2",
+                      "icon-size": 0.27,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
+                    }
+                  },
+                  {
+                    "id": "Movement_Trajectory_layer",
+                    "name": "Interpolated movement",
+                    "source": "Movement_Trajectory_Sources",
+                    "type": "line",
+                    "minzoom": 12,
+                    "order": 100,
+                    "layout": {
+                      "visibility": "none"
+                    },
+					"paint": {
+						"line-color": "#326578",
+						"line-width": 3
+					}
+                  }
+                ]
+              }
+            ]
+        },
+        {
+            "name": "Food retail environment",
+            "groups": [
+            {
+                "name": "Food Hygiene Rating Service (2023)",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
+                    "id": "fhr-cambridge-source",
+                    "type": "vector",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:fhr_cambridge&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                  }
+                ],
+                "layers": [
+                    {
+                        "id": "fhr-cambridge_layer",
+                        "name": "School/college/university",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 24,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "School/college/university"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_two",
+                        "name": "Hospitals/childcare/care homes",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Hospitals/Childcare/Caring Premises"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_three",
+                        "name": "Restaurant/cafe/canteen",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Restaurant/Cafe/Canteen"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_four",
+                        "name": "Hotel/bed & breakfast/guest house",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Hotel/bed & breakfast/guest house"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_five",
+                        "name": "Pub/bar/nightclub",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Pub/bar/nightclub"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_six",
+                        "name": "Mobile caterer",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Mobile caterer"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_seven",
+                        "name": "Retailers - supermarkets/hypermarkets",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Retailers - supermarkets/hypermarkets"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_eight",
+                        "name": "Retailers - other",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Retailers - other"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_nine",
+                        "name": "Takeaway/sandwich shop",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Takeaway/sandwich shop"]
+                    },
+                    {
+                        "id": "fhr-cambridge_layer_ten",
+                        "name": "Other catering premises",
+                        "source": "fhr-cambridge-source",
+                        "source-layer": "fhr_cambridge",
+                        "type": "symbol",
+                        "minzoom": 6,
+                        "order": 25,
+                        "layout": {
+                            "visibility": "none",
+                            "icon-image": "FoodHygieneRating",
+                            "icon-size": 0.45,
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        },
+                        "filter": ["==", ["get", "BusinessType"], "Other catering premises"]
+                    }
+        
+                ]
+            },
+            {
+                "name": "Points of Interest",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                    {
+                        "id": "poi-sport-entertainment-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_sport_and_entertainment&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    },
+                    {
+                        "id": "poi-education-health-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_education_and_health&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    },
+                    {
+                        "id": "poi-public-infrastructure-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_public_infrastructure&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    },
+                    {
+                        "id": "poi-supermarkets-source",
+                        "type": "geojson",
+                        "data": "http://174.138.27.240:5007/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Apoints_of_interest_ex_supermarkets&&outputFormat=application%2Fjson",
+                        "cluster": true,
+                        "clusterMaxZoom": 14,
+                        "clusterRadius": 50
+                    }
+                ],
+                "layers": [
+                    {
+                        "id": "poi-sport-entertainment",
+                        "name": "Sport and entertainment",
+                        "source": "poi-sport-entertainment-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "sports",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-sport-entertainment-cluster",
+                        "name": "Sport and entertainment",
+                        "source": "poi-sport-entertainment-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "sports_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    },
+                    {
+                        "id": "poi-education-health",
+                        "name": "Education and health",
+                        "source": "poi-education-health-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "edu",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-education-health-cluster",
+                        "name": "Education and health",
+                        "source": "poi-education-health-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "edu_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    },
+                    {
+                        "id": "poi-public-infrastructure",
+                        "name": "Public infrastructure",
+                        "source": "poi-public-infrastructure-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "public",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-public-infrastructure-cluster",
+                        "name": "Public infrastructure",
+                        "source": "poi-public-infrastructure-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "public_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    },
+                    {
+                        "id": "poi-supermarkets",
+                        "name": "Food Retail (Supermarkets)",
+                        "source": "poi-supermarkets-source",
+                        "type": "symbol",
+                        "filter": ["!", ["has", "point_count"]],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "supermarket",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.375, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true
+                        }
+                    },
+                    {
+                        "id": "poi-supermarkets-cluster",
+                        "name": "Food Retail (Supermarkets)",
+                        "source": "poi-supermarkets-source",
+                        "type": "symbol",
+                        "filter": ["has", "point_count"],
+                        "layout": {
+                            "visibility": "visible",
+                            "icon-image": "supermarket_circle",
+                            "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.3875, 20, 0.4875],
+                            "icon-allow-overlap": true,
+                            "icon-ignore-placement": true,
+                            "text-field": "{point_count_abbreviated}",
+                            "text-font": ["Arial Unicode MS Regular"],
+                            "text-size": 9,
+                            "text-anchor": "center",
+                            "text-offset": [0, 0]
+                        }
+                    }
+                ]
+            },                                                                                                                                                                                                                   
+              {
+                "name": "Fenland Study (circa 2014)",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                  {
+                    "id": "Takeaways Sources",
+                    "type": "vector",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:takeaways&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                  },
+                  {
+                    "id": "Supermarket Sources",
+                    "type": "vector",
+                    "tiles": [
+                      "http://174.138.27.240:5007/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:supermarket&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                  }
+                ],
+                "layers": [
+                  {
+                    "id": "Takeaways_layer",
+                    "name": "Fast food",
+                    "source": "Takeaways Sources",
+                    "source-layer": "takeaways",
+                    "type": "symbol",
+                    "minzoom": 6,
+                    "order": 24,
+                    "layout": {
+                      "visibility": "none",
+                      "icon-image": "takeaway",
+                      "icon-size": 0.35,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
+                    }
+                  },
+                  {
+                    "id": "Supermarket_layer",
+                    "name": "Supermarket",
+                    "source": "Supermarket Sources",
+                    "source-layer": "supermarket",
+                    "type": "symbol",
+                    "minzoom": 6,
+                    "order": 25,
+                    "layout": {
+                      "visibility": "none",
+                      "icon-image": "supermarket",
+                      "icon-size": 0.35,
+                      "icon-allow-overlap": true,
+                      "icon-ignore-placement": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+        {
+            "name": "Environmental sensor data",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "metoffice",  
+                    "type": "geojson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=stations%3Ametoffice&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "ea-stations",  
+                    "type": "geojson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=stations%3Ariverstations&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "aq-stations",  
+                    "type": "geojson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=airquality%3Aairquality&outputFormat=application%2Fjson"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "airquality",
+                    "name": "Air quality", 
+                    "source": "aq-stations",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 4,
+                    "order": 32,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "air_airquality", 
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "airquality_cluster",
+                    "name":  "Air quality",
+                    "source": "aq-stations",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "ukair",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
+                },
+                {
+                    "id": "metoffice",
+                    "name": "Weather", 
+                    "source": "metoffice",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 4,
+                    "order": 31,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": [
+                            "match",
+                            ["get", "subtype"],
+                            "observation", "met_weather-obs",
+                            "forecast", "met_weather-for",
+                            "met_weather"
+                        ],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "metoffice_cluster",
+                    "name":  "Weather",
+                    "source": "metoffice",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "metoffice",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
+                },
+                {
+                    "id": "ea-stations",
+                    "name": "Flood monitoring", 
+                    "source": "ea-stations",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 4,
+                    "order": 30,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": [
+                            "match",
+                            ["get", "type"],
+                            "ea-flow", "ea_flow",
+                            "ea-rainfall", "ea_rainfall",
+                            "ea-temperature", "ea_temperature",
+                            "ea-water-level", "ea_water-level",
+                            "ea-wind", "ea_wind",
+                            "floodmonitoring"
+                        ],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "ea-stations_cluster",
+                    "name":  "Flood monitoring",
+                    "source": "ea-stations",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "floodmonitoring",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Flood Warnings",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "floodwarnings_active",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=true"
+                    ]
+                },
+                {
+                    "id": "floodwarnings_inactive",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=false"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "floodwarnings",
+                    "name": "Active flood warnings",
+                    "source": "floodwarnings_active",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 11,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "text-field": ["get", "severity"],
+                    "paint": {
+                        "fill-color": [
+                            "match",
+                            ["get", "severity"],
+                            "4", "#add8e6",
+                            "3", "#ebc244",
+                            "2", "#ff8800",
+                            "1", "#c90a0a",
+                            "#808080"
+                          ],
+                        "fill-opacity": 0.4,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "floodwarnings_outdated",
+                    "name": "Inactive flood warnings",
+                    "source": "floodwarnings_inactive",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 10,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#808080",
+                        "fill-opacity": 0.3,
+                        "fill-outline-color": "#000000"
+                    }
+                }
+            ]
+        },        
+        {
+            "name": "Land use",
+            "groups": [
+                {   
+                "name": "Green space",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                    {
+                        "id": "green-space-source",
+                        "type": "raster",
+                        "tiles": [
+                            "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        ]
+                    }
+                ],
+                "layers": [
+                    {
+                        "id": "green-space_layer",
+                        "name": "Cambridgeshire",
+                        "source": "green-space-source",
+                        "type": "raster",
+                        "minzoom": 4,
+                        "order": 1,
+                        "layout": {
+                            "visibility": "none"
+                        }
+                    },
+                    {
+                        "id": "green-space_layer_2",
+                        "name": "Norfolk",
+                        "source": "green-space-source",
+                        "type": "raster",
+                        "minzoom": 4,
+                        "order": 1,
+                        "layout": {
+                            "visibility": "none"
+                        }
+                    }
+                ]
+            },
+            {   "name": "Crop map",
+                "stack": "http://174.138.27.240:5007",
+                "sources": [
+                    {
+                        "id": "cropmap-source",
+                        "type": "raster",
+                        "tiles": [
+                            "http://174.138.27.240:5007/geoserver/the_world_avatar/wms?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                        ]
+                    }
+                ],
+                "layers": [
+                    {
+                        "id": "cropmap_layer",
+                        "name": "Cambridgeshire",
+                        "source": "cropmap-source",
+                        "type": "raster",
+                        "minzoom": 4,
+                        "order": 2,
+                        "layout": {
+                            "visibility": "none"
+                        }
+                    }
+                ]
+            }
+        ]
+        }
+    ]
+}
