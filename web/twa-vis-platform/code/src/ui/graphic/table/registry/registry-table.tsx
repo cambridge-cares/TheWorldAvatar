@@ -1,16 +1,15 @@
 import styles from './registry.table.module.css';
-import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { RegistryFieldValues } from 'types/form';
 import StatusComponent from 'ui/text/status/status';
-import IconComponent from 'ui/graphic/icon/icon';
-import { MaterialIconButtonWithIndex } from 'ui/graphic/icon/icon-button';
 import { parseWordsForLabels } from 'utils/client-utils';
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { FieldValues } from 'react-hook-form';
 
 interface RegistryTableProps {
-  fields: RegistryFieldValues[];
+  instances: RegistryFieldValues[];
   clickEventHandlers: { [key: string]: (index: number) => void };
   limit?: number;
 }
@@ -18,103 +17,69 @@ interface RegistryTableProps {
 /**
  * This component renders a registry of table based on the input headers and rows.
  * 
- * @param {RegistryFieldValues[]} fields The field values for the table.
+ * @param {RegistryFieldValues[]} instances The instance values for the table.
  * @param {Function} clickEventHandlers Event on button click.
  * @param {number} limit Optional limit to the number of columns shown.
  */
 export default function RegistryTable(props: Readonly<RegistryTableProps>) {
-  const [statusCol, setStatusCol] = useState<number>(-1);
-  const [headerElements, setHeaderElements] = useState<React.ReactNode>(<></>);
-  const [rowElements, setRowElements] = useState<React.ReactNode>(<></>);
+  // Generate a list of column headings
+  const columns: ColumnDef<Record<string, string>>[] = React.useMemo(() => {
+    if (props.instances?.length === 0) return [];
+    return Object.keys(props.instances[0]).map(field => ({
+      id: field,
+      accessorKey: field,
+      header: parseWordsForLabels(field),
+    }));
+  }, [props.instances]);
 
-  // A hook that parses the headers whenever fields are refetched
-  useEffect(() => {
-    // A function to parse headers from the inputs
-    const parseHeaders = (fields: RegistryFieldValues[], limit: number): string[] => {
-      return Object.keys(fields[0]).sort((current, next) => {
-        // Always move the id first if available, else, name should be first
-        if (current === "id") return -1;
-        if (next === "id") return 1;
-        if (current === "name") return -1;
-        if (next === "name") return 1;
-        // The IRI field should be ignored and moved to the very end
-        if (current.toLowerCase() === "iri" || next.toLowerCase() === "iri") return -1;
-        return 0; // Keep other items in the same order
-      }).slice(0, limit);
-    };
+  // Parse row values
+  const data: FieldValues[] = React.useMemo(() => {
+    if (props.instances?.length === 0) return [];
+    // Extract only the value into the data to simplify
+    return props.instances.map(instance => {
+      const flattenInstance: Record<string, string> = {};
+      Object.keys(instance).map(field => {
+        flattenInstance[field] = instance[field].value
+      })
+      return flattenInstance;
+    });
+  }, [props.instances]);
 
-    // A function to generate the header elements in the table based on the headers
-    const genHeaders = (headers: string[]): React.ReactNode => {
-      if (headers?.length > 0) {
-        // Returns the first header as an icon and the remaining header items
-        return [<th key={"header-order"}><IconComponent classes={iconStyles["small-icon"]} icon="sort" /></th>,
-        ...headers.map((header, colIndex) => {
-          if (header.toLowerCase() === "status") {
-            setStatusCol(colIndex);
-          }
-          return <th key={header + colIndex}>{parseWordsForLabels(header)}</th>
-        })];
-      } else {
-        return <th></th>;
-      }
-    };
 
-    // A function to generate the row elements in the table based on the headers and field inputs
-    const genRows = (fields: RegistryFieldValues[], headers: string[]): React.ReactNode => {
-      if (fields?.length > 0) {
-        return fields.map((row, rowIndex) => (
-          <tr key={row[headers[0]].value + rowIndex}>
-            <td>
-              <div className={styles["table-icon-cell"]}>
-                <MaterialIconButtonWithIndex
-                  iconName="edit"
-                  iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
-                  index={rowIndex}
-                  onButtonClick={props.clickEventHandlers["edit"]}
-                />
-                <MaterialIconButtonWithIndex
-                  iconName="expand_circle_right"
-                  iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
-                  index={rowIndex}
-                  onButtonClick={props.clickEventHandlers["view"]}
-                />
-                <MaterialIconButtonWithIndex
-                  iconName="delete"
-                  iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
-                  index={rowIndex}
-                  onButtonClick={props.clickEventHandlers["delete"]}
-                />
-              </div>
-            </td>
-            {headers.map((column, colIndex) => {
-              const columnVal: string = row[column] ? parseWordsForLabels(row[column].value) : "";
-              return colIndex == statusCol ?
-                (<td key={column + colIndex}><StatusComponent status={columnVal} /> </td>) :
-                (<td key={column + colIndex} >{columnVal}</td>)
-            }
-            )}
-          </tr>
-        ))
-      }
-    };
-
-    let headers: string[] = [];
-    if (props.fields?.length > 0) {
-      headers = parseHeaders(props.fields, props.limit);
-    }
-    setHeaderElements(genHeaders(headers));
-    setRowElements(genRows(props.fields, headers));
-  }, [props.fields]);
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <table className={styles["table"]}>
-      <thead>
-        <tr className={styles["header"]}>
-          {headerElements}
-        </tr>
+      <thead className={styles["header"]}>
+        {table.getHeaderGroups().map(headerGroup => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <th key={header.id}>
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+              </th>
+            ))}
+          </tr>
+        ))}
       </thead>
       <tbody>
-        {rowElements}
+        {table.getRowModel().rows.map(row => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
       </tbody>
     </table>
   );

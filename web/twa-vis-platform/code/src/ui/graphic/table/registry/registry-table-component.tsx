@@ -74,7 +74,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
         />
         <div className={styles["table-contents"]}>
           <RegistryTable
-            fields={currentInstances}
+            instances={currentInstances}
             clickEventHandlers={{
               "view": handleClickView,
               "edit": handleClickEdit,
