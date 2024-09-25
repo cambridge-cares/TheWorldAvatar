@@ -47,7 +47,7 @@ Visualisation will be available at http://localhost:3838/visualisation locally.
 Make sure to have mapbox_api_key and mapbox_username in the `TWA-VIS-PLATFORM` folder.
 
 
-Navigate to the `Web->TWA-VIS-PLATFORM` directory. Ensure that the `CODE->PUBLIC->CONFIG` folder contains the four JSON files: `data-settings.json`, `data.json`, `map-settings.json`, and `ui-settings.json`. Changes are made only in the `data.json` file, Copy the GeoJSON link from GeoServer and paste the link in the "data" attribute of the  `data.json` file. These visualisation files should be in the `Web->TWA-VIS-PLATFORM->CODE->PUBLIC->CONFIG`.
+Navigate to the `Web->TWA-VIS-PLATFORM` directory. Ensure that the `CONFIG` folder contains the four JSON files: `data-settings.json`, `data.json`, `map-settings.json`, and `ui-settings.json`. Changes are made only in the `data.json` file, Copy the GeoJSON link from GeoServer and paste the link in the "data" attribute of the  `data.json` file. These visualisation files should be in the `Web->TWA-VIS-PLATFORM->CODE->PUBLIC->CONFIG`.
 
 Additionally, verify that the `OPTIONAL-PAGES` folder includes a `landing-page.md` file. Lastly, update the `docker-compose.yml` file by setting `KEYCLOAK` to `false`.
 Run the Docker Deployment command and verify the layers.
