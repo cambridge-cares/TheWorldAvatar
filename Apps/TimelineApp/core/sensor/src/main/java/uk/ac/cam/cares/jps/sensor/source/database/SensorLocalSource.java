@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import uk.ac.cam.cares.jps.sensor.source.database.model.dao.ActivityDataDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GravityDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GyroDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.LightDao;
@@ -32,6 +33,7 @@ import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.AccelerationDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.AppDatabase;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.LocationDao;
+import uk.ac.cam.cares.jps.sensor.source.database.model.entity.ActivityData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Gravity;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.GyroData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.LightData;
@@ -60,6 +62,7 @@ public class SensorLocalSource {
     public UnsentDataDao unsentDataDao;
     public RelativeHumidityDao relativeHumidityDao;
     public SoundLevelDao soundLevelDao;
+    public ActivityDataDao activityDataDao;
     Logger LOGGER = Logger.getLogger(SensorLocalSource.class);
     Map<String, JSONArray> unsentData;
 
@@ -79,8 +82,22 @@ public class SensorLocalSource {
         soundLevelDao = appDatabase.soundLevelDao();
         relativeHumidityDao = appDatabase.relativeHumidityDao();
         this.unsentDataDao = appDatabase.unsentDataDao();
+        activityDataDao = appDatabase.activityDataDao();
         this.unsentData = new HashMap<>();
 
+    }
+
+    /**
+     * Commits activity data to the local database. The data is provided through the activity
+     * recognition service class.
+     *
+     * @param activityType the type of activity detected with the highest confidence level
+     * @param confidence value 0-100 denoting how likely the activity is being performed
+     * @param timestamp time-series of when the activity was first detected
+     */
+    public void saveActivityData(String activityType, int confidence, long timestamp) {
+        ActivityData activityData = new ActivityData(activityType, confidence, timestamp);
+        activityDataDao.insert(activityData);
     }
 
 

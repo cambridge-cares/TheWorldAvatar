@@ -4,6 +4,7 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.AccelerationDao;
+import uk.ac.cam.cares.jps.sensor.source.database.model.dao.ActivityDataDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GravityDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GyroDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.LightDao;
@@ -14,6 +15,7 @@ import uk.ac.cam.cares.jps.sensor.source.database.model.dao.RelativeHumidityDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.SoundLevelDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.UnsentDataDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
+import uk.ac.cam.cares.jps.sensor.source.database.model.entity.ActivityData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Gravity;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.GyroData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.LightData;
@@ -24,7 +26,7 @@ import uk.ac.cam.cares.jps.sensor.source.database.model.entity.RelativeHumidity;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
 
-@Database(entities = {LocationData.class, Acceleration.class, LightData.class, MagnetFieldStrength.class, Gravity.class, GyroData.class, Pressure.class, RelativeHumidity.class, SoundLevel.class, UnsentData.class}, version = 2)
+@Database(entities = {LocationData.class, Acceleration.class, LightData.class, MagnetFieldStrength.class, Gravity.class, GyroData.class, Pressure.class, RelativeHumidity.class, SoundLevel.class, UnsentData.class, ActivityData.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract LocationDao locationDao();
     public abstract AccelerationDao accelerationDao();
@@ -36,7 +38,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract RelativeHumidityDao relativeHumidityDao();
     public abstract SoundLevelDao soundLevelDao();
     public abstract UnsentDataDao unsentDataDao();
-
+    public abstract ActivityDataDao activityDataDao();
 
 
 }
