@@ -1,12 +1,13 @@
 "use client";
 
 import styles from './table.ribbon.module.css';
+import fieldStyles from 'ui/interaction/form/field/field.module.css';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
-import { sendGetRequest } from 'utils/server-actions';
+import { sendPostRequest } from 'utils/server-actions';
 import { DownloadButton } from 'ui/interaction/download/download';
 
 interface TableRibbonProps {
@@ -24,22 +25,49 @@ interface TableRibbonProps {
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
+  const scheduleId: string = "schedule date";
   // Users can only either add or schedule at one time; schedule is expected to add new instances but with restrictions
   const buttonIcon: string = props.schedulerAgentApi ? "schedule_send" : "add";
-  const buttonText: string = props.schedulerAgentApi ? "schedule today" : "add " + props.entityType;
+  const buttonText: string = props.schedulerAgentApi ? "schedule" : "add " + props.entityType;
+
+  // Start off with today's date
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
+
+  // Handle change event for the date input
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value);
+  };
 
   const openAddModal: React.MouseEventHandler<HTMLDivElement> = () => {
     router.push(`../add/${props.entityType}`);
   };
 
   const sendScheduleRequest: React.MouseEventHandler<HTMLDivElement> = () => {
-    sendGetRequest(`${props.schedulerAgentApi}schedule`);
+    const jsonBody: string = JSON.stringify({
+      date: selectedDate,
+    });
+    sendPostRequest(`${props.schedulerAgentApi}/schedule`, jsonBody);
   };
   const buttonEvent: React.MouseEventHandler<HTMLDivElement> = props.schedulerAgentApi ? sendScheduleRequest : openAddModal;
 
   return (
     <div className={styles.menu}>
       <div className={styles["ribbon-button-container"]}>
+        {props.schedulerAgentApi && <div>
+          <label className={fieldStyles["form-input-label"]} htmlFor={scheduleId}>
+            Date:
+          </label>
+          <input
+            id={scheduleId}
+            className={fieldStyles["dtpicker"]}
+            style={{ width: "5.5rem" }}
+            type={"date"}
+            defaultValue={selectedDate}
+            aria-label={scheduleId}
+            onChange={handleDateChange}
+          />
+        </div>
+        }
         <MaterialIconButton
           iconName={buttonIcon}
           className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
