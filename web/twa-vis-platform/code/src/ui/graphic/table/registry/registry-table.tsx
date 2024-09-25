@@ -6,7 +6,7 @@ import { FieldValues } from 'react-hook-form';
 import { CellContext, ColumnDef, DisplayColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 import { RegistryFieldValues } from 'types/form';
-import { parseWordsForLabels } from 'utils/client-utils';
+import { getAfterDelimiter, isValidIRI, parseWordsForLabels } from 'utils/client-utils';
 import RegistryRowActions from './actions/registry-table-action';
 import IconComponent from 'ui/graphic/icon/icon';
 import StatusComponent from 'ui/text/status/status';
@@ -32,11 +32,15 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
     const actionCol: DisplayColumnDef<Record<string, string>> = {
       id: "actions",
       header: () => (<IconComponent classes={iconStyles["small-icon"]} icon="linear_scale" />),
-      cell: (context: CellContext<Record<string, string>, unknown>) => (
-        <RegistryRowActions
-          recordId={context.row.original.id}
+      cell: (context: CellContext<Record<string, string>, unknown>) => {
+        const recordId: string = isValidIRI(context.row.original.id) ?
+          getAfterDelimiter(context.row.original.id, "/")
+          : context.row.original.id;
+        return (<RegistryRowActions
+          recordId={recordId}
           recordType={props.recordType}
-        />),
+        />)
+      },
     }
     return [actionCol, ...Object.keys(props.instances[0]).map(field => ({
       id: field,
@@ -47,7 +51,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
         if (context.column.id.toLowerCase() === "status") {
           return (<StatusComponent status={`${context.getValue()}`} />);
         }
-        return context.getValue();
+        return parseWordsForLabels(`${context.getValue()}`);
       }
     }))];
   }, [props.instances]);
