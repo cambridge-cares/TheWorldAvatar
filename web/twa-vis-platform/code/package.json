@@ -25,6 +25,7 @@
     "@mui/icons-material": "^5.16.6",
     "@mui/material": "^5.16.6",
     "@reduxjs/toolkit": "^2.2.7",
+    "@tanstack/react-table": "^8.20.5",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
