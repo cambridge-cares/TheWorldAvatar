@@ -59,6 +59,9 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
     if (formType == PathNames.REGISTRY_ADD || formType == PathNames.SEARCH) {
       return 1;
     }
+    if (defaultValue === "P1D") {
+      return 0;
+    }
     // Retrieve and parse the recurrent digit based on default value
     const match: RegExpMatchArray = /P(\d+)D/.exec(defaultValue);
     if (match) {

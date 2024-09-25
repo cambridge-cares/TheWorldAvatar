@@ -109,10 +109,10 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
   // A function to initiate the form submission process
   const onSubmit = form.handleSubmit(async (formData: FieldValues) => {
     let pendingResponse: HttpResponse;
-    if (formData[FORM_STATES.RECURRENCE]) {
+    if (formData[FORM_STATES.RECURRENCE] || formData[FORM_STATES.RECURRENCE] == 0) {
       formData = {
         ...formData,
-        recurrence: `P${formData[FORM_STATES.RECURRENCE] * 7}D`,
+        recurrence: `P${formData[FORM_STATES.RECURRENCE] == 0 ? 1 : formData[FORM_STATES.RECURRENCE] * 7}D`,
       }
     }
 
