@@ -1,35 +1,45 @@
 import styles from './registry.table.module.css';
 
 import React from 'react';
+import { FieldValues } from 'react-hook-form';
+import { CellContext, ColumnDef, DisplayColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 import { RegistryFieldValues } from 'types/form';
-import StatusComponent from 'ui/text/status/status';
 import { parseWordsForLabels } from 'utils/client-utils';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { FieldValues } from 'react-hook-form';
+import RegistryRowActions from './actions/registry-table-action';
 
 interface RegistryTableProps {
+  recordType: string;
   instances: RegistryFieldValues[];
-  clickEventHandlers: { [key: string]: (index: number) => void };
   limit?: number;
 }
 
 /**
- * This component renders a registry of table based on the input headers and rows.
+ * This component renders a registry of table based on the inputs.
  * 
+ * @param {string} recordType The type of the record.
  * @param {RegistryFieldValues[]} instances The instance values for the table.
- * @param {Function} clickEventHandlers Event on button click.
  * @param {number} limit Optional limit to the number of columns shown.
  */
 export default function RegistryTable(props: Readonly<RegistryTableProps>) {
   // Generate a list of column headings
   const columns: ColumnDef<Record<string, string>>[] = React.useMemo(() => {
     if (props.instances?.length === 0) return [];
-    return Object.keys(props.instances[0]).map(field => ({
+    // Include an additional action column definition
+    const actionCol: DisplayColumnDef<Record<string, string>> = {
+      id: "actions",
+      header: "Actions",
+      cell: (context: CellContext<Record<string, string>, unknown>) => (
+        <RegistryRowActions
+          recordId={context.row.original.id}
+          recordType={props.recordType}
+        />),
+    }
+    return [actionCol, ...Object.keys(props.instances[0]).map(field => ({
       id: field,
       accessorKey: field,
       header: parseWordsForLabels(field),
-    }));
+    }))];
   }, [props.instances]);
 
   // Parse row values
@@ -44,7 +54,6 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
       return flattenInstance;
     });
   }, [props.instances]);
-
 
   const table = useReactTable({
     data,
