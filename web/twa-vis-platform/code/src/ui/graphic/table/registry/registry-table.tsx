@@ -1,4 +1,5 @@
 import styles from './registry.table.module.css';
+import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import React from 'react';
 import { FieldValues } from 'react-hook-form';
@@ -7,6 +8,7 @@ import { CellContext, ColumnDef, DisplayColumnDef, flexRender, getCoreRowModel, 
 import { RegistryFieldValues } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
 import RegistryRowActions from './actions/registry-table-action';
+import IconComponent from 'ui/graphic/icon/icon';
 
 interface RegistryTableProps {
   recordType: string;
@@ -28,7 +30,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
     // Include an additional action column definition
     const actionCol: DisplayColumnDef<Record<string, string>> = {
       id: "actions",
-      header: "Actions",
+      header: () => (<IconComponent classes={iconStyles["small-icon"]} icon="linear_scale" />),
       cell: (context: CellContext<Record<string, string>, unknown>) => (
         <RegistryRowActions
           recordId={context.row.original.id}
