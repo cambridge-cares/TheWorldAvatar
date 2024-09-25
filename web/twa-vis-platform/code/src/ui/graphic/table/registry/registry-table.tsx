@@ -9,6 +9,7 @@ import { RegistryFieldValues } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
 import RegistryRowActions from './actions/registry-table-action';
 import IconComponent from 'ui/graphic/icon/icon';
+import StatusComponent from 'ui/text/status/status';
 
 interface RegistryTableProps {
   recordType: string;
@@ -41,6 +42,13 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
       id: field,
       accessorKey: field,
       header: parseWordsForLabels(field),
+      cell: (context: CellContext<Record<string, string>, unknown>) => {
+        // Render status differently
+        if (context.column.id.toLowerCase() === "status") {
+          return (<StatusComponent status={`${context.getValue()}`} />);
+        }
+        return context.getValue();
+      }
     }))];
   }, [props.instances]);
 
