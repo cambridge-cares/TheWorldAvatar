@@ -14,6 +14,8 @@ export const FORM_STATES: Record<string, string> = {
   FRI: "friday",
   SAT: "saturday",
   SUN: "sunday",
+  START_DATE: "start date",
+  END_DATE: "end date",
   TIME_SLOT_START: "time slot start",
   TIME_SLOT_END: "time slot end",
 };

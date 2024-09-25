@@ -65,6 +65,34 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             <option value={regularService}>{regularService}</option>
           </select>
         </div>
+        <FormFieldComponent
+          entityType={scheduleType}
+          field={{
+            "@id": "string",
+            "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+            name: { "@value": FORM_STATES.START_DATE },
+            fieldId: FORM_STATES.START_DATE,
+            datatype: "date",
+            description: { "@value": "Effective start date of service" },
+            order: 0,
+          }}
+          form={props.form}
+          options={props.options}
+        />
+        {selectedServiceOption === regularService && <FormFieldComponent
+          entityType={scheduleType}
+          field={{
+            "@id": "string",
+            "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+            name: { "@value": FORM_STATES.END_DATE },
+            fieldId: FORM_STATES.END_DATE,
+            datatype: "date",
+            description: { "@value": "Effective end date of service" },
+            order: 0,
+          }}
+          form={props.form}
+          options={props.options}
+        />}
         {selectedServiceOption === regularService && <div className={styles["schedule-occurrence-container"]}>
           <span className={fieldStyles["field-text"]}>Repeat every</span>
           <input
