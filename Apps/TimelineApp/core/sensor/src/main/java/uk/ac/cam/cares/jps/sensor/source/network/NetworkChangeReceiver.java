@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.sensor.source.network;
 
 
 
+import static uk.ac.cam.cares.jps.sensor.SensorService.compressData;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -66,7 +68,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                         try {
                             Map<String, JSONArray> allSensorDataMap = deserializeMap(unsentData.data);
                             JSONArray allSensorData = convertMapToSensorData(allSensorDataMap);
-                            sensorNetworkSource.sendPostRequest(unsentData.deviceId, allSensorData);
+                            String jsonString = allSensorData.toString();
+                            byte[] compressedData = compressData(jsonString);
+                            sensorNetworkSource.sendPostRequest(unsentData.deviceId, compressedData, allSensorData);
                             sensorLocalSource.deleteUnsentData(unsentData);
                             Log.e("network change receiver", "unsent data operations completed");
                         } catch (Exception e) {

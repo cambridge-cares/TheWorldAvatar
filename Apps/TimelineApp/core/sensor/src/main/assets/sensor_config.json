@@ -1,0 +1,13 @@
+{
+  "samplingRates": {
+    "accelerometer": "SENSOR_DELAY_NORMAL",
+    "gyroscope": "SENSOR_DELAY_NORMAL",
+    "magnetometer": "SENSOR_DELAY_NORMAL",
+    "light": "SENSOR_DELAY_NORMAL",
+    "humidity": "SENSOR_DELAY_NORMAL",
+    "pressure": "SENSOR_DELAY_NORMAL",
+    "gravity": "SENSOR_DELAY_NORMAL",
+    "location": "SENSOR_DELAY_NORMAL",
+    "sound": "SENSOR_DELAY_NORMAL"
+  }
+}

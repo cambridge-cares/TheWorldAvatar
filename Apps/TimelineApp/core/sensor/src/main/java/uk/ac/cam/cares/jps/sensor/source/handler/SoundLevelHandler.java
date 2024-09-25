@@ -65,7 +65,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      * to process the audio stream.
      */
     @Override
-    public void start() {
+    public void start(Integer integer) {
         if (!isInitialized) {
             return;
         }
@@ -74,8 +74,6 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             LOGGER.warn("Record audio permission not granted. SoundLevel handler failed to start. Request for permission should be handled in fragment.");
             return;
         }
-
-        super.start();
         audioRecord.startRecording();
         isRecording = true;
         startRecordingThread();

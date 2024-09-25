@@ -97,4 +97,31 @@ public class LocationData extends SensorData {
     public String toJSONString() {
         return "";
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", "location");
+
+            JSONObject values = new JSONObject();
+            values.put("latitude", this.latitude);
+            values.put("longitude", this.longitude);
+            values.put("altitude", this.altitude);
+            values.put("speed", this.speed);
+            values.put("bearing", this.bearing);
+            values.put("horizontalAccuracy", this.horizontalAccuracy != null ? this.horizontalAccuracy : JSONObject.NULL);
+            values.put("bearingAccuracy", this.bearingAccuracy != null ? this.bearingAccuracy : JSONObject.NULL);
+            values.put("speedAccuracy", this.speedAccuracy != null ? this.speedAccuracy : JSONObject.NULL);
+            values.put("verticalAccuracy", this.verticalAccuracy != null ? this.verticalAccuracy : JSONObject.NULL);
+
+            json.put("values", values);
+            json.put("time", this.time);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
 }

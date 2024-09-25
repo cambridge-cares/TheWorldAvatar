@@ -16,6 +16,9 @@ public class SensorCollectionStateManagerRepository {
     LoginRepository loginRepository;
     SensorCollectionStateManager sensorCollectionStateManager;
 
+    public void setTaskId(Object o) {
+    }
+
     private interface FunctionRunWithSensorCollectionState<E> {
         E get() throws SensorCollectionStateException;
     }
@@ -107,4 +110,15 @@ public class SensorCollectionStateManagerRepository {
     public void clearManager(String userId) {
         sensorCollectionStateManager.clearState(userId);
     }
+
+    /**
+     * Retrieves task id.
+     * @param callback The callback that will be invoked with the task ID once it is retrieved,
+     * or with an error if the operation fails.
+     */
+    public void getTaskId(RepositoryCallback<String> callback) {
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback,
+                (FunctionRunWithSensorCollectionState<String>) () -> sensorCollectionStateManager.getTaskId());
+    }
+
 }
