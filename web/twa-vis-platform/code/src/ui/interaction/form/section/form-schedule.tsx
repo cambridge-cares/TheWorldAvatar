@@ -7,8 +7,8 @@ import { UseFormReturn } from 'react-hook-form';
 import { PropertyGroup, VALUE_KEY } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
 import FormCheckboxField from '../field/form-checkbox-field';
-import FormDateTimePicker from '../field/form-date-time-picker';
 import { FORM_STATES } from '../form-utils';
+import FormFieldComponent from '../field/form-field';
 
 interface FormScheduleProps {
   group: PropertyGroup;
@@ -29,6 +29,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
   const daysOfWeekLabel: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const singleService: string = "Single Service";
   const regularService: string = "Regular Service";
+  const scheduleType: string = "schedule";
 
   // Define the state to store the selected value
   const [selectedServiceOption, setSelectedServiceOption] = useState<string>(
@@ -97,46 +98,34 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
         <div className={styles["time-slot-container"]}>
           <h1 className={fieldStyles["field-text"]} style={{ margin: "0.5rem 0.75rem" }}>Time Slot</h1>
           <div className={styles["form-fieldset-contents"]}>
-            <div className={fieldStyles["form-field-container"]}>
-              <div className={fieldStyles["form-input-container"]}>
-                <FormDateTimePicker
-                  field={{
-                    "@id": "string",
-                    "@type": "http://www.w3.org/ns/shacl#PropertyShape",
-                    name: { "@value": "from" },
-                    fieldId: FORM_STATES.TIME_SLOT_START,
-                    datatype: "time",
-                    description: { "@value": "" },
-                    order: 0,
-                  }}
-                  form={props.form}
-                  options={props.options}
-                  styles={{
-                    label: [fieldStyles["form-input-label"]],
-                  }}
-                />
-              </div>
-            </div>
-            <div className={fieldStyles["form-field-container"]}>
-              <div className={fieldStyles["form-input-container"]}>
-                <FormDateTimePicker
-                  field={{
-                    "@id": "string",
-                    "@type": "http://www.w3.org/ns/shacl#PropertyShape",
-                    name: { "@value": "to" },
-                    fieldId: FORM_STATES.TIME_SLOT_END,
-                    datatype: "time",
-                    description: { "@value": "" },
-                    order: 0,
-                  }}
-                  form={props.form}
-                  options={props.options}
-                  styles={{
-                    label: [fieldStyles["form-input-label"]],
-                  }}
-                />
-              </div>
-            </div>
+            <FormFieldComponent
+              entityType={scheduleType}
+              field={{
+                "@id": "string",
+                "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+                name: { "@value": "from" },
+                fieldId: FORM_STATES.TIME_SLOT_START,
+                datatype: "time",
+                description: { "@value": "" },
+                order: 0,
+              }}
+              form={props.form}
+              options={props.options}
+            />
+            <FormFieldComponent
+              entityType={scheduleType}
+              field={{
+                "@id": "string",
+                "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+                name: { "@value": "to" },
+                fieldId: FORM_STATES.TIME_SLOT_END,
+                datatype: "time",
+                description: { "@value": "" },
+                order: 1,
+              }}
+              form={props.form}
+              options={props.options}
+            />
           </div>
         </div>
       </div>

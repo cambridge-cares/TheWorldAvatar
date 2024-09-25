@@ -16,7 +16,7 @@ import FormInputMinMaxField from './input/form-min-max-input';
 
 interface FormFieldProps {
   entityType: string;
-  agentApi: string;
+  agentApi?: string;
   field: PropertyShape;
   form: UseFormReturn;
   options?: {
@@ -28,7 +28,7 @@ interface FormFieldProps {
  * Renders a form field as part of the form component.
  * 
  * @param {string} entityType The type of entity.
- * @param {string} agentApi The target agent endpoint for any registry related functionalities.
+ * @param {string} agentApi The target agent endpoint for any registry related functionalities. Optional for dropdown
  * @param {PropertyShape} field The form field data model.
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
  * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.
