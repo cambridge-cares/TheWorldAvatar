@@ -4,7 +4,7 @@ import generalStyles from '../form.module.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { defaultSearchOption, ONTOLOGY_CONCEPT_ROOT, OntologyConcept, OntologyConceptMappings, PropertyShape, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAvailableTypes } from 'utils/server-actions';
@@ -76,7 +76,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
           firstOption = "Singapore";
         }
         // Add the default search option only if this is the search form
-        if (form.getValues(FORM_STATES.FORM_TYPE) === PathNames.SEARCH) {
+        if (form.getValues(FORM_STATES.FORM_TYPE) === Paths.SEARCH) {
           firstOption = defaultSearchOption.label.value;
           concepts.unshift(defaultSearchOption);
         }
@@ -91,7 +91,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
       setIsFetching(false);
     }
 
-    if ((formType != PathNames.REGISTRY || formType != PathNames.REGISTRY_DELETE)
+    if ((props.form.getValues(FORM_STATES.FORM_TYPE) != Paths.REGISTRY || props.form.getValues(FORM_STATES.FORM_TYPE) != Paths.REGISTRY_DELETE)
       && props.field.in && !effectRan.current) {
       getEntityConcepts(props.field, props.form);
     }
@@ -108,7 +108,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
       <div className={styles["form-field-container"]}>
         <div className={styles["form-input-container"]}>
           {/** Display input min max range only if this is the search form and a numerical value */}
-          {formType == PathNames.SEARCH && ["integer", "decimal"].includes(props.field.datatype)
+          {formType == Paths.SEARCH && ["integer", "decimal"].includes(props.field.datatype)
             ? <FormInputMinMaxField
               field={props.field}
               form={props.form}

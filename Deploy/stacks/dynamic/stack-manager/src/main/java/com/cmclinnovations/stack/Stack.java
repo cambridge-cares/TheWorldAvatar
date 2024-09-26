@@ -80,7 +80,9 @@ public class Stack {
 
         this.config = config;
 
-        StackClient.setHostPath(config.getHostPath());
+        if (null != config) {
+            StackClient.setHostPath(config.getHostPath());
+        }
     }
 
     public void initialiseServices() {

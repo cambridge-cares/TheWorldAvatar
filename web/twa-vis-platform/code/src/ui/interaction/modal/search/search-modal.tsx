@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import { FormComponent } from 'ui/interaction/form/form';
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { HttpResponse } from 'utils/server-actions';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import ResponseComponent from 'ui/text/response/response';
@@ -63,7 +63,7 @@ export default function SearchModal(props: Readonly<SearchModalProps>) {
           <FormComponent
             formRef={formRef}
             entityType={props.id}
-            formType={PathNames.SEARCH}
+            formType={Paths.SEARCH}
             agentApi={`${props.stack}/vis-backend-agent`}
             setResponse={setResponse}
             onSubmittingChange={handleFormSubmittingChange}
