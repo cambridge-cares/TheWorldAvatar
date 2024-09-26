@@ -11,7 +11,7 @@ import { parseWordsForLabels } from 'utils/client-utils';
 import { getLabelledData } from 'utils/server-actions';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import RegistryTable from './registry-table';
-import TableRibbon from './table-ribbon';
+import TableRibbon from './ribbon/table-ribbon';
 
 interface RegistryTableComponentProps {
   entityType: string;
