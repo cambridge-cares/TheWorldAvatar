@@ -4,9 +4,9 @@ drop column if exists company_uuid,
 drop column if exists industry_uuid,
 drop column if exists facility_uuid;
 alter table data_centres 
-add column company_uuid TEXT,
-add column industry_uuid TEXT,
-add column facility_uuid TEXT;
+add column company_uuid UUID,
+add column industry_uuid UUID,
+add column facility_uuid UUID;
 UPDATE data_centres
 SET company_uuid = uuid_generate_v5('6ba7b810-9dad-11d1-80b4-00c04fd430c8', company),
    industry_uuid = uuid_generate_v5('9a791b56-6c62-4ebf-87bd-e4e87cbedd61', infrastructure_type),
