@@ -76,14 +76,14 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
         </div>
         }
         <MaterialIconButton
-            iconName={buttonIcon}
-            className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
-            text={{
-              styles: [styles["button-text"]],
-              content: buttonText
-            }}
-            onClick={buttonEvent}
-          />)}
+          iconName={buttonIcon}
+          className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
+          text={{
+            styles: [styles["button-text"]],
+            content: buttonText
+          }}
+          onClick={buttonEvent}
+        />)}
         <DownloadButton
           agentApi={`${props.registryAgentApi}/csv/${props.entityType}`}
           className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
