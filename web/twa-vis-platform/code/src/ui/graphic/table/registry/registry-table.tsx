@@ -51,7 +51,10 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
         if (context.column.id.toLowerCase() === "status") {
           return (<StatusComponent status={`${context.getValue()}`} />);
         }
-        return parseWordsForLabels(`${context.getValue()}`);
+        if (context.getValue()) {
+          return parseWordsForLabels(`${context.getValue()}`);
+        }
+        return "";
       }
     }))];
   }, [props.instances]);
