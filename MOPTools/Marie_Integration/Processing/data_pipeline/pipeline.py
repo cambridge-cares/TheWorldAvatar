@@ -125,7 +125,7 @@ class ChatGPTAPI:
         self.api_key    = self.read_api_key_from_file()
         self.client     = OpenAI(api_key=self.api_key)
 
-    def send_request(self, pdf_text: str, prompt: str, model_name: str, json_out: int) -> str:
+    def send_request(self, pdf_text: str, prompt: str, model_name: str, json_out: int, dynamic_prompt) -> str:
         """
         Sends a request to the OpenAI API with the given text and prompt.
 
@@ -137,9 +137,10 @@ class ChatGPTAPI:
         Returns:
         str:                    The response from the OpenAI API.
         """
-        full_prompt       = f"{prompt}\n\n{pdf_text}"
+        
         match  json_out:
             case 12:
+              full_prompt       = f"{prompt}\n\n{pdf_text}"
               messages    =[
               {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
               {"role": "user", "content": full_prompt} 
@@ -173,12 +174,16 @@ class ChatGPTAPI:
                                                                   "Add": {
                                                                       "type": "object",
                                                                       "properties": {
-                                                                          "usedVessel": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
                                                                           "addedChemicalName": {"type": "string"},
                                                                           "addedChemicalAmount": {"type": "string"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "addedDropwise": {"type": "boolean"},
+                                                                          "atmosphere": {"type": "string"},
+                                                                          "additionTime": {"type": "string"}
                                                                       },
-                                                                      "required": ["usedVessel", "addedChemicalName", "addedChemicalAmount", "stepNumber"],
+                                                                      "required": ["usedVesselName", "usedVesselType", "addedChemicalName", "addedChemicalAmount", "stepNumber", "addedDropwise", "atmosphere", "additionTime"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -197,11 +202,13 @@ class ChatGPTAPI:
                                                                           "heatingCoolingRate": {"type": "string"},
                                                                           "heatingCoolingRateComment": {"type": "string"},
                                                                           "underVacuum": {"type": "boolean"},
-                                                                          "usedVessel": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
                                                                           "sealedVessel": {"type": "boolean"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "atmosphere": {"type": "string"}
                                                                       },
-                                                                      "required": ["heatCoolingTime", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVessel", "sealedVessel", "stepNumber", "heatingCoolingRateComment"],
+                                                                      "required": ["heatCoolingTime", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVesselName", "usedVesselType", "sealedVessel", "stepNumber", "heatingCoolingRateComment", "atmosphere"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -217,11 +224,13 @@ class ChatGPTAPI:
                                                                           "washingSolventName": {"type": "string"},
                                                                           "washingSolventAmount": {"type": "string"},
                                                                           "repetitions": {"type": "integer"},
-                                                                          "usedVessel": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
                                                                           "stepNumber": {"type": "integer"},
-                                                                          "filterComment": {"type": "string"}
+                                                                          "filterComment": {"type": "string"},
+                                                                          "atmosphere": {"type": "string"}
                                                                       },
-                                                                      "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVessel", "stepNumber", "filterComment"],
+                                                                      "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVesselName", "usedVesselType", "stepNumber", "filterComment", "atmosphere"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -234,13 +243,14 @@ class ChatGPTAPI:
                                                                   "Crystallization": {
                                                                       "type": "object",
                                                                       "properties": {
-                                                                          "usedVessel": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
                                                                           "targetTemperature": {"type": "string"},
                                                                           "stepNumber": {"type": "integer"},
                                                                           "crystallizationTime": {"type": "string"},
                                                                           "crystallizationComment": {"type": "string"}
                                                                       },
-                                                                      "required": ["usedVessel", "targetTemperature", "crystallizationTime", "crystallizationComment", "stepNumber"],
+                                                                      "required": ["usedVesselName", "usedVesselType", "targetTemperature", "crystallizationTime", "crystallizationComment", "stepNumber"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -254,10 +264,12 @@ class ChatGPTAPI:
                                                                       "type": "object",
                                                                       "properties": {
                                                                           "stirringTime": {"type": "string"},
-                                                                          "usedVessel": {"type": "string"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "atmosphere": {"type": "string"}
                                                                       },
-                                                                      "required": ["stirringTime", "usedVessel", "stepNumber"],
+                                                                      "required": ["usedVesselName", "usedVesselType", "stirringTime", "stepNumber", "atmosphere"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -271,14 +283,55 @@ class ChatGPTAPI:
                                                                       "type": "object",
                                                                       "properties": {
                                                                           "sonicationTime": {"type": "string"},
-                                                                          "usedVessel": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
                                                                           "stepNumber": {"type": "integer"}
                                                                       },
-                                                                      "required": ["sonicationTime", "usedVessel", "stepNumber"],
+                                                                      "required": ["sonicationTime", "usedVesselName", "usedVesselType", "stepNumber"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
                                                               "required": ["Sonicate"],
+                                                              "additionalProperties": False
+                                                          },
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Evaporate": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "evaporationTime": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
+                                                                          "pressure": {"type": "string"},
+                                                                          "temperature": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["evaporationTime", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Evaporate"],
+                                                              "additionalProperties": False
+                                                          },
+                                                          {
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Dry": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "dryingTime": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string"},
+                                                                          "usedVesselType": {"type": "string"},
+                                                                          "pressure": {"type": "string"},
+                                                                          "temperature": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["dryingTime", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Dry"],
                                                               "additionalProperties": False
                                                           }
                                                       ]
@@ -301,8 +354,334 @@ class ChatGPTAPI:
                   top_p=0.1  # Limits the selection of probability mass
               )
 
+            case 17:
+              full_prompt       = f"{prompt}\n\n{pdf_text}"
+              add               = {}
+              heat_chill        = {}
+              filt              = {}
+              crystal           = {}
+              stir              = {}
+              soni              = {}
+              evap              = {}
+              dry               = {}
+              dissolve          = {}
+              separate          = {}
+              transfer          = {}
+
+              if dynamic_prompt["Add"] == True:
+                add.update({"type": "object",
+                                                              "properties": {
+                                                                  "Add": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "addedChemicalName": { "type": "array",
+                                                                          "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}},
+                                                                          "addedChemicalAmount": {"type": "string", "description": "Added amount of the chemcial used in this step."},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "addedDropwise": {"type": "boolean", "description": "true if text states added dropwise, false otherwise."},
+                                                                          "stir": {"type": "boolean", "description": "true if stired while adding false otherwise."},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."},
+                                                                          "duration": {"type": "string", "description": "Time the addition takes. E.g. Added over 5 minutes."},
+                                                                          "targetPH": {"type": "string", "description": "If the step involves acidification note target Ph."},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
+                                                                      },
+                                                                      "required": ["usedVesselName", "usedVesselType", "addedChemicalName", "addedChemicalAmount", "stepNumber", "addedDropwise", "atmosphere", "duration", "stir", "targetPH", "comment"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Add"],
+                                                              "additionalProperties": False
+                                                              })
+
+              if dynamic_prompt["HeatChill"]:
+                heat_chill.update({"type": "object",
+                                                              "properties": {
+                                                                  "HeatChill": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string", "description": "Time the vessel is heated or cooled."},
+                                                                          "usedDevice": {"type": "string", "description": "Equipment used for heating or cooling."},
+                                                                          "targetTemperature": {"type": "string", "description": "Temperature the vessel is heated to."},
+                                                                          "heatingCoolingRate": {"type": "string", "description": "Temperature gradient that is applied to heat the vessel. For constant fill in 0 and for reflux state reflux."},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."},
+                                                                          "underVacuum": {"type": "boolean", "description": "If the heating is performed under reduced pressure or vacuum."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "sealedVessel": {"type": "boolean", "description": "true if the vessel is sealed. "},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."}
+                                                                      },
+                                                                      "required": ["duration", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVesselName", "usedVesselType", "sealedVessel", "stepNumber", "comment", "atmosphere"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["HeatChill"],
+                                                              "additionalProperties": False})
+
+              if dynamic_prompt["Dry"]:
+                dry.update({
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Dry": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string", "description": "Time the chemical is dried."},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "pressure": {"type": "string", "description": "Pressure applied for drying, often: reduced Pressue, Vacum, etc. "},
+                                                                          "temperature": {"type": "string", "description": "Temperature applied for drying."},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Dry"],
+                                                              "additionalProperties": False
+                                                          })
+
+
+              if dynamic_prompt["Filter"]:
+                filt.update({"type": "object",
+                                                              "properties": {
+                                                                  "Filter": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "washingSolventName": { "type": "array",
+                                                                          "items":{"type":"string"}},
+                                                                          "washingSolventAmount": {"type": "string", "description": "Amount of Solvent per filtration. "},
+                                                                          "vacuumFiltration": {"type": "boolean", "description": "True for vacuum filtration. "},
+                                                                          "repetitions": {"type": "integer", "description": "Number of filtrations"},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."}
+                                                                      },
+                                                                      "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVesselName", "usedVesselType", "stepNumber", "comment", "atmosphere","vacuumFiltration"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Filter"],
+                                                              "additionalProperties": False
+                                                          })
+
+              if dynamic_prompt["Sonicate"]:
+                soni.update({"type": "object",
+                                                              "properties": {
+                                                                  "Sonicate": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Sonicate"],
+                                                              "additionalProperties": False
+                                                          })
+
+              if dynamic_prompt["Stir"]:
+                stir.update({
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Stir": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."},
+                                                                          "temperature": {"type": "string", "description": "Temperature at which it is stirred."}
+                                                                      },
+                                                                      "required": ["usedVesselName", "usedVesselType", "duration", "stepNumber", "atmosphere", "temperature"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Stir"],
+                                                              "additionalProperties": False
+                                                          })
+              if dynamic_prompt["Crystallization"]:
+                crystal.update({
+                                                              "type": "object",
+                                                              "properties": {
+                                                                  "Crystallization": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "targetTemperature": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "duration": {"type": "string"},
+                                                                          "crystallizationComment": {"type": "string"}
+                                                                      },
+                                                                      "required": ["usedVesselName", "usedVesselType", "targetTemperature", "duration", "crystallizationComment", "stepNumber"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Crystallization"],
+                                                              "additionalProperties": False
+                                                          })
+              if dynamic_prompt["Evaporate"]:
+                evap.update({"type": "object",
+                                                              "properties": {
+                                                                  "Evaporate": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "pressure": {"type": "string"},
+                                                                          "temperature": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Evaporate"],
+                                                              "additionalProperties": False
+                                                          })
+              if dynamic_prompt["Dissolve"]:
+                dissolve.update({"type": "object",
+                                                              "properties": {
+                                                                  "Dissolve": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "solventName": { "type": "array",
+                                                                          "items":{"type":"string"}},
+                                                                          "solventAmount": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Dissolve"],
+                                                              "additionalProperties": False
+                                                          })
+              if dynamic_prompt["Separate"]:
+                separate.update({"type": "object",
+                                                              "properties": {
+                                                                  "Separate": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "solventName": { "type": "array",
+                                                                          "items":{"type":"string"}},
+                                                                          "solventAmount": {"type": "string"},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Separate"],
+                                                              "additionalProperties": False
+                                                          })
+              if dynamic_prompt["Transfer"]:
+                transfer.update({"type": "object",
+                                                              "properties": {
+                                                                  "Transfer": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                          "duration": {"type": "string"},
+                                                                          "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "targetVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
+                                                                          "targetVesselType": {"type": "string", "description": "One of 7 vessel types.",
+                                                                          "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
+                                                                          "stepNumber": {"type": "integer"}
+                                                                      },
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "targetVesselName", "targetVesselType", "stepNumber", "solventName", "solventAmount"],
+                                                                      "additionalProperties": False
+                                                                  }
+                                                              },
+                                                              "required": ["Transfer"],
+                                                              "additionalProperties": False
+                                                          })
+              messages    =[
+              {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
+              {"role": "user", "content": full_prompt} 
+              ]
+
+              response = self.client.chat.completions.create(
+                  model=model_name,
+                  response_format={
+                      "type": "json_schema",
+                      "json_schema": {
+                          "name": "synthesis",
+                          "schema": {
+                              "type": "object",
+                              "properties": {
+                                  "Synthesis": {
+                                      "type": "array",
+                                      "items": {
+                                          "type": "object",
+                                          "properties": {
+                                              "productNames": { "type": "array",
+                                                      "items":{"type":"string"}},
+                                              "productCCDCNumber": {"type": "string"},
+                                              "steps": {
+                                                  "type": "array",
+                                                  "items": {
+                                                      "type": "object",
+                                                      "anyOf": [  
+                                                          add,
+                                                          heat_chill,
+                                                          filt,
+                                                          crystal,
+                                                          stir,
+                                                          soni,
+                                                          evap,
+                                                          dry,
+                                                          dissolve
+                                                      ]
+                                                  }
+                                              }
+                                          },
+                                          "required": ["productNames", "productCCDCNumber", "steps"],
+                                          "additionalProperties": False
+                                      }
+                                  }
+                              },
+                              "required": ["Synthesis"],
+                              "additionalProperties": False
+                          },
+                          "strict": True
+                      }
+                  },
+                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
+              )
+
 
             case 11:
+              full_prompt       = f"{prompt}\n\n{pdf_text}"
               messages    =[
               {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
               {"role": "user", "content": full_prompt} 
@@ -372,6 +751,7 @@ class ChatGPTAPI:
                   top_p=0.1  # Limits the selection of probability mass
               )
             case 13:
+              full_prompt       = f"{prompt}\n\n{pdf_text}"
               messages    =[
               {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
               {"role": "user", "content": full_prompt} 
@@ -475,6 +855,7 @@ class ChatGPTAPI:
                   top_p=0.1  # Limits the selection of probability mass
               )
             case 14:
+              full_prompt       = f"{prompt}\n\n{pdf_text}"
               messages    =[
               {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
               {"role": "user", "content": full_prompt} 
@@ -551,15 +932,99 @@ class ChatGPTAPI:
                   temperature=0.2,  # Adds controlled randomness
                   top_p=0.1  # Limits the selection of probability mass
               )
-
+            case 15:
+              full_prompt       = f"{prompt}"
+              messages    =[
+              {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
+              {"role": "user", "content": full_prompt} 
+              ]
+              response = self.client.chat.completions.create(
+                  model=model_name,
+                  response_format={
+                      "type": "json_schema",
+                      "json_schema": {
+                          "name": "chemicalSynthesis",
+                          "schema": {
+                              "type": "object",
+                              "properties": {
+                                  "mopFormula": {"type": "string"},
+                                  "cbuFormula1": {"type": "string"},
+                                  "cbuSpeciesNames1": {
+                                      "type": "array",
+                                      "items": {"type": "string"}
+                                  },
+                                  "cbuFormula2": {"type": "string"},
+                                  "cbuSpeciesNames2": { 
+                                      "type": "array",
+                                      "items": {"type": "string"}
+                                  }
+                              },
+                              "required": [
+                                  "mopFormula", "cbuFormula1", 
+                                  "cbuSpeciesNames1", "cbuFormula2", 
+                                  "cbuSpeciesNames2"
+                              ],
+                              "additionalProperties": False  
+                          },
+                      "strict": True
+                      }
+                  },
+                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
+              )
+            case 18:
+              full_prompt       = f"{prompt}\n\n{pdf_text}"
+              messages    =[
+              {"role": "system","content": "You will be provided with unstructured data, and your task is to parse it into json format."},
+              {"role": "user", "content": full_prompt} 
+              ]
+              response = self.client.chat.completions.create(
+                  model=model_name,
+                  response_format={
+                      "type": "json_schema",
+                      "json_schema": {
+                          "name": "chemicalSynthesis",
+                          "schema": {
+                              "type": "object",
+                              "properties": {
+                                "Add": {"type": "boolean"},
+                                "HeatChill": {"type": "boolean"},
+                                "Dry": {"type": "boolean"},
+                                "Evaporate": {"type": "boolean"},
+                                "Filter": {"type": "boolean"},
+                                "Sonicate": {"type": "boolean"},
+                                "Stir": {"type": "boolean"},
+                                "Crystallization": {"type": "boolean"},
+                                "Dissolve": {"type": "boolean"},
+                                "Separate": {"type": "boolean"},
+                                "Transfer": {"type": "boolean"}
+                              },
+                              "required": [
+                                  "Add", "HeatChill", "Separate", "Transfer",
+                                  "Dry", "Evaporate", "Crystallization",
+                                  "Filter", "Sonicate", "Stir", "Dissolve"
+                              ],
+                              "additionalProperties": False  
+                          },
+                      "strict": True
+                      }
+                  },
+                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
+              )
             case _:
+              full_prompt       = f"{prompt}\n\n{pdf_text}"
               print("default prompt")
               messages    =[
               {"role": "system","content": "You will be provided with synthesis text and your task is to extract text based on the instruction."},
               {"role": "user", "content": full_prompt} ]
               response        = self.client.chat.completions.create(
                                   model=model_name,
-                                  messages=messages
+                                  messages=messages,
+                  temperature=0.2,  # Adds controlled randomness
+                  top_p=0.1  # Limits the selection of probability mass
               )
         return response.choices[0].message.content
 
@@ -737,6 +1202,77 @@ group by ?Species
             if literature_doi["DOI"]=="Not in OntoMOPs KG":
                 continue
             GetPaper.GetPapers.get_paper(literature_doi["DOI"])
+def extract_bracket_substrings(input_string):
+    # Use regex to find all substrings within square brackets
+    substrings = re.findall(r'\[[^\]]*\]', input_string)
+    
+    if len(substrings) >= 2:
+        substring1 = substrings[0]
+        substring2 = substrings[1]
+        return substring1, substring2
+    else:
+        return None, None
+def input_for_cbu(doi:str) -> dict:
+    # initialize KG class
+    script_dir                          = os.path.dirname(os.path.abspath(__file__))
+    # make file path dependent on script location
+    a_box_updates_config                = KG.config_a_box_updates(os.path.join(script_dir,"../OntoSynthesisConnection.env"))
+    # instantiate class
+    updater = KG.UpdateKG(
+        query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
+        update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
+        kg_user                         = a_box_updates_config.KG_USERNAME,
+        kg_password                     = a_box_updates_config.KG_PASSWORD
+    )
+    mops                                = get_literature(doi)
+    species_list                        = []
+    cbu_list                            = []
+    mop_list                            = []
+
+    for mop in mops:
+      print("mops: ", mop)
+      cbu_list.append({extract_bracket_substrings(mop["Formula"])})
+      query                               = f"""
+      PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
+      PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+      PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      PREFIX bibo: <http://purl.org/ontology/bibo/>
+      PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>	
+
+
+      SELECT distinct 
+            (GROUP_CONCAT(DISTINCT ?label; separator=", ") AS ?allLabels) 
+      WHERE {{
+      ?ChemicalSynthesis 	osyn:retrievedFrom 			?doc 			.
+        ?doc				bibo:doi					?provenance 	.
+      ?doc <http://purl.org/ontology/bibo/doi> 		?doi 			.
+        ?transform osyn:isDescribedBy 	?ChemicalSynthesis ;
+                  osyn:hasChemicalOutput ?output 			. 
+        ?output 	osyn:isRepresentedBy 	?MOP	.
+        ?MOP 		mop:hasCCDCNumber		"{mop["CCDCNum"]}" .
+        ?ChemicalSynthesis osyn:hasChemicalInput ?InputChemical.
+        
+        
+        ?InputChemical osyn:referencesMaterial ?Material 	.
+        ?Species skos:altLabel ?label .
+        ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
+        ?SinglePhase <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
+        ?Material <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehaviour> ?SinglePhase .
+        ?PhaseComponent	<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty>	?PhaseComponentConc	.
+        ?PhaseComponentConc om:hasValue		?concval					.
+        ?concval	om:hasNumericalValue ?concnum			;
+                  <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure>	?cunit					.
+        ?cunit	rdfs:label		?concunit				.
+        }}
+        GROUP BY ?Species  ?doi ?ChemicalSynthesis """        
+      cbu_labels                        = updater.sparql_client.performQuery(query) 
+      species_list.append(cbu_labels)
+      mop_list.append(mop["CCDCNum"])
+
+    print(cbu_list, species_list)
+    return mop_list, cbu_list, species_list
+
 def query_mop_names(doi:str):
     script_dir                          = os.path.dirname(os.path.abspath(__file__))
     # make file path dependent on script location
@@ -746,7 +1282,7 @@ def query_mop_names(doi:str):
         query_endpoint                  = a_box_updates_config.SPARQL_QUERY_ENDPOINT,
         update_endpoint                 = a_box_updates_config.SPARQL_UPDATE_ENDPOINT,
         kg_user                         = a_box_updates_config.KG_USERNAME,
-        kg_password                     = a_box_updates_config.KG_PASSWORD )
+        kg_password                     = a_box_updates_config.KG_PASSWORD)
     #where_lit                   = """   ?Provenance	om:hasReferenceDOI      ?DOI     . """
     #select_variables            = """ DISTINCT  ?DOI"""
     #literature_dois             = sparql_point.query_triple(where_lit, select_variables)
