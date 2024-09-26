@@ -58,7 +58,7 @@ unitFrequency = year
 ```
 
 #### 1.1.2.2 Meta Data
-The Mackay Data Agent is able to handle meta data queries to the knowledge graph as well. Some examples can be found in the `./cinfs_files/data` folder. 
+The Mackay Data Agent is able to handle meta data queries to the knowledge graph as well. Some examples can be found in the `./confs_files/data` folder. 
 - `variable_name` - name of the variable
 - `url` - query endpoint
 - `user` - username to access query endpoint if any exist
