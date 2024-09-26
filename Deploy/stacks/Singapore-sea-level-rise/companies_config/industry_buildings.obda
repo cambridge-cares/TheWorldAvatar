@@ -24,8 +24,8 @@ target          building:{building_uuid} ontobim:hasFacility :datacenter/{facili
                 icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
-                    "facility_uuid"::text,
-                    "building_uuid"::text,
+                    "facility_uuid",
+                    "building_uuid",
                     "address",
                     "postal_code"
                 FROM
@@ -39,8 +39,8 @@ target          building:{building_uuid} ontobim:hasFacility :chemplant/{facilit
                 icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
-                    "facility_uuid"::text,
-                    "building_uuid"::text,
+                    "facility_uuid",
+                    "building_uuid",
                     "address",
                     "postal_code"
                 FROM
@@ -52,8 +52,8 @@ target          building:{building_uuid} ontobim:hasFacility :waferPlant/{facili
                 icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
-                    "facility_uuid"::text,
-                    "building_uuid"::text,
+                    "facility_uuid",
+                    "building_uuid",
                     "address",
                     "postal_code"
                 FROM
@@ -65,8 +65,8 @@ target          building:{building_uuid} ontobim:hasFacility :foodPlant/{facilit
                 icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
-                    "facility_uuid"::text,
-                    "building_uuid"::text,
+                    "facility_uuid",
+                    "building_uuid",
                     "address",
                     "postal_code"
                 FROM
@@ -78,8 +78,8 @@ target          building:{building_uuid} ontobim:hasFacility :pharmaPlant/{facil
                 icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
-                    "facility_uuid"::text,
-                    "building_uuid"::text,
+                    "facility_uuid",
+                    "building_uuid",
                     "address",
                     "postal_code"
                 FROM
@@ -91,8 +91,8 @@ target          building:{building_uuid} ontobim:hasFacility :precisionPlant/{fa
                 icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
-                    "facility_uuid"::text,
-                    "building_uuid"::text,
+                    "facility_uuid",
+                    "building_uuid",
                     "address",
                     "postal_code"
                 FROM
@@ -104,8 +104,8 @@ target          building:{building_uuid} ontobim:hasFacility :printingPlant/{fac
                 icontact:address/{facility_uuid} icontact:hasStreet "{address}"^^xsd:string;
                                                 ontobuiltenv:hasPostalCode "{postal_code}"^^xsd:string.
 source          SELECT
-                    "facility_uuid"::text,
-                    "building_uuid"::text,
+                    "facility_uuid",
+                    "building_uuid",
                     "address",
                     "postal_code"
                 FROM
@@ -117,8 +117,8 @@ target          building:{building_uuid} ontobim:hasFacility :chemplant/{company
                 icontact:address/{building_uuid} ontocompany:hasLandLotDetails ontocompany:landlotdetails/{building_uuid}.
                 ontocompany:landlotdetails/{building_uuid} ontocompany:hasLandLotNumber "{land_lot_number}"^^xsd:string.              
 source          SELECT
-                    "company_uuid"::text,
-                    "building_uuid"::text,
+                    "company_uuid",
+                    "building_uuid",
                     "land_lot_number"
                 FROM
                     "jurong_island_buildings"
