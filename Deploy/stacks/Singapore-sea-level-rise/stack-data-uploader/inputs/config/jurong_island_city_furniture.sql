@@ -5,8 +5,8 @@ ALTER TABLE jurong_island_city_furniture
     DROP COLUMN IF EXISTS "city_furniture_uuid";
 
 ALTER TABLE jurong_island_city_furniture 
-    ADD COLUMN company_uuid UUID,
-    ADD COLUMN "city_furniture_uuid" UUID;
+    ADD COLUMN company_uuid TEXT,
+    ADD COLUMN "city_furniture_uuid" TEXT;
 
 WITH cityfurniture_footprint AS (
     SELECT cityobject_genericattrib.cityobject_id,
