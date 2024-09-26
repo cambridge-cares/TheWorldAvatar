@@ -52,9 +52,9 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{facility_uuid}. 
                 :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "facility_uuid",
-                    "industry_uuid",
+                    "company_uuid"::text,
+                    "facility_uuid"::text,
+                    "industry_uuid"::text,
                     "data_centre_name",
                     "company",
                     "ssic_code",
@@ -105,9 +105,9 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{facility_uuid}. 
                 :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "facility_uuid",
-                    "industry_uuid",
+                    "company_uuid"::text,
+                    "facility_uuid"::text,
+                    "industry_uuid"::text,
                     "product",
                     "plant_name",                    
                     "company",
@@ -163,9 +163,9 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{facility_uuid}. 
                 :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "facility_uuid",
-                    "industry_uuid",
+                    "company_uuid"::text,
+                    "facility_uuid"::text,
+                    "industry_uuid"::text,
                     "product",
                     "plant_name",
                     "surface_area",                    
@@ -216,9 +216,9 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{facility_uuid}. 
                 :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "facility_uuid",
-                    "industry_uuid",
+                    "company_uuid"::text,
+                    "facility_uuid"::text,
+                    "industry_uuid"::text,
                     "product",
                     "plant_name",                    
                     "company",
@@ -268,9 +268,9 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{facility_uuid}. 
                 :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "facility_uuid",
-                    "industry_uuid",
+                    "company_uuid"::text,
+                    "facility_uuid"::text,
+                    "industry_uuid"::text,
                     "plant_name",                    
                     "company",
                     "ssic_code",
@@ -319,9 +319,9 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{facility_uuid}. 
                 :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "facility_uuid",
-                    "industry_uuid",
+                    "company_uuid"::text,
+                    "facility_uuid"::text,
+                    "industry_uuid"::text,
                     "plant_name",                   
                     "company",
                     "ssic_code",
@@ -357,9 +357,9 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{facility_uuid}. 
                 :generatedheatunit/{facility_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "facility_uuid",
-                    "industry_uuid",
+                    "company_uuid"::text,
+                    "facility_uuid"::text,
+                    "industry_uuid"::text,
                     "plant_name",
                     "company",
                     "ssic_code",
@@ -393,8 +393,8 @@ target          :company/{company_uuid} a ontocompany:Company;
                     om:hasUnit :generatedheatunit/{city_furniture_uuid}. 
                 :generatedheatunit/{city_furniture_uuid} skos:notation "MW"^^xsd:string.
 source          SELECT
-                    "company_uuid",
-                    "city_furniture_uuid",
+                    "company_uuid"::text,
+                    "city_furniture_uuid"::text,
                     "company",
                     "ssic_code",
                     "business_activity",
@@ -413,7 +413,7 @@ target          :company/{company_uuid} a ontocompany:Company;
                 :chemplant/{company_uuid} a ontochemplant:ChemicalPlant;
                     rdfs:label "Chemical_Plant_{company}"^^xsd:string.                              
 source          SELECT
-                    "company_uuid",
+                    "company_uuid"::text,
                     "company",
                     "ssic_code",
                     "business_activity"
