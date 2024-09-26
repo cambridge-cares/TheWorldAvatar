@@ -62,7 +62,31 @@ npm install
 npm run build
 ```
 
-7. Open a command terminal at the same directory as this README and run the following:
+7. Navigate to `/model/queries_data_agent.json`, this json file defines the meta and timeseries data to filter out from the raw data returned back by the [MacKay Data Agent], modify it accordingly. 
+
+Under `meta_data`, there are the following keys:
+ - name - name of the variable
+ - unit_convert - scaling applied to the variable (currently the agent only provides one millionth and one thousandth)
+
+ Under `timeseries_data`, there are the following keys:
+ - name - name of the variable
+ - times - timestamps of data to filter out from the raw data
+ - unit_convert - scaling applied to the variable (currently the agent only provides one millionth and one thousandth)
+
+8. Navigate to `/utils/config.py`, this file contains some variables that needs to be modified accordingly:
+- KG_UPDATE_LIST_STATIC - meta data list containing the following key:value pairs: 
+- ```<name of the variable>:<cell address in the Mackay Calculator Excel Model to update new values with>```
+
+- KG_UPDATE_LIST - timeseries data list containing the following key:value pairs: 
+ - ```<name of the variable>:<range of cell addresses in the Mackay Calculator Excel Model to update new values with>```
+
+**Take Note:** The number of cells in the range must be the same as the number of times specified in the `timeseries_data` section in `/model/queries_data_agent.json`
+
+- DATA_AGENT_TIMESERIES_URL - endpoint URL of the [MacKay Data Agent] timeseries data route
+
+- DATA_AGENT_META_URL - endpoint URL of the [MacKay Data Agent] meta data route
+ 
+9. Open a command terminal at the same directory as this README and run the following:
 ```
 flask run --host=X.X.X.X --port=XXXX
 ```
