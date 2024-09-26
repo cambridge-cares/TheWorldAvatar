@@ -100,8 +100,6 @@ export default function Navbar(props: Readonly<NavbarProps>) {
             url={Routes.HELP} />
         }
       </div>
-
-
     </div>
   );
 }

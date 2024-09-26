@@ -10,7 +10,7 @@
 const nextConfig = {
 	reactStrictMode: true,
 	basePath: "", //default 
-	compiler: { removeConsole: true },
+	compiler: { removeConsole: false },
 };
 
 export default nextConfig;

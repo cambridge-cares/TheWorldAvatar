@@ -3,7 +3,7 @@ title: Sample Visualisation
 slug: landing
 ---
 
-<img src="./images/defaults/icons/twa.svg" style="max-width:200px; max-height:100px" />
+<img src="/images/defaults/icons/twa.svg" style="max-width:200px; max-height:100px" />
 
 ---
 

@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
-import { PathNames, PageTitles, Modules } from 'io/config/routes';
+import { Paths, PageTitles, Modules } from 'io/config/routes';
 import MapContainer from 'map/map-container';
 import { ScenarioDefinition } from 'types/scenario';
 import { DefaultSettings } from 'types/settings';
@@ -60,6 +60,6 @@ export default async function VisualisationPage() {
       />
     )
   } else {
-    redirect(PathNames.HOME);
+    redirect(Paths.HOME);
   }
 }

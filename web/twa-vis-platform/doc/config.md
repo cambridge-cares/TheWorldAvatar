@@ -76,9 +76,9 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 ```json
 {
   "branding": {
-    "navbar": ["./images/defaults/navbar-logo.svg"], // Optional custom logo for the navbar (should be 5:1 aspect ratio)
-    "landing": "./images/path/to/svg/light.svg", // Landing page brand/company image for light mode
-    "landingDark": "./images/path/to/svg/dark.svg" // Optional landing page brand/company image for dark mode
+    "navbar": ["/images/defaults/navbar-logo.svg"], // Optional custom logo for the navbar (should be 5:1 aspect ratio)
+    "landing": "/images/path/to/svg/light.svg", // Landing page brand/company image for light mode
+    "landingDark": "/images/path/to/svg/dark.svg" // Optional landing page brand/company image for dark mode
   },
   "modules": {
     "landing": true, // Should the landing page be enabled
@@ -93,7 +93,7 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
       "url": "map",
       "title": "Explore",
       "caption": "Describe your map here",
-      "icon": "./images/path/to/svg.svg"
+      "icon": "/images/path/to/svg.svg"
     }
   ],
   "resources": {
@@ -147,12 +147,12 @@ Icons on the map are shown by default in the layer tree. Additional legend items
       // Group one, item one
       "Active": {
         "type": "symbol",
-        "icon": "./images/active.svg"
+        "icon": "/images/active.svg"
       },
       // Group one, item two
       "Inactive": {
         "type": "symbol",
-        "icon": "./images/inactive.jpg"
+        "icon": "/images/inactive.jpg"
       },
       // Group one, item three
       "Unknown": {
@@ -246,7 +246,7 @@ Below is an example of the contents for a valid `map-settings.json` file for Map
   },
   "icons": {
     // Mappings for the icon name that will be called in code and its corresponding url
-    "info": "./images/defaults/icons/info.svg"
+    "info": "/images/defaults/icons/info.svg"
   }
 }
 ```
@@ -374,7 +374,7 @@ Developers can insert landing pages alongside other supplementary pages such as 
 
 Do note that the supplementary pages will be inserted as thumbnails and accessed via the landing page. It is crucial to add numbers in the file name of supplementary pages to order the thumbnail display according to your preferences. Otherwise, file names are insignificant if the display order is not of utmost significance. For instance, `01.about.md` and `02.glossary.md` will be always be displayed in this sequence as 01 is smaller than 02.
 
-When linking the images in markdown, do note that any relative path should start from the `./images` path (e.g. `./images/defaults/icons/acknowledgement.svg`).
+When linking the images in markdown, do note that any relative path should start from the `/images` path (e.g. `/images/defaults/icons/acknowledgement.svg`).
 
 ### 3.1 Fields
 
