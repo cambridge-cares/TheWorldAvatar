@@ -11,7 +11,7 @@ import { FORM_STATES, initFormField } from './form-utils';
 import FormFieldComponent from './field/form-field';
 import FormSection from './section/form-section';
 import { DependentFormSection } from './section/dependent-form-section';
-import FormSchedule from './section/form-schedule';
+import FormSchedule, { daysOfWeek } from './section/form-schedule';
 import { useDispatch } from 'react-redux';
 import { setFilterFeatureIris } from 'state/map-feature-slice';
 
@@ -110,10 +110,15 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
     let pendingResponse: HttpResponse;
     // For single service
     if (formData[FORM_STATES.RECURRENCE] == 0) {
+      const startDate: string = formData[FORM_STATES.START_DATE];
+      const dateObject: Date = new Date(startDate);
+      const dayOfWeek = daysOfWeek[dateObject.getUTCDay()];
+
       formData = {
         ...formData,
         recurrence: "P1D",
-        "end date": formData[FORM_STATES.START_DATE], // End date must correspond to start date
+        "end date": startDate, // End date must correspond to start date
+        [dayOfWeek]: true, // Ensure the corresponding day of week is true
       }
       // For regular service
     } else if (formData[FORM_STATES.RECURRENCE]) {

@@ -17,6 +17,9 @@ interface FormScheduleProps {
     disabled?: boolean;
   };
 }
+
+export const daysOfWeek: string[] = [FORM_STATES.SUN, FORM_STATES.MON, FORM_STATES.TUES, FORM_STATES.WED, FORM_STATES.THURS, FORM_STATES.FRI, FORM_STATES.SAT];
+
 /**
  * This component renders a form schedule as a form section.
  * 
@@ -25,7 +28,6 @@ interface FormScheduleProps {
  * @param {boolean} options.disabled Optional indicator if the fields should be disabled. Defaults to false.
  */
 export default function FormSchedule(props: Readonly<FormScheduleProps>) {
-  const daysOfWeek: string[] = [FORM_STATES.SUN, FORM_STATES.MON, FORM_STATES.TUES, FORM_STATES.WED, FORM_STATES.THURS, FORM_STATES.FRI, FORM_STATES.SAT];
   const daysOfWeekLabel: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const singleService: string = "Single Service";
   const regularService: string = "Regular Service";
