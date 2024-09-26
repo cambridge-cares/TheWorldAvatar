@@ -53,7 +53,7 @@ Note that for the update-from-TWA function to work, another agent - [MacKay Data
 pip install -r requirements.txt
 ``` 
 
-2. Create a folder called `model` in the same directory as this README if it does not exist yet. Download MacKay Calculator Excel model (```Excel_MacKay_Carbon_Calculator_v209.xlsm```) and mapping csvs (```controls.csv```, ```output.csv```,```single_values.csv```) into ```model``` from [CARES Mackay Calculator model and mapping Dropbox](https://www.dropbox.com/scl/fo/sktgvt6mxuxbffjo5lyfy/AHYhKQPPHdVIY2ChAGaWDIo?rlkey=di2o9os1rp0y6lghp6lthtbrv&dl=0).
+2. Create a folder called `model` in the same directory as this README if it does not exist yet. Download MacKay Calculator Excel model (```Excel_MacKay_Carbon_Calculator_v209.xlsm```, version may be updated) and mapping csvs (```controls.csv```, ```output.csv```,```single_values.csv```) into ```model``` from [CARES Mackay Calculator model and mapping Dropbox](https://www.dropbox.com/scl/fo/sktgvt6mxuxbffjo5lyfy/AHYhKQPPHdVIY2ChAGaWDIo?rlkey=di2o9os1rp0y6lghp6lthtbrv&dl=0).
 
 3. Create a folder called `json` at `/frontend/src/assets/`. Run ```prepare_initial.py```, which generates a `initial_plotdata.json` and a `descriptions.json` in `/frontend/src/assets/json`.
 
