@@ -1,7 +1,10 @@
 package com.cmclinnovations.agent.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.cmclinnovations.agent.utils.StringResource;
@@ -23,12 +26,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class SparqlBinding {
   private Map<String, SparqlResponseField> bindings;
+  private List<SparqlVariableOrder> sequence;
 
   /**
    * Constructs a new model.
    */
   public SparqlBinding(ObjectNode sparqlRow) {
     this.bindings = new HashMap<>();
+    this.sequence = new ArrayList<>();
     Iterator<Map.Entry<String, JsonNode>> iterator = sparqlRow.fields();
     while (iterator.hasNext()) {
       Map.Entry<String, JsonNode> sparqlCol = iterator.next();
@@ -45,7 +50,21 @@ public class SparqlBinding {
    * Retrieve the Bindings as a map object.
    */
   public Map<String, SparqlResponseField> get() {
+    if (!this.sequence.isEmpty()) {
+      // Sort the map if there is a sequence
+      Map<String, SparqlResponseField> sortedBindings = new LinkedHashMap<>();
+      this.sequence
+          .forEach(variable -> sortedBindings.put(variable.property(), this.bindings.get(variable.property())));
+      return sortedBindings;
+    }
     return this.bindings;
+  }
+
+  /**
+   * Retrieve the Bindings as a map object.
+   */
+  public void addSequence(List<SparqlVariableOrder> sequence) {
+    this.sequence = sequence;
   }
 
   /**

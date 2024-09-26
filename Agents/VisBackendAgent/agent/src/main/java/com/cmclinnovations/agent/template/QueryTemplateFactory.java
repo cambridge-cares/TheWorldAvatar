@@ -162,6 +162,13 @@ public class QueryTemplateFactory {
   }
 
   /**
+   * Retrieve the sequence of the variables.
+   */
+  public List<SparqlVariableOrder> getSequence() {
+    return this.varSequence;
+  }
+
+  /**
    * Generates the class restriction line of a query ie:
    * ?iri a <clazz_iri>.
    * 

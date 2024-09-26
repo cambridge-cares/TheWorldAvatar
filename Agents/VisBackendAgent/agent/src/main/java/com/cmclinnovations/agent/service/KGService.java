@@ -3,6 +3,7 @@ package com.cmclinnovations.agent.service;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Map;
+import java.util.List;
 import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.model.SparqlVariableOrder;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
@@ -179,8 +181,14 @@ public class KGService {
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     String instanceQuery = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, targetId,
         hasParent);
+    List<SparqlVariableOrder> varSequence = this.queryTemplateFactory.getSequence();
     LOGGER.debug("Querying the knowledge graph for the instances...");
-    return query(instanceQuery);
+    Queue<SparqlBinding> instances = query(instanceQuery);
+    // If there is a variable sequence available, add the sequence to each binding,
+    if (!varSequence.isEmpty()) {
+      instances.forEach(instance -> instance.addSequence(varSequence));
+    }
+    return instances;
   }
 
   /**
