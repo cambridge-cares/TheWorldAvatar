@@ -335,7 +335,8 @@ public class QueryTemplateFactory {
           searchCriteria.put(queryLine.property(), queryLine.subjectFilter());
           currentLine.append(genSearchCriteria(queryLine.property(), searchCriteria));
         }
-        StringResource.genOptionalClause(currentLine.toString());
+        String optionalLine = StringResource.genOptionalClause(currentLine.toString());
+        this.queryLines.put(queryLine.property(), optionalLine);
       } else {
         // Non-optional lines does not require special effects
         this.queryLines.put(queryLine.property(), currentLine.toString());

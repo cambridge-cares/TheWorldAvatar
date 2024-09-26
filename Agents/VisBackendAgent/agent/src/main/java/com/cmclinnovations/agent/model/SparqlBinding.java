@@ -54,7 +54,12 @@ public class SparqlBinding {
       // Sort the map if there is a sequence
       Map<String, SparqlResponseField> sortedBindings = new LinkedHashMap<>();
       this.sequence
-          .forEach(variable -> sortedBindings.put(variable.property(), this.bindings.get(variable.property())));
+          .forEach(variable -> {
+            String field = variable.property();
+            if (this.bindings.get(field) != null) {
+              sortedBindings.put(field, this.bindings.get(field));
+            }
+          });
       return sortedBindings;
     }
     return this.bindings;
