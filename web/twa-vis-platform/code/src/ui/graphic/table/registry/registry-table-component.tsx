@@ -30,6 +30,8 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
   const isModalOpen: boolean = useSelector(getIsOpenState);
   const [currentInstances, setCurrentInstances] = useState<RegistryFieldValues[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [submitScheduling, setSubmitScheduling] = useState<boolean>(false);
+
   // A hook that refetches all data when the dialogs are closed
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -43,10 +45,11 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
       }
     };
 
-    if (!isModalOpen) {
+    if (!isModalOpen || submitScheduling) {
       fetchData();
+      setSubmitScheduling(false);
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, submitScheduling]);
 
   return (
     <div className={styles["container"]}>
@@ -56,6 +59,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
           entityType={props.entityType}
           registryAgentApi={props.registryAgentApi}
           schedulerAgentApi={props.schedulerAgentApi}
+          setSubmitScheduling = {setSubmitScheduling}
         />
         <div className={styles["table-contents"]}>
           {isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable

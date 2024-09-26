@@ -14,6 +14,7 @@ interface TableRibbonProps {
   entityType: string;
   registryAgentApi: string;
   schedulerAgentApi: string;
+  setSubmitScheduling: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -22,6 +23,7 @@ interface TableRibbonProps {
  * @param {string} entityType The type of entity.
  * @param {string} registryAgentApi The target endpoint for default registry agents.
  * @param {string} schedulerAgentApi The target endpoint for scheduler specific functionality.
+ * @param setSubmitScheduling Set the submit scheduling state for submitting the scheduler.
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
@@ -47,6 +49,7 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
       date: selectedDate,
     });
     sendPostRequest(`${props.schedulerAgentApi}/schedule`, jsonBody);
+    props.setSubmitScheduling(true);
   };
   const buttonEvent: React.MouseEventHandler<HTMLDivElement> = props.schedulerAgentApi ? sendScheduleRequest : openAddModal;
 
