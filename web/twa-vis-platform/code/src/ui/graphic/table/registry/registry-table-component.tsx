@@ -6,11 +6,12 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getIsOpenState } from 'state/modal-slice';
+import { RegistryFieldValues } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
 import { getLabelledData } from 'utils/server-actions';
+import LoadingSpinner from 'ui/graphic/loader/spinner';
 import RegistryTable from './registry-table';
 import TableRibbon from './table-ribbon';
-import { RegistryFieldValues } from 'types/form';
 
 interface RegistryTableComponentProps {
   entityType: string;
@@ -28,13 +29,15 @@ interface RegistryTableComponentProps {
 export default function RegistryTableComponent(props: Readonly<RegistryTableComponentProps>) {
   const isModalOpen: boolean = useSelector(getIsOpenState);
   const [currentInstances, setCurrentInstances] = useState<RegistryFieldValues[]>([]);
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   // A hook that refetches all data when the dialogs are closed
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
+      setIsLoading(true);
       try {
         const instances: RegistryFieldValues[] = await getLabelledData(props.registryAgentApi, props.entityType);
         setCurrentInstances(instances);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching instances', error);
       }
@@ -55,11 +58,11 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
           schedulerAgentApi={props.schedulerAgentApi}
         />
         <div className={styles["table-contents"]}>
-          <RegistryTable
+          {isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable
             recordType={props.entityType}
             instances={currentInstances}
             limit={3}
-          />
+          />}
         </div>
       </div>
     </div>
