@@ -36,7 +36,9 @@ agent_iri =
 base_url = 
 ```
 ### 1.1.2 Data Point Configuration
-Mackay Data Agents manage the update and reading of multiple data points, each the result of a chain of derivations. Configuration files one per data point are put under [data config folder]. Some examples can be found in `./confs_files/data` folder. 
+
+#### 1.1.2.1 Timeseries Data
+Mackay Data Agent manages the update and reading of multiple data points, each the result of a chain of derivations. Configuration files one per data point are put under [data config folder]. Some examples can be found in `./confs_files/data` folder. 
 
 Before deployment, remove any of the unused data configuration files from `./confs_files/data` folder.
 
@@ -55,6 +57,13 @@ frequency = 1
 unitFrequency = year
 ```
 
+#### 1.1.2.2 Meta Data
+The Mackay Data Agent is able to handle meta data queries to the knowledge graph as well. Some examples can be found in the `./cinfs_files/data` folder. 
+- `variable_name` - name of the variable
+- `url` - query endpoint
+- `user` - username to access query endpoint if any exist
+- `password` - password to access query endpoint if any exist
+- `query_string` - SPARQL query strings
 
 ## 1.2 Required Derivation Markup
 `Mackay Data Agent` is a client of the [API Agent]. If any api-meta-data IRI declared in the data config files is not registered to API agent and in turn never instantiated when the Mackay Data Agent starts, `Mackay Data Agent` will register them to the [API agent] (and subsequently the API data will be instantiated). This however is on the condition that the API meta-data triples are already properly instantiated in the KG.  Refer to [API Agent] README 1.3 on how to declare API meta-data in KG.
@@ -74,7 +83,8 @@ Note that the agent needs 4 other components to work:
 2. PostgresSQL.
 3. [Forecasting Agent]
 4. [API Agent]
-#2. Agent Design
+
+# 2. Agent Design
 
 # 2.1 Mackay Calculator Agents
 The Singapore MacKay Carbon Calculator provides a model of the Singapore energy system that allows you to explore pathways to decarbonisation. The scenario simulation is based on an underling Mackay Calculator Model. We implement it in the TWA agent framework with two agents.
