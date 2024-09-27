@@ -146,6 +146,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.setSql(lineLayerDeviceId);
             virtualTable.setEscapeSql(true);
             virtualTable.setName("line_layer_device_id_table");
+            virtualTable.addVirtualTableParameter("device_id", "", ".*");
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
@@ -168,6 +169,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
             virtualTable.setEscapeSql(true);
             virtualTable.setName("line_layer_device_id_table");
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326");
+            virtualTable.addVirtualTableParameter("user_id", "", ".*");
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
             geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserId", geoServerVectorSettings);

@@ -33,8 +33,12 @@ line AS (
 )
 
 SELECT 
-    time, geom, speed, altitude, bearing, device_id, iri
+    time, geom, speed, altitude, bearing, iri
 FROM 
     line
 WHERE
     line.prev_geom IS NOT NULL
+    AND (CASE 
+            WHEN '%device_id%' <> '' THEN line.device_id = '%device_id%'
+            ELSE TRUE
+         END)
