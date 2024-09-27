@@ -11,6 +11,9 @@ import RegistryRowActions from './actions/registry-table-action';
 import IconComponent from 'ui/graphic/icon/icon';
 import StatusComponent from 'ui/text/status/status';
 
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+
 interface RegistryTableProps {
   recordType: string;
   instances: RegistryFieldValues[];
@@ -26,37 +29,41 @@ interface RegistryTableProps {
  */
 export default function RegistryTable(props: Readonly<RegistryTableProps>) {
   // Generate a list of column headings
-  const columns: ColumnDef<Record<string, string>>[] = React.useMemo(() => {
+  // const columns: ColumnDef<Record<string, string>>[] = React.useMemo(() => {
+  const columns: GridColDef[] = React.useMemo(() => {
     if (props.instances?.length === 0) return [];
-    // Include an additional action column definition
-    const actionCol: DisplayColumnDef<Record<string, string>> = {
-      id: "actions",
-      header: () => (<IconComponent classes={iconStyles["small-icon"]} icon="linear_scale" />),
-      cell: (context: CellContext<Record<string, string>, unknown>) => {
-        const recordId: string = isValidIRI(context.row.original.id) ?
-          getAfterDelimiter(context.row.original.id, "/")
-          : context.row.original.id;
-        return (<RegistryRowActions
-          recordId={recordId}
-          recordType={props.recordType}
-        />)
+    return [
+      {
+        field: "actions",
+        headerName: "",
+        width: 100,
+        renderCell: (params) => {
+          const recordId: string = isValidIRI(params.row.id) ?
+            getAfterDelimiter(params.row.id, "/")
+            : params.row.id;
+          return (<RegistryRowActions
+            recordId={recordId}
+            recordType={props.recordType}
+          />);
+        }
       },
-    }
-    return [actionCol, ...Object.keys(props.instances[0]).map(field => ({
-      id: field,
-      accessorKey: field,
-      header: parseWordsForLabels(field),
-      cell: (context: CellContext<Record<string, string>, unknown>) => {
-        // Render status differently
-        if (context.column.id.toLowerCase() === "status") {
-          return (<StatusComponent status={`${context.getValue()}`} />);
+      ...Object.keys(props.instances[0]).map(field => ({
+        field,
+        headerName: parseWordsForLabels(field),
+        width: 150, // Adjust the width as needed
+        renderCell: (params: any) => {
+          // Render status differently
+          if (field.toLowerCase() === "status") {
+            return (<StatusComponent status={`${params.value}`} />);
+          }
+          if (params.value) {
+            return parseWordsForLabels(`${params.value}`);
+          }
+          return "";
         }
-        if (context.getValue()) {
-          return parseWordsForLabels(`${context.getValue()}`);
-        }
-        return "";
-      }
-    }))];
+      }))
+    ];
+
   }, [props.instances]);
 
   // Parse row values
@@ -72,41 +79,23 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
     });
   }, [props.instances]);
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
   return (
-    <table className={styles["table"]}>
-      <thead className={styles["header"]}>
-        {table.getHeaderGroups().map(headerGroup => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
-              <th key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map(row => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map(cell => (
-              <td key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+    <Box sx={{ height: 400, width: '100%' }}>
+      <DataGrid
+        className={styles["table"]}
+        rows={data}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableRowSelectionOnClick
+      />
+    </Box>
+  )
 }
