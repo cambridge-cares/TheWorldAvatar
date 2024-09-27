@@ -129,7 +129,7 @@ public class QueryManager {
         JSONArray timedata = getTime(request, classMatches, response);
 
         // Get trajectory data
-        JSONArray trajectoryData = getTrajectory(request, classMatches, response);
+        JSONObject trajectoryData = getTrajectory(request, classMatches, response);
 
         // Combine into a single JSON structure
         JSONObject result = new JSONObject();
@@ -218,10 +218,10 @@ public class QueryManager {
         return timeHandler.getData(classMatches, response);
     }
 
-    private JSONArray getTrajectory(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
+    private JSONObject getTrajectory(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
         TrajectoryHandler trajectoryHandler = new TrajectoryHandler(request.getIri(), request.getEndpoint(),
-                this.configStore);
-        trajectoryHandler.setClients(kgClient, tsClient);
+                this.configStore, request.getLowerBound(), request.getUpperBound());
+        trajectoryHandler.setClients(kgClient);
         return trajectoryHandler.getData(classMatches);
     }
 }

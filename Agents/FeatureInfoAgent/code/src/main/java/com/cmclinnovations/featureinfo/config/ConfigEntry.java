@@ -74,6 +74,8 @@ public class ConfigEntry {
      */
     private String timeDatabase;
 
+    private String pointIriQueryFile;
+    private String pointIriQueryContent;
     private String featureIriQueryFile;
     private String featureIriQueryContent;
     private String trajectoryMetaFile;
@@ -168,6 +170,10 @@ public class ConfigEntry {
      */
     public String getTimeDatabase() {
         return this.timeDatabase;
+    }
+
+    public String getPointIriQuery() {
+        return pointIriQueryContent;
     }
 
     public String getFeatureIriQuery() {
@@ -407,6 +413,7 @@ public class ConfigEntry {
         public ConfigEntry build(
                 String id,
                 String classIRI,
+                String pointIriQuery,
                 String featureIriQuery,
                 String metaQuery,
                 String database) throws IOException {
@@ -414,6 +421,7 @@ public class ConfigEntry {
             // Create and return ConfigEntry instance.
             ConfigEntry entry = new ConfigEntry(id);
             entry.classIRI = classIRI;
+            entry.pointIriQueryFile = pointIriQuery;
             entry.featureIriQueryFile = featureIriQuery;
             entry.trajectoryMetaFile = metaQuery;
             entry.trajectoryDatabase = database;
@@ -451,6 +459,10 @@ public class ConfigEntry {
             }
 
             // Parse trajectory query
+            if (entry.pointIriQueryFile != null && !entry.pointIriQueryFile.isEmpty()) {
+                Path file = this.configDirectory.resolve(Paths.get(entry.pointIriQueryFile));
+                entry.pointIriQueryContent = Files.readString(file);
+            }
             if (entry.featureIriQueryFile != null && !entry.featureIriQueryFile.isEmpty()) {
                 Path file = this.configDirectory.resolve(Paths.get(entry.featureIriQueryFile));
                 entry.featureIriQueryContent = Files.readString(file);

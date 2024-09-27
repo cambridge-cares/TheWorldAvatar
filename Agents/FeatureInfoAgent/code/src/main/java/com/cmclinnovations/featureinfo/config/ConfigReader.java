@@ -147,11 +147,12 @@ public class ConfigReader {
 
             // trajectory details
             JSONObject trajectoryEntry = jsonEntry.getJSONObject("trajectory");
+            String pointIriQuery = trajectoryEntry.getString("pointIriQuery");
             String featureIriQuery = trajectoryEntry.getString("featureIriQuery");
             String metaQuery = trajectoryEntry.getString("metaQuery");
-            String timeDatabase = trajectoryEntry.getString("database");
+            String timeDatabase = trajectoryEntry.optString("database");
 
-            return builder.build(id, clazz, featureIriQuery, metaQuery, timeDatabase);
+            return builder.build(id, clazz, pointIriQuery, featureIriQuery, metaQuery, timeDatabase);
         } else {
             // Assume old format entry
             String id = "entry-" + (entries.size() + 1);
