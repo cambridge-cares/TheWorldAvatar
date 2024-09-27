@@ -5,6 +5,7 @@
 - For a complete production deployment guide, including Docker setup and NGINX configuration, read this README file in its entirety.
 - For component-specific setup or development instructions, refer to the linked README files in the [Project Structure](#project-structure) section.
 - The production deployment guide in this README is self-contained and can be followed without referencing other documents.
+
 ## Table of Contents
 
 - [Question-Answering System for The World Avatar](#question-answering-system-for-the-world-avatar)
@@ -137,41 +138,41 @@ This entire application must be deployed on a production server with a NGINX ser
 
 4. Configure NGINX redirect for the backend endpoint. Trailing forward slashes `/` are allowed.
    ```
-   location /demos/marie/api/ {
+   location /backend/chat/api/ {
      proxy_pass    http://123.123.123.123:5000/;
      ...
    }
    ```
-   KIV: Implement a health endpoint GET `/health` and so that the redirect can be verified by checking that GET `https://abc.xyz/demos/marie/api/health` returns 200.
+   KIV: Implement a health endpoint GET `/health` and so that the redirect can be verified by checking that GET `https://abc.xyz/backend/chat/api/health` returns 200.
 
 5. Frontend setup:
    1. Configure the backend endpoint for the Next.js app by creating a `.env.local` file under `frontend/next_marie_app/` with the following content (note the trailing forward slash).
       ```
-      NEXT_PUBLIC_BACKEND_ENDPOINT=https://abc.xyz/demos/marie/api/
+      NEXT_PUBLIC_BACKEND_ENDPOINT=https://abc.xyz/backend/chat/api/
       ```
-   2. Verify that the `BASE_PATH` value in [`.env.production`](frontend/next_app_marie/.env.production) is set to `/demos/marie`.
+   2. Verify that the `BASE_PATH` value in [`.env.production`](frontend/next_app_marie/.env.production) is set to `/frontend/chat`.
    3. Build the image and launch the container.
       ```bash
       docker build -t next-app-marie .
       docker run -d --name next-app-marie -p 3000:3000 next-app-marie
       ```
-      The Next.js server should be listening at http://123.123.123.123:3000/demos/marie. To verify that it is running, visit http://123.123.123.123:3000/demos/marie in a browser and check if the home page is displayed.
+      The Next.js server should be listening at http://123.123.123.123:3000/frontend/chat. To verify that it is running, visit http://123.123.123.123:3000/frontend/chat in a browser and check if the home page is displayed.
 
 6. Configure NGINX redirect for the frontend endpoint. Trailing forward slashes `/` are **NOT ALLOWED**.
    ```
    # correct
-   location /demos/marie {
-     proxy_pass    http://123.123.123.123:3000/demos/marie;
+   location /frontend/chat {
+     proxy_pass    http://123.123.123.123:3000/frontend/chat;
      ...
    }
 
    # wrong
-   location /demos/marie/ {
-     proxy_pass    http://123.123.123.123:3000/demos/marie/;
+   location /frontend/chat/ {
+     proxy_pass    http://123.123.123.123:3000/frontend/chat/;
        ...
    }
    ```
-   To verify that the redirect works, visit https://abc.xyz/demos/marie in a browser and check if the home page is displayed.
+   To verify that the redirect works, visit https://abc.xyz/frontend/chat in a browser and check if the home page is displayed.
 
 ### Outcome
 
@@ -181,11 +182,11 @@ The desired state of the deployed system is as follows.
 - FastAPI server running at http://123.123.123.123:5000.
 - Next.js server running at http://123.123.123.123:3000.
 - NGINX server redirects:
-  - https://abc.xyz/demos/marie to http://123.123.123.123:3000.
-  - https://abc.xyz/demos/marie/api to http://123.123.123.123:5000.
-- Next.js server is configured with the SSL-encrypted public address of the backend server https://abc.xyz/demos/marie/api.
+  - https://abc.xyz/frontend/chat to http://123.123.123.123:3000.
+  - https://abc.xyz/backend/chat/api to http://123.123.123.123:5000.
+- Next.js server is configured with the SSL-encrypted public address of the backend server https://abc.xyz/backend/chat/api.
 
-Please note that this target state necessitates that the FastAPI endpoint be exposed over HTTPS so that the HTML/JS code in the client browser loaded from an secure origin, i.e. https://abc.xyz/demos/marie, can safely make requests to the backend without getting blocked by the browser due to [mixed content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content).
+Please note that this target state necessitates that the FastAPI endpoint be exposed over HTTPS so that the HTML/JS code in the client browser loaded from an secure origin, i.e. https://abc.xyz/frontend/chat, can safely make requests to the backend without getting blocked by the browser due to [mixed content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content).
 
 ```mermaid
 sequenceDiagram
@@ -195,9 +196,9 @@ sequenceDiagram
   participant next as Next.js server at<br/>123.123.123.123:3000
   participant fastapi as FastAPI server at<br/>123.123.123.123:5000
 
-  user->>browser: Navigates to<br/>https://abc.xyz/demos/marie
+  user->>browser: Navigates to<br/>https://abc.xyz/frontend/chat
   activate browser
-  browser->>nginx: Requests HTML at<br/>https://abc.xyz/demos/marie
+  browser->>nginx: Requests HTML at<br/>https://abc.xyz/frontend/chat
   activate nginx
   nginx->>next: Forwards HTML request to<br/>http://123.123.123.123:3000
   activate next
@@ -210,7 +211,7 @@ sequenceDiagram
 
   user->>browser: Submits a query
   activate browser
-  browser->>nginx: Makes API call to<br/>https://abc.xyz/demos/marie/api
+  browser->>nginx: Makes API call to<br/>https://abc.xyz/backend/chat/api
   activate nginx
   nginx->>fastapi: Forwards API call to<br/>http://123.123.123.123:5000
   activate fastapi
@@ -225,4 +226,4 @@ sequenceDiagram
 
 ## Usage
 
-Visit https://abc.xyz/demos/marie or http://123.123.123.123:3000 to access the web interface and start interacting with the system.
+Visit https://abc.xyz/frontend/chat or http://123.123.123.123:3000 to access the web interface and start interacting with the system.
