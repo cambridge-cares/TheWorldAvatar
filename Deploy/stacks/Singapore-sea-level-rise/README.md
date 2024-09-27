@@ -112,6 +112,12 @@ Execute [landplot_layer.sql] to create a new materialised view, and update SQL v
 ```
 SELECT * FROM landplot_layer
 ```
+Manually add this ontop mapping to the ontop container, prefixes are dependent on current state of the ontop mapping:
+```
+mappingId	landplot to buildings
+target		tw:landplot/{ogc_fid} tw:ontoplot/containsBuilding tw:Building/{building_uuid} . 
+source		SELECT ogc_fid, building_uuid from landplot_buildings
+```
 
 ### Carpark
 Create carpark namespace in Blazegraph and carpark database in PostGIS.
