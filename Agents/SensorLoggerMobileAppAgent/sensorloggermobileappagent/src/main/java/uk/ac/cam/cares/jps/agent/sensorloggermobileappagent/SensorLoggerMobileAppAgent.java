@@ -125,7 +125,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                     task.addData(dataHashmap);
                 } else {
                     // retrieving non-compressed data
-                    JSONArray payload = new JSONArray(requestParams.getString("payload"));
+                    JSONArray payload = requestParams.getJSONArray("payload");
                     HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
                     LOGGER.info(deviceId + " is fetched and start to add data");
                     task.addData(dataHashmap);
@@ -152,8 +152,8 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     private String decompressGzip(byte[] compressedData) throws IOException {
         try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(compressedData));
-             InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8);
-             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
 
             StringBuilder outStr = new StringBuilder();
             String line;
@@ -163,7 +163,6 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             return outStr.toString();
         }
     }
-
 
     private SmartphoneRecordingTask getSmartphoneRecordingTask(String deviceId) {
         synchronized (smartphoneHashmap) {
