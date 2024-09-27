@@ -104,15 +104,9 @@ This entire application must be deployed on a production server with a NGINX ser
 
 ### Required resources
 
-- ONNX file for Sentence-BERT model weights:
-  - To be placed in [`backend/triton_inference_server/model_repository/mpnet/1/`](backend/triton_inference_server/model_repository/mpnet/1/).
-  - See `triton_inference_server`'s [README](backend/triton_inference_server/README.md#required-resources) for how to obtain this ONNX file.
-- Datasets to be ingested into Redis need to be placed in the following directories.
-  - [`backend/fastapi_app/data/lexicon`](backend/fastapi_app/data/lexicon/): JSON files for lexicons of entities that require linking with Redis. Each file is an array of `Lexicon` objects.
-  - [`backend/fastapi_app/data/schema/properties`](backend/fastapi_app/data/schema/properties): JSON files for information on KG predicates. Each file is an array of `GraphItemType` objects.
-  - [`backend/fastapi_app/data/nlq2datareq_examples`](backend/fastapi_app/data/nlq2datareq_examples/): JSON files for semantic parsing examples. Each file is an array of `Nlq2DataReqExample` objects.
-  - [`backend/fastapi_app/data/qtRecog_examples`](backend/fastapi_app/data/qtRecog_examples/): JSON files for quantity recognition examples. Each file is an array of `QtRecogExample` objects.
-  - See `data_generation`'s [README](./data_generation/README.md#json-schema-definitions) for the JSON schemas.
+For deployment, you will need various resource files including model weights, lexicons, and example data. These should be prepared in advance. See Step 3 in the [Steps](#steps) section for details on where to place these files.
+
+Note: If you need to generate new resources or understand their format, refer to the `data_generation` directory ([More details](data_generation/README.md)) for utility scripts and documentation.
 
 ### Steps
 
@@ -124,7 +118,21 @@ This entire application must be deployed on a production server with a NGINX ser
    cd TheWorldAvatar/QuestionAnswering/QA_ICL/
    ```
 
-3. Spin up the backend services by executing the following command.
+3. Add resource files for the backend:
+     - ONNX file for Sentence-BERT model weights:
+       - Place in [`backend/triton_inference_server/model_repository/mpnet/1/`](backend/triton_inference_server/model_repository/mpnet/1/).
+     - Lexicon files:
+       - Place JSON files in [`backend/fastapi_app/data/lexicon`](backend/fastapi_app/data/lexicon/)
+     - Schema property files:
+       - Place JSON files in [`backend/fastapi_app/data/schema/properties`](backend/fastapi_app/data/schema/properties)
+     - Semantic parsing example files:
+       - Place JSON files in [`backend/fastapi_app/data/nlq2datareq_examples`](backend/fastapi_app/data/nlq2datareq_examples/)
+     - Quantity recognition example files:
+       - Place JSON files in [`backend/fastapi_app/data/qtRecog_examples`](backend/fastapi_app/data/qtRecog_examples/)
+
+   Note: The format of these resources and instructions on how to generate them can be found in the `data_generation` directory (see [More details](data_generation/README.md)). For instructions on how to obtain the ONNX file, see `triton_inference_server`'s [README](backend/triton_inference_server/README.md#required-resources).
+
+4. Spin up the backend services by executing the following command.
 
    ```bash
    sh backend/deploy.sh
