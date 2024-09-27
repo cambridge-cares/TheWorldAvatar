@@ -29,7 +29,13 @@ interface TableRibbonProps {
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
-  const { authorised } = useProtectedRole();
+
+  const isKeycloakEnabled = process.env.KEYCLOAK === 'true';
+
+  let authorised;
+  if (isKeycloakEnabled) {
+    authorised = useProtectedRole().authorised;
+  }
 
   const scheduleId: string = "schedule date";
   // Users can only either add or schedule at one time; schedule is expected to add new instances but with restrictions
@@ -60,7 +66,7 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   return (
     <div className={styles.menu}>
       <div className={styles["ribbon-button-container"]}>
-        {authorised && props.schedulerAgentApi && <div>
+        {(authorised || !isKeycloakEnabled) && props.schedulerAgentApi && <div>
           <label className={fieldStyles["form-input-label"]} htmlFor={scheduleId}>
             Date:
           </label>
@@ -75,7 +81,7 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
           />
         </div>
         }
-        {authorised &&
+        {(authorised || !isKeycloakEnabled) &&
           <MaterialIconButton
             iconName={buttonIcon}
             className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
