@@ -35,8 +35,8 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const control: Control = props.form.control;
   const [isFetching, setIsFetching] = useState<boolean>(true);
+  const [displayField, setDisplayField] = useState<string>("");
   const [selectElements, setSelectElements] = useState<RegistryFieldValues[]>([]);
-
   // If there is a need, retrieve the parent field name. Parent field depends on the shape to field mappings.
   // Else, it should remain as an empty string
   const firstRelevantShapeKey: string = props.dependentProp.nodeKind ? props.dependentProp.qualifiedValueShape.find(shape => {
@@ -85,6 +85,17 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
       }
       // Set the form value to the default value if available, else, default to the first option
       form.setValue(field.fieldId, defaultId);
+      // Retrieve and set the display field accordingly
+      if (entities.length > 0) {
+        const fields: string[] = Object.keys(entities[0]);
+        if (fields.includes("name")) {
+          setDisplayField("name");
+        } else if (fields.includes("street")) {
+          setDisplayField("street");
+        } else {
+          setDisplayField(Object.keys(fields).find((key => key != "id" && key != "iri")));
+        }
+      }
 
       // Update dropdown options
       setSelectElements(entities);
@@ -130,7 +141,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
                 field={props.dependentProp}
                 form={props.form}
                 selectOptions={selectElements.map(entity => entity.id.value)}
-                selectLabels={selectElements.map(entity => entity.name?.value ?? entity.first_name?.value)}
+                selectLabels={selectElements.map(entity => entity[displayField]?.value)}
                 options={{
                   disabled: formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE
                 }}
