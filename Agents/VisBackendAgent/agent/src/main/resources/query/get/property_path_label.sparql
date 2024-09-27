@@ -101,6 +101,8 @@ WHERE {
       BIND (IF(?multisubpath_proppath != "" && isBlank(?multisubpath_initial), ?multisubpath_listitem, ?multisubpath_initial) AS ?multisubpath)
       FILTER (BOUND(?multisubpath))
     }
+    # Ignore all id subproperties
+    FILTER (?subname!="id")
   }
   BIND (COALESCE(?subname, ?propname) AS ?name)
   # If there is a parent indicator, the property should be a parent
