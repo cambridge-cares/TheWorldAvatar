@@ -28,24 +28,29 @@ The backend consists of two main components:
 
 ## Deployment
 
+This guide is for deploying the backend services using Docker containers in a production environment.
+
 ### Prerequisites
 
 - Docker (Docker Engine, Docker CLI, and Docker Compose)
 
 ### Steps
 
-1. Prepare the `fastapi_app`:
+1. Prepare the Triton Inference Server:
+   Deposit the text embedding model weights for the Sentence-BERT model in `triton_inference_server/model_repository/mpnet/1/`. 
+   For more details, see [Triton Server README](./triton_inference_server/README.md#required-resources).
+
+2. Prepare the `fastapi_app`:
    
-   Deposit the required data and configure parameters as specified in:
+   - Deposit the [required data](./fastapi_app/README.md#required-resources) in the following locations:
+     - Lexicon files: `fastapi_app/data/lexicon/`
+     -  Schema property files: `fastapi_app/data/schema/properties/`
+     -  Semantic parsing example files: `fastapi_app/data/nlq2datareq_examples/`
+     -  Quantity recognition example files: `fastapi_app/data/qtRecog_examples/`
+  
+    - Configure parameters by creating `fastapi_app/app.yaml` according to [Configurable parameters](./fastapi_app/README.md#configurable-parameters) section.
 
-    - [Required resources](./fastapi_app/README.md#required-resources)
-    - [Configurable parameters](./fastapi_app/README.md#configurable-parameters).
-
-1. Prepare the `triton_inference_server`:
-   
-   Deposit text embedding model weights as described in [Required resources](./triton_inference_server/README.md#required-resources).
-
-1. Execute the deployment script:
+3. Execute the deployment script:
    
    ```bash
    sh deploy.sh
@@ -58,6 +63,7 @@ The backend consists of two main components:
 
    After successful deployment, the application will be available at `localhost:5000`.
 
+Note: For development mode deployment of the FastAPI app, please refer to FastAPI App [README](./fastapi_app/README.md).
 
 ## Usage
 
