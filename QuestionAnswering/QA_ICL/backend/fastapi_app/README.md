@@ -2,12 +2,18 @@
 
 ## Initial setup
 
+This section outlines the services, resources, and configurations needed for native and Docker installations. Follow these instructions before proceeding to the installation steps.
+
 ### Required services
 
-- A Redis server (see [Run Redis Stack in Docker](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/))
-- A text embedding service exposed via either OpenAI-compatible or NVIDIA's Triton API. For running a local Triton server in Docker, see [triton_inference_server](../triton_inference_server/).
-- A chat completion service exposed via OpenAI-compatible API.
-- (Optional) LocationIQ geocoding service. 
+#### Services to Deploy
+- Redis server: For data storage and retrieval. [Run Redis Stack in Docker](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/)
+- Text embedding service: Exposed via either OpenAI-compatible or NVIDIA's Triton API. For local deployment, see [triton_inference_server](../triton_inference_server/).
+
+#### External API Services
+These services are called directly and don't require setup, but may need API keys configured:
+- Chat completion service: Exposed via OpenAI-compatible API.
+- (Optional) LocationIQ geocoding service: Used for determining geographical coordinates based on location names. 
   - Context: Some of Zaha's features require geocoding i.e. the determination of geographical coordinates based on a location name. These apply for use cases such as finding pollutant concentrations or the nearest carpark given a location name. By default the app will preferentially use the [API key-free geocoding service by Nominatim](https://nominatim.org/release-docs/latest/api/Search/). However, Nominatim does impose a rate limit (read more about [Nominatim's usage policy](https://operations.osmfoundation.org/policies/nominatim/)). 
   - To avoid having geocoding requests denied, the app will also make requests to [LocationIQ](https://locationiq.com/), which requires an API key. At the time of writing, LocationIQ does offer a free plan for API access.
   - KIV: [set up a local Nominatim instance](https://nominatim.org/release-docs/latest/admin/Installation/) to remove dependency on external geocoding services.
@@ -65,35 +71,36 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
   
 ### Steps
 
-1. Follow the points in the section [Initial setup](#initial-setup) to ensure that the required services and resources are properly configured.
+1. Deploy the required services, add the resources, and configure the parameters as defined in the [Initial setup](#initial-setup) section.
 
-1. Create conda environment and activate it.
+2. Create conda environment and activate it.
    ```{bash}
    conda create --name qa_backend python==3.10
    conda activate qa_backend
    ```
 
-1. Install dependencies.
+3. Install dependencies.
    ```{bash}
    pip install -r requirements.txt
    ```
 
-1. Ingest required datasets into Redis server, as per the section ['Required datasets'](#required-datasets).
+4. Ingest required datasets into Redis server, as per the section ['Required datasets'](#required-datasets).
 
-1. Start the server:
+5. Start the server:
    - In debug mode (app is automatically reloaded upon code changes), `uvicorn main:app --reload --log-config=log_conf.yaml`.
    - In production mode, `uvicorn main:app --host=0.0.0.0 --log-config log_conf.yaml --workers 4`.
    - The app will be available at `localhost:8000`.  
    <!-- TODO: add a health check endpoint -->
    - To expose the app at a different port, use the command line argument `--port {port}` e.g. `uvicorn main:app --reload --log-config=log_conf.yaml --port 5000`.
 
-1. Whenever any dataset needs to be updated, re-run the ingestion script for that specific dataset with the argument `--drop_index --invalidate_cache` to (1) trigger Redis to flush the old index and create a new one, and (2) re-create on-disc cache for the processed datasets. KIV: allow user to add new resource entries without processing everything again and recreatng the index.
+6. Whenever any dataset needs to be updated, re-run the ingestion script for that specific dataset with the argument `--drop_index --invalidate_cache` to (1) trigger Redis to flush the old index and create a new one, and (2) re-create on-disc cache for the processed datasets. KIV: allow user to add new resource entries without processing everything again and recreatng the index.
 
 ## Docker installation
 
-1. Follow the points in the section [Initial setup](#initial-setup) to ensure that the required services and resources are properly configured.
+1. Ensure that the required services are deployed, resources are added, and parameters are configured as specified in the [Initial setup](#initial-setup) section.
+
 1. Build the image, `docker build -t fastapi_app .`.
-1. Spin up the container as follows. The app will be available at `localhost:5000` on Docker host.
+2. Spin up the container as follows. The app will be available at `localhost:5000` on Docker host.
    ```{bash}
    docker run --name fastapi_app \
       -e APP_ENV=prod \
@@ -104,7 +111,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
    Notes:
    - `-p 5000:8000` instructs Docker to map port 5000 on Docker host to port 8000 in the container, which is the default FastAPI port. 
    - `-v "$(pwd)/data:/code/data"` mounts the `data` directory in the host machine into the container.
-1. To ingest the required datasets, one may open a `bash` terminal in the container by executing `docker exec -it fastapi_app bash` and then run the ingestion command as introduced in section ['Required datasets'](#required-datasets).
+3. To ingest the required datasets, one may open a `bash` terminal in the container by executing `docker exec -it fastapi_app bash` and then run the ingestion command as introduced in section ['Required datasets'](#required-datasets).
 
 
 ## Usage
