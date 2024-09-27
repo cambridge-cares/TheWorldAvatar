@@ -1,14 +1,20 @@
 # Question-Answering System for The World Avatar
 
+## How to Use This Documentation
+
+- For a complete production deployment guide, including Docker setup and NGINX configuration, read this README file in its entirety.
+- For component-specific setup or development instructions, refer to the linked README files in the [Project Structure](#project-structure) section.
+- The production deployment guide in this README is self-contained and can be followed without referencing other documents.
 ## Table of Contents
 
 - [Question-Answering System for The World Avatar](#question-answering-system-for-the-world-avatar)
+  - [How to Use This Documentation](#how-to-use-this-documentation)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Architecture](#architecture)
   - [Project Structure](#project-structure)
   - [Production deployment guide](#production-deployment-guide)
-    - [Prerequisities](#prerequisities)
+    - [Prerequisites](#prerequisites)
     - [Required resources](#required-resources)
     - [Steps](#steps)
     - [Outcome](#outcome)
@@ -20,11 +26,11 @@ In this iteration, The World Avatar's Question-Answering System converts natural
 
 Key Features
 
-- Utilises in-context learning for semantic parsing
-- Supports multiple data sources including RDF graphs and HTTP endpoints
-- Employs LLMs for natural language understanding
-- Provides a user-friendly frontend interface
-- Includes utilities for data preparation
+- Utilises in-context learning for semantic parsing.
+- Supports multiple data sources including RDF graphs and HTTP endpoints.
+- Employs LLMs for natural language understanding.
+- Provides a user-friendly frontend interface.
+- Includes utilities for data preparation.
 
 
 ## Architecture
@@ -73,20 +79,24 @@ graph TD
 
 The project is organised into the following directories:
 
-- [`data_generation/`](data_generation/): contains utility scripts to help with preparing datasets required by the backend.
+- [`data_generation/`](data_generation/): Contains utility scripts to help with preparing datasets required by the backend. [More details](data_generation/README.md)
 - [`backend/`](backend/)
-  - [`fastapi_app/`](backend/fastapi_app/): source code for FastAPI application.
-  - [`triton_inference_server/`](backend/triton_inference_server/): contains the config to serve the Sentence-BERT model.
+  - [`fastapi_app/`](backend/fastapi_app/): Source code for FastAPI application. [Setup instructions](backend/fastapi_app/README.md)
+  - [`triton_inference_server/`](backend/triton_inference_server/): Configuration for serving the Sentence-BERT model. [Docker setup](backend/triton_inference_server/README.md)
 - [`frontend/`](frontend/)
-  - [`mock_backend/`](frontend/mock_backend/): source code for Express server to mock backend API.
-  - [`next_app_marie/`](frontend/next_app_marie/): source code for Marie's Next.js app.
+  - [`mock_backend/`](frontend/mock_backend/): Source code for Express server to mock backend API. [Native setup](frontend/mock_backend/README.md)
+  - [`next_app_marie/`](frontend/next_app_marie/): Source code for Marie's Next.js app. [Setup instructions](frontend/next_app_marie/README.md)
 
+Each linked README contains specific setup instructions for development or component-specific deployment.
 
 ## Production deployment guide
 
+
+This section provides a comprehensive guide for deploying the entire system using Docker and configuring NGINX as a reverse proxy. It is intended to be read independently from other sets of installation instructions found in component-specific README files. For development setup or component-specific details, please refer to the linked README files in the [Project Structure](#project-structure) section.
+
 This entire application must be deployed on a production server with a NGINX server set up in order to function.
 
-### Prerequisities
+### Prerequisites
 
  - Docker (Docker Engine, Docker CLI, and Docker Compose) installed in the remote server for hosting the application.
  - Edit rights to the NGINX server's configuration.
