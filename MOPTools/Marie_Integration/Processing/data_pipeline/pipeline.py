@@ -305,9 +305,10 @@ class ChatGPTAPI:
                                                                           "usedVesselType": {"type": "string"},
                                                                           "pressure": {"type": "string"},
                                                                           "temperature": {"type": "string"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "remainingVolume": {"type": "string"}
                                                                       },
-                                                                      "required": ["evaporationTime", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
+                                                                      "required": ["evaporationTime", "usedVesselName", "remainingVolume", "usedVesselType", "stepNumber", "pressure", "temperature"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -325,7 +326,8 @@ class ChatGPTAPI:
                                                                           "usedVesselType": {"type": "string"},
                                                                           "pressure": {"type": "string"},
                                                                           "temperature": {"type": "string"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "vacuumType": {"type": "string"},
                                                                       },
                                                                       "required": ["dryingTime", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
                                                                       "additionalProperties": False
@@ -382,10 +384,10 @@ class ChatGPTAPI:
                                                                           "addedChemicalAmount": {"type": "string", "description": "Added amount of the chemcial used in this step."},
                                                                           "stepNumber": {"type": "integer"},
                                                                           "addedDropwise": {"type": "boolean", "description": "true if text states added dropwise, false otherwise."},
-                                                                          "stir": {"type": "boolean", "description": "true if stired while adding false otherwise."},
+                                                                          "stir": {"type": "boolean", "description": "true if stired while adding, false otherwise."},
                                                                           "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."},
                                                                           "duration": {"type": "string", "description": "Time the addition takes. E.g. Added over 5 minutes."},
-                                                                          "targetPH": {"type": "string", "description": "If the step involves acidification note target Ph."},
+                                                                          "targetPH": {"type": "number", "description": "If the step involves acidification note target Ph."},
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
                                                                       "required": ["usedVesselName", "usedVesselType", "addedChemicalName", "addedChemicalAmount", "stepNumber", "addedDropwise", "atmosphere", "duration", "stir", "targetPH", "comment"],
@@ -412,10 +414,11 @@ class ChatGPTAPI:
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
                                                                           "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
                                                                           "sealedVessel": {"type": "boolean", "description": "true if the vessel is sealed. "},
+                                                                          "stir": {"type": "boolean", "description": "true if mixture is stirred while heating. "},
                                                                           "stepNumber": {"type": "integer"},
                                                                           "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."}
                                                                       },
-                                                                      "required": ["duration", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVesselName", "usedVesselType", "sealedVessel", "stepNumber", "comment", "atmosphere"],
+                                                                      "required": ["duration", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVesselName", "usedVesselType", "sealedVessel", "stepNumber", "comment", "atmosphere", "stir"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -435,9 +438,10 @@ class ChatGPTAPI:
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
                                                                           "pressure": {"type": "string", "description": "Pressure applied for drying, often: reduced Pressue, Vacum, etc. "},
                                                                           "temperature": {"type": "string", "description": "Temperature applied for drying."},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -456,7 +460,7 @@ class ChatGPTAPI:
                                                                           "items":{"type":"string"}},
                                                                           "washingSolventAmount": {"type": "string", "description": "Amount of Solvent per filtration. "},
                                                                           "vacuumFiltration": {"type": "boolean", "description": "True for vacuum filtration. "},
-                                                                          "repetitions": {"type": "integer", "description": "Number of filtrations"},
+                                                                          "numberOfFiltrations": {"type": "integer", "description": "Number of filtrations"},
                                                                           "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
                                                                           "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
@@ -464,7 +468,7 @@ class ChatGPTAPI:
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."},
                                                                           "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."}
                                                                       },
-                                                                      "required": ["washingSolventName", "washingSolventAmount", "repetitions", "usedVesselName", "usedVesselType", "stepNumber", "comment", "atmosphere","vacuumFiltration"],
+                                                                      "required": ["washingSolventName", "washingSolventAmount", "numberOfFiltrations", "usedVesselName", "usedVesselType", "stepNumber", "comment", "atmosphere","vacuumFiltration"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -527,9 +531,9 @@ class ChatGPTAPI:
                                                                           "targetTemperature": {"type": "string"},
                                                                           "stepNumber": {"type": "integer"},
                                                                           "duration": {"type": "string"},
-                                                                          "crystallizationComment": {"type": "string"}
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["usedVesselName", "usedVesselType", "targetTemperature", "duration", "crystallizationComment", "stepNumber"],
+                                                                      "required": ["usedVesselName", "usedVesselType", "targetTemperature", "duration", "comment", "stepNumber"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -548,9 +552,10 @@ class ChatGPTAPI:
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
                                                                           "pressure": {"type": "string"},
                                                                           "temperature": {"type": "string"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -570,9 +575,10 @@ class ChatGPTAPI:
                                                                           "solventName": { "type": "array",
                                                                           "items":{"type":"string"}},
                                                                           "solventAmount": {"type": "string"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -592,9 +598,10 @@ class ChatGPTAPI:
                                                                           "solventName": { "type": "array",
                                                                           "items":{"type":"string"}},
                                                                           "solventAmount": {"type": "string"},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -614,9 +621,10 @@ class ChatGPTAPI:
                                                                           "targetVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
                                                                           "targetVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "targetVesselName", "targetVesselType", "stepNumber", "solventName", "solventAmount"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "targetVesselName", "targetVesselType", "stepNumber", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -658,7 +666,9 @@ class ChatGPTAPI:
                                                           soni,
                                                           evap,
                                                           dry,
-                                                          dissolve
+                                                          dissolve, 
+                                                          transfer, 
+                                                          separate
                                                       ]
                                                   }
                                               }
