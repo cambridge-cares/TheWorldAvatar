@@ -475,6 +475,10 @@
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/Playgrounds~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/Recreational} \\
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/PlumbingAndHeatingServices~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/ConstructionServices} \\
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/PneumaticEngineers~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/EngineeringServices} \\
+\seqsplit{https://www.theworldavatar.com/kg/ontopoi/PointOfInterestEnd~{$\sqsubseteq$}~http://ies.data.gov.uk/ontology/ies4#BoundingState} \\
+\seqsplit{https://www.theworldavatar.com/kg/ontopoi/PointOfInterestEnd~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#isEndOf.https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
+\seqsplit{https://www.theworldavatar.com/kg/ontopoi/PointOfInterestStart~{$\sqsubseteq$}~http://ies.data.gov.uk/ontology/ies4#BoundingState} \\
+\seqsplit{https://www.theworldavatar.com/kg/ontopoi/PointOfInterestStart~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#isStartOf.https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/PoliceStations~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/CentralAndLocalGovernment} \\
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/PoliticalPartiesAndRelatedOrganisations~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/Organisations} \\
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/PoolAndCourtConstruction~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/ConstructionServices} \\
@@ -664,6 +668,10 @@
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/Paypoint®Locations~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/LegalAndFinancial} \\
 \seqsplit{https://www.theworldavatar.com/kg/ontopoi/Railways(HeritageSteamAndMiniature)~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/Tourism} \\
 \seqsplit{{$\exists$}~http://ies.data.gov.uk/ontology/ies4#branding.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
+\seqsplit{{$\exists$}~http://ies.data.gov.uk/ontology/ies4#hasSourceReference.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
+\seqsplit{{$\exists$}~http://ies.data.gov.uk/ontology/ies4#inPeriod.{$\top$}~{$\sqsubseteq$}~(https://www.theworldavatar.com/kg/ontopoi/PointOfInterestEnd~{$\sqcup$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterestStart)} \\
+\seqsplit{{$\exists$}~http://ies.data.gov.uk/ontology/ies4#isEndOf.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterestEnd} \\
+\seqsplit{{$\exists$}~http://ies.data.gov.uk/ontology/ies4#isStartOf.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterestStart} \\
 \seqsplit{{$\exists$}~om:hasNumericalValue.{$\top$}~{$\sqsubseteq$}~om:Measure} \\
 \seqsplit{{$\exists$}~om:hasUnit.{$\top$}~{$\sqsubseteq$}~om:Measure} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PositionalAccuracy} \\
@@ -675,6 +683,10 @@
 \seqsplit{{$\exists$}~https://www.theworldavatar.com/kg/ontopoi/hasPositionalAccuracy.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
 \seqsplit{{$\exists$}~https://www.theworldavatar.com/kg/ontopoi/hasnearestITN.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#branding.http://ies.data.gov.uk/ontology/ies4#Organisation} \\
+\seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#hasSourceReference.https://www.theworldavatar.com/kg/ontopoi/SourceReference} \\
+\seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#inPeriod.http://ies.data.gov.uk/ontology/ies4#ParticularPeriod} \\
+\seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#isEndOf.https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
+\seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#isStartOf.https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~om:hasNumericalValue.https://www.theworldavatar.com/kg/ontopoi/double} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~om:hasUnit.om:Unit} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~om:hasValue.om:Measure} \\
@@ -685,6 +697,7 @@
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~https://www.theworldavatar.com/kg/ontopoi/hasGeographicCounty.https://www.theworldavatar.com/kg/ontopoi/GeographicCounty} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~https://www.theworldavatar.com/kg/ontopoi/hasPositionalAccuracy.https://www.theworldavatar.com/kg/ontopoi/PositionalAccuracy} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~https://www.theworldavatar.com/kg/ontopoi/hasnearestITN.https://www.theworldavatar.com/kg/ontopoi/ITN} \\
+\seqsplit{{$\exists$}~http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation.{$\top$}~{$\sqsubseteq$}~http://ies.data.gov.uk/ontology/ies4#ParticularPeriod} \\
 \seqsplit{{$\exists$}~http://ontology.eil.utoronto.ca/icontact.owl#hasStreet.{$\top$}~{$\sqsubseteq$}~http://ies.data.gov.uk/ontology/ies4#Address} \\
 \seqsplit{{$\exists$}~http://www.opengis.net/ont/geosparql#asWKT.{$\top$}~{$\sqsubseteq$}~(https://www.theworldavatar.com/kg/ontopoi/ITN~{$\sqcup$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest)} \\
 \seqsplit{{$\exists$}~http://www.w3.org/2006/vcard/ns#postal-code.{$\top$}~{$\sqsubseteq$}~http://ies.data.gov.uk/ontology/ies4#Address} \\
@@ -700,6 +713,7 @@
 \seqsplit{{$\exists$}~https://www.theworldavatar.com/kg/ontopoi/hasUPRN.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
 \seqsplit{{$\exists$}~https://www.theworldavatar.com/kg/ontopoi/hasURL.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
 \seqsplit{{$\exists$}~https://www.theworldavatar.com/kg/ontopoi/isAddressVerified.{$\top$}~{$\sqsubseteq$}~https://www.theworldavatar.com/kg/ontopoi/PointOfInterest} \\
+\seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation.xsd:anyURI} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://ontology.eil.utoronto.ca/icontact.owl#hasStreet.xsd:string} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://www.opengis.net/ont/geosparql#asWKT.http://www.opengis.net/ont/geosparql#wktLiteral} \\
 \seqsplit{{$\top$}~{$\sqsubseteq$}~{$\forall$}~http://www.w3.org/2006/vcard/ns#postal-code.xsd:string} \\

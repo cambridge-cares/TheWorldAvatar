@@ -4,6 +4,13 @@ ontopoi,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 ontopoi,TBox,OntoPOI is an ontology developed for representing points of interest.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 ontopoi,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Point Of Interest,Class,,,,,,A specific location or place of significance in a geographical context,,Point Of Interest
+http://ies.data.gov.uk/ontology/ies4#BoundingState,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Bounding State
+Point Of Interest Start,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,Tthe official date when a point-of-interest entity began operations or was inaugurated.,https://www.theworldavatar.com/kg/ontopoi,Point Of Interest Start
+Point Of Interest End,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,The date of decommissioning or closure of a point-of-interest entity.,https://www.theworldavatar.com/kg/ontopoi,Point Of Interest End
+http://ies.data.gov.uk/ontology/ies4#isStartOf,Object Property,,,Point Of Interest Start,Point Of Interest,only,An object property representing the start date of a point-of-interest entity.,http://ies.data.gov.uk/ontology/ies4,is Start Of
+http://ies.data.gov.uk/ontology/ies4#isEndOf,Object Property,,,Point Of Interest End,Point Of Interest,only,An object property representing the end date of a point-of-interest entity.,http://ies.data.gov.uk/ontology/ies4,is End Of
+http://ies.data.gov.uk/ontology/ies4#inPeriod,Object Property,,,Point Of Interest Start UNION Point Of Interest End,http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,,An object property relating the start or end of a point-of-interest entity to a specific period.,http://ies.data.gov.uk/ontology/ies4,in Period
+http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation,Data Property,,,http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,any uri,,,http://ies.data.gov.uk/ontology/ies4,iso 8601 Period Representation
 Accommodation Eating And Drinking,Class,Point Of Interest,IS-A,,,,"Any facility or place where individuals can stay temporarily and/or consume food and drinks, typically while traveling",https://www.theworldavatar.com/kg/ontopoi,"Accommodation, eating and drinking"
 Commercial Services,Class,Point Of Interest,IS-A,,,,"Services that are provided by businesses or organisations with the primary purpose of generating profit through the exchange of goods, services, or expertise",https://www.theworldavatar.com/kg/ontopoi,Commercial services
 Attractions,Class,Point Of Interest,IS-A,,,,"Places or sites that draw the attention of visitors, offering entertainment, education, or cultural value",https://www.theworldavatar.com/kg/ontopoi,Attractions
@@ -15,7 +22,7 @@ Retail,Class,Point Of Interest,IS-A,,,,"Businesses that purchase products from m
 Transport,Class,Point Of Interest,IS-A,,,,"Systems or infrastructure used to move people, goods, and services from one location to another",https://www.theworldavatar.com/kg/ontopoi,Transport
 Positional Accuracy,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,A quantity indicating how precisely the location of the POI has been mapped,https://www.theworldavatar.com/kg/ontopoi,Positional Accuracy
 Distance,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,A quantity indicating the distance of the nearest ITN from the POI,https://www.theworldavatar.com/kg/ontopoi,Distance
-Locality,Class,,,,,,"A geographic area or neighborhood within a larger city, town, or administrative region",https://www.theworldavatar.com/kg/ontopoi,Locality
+https://dbpedia.org/ontology/Locality,Class,,,,,,"A geographic area or neighborhood within a larger city, town, or administrative region",https://dbpedia.org/ontology,Locality
 Geographic County,Class,,,,,,"A traditional, historical, or ceremonial division of land that defines a region for purposes such as cultural identity, historical boundaries, and geographic context",https://www.theworldavatar.com/kg/ontopoi,Geographic County
 Source Reference,Class,,,,,,"Source or origin of the POI data, indicating where or how the information was gathered",https://www.theworldavatar.com/kg/ontopoi,Source Reference
 has Distance,Object Property,,,Point Of Interest,Distance,,An object property indicating the distance from the POI to its nearest ITN,https://www.theworldavatar.com/kg/ontopoi,has Distance
@@ -44,7 +51,7 @@ has URL,Data Property,,,Point Of Interest,any uri,,The web address (URL) of the 
 http://ies.data.gov.uk/ontology/ies4#branding,Object Property,,,Point Of Interest,http://ies.data.gov.uk/ontology/ies4#Organisation,,The brand associated with the POI,http://ies.data.gov.uk/ontology/ies4,has Brand
 has Qualifier Type,Data Property,,,Point Of Interest,string,,"Specifies the type of qualifier associated with the POI, which could provide further context or detail about the point, e.g., Charity",https://www.theworldavatar.com/kg/ontopoi,has Qualifier Type
 has Qualifier,Data Property,,,Point Of Interest,string,,"Specifies the class of qualifier associated with the POI, e.g., Food Bank",https://www.theworldavatar.com/kg/ontopoi,has Qualifier
-http://ies.data.gov.uk/ontology/ies4#hasSourceReference,Object Property,,,,,,,,
+http://ies.data.gov.uk/ontology/ies4#hasSourceReference,Object Property,,,Point Of Interest,Source Reference,,,,
 has Supply Date,Data Property,,,Point Of Interest,date time,,The date when the POI data was supplied or last updated,https://www.theworldavatar.com/kg/ontopoi,has Supply Date
 Accommodation,Class,Accommodation Eating And Drinking,IS-A,,,,"Accommodation is a subcategory of accommodation, eating and drinking",https://www.theworldavatar.com/kg/ontopoi,Accommodation
 Eating And Drinking,Class,Accommodation Eating And Drinking,IS-A,,,,"Eating and drinking is a subcategory of accommodation, eating and drinking",https://www.theworldavatar.com/kg/ontopoi,Eating and drinking
