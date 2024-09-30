@@ -56,7 +56,6 @@ class DataReqExecutor:
                 logger.info("Fall back to default executor")
         elif isinstance(req_form, FuncDataReqForm):
             return self.func_executor.exec(
-                var2cls=var2cls,
                 entity_bindings=entity_bindings,
                 const_bindings=const_bindings,
                 req_form=req_form,
