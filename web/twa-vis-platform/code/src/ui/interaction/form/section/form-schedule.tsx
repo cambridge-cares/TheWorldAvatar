@@ -1,5 +1,6 @@
 import styles from '../form.module.css';
 import fieldStyles from '../field/field.module.css';
+import inputStyles from '../field/input/input.module.css';
 
 import React, { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
@@ -59,7 +60,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
           <select
             id="select-input"
             value={selectedServiceOption}
-            className={fieldStyles["selector"]}
+            className={inputStyles["selector"]}
             disabled={props.options?.disabled}
             onChange={handleServiceChange}
           >
