@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-clients</artifactId>
-    <version>1.37.2</version>
+    <version>1.37.3-separate-podman-client</version>
 
     <name>Stack Clients</name>
     <url>https://theworldavatar.io</url>
@@ -72,17 +72,6 @@
             <artifactId>jersey-media-multipart</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.brsanthu/migbase64 -->
-        <dependency>
-            <groupId>com.brsanthu</groupId>
-            <artifactId>migbase64</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
         <dependency>
             <groupId>com.github.docker-java</groupId>
@@ -141,12 +130,6 @@
             <version>1.43.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.blazegraph</groupId>
             <artifactId>bigdata-client</artifactId>
@@ -194,6 +177,12 @@
             <groupId>com.moandjiezana.toml</groupId>
             <artifactId>toml4j</artifactId>
             <version>0.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cmcl</groupId>
+            <artifactId>podman-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
@@ -244,75 +233,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <?m2e execute onConfiguration?>
-                        <id>generate-swagger-client</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${podman.file}</inputSpec>
-                            <language>java</language>
-                            <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
-                            <apiPackage>${project.groupId}.swagger.podman.api</apiPackage>
-                            <configOptions>
-                                <dateLibrary>legacy</dateLibrary>
-                                <library>jersey2</library>
-                            </configOptions>
-                            <addCompileSourceRoot>true</addCompileSourceRoot>
-                            <generateApis>true</generateApis>
-                            <generateApiTests>false</generateApiTests>
-                            <generateApiDocumentation>false</generateApiDocumentation>
-                            <generateModels>true</generateModels>
-                            <modelsToGenerate></modelsToGenerate>
-                            <generateModelTests>false</generateModelTests>
-                            <generateModelDocumentation>false</generateModelDocumentation>
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                            <supportingFilesToGenerate></supportingFilesToGenerate>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>io.swagger.codegen.v3</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <?m2e execute onConfiguration?>
-                        <id>generate-superset-swagger-client</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${superset.file}</inputSpec>
-                            <language>java</language>
-                            <modelPackage>${project.groupId}.swagger.superset.model</modelPackage>
-                            <apiPackage>${project.groupId}.swagger.superset.api</apiPackage>
-                            <configOptions>
-                                <dateLibrary>legacy</dateLibrary>
-                                <library>jersey2</library>
-                            </configOptions>
-                            <addCompileSourceRoot>true</addCompileSourceRoot>
-                            <generateApis>true</generateApis>
-                            <generateApiTests>false</generateApiTests>
-                            <generateApiDocumentation>false</generateApiDocumentation>
-                            <generateModels>true</generateModels>
-                            <modelsToGenerate></modelsToGenerate>
-                            <generateModelTests>false</generateModelTests>
-                            <generateModelDocumentation>false</generateModelDocumentation>
-                            <generateSupportingFiles>true</generateSupportingFiles>
-                            <supportingFilesToGenerate></supportingFilesToGenerate>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 
     </build>

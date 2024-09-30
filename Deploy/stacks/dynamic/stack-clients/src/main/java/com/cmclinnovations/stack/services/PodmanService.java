@@ -18,23 +18,6 @@ import java.util.stream.Stream;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.PodmanClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
-import com.cmclinnovations.swagger.podman.ApiException;
-import com.cmclinnovations.swagger.podman.api.ContainersApi;
-import com.cmclinnovations.swagger.podman.api.PodsApi;
-import com.cmclinnovations.swagger.podman.api.SecretsApi;
-import com.cmclinnovations.swagger.podman.model.ContainerCreateResponse;
-import com.cmclinnovations.swagger.podman.model.IDResponse;
-import com.cmclinnovations.swagger.podman.model.ListContainer;
-import com.cmclinnovations.swagger.podman.model.ListPodsReport;
-import com.cmclinnovations.swagger.podman.model.MountPoint;
-import com.cmclinnovations.swagger.podman.model.NamedVolume;
-import com.cmclinnovations.swagger.podman.model.Namespace;
-import com.cmclinnovations.swagger.podman.model.PerNetworkOptions;
-import com.cmclinnovations.swagger.podman.model.PodSpecGenerator;
-import com.cmclinnovations.swagger.podman.model.PortMapping;
-import com.cmclinnovations.swagger.podman.model.Secret;
-import com.cmclinnovations.swagger.podman.model.SecretInfoReport;
-import com.cmclinnovations.swagger.podman.model.SpecGenerator;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;
@@ -46,6 +29,24 @@ import com.github.dockerjava.api.model.NetworkAttachmentConfig;
 import com.github.dockerjava.api.model.PortConfig;
 import com.github.dockerjava.api.model.PortConfigProtocol;
 import com.github.dockerjava.api.model.ServiceSpec;
+
+import io.cmcl.podman.client.ApiException;
+import io.cmcl.podman.client.api.ContainersApi;
+import io.cmcl.podman.client.api.PodsApi;
+import io.cmcl.podman.client.api.SecretsApi;
+import io.cmcl.podman.client.model.ContainerCreateResponse;
+import io.cmcl.podman.client.model.IDResponse;
+import io.cmcl.podman.client.model.ListContainer;
+import io.cmcl.podman.client.model.ListPodsReport;
+import io.cmcl.podman.client.model.MountPoint;
+import io.cmcl.podman.client.model.NamedVolume;
+import io.cmcl.podman.client.model.Namespace;
+import io.cmcl.podman.client.model.PerNetworkOptions;
+import io.cmcl.podman.client.model.PodSpecGenerator;
+import io.cmcl.podman.client.model.PortMapping;
+import io.cmcl.podman.client.model.Secret;
+import io.cmcl.podman.client.model.SecretInfoReport;
+import io.cmcl.podman.client.model.SpecGenerator;
 
 public class PodmanService extends DockerService {
 
