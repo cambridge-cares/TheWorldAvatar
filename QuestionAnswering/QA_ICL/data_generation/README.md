@@ -9,6 +9,10 @@
     - [Lexicon](#lexicon)
     - [Schema Elements](#schema-elements)
     - [Data Request Generation Examples](#data-request-generation-examples)
+      - [SparqlDataRequestForm Schema](#sparqldatarequestform-schema)
+      - [FuncDataRequestForm Schema](#funcdatarequestform-schema)
+      - [DataRequest Schema](#datarequest-schema)
+      - [Nlq2DataReqExample Schema](#nlq2datareqexample-schema)
     - [Physical Quantity Recognition Examples](#physical-quantity-recognition-examples)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
@@ -147,9 +151,29 @@ Schema definition for relation type data:
 
 A question can be answered so long as appropriate data is supplied. The retrieval of pertinent data is carried out by executing structured data requests that correspond to the input questions. By prompting LLMs with pairs of natural language queries and their corresponding data requests, LLMs can perform in-context learning to automatically generate data requests for unseen input questions.
 
-Data requests come in two variants: SPARQL query and function call. 
+Data requests come in two variants: SPARQL query and function call. To represent these concepts, we use a hierarchy of interconnected JSON schemas. Below is an overview of these schemas and their relationships:
 
-Schema definition of SPARQL data request forms:
+1. Base schemas for data request forms
+   - `SparqlDataRequestForm`: Defines the structure for SPARQL-based data requests.
+   - `FuncDataRequestForm`: Defines the structure for function call-based data requests.
+2. Composite schemas
+   - `DataRequest`: Incorporates either a `SparqlDataRequestForm` or a `FuncDataRequestForm`, along with additional metadata.
+   - `Nlq2DataReqExample`: Represents a complete example, pairing a natural language query with its corresponding DataRequest.
+
+Here's a visual representation of the schema relationships:
+
+```
+Nlq2DataReqExample
+└── DataRequest
+    ├── SparqlDataRequestForm
+    └── FuncDataRequestForm
+```
+
+Now, let's examine each schema in detail:
+
+#### SparqlDataRequestForm Schema
+
+This schema defines the structure for SPARQL-based data requests.
 
 ```{json}
 {
@@ -194,7 +218,9 @@ Schema definition of SPARQL data request forms:
 }
 ```
 
-Schema definition for function call data request forms:
+#### FuncDataRequestForm Schema
+
+This schema defines the structure for function call-based data requests.
 
 ```{json}
 {
@@ -214,7 +240,9 @@ Schema definition for function call data request forms:
 }
 ```
 
-Schema definition of data requests:
+#### DataRequest Schema
+
+This schema incorporates either a `SparqlDataRequestForm` or a `FuncDataRequestForm`, along with additional metadata.
 
 ```{json}
 {
@@ -264,7 +292,9 @@ Schema definition of data requests:
 }
 ```
 
-Schema definition of data request generation examples:
+#### Nlq2DataReqExample Schema
+
+This schema represents a complete example, pairing a natural language query with its corresponding `DataRequest`.
 
 ```{json}
 {
