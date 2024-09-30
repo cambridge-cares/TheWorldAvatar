@@ -142,14 +142,6 @@ public class QueryManager {
         }
         if (trajectoryData != null && !trajectoryData.isEmpty()) {
             result.put("meta", trajectoryData);
-            // hack
-            try {
-                Path path = Paths.get("/app", "queries", "converted_time_series.json");
-                JSONArray timedata2 = new JSONArray(Files.readString(path));
-                result.put("time", timedata2);
-            } catch (Exception e) {
-
-            }
         }
 
         return result;

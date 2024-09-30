@@ -14,8 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.postgis.LineString;
@@ -30,7 +28,7 @@ import org.apache.jena.sparql.engine.binding.BindingFactory;
 import org.apache.jena.sparql.syntax.Element;
 import org.apache.jena.sparql.syntax.ElementData;
 import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.sparql.syntax.ElementService;
+import org.apache.jena.sparql.syntax.ElementPathBlock;
 import org.apache.jena.sparql.syntax.ElementTriplesBlock;
 import org.apache.jena.sparql.syntax.ElementVisitorBase;
 import org.apache.jena.sparql.syntax.ElementWalker;
@@ -42,6 +40,7 @@ import com.cmclinnovations.featureinfo.config.ConfigStore;
 import com.cmclinnovations.featureinfo.config.StackEndpoint;
 import com.cmclinnovations.featureinfo.config.StackEndpointType;
 import com.cmclinnovations.featureinfo.config.StackInteractor;
+import com.cmclinnovations.featureinfo.core.meta.MetaParser;
 import com.cmclinnovations.featureinfo.utils.Utils;
 
 import net.sf.jsqlparser.JSQLParserException;
@@ -50,7 +49,6 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.Select;
 
-import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -82,10 +80,8 @@ public class TrajectoryHandler {
     }
 
     public JSONObject getData(List<ConfigEntry> classMatches) {
-        JSONObject data = new JSONObject();
+        List<JSONArray> rawResults = new ArrayList<>();
         classMatches.stream().filter(c -> c.getFeatureIriQuery() != null).forEach(classMatch -> {
-            List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
-
             // Construct line using points queried from point time series
             List<String> pointIriList = getPointIriList(classMatch.getPointIriQuery());
 
@@ -96,33 +92,10 @@ public class TrajectoryHandler {
             List<String> featureIriList = getFeatures(featureIriQuery, classMatch.getTrajectoryDatabase());
 
             String trajectoryMetaQueryTemplate = classMatch.getTrajectoryMetaQuery();
-            addMetadata(trajectoryMetaQueryTemplate, featureIriList, data);
-
-            String ontopURL = "<" + configStore.getStackEndpoints(StackEndpointType.ONTOP).get(0).url() + ">";
-            trajectoryMetaQueryTemplate = trajectoryMetaQueryTemplate.replace("[ONTOP]", ontopURL);
-
-            ValuesPattern valuesPattern = new ValuesPattern(SparqlBuilder.var("building"),
-                    featureIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
-            String trajectoryMetaQuery = trajectoryMetaQueryTemplate.replace("[FEATURE_IRI_VALUES]",
-                    valuesPattern.getQueryString());
-
-            // Run query
-
-            LOGGER.debug("Running non-federated meta data query.");
-            remoteStoreClient.setQueryEndpoint(endpoints.get(0)); // ontop anyway, temp fudge
-            JSONArray queryResult = remoteStoreClient.executeQuery(trajectoryMetaQuery);
-
-            for (int i = 0; i < queryResult.length(); i++) {
-                JSONObject thisElement = queryResult.getJSONObject(i);
-                String type = thisElement.getString("Type");
-                String[] segments = type.split("/");
-                String key = segments[segments.length - 1];
-                String value = thisElement.getString("Count");
-                data.put(key, value);
-            }
+            rawResults.add(getMetadata(trajectoryMetaQueryTemplate, featureIriList));
         });
 
-        return data;
+        return MetaParser.formatData(rawResults);
     }
 
     List<String> getPointIriList(String pointIriQueryTemplate) {
@@ -164,7 +137,7 @@ public class TrajectoryHandler {
             TimeSeriesClient<Long> tsClient = getTimeSeriesClientViaFactory(List.of(pointIri));
             tsClient.setRDBClient(tsClient.getRdbUrl(), rdbEndpoint.username(), rdbEndpoint.password());
 
-            TimeSeries<Long> timeseries = tsClient.getTimeSeries(List.of(pointIri));
+            TimeSeries<Long> timeseries = tsClient.getTimeSeriesWithinBounds(List.of(pointIri), lowerbound, upperbound);
             timeList.addAll(timeseries.getTimes());
             pointList.addAll(timeseries.getValuesAsPoint(pointIri));
         });
@@ -212,45 +185,29 @@ public class TrajectoryHandler {
         return featureIriList;
     }
 
-    private void addMetadata(String queryTemplate, List<String> featureIriList, JSONObject metadata) {
+    private JSONArray getMetadata(String queryTemplate, List<String> featureIriList) {
         String ontopURL = "<" + configStore.getStackEndpoints(StackEndpointType.ONTOP).get(0).url() + ">";
-        String queryString = queryTemplate.replace("[ONTOP]", ontopURL);
 
-        Query query = QueryFactory.create(queryString);
+        Query query = QueryFactory.create(queryTemplate.replace("[ONTOP]", ontopURL));
 
-        if (queryString.contains("?Feature")) {
-            // Inject featureIriList into the given query template
-            // create a VALUES clause from featureIriList
-            ElementData valuesClause = new ElementData();
-            Var featureVar = Var.alloc(FEATURE_VARIABLE_NAME);
-            valuesClause.add(featureVar);
+        if (checkIfVariableExists(query, FEATURE_VARIABLE_NAME)) {
+            // add VALUES ?Feature {<feature1> <feature2> <feature3>} to query
+            addValues(query, featureIriList);
 
-            List<Node> featureValues = featureIriList.stream().map(NodeFactory::createURI).collect(Collectors.toList());
+            // execute query
+            List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
 
-            featureValues.forEach(featureValue -> {
-                Binding binding = BindingFactory.binding(featureVar, featureValue);
-                valuesClause.add(binding);
-            });
-
-            // Get the existing WHERE clause (query pattern)
-            Element existingPattern = query.getQueryPattern();
-
-            // Create a new ElementGroup to combine the VALUES clause with the existing
-            // patterns
-            ElementGroup newGroup = new ElementGroup();
-
-            // Add the VALUES clause to the top
-            newGroup.addElement(valuesClause);
-
-            // Add the existing pattern to the group (if there is any existing pattern)
-            if (existingPattern != null) {
-                newGroup.addElement(existingPattern);
+            JSONArray queryResult;
+            if (endpoints.size() == 1) {
+                LOGGER.debug("Running non-federated meta data query for trajectory.");
+                remoteStoreClient.setQueryEndpoint(endpoints.get(0));
+                queryResult = remoteStoreClient.executeQuery(query.toString());
+            } else {
+                LOGGER.debug("Running federated meta data query for trajectory.");
+                queryResult = remoteStoreClient.executeFederatedQuery(endpoints, query.toString());
             }
 
-            // Set the modified group as the new query pattern (updated WHERE clause)
-            query.setQueryPattern(newGroup);
-
-            query.toString();
+            return queryResult;
         } else {
             String errmsg = "Trajectory metadata query must contain a variable named " + FEATURE_VARIABLE_NAME;
             LOGGER.error(errmsg);
@@ -266,36 +223,61 @@ public class TrajectoryHandler {
         ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase() {
             @Override
             public void visit(ElementTriplesBlock el) {
-                el.patternElts().forEachRemaining(triple -> {
-                    // Collect variables in the subject, predicate, and object
-                    if (triple.getSubject().isVariable()) {
-                        variables.add(triple.getSubject().getName());
-                    }
-                    if (triple.getPredicate().isVariable()) {
-                        variables.add(triple.getPredicate().getName());
-                    }
-                    if (triple.getObject().isVariable()) {
-                        variables.add(triple.getObject().getName());
-                    }
-                });
+                el.patternElts().forEachRemaining(triple -> collectTripleVariables(triple.getSubject(),
+                        triple.getPredicate(), triple.getObject()));
             }
 
             @Override
-            public void visit(ElementService el) {
-                // Visit the inner pattern of the SERVICE clause
-                ElementWalker.walk(el.getElement(), this);
+            public void visit(ElementPathBlock el) {
+                el.patternElts().forEachRemaining(triplePath -> collectTripleVariables(triplePath.getSubject(),
+                        triplePath.getPredicate(), triplePath.getObject()));
             }
 
-            @Override
-            public void visit(ElementGroup el) {
-                for (Element element : el.getElements()) {
-                    ElementWalker.walk(element, this); // Recurse into each element in the group
-                }
+            private void collectTripleVariables(Node subject, Node predicate, Node object) {
+                if (subject.isVariable())
+                    variables.add(subject.getName());
+                if (predicate.isVariable())
+                    variables.add(predicate.getName());
+                if (object.isVariable())
+                    variables.add(object.getName());
             }
         });
 
         // Check if the desired variable exists in the set
         return variables.contains(variableName);
+    }
+
+    private void addValues(Query query, List<String> featureIriList) {
+        // Inject featureIriList into the given query template
+        // create a VALUES clause from featureIriList
+        ElementData valuesClause = new ElementData();
+        Var featureVar = Var.alloc(FEATURE_VARIABLE_NAME);
+        valuesClause.add(featureVar);
+
+        List<Node> featureValues = featureIriList.stream().map(NodeFactory::createURI).collect(Collectors.toList());
+
+        featureValues.forEach(featureValue -> {
+            Binding binding = BindingFactory.binding(featureVar, featureValue);
+            valuesClause.add(binding);
+        });
+
+        // Get the existing WHERE clause (query pattern)
+        Element existingPattern = query.getQueryPattern();
+
+        // Create a new ElementGroup to combine the VALUES clause with the existing
+        // patterns
+        ElementGroup newGroup = new ElementGroup();
+
+        // Add the VALUES clause to the top
+        newGroup.addElement(valuesClause);
+
+        // Add the existing pattern to the group (if there is any existing pattern)
+        if (existingPattern != null) {
+            newGroup.addElement(existingPattern);
+        }
+
+        // Set the modified group as the new query pattern (updated WHERE clause)
+        query.setQueryPattern(newGroup);
     }
 
     private TimeSeriesClient<Long> getTimeSeriesClientViaFactory(List<String> pointIriList) {
@@ -327,13 +309,7 @@ public class TrajectoryHandler {
             indices.add(i);
         }
 
-        // Sort the indices based on values in listToSortBy
-        Collections.sort(indices, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer i1, Integer i2) {
-                return listToSortBy.get(i1).compareTo(listToSortBy.get(i2));
-            }
-        });
+        Collections.sort(indices, Comparator.comparing(listToSortBy::get));
 
         // Create a sorted copy of listToSortBy and listToSort
         List<T> sortedListToSortBy = new ArrayList<>(listToSortBy.size());
