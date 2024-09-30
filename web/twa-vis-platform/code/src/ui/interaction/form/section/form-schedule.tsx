@@ -96,7 +96,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
           options={props.options}
         />}
         {selectedServiceOption === regularService && <div className={styles["schedule-occurrence-container"]}>
-          <span className={fieldStyles["field-text"]}>Repeat every</span>
+          <span className={fieldStyles["field-text"]}>Repeat once every</span>
           <input
             id={FORM_STATES.RECURRENCE}
             type={"number"}
