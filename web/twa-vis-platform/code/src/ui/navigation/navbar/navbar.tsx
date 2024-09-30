@@ -106,7 +106,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
             name="REGISTRY"
             tooltip="Open registry."
             icon="contract"
-            url="/view/contract" />
+            url="/view/agreement" />
         }
         {props.showScheduler &&
           <NavbarComponent
