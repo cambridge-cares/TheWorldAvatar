@@ -3,7 +3,7 @@
 This directory contains the configuration to serve the Sentence-BERT model for generating text embeddings, which plays a specific role in our Question Answering (QA) system workflow.
 
 ## Role of Text Embedding in the QA Workflow
-According to the main architecture described in [README](../../README.md#Architecture), the Triton server serves the Sentence-BERT model for text embedding generation via gRPC. Its primary function is:
+The FastAPI app relies on this service to obtain text embeddings. It interacts with this service for the data ingestion process and for every request submitted to the endpoint `/qa`. According to the main architecture described in [README](../../README.md#Architecture), the Triton server serves the Sentence-BERT model for text embedding generation via gRPC. Its primary function is:
 
 - Text Embedding Generation
    - The Sentence-BERT model hosted on this Triton server generates text embeddings. These embeddings are used for natural language processing tasks within the FastAPI application, such as semantic similarity comparisons of the QA system.
@@ -39,7 +39,7 @@ This ONNX file can be obtained by using HuggingFace's [utility](https://huggingf
 
 ### Usage
 
-See [Triton Client Libraries and Examples](https://github.com/triton-inference-server/client).
+See [Triton Client Libraries and Examples](https://github.com/triton-inference-server/client) for information on how to interact with the Triton Inference Server.
 
 ## Development
 
