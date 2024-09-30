@@ -31,11 +31,8 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
 
   const isKeycloakEnabled = process.env.KEYCLOAK === 'true';
-
-  let authorised;
-  if (isKeycloakEnabled) {
-    authorised = useProtectedRole().authorised;
-  }
+  
+  const authorised = useProtectedRole().authorised;
 
   const scheduleId: string = "schedule date";
   // Users can only either add or schedule at one time; schedule is expected to add new instances but with restrictions
