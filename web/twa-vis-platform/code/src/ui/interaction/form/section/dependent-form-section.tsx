@@ -121,7 +121,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
     if (formType != Paths.REGISTRY_ADD) {
       url = `../${url}`;
     }
-    router.push(url);
+    window.open(url, "_blank");
   };
 
   // The fieldset should only be displayed if it either does not have parent elements (no nodekind) or 
