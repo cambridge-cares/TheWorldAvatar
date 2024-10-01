@@ -1,3 +1,4 @@
+/* Used by timeline app, produces a single line rather than line segments */
 WITH distinct_devices AS (
     SELECT 
         array_agg(device_id::text) as device_list
@@ -33,12 +34,11 @@ line AS (
 )
 
 SELECT 
-    time, geom, speed, altitude, bearing, iri
+    ST_MakeLine(geom) as geom, 
+    CONCAT('https://w3id.org/MON/person.owl#person_', '%user_id%') AS iri
 FROM 
-    line
+    timeseries ts
 WHERE
-    line.prev_geom IS NOT NULL
-    AND (CASE 
-            WHEN '%user_id%' <> '' THEN line.user_id = '%user_id%'
-            ELSE TRUE
-         END)
+    ('%user_id%' = '' OR user_id = '%user_id%')
+    AND (%lowerbound% = 0 OR time > %lowerbound%)
+    AND (%upperbound% = 0 OR time < %upperbound%)

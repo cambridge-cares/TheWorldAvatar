@@ -38,7 +38,4 @@ FROM
     line
 WHERE
     line.prev_geom IS NOT NULL
-    AND (CASE 
-            WHEN '%device_id%' <> '' THEN line.device_id = '%device_id%'
-            ELSE TRUE
-         END)
+    AND ('%device_id%' = '' OR device_id = '%device_id%')
