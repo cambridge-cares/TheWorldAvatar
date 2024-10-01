@@ -143,7 +143,7 @@ public class CityDB extends GeoServerDataSubset {
     public void createLayers(String workspaceName, String database) {
         logger.info("Publishing to geoserver...");
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, getTable(), getSchema(), geoServerSettings);
+                .createPostGISLayer(workspaceName, database, getSchema(), getTable(), geoServerSettings);
     }
 
     public void createLayer(String database) {
