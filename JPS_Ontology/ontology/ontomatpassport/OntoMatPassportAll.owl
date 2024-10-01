@@ -73,9 +73,48 @@
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Biodegradability"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprint"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMaterial"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Density"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Dimension"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/FeedstockFractionFromRecycledProduct"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/FeedstockFractionFromReusedProduct"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficient"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/LinearFlowIndex"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Mass"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MaterialCircularityIndicator"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionCollectedForRecycling"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionCollectedForReuse"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForPortionCollectedForRecycling"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForProducingFeedstock"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Resistance"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Rigidity"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TotalMass"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WaterUsage"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprintMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/DensityMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/DimensionMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficientMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ResistanceMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RigidityMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TemporalPropertyMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalConductivityMeasure"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WaterUsageMeasure"/>
         <rdfs:comment>An object property referring to the measured value of a quantity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Value</rdfs:label>
     </owl:ObjectProperty>
     
@@ -1026,6 +1065,18 @@
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalConductivityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalConductivityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A thermal property that describes the capacity of an object to conduct heat.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
         <rdfs:label>Thermal conductivity</rdfs:label>
@@ -1048,6 +1099,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Biodegradability">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/BiologicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A property expressing whether an object is entirely, partially or not biodegradable.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Biodegradability</rdfs:label>
@@ -1072,9 +1135,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprint">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/EnvironmentalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprintMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprintMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The total amount of carbon dioxide (CO2) emitted during the raw material extraction and production process.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Carbon footprint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprintMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprintMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure that quantifies the total amount of carbon dioxide (CO?) emitted, directly or indirectly, by a product during the material extraction and manufacturing stages.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Carbon footprint measure</rdfs:label>
     </owl:Class>
     
 
@@ -1168,9 +1255,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMaterial">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CompositionProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A property to describe the type and amount of constituent materials belonging to an object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Constituent material</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ConstituentMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the amount of constituent materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Constituent measure</rdfs:label>
     </owl:Class>
     
 
@@ -1192,9 +1303,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Density">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/DensityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/DensityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A physical property that describes the density of an object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Density</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/DensityMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/DensityMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the density of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Density measure</rdfs:label>
     </owl:Class>
     
 
@@ -1204,9 +1339,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Dimension">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/DimensionMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/DimensionMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A physical propertythat describes the dimension of an object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Dimension</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/DimensionMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/DimensionMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the dimension of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Dimension measure</rdfs:label>
     </owl:Class>
     
 
@@ -1253,6 +1412,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/FeedstockFractionFromRecycledProduct">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The fraction of feedstock from recycled products.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Feedstock fraction from recycled product</rdfs:label>
@@ -1265,6 +1436,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/FeedstockFractionFromReusedProduct">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The fraction of feedstock from reused products.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Feedstock fraction from reused product</rdfs:label>
@@ -1280,6 +1463,38 @@
         <rdfs:comment>A property that determines the ease and intensity with which an object can ignite and burn.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Flammability</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficient -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficient">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficientMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficientMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficientMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/HeatTransferCoefficientMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the heat transfer coefficient of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Heat transfer coefficient measure</rdfs:label>
     </owl:Class>
     
 
@@ -1320,6 +1535,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/LinearFlowIndex">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The proportion of material that moves from its origin as virgin materials to its final state as non-recyclable waste [Ellen MacArthur Foundation, 2015]</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Linear Flow Index</rdfs:label>
@@ -1343,9 +1570,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Mass">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A physical property to describe the mass of an object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Mass</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the mass of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Mass measure</rdfs:label>
     </owl:Class>
     
 
@@ -1355,6 +1606,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/MaterialCircularityIndicator">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A measure of how circular the materials of a product are.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Material Circularity Indicator</rdfs:label>
@@ -1380,6 +1643,18 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the percentage of a quantity or whole.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Percentage measure</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport/Product -->
 
 
@@ -1396,6 +1671,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionCollectedForRecycling">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The fraction of a product collected for recycling.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Product fraction collected for recycling</rdfs:label>
@@ -1408,6 +1695,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ProductFractionCollectedForReuse">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The fraction of a product collected for reuse.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Product fraction collected for reuse</rdfs:label>
@@ -1420,6 +1719,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecycledContent">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A sustainability property to describe the amount of recycled content used in manufacturing an object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Recycled content</rdfs:label>
@@ -1432,6 +1743,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForPortionCollectedForRecycling">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The recycling efficiency of a portion collected from a product for recycling.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Recycling efficiency for portion collected for recycling</rdfs:label>
@@ -1444,6 +1767,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForProducingFeedstock">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/PercentageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The recycling efficiency in producing recycled feedstock.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Recycling efficiency for producing feedstock</rdfs:label>
@@ -1456,9 +1791,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Resistance">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ResistanceMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ResistanceMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>Any mechanical force that tends to retard or oppose motion [WordNet 3.1]</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Resistance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ResistanceMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ResistanceMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the resistance of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Resistance measure</rdfs:label>
     </owl:Class>
     
 
@@ -1468,9 +1827,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/Rigidity">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RigidityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RigidityMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The physical property of being stiff and resisting bending [WordNet 3.1]</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Rigidity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/RigidityMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/RigidityMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the rigidity of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Rigidity measure</rdfs:label>
     </owl:Class>
     
 
@@ -1511,6 +1894,38 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the amount of heat required to raise the temperature of a unit mass of a substance by one degree Celsius (or one Kelvin).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Specific heat measure</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontomatpassport/Supplier -->
 
 
@@ -1528,9 +1943,33 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TemporalPropertyMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TemporalPropertyMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A property to express the temporal aspect of an object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Temporal property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/TemporalPropertyMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TemporalPropertyMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify different temporal aspects of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Temporal property measure</rdfs:label>
     </owl:Class>
     
 
@@ -1543,6 +1982,18 @@
         <rdfs:comment>The resistance of an object to tensile forces.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Tensile strength</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/ThermalConductivityMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/ThermalConductivityMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure to quantify the thermal conductivity of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Thermal conductivity measure</rdfs:label>
     </owl:Class>
     
 
@@ -1565,6 +2016,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/TotalMass">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The total mass of a product.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Total mass</rdfs:label>
@@ -1589,6 +2052,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The mass of virgin content in a product.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Virgin content mass</rdfs:label>
@@ -1601,6 +2076,18 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/WasteMass">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CircularEconomyProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/MassMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The mass of waste produced from an end-of-life product.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Waste mass</rdfs:label>
@@ -1637,9 +2124,33 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/WaterUsage">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/EnvironmentalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WaterUsageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/WaterUsageMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The total amount of water consumed during the raw material extraction and production processes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
-        <rdfs:label>Water Usage</rdfs:label>
+        <rdfs:label>Water usage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport/WaterUsageMeasure -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/WaterUsageMeasure">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:comment>A measure that quantifies the total amount of water used, directly or indirectly, by a product during the material extraction and manufacturing stages</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
+        <rdfs:label>Water usage measure</rdfs:label>
     </owl:Class>
     
 
