@@ -13,6 +13,7 @@ import StatusComponent from 'ui/text/status/status';
 
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
+import { RegistryTableTheme } from './registry-table-theme';
 
 interface RegistryTableProps {
   recordType: string;
@@ -80,22 +81,25 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
   }, [props.instances]);
 
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        className={styles["table"]}
-        rows={data}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
+    <RegistryTableTheme >
+      <Box>
+        <DataGrid
+          className={styles["table"]}
+          rows={data}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
             },
-          },
-        }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-      />
-    </Box>
+          }}
+          pageSizeOptions={[5]}
+          checkboxSelection={false}
+          disableRowSelectionOnClick={false}
+          autosizeOnMount={true}
+        />
+      </Box>
+    </RegistryTableTheme> 
   )
 }
