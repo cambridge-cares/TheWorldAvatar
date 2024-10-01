@@ -102,10 +102,6 @@ The full time-sequence diagram of Mackay Data Agent actions are illustrated as t
 3) Client may request an update of all data managed by the Data Agent via http request. Upon request, each datapoint is updated via the DIF derivation update method, which checks the attached timestamps along the derivation chain and updates accordingly.
 4) Client may request to read the datapoints from the current KG.
 
-<p align="center">
-    <img src="./imgs/sequenceDATAAGENT.png" alt="drawing" width="800"/>
-</p>
-
 # 2.3 Ontology
 We map three Mackay inputs data to quantity instances in TWA KG. A proposed version of design can be found in [tbox_dev]. Note that this is not the finalized version.
 
