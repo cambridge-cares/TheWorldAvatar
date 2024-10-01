@@ -73,6 +73,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity"/>
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Biodegradability"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprint"/>
@@ -92,7 +93,6 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForProducingFeedstock"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Resistance"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/Rigidity"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/TotalMass"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass"/>
@@ -1052,6 +1052,18 @@
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>The quantity of heat needed to increase the temperature of a material&apos;s unit mass by one unit.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
         <rdfs:label>Specific heat</rdfs:label>
@@ -1890,26 +1902,6 @@
         <rdfs:comment>The resistance of an object to shearing forces.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport"/>
         <rdfs:label>Shear strength</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 

@@ -4,6 +4,8 @@
 \seqsplit{om:HeatCapacity~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty} \\
 \seqsplit{om:HeatTransferCoefficient~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty} \\
 \seqsplit{om:SpecificHeatCapacity~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty} \\
+\seqsplit{om:SpecificHeatCapacity~{$\sqsubseteq$}~{$\exists$}~om:hasValue.http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure} \\
+\seqsplit{om:SpecificHeatCapacity~{$\sqsubseteq$}~{$\forall$}~om:hasValue.http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure} \\
 \seqsplit{om:ThermalConductivity~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/ThermalProperty} \\
 \seqsplit{om:ThermalConductivity~{$\sqsubseteq$}~{$\exists$}~om:hasValue.http://www.theworldavatar.com/kg/ontomatpassport/ThermalConductivityMeasure} \\
 \seqsplit{om:ThermalConductivity~{$\sqsubseteq$}~{$\forall$}~om:hasValue.http://www.theworldavatar.com/kg/ontomatpassport/ThermalConductivityMeasure} \\
@@ -87,8 +89,6 @@
 \seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/ServiceLife~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty} \\
 \seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/ShearModulus~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/Rigidity} \\
 \seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/ShearStrength~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/Resistance} \\
-\seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat~{$\sqsubseteq$}~{$\exists$}~om:hasValue.http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure} \\
-\seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat~{$\sqsubseteq$}~{$\forall$}~om:hasValue.http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure} \\
 \seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeatMeasure~{$\sqsubseteq$}~om:Measure} \\
 \seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty~{$\sqsubseteq$}~om:Quantity} \\
 \seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty~{$\sqsubseteq$}~OntoCAPE\_System:Property} \\
@@ -151,6 +151,7 @@
 \seqsplit{http://www.theworldavatar.com/kg/ontomatpassport/hasRegistrationCountry~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/hasCountry} \\
 \seqsplit{{$\exists$}~om:hasUnit.{$\top$}~{$\sqsubseteq$}~om:Measure} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~om:Quantity} \\
+\seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~om:SpecificHeatCapacity} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~om:ThermalConductivity} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/Biodegradability} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/CarbonFootprint} \\
@@ -170,7 +171,6 @@
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/RecyclingEfficiencyForProducingFeedstock} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/Resistance} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/Rigidity} \\
-\seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/SpecificHeat} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/TemporalProperty} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/TotalMass} \\
 \seqsplit{{$\exists$}~om:hasValue.{$\top$}~{$\sqsubseteq$}~http://www.theworldavatar.com/kg/ontomatpassport/VirginContentMass} \\

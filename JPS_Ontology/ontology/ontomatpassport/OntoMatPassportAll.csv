@@ -166,8 +166,8 @@ http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Proper
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,TemporalProperty,TemporalPropertyMeasure,only,,http://www.theworldavatar.com/kg/ontomatpassport,Value
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity,ThermalConductivityMeasure,some,,http://www.theworldavatar.com/kg/ontomatpassport,Value
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/ThermalConductivity,ThermalConductivityMeasure,only,,http://www.theworldavatar.com/kg/ontomatpassport,Value
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,SpecificHeat,SpecificHeatMeasure,some,,http://www.theworldavatar.com/kg/ontomatpassport,Value
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,SpecificHeat,SpecificHeatMeasure,only,,http://www.theworldavatar.com/kg/ontomatpassport,Value
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity,SpecificHeatMeasure,some,,http://www.theworldavatar.com/kg/ontomatpassport,Value
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificHeatCapacity,SpecificHeatMeasure,only,,http://www.theworldavatar.com/kg/ontomatpassport,Value
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,CarbonFootprint,CarbonFootprintMeasure,some,,http://www.theworldavatar.com/kg/ontomatpassport,Value
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,CarbonFootprint,CarbonFootprintMeasure,only,,http://www.theworldavatar.com/kg/ontomatpassport,Value
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,WaterUsage,WaterUsageMeasure,some,,http://www.theworldavatar.com/kg/ontomatpassport,Value
