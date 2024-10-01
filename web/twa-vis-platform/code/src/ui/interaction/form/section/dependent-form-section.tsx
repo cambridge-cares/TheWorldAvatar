@@ -6,7 +6,7 @@ import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { Paths } from 'io/config/routes';
-import { ID_KEY, PropertyShape, RegistryFieldValues, VALUE_KEY } from 'types/form';
+import { FormOptionType, ID_KEY, PropertyShape, RegistryFieldValues, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
@@ -35,8 +35,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const control: Control = props.form.control;
   const [isFetching, setIsFetching] = useState<boolean>(true);
-  const [displayField, setDisplayField] = useState<string>("");
-  const [selectElements, setSelectElements] = useState<RegistryFieldValues[]>([]);
+  const [selectElements, setSelectElements] = useState<FormOptionType[]>([]);
   // If there is a need, retrieve the parent field name. Parent field depends on the shape to field mappings.
   // Else, it should remain as an empty string
   const firstRelevantShapeKey: string = props.dependentProp.nodeKind ? props.dependentProp.qualifiedValueShape.find(shape => {
@@ -85,20 +84,30 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
       }
       // Set the form value to the default value if available, else, default to the first option
       form.setValue(field.fieldId, defaultId);
+
+      const formFields: FormOptionType[] = [];
       // Retrieve and set the display field accordingly
       if (entities.length > 0) {
         const fields: string[] = Object.keys(entities[0]);
+        let displayField: string;
         if (fields.includes("name")) {
-          setDisplayField("name");
+          displayField = "name";
         } else if (fields.includes("street")) {
-          setDisplayField("street");
+          displayField = "street";
         } else {
-          setDisplayField(Object.keys(fields).find((key => key != "id" && key != "iri")));
+          displayField = Object.keys(fields).find((key => key != "id" && key != "iri"));
         }
+        entities.map(entity => {
+          const formOption: FormOptionType = {
+            value: entity.id.value,
+            label: entity[displayField]?.value,
+          };
+          formFields.push(formOption);
+        })
       }
 
-      // Update dropdown options
-      setSelectElements(entities);
+      // Update select options
+      setSelectElements(formFields);
       setIsFetching(false);
     }
 
@@ -140,8 +149,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
               <DependentFormSelector
                 field={props.dependentProp}
                 form={props.form}
-                selectOptions={selectElements.map(entity => entity.id.value)}
-                selectLabels={selectElements.map(entity => entity[displayField]?.value)}
+                fieldOptions={selectElements}
                 options={{
                   disabled: formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE
                 }}
