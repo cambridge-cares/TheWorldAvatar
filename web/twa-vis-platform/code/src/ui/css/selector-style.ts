@@ -4,9 +4,8 @@ import { FormOptionType } from 'types/form';
 
 // Selector styles for react select
 export const selectorStyles: StylesConfig<FormOptionType | GroupBase<FormOptionType>, false, GroupBase<FormOptionType>> = {
-  control: (provided) => ({
+  control: (provided, { isDisabled }) => ({
     ...provided,
-    backgroundColor: "var(--background-tertiary)",
     outline: "1px solid var(--border-primary)",
     borderRadius: "5px",
     minHeight: "3vh",
@@ -16,14 +15,21 @@ export const selectorStyles: StylesConfig<FormOptionType | GroupBase<FormOptionT
     padding: "0 0.5rem",
     margin: "0",
 
-    color: "var(--background-inverse-primary)",
-    fontSize: "var(--font-size-tertiary-text)",
+    cursor: isDisabled ? "not-allowed !important" : "default",
+    border: isDisabled ? "1px inset var(--border-primary)" : "none",
+    backgroundColor: isDisabled ? "var(--background-secondary)" : "var(--background-tertiary)",
+    opacity: isDisabled ? "0.75" : "1",
+  }),
+  dropdownIndicator: (provided, { isDisabled }) => ({
+    ...provided,
+    color: isDisabled ? "var(--background-secondary)" : "var(--text-color-primary)",
   }),
   menu: (provided) => ({
     ...provided,
     backgroundColor: "var(--background-tertiary)",
     boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
     margin: "0.25rem 0",
+    minWidth: "100%",
     width: "fit-content",
   }),
   noOptionsMessage: (provided) => ({
@@ -39,9 +45,9 @@ export const selectorStyles: StylesConfig<FormOptionType | GroupBase<FormOptionT
     color: "var(--background-inverse-primary)",
     fontSize: "var(--font-size-tertiary-text)",
   }),
-  singleValue: (provided) => ({
+  singleValue: (provided, { isDisabled }) => ({
     ...provided,
-    color: "var(--background-inverse-primary)",
+    color: isDisabled ? "var(--text-color-secondary)" : "var(--background-inverse-primary)",
     fontSize: "var(--font-size-tertiary-text)",
   }),
   input: (provided) => ({

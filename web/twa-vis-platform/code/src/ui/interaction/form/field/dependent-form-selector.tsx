@@ -48,6 +48,7 @@ export default function DependentFormSelector(props: Readonly<FormSelectorProps>
             isLoading={false}
             isMulti={false}
             isSearchable={true}
+            isDisabled={props.options.disabled}
           />
         )}
       />
