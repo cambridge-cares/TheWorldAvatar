@@ -4,6 +4,24 @@
 
 Marie's frontend is the web interface to interact with TWA's chemical data repositories via natural language. This Next.js app provides a  user-friendly way to submit queries and obtain responses from Marie's backend, including visualisation of molecular structures. The application also provides structured forms to search for chemical species and zeolites, as well as plots to visualise chemical and structural trends.
 
+## Table of Contents
+- [Marie's Frontend](#maries-frontend)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Backend endpoint configuration](#backend-endpoint-configuration)
+    - [Native setup](#native-setup)
+      - [Prerequisites](#prerequisites)
+      - [Steps](#steps)
+    - [Docker deployment](#docker-deployment)
+      - [Prerequisites](#prerequisites-1)
+      - [Steps](#steps-1)
+  - [Developer's Documentation](#developers-documentation)
+    - [Overview of tech stack](#overview-of-tech-stack)
+    - [UI components](#ui-components)
+    - [Image components](#image-components)
+    - [Query submission handling](#query-submission-handling)
+
 
 ## Installation
 
