@@ -1,5 +1,32 @@
 # QA Application Backend
 
+## Table of Contents
+- [QA Application Backend](#qa-application-backend)
+  - [Table of Contents](#table-of-contents)
+  - [Initial setup](#initial-setup)
+    - [Required services](#required-services)
+      - [Services to Deploy](#services-to-deploy)
+      - [External API Services](#external-api-services)
+    - [Required datasets](#required-datasets)
+    - [Configurable parameters](#configurable-parameters)
+  - [Native installation](#native-installation)
+    - [Prerequisites](#prerequisites)
+    - [Steps](#steps)
+  - [Docker installation](#docker-installation)
+  - [Usage](#usage)
+    - [Backend](#backend)
+    - [Frontend (to be deprecated)](#frontend-to-be-deprecated)
+  - [Developer's documentation](#developers-documentation)
+    - [Application breakdown](#application-breakdown)
+    - [/qa endpoint handling](#qa-endpoint-handling)
+    - [Entity Linking](#entity-linking)
+      - [Input \& Output JSON Object Example](#input--output-json-object-example)
+      - [Linking Methods](#linking-methods)
+        - [Customized Linker](#customized-linker)
+        - [Fuzzy Match with Redis](#fuzzy-match-with-redis)
+        - [Semantic Match with Redis](#semantic-match-with-redis)
+
+
 ## Initial setup
 
 This section outlines the services, resources, and configurations needed for native and Docker installations. Follow these instructions before proceeding to the installation steps.
@@ -84,7 +111,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
    pip install -r requirements.txt
    ```
 
-4. Ingest required datasets into Redis server, as per the section ['Required datasets'](#required-datasets).
+4. Ingest required datasets into Redis server, as per the section [Required datasets](#required-datasets).
 
 5. Start the server:
    - In debug mode (app is automatically reloaded upon code changes), `uvicorn main:app --reload --log-config=log_conf.yaml`.
