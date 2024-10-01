@@ -65,7 +65,7 @@
 }
 
 .table-icon-cell {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
 }
 
