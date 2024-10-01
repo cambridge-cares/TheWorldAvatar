@@ -6,6 +6,7 @@ import React, { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { usePathname, useRouter } from 'next/navigation';
 
+import useRefresh from 'hooks/useRefresh';
 import { Paths } from 'io/config/routes';
 import { setIsOpen } from 'state/modal-slice';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
@@ -33,6 +34,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const [refreshFlag, triggerRefresh] = useRefresh();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
@@ -80,18 +82,25 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
         <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase().replace("_", " ")}`}</span>
       </div>
       <div className={styles["form-contents"]}>
-        <FormComponent
-          formRef={formRef}
-          entityType={props.entityType}
-          formType={props.formType}
-          agentApi={props.agentApi}
-          setResponse={setResponse}
-          onSubmittingChange={handleFormSubmittingChange}
-        />
+        {refreshFlag ? <LoadingSpinner isSmall={false} /> :
+          <FormComponent
+            formRef={formRef}
+            entityType={props.entityType}
+            formType={props.formType}
+            agentApi={props.agentApi}
+            setResponse={setResponse}
+            onSubmittingChange={handleFormSubmittingChange}
+          />
+        }
       </div>
       <div className={styles["form-footer"]}>
+        {!isSubmitting && !response && <MaterialIconButton
+          iconName={"cached"}
+          iconStyles={[styles["form-button-icon"]]}
+          onClick={triggerRefresh}
+        />}
         {isSubmitting && <LoadingSpinner isSmall={false} />}
-        {!isSubmitting && (<ResponseComponent response={response} />)}
+        {!isSubmitting && response && (<ResponseComponent response={response} />)}
         <div className={styles["form-row"]}>
           {props.formType === Paths.REGISTRY && <MaterialIconButton
             iconName={"edit"}
