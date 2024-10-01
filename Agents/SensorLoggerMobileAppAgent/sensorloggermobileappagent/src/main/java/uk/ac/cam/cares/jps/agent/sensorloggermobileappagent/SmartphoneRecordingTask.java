@@ -16,18 +16,15 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 import java.nio.file.Path;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 
 public class SmartphoneRecordingTask {
-
-    Logger LOGGER;
+    Logger logger;
 
     AccelerometerProcessor accelerometerProcessor;
     DBFSDataProcessor dbfsDataProcessor;
@@ -41,7 +38,6 @@ public class SmartphoneRecordingTask {
     private final Node smartphoneIRI;
     private final String deviceId;
 
-    private final RemoteStoreClient storeClient;
     private final RemoteStoreClient ontopRemoteStoreClient;
     private final TimeSeriesClient<Long> tsClient;
     private final AgentConfig config;
@@ -54,9 +50,8 @@ public class SmartphoneRecordingTask {
 
     public SmartphoneRecordingTask(RemoteStoreClient storeClient, RemoteRDBStoreClient rdbStoreClient,
             AgentConfig config, String deviceId, RemoteStoreClient ontopRemoteStoreClient) {
-        LOGGER = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
+        logger = LogManager.getLogger("SmartphoneRecordingTask_" + deviceId);
 
-        this.storeClient = storeClient;
         this.ontopRemoteStoreClient = ontopRemoteStoreClient;
         TimeSeriesRDBClientWithReducedTables<Long> tsRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Long.class);
         tsRdbClient.setRdbURL(rdbStoreClient.getRdbURL());
@@ -79,20 +74,20 @@ public class SmartphoneRecordingTask {
     }
 
     public synchronized void addData(HashMap<String, List<?>> data) {
-        LOGGER.info("adding data...");
+        logger.info("adding data...");
         sensorDataProcessorList.forEach(p -> p.addData(data));
         lastActiveTime = System.currentTimeMillis();
-        LOGGER.info("finish adding data and the last active time is updated to " + lastActiveTime);
+        logger.info("finish adding data and the last active time is updated to " + lastActiveTime);
     }
 
     public synchronized boolean shouldProcessData() {
         if (System.currentTimeMillis() - lastProcessedTime < config.getTimerFrequency() * 1000L) {
-            LOGGER.debug(String.format("Current time: %d, last processed time: %d; No need to process data.",
+            logger.debug(String.format("Current time: %d, last processed time: %d; No need to process data.",
                     System.currentTimeMillis(),
                     lastProcessedTime));
             return false;
         } else if (isProcessing) {
-            LOGGER.debug("Another thread is processing the data, current thread should skip");
+            logger.debug("Another thread is processing the data, current thread should skip");
             return false;
         } else {
             return true;
@@ -102,23 +97,23 @@ public class SmartphoneRecordingTask {
     public synchronized void processAndSendData() {
         isProcessing = true;
 
-        LOGGER.info("Processing and sending data");
+        logger.info("Processing and sending data");
         if (sensorDataProcessorList.stream().allMatch(SensorDataProcessor::isIriInstantiationNeeded)) {
-            LOGGER.info("Need to init kg");
+            logger.info("Need to init kg");
             initKgUsingOntop(sensorLoggerPostgresClient);
         }
 
         if (sensorDataProcessorList.stream().anyMatch(SensorDataProcessor::isRbdInstantiationNeeded)) {
             sensorDataProcessorList.forEach(s -> s.initIRIs());
-            LOGGER.info("Need to init rdb");
+            logger.info("Need to init rdb");
             bulkInitRdb();
         }
 
         try {
             bulkAddTimeSeriesData();
         } catch (RuntimeException e) {
-            LOGGER.error(e.getMessage());
-            LOGGER.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error(e.getCause());
 
             lastProcessedTime = System.currentTimeMillis();
             isProcessing = false;
@@ -126,7 +121,7 @@ public class SmartphoneRecordingTask {
         }
 
         lastProcessedTime = System.currentTimeMillis();
-        LOGGER.info("Done with sending data, and update the processed time to " + lastProcessedTime);
+        logger.info("Done with sending data, and update the processed time to " + lastProcessedTime);
 
         isProcessing = false;
     }
@@ -156,7 +151,7 @@ public class SmartphoneRecordingTask {
                 locationDataProcessor,
                 magnetometerDataProcessor,
                 relativeBrightnessProcessor);
-        LOGGER.info("sensor data iri created: " + sensorDataProcessorList.stream()
+        logger.info("sensor data iri created: " + sensorDataProcessorList.stream()
                 .map(SensorDataProcessor::getDataIRIMap)
                 .flatMap(map -> map.entrySet().stream())
                 .map(Entry::getValue)
@@ -164,7 +159,7 @@ public class SmartphoneRecordingTask {
     }
 
     private void initKgUsingOntop(SensorLoggerPostgresClient sensorLoggerPostgresClient) {
-        LOGGER.info("Instantiating kg in ontop");
+        logger.info("Instantiating kg in ontop");
 
         List<String> sensorClasses = sensorDataProcessorList.stream().map(s -> s.getOntodeviceLabel())
                 .collect(Collectors.toList());
@@ -176,18 +171,18 @@ public class SmartphoneRecordingTask {
             try {
                 obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
             } catch (IOException e) {
-                LOGGER.error("Could not retrieve ontop.obda file.");
+                logger.error("Could not retrieve ontop.obda file.");
                 throw new RuntimeException(e);
             }
             OntopClient.getInstance().updateOBDA(obdaFile);
         }
 
         sensorDataProcessorList.forEach(p -> p.setIriInstantiationNeeded(false));
-        LOGGER.info(
+        logger.info(
                 "finish instantiating kg, exception above is probably from updating the obda file and is harmless.");
         // wait 30 seconds for ontop to initialise before allow queries execution
         try {
-            LOGGER.info("Waiting for 30 seconds to allow ontop to intialise");
+            logger.info("Waiting for 30 seconds to allow ontop to intialise");
             Thread.sleep(30000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -205,13 +200,13 @@ public class SmartphoneRecordingTask {
             dataClasses.add(p.getDataClass());
         }
 
-        LOGGER.info("bulk init iris in rdb");
+        logger.info("bulk init iris in rdb");
         List<String> timeUnits = Collections.nCopies(dataIris.size(), "millisecond");
         tsClient.bulkInitTimeSeries(dataIris, dataClasses, timeUnits, 4326);
 
         sensorDataProcessorList.stream().filter(SensorDataProcessor::isRbdInstantiationNeeded)
                 .forEach(p -> p.setRbdInstantiationNeeded(false));
-        LOGGER.info("finish init postgres dbTable and the corresponding table");
+        logger.info("finish init postgres dbTable and the corresponding table");
     }
 
     private void bulkAddTimeSeriesData() throws RuntimeException {
@@ -225,7 +220,7 @@ public class SmartphoneRecordingTask {
                     }
                 }).collect(Collectors.toList());
         if (tsList.isEmpty() || tsList.stream().mapToInt(ts -> ts.getTimes().size()).sum() == 0) {
-            LOGGER.info("No new data, skip bulk add time series data");
+            logger.info("No new data, skip bulk add time series data");
             return;
         }
 
@@ -238,9 +233,9 @@ public class SmartphoneRecordingTask {
             }
         }
 
-        LOGGER.info(String.format("bulk adding %d time series", tsList.size()));
+        logger.info(String.format("bulk adding %d time series", tsList.size()));
         tsClient.bulkaddTimeSeriesData(tsList);
-        LOGGER.info("finish adding data to postgres tables");
+        logger.info("finish adding data to postgres tables");
     }
 
     String getSmartphoneIRI() {

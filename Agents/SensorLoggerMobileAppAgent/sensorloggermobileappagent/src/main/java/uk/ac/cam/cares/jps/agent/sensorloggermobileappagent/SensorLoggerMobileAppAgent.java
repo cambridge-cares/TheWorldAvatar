@@ -25,18 +25,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 
 @WebServlet(urlPatterns = "/update")
 
 public class SensorLoggerMobileAppAgent extends JPSAgent {
-    Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
     private RemoteStoreClient storeClient;
     private RemoteStoreClient ontopClient;
     private RemoteRDBStoreClient rdbStoreClient;
