@@ -2,6 +2,20 @@
 
 This directory contains the configuration to serve the Sentence-BERT model for generating text embeddings, which plays a specific role in our Question Answering (QA) system workflow.
 
+## Table of Contents
+- [Self-hosting ML models for QA applications](#self-hosting-ml-models-for-qa-applications)
+  - [Table of Contents](#table-of-contents)
+  - [Role of Text Embedding in the QA Workflow](#role-of-text-embedding-in-the-qa-workflow)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Required resources](#required-resources)
+    - [Steps](#steps)
+    - [Usage](#usage)
+  - [Development](#development)
+    - [Development with Triton image](#development-with-triton-image)
+    - [Testing](#testing)
+
+
 ## Role of Text Embedding in the QA Workflow
 The FastAPI app relies on this service to obtain text embeddings. It interacts with this service for the data ingestion process and for every request submitted to the endpoint `/qa`. According to the main architecture described in [README](../../README.md#Architecture), the Triton server serves the Sentence-BERT model for text embedding generation via gRPC. Its primary function is:
 
