@@ -9,9 +9,12 @@
   flex-direction: column;
 }
 
-.form-title {
+.form-row {
   display: flex;
   flex-direction: row;
+}
+
+.form-title {
   text-wrap: nowrap;
 }
 
