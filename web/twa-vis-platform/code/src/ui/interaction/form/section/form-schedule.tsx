@@ -1,11 +1,12 @@
 import styles from '../form.module.css';
 import fieldStyles from '../field/field.module.css';
-import inputStyles from '../field/input/input.module.css';
 
 import React, { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+import Select from 'react-select';
 
-import { PropertyGroup, VALUE_KEY } from 'types/form';
+import { FormOptionType, PropertyGroup, VALUE_KEY } from 'types/form';
+import { selectorStyles } from 'ui/css/selector-style';
 import { parseWordsForLabels } from 'utils/client-utils';
 import FormCheckboxField from '../field/form-checkbox-field';
 import { FORM_STATES } from '../form-utils';
@@ -40,13 +41,13 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
   );
 
   // Handle change event for the select input
-  const handleServiceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    if (event.target.value === singleService) {
+  const handleServiceChange = (value: string) => {
+    if (value === singleService) {
       props.form.setValue(FORM_STATES.RECURRENCE, 0);
     } else {
       props.form.setValue(FORM_STATES.RECURRENCE, 1);
     }
-    setSelectedServiceOption(event.target.value);
+    setSelectedServiceOption(value);
   };
 
   return (
@@ -57,16 +58,16 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
       <div className={styles["form-fieldset-contents"]}>
         <div className={styles["schedule-occurrence-container"]}>
           <label className={fieldStyles["field-text"]} htmlFor="select-input">Service type: </label>
-          <select
-            id="select-input"
-            value={selectedServiceOption}
-            className={inputStyles["selector"]}
-            disabled={props.options?.disabled}
-            onChange={handleServiceChange}
-          >
-            <option value={singleService}>{singleService}</option>
-            <option value={regularService}>{regularService}</option>
-          </select>
+          <Select
+            styles={selectorStyles}
+            unstyled
+            options={[{ label: singleService, value: singleService }, { label: regularService, value: regularService }]}
+            value={{ label: selectedServiceOption, value: selectedServiceOption }}
+            onChange={(selectedOption) => handleServiceChange((selectedOption as FormOptionType).value)}
+            isLoading={false}
+            isMulti={false}
+            isSearchable={true}
+          />
         </div>
         <FormFieldComponent
           entityType={scheduleType}
