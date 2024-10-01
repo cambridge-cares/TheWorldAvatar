@@ -15,8 +15,6 @@
 }
 
 .form-title {
-  display: flex;
-  flex-direction: row;
   text-wrap: nowrap;
 }
 

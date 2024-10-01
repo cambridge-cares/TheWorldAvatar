@@ -54,7 +54,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
 
   const showReturnButton: boolean = props.formType === Paths.REGISTRY || !!response;
   const id: string = getAfterDelimiter(usePathname(), "/");
-  
+
   // An event handler that will navigate to the required form when clicked
   const openDeleteModal = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -75,7 +75,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
 
   return (
     <div className={styles["container"]}>
-      <div className={styles["form-title"]}>
+      <div className={`${styles["form-title"]} ${styles["form-row"]}`}>
         <ReturnButton />
         <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase().replace("_", " ")}`}</span>
       </div>
