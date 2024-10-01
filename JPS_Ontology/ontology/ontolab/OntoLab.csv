@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoLab,TBox,https://www.theworldavatar.com/kg/ontolab/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoLab,TBox,1.10,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoLab,TBox,1.11,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoLab,TBox,OntoLab is an ontology developed for expressing facilities in a research lab.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoLab,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Laboratory,Class,https://www.theworldavatar.com/kg/ontobim/Facility,IS-A,,,,"Facility that provides controlled conditions in which scientific or technological research, experiments, and measurement may be performed. [https://www.wikidata.org/wiki/Q483242]",https://www.theworldavatar.com/kg/ontolab/,
@@ -28,6 +28,136 @@ ChemicalContainer,Class,https://w3id.org/bot#Element,IS-A,,,,A container in the 
 ReagentBottle,Class,ChemicalContainer,IS-A,,,,The container that hosts chemical stock solutions.,https://www.theworldavatar.com/kg/ontolab/,
 WasteBottle,Class,ChemicalContainer,IS-A,,,,The container that hosts waste chemicals.,https://www.theworldavatar.com/kg/ontolab/,
 Vial,Class,ChemicalContainer,IS-A,,,,The container that hosts a small amount of chemical amount.,https://www.theworldavatar.com/kg/ontolab/,
+BatteryTester,Class,LabEquipment,IS-A,,,,"A device that tests battery performance, either capacity or behaviour in a cycle.",https://www.theworldavatar.com/kg/ontolab/,Battery tester
+Filter,Class,LabEquipment,IS-A,,,,A device that separates a solution into several parts of different composition.,https://www.theworldavatar.com/kg/ontolab/,Filter
+OsmosisFilter,Class,Filter,IS-A,,,,A filter that separates solutions through the principles of osmosis.,https://www.theworldavatar.com/kg/ontolab/,Osmosis filter
+Neutralizer,Class,Filter,IS-A,,,,A filter that neutralizes radioactivity of a material that passes through.,https://www.theworldavatar.com/kg/ontolab/,Neutralizer
+Laser,Class,LabEquipment,IS-A,,,,A device that emits coherent light for scientific or industrial use.,https://www.theworldavatar.com/kg/ontolab/,Laser
+SolidStateLaser,Class,Laser,IS-A,,,,A laser that uses a solid material as the gain medium.,https://www.theworldavatar.com/kg/ontolab/,Solid-state laser
+ElectrosprayIonSource,Class,LabEquipment,IS-A,,,,A device that generates ions using electrospray for mass spectrometry.,https://www.theworldavatar.com/kg/ontolab/,Electrospray ion source
+Dryer,Class,LabEquipment,IS-A,,,,A device that removes moisture from a substance.,https://www.theworldavatar.com/kg/ontolab/,Dryer
+FilterDryer,Class,Dryer,IS-A,,,,A dryer that uses a filtering mechanism to separate and remove moisture.,https://www.theworldavatar.com/kg/ontolab/,Filter dryer
+SprayDryer,Class,Dryer,IS-A,,,,A dryer that uses spray techniques to rapidly dry liquids into powders.,https://www.theworldavatar.com/kg/ontolab/,Spray dryer
+Rig,Class,LabEquipment,IS-A,,,,A combination of equipment used for conducting experiments.,https://www.theworldavatar.com/kg/ontolab/,Rig
+HTHPRig,Class,Rig,IS-A,,,,"A high-temperature, high-pressure rig used for experiments under extreme conditions.",https://www.theworldavatar.com/kg/ontolab/,HTHP rig
+Reactor,Class,LabEquipment,IS-A,,,,A device where chemical or physical reactions take place.,https://www.theworldavatar.com/kg/ontolab/,Reactor
+MicroReactor,Class,Reactor,IS-A,,,,A small-scale reactor used for precise control of reaction conditions.,https://www.theworldavatar.com/kg/ontolab/,Microreactor
+PhotoChemicalReactor,Class,Reactor,IS-A,,,,A reactor designed for carrying out photochemical reactions.,https://www.theworldavatar.com/kg/ontolab/,Photochemical reactor
+TubularReactor,Class,Reactor,IS-A,,,,A reactor in the form of a tube where reactions occur as substances flow through.,https://www.theworldavatar.com/kg/ontolab/,Tubular reactor
+FlowChemistryReactor,Class,Reactor,IS-A,,,,"A reactor used for performing flow chemistry, allowing reactions to occur in a continuous flow.",https://www.theworldavatar.com/kg/ontolab/,Flow chemistry reactor
+FlowCellReactor,Class,FlowChemistryReactor,IS-A,,,,A reactor that uses a flow cell to perform continuous reactions.,https://www.theworldavatar.com/kg/ontolab/,Flow cell reactor
+HeatedFlowCellReactor,Class,FlowCellReactor,IS-A,,,,A flow cell reactor with heating capabilities.,https://www.theworldavatar.com/kg/ontolab/,Heated flow cell reactor
+FlowCellAnvil,Class,FlowCellReactor,IS-A,,,,A component in flow cell reactors that applies pressure during the reaction.,https://www.theworldavatar.com/kg/ontolab/,Flow cell anvil
+Etcher,Class,LabEquipment,IS-A,,,,A device used for etching materials using chemical or plasma processes.,https://www.theworldavatar.com/kg/ontolab/,Etcher
+PlasmaEtcher,Class,Etcher,IS-A,,,,A device that uses plasma to etch materials.,https://www.theworldavatar.com/kg/ontolab/,Plasma etcher
+Generator,Class,LabEquipment,IS-A,,,,"A device that generates gas, vapour, or electricity for use in experiments.",https://www.theworldavatar.com/kg/ontolab/,Lab generator
+BubbleGenerator,Class,Generator,IS-A,,,,A device that generates bubbles in liquids for scientific applications.,https://www.theworldavatar.com/kg/ontolab/,Bubble generator
+NitrogenGenerator,Class,Generator,IS-A,,,,A generator that produces nitrogen gas for laboratory use.,https://www.theworldavatar.com/kg/ontolab/,Nitrogen generator
+WaveformGenerator,Class,Generator,IS-A,,,,A device that generates electrical waveforms for experimental purposes.,https://www.theworldavatar.com/kg/ontolab/,Waveform generator
+VapourGenerator,Class,Generator,IS-A,,,,A device that produces vapour for laboratory or industrial processes.,https://www.theworldavatar.com/kg/ontolab/,Vapour generator
+SignalAmplifier,Class,LabEquipment,IS-A,,,,A device that increases the strength of a signal.,https://www.theworldavatar.com/kg/ontolab/,Signal amplifier
+EEGAmplifier,Class,SignalAmplifier,IS-A,,,,A device that amplifies brainwave signals for EEG analysis.,https://www.theworldavatar.com/kg/ontolab/,EEG amplifier
+Calibrator,Class,LabEquipment,IS-A,,,,A device used to adjust and standardize the output of instruments.,https://www.theworldavatar.com/kg/ontolab/,Calibrator
+AirFlowCalibrator,Class,Calibrator,IS-A,,,,A calibrator that measures and adjusts airflow.,https://www.theworldavatar.com/kg/ontolab/,Airflow calibrator
+Bath,Class,LabEquipment,IS-A,,,,A device used for heating or cooling substances through immersion in a liquid.,https://www.theworldavatar.com/kg/ontolab/,Bath
+UltrasonicBath,Class,Bath,IS-A,,,,A bath that uses ultrasonic waves to clean or treat materials.,https://www.theworldavatar.com/kg/ontolab/,Ultrasonic bath
+Autoinjector,Class,LabEquipment,IS-A,,,,A device used for automatically injecting substances into a system.,https://www.theworldavatar.com/kg/ontolab/,Autoinjector
+SpinCoater,Class,LabEquipment,IS-A,,,,A device used for evenly coating a surface with a liquid by spinning.,https://www.theworldavatar.com/kg/ontolab/,Spin coater
+Centrifuge,Class,LabEquipment,IS-A,,,,A device that uses centrifugal force to separate substances of different densities.,https://www.theworldavatar.com/kg/ontolab/,Centrifuge
+Degasser,Class,LabEquipment,IS-A,,,,A device that removes gases from liquids.,https://www.theworldavatar.com/kg/ontolab/,Degasser
+FaradayCage,Class,LabEquipment,IS-A,,,,A structure that shields against electromagnetic fields.,https://www.theworldavatar.com/kg/ontolab/,Faraday cage
+Incubator,Class,LabEquipment,IS-A,,,,A device used to maintain a controlled environment for growth or experimentation.,https://www.theworldavatar.com/kg/ontolab/,Incubator
+Circulator,Class,LabEquipment,IS-A,,,,A device that circulates a fluid for temperature control or mixing.,https://www.theworldavatar.com/kg/ontolab/,Circulator
+PressureRegulator,Class,LabEquipment,IS-A,,,,A device that maintains a consistent pressure within a system.,https://www.theworldavatar.com/kg/ontolab/,Pressure regulator
+Stand,Class,LabEquipment,IS-A,,,,A supporting structure used to hold equipment in place.,https://www.theworldavatar.com/kg/ontolab/,Stand
+SublimationApparatus,Class,LabEquipment,IS-A,,,,An apparatus used to convert a substance directly from a solid to a gas.,https://www.theworldavatar.com/kg/ontolab/,Sublimation apparatus
+SemiconductorMaskAligner,Class,LabEquipment,IS-A,,,,A device used in the semiconductor industry for aligning masks during lithography.,https://www.theworldavatar.com/kg/ontolab/,Semiconductor mask aligner
+Autoclave,Class,LabEquipment,IS-A,,,,A device used to sterilize equipment by applying high-pressure steam.,https://www.theworldavatar.com/kg/ontolab/,Autoclave
+Autosampler,Class,LabEquipment,IS-A,,,,A device that automatically takes samples from a larger batch for testing.,https://www.theworldavatar.com/kg/ontolab/,Autosampler
+PelletFeeder,Class,LabEquipment,IS-A,,,,A device that feeds pellets into a system for experimental or industrial processes.,https://www.theworldavatar.com/kg/ontolab/,Pellet feeder
+TriggerBox,Class,LabEquipment,IS-A,,,,A device used to trigger events or start processes in an experimental setup.,https://www.theworldavatar.com/kg/ontolab/,Trigger box
+Titrator,Class,LabEquipment,IS-A,,,,A device that measures and adds titrants to a solution for chemical analysis.,https://www.theworldavatar.com/kg/ontolab/,Titrator
+OzoneCleaner,Class,LabEquipment,IS-A,,,,A device that uses ozone gas to clean or disinfect.,https://www.theworldavatar.com/kg/ontolab/,Ozone cleaner
+RailInjectionEngine,Class,LabEquipment,IS-A,,,,An engine that uses rail injection technology to control fuel flow.,https://www.theworldavatar.com/kg/ontolab/,Rail injection engine
+Evaporator,Class,LabEquipment,IS-A,,,,A device that removes liquid by vaporization.,https://www.theworldavatar.com/kg/ontolab/,Evaporator
+RotaryEvaporator,Class,Evaporator,IS-A,,,,A device that uses rotation to evaporate solvents from mixtures.,https://www.theworldavatar.com/kg/ontolab/,Rotary evaporator
+Mixer,Class,LabEquipment,IS-A,,,,A device used to blend substances together.,https://www.theworldavatar.com/kg/ontolab/,Mixer
+PlanetaryMixer,Class,Mixer,IS-A,,,,A mixer that moves in a planetary motion for thorough mixing.,https://www.theworldavatar.com/kg/ontolab/,Planetary mixer
+Shaker,Class,LabEquipment,IS-A,,,,A device used to agitate substances in containers.,https://www.theworldavatar.com/kg/ontolab/,Shaker
+ControlledEvaporatorMixer,Class,Mixer,IS-A,,,,A mixer that combines evaporation and mixing processes.,https://www.theworldavatar.com/kg/ontolab/,Controlled evaporator mixer
+MeasurementApparatus,Class,LabEquipment,IS-A,,,,A device used for measuring physical properties.,https://www.theworldavatar.com/kg/ontolab/,Measurement apparatus
+Scale,Class,MeasurementApparatus,IS-A,,,,A device that measures weight or mass.,https://www.theworldavatar.com/kg/ontolab/,Scale
+Balance,Class,Scale,IS-A,,,,A device used to measure the mass of an object.,https://www.theworldavatar.com/kg/ontolab/,Balance
+AnalyticalBalance,Class,Balance,IS-A,,,,A balance with high precision for analytical purposes.,https://www.theworldavatar.com/kg/ontolab/,Analytical balance
+PrecisionBalance,Class,Balance,IS-A,,,,A balance that provides accurate measurements for scientific use.,https://www.theworldavatar.com/kg/ontolab/,Precision balance
+Lamp,Class,LabEquipment,IS-A,,,,A device that emits light for scientific or experimental purposes.,https://www.theworldavatar.com/kg/ontolab/,Lamp
+SmokePointLamp,Class,Lamp,IS-A,,,,A lamp used to determine the smoke point of oils and fats.,https://www.theworldavatar.com/kg/ontolab/,Smoke point lamp
+ArcLamp,Class,Lamp,IS-A,,,,A lamp that produces light through an electric arc.,https://www.theworldavatar.com/kg/ontolab/,Arc lamp
+UVKit,Class,Lamp,IS-A,,,,A kit used to generate and control ultraviolet light for laboratory use.,https://www.theworldavatar.com/kg/ontolab/,UV kit
+Potentiostat,Class,LabEquipment,IS-A,,,,A device that controls the potential difference in electrochemical cells.,https://www.theworldavatar.com/kg/ontolab/,Potentiostat
+Analyzer,Class,LabEquipment,IS-A,,,,"A device or instrument used to measure, assess, and analyze various properties of substances or samples.",https://www.theworldavatar.com/kg/ontolab/,Analyzer
+TGA-DSCAnalyzer,Class,Analyzer,IS-A,,,,A device that combines thermogravimetric analysis and differential scanning calorimetry.,https://www.theworldavatar.com/kg/ontolab/,TGA-DSC analyzer
+ThermoGravimetricAnalyzer,Class,Analyzer,IS-A,,,,A thermogravimetric analyzer used for measuring changes in weight.,https://www.theworldavatar.com/kg/ontolab/,Thermo gravimetric analyzer
+ParticleAnalyzer,Class,Analyzer,IS-A,,,,A device used to analyze and characterize particles in a sample.,https://www.theworldavatar.com/kg/ontolab/,Particle analyzer
+ChemisorptionAnalyzer,Class,Analyzer,IS-A,,,,A device used to analyze chemisorption phenomena.,https://www.theworldavatar.com/kg/ontolab/,Chemisorption analyzer
+GasAnalyzer,Class,Analyzer,IS-A,,,,A device that measures the composition of gases.,https://www.theworldavatar.com/kg/ontolab/,Gas analyzer
+GasChromatograph,Class,GasAnalyzer,IS-A,,,,A device used for separating and analyzing compounds in gas mixtures.,https://www.theworldavatar.com/kg/ontolab/,Gas chromatograph
+Galvanostat,Class,LabEquipment,IS-A,,,,A device used to control the current in an electrochemical system.,https://www.theworldavatar.com/kg/ontolab/,Galvanostat
+SpectroscopyCamera,Class,LabEquipment,IS-A,,,,A camera used for capturing spectra in spectroscopy experiments.,https://www.theworldavatar.com/kg/ontolab/,Spectroscopy camera
+Microscope,Class,LabEquipment,IS-A,,,,A device used to magnify and visualize small objects.,https://www.theworldavatar.com/kg/ontolab/,Microscope
+PotentiostatGalvanostat,Class,LabEquipment,IS-A,,,,A device that combines potentiostat and galvanostat functionalities.,https://www.theworldavatar.com/kg/ontolab/,Potentiostat-galvanostat
+DryCabinet,Class,https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet,IS-A,,,,A cabinet designed to keep items dry and moisture-free.,https://www.theworldavatar.com/kg/ontolab/,Dry cabinet
+Carousel,Class,LabEquipment,IS-A,,,,A rotating storage system for lab supplies or equipment.,https://www.theworldavatar.com/kg/ontolab/,Carousel
+SafetyCabinet,Class,https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet,IS-A,,,,A cabinet designed to store hazardous materials safely.,https://www.theworldavatar.com/kg/ontolab/,Safety cabinet
+Chiller,Class,LabEquipment,IS-A,,,,A device used to cool liquids or gases.,https://www.theworldavatar.com/kg/ontolab/,Chiller
+ChillerPlate,Class,Chiller,IS-A,,,,A plate used for chilling samples or materials in a laboratory setting.,https://www.theworldavatar.com/kg/ontolab/,Chiller plate
+Heater,Class,LabEquipment,IS-A,,,,A device that generates heat for various applications.,https://www.theworldavatar.com/kg/ontolab/,Heater
+HotPlate,Class,Heater,IS-A,,,,A plate that provides controlled heat for laboratory experiments.,https://www.theworldavatar.com/kg/ontolab/,Hot plate
+Burner,Class,Heater,IS-A,,,,A device used to produce heat or flame for experimental purposes.,https://www.theworldavatar.com/kg/ontolab/,Burner
+Furnace,Class,Heater,IS-A,,,,A device used for heating materials to high temperatures.,https://www.theworldavatar.com/kg/ontolab/,Furnace
+MuffleFurnace,Class,Furnace,IS-A,,,,A furnace that uses insulated walls to maintain high temperatures.,https://www.theworldavatar.com/kg/ontolab/,Muffle furnace
+TubeFurnace,Class,Furnace,IS-A,,,,A furnace designed in a tubular shape for specific heating applications.,https://www.theworldavatar.com/kg/ontolab/,Tube furnace
+VaccuumFurnace,Class,Furnace,IS-A,,,,A furnace that operates under vacuum conditions to prevent oxidation.,https://www.theworldavatar.com/kg/ontolab/,Vacuum furnace
+LabEquipmentAccessory,Class,LabEquipment,IS-A,,,,A supplementary item used to enhance laboratory processes.,https://www.theworldavatar.com/kg/ontolab/,Lab equipment accessory
+SpectroscopyAccessory,Class,LabEquipmentAccessory,IS-A,,,,An accessory that enhances the capabilities of spectroscopy instruments.,https://www.theworldavatar.com/kg/ontolab/,Spectroscopy accessory
+SpecularReflectionAccessory,Class,SpectroscopyAccessory,IS-A,,,,An accessory used for measuring specular reflection in optics.,https://www.theworldavatar.com/kg/ontolab/,Specular reflection accessory
+DiffuseReflectionAccessory,Class,SpectroscopyAccessory,IS-A,,,,An accessory used for measuring diffuse reflection in optical experiments.,https://www.theworldavatar.com/kg/ontolab/,Diffuse reflection accessory
+AttenuatedTotalReflectionAccessory,Class,SpectroscopyAccessory,IS-A,,,,An accessory used in ATR spectroscopy for analyzing samples.,https://www.theworldavatar.com/kg/ontolab/,Attenuated total reflection accessory
+LaserAccessory,Class,LabEquipmentAccessory,IS-A,,,,An accessory designed to enhance the functionality of laser systems.,https://www.theworldavatar.com/kg/ontolab/,Laser accessory
+AccessoryModule,Class,LabEquipmentAccessory,IS-A,,,,A module that adds specific functionalities to laboratory instruments.,https://www.theworldavatar.com/kg/ontolab/,Accessory module
+ECDModule,Class,AccessoryModule,IS-A,,,,A module for enhanced electrochemical detection.,https://www.theworldavatar.com/kg/ontolab/,ECD module
+BipotentiostatModule,Class,AccessoryModule,IS-A,,,,A module that combines two potentiostat functionalities.,https://www.theworldavatar.com/kg/ontolab/,Bipotentiostat module
+ThermocoupleInputModule,Class,AccessoryModule,IS-A,,,,A module for connecting thermocouples to measuring devices.,https://www.theworldavatar.com/kg/ontolab/,Thermocouple input module
+EISModule,Class,AccessoryModule,IS-A,,,,A module for electrochemical impedance spectroscopy.,https://www.theworldavatar.com/kg/ontolab/,EIS module
+Nozzle,Class,LabEquipment,IS-A,,,,A device used to direct or control the flow of fluids or gases.,https://www.theworldavatar.com/kg/ontolab/,Nozzle
+UltrasonicSprayNozzle,Class,Nozzle,IS-A,,,,A nozzle that uses ultrasonic waves to create fine sprays.,https://www.theworldavatar.com/kg/ontolab/,Ultrasonic spray nozzle
+Coupler,Class,LabEquipment,IS-A,,,,A device used to join two systems or components together.,https://www.theworldavatar.com/kg/ontolab/,Coupler
+FiberOpticCoupler,Class,Coupler,IS-A,,,,A coupler designed for connecting fiber optic cables.,https://www.theworldavatar.com/kg/ontolab/,Fiber optic coupler
+Probe,Class,LabEquipment,IS-A,,,,A device used to investigate or measure properties of materials.,https://www.theworldavatar.com/kg/ontolab/,Probe
+FiberOpticProbe,Class,Probe,IS-A,,,,A probe designed for use with fiber optic technology.,https://www.theworldavatar.com/kg/ontolab/,Fiber optic probe
+VibrationIsolator,Class,LabEquipment,IS-A,,,,A device that minimizes vibrations for sensitive laboratory equipment.,https://www.theworldavatar.com/kg/ontolab/,Vibration isolator
+CentrifugeRotor,Class,LabEquipment,IS-A,,,,A rotor used in centrifuges for separating materials by density.,https://www.theworldavatar.com/kg/ontolab/,Centrifuge rotor
+Platform,Class,LabEquipment,IS-A,,,,A base or surface used to support laboratory equipment.,https://www.theworldavatar.com/kg/ontolab/,Platform
+VaccuumTable,Class,Platform,IS-A,,,,A table that creates a vacuum for holding samples in place during experiments.,https://www.theworldavatar.com/kg/ontolab/,Vacuum table
+LaserTableBase,Class,Platform,IS-A,,,,A base designed to support laser systems.,https://www.theworldavatar.com/kg/ontolab/,Laser table base
+Chassis,Class,LabEquipment,IS-A,,,,A framework used to support and protect laboratory devices.,https://www.theworldavatar.com/kg/ontolab/,Chassis
+TestBed,Class,LabEquipment,IS-A,,,,A controlled environment used for testing and experimentation.,https://www.theworldavatar.com/kg/ontolab/,Test bed
+TranslationStage,Class,LabEquipment,IS-A,,,,A device used to move samples or instruments in a controlled manner.,https://www.theworldavatar.com/kg/ontolab/,Translation stage
+ManualTranslationStage,Class,TranslationStage,IS-A,,,,A manually operated device for translating samples or instruments.,https://www.theworldavatar.com/kg/ontolab/,Manual translation stage
+MotorizedTranslationStage,Class,TranslationStage,IS-A,,,,A motorized device for translating samples or instruments automatically.,https://www.theworldavatar.com/kg/ontolab/,Motorized translation stage
+RotaryStage,Class,TranslationStage,IS-A,,,,A device that rotates samples or instruments around a fixed point.,https://www.theworldavatar.com/kg/ontolab/,Rotary stage
+MotorizedRotaryStage,Class,RotaryStage,IS-A,,,,A motorized version of a rotary stage for precise control.,https://www.theworldavatar.com/kg/ontolab/,Motorized rotary stage
+Trolley,Class,LabEquipment,IS-A,,,,A wheeled cart used for transporting laboratory supplies.,https://www.theworldavatar.com/kg/ontolab/,Trolley
+Stirrer,Class,LabEquipment,IS-A,,,,A device used for stirring liquids or mixtures.,https://www.theworldavatar.com/kg/ontolab/,Stirrer
+HotPlateStirrer,Class,Stirrer,IS-A,,,,A stirrer that provides heat while mixing liquids.,https://www.theworldavatar.com/kg/ontolab/,Hot Plate stirrer
+HotPlateStirrer,Class,Heater,IS-A,,,,A stirrer that provides heat while mixing liquids.,https://www.theworldavatar.com/kg/ontolab/,Hot Plate stirrer
+MagneticStirrer,Class,Stirrer,IS-A,,,,A stirrer that uses a magnetic field to mix liquids.,https://www.theworldavatar.com/kg/ontolab/,magnetic stirrer
+OverheadStirrer,Class,Stirrer,IS-A,,,,A stirrer that operates from above the container.,https://www.theworldavatar.com/kg/ontolab/,Overhead stirrer
+MotorisedSlide,Class,LabEquipment,IS-A,,,,A motorized device for moving slides in microscopy.,https://www.theworldavatar.com/kg/ontolab/,Motorised slide
+GloveBox,Class,LabEquipment,IS-A,,,,A sealed container used to handle sensitive materials in a controlled atmosphere.,https://www.theworldavatar.com/kg/ontolab/,Glove box
+SpillKit,Class,LabEquipment,IS-A,,,,A kit containing materials to manage and clean up spills.,https://www.theworldavatar.com/kg/ontolab/,Spill kit
+MicrolabBox,Class,LabEquipment,IS-A,,,,A compact box for storing laboratory materials and equipment.,https://www.theworldavatar.com/kg/ontolab/,Microlab box
+ThinFilmDepositionApparatus,Class,LabEquipment,IS-A,,,,An apparatus used for depositing thin films on substrates.,https://www.theworldavatar.com/kg/ontolab/,Thin film deposition apparatus
 isManagedBy,Object Property,,,LabEquipment,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,maximum 1,The relationship between lab equipment and the agent service that manages it.,https://www.theworldavatar.com/kg/ontolab/,
 contains,Object Property,,,Laboratory,LabEquipment,,The relation between the laboratory and the lab equipment located in it.,https://www.theworldavatar.com/kg/ontolab/,
 hasPrice,Object Property,,,LabEquipment,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,maximum 1,The relation specifies the price of a laboratory equipment.,https://www.theworldavatar.com/kg/ontolab/,
