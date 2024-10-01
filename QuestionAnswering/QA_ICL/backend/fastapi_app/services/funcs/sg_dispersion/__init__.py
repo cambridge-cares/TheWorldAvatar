@@ -84,17 +84,6 @@ class SGDispersionFuncExecutor(Name2Func):
             text = text[1:-1]
         return text
 
-    def _link_ship(self, text: str | None, mmsi: str | None):
-        logger.info(
-            "Perform entity linking for `text`: {text}, `mmsi`: {mmsi}".format(
-                text=text, mmsi=mmsi
-            )
-        )
-        iris = self.entity_store.link(cls="Ship", text=text, mmsi=mmsi)
-        logger.info("Linked IRIs: " + str(iris))
-
-        return iris
-
     def lookup_ship_attributes(self, ship: list[str], **kwargs):
         """
         Given ship name or MMSI, returns MMSI, maximum static draught, dimension, IMO number, ship type, call sign
@@ -108,7 +97,7 @@ class SGDispersionFuncExecutor(Name2Func):
 
             ship_feature_info = self.ship_feature_info_client.query(iri=iri)
             ship_meta = ship_feature_info.meta.model_dump()
-            ship_meta = {k: self._sanitise(v) for k, v in ship_meta.items()}
+            ship_meta = {k: self._sanitise(v) if isinstance(v, str) else v for k, v in ship_meta.items()}
 
             for k, v in ship_meta.items():
                 if k not in vars_set:
@@ -145,12 +134,9 @@ class SGDispersionFuncExecutor(Name2Func):
                     )
                     key2plot[key] = plot
 
-                label = ""  # TODO: look up ship label
-                mmsi = "(MMSI: {mmsi})".format(mmsi=ship_feature_info.meta.mmsi)
-
                 plot.traces.append(
                     ScatterPlotTrace(
-                        name=" ".join(x for x in [label, mmsi] if x),
+                        name="MMSI: {mmsi}".format(mmsi=self._sanitise(ship_feature_info.meta.mmsi)),
                         x=TypedSeries(data=timeseries_data.time, type="date"),
                         y=TypedSeries(data=values, type="number"),
                     )
