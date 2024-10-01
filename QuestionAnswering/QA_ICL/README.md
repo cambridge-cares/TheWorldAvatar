@@ -47,7 +47,7 @@ The architecture involve the interaction between a frontend interface and the ba
     - **Triton server**: serves Sentence-BERT model for text embedding generation via gRPC.
 3. External services:
    - **Blazegraph servers**: store and expose RDF data via SPARQL.
-   - **OpenAI API server**: provides chat completions API.
+   - **OpenAI API server**: provides entity recognition, semantic parsing and chat completions API.
 
 ```mermaid
 graph TD
@@ -63,7 +63,7 @@ graph TD
 
     bg[(<b>Blazegraph servers</b><br/>RDF data storage)]
 
-    openai[<b>OpenAI API server</b><br/>Chat completions]
+    openai[<b>OpenAI API server</b><br/>Entity recognition &<br/> semantic parsing &<br/> chat completions]
 
     next -->|HTTP| fastapi
     fastapi -->|RESP| redis
@@ -132,19 +132,31 @@ Note: If you need to generate new resources or understand their format, refer to
 
    Note: The format of these resources and instructions on how to generate them can be found in the `data_generation` directory (see [More details](data_generation/README.md)). For instructions on how to obtain the ONNX file, see `triton_inference_server`'s [README](backend/triton_inference_server/README.md#required-resources).
 
-4. Spin up the backend services by executing the following command.
+4. Backend setup:
+    1. Configure parameters by creating `fastapi_app/app.yaml` and add the following configurations:
+        ```
+          translator:
+            api_key: <openai_api_key_for_translation_service>
+          chat:
+            api_key: <openai_api_key_for_chat_service>
+          location_iq:
+            api_key: <location_iq_api_key_for_geocoding_service>
+          ontomops_fileserver:
+            username: <ontomops_fileserver_username>
+            password: <ontomops_fileserver_password>
+        ```
+    2. Spin up the backend services
+        ```bash
+        sh backend/deploy.sh
+        ```
 
-   ```bash
-   sh backend/deploy.sh
-   ```
+        The script involves two steps:
+        1. Deploy the backend services in Docker
+        2. Ingest relevant data into Redis
 
-  The script involves two steps:
-  1. Deploy the backend services in Docker
-  2. Ingest relevant data into Redis
+    The FastAPI app should be listening at http://123.123.123.123:5000. To verify that it is running, visit http://123.123.123.123:5000/docs in a browser and check if a Swagger UI for API documentation is shown.
 
-   The FastAPI app should be listening at http://123.123.123.123:5000. To verify that it is running, visit http://123.123.123.123:5000/docs in a browser and check if a Swagger UI for API documentation is shown.
-
-4. Configure NGINX redirect for the backend endpoint. Trailing forward slashes `/` are allowed.
+5. Configure NGINX redirect for the backend endpoint. Trailing forward slashes `/` are allowed.
    ```
    location /backend/chat/api/ {
      proxy_pass    http://123.123.123.123:5000/;
@@ -153,7 +165,7 @@ Note: If you need to generate new resources or understand their format, refer to
    ```
    KIV: Implement a health endpoint GET `/health` and so that the redirect can be verified by checking that GET `https://abc.xyz/backend/chat/api/health` returns 200.
 
-5. Frontend setup:
+6. Frontend setup:
    1. Configure the backend endpoint for the Next.js app by creating a `.env.local` file under `frontend/next_marie_app/` with the following content (note the trailing forward slash).
       ```
       NEXT_PUBLIC_BACKEND_ENDPOINT=https://abc.xyz/backend/chat/api/
@@ -166,7 +178,7 @@ Note: If you need to generate new resources or understand their format, refer to
       ```
       The Next.js server should be listening at http://123.123.123.123:3000/frontend/chat. To verify that it is running, visit http://123.123.123.123:3000/frontend/chat in a browser and check if the home page is displayed.
 
-6. Configure NGINX redirect for the frontend endpoint. Trailing forward slashes `/` are **NOT ALLOWED**.
+7. Configure NGINX redirect for the frontend endpoint. Trailing forward slashes `/` are **NOT ALLOWED**.
    ```
    # correct
    location /frontend/chat {
