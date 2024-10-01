@@ -9,6 +9,11 @@
   flex-direction: column;
 }
 
+.form-row {
+  display: flex;
+  flex-direction: row;
+}
+
 .form-title {
   display: flex;
   flex-direction: row;

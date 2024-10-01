@@ -4,7 +4,7 @@ import styles from './form.module.css';
 
 import React, { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { Paths } from 'io/config/routes';
 import { setIsOpen } from 'state/modal-slice';
@@ -14,6 +14,7 @@ import { FormComponent } from 'ui/interaction/form/form';
 import ReturnButton from 'ui/navigation/return/return';
 import ResponseComponent from 'ui/text/response/response';
 import { HttpResponse } from 'utils/server-actions';
+import { getAfterDelimiter } from 'utils/client-utils';
 
 interface FormContainerComponentProps {
   entityType: string;
@@ -52,6 +53,25 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
   };
 
   const showReturnButton: boolean = props.formType === Paths.REGISTRY || !!response;
+  const id: string = getAfterDelimiter(usePathname(), "/");
+  
+  // An event handler that will navigate to the required form when clicked
+  const openDeleteModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const url: string = `../../delete/${props.entityType}/${id}`;
+    router.push(url);
+  };
+
+  const openEditModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const url: string = `../../edit/${props.entityType}/${id}`;
+    router.push(url);
+  };
+
+  const closeTab = () => {
+    window.close(); // Closes the tab
+    router.back(); // Required to close the intercepted modal as the tab cannot be closed
+  };
 
   return (
     <div className={styles["container"]}>
@@ -72,16 +92,39 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
       <div className={styles["form-footer"]}>
         {isSubmitting && <LoadingSpinner isSmall={false} />}
         {!isSubmitting && (<ResponseComponent response={response} />)}
-        <MaterialIconButton
-          iconName={showReturnButton ? "logout" : "publish"}
-          className={styles["form-button"]}
-          iconStyles={[styles["form-button-icon"]]}
-          text={{
-            styles: [styles["form-button-text"]],
-            content: showReturnButton ? "RETURN" : "SUBMIT"
-          }}
-          onClick={showReturnButton ? onReturn : onSubmit}
-        />
+        <div className={styles["form-row"]}>
+          {props.formType === Paths.REGISTRY && <MaterialIconButton
+            iconName={"edit"}
+            className={styles["form-button"]}
+            iconStyles={[styles["form-button-icon"]]}
+            text={{
+              styles: [styles["form-button-text"]],
+              content: "EDIT"
+            }}
+            onClick={openEditModal}
+          />}
+          {props.formType === Paths.REGISTRY && <MaterialIconButton
+            iconName={"delete"}
+            className={styles["form-button"]}
+            iconStyles={[styles["form-button-icon"]]}
+            text={{
+              styles: [styles["form-button-text"]],
+              content: "DELETE"
+            }}
+            onClick={openDeleteModal}
+          />
+          }
+          <MaterialIconButton
+            iconName={showReturnButton ? "logout" : "publish"}
+            className={styles["form-button"]}
+            iconStyles={[styles["form-button-icon"]]}
+            text={{
+              styles: [styles["form-button-text"]],
+              content: showReturnButton ? "RETURN" : "SUBMIT"
+            }}
+            onClick={showReturnButton ? props.formType === Paths.REGISTRY_DELETE ? closeTab : onReturn : onSubmit}
+          />
+        </div>
       </div>
     </div>
   );
