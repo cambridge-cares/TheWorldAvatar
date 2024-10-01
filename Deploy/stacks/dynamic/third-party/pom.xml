@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.cmcl</groupId>
+    <artifactId>api-generator-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>API Generator Parent</name>
+
+    <modules>
+        <module>client-parent</module>
+        <module>podman-client</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>calculate-client-name</id>
+                            <goals>
+                                <goal>regex-property</goal>
+                            </goals>
+                            <phase>initialize</phase>
+                            <configuration>
+                                <name>client.name</name>
+                                <value>${project.artifactId}</value>
+                                <regex>-client-generator</regex>
+                                <replacement></replacement>
+                                <failIfNoMatch>false</failIfNoMatch>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.openapitools</groupId>
+                    <artifactId>openapi-generator-maven-plugin</artifactId>
+                    <version>7.8.0</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                            <configuration>
+                                <inputSpec>${project.basedir}/${openapiSpecFile}</inputSpec>
+                                <generatorName>java</generatorName>
+                                <addCompileSourceRoot>false</addCompileSourceRoot>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${client.name}-client</artifactId>
+                                <artifactVersion>${project.version}</artifactVersion>
+                                <apiPackage>${project.groupId}.${client.name}.client.api</apiPackage>
+                                <modelPackage>${project.groupId}.${client.name}.client.model</modelPackage>
+                                <packageName>${project.groupId}.${client.name}.client</packageName>
+                                <configOptions>
+                                    <dateLibrary>legacy</dateLibrary>
+                                    <library>jersey2</library>
+                                    <parentGroupId>io.cmcl</parentGroupId>
+                                    <parentArtifactId>api-client-parent</parentArtifactId>
+                                    <parentVersion>1.0.0-SNAPSHOT</parentVersion>
+                                </configOptions>
+                                <skipIfSpecIsUnchanged>true</skipIfSpecIsUnchanged>
+                                <configHelp>false</configHelp>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.4.1</version>
+                    <executions>
+                        <execution>
+                            <id>package-${client.name}-client</id>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <phase>prepare-package</phase>
+
+                            <configuration>
+                                <executable>mvn</executable>
+                                <workingDirectory>target/generated-sources/openapi</workingDirectory>
+                                <arguments>
+                                    <argument>package</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>install-${client.name}-client</id>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <phase>install</phase>
+                            <configuration>
+                                <executable>mvn</executable>
+                                <workingDirectory>target/generated-sources/openapi</workingDirectory>
+                                <arguments>
+                                    <argument>install</argument>
+                                    <argument>-DskipTests</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>deploy-${client.name}-client</id>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <phase>deploy</phase>
+                            <configuration>
+                                <executable>mvn</executable>
+                                <workingDirectory>target/generated-sources/openapi</workingDirectory>
+                                <arguments>
+                                    <argument>deploy</argument>
+                                    <argument>-DskipTests</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

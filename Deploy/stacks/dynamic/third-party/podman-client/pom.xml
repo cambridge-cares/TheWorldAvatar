@@ -6,8 +6,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.cmcl</groupId>
-    <artifactId>podman-client</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>podman-client-generator</artifactId>
+    <version>4.3.0-1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Podman Client</name>
@@ -20,13 +20,14 @@
 
     <properties>
         <openapiSpecFile>swagger-v4.3.yaml</openapiSpecFile>
+        <openapi.generator.maven.plugin.skipValidateSpec>true</openapi.generator.maven.plugin.skipValidateSpec>
     </properties>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
