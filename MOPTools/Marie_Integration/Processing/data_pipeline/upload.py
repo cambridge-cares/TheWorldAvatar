@@ -102,8 +102,15 @@ def upload_predefined():
     AirAtmo                             = VesselEnvironment(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VesselEnvironment_6132df22d-79dl-saa1-ba12-351gd22fgde2", rdfs_label="Air atmosphere")
     unknown_Atmo                        = VesselEnvironment(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VesselEnvironment_8112eg34f-12et-s1a2-sa27-124fg44hgde2", rdfs_label="N/A")
     
+    # separation types
+    centrifuge                          = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8", rdfs_label="centrifuge")
+    column                              = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_aea2a49f-067f-4818-8abc-544dd8696ba8", rdfs_label="column")
+    wash                                = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_61233c76-a0e5-4cb0-8c5c-ab8347955ea6", rdfs_label="washing")
+    extraction                          = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8", rdfs_label="extraction")
+    unknown_sep                         = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_9ff2a8f7-3c9c-4419-9f3a-76b34d8629c0", rdfs_label="N/A")
+    
     percentage                          = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/percent", rdfs_label="percent")
-    instances                           = [N2Atmo, ArAtmo, AirAtmo , unknown_Atmo, vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_min, duration_day, duration_h, duration_s, duration_week, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA, schlenk]
+    instances                           = [N2Atmo, column, extraction, unknown_sep, wash, centrifuge, ArAtmo, AirAtmo , unknown_Atmo, vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_min, duration_day, duration_h, duration_s, duration_week, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA, schlenk]
     push_component_to_kg(instances, client)
 
 def find_patterns_and_divide_multiply(text, multiplier_flag):
@@ -333,6 +340,39 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
     print("used query: ", query)
     print("MOp query result returned: ", out)
     return out
+def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
+    CCDC_number             = remove_na(CCDC_number)
+    mop_formula             = remove_na(mop_formula)
+    mop_name                = remove_na(mop_name)
+    print("querying for mop: ", CCDC_number, mop_formula, mop_name)
+    insert_string               = ""
+    # break down mop list of strings in a way to insert in a value sparql statement
+    for label in mop_name:
+        if label != "N/A" and label != "" and label != " " and label != 'lab':
+            label = re.sub(r'[^\w\s,]', '', label)
+        # Append each formatted element to the result string
+            insert_string += f""" "{label}" """
+    print("mop querying: ", insert_string)
+    # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
+    query = f"""
+        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        PREFIX osyn:    <https://www.theworldavatar.com/kg/OntoSyn/>
+        SELECT ?chemicalOutput
+        WHERE {{
+        ?chemicalTrans      osyn:hasChemicalOutput  ?chemicalOutput         .
+        ?chemicalOutput     osyn:isRepresentedBy    ?mop                    .
+        ?mop a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
+        VALUES ?Text {{{insert_string}}}
+        ?chemicalOutput  rdfs:label ?Text .  
+                }}
+        GROUP BY ?chemicalOutput"""
+    out                     = client.perform_query(query)
+    print("used query: ", query)
+    print("MOp query result returned: ", out)
+    return out
 
 def transformation_querying(client, mop_name):
     print("mop name: ", mop_name)
@@ -387,6 +427,21 @@ def match_element(element_name, client):
             element_iri                          = "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_e253b6ca-c169-4e60-b6be-46b95e045a85"
     element                                      = Element.pull_from_kg(element_iri, client,recursive_depth=-1)[0]
     return element
+
+def match_separation(separation_name, client):
+    match separation_name:
+        case 'centrifuge':
+            separation_iri                          = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8"
+        case 'column':  
+            separation_iri                          = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_aea2a49f-067f-4818-8abc-544dd8696ba8"
+        case 'washing': 
+            separation_iri                          = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_61233c76-a0e5-4cb0-8c5c-ab8347955ea6"
+        case 'extraction':  
+            separation_iri                          = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8"
+        case _:     
+            separation_iri                          = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_9ff2a8f7-3c9c-4419-9f3a-76b34d8629c0"
+    separation                                      = SeparationType.pull_from_kg(separation_iri, client,recursive_depth=-1)[0]
+    return separation
 
 def match_atmosphere(atmosphere, client):
     match atmosphere:
@@ -468,52 +523,17 @@ def get_unit(unit_name, client):
     """
     return unit
 
-def heatchill_upload(client, vessel, heatchill_step):
-    if heatchill_step["targetTemperature"] == "room temperature":
-        temp                                    = [25.0]
-        temperature_unit                        = get_unit("C", client) 
-    else:
-        temp, temp_unit                         = extract_numbers_and_units(heatchill_step["targetTemperature"],"temp")
-        temperature_unit                        = get_unit(temp_unit[0], client) 
-        print("temperature: ", temp, temp_unit)
-    heat_time, time_unit                        = extract_numbers_and_units(heatchill_step["duration"], "add")
-    heat_rate, rate_unit                        = extract_numbers_and_units(heatchill_step["heatingCoolingRate"], "temp")
-    
-    print("heatingrate: ", heat_rate, rate_unit)
-    print("duration: ", heat_time, time_unit)
-    # temperature 
-    id_hash_value                               = str(uuid.uuid4())
-    temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
-    target_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetTemperature_{id_hash_value}", hasValue=temperature_value)
-
-    # heat rate
-    rate_unit                                   = get_unit(rate_unit[0], client) 
-    rate_value                                  = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureRate_{id_hash_value}", hasNumericalValue=heat_rate[0], hasUnit=rate_unit)
-    temperature_rate                            = TemperatureRate(hasValue=rate_value) 
-
-    # duration 
-    duration_unit                               = get_unit(time_unit[0], client) 
-    duration_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/StepDuration_{id_hash_value}", hasNumericalValue=heat_time[0], hasUnit=duration_unit)
-    duration                                    = Duration(hasValue=duration_value)
-
-    # Vessel:
-    vessel_type                                 = match_vessel(heatchill_step['usedVesselType'], client)
-    if vessel.rdfs_label != heatchill_step["usedVesselName"]:
-        print("new vessel")
-        vessel                                  = Vessel(rdfs_label=heatchill_step["usedVesselName"],hasVesselType=vessel_type)
-    heatchill_device                            = heatchill_step["usedDevice"]
-    # put everything together
-    heat_chill                                  = HeatChill(hasVessel=vessel, hasStepDuration=duration, hasTargetTemperature=target_temperature, hasTemperatureRate=temperature_rate, hasVacuum=heatchill_step["underVacuum"], isSealed=heatchill_step["sealedVessel"], IsStirred=heatchill_step['stir'], hasOrder=heatchill_step['stepNumber'], rdfs_comment=heatchill_step['comment'])
-    components = [temperature_value, target_temperature, temperature_value, temperature_rate, duration_value, duration, heat_chill, vessel]
-    push_component_to_kg(components, client)
-    return  heat_chill, vessel
-
 def upload_inputChem(chemicals, synthesis_client, species_client):
     phase_components                                        = []
     phase_component_concentrations                          = [] 
     for chemical in chemicals:
         species_name                                            = chemical["chemicalName"]
-        add_value, add_unit                                     = extract_numbers_and_units(chemical["chemicalAmount"], "add")
+        # check if key is present
+        if "chemicalAmount" in chemical:
+            add_value, add_unit                                 = extract_numbers_and_units(chemical["chemicalAmount"], "add")
+        else: 
+            add_value                                           = -1
+            add_unit                                            = "N/A"
         if species_name == []:
             species_name                                        = ["N/A"]
         species                                                 = instantiate_input(species_name[0], species_name, client_species=species_client, client_synthesis=synthesis_client) 
@@ -537,7 +557,11 @@ def upload_inputChem(chemicals, synthesis_client, species_client):
     composition                                                 = Composition(comprisesDirectly=phase_component_concentrations)
     single_phase                                                = SinglePhase(isComposedOfSubsystem=phase_components, hasComposition=composition)     
     material                                                    = Material(thermodynamicBehaviour=single_phase)
-    chemical_input                                              = ChemicalInput(referencesMaterial=material)
+    if "supplierName" in chemicals and "purity" in chemicals:
+        supplier                                                    = Supplier(rdfs_label=chemicals["supplierName"])
+        chemical_input                                              = ChemicalInput(referencesMaterial=material, hasPurity=chemicals["purity"], isSuppliedBy=supplier)
+    else:
+        chemical_input                                              = ChemicalInput(referencesMaterial=material)
     components = [phase_component_concentration, phase_component, composition, single_phase, material, chemical_input]
     push_component_to_kg(components, synthesis_client)
     return chemical_input
@@ -579,7 +603,7 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
             print("temperature: ", temp, temp_unit)
         heat_time, time_unit                        = extract_numbers_and_units(standard_step["duration"], "add")
         heat_rate, rate_unit                        = extract_numbers_and_units(standard_step["heatingCoolingRate"], "temp")
-        
+        device                                      = HeatChillDevice(rdfs_label=standard_step["usedDevice"])
         print("heatingrate: ", heat_rate, rate_unit)
         print("duration: ", heat_time, time_unit)
         # temperature 
@@ -592,8 +616,8 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
         rate_value                                  = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureRate_{id_hash_value}", hasNumericalValue=heat_rate[0], hasUnit=rate_unit)
         temperature_rate                            = TemperatureRate(hasValue=rate_value) 
         # put everything together
-        heat_chill                                  = HeatChill(hasVessel=vessel, hasVesselEnvironment=atmosphere, hasStepDuration=duration, hasTargetTemperature=target_temperature, hasTemperatureRate=temperature_rate, hasVacuum=standard_step["underVacuum"], isSealed=standard_step["sealedVessel"], IsStirred=standard_step['stir'], hasOrder=standard_step['stepNumber'], rdfs_comment=standard_step['comment'])
-        components = [temperature_value, target_temperature, temperature_value, temperature_rate, duration_value, duration, heat_chill, vessel]
+        heat_chill                                  = HeatChill(hasVessel=vessel, hasHeatChillDevice=device,hasVesselEnvironment=atmosphere, hasStepDuration=duration, hasTargetTemperature=target_temperature, hasTemperatureRate=temperature_rate, hasVacuum=standard_step["underVacuum"], isSealed=standard_step["sealedVessel"], IsStirred=standard_step['stir'], hasOrder=standard_step['stepNumber'], rdfs_comment=standard_step['comment'])
+        components = [heat_chill]
         push_component_to_kg(components, synthesis_client) 
         return heat_chill, vessel, chemicals_list
     
@@ -608,8 +632,8 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
             chemical_input                                  = upload_inputChem(standard_step["washingSolvent"], synthesis_client, species_client)
         else:
             chemical_input                                  = ChemicalInput()
-        filter_class                                        = Filter(hasOrder=standard_step["stepNumber"], hasVesselEnvironment=atmosphere, isRepeated=standard_step["numberOfFiltrations"], isVacuumFiltration=standard_step["vacuumFiltration"],hasWashingSolvent=chemical_input, rdfs_comment=standard_step["comment"], hasVessel=vessel)  
-        components = [filter_class, vessel]
+        filter_class                                        = Filter(hasOrder=standard_step["stepNumber"], hasVesselEnvironment=atmosphere, isRepeated=standard_step["numberOfFiltrations"]-1, isVacuumFiltration=standard_step["vacuumFiltration"],hasWashingSolvent=chemical_input, rdfs_comment=standard_step["comment"], hasVessel=vessel)  
+        components = [filter_class]
         push_component_to_kg(components, synthesis_client)
         chemicals_list.append(chemical_input)
         return filter_class, vessel, chemicals_list
@@ -627,8 +651,8 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
         target_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/StirTemperature_{id_hash_value}", hasValue=temperature_value)
         
-        stir                                        = Stir(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasStirringTemperature=target_temperature)
-        components                                  = [duration_value, duration, stir, vessel]
+        stir                                        = Stir(hasStepDuration=duration, isWait=standard_step["wait"], hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasStirringTemperature=target_temperature)
+        components                                  = [stir]
         push_component_to_kg(components, synthesis_client)
         return stir, vessel, chemicals_list
     
@@ -646,7 +670,7 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
         target_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetTemperature_{id_hash_value}", hasValue=temperature_value)
         crystallization                             = Crystallization(hasOrder=standard_step["stepNumber"], hasVesselEnvironment=atmosphere, hasVessel=vessel, hasStepDuration=duration, rdfs_comment=standard_step["comment"], hasCrystallizationTargetTemperature=target_temperature)
-        components                                  = [duration_value, duration, temperature_value, target_temperature, crystallization, vessel]
+        components                                  = [crystallization]
         push_component_to_kg(components, synthesis_client)
         return crystallization, vessel, chemicals_list
     
@@ -659,16 +683,17 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
         else:
             temp, temp_unit                         = extract_numbers_and_units(standard_step["temperature"], "temp")
             temperature_unit                        = get_unit(temp_unit[0], synthesis_client) 
-        pres, pres_unit                             = extract_numbers_and_units(standard_step["pressure"], "temp")
-        pressure_unit                               = get_unit(pres_unit[0], synthesis_client) 
+        if standard_step["dryingAgent"] != []:
+            chemical_input                          = upload_inputChem(standard_step["dryingAgent"], synthesis_client, species_client)
+        else:
+            chemical_input                          = ChemicalInput()
 
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit, rdfs_comment=standard_step["temperature"])
-        pressure_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/PressureValue_{id_hash_value}",hasNumericalValue=pres[0], hasUnit=pressure_unit, rdfs_comment=standard_step["pressure"])
+        #pressure_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/PressureValue_{id_hash_value}",hasNumericalValue=pres[0], hasUnit=pressure_unit, rdfs_comment=standard_step["pressure"])
         drying_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/DryingTemperature_{id_hash_value}", hasValue=temperature_value)
-        drying_pressure                             = Pressure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/DryingPressure_{id_hash_value}", hasValue=pressure_value)
-        #dry                                         = Dry(hasStepDuration=duration, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasDryingTemperature=drying_temperature, hasDryingPressure=drying_pressure, rdfs_comment=standard_step["comment"])
-        dry                                         = Dry(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasDryingTemperature=drying_temperature, rdfs_comment=standard_step["comment"])
-        components                                  = [duration, duration_value, temperature_value, drying_temperature, dry, vessel]
+        drying_pressure                             = Pressure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/DryingPressure_{id_hash_value}", rdfs_label=standard_step["pressure"])
+        dry                                         = Dry(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasDryingPressure=drying_pressure,hasDryingTemperature=drying_temperature, rdfs_comment=standard_step["comment"])
+        components                                  = [dry]
         push_component_to_kg(components, synthesis_client)
         return dry, vessel, chemicals_list
     
@@ -681,39 +706,48 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
         else:
             temp, temp_unit                         = extract_numbers_and_units(standard_step["temperature"], "temp")
             temperature_unit                        = get_unit(temp_unit[0], synthesis_client) 
-        pres, pres_unit                             = extract_numbers_and_units(standard_step["pressure"], "temp")
-        pressure_unit                               = get_unit(pres_unit[0], synthesis_client) 
-
+        vol, vol_unit                               = extract_numbers_and_units(standard_step["targetVolume"], "temp")
+        volume_unit                                 = get_unit(vol_unit[0], synthesis_client) 
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit, rdfs_comment=standard_step["temperature"])
-        pressure_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/PressureValue_{id_hash_value}",hasNumericalValue=pres[0], hasUnit=pressure_unit, rdfs_comment=standard_step["pressure"])
+        #pressure_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/PressureValue_{id_hash_value}",hasNumericalValue=pres[0], hasUnit=pressure_unit, rdfs_comment=standard_step["pressure"])
         evap_temperature                            = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/EvaporationTemperature_{id_hash_value}", hasValue=temperature_value)
-        evap_pressure                               = Pressure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/EvaporationPressure_{id_hash_value}", hasValue=pressure_value)
-        # evaporate                                   = Evaporate(hasStepDuration=duration, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasEvaporationTemperature=evap_temperature, hasEvaporationPressure=evap_pressure, rdfs_comment=standard_step["comment"])  
-        evaporate                                   = Evaporate(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasEvaporationTemperature=evap_temperature, rdfs_comment=standard_step["comment"])  
-        
-        components                                  = [duration_value, duration, vessel, temperature_value, evap_temperature, evaporate]
+        evap_pressure                               = Pressure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/EvaporationPressure_{id_hash_value}", rdfs_label=standard_step["pressure"])
+        if standard_step["removedSpecies"] != []:
+            chemical_input                          = upload_inputChem(standard_step["removedSpecies"], synthesis_client, species_client)
+        else:
+            chemical_input                          = ChemicalInput()
+        volume_value                                = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/VolumeValue_{id_hash_value}",hasNumericalValue=vol[0], hasUnit=volume_unit, rdfs_comment=standard_step["targetVolume"])
+        target_volume                               = Volume(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetVolume_{id_hash_value}", hasValue=volume_value)
+        evaporate                                   = Evaporate(hasStepDuration=duration, isEvaporatedToVolume=target_volume, isRemovedSpecies=chemical_input, hasRotaryEvaporator=standard_step["rotaryEvaporator"],hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasEvaporationTemperature=evap_temperature, hasEvaporationPressure=evap_pressure, rdfs_comment=standard_step["comment"])  
+        components                                  = [evaporate]
         push_component_to_kg(components, synthesis_client)
         return evaporate, vessel, chemicals_list
 
     elif "Transfer" in standard_input:
         standard_step                           = standard_input["Transfer"]
+        # target vessel
         vessel, duration, duration_value, atmosphere, id_hash_value     = steps_preupload(standard_step, synthesis_client)
         targetvessel_type                       = match_vessel(standard_step["targetVesselType"], synthesis_client)
         targetvessel                            = Vessel(rdfs_label=standard_step["targetVesselName"], hasVesselType=targetvessel_type)
-        transfer                                = Transfer(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, isTransferedTo=targetvessel, rdfs_comment=standard_step["comment"])
-        components                              = [duration_value, duration, transfer, vessel, targetvessel]
+        # volume
+        vol, vol_unit                               = extract_numbers_and_units(standard_input["transferedAmount"], "temp")
+        volume_unit                                 = get_unit(vol_unit[0], synthesis_client) 
+        volume_value                                = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/VolumeValue_{id_hash_value}",hasNumericalValue=vol[0], hasUnit=volume_unit, rdfs_comment=standard_step["targetVolume"])
+        target_volume                               = Volume(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetVolume_{id_hash_value}", hasValue=volume_value)
+        transfer                                    = Transfer(hasStepDuration=duration, hasTransferedAmount=target_volume, isLayeredTransfer=standard_step["isLayered"], hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, isTransferedTo=targetvessel, rdfs_comment=standard_step["comment"])
+        components                                  = [transfer]
         push_component_to_kg(components, synthesis_client)
         return transfer, targetvessel, chemicals_list
     
     elif "Dissolve" in standard_input:
-        standard_step                           = standard_input["Dissolve"]
+        standard_step                                                   = standard_input["Dissolve"]
         vessel, duration, duration_value, atmosphere, id_hash_value     = steps_preupload(standard_step, synthesis_client)
         if standard_step["solvent"] != []:
-            chemical_input                                  = upload_inputChem(standard_step["solvent"], synthesis_client, species_client)
+            chemical_input                                              = upload_inputChem(standard_step["solvent"], synthesis_client, species_client)
         else:
-            chemical_input                                  = ChemicalInput()
-        dissolve                                = Dissolve(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasSolventDissolve=chemical_input, rdfs_comment=standard_step["comment"])
-        components                              = [duration_value, duration, dissolve, vessel]
+            chemical_input                                              = ChemicalInput()
+        dissolve                                                        = Dissolve(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasSolventDissolve=chemical_input, rdfs_comment=standard_step["comment"])
+        components                                                      = [dissolve]
         chemicals_list.append(chemical_input)
         push_component_to_kg(components, synthesis_client)
         return dissolve, vessel, chemicals_list
@@ -722,11 +756,12 @@ def standard_step_upload(standard_input, vessel, chemicals_list, synthesis_clien
         standard_step                           = standard_input["Separate"]
         vessel, duration, duration_value, atmosphere, id_hash_value     = steps_preupload(standard_step, synthesis_client)
         if standard_step["solvent"] != []:
-            chemical_input                                  = upload_inputChem(standard_step["solvent"], synthesis_client, species_client)
+            chemical_input                                              = upload_inputChem(standard_step["solvent"], synthesis_client, species_client)
         else:
-            chemical_input                                  = ChemicalInput()
-        separate                                = Separate(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasSeparationSolvent=chemical_input , rdfs_comment=standard_step["comment"])
-        components                              = [duration_value, duration, separate, duration_value, vessel]
+            chemical_input                                              = ChemicalInput()
+        separation_type                                                 = match_separation(standard_step["separationType"], synthesis_client)
+        separate                                                        = Separate(hasStepDuration=duration, isSeparationType=separation_type, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasSeparationSolvent=chemical_input , rdfs_comment=standard_step["comment"])
+        components                                                      = [separate]
         chemicals_list.append(chemical_input)
         push_component_to_kg(components, synthesis_client)
         return separate, vessel, chemicals_list
@@ -774,20 +809,13 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
     return species
 
 def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, client_mop, client_synthesis):
-    # query for existing mops either in the onto mops ontology or if not in the onto synthesis ontology
+    # query for existing mops either in the OntoMOPs ontology 
     mop_iri                             = mop_querying(client_mop, ccdc_number, chemical_formula, mop_names)
-    if mop_iri == [] or mop_iri == None:
-        mop_iri                         = mop_querying(client_synthesis, ccdc_number, chemical_formula, mop_names)
-        # pull the mop instance with the iri and update the alt labels. If it fails isntantiate a new MOP instance.
-
-    # ccdc_number is of type int and "N/A" a string -> causes an error
-    if ccdc_number == "N/A":
-                mop                     = MetalOrganicPolyhedron(hasMOPFormula=chemical_formula, mopAltLabel=mop_names)
+    # if no mop fits instantiate otherwise empty entry
+    if mop_iri == []:
+        mop                                 = MetalOrganicPolyhedron()
     else:
-                mop                     = MetalOrganicPolyhedron(hasCCDCNumber=ccdc_number, hasMOPFormula=chemical_formula, mopAltLabel=mop_names)
-    # give instantiated mop the queried IRI
-    if mop_iri != [] and mop_iri != None:
-        mop.instance_iri                    = mop_iri[0]["MOPIRI"] 
+        mop                                 = MetalOrganicPolyhedron(instance_iri=mop_iri[0]["MOPIRI"], hasCCDCNumber=ccdc_number, hasMOPFormula=chemical_formula, mopAltLabel=mop_names)
     # Yield
     uuid_id                                 = str(uuid.uuid4())
     unit                                    = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/percent", client_synthesis, recursive_depth=-1)[0]
@@ -797,7 +825,9 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
     yield_str                               = yield_str.replace("N/A", "-1")
     yield_value                             = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_{uuid_id}", hasNumericalValue=float(yield_str), hasUnit=unit)
     yield_instance                          = AmountOfSubstanceFraction(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/Yield_{uuid_id}", hasValue=yield_value)
-    chemical_output                         = ChemicalOutput(isRepresentedBy=mop, hasYield=yield_instance, rdfs_label=mop_names)
+    output_names                            = mop_names.append(chemical_formula)
+    output_names                            = output_names.append(ccdc_number)
+    chemical_output                         = ChemicalOutput(isRepresentedBy=mop, hasYield=yield_instance, rdfs_label=output_names)
     return mop, chemical_output, yield_value, yield_instance 
 
 def doi_from_path(path:str):
@@ -828,7 +858,7 @@ def chemicals_upload_json(input_path, output_path):
         output_chemical                         = chemicals['outputChemical'][0]
         print("output chemical: ", output_chemical)
         # add yield to chemical output / make subclass of product!
-        mop, chemical_output, yield_value, yield_instance       = instantiate_output(output_chemical["CCDCNumber"], output_chemical["chemicalFormula"], output_chemical["names"], output_chemical["yield"], client_mop, client_synthesis)
+        mop, chemical_output, yield_value, yield_instance           = instantiate_output(output_chemical["CCDCNumber"], output_chemical["chemicalFormula"], output_chemical["names"], output_chemical["yield"], client_mop, client_synthesis)
         # input chemicals:
         chemical_list                               = []
         for chemical in chemicals['inputChemicals']:
