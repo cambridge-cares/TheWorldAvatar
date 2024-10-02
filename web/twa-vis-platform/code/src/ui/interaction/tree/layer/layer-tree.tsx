@@ -83,6 +83,8 @@ function recurseParseTreeStructure(
         ? groupIndex.toString()
         : parentGroup.address + "." + groupIndex,
     icon: dataGroup.treeIcon,
+    stack: dataGroup.stackEndpoint,
+    search: dataGroup.search,
     layers: [],
     subGroups: [],
     showChildren: dataGroup.isExpanded,

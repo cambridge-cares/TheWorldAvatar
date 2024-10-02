@@ -23,16 +23,30 @@ if __name__ == "__main__":
         action="store_true",
         help="Whether to populate surface_forms field with the label",
     )
+    parser.add_argument(
+        "--ontop",
+        action="store_true",
+        help="Whether the endpoint is an ontop endpoint",
+    )
     parser.add_argument("--out", required=True, help="Path to output JSON file")
     args = parser.parse_args()
 
     sparql_client = SPARQLWrapper(args.endpoint)
     sparql_client.setReturnFormat(JSON)
 
-    query = """SELECT ?s ?label WHERE {{
+    def get_query_for_ontop():
+        return """SELECT ?s ?label WHERE {{
+    ?s a <{base_class}> .
+    ?s rdfs:label ?label
+}}"""
+
+    def get_query_for_blazegraph():
+        return """SELECT ?s ?label WHERE {{
     ?s a/rdfs:subClassOf* <{base_class}> .
     ?s rdfs:label ?label
-}}""".format(
+}}"""
+
+    query = (get_query_for_blazegraph() if not args.ontop else get_query_for_ontop()).format(
         base_class=args.base_class
     )
 

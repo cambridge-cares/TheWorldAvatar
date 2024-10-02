@@ -25,9 +25,9 @@ class SGBuildingFuncExecutor(Name2Func):
     def get_name2func(
         self,
     ):
-        return {"visualise_building_footprint": self.visualise_building_footprint}
+        return {"visualise_facility_building_footprint": self.visualise_facility_building_footprint}
 
-    def visualise_building_footprint(self, facility: list[str], **kwargs):
+    def visualise_facility_building_footprint(self, facility: list[str], **kwargs):
         query = f"""PREFIX rdf: <{RDF}>
 PREFIX bldg: <{CITYGML_BUILDING}>
 PREFIX grp: <{CITYGML_CITYOBJECTGROUP}>
