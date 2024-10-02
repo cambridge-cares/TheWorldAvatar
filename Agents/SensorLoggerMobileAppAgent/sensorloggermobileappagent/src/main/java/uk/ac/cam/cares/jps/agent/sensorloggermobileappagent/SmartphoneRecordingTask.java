@@ -100,7 +100,7 @@ public class SmartphoneRecordingTask {
         logger.info("Processing and sending data");
         if (sensorDataProcessorList.stream().allMatch(SensorDataProcessor::isIriInstantiationNeeded)) {
             logger.info("Need to init kg");
-            initKgUsingOntop(sensorLoggerPostgresClient);
+            initKgUsingOntop();
         }
 
         if (sensorDataProcessorList.stream().anyMatch(SensorDataProcessor::isRbdInstantiationNeeded)) {
@@ -158,7 +158,7 @@ public class SmartphoneRecordingTask {
                 .collect(Collectors.joining("; ")));
     }
 
-    private void initKgUsingOntop(SensorLoggerPostgresClient sensorLoggerPostgresClient) {
+    private void initKgUsingOntop() {
         logger.info("Instantiating kg in ontop");
 
         List<String> sensorClasses = sensorDataProcessorList.stream().map(s -> s.getOntodeviceLabel())
@@ -255,5 +255,11 @@ public class SmartphoneRecordingTask {
         }
 
         return smartphone;
+    }
+
+    public void instantiate() {
+        initKgUsingOntop();
+        sensorDataProcessorList.forEach(s -> s.initIRIs());
+        bulkInitRdb();
     }
 }

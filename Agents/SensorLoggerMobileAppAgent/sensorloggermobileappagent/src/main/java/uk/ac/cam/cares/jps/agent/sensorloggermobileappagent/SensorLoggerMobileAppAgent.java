@@ -13,6 +13,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -27,7 +28,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
-@WebServlet(urlPatterns = "/update")
+@WebServlet(urlPatterns = { "/update", "/instantiate" })
 
 public class SensorLoggerMobileAppAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
@@ -91,48 +92,56 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     }
 
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-        if (!validateInput(requestParams)) {
-            JSONObject result = new JSONObject();
-            result.put("message", "one or more of the request params is missing");
-        }
-
-        // extract the compressed data string from the request
-        String deviceId = requestParams.getString("deviceId");
-        LOGGER.info(deviceId + ": receive request");
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         JSONObject result = new JSONObject();
-        result.put("message", deviceId + ": receive request");
+        if (request.getServletPath().contentEquals("/instantiate")) {
+            String deviceId = requestParams.getString("deviceId");
 
-        SmartphoneRecordingTask task = getSmartphoneRecordingTask(deviceId);
-        addDataExecutor.submit(() -> {
-            try {
-                if (requestParams.has("compressedData")) {
-                    String compressedDataString = requestParams.getString("compressedData");
-
-                    LOGGER.info(deviceId + " is fetched and start to add data");
-
-                    byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
-                    String decompressedData = decompressGzip(compressedData);
-                    JSONArray payload = new JSONArray(decompressedData);
-                    HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
-
-                    task.addData(dataHashmap);
-                } else {
-                    // retrieving non-compressed data
-                    JSONArray payload = requestParams.getJSONArray("payload");
-                    HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
-                    LOGGER.info(deviceId + " is fetched and start to add data");
-                    task.addData(dataHashmap);
-                }
-            } catch (JsonProcessingException jsonError) {
-                // handle JsonProcessingException
-            } catch (IOException ioError) {
-                // handle IOException
+            SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, agentConfig,
+                    deviceId, ontopClient);
+            task.instantiate();
+            result.put("message", "instantiated deviceId = " + deviceId);
+        } else {
+            if (!validateInput(requestParams)) {
+                result.put("message", "one or more of the request params is missing");
             }
-        });
 
-        LOGGER.info(deviceId + " data being added");
-        result.put("message", "data being processed");
+            // extract the compressed data string from the request
+            String deviceId = requestParams.getString("deviceId");
+            LOGGER.info(deviceId + ": receive request");
+            result.put("message", deviceId + ": receive request");
+
+            SmartphoneRecordingTask task = getSmartphoneRecordingTask(deviceId);
+            addDataExecutor.submit(() -> {
+                try {
+                    if (requestParams.has("compressedData")) {
+                        String compressedDataString = requestParams.getString("compressedData");
+
+                        LOGGER.info(deviceId + " is fetched and start to add data");
+
+                        byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
+                        String decompressedData = decompressGzip(compressedData);
+                        JSONArray payload = new JSONArray(decompressedData);
+                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+
+                        task.addData(dataHashmap);
+                    } else {
+                        // retrieving non-compressed data
+                        JSONArray payload = requestParams.getJSONArray("payload");
+                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+                        LOGGER.info(deviceId + " is fetched and start to add data");
+                        task.addData(dataHashmap);
+                    }
+                } catch (JsonProcessingException jsonError) {
+                    // handle JsonProcessingException
+                } catch (IOException ioError) {
+                    // handle IOException
+                }
+            });
+
+            LOGGER.info(deviceId + " data being added");
+            result.put("message", "data being processed");
+        }
         return result;
     }
 
