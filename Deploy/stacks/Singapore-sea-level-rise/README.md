@@ -155,6 +155,9 @@ Time series data for CARES weather station is stored in the main database (postg
 
 Execute [cares_weather.http] to instantiate and start periodic updates.
 
+### nginx for PostGIS
+The stack's PostGIS is accessible at port 3840, to change the port edit [nginx-2].
+
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
 Kok Foong Lee
@@ -168,3 +171,4 @@ Kok Foong Lee
 [api.properties (weather)]: ./cares_weather_config/api.properties
 [client.properties (weather)]: ./cares_weather_config/client.properties
 [cares_weather.http]: ./http_requests/cares_weather.http
+[nginx-2]: ./stack-manager/inputs/config/services/nginx-2.json
