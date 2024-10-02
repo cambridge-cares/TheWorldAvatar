@@ -9,4 +9,4 @@ FROM
     buildings_layer b, 
     buffered_line l
 WHERE 
-    ST_Intersects(b.geom, l.geom) AND b.ontobuilt = 'Education'
+    ST_Intersects(b.geom, l.geom) AND b.ontobuilt = 'DrinkingEstablishment'
