@@ -16,7 +16,8 @@
             "ship-input-agent",
             "ship-data-agent",
             "carpark-agent",
-            "cares-weather-station-agent"
+            "cares-weather-station-agent",
+            "nginx-2"
         ],
         "excludes": []
     },
