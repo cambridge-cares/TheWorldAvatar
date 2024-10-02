@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontolab="https://www.theworldavatar.com/kg/ontolab/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontolab/">
-        <dc:date>01 October 2024</dc:date>
+        <dc:date>02 October 2024</dc:date>
         <rdfs:comment>OntoLab is an ontology developed for expressing facilities in a research lab.</rdfs:comment>
         <owl:versionInfo>1.11</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -497,18 +497,6 @@
         <rdfs:comment>A device used for automatically injecting substances into a system.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
         <rdfs:label>Autoinjector</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontolab/Autosampler -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Autosampler">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
-        <rdfs:comment>A device that automatically takes samples from a larger batch for testing.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
-        <rdfs:label>Autosampler</rdfs:label>
     </owl:Class>
     
 

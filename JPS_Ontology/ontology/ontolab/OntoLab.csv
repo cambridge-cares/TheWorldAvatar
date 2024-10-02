@@ -73,7 +73,6 @@ Stand,Class,LabEquipment,IS-A,,,,A supporting structure used to hold equipment i
 SublimationApparatus,Class,LabEquipment,IS-A,,,,An apparatus used to convert a substance directly from a solid to a gas.,https://www.theworldavatar.com/kg/ontolab/,Sublimation apparatus
 SemiconductorMaskAligner,Class,LabEquipment,IS-A,,,,A device used in the semiconductor industry for aligning masks during lithography.,https://www.theworldavatar.com/kg/ontolab/,Semiconductor mask aligner
 Autoclave,Class,LabEquipment,IS-A,,,,A device used to sterilize equipment by applying high-pressure steam.,https://www.theworldavatar.com/kg/ontolab/,Autoclave
-Autosampler,Class,LabEquipment,IS-A,,,,A device that automatically takes samples from a larger batch for testing.,https://www.theworldavatar.com/kg/ontolab/,Autosampler
 PelletFeeder,Class,LabEquipment,IS-A,,,,A device that feeds pellets into a system for experimental or industrial processes.,https://www.theworldavatar.com/kg/ontolab/,Pellet feeder
 TriggerBox,Class,LabEquipment,IS-A,,,,A device used to trigger events or start processes in an experimental setup.,https://www.theworldavatar.com/kg/ontolab/,Trigger box
 Titrator,Class,LabEquipment,IS-A,,,,A device that measures and adds titrants to a solution for chemical analysis.,https://www.theworldavatar.com/kg/ontolab/,Titrator
