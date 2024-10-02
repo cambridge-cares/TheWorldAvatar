@@ -2,7 +2,7 @@
 title: Attributions
 slug: attributions
 description: Details on the data sources.
-thumbnail: ./images/defaults/icons/glossary.svg
+thumbnail: /images/defaults/icons/glossary.svg
 ---
 
 # Attributions

@@ -5,7 +5,7 @@ from flask import Response
 from mackay.calculator_model import CalculatorModel
 from flask import jsonify
 from utils.query_kg import query_all, query_data_agent
-from utils.config import QUERYFILEPATH, DATA_AGENT_URL
+from utils.config import QUERYFILEPATH, DATA_AGENT_TIMESERIES_URL, DATA_AGENT_META_URL
 import json
 import datetime
 from dateutil.parser import parse
@@ -30,13 +30,14 @@ def placeholder(v):
     return v
 
 # output format: {'key': []}
-def read_from_data_agent():
-    raw_data = query_data_agent(DATA_AGENT_URL)
+def read_timeseries_from_data_agent():
+    raw_data = query_data_agent(DATA_AGENT_TIMESERIES_URL)
     with open(QUERYFILEPATH) as query_json:
         query_dict = json.load(query_json)
         data_filters = query_dict['data_filter']
+        ts_data_filters = data_filters['timeseries_data']
         out = {}
-        for filterobj in data_filters:
+        for filterobj in ts_data_filters:
             unit_convert_name = "unit_convert_{}".format(filterobj['unit_convert'] ) if 'unit_convert' in filterobj else None
             unit_convert_func = getattr(importlib.import_module("utils.query_kg"),unit_convert_name) if unit_convert_name else placeholder
             filterobj['times'] = [ parse_incomplete_time(t) for t in filterobj['times']]
@@ -45,8 +46,21 @@ def read_from_data_agent():
                 entry = raw_data[filterobj['name']]
                 print(entry['time'])
                 out[filterobj['name']] =  [ unit_convert_func(v) for t,v in zip(entry['time'],entry['value']) if t in filterobj['times']]
-        print('out values:')
-        print(out)
+        return out
+    
+def read_meta_data_from_data_agent():
+    raw_data = query_data_agent(DATA_AGENT_META_URL)
+    with open(QUERYFILEPATH) as query_json:
+        query_dict = json.load(query_json)
+        data_filters = query_dict['data_filter']
+        meta_data_filters = data_filters['meta_data']
+        out = {}
+        for filterobj in meta_data_filters:
+            unit_convert_name = "unit_convert_{}".format(filterobj['unit_convert'] ) if 'unit_convert' in filterobj else None
+            unit_convert_func = getattr(importlib.import_module("utils.query_kg"),unit_convert_name) if unit_convert_name else placeholder
+            if filterobj['name'] in raw_data:
+                entry = raw_data[filterobj['name']]
+                out[filterobj['name']] = unit_convert_func(float(entry['value']))
         return out
 
 
@@ -60,8 +74,10 @@ class ModelUpdateHandler(Resource):
         #Run access agent to retrieve data
         #Update
         try:
-            new_values = read_from_data_agent()
-            calculator.updateFromKG(new_values)
+            new_ts_values = read_timeseries_from_data_agent()
+            calculator.updateTimeSeriesFromKG(new_ts_values)
+            new_meta_values = read_meta_data_from_data_agent()
+            calculator.updateMetaDataFromKG(new_meta_values)
             final_ret = {"status": "Success"}
             app.logger.info('Updated Mackay model values from TWA')
             return final_ret

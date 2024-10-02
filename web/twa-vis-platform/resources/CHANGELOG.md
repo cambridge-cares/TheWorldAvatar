@@ -3,6 +3,17 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.7.0
+
+### Bug Fixes
+
+* Random logouts when keycloak authentication is enabled
+* Role based authorisation was broken behind docker
+
+### Changes
+
+* Updated various package dependencies to latest versions
+
 ## 5.6.0
 
 ### Features

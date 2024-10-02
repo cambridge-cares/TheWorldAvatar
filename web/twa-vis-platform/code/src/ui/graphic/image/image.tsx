@@ -1,3 +1,4 @@
+import Image from "next/image";
 
 interface AppImageProps {
   readonly url: string;
@@ -23,7 +24,7 @@ export default function AppImage(props: AppImageProps) {
   // They employ a different url format in production, which cannot work well with the reverse proxy in the stack.
   return (
     <div className={props.classes}>
-      <img
+      <Image
         src={props.url}
         height={height}
         width={width}

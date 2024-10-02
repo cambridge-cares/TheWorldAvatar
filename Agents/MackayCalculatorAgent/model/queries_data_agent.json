@@ -1,0 +1,28 @@
+{
+  "data_filter": {
+    "meta_data":   
+    [
+      {
+        "name": "hhv",
+        "unit_convert": "million"
+      },
+      {
+        "name": "lhv",
+        "unit_convert": "million"
+      }
+    ],
+    "timeseries_data":
+    [
+      {
+        "name": "dwelling_unit",
+        "times":[2015, 2020,2025,2030,2035, 2040, 2045, 2050],
+        "unit_convert": "thousand"
+      },
+      {
+        "name": "population",
+        "times":[2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060, 2065, 2070, 2075, 2080, 2085, 2090, 2095, 2100],
+        "unit_convert": "thousand"
+      }
+    ]
+  }
+}

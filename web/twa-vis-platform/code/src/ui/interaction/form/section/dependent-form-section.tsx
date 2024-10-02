@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { ID_KEY, PropertyShape, RegistryFieldValues, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
@@ -69,7 +69,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
           entities = await getData(props.agentApi, parentField, getAfterDelimiter(currentParentOption, "/"), entityType);
         }
         // If there is no valid parent option, there should be no entity
-      } else if (formType === PathNames.REGISTRY || formType === PathNames.REGISTRY_DELETE) {
+      } else if (formType === Paths.REGISTRY || formType === Paths.REGISTRY_DELETE) {
         // Retrieve only one entity to reduce query times as users cannot edit anything in view or delete mode
         entities = await getData(props.agentApi, entityType, getAfterDelimiter(field.defaultValue.value, "/"));
       } else {
@@ -97,7 +97,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   // An event handler that will navigate to the required add form when clicked
   const openAddSubEntityModal = () => {
     let url: string = `../add/${queryEntityType}`;
-    if (formType != PathNames.REGISTRY_ADD) {
+    if (formType != Paths.REGISTRY_ADD) {
       url = `../${url}`;
     }
     router.push(url);
@@ -107,7 +107,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   const openViewSubEntityModal = () => {
     let url: string = `../view/${queryEntityType}/${getAfterDelimiter(currentOption, "/")}`;
     // Other form types will have an extra path for the entity id, except for ADD
-    if (formType != PathNames.REGISTRY_ADD) {
+    if (formType != Paths.REGISTRY_ADD) {
       url = `../${url}`;
     }
     router.push(url);
@@ -132,7 +132,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
                 selectOptions={selectElements.map(entity => entity.id.value)}
                 selectLabels={selectElements.map(entity => entity.name?.value ?? entity.first_name?.value)}
                 options={{
-                  disabled: formType == PathNames.REGISTRY || formType == PathNames.REGISTRY_DELETE
+                  disabled: formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE
                 }}
                 styles={{
                   label: [styles["form-input-label"]],
@@ -153,7 +153,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
             No {label} detected
           </p>
           )}
-          {(formType != PathNames.REGISTRY && formType != PathNames.REGISTRY_DELETE) && (
+          {(formType != Paths.REGISTRY && formType != Paths.REGISTRY_DELETE) && (
             <MaterialIconButton
               iconName={"add"}
               className={styles["button"] + " " + styles["button-layout"]}
