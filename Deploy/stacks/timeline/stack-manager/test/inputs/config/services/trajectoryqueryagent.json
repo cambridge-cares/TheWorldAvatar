@@ -3,7 +3,7 @@
     "Name": "trajectoryqueryagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "trajectoryqueryagent:2.0.0-dev-timeline-stack-SNAPSHOT",
+        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:2.0.0-dev-timeline-stack-SNAPSHOT",
         "Configs": [
           {
             "ConfigName": "blazegraph"

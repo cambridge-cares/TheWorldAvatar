@@ -2,9 +2,4 @@ version: "3.8"
 
 services:
   sensorloggermobileappagent:
-    image: sensorloggermobileappagent:3.0.0-dev-timeline-stack-SNAPSHOT
-    build: .
-    ports:
-      - "10102:8080"
-    volumes:
-      - ./sensorloggermobileappagent/src/main/resources:/resources
+    image: ghcr.io/cambridge-cares/sensorloggermobileappagent:3.0.0-dev-timeline-stack-SNAPSHOT

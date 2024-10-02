@@ -2,9 +2,4 @@ version: "3.8"
 
 services:
   trajectoryqueryagent:
-    image: trajectoryqueryagent:2.0.0-dev-timeline-stack-SNAPSHOT
-    build: .
-    ports:
-      - "10108:8080"
-    volumes:
-      - ./trajectoryqueryagent/src/main/resources:/resources
+    image: ghcr.io/cambridge-cares/trajectoryqueryagent:2.0.0-dev-timeline-stack-SNAPSHOT
