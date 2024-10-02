@@ -3,7 +3,7 @@ import glob
 import fitz  # PyMuPDF
 import tiktoken
 from pipeline import get_literature, ChatGPTAPI, chemicals, append_si_to_paper, query_mop_names, input_for_cbu
-from upload import chemicals_upload, upload, chemicals_upload_json, upload_steps
+from upload import upload, chemicals_upload_json, upload_steps
 import json
 
 
@@ -34,6 +34,7 @@ def process_files_in_directory(func, input_dir, output_dir):
     """Processes each .xyz file in the input directory and saves the modified files to the output directory."""
     for file_path in glob.glob(os.path.join(input_dir, '*')):
         if os.path.isfile(file_path):
+            print("current file: ", file_path)
             transformed_text        = func(file_path, output_dir)
 
 def transform_xyz_string(file_path:str, output_dir:str) -> None:
@@ -196,7 +197,7 @@ def use_openai(file_path:str, output_dir:str):
     else:   
         doi                     = name[:] 
     doi                         = doi.replace("_", "/")
-    prompt                      = 17
+    prompt                      = 16
     match prompt:
         case 1:
                 extend          = ".txt"
@@ -602,21 +603,22 @@ If any information is missing or unclear, use "N/A" as a placeholder.
             json_output         = False
             mop_formula         = get_literature(doi)
             extend              = ".json"
+            dynamic_prompt      = {}
             prompt_syn          = f""" 
 Task Specification: "Summarize the synthesis procedure into a JSON file. Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema.
 Try to use product names and CCDC numbers from the following list: {mop_formula}
 List the chemicals for each synthesis procedure. Make sure to only list one synthesis product per synthesis procedure. 
 The supplier name and purity are ussualy given in the general procedure of the paper while additional names and the chemical formula ussually is listed in the exact procedure. 
 If any information is missing or uncertain, fill the cell with N/A for strings or 0 for numeric types.
-Extract mixtures as one chemical but by separating the chemical names of the individual names with a "/". Example: chemicalName: "Ethanol/Water" for a mixture of Ethanol and Water. For all ChemicalAmount entries if the chemical is a mixture make sure to enter the amount for all components either by specifying the absolute amount as the names
-(Example: for 10 mL ethanol and 20 mL water write: chemicalName: ethanol/water, chemicalAmount: 10mL/20mL.) or give the ratio of the two chemicals (Example: chemicalAmount: 30 mL (1:2))
 
 Category Specifications:
 "synthesisProcedure": Some of the provided text describe procedures for multiple products make sure to list each of them as a separate synthesisProcedure. 
     "procedureName": name the procedure after the product or copy an existing title.
         "inputChemicals": all chemicals listed that are not the end product of the synthesis and used in the specific procedure.
+        If multiple chemical species are added or used as washing solvent etc. in one step make a new entry for each chemical. For all ChemicalAmount entries if the chemical is a mixture make sure to enter the amount for all components either by specifying the absolute amount as the names
+        (Example: for 10 mL ethanol and 20 mL water write: "addedChemical":[{{"addedChemicalName":["ethanol"],"addedChemicalAmount":"10 mL"}}, {{"addedChemicalName":["water"],"addedChemicalAmount":"20 mL"}}] 
             "chemicalFormula": a set of chemical symbols showing the elements present in a compound and their relative proportions.
-            "names": name of the inputChemicals, make sure to list all names that are used in the text. Separate the names by comma and extract them as individual strings. Example: 
+            "names": name of the inputChemicals, make sure to list all names that are used in the text. Separate the names by comma and extract them as individual strings. 
             "chemicalAmount": amount of the chemical in mole, kg or both. Example: 1.45 g, 4.41 mmol 
             "supplierName": Company name that produces the chemical which is usually given in the general procedure.  Example: Iron-
             (III) sulfate hydrate, 1,4-benzenedicarboxylic acid (H2BDC) was
@@ -661,20 +663,20 @@ Make sure to return all described procedures.
 Category specification: 
 Add is a step where material is added to a mixture or vessel this also includes acidify. Make sure to assign each chemical addition to an independent step. Also be carefull about the order of additions. Don't strictly follow the order the chemicals are listed in the procedure but in order they are added.
 If the text specifies for example chemical X in water then water then chemical X and water neeed to be mixed first in a separate vessel and then added to the other vessel.
-If more than one reagent or solvent is added group each of them in their own step. If something is added twice list them as independent addition steps. An Add step requires a vessel and the name of the chemical that is added.
+If more than one reagent or solvent is assign each of them their own step. If something is added twice list them as independent addition steps. An Add step requires a vessel and the name of the chemical that is added.
 HeatChill is a synthesis step where a mixture or vessel is heated or cooled. If a mixture is heated or cooled to several different temperatures, 
 assign each entry to a new step for each temperature. Each Heat and cooling step requires a target temperature to which is heated or cooled.
 Make sure to assign the heating rate to the step with the assigned target temperature. 
-Filter is a step in which a solid is extracted by filtration or washed with a solvent. 
-Stirr is a step where a mixture is stirred for a certain time without heating, cooling, adding or filtering material. 
+Filter is a step in which a solid is extracted by filtration or washed with a solvent. Each filtration and washing should be listed as separate steps.
+Stirr is a step where a mixture is stirred for a certain time without heating, cooling, adding or filtering material. If the procedure mentions waiting for a certain time assign it to stir and mention stirringrate = 0. 
 Crystallize: Crystallize dissolved solid by ramping temperature to given temp over given time.
 Sonication describes the use of a sonication device for a certain time. 
 Dry: Drying process that can involve a pressure and temperature. 
 Evaporate: Describes evaporation of solvent. Include the time for which the evaporation process is performed. 
 Dissolve: Dissolve solid in solvent. Assign soaking here as well.
 Transfer: Transfer vessel content from one vessel to another.
-Separate: Separate by extraction, centrifuge or column. Make sure to assign filtration as Filter step and not separation. 
-
+Separate: Separate by extraction, centrifuge or column. Make sure to assign filtration as Filter step and not separation. Always mention the vessel name the separation is transfered to  eve nif it stays in the same vessesl.
+If nothing is done and one just wait assign the step to Stir with stirring rate = 0.
 Explicit Details: Ensure that all implicit information in the original text is made explicit.
 For example, specify temperature, time, and any other conditions that are critical for the synthesis but may not be directly stated.
 Include explicit comments from the text regarding MOP chemcial formula and CCDC number. 
@@ -697,7 +699,7 @@ Example:## MOP-14 Synthesis:
 10. **HeatChill:** Heat the mixture in vessel 3 to 85 °C at a constant rate and maintain for 14 hours.
 11. **Filter:** Collect the green cubic crystals formed by washing with 3 × 2 mL of DMF.
 12. **Filter:** Wash the crystals with 2 × 1 mL of cyclohexane.
-13. **Comment:** Yield: 18 mg, 24% based on H25-Br-mBDC. MOP Formula: [Cu2]12[(C6H3Br)(CO2)2]24, CCDC Number: 706816.
+**Comment:** Yield: 18 mg, 24% based on H25-Br-mBDC. MOP Formula: [Cu2]12[(C6H3Br)(CO2)2]24, CCDC Number: 706816.
 """
         case 17:
             json_output             = True
@@ -736,12 +738,9 @@ Synthesis Text:
             if dynamic_prompt["Dissolve"]:
                 category_spec      += f"""Dissolve: Dissolve or soak solid in solvent. """
             if dynamic_prompt["Separate"]:
-                category_spec      += f"""Separate: Separation step that is not covered otherwise. UsuallySeparate by extraction, centrifuge or column. Make sure to assign filtration as Filter step and not separation. """
+                category_spec      += f"""Separate: Separation step that is not covered otherwise. Usually separate by extraction, centrifuge or column. Make sure to assign filtration as Filter step and not separation. """
             if dynamic_prompt["Transfer"]:
                 category_spec      += f"""Transfer: Transfer vessel content from one vessel to another. """
-
-
-
                        
             prompt_syn              = f""" 
             
@@ -749,19 +748,20 @@ Task Description:
 Write a JSON file that organizes synthesis steps. Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema. Ensure that each step has an entry "stepNumber" that represents the chronological order of the steps if possible use the number given in the text.
 Try to assign a vessel type from one of the following: Teflon-lined stainless-steel vessel, glass vial, quartz tube, round bottom flask, glass scintillation vial, pyrex tube, or schlenk flask. If it is impossible to assign a vessel insert N/A.
 Enter both vessel name and type in the "usedVesssel" entry. Example entry for vessel name: "vessel 1"
-Fill productNames with names that match best from the following list: {mop_names}.
+Fill productNames with names that match best from the following list: {mop_names}. If there is no match copy the name given in the text.
 For chemical names make sure to write each name as separate string. Wrong: ["C4H9NO, DMA, N,N'-dimethylacetamide"], Correct: ["C4H9NO", "DMA", "N,N'-dimethylacetamide"]
 
 Category Specifications:
 {category_spec}
-Group Steps: Categorize all synthesis steps into their respective groups (Add, HeatChill, Filter, Stirr, Sonicate, Crystallize, Evaporate, or Dry) while maintaining their original chronological order.
+Group Steps: Categorize all synthesis steps into their respective groups (Add, HeatChill, Filter, Stirr, Sonicate, Crystallize, Evaporate, Transfer, Dissolve, or Dry) while maintaining their original chronological order.
 Assign Step Numbers: Retain the original step number from the input. If steps are omitted or split into several steps correct the number in the other synthesis steps as well. There should never be duplicate step numbers.
-Chemical Names: For all ChemicalName entries if the chemical is a mixture make sure to enter the name in the following format: namechemical1/namechemical2, example: ethanol/DMF. Make sure that the correct chemical name is used and that abbreviations are not confused.
-Chemical Amount: For all ChemicalAmount entries if the chemical is a mixture make sure to enter the amount for all components either by specifying the absolute amount as the names (Example: for 10 mL ethanol and 20 mL water write: chemicalName: ethanol/water, chemicalAmount: 10mL/20mL.) or give the ratio of the two chemicals (Example: chemicalAmount: 30 mL (1:2))
-in the following format: namechemical1/namechemical2, example: ethanol/DMF. Make sure that the correct chemical name is used and that abbreviations are not confused.
+If multiple chemical species are added or used as washing solvent etc. in one step make a new entry for each chemical. For all ChemicalAmount entries if the chemical is a mixture make sure to enter the amount for all components either by specifying the absolute amount as the names
+(Example: for 10 mL ethanol and 20 mL water write: "addedChemical":[{{"addedChemicalName":["ethanol"],"addedChemicalAmount":"10 mL"}}, {{"addedChemicalName":["water"],"addedChemicalAmount":"20 mL"}}] 
+For chemical names make sure to write each name as separate string. Wrong: ["C4H9NO, DMA, N,N'-dimethylacetamide"], Correct: ["C4H9NO", "DMA", "N,N'-dimethylacetamide"]
+Chemical Amount: For all ChemicalAmount entries if the chemical is a mixture make sure to enter the amount for all components either by specifying the absolute amount or give the ratio of the two chemicals (Example: chemicalAmount: 30 mL (1:2))
 Return:
 Provide a single JSON document containing the categorized synthesis steps with assigned step numbers, ensuring it accurately represents the chronological order of the entire synthesis procedure.
-Make sure to fill in all the requried fields. If a field is unknown fill in "N/A" for strings and 0 for numeric types.
+Make sure to fill in all the requried fields. If a field is unknown fill in "N/A" for strings and -1 for numeric types.
 Synthesis Text: 
 """
         case 8:
@@ -843,12 +843,15 @@ def create_directory(script_dir, folder_name):
 
     :param path: The path of the directory to create.
     """
+    input_dir_pdf                   = os.path.join(script_dir,f"../Data/{folder_name}_pdf")
+    input_dir_txt                   = os.path.join(script_dir,f"../Data/{folder_name}_txt")
+    input_dir_cbu                   = os.path.join(script_dir,f"../Data/{folder_name}_cbu")
     input_dir_preSteps              = os.path.join(script_dir,f"../Data/{folder_name}_preSteps")
     input_dir_steps                 = os.path.join(script_dir, f"../Data/{folder_name}_steps")
     input_dir_extractedProcedure    = os.path.join(script_dir, f"../Data/{folder_name}_extractedProcedure")
     input_dir_chemicals1            = os.path.join(script_dir, f"../Data/{folder_name}_chemicals1")
     input_dir_characterisation      = os.path.join(script_dir, f"../Data/{folder_name}_characterisation")
-    dir_list                        = [input_dir_preSteps, input_dir_steps, input_dir_extractedProcedure, input_dir_chemicals1, input_dir_characterisation]
+    dir_list                        = [input_dir_pdf, input_dir_txt, input_dir_cbu, input_dir_preSteps, input_dir_steps, input_dir_extractedProcedure, input_dir_chemicals1, input_dir_characterisation]
     for direct in dir_list:
     # The 'exist_ok=True' argument ensures that no error is raised if the directory already exists.
         os.makedirs(direct, exist_ok=True)
@@ -863,14 +866,14 @@ def main():
     #process_files_in_directory(chemicals_upload, in_directory, out_directory)
     #process_files_in_directory(prepend_line_count, in_directory, out_directory)
     #processor.process_files_in_directory(processor.transform_xyz_string)
-    #processor.process_files_in_directory(processor.extract_text_from_pdf)
+    
     # pre steps
     #in_directory                        = os.path.join(script_dir, "../Data/batch2_txt")
     #out_directory                       = os.path.join(script_dir, "../Data/third10_chemicals1")
-    folder_name                         = "fift10"
-    #create_directory(script_dir, folder_name)
+    folder_name                         = "sixth10"
+    create_directory(script_dir, folder_name)
 
-
+    in_directory                        = os.path.join(script_dir, f"../Data/{folder_name}_pdf")
     in_directory                        = os.path.join(script_dir,f"../Data/{folder_name}_preSteps")
     out_directory                       = os.path.join(script_dir, f"../Data/{folder_name}_steps")
     in_directory                        = os.path.join(script_dir, f"../Data/{folder_name}_preStep")
@@ -883,14 +886,16 @@ def main():
     out_directory                       = os.path.join(script_dir, f"../Data/{folder_name}_chemicals1")
     in_directory                        = os.path.join(script_dir, f"../Data/{folder_name}_preSteps")
     out_directory                       = os.path.join(script_dir, f"../Data/{folder_name}_steps")
-    in_directory                        = os.path.join(script_dir, "../Data/batch3_txt")
+    in_directory                        = os.path.join(script_dir, "../Data/batch6_txt")
     out_directory                       = os.path.join(script_dir, f"../Data/{folder_name}_characterisation")
-    in_directory                        = os.path.join(script_dir, f"../Data/{folder_name}_preSteps")
-    out_directory                       = os.path.join(script_dir, f"../Data/{folder_name}_steps")
-    process_files_in_directory(use_openai, in_directory, out_directory)
+    in_directory                        = os.path.join(script_dir, "../Data/first10_pdf_2+batch1")
+    out_directory                       = os.path.join(script_dir, f"../Data/{folder_name}_preSteps")
+    #process_files_in_directory(use_openai, in_directory, out_directory)
     # steps
+    #process_files_in_directory(extract_text_from_pdf, in_directory, out_directory)
+    process_files_in_directory(chemicals_upload_json, f"../Data/{folder_name}_chemicals1", out_directory)
+    #
     #process_files_in_directory(upload_steps,  f"../Data/{folder_name}_steps", out_directory)
-    #process_files_in_directory(chemicals_upload_json, f"../Data/{folder_name}_chemicals1", out_directory)
     #mop_names                           = get_literature("10.1039/C5DT04764A")
     #process_files_in_directory(upload, in_directory, out_directory)
     #process_files_in_directory(count_tokens_and_calculate_cost, in_directory, out_directory)
