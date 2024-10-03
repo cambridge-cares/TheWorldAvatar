@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontowastemanagement="https://www.theworldavatar.com/kg/ontowastemanagement/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/">
-        <dc:date>23 September 2024</dc:date>
+        <dc:date>03 October 2024</dc:date>
         <rdfs:comment>OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -209,7 +209,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/requestedBinType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceCommitment"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
         <rdfs:comment>A relationship describing the bin type for a series of waste services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
@@ -222,7 +222,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/requestedWasteCategory">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceCommitment"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
         <rdfs:comment>A relationship describing the waste category for a series of waste services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
@@ -328,13 +328,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment"/>
     
 
 
@@ -762,18 +755,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials from residential, commercial, or industrial sources.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>Waste service</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceCommitment -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceCommitment">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/requestedBinType"/>
@@ -788,9 +769,9 @@
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>General conditions for the waste services that the contracting parties agree to.</rdfs:comment>
+        <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials from residential, commercial, or industrial sources.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>Waste service commitment</rdfs:label>
+        <rdfs:label>Waste service</rdfs:label>
     </owl:Class>
     
 

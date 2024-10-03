@@ -102,23 +102,21 @@ Figure 1: TBox representation for a Waste Service Agreement following the FIBO o
     "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
 ```
 
-The service agreement will also mandate a waste service commitment, including the service time, schedule, waste category, bin type, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeated categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 2 to optimise and arrange waste services with executable details.
+The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeated categories.
+
+Furthermore, the waste service will be given a contact person, who is an employee of the client. This person will play a role of a service provider who provides a contact service for the waste service specified in the agreement. The waste service is also assigned a corresponding waste category and bin type for service execution.
 
 Figure 2: TBox representation of the contractual obligations for the waste collection service
 
 ```mermaid
     erDiagram
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontowm:WasteServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
 
-    "ontowm:WasteServiceCommitment" {
-        rdfs-subClassOf ontoservice-ServiceCommitment
+    "ontoservice:ServiceCommitment" {
         rdfs-comments remarks_string
     }
 
-    "ontowm:WasteServiceCommitment" ||--|| "ontowm:Waste" : "ontowm:requestedWasteCategory"
-    "ontowm:WasteServiceCommitment" ||--|| "ontowm:Bin" : "ontowm:requestedBinType"
-
-    "ontowm:WasteServiceCommitment" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
+    "ontoservice:ServiceCommitment" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
      "fibo-fnd-dt-fd:RegularSchedule" {
         fibo-fnd-dt-fd-hasCount integer
     }
@@ -146,6 +144,9 @@ Figure 2: TBox representation of the contractual obligations for the waste colle
     }
 
     "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteService" : "fibo-fnd-rel-rel:governs"
+    "ontowm:WasteService" ||--|| "ontowm:Waste" : "ontowm:requestedWasteCategory"
+    "ontowm:WasteService" ||--|| "ontowm:Bin" : "ontowm:requestedBinType"
+
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
