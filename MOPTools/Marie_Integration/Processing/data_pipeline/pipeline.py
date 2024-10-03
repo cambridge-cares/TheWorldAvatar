@@ -379,18 +379,27 @@ class ChatGPTAPI:
                                                                           "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
                                                                           "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
-                                                                          "addedChemicalName": { "type": "array",
-                                                                          "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}},
-                                                                          "addedChemicalAmount": {"type": "string", "description": "Added amount of the chemcial used in this step."},
+                                                                          "addedChemical":{ "type": "array",
+                                                                                           "items":{"type":"object",
+                                                                                                    "properties":{
+                                                                                                      "chemicalName": { "type": "array",
+                                                                                                      "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}},
+                                                                                                      "chemicalAmount": {"type": "string", "description": "Added amount of the chemcial used in this step."}
+                                                                                                    },
+                                                                                                    "required": ["chemicalName", "chemicalAmount"],
+                                                                          "additionalProperties": False
+                                                                      }, 
+                                                                          "description": "If a mixture of species is added make multiple entries each with chemcial names and chemical amount."},
                                                                           "stepNumber": {"type": "integer"},
-                                                                          "addedDropwise": {"type": "boolean", "description": "true if text states added dropwise, false otherwise."},
                                                                           "stir": {"type": "boolean", "description": "true if stired while adding, false otherwise."},
-                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."},
+                                                                          "isLayered": {"type": "boolean", "description": "true if added component is layered on top of content in target vessel."},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                           "duration": {"type": "string", "description": "Time the addition takes. E.g. Added over 5 minutes."},
                                                                           "targetPH": {"type": "number", "description": "If the step involves acidification note target Ph."},
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["usedVesselName", "usedVesselType", "addedChemicalName", "addedChemicalAmount", "stepNumber", "addedDropwise", "atmosphere", "duration", "stir", "targetPH", "comment"],
+                                                                      "required": ["usedVesselName", "usedVesselType", "addedChemical", "stepNumber",  "atmosphere", "duration", "stir", "targetPH", "isLayered", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -416,7 +425,8 @@ class ChatGPTAPI:
                                                                           "sealedVessel": {"type": "boolean", "description": "true if the vessel is sealed. "},
                                                                           "stir": {"type": "boolean", "description": "true if mixture is stirred while heating. "},
                                                                           "stepNumber": {"type": "integer"},
-                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."}
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                       },
                                                                       "required": ["duration", "usedDevice", "targetTemperature", "heatingCoolingRate", "underVacuum", "usedVesselName", "usedVesselType", "sealedVessel", "stepNumber", "comment", "atmosphere", "stir"],
                                                                       "additionalProperties": False
@@ -439,9 +449,20 @@ class ChatGPTAPI:
                                                                           "pressure": {"type": "string", "description": "Pressure applied for drying, often: reduced Pressue, Vacum, etc. "},
                                                                           "temperature": {"type": "string", "description": "Temperature applied for drying."},
                                                                           "stepNumber": {"type": "integer"},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
+                                                                          "dryingAgent":{ "type": "array", "description": "Chemical used to support drying.",
+                                                                                           "items":{"type":"object",
+                                                                                                    "properties":{
+                                                                                                      "chemicalName": { "type": "array",
+                                                                                                      "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}}
+                                                                                                    },
+                                                                                                    "required": ["chemicalName"],
+                                                                          "additionalProperties": False
+                                                                      }}, 
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature", "comment"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "atmosphere", "pressure", "temperature", "comment", "dryingAgent"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -456,9 +477,15 @@ class ChatGPTAPI:
                                                                   "Filter": {
                                                                       "type": "object",
                                                                       "properties": {
-                                                                          "washingSolventName": { "type": "array",
-                                                                          "items":{"type":"string"}},
-                                                                          "washingSolventAmount": {"type": "string", "description": "Amount of Solvent per filtration. "},
+                                                                          "washingSolvent":{ "type": "array",
+                                                                                           "items":{"type":"object",
+                                                                                                    "properties":{
+                                                                                                      "chemicalName": { "type": "array",
+                                                                                                      "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}},
+                                                                                                      "chemicalAmount": {"type": "string", "description": "Added amount of the chemcial used in this step."}},
+                                                                                                    "required": ["chemicalName", "chemicalAmount"],
+                                                                          "additionalProperties": False}, 
+                                                                          "description": "If a mixture of species is added make multiple entries each with chemcial names and chemical amount."},
                                                                           "vacuumFiltration": {"type": "boolean", "description": "True for vacuum filtration. "},
                                                                           "numberOfFiltrations": {"type": "integer", "description": "Number of filtrations"},
                                                                           "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
@@ -466,9 +493,10 @@ class ChatGPTAPI:
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
                                                                           "stepNumber": {"type": "integer"},
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."},
-                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."}
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                       },
-                                                                      "required": ["washingSolventName", "washingSolventAmount", "numberOfFiltrations", "usedVesselName", "usedVesselType", "stepNumber", "comment", "atmosphere","vacuumFiltration"],
+                                                                      "required": ["washingSolvent", "numberOfFiltrations", "usedVesselName", "usedVesselType", "stepNumber", "comment", "atmosphere","vacuumFiltration"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -486,9 +514,11 @@ class ChatGPTAPI:
                                                                           "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
                                                                           "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
-                                                                          "stepNumber": {"type": "integer"}
+                                                                          "stepNumber": {"type": "integer"},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "atmosphere"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -508,10 +538,12 @@ class ChatGPTAPI:
                                                                           "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
                                                                           "stepNumber": {"type": "integer"},
-                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere."},
-                                                                          "temperature": {"type": "string", "description": "Temperature at which it is stirred."}
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
+                                                                          "temperature": {"type": "string", "description": "Temperature at which it is stirred."},
+                                                                          "wait": {"type": "boolean", "description": "True if stirringrate = 0."},
                                                                       },
-                                                                      "required": ["usedVesselName", "usedVesselType", "duration", "stepNumber", "atmosphere", "temperature"],
+                                                                      "required": ["usedVesselName", "usedVesselType", "duration", "stepNumber", "atmosphere", "temperature", "wait"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -531,9 +563,11 @@ class ChatGPTAPI:
                                                                           "targetTemperature": {"type": "string"},
                                                                           "stepNumber": {"type": "integer"},
                                                                           "duration": {"type": "string"},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["usedVesselName", "usedVesselType", "targetTemperature", "duration", "comment", "stepNumber"],
+                                                                      "required": ["usedVesselName", "usedVesselType", "targetTemperature", "duration", "comment", "atmosphere", "stepNumber"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -553,9 +587,21 @@ class ChatGPTAPI:
                                                                           "pressure": {"type": "string"},
                                                                           "temperature": {"type": "string"},
                                                                           "stepNumber": {"type": "integer"},
+                                                                          "rotaryEvaporator": {"type": "boolean", "description": "True if rotary evaporator is used."},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
+                                                                          "removedSpecies":{ "type": "array",
+                                                                                           "items":{"type":"object",
+                                                                                                    "properties":{
+                                                                                                      "chemicalName": { "type": "array",
+                                                                                                      "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}}},
+                                                                                                    "required": ["chemicalName"],
+                                                                          "additionalProperties": False}, 
+                                                                          "description": "Species that is removed by evaporation."},
+                                                                          "targetVolume": {"type": "string", "description": "Volume to which mixture is evaporated."},
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "pressure", "temperature", "comment"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "atmosphere", "stepNumber", "pressure", "temperature", "removedSpecies", "rotaryEvaporator", "targetVolume",  "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -572,13 +618,21 @@ class ChatGPTAPI:
                                                                           "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
                                                                           "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
-                                                                          "solventName": { "type": "array",
-                                                                          "items":{"type":"string"}},
-                                                                          "solventAmount": {"type": "string"},
+                                                                          "solvent":{ "type": "array",
+                                                                                           "items":{"type":"object",
+                                                                                                    "properties":{
+                                                                                                      "chemicalName": { "type": "array",
+                                                                                                      "items":{"type":"string", "description": "Name of the chemical as given in the prompt. Make sure to not include multiple species."}},
+                                                                                                      "chemicalAmount": {"type": "string", "description": "Amount of the chemcial used in this step."}},
+                                                                                                    "required": ["chemicalName", "chemicalAmount"],
+                                                                          "additionalProperties": False}, 
+                                                                          "description": "If a mixture of species is used make multiple entries each with chemcial names and chemical amount."},
                                                                           "stepNumber": {"type": "integer"},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount", "comment"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solvent", "atmosphere", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -595,13 +649,23 @@ class ChatGPTAPI:
                                                                           "usedVesselName": {"type": "string", "description": "Generic vessel name, e.g. vessel 1."},
                                                                           "usedVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
-                                                                          "solventName": { "type": "array",
-                                                                          "items":{"type":"string"}},
-                                                                          "solventAmount": {"type": "string"},
+                                                                          "solvent":{ "type": "array",
+                                                                                           "items":{"type":"object",
+                                                                                                    "properties":{
+                                                                                                      "chemicalName": { "type": "array",
+                                                                                                      "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}},
+                                                                                                      "chemicalAmount": {"type": "string", "description": "Amount of the chemcial used in this step."}},
+                                                                                                    "required": ["chemicalName", "chemicalAmount"],
+                                                                          "additionalProperties": False}, 
+                                                                          "description": "If a mixture of species is used make multiple entries each with chemcial names and chemical amount."},
                                                                           "stepNumber": {"type": "integer"},
+                                                                          "separationType": {"type": "string", "description": "Separation type that is performed.",
+                                                                          "enum": ["extraction", "washing", "column", "centrifuge"]},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                           "comment": {"type": "string", "description": "Information that does not fit any other entry."}
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "stepNumber", "solventName", "solventAmount", "comment"],
+                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "atmosphere", "stepNumber", "solvent", "separationType", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -622,9 +686,13 @@ class ChatGPTAPI:
                                                                           "targetVesselType": {"type": "string", "description": "One of 7 vessel types.",
                                                                           "enum": ["Teflon-lined stainless-steel vessel", "glass vial", "quartz tube", "round bottom flask", "glass scintillation vial", "pyrex tube", "schlenk flask"]},
                                                                           "stepNumber": {"type": "integer"},
-                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."}
+                                                                          "isLayered": {"type": "boolean", "description": "true if transfered component is layered on top of content in target vessel."},
+                                                                          "transferedAmount": {"type": "string", "description": "volume or mass that is transfered if given."},
+                                                                          "comment": {"type": "string", "description": "Information that does not fit any other entry."},
+                                                                          "atmosphere": {"type": "string", "description": "indicates if step is conducted under N2 or Ar atmosphere.", 
+                                                                                         "enum": ["N2", "Ar", "Air", "N/A"]},
                                                                       },
-                                                                      "required": ["duration", "usedVesselName", "usedVesselType", "targetVesselName", "targetVesselType", "stepNumber", "comment"],
+                                                                      "required": ["duration", "usedVesselName", "atmosphere", "usedVesselType", "targetVesselName", "isLayered", "targetVesselType", "stepNumber", "transferedAmount", "comment"],
                                                                       "additionalProperties": False
                                                                   }
                                                               },
@@ -895,14 +963,20 @@ class ChatGPTAPI:
                                         "items": {
                                           "type": "object",
                                           "properties": {
-                                            "chemicalFormula": {"type": "string"},
-                                            "names": { "type": "array",
-                                                      "items":{"type":"string"}},
-                                            "amountOfChemical": {"type":"string"},
+                                            "chemical":{ "type": "array",
+                                                      "items":{"type":"object",
+                                                      "properties":{
+                                                        "chemicalFormula": {"type": "string"},
+                                                        "chemicalName": { "type": "array",
+                                                        "items":{"type":"string", "description": "Name of the chemical as given in the prompt"}},
+                                                        "chemicalAmount": {"type": "string", "description": "Amount of the chemcial used in this step."}},
+                                                        "required": ["chemicalName", "chemicalAmount", "chemicalFormula"],
+                                                      "additionalProperties": False}, 
+                                                      "description": "If a mixture of species is used make multiple entries each with chemcial names and chemical amount."},
                                             "supplierName": {"type": "string"},
                                             "purity": { "type": "string" }
                                           },
-                                          "required": ["chemicalFormula", "names", "amountOfChemical", "supplierName", "purity"],
+                                          "required": ["chemical", "supplierName", "purity"],
                                           "additionalProperties": False
                                         }
                                       },
@@ -1304,23 +1378,20 @@ def query_mop_names(doi:str):
             PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX mops: <https://www.theworldavatar.com/kg/ontomops/>
     PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
-    SELECT ?mopformula ?lab
+    SELECT ?lab
     WHERE {{
-      ?chemicalOutput	osyn:isRepresentedBy 	?mop .
-      ?chemicalTransformation   osyn:hasChemicalOutput 	      ?chemicalOutput 	;
+      
+      ?chemicalTransformation   osyn:hasChemicalOutput 	      ?chemicalOutput 	  ;
                                 osyn:isDescribedBy		        ?chemicalSynthesis 	.
-      ?chemicalSynthesis	      osyn:retrievedFrom 		          ?document			        . 
-      ?document 			          <http://purl.org/ontology/bibo/doi>   "{doi}"		      .
-      ?mop  a mops:MetalOrganicPolyhedron	 	;
-              mops:hasMOPFormula	?mopformula	;
-              mops:mopAltLabel			?lab	.
+      ?chemicalOutput	          skos:altLabel                    ?lab             .
+      ?chemicalSynthesis	      osyn:retrievedFrom 		        ?document			      . 
+      ?document 			          <http://purl.org/ontology/bibo/doi>   "{doi}"		  .
           }}
                                               """        
     species_labels                        = updater.sparql_client.performQuery(query) 
     print("species labels: ", species_labels)
     species_list                          = []
     for species in species_labels:
-      species_list.append(species["mopformula"])
       species_list.append(species["lab"])
     return species_list
     
@@ -1405,343 +1476,7 @@ if __name__ == "__main__":
     doi                     = name.replace("_", "/")
     mop_cbu                 = get_literature(doi)
     print(mop_cbu)
-    prompt2                 = """For every compound, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Synthesis text: """
-    prompt2_2               = f"""For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Synthesis text: """
-    prompt3                 = f"""For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Please make sure that 
-                                    for each procedure the first step is a list of **Reagents and Materials** and the last step is **Characterization**. 
-                                    Answer the question as truthfully as possible using the provided context. If any information is not provided 
-                                    or you are unsure, use "N/A".
-
-                                    Synthesis text: """
-    prompt3_2               = f"""For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Please make sure that 
-                                    for each procedure the first step is a list of **Reagents and Materials** and the last step is **Characterization**. 
-                                    Answer the question as truthfully as possible using the provided context. If any information is not provided 
-                                    or you are unsure, use "N/A". Please make sure to assign each synthesis to the correct MOP from the following list: {mop_cbu}.
-                                    If it is not possible to assign the synthesis to a MOP, list the name in the paper. 
-                                     
-                                      
-                                    Synthesis text: """
-    prompt4                 = f"""  For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Please make sure that 
-                                    for each procedure the first step is a list of **Reagents and Materials** and the last step is **Characterization**. 
-                                    Make sure to include all listed materials with the used quantities if available and to include the characterisation methods and results.
-                                    Answer the question as truthfully as possible using the provided context. If any information is not provided 
-                                    or you are unsure, use "N/A".
     
-                                    
-                                    
-                                Synthesis text: """
-    prompt8                 = f"""  For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Please make sure that 
-                                    for each procedure a list of "Reagents and Materials" and "Characterization" is listed separately if possible. 
-                                    Make sure to include all listed materials with the used quantities if available and to include the characterisation methods and results.
-                                    Answer the question as truthfully as possible using the provided context. If any information is not provided 
-                                    or you are unsure, use "N/A". Group the steps into the following XDL steps: Add, Separate, Heat or Chill, wash solid, filter, transfer and add the group as title.
-                                    
-                                    Synthesis text: """
-    prompt9                 = f"""  For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions.  Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Please make sure that 
-                                    for each procedure a list of "Reagents and Materials" and "Characterization" is listed separately if possible. 
-                                    Make sure to include all listed materials with the used quantities if available.
-                                    Answer the question as truthfully as possible using the provided context. If any information is not provided 
-                                    or you are unsure, use "N/A".
-                                    
-                                    Synthesis text: """
-    prompt10                 = f"""  For the following MOPs: {mop_cbu}, please rewrite the provided synthesis procedures into separate,
-                                    clear, and self-contained step-by-step instructions. Ensure that each synthesis procedure is entirely
-                                    independent, with no cross-references to the other, and doesn't rely on any shared understanding. 
-                                    Any information that appears implicit should be made explicit in the rewrite. Please make sure that 
-                                    for each procedure a list of "Reagents and Materials" and "Characterization" is listed separately if possible. 
-                                    Make sure to include all listed materials with the used quantities if available and to include the characterisation methods and results.
-                                    Answer the question as truthfully as possible using the provided context. If any information is not provided 
-                                    or you are unsure, use "N/A".
-                                    
-                                    Synthesis text: """
-
-    prompt5                 = """Could you summarize the following synthesis procedure in a json document? Answer the question as truthfully as possible using the provided context.
-                                    If any information is not provided or you are unsure, use "N/A". Synthesis steps:"""
-    prompt6                 = f"""Could you go through the following synthesis description and assign each step to one of the following XDL synthesis steps: Add, Separate, Heat or Chill, wash solid, filter, transfer?"""
-    prompt7                 = """Could you summarize the following synthesis procedure in a jsonld document? Answer the question as truthfully as possible using the provided context.
-                                    If any information is not provided or you are unsure, use "N/A". Please use the following Ontology as schema:
-                                    {
-  "@context": {
-    "OntoSyn": "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl#",
-    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "owl": "http://www.w3.org/2002/07/owl#",
-    "dc": "http://purl.org/dc/elements/1.1/",
-    "xsd": "http://www.w3.org/2001/XMLSchema#"
-  },
-  "@id": "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl",
-  "@type": "owl:Ontology",
-  "dc:date": "18 June 2024",
-  "rdfs:comment": "An ontology developed for representing chemical synthesis procedures.",
-  "owl:versionInfo": "1.0",
-  "owl:Class": [
-    {
-      "@id": "OntoSyn:ChemicalSynthesis",
-      "rdfs:label": "Chemical Synthesis",
-      "rdfs:comment": "A class representing a chemical synthesis procedure."
-    },
-    {
-      "@id": "OntoSyn:Reagent",
-      "rdfs:label": "Reagent",
-      "rdfs:comment": "A class representing a chemical reagent."
-    },
-    {
-      "@id": "OntoSyn:Solvent",
-      "rdfs:label": "Solvent",
-      "rdfs:comment": "A class representing a solvent used in the synthesis."
-    },
-    {
-      "@id": "OntoSyn:Equipment",
-      "rdfs:label": "Equipment",
-      "rdfs:comment": "A class representing equipment used in the synthesis."
-    },
-    {
-      "@id": "OntoSyn:Product",
-      "rdfs:label": "Product",
-      "rdfs:comment": "A class representing the product of the synthesis."
-    },
-    {
-      "@id": "OntoSyn:SynthesisProcedure",
-      "rdfs:label": "SynthesisProcedure",
-      "rdfs:comment": "A class representing a step in the synthesis procedure."
-    },
-    {
-      "@id": "OntoSyn:Add",
-      "rdfs:label": "Add",
-      "rdfs:comment": "A class representing the addition of a reagent to a vessel."
-    },
-    {
-      "@id": "OntoSyn:Separate",
-      "rdfs:label": "Separate",
-      "rdfs:comment": "A class representing the separation of components in a synthetic reaction."
-    },
-    {
-      "@id": "OntoSyn:Vessel",
-      "rdfs:label": "Vessel",
-      "rdfs:comment": "A class representing a vessel used in the reaction."
-    },
-    {
-      "@id": "OntoSyn:HeatChill",
-      "rdfs:label": "HeatChill",
-      "rdfs:comment": "A class representing the process of heating or chilling in a synthetic reaction."
-    },
-    {
-      "@id": "OntoSyn:Filter",
-      "rdfs:label": "Filter",
-      "rdfs:comment": "A class representing the filtration process in a synthetic reaction."
-    },
-    {
-      "@id": "OntoSyn:WashSolid",
-      "rdfs:label": "WashSolid",
-      "rdfs:comment": "A class representing the process of washing solid materials in a synthetic reaction."
-    },
-    {
-      "@id": "OntoSyn:Stir",
-      "rdfs:label": "Stir",
-      "rdfs:comment": "A class representing the process of stirring in a synthetic reaction."
-    }
-  ],
-  "owl:DatatypeProperty": [
-    {
-      "@id": "OntoSyn:name",
-      "rdfs:label": "Name",
-      "rdfs:comment": "The name of the synthesis or entity.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "OntoSyn:description",
-      "rdfs:label": "Description",
-      "rdfs:comment": "A detailed description of the synthesis or entity.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "OntoSyn:quantity",
-      "rdfs:label": "Quantity",
-      "rdfs:comment": "The quantity of a reagent or material.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:Reagent"
-      },
-      "rdfs:range": {
-        "@id": "xsd:decimal"
-      }
-    },
-    {
-      "@id": "OntoSyn:unit",
-      "rdfs:label": "Unit",
-      "rdfs:comment": "The unit of measurement for the quantity.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:Reagent"
-      },
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "OntoSyn:steps",
-      "rdfs:label": "Steps",
-      "rdfs:comment": "The step-by-step procedure of the synthesis.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "xsd:string"
-      }
-    },
-    {
-      "@id": "OntoSyn:conditions",
-      "rdfs:label": "Conditions",
-      "rdfs:comment": "The conditions under which the synthesis is performed (temperature, time, pressure, etc.).",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      }
-    },
-    {
-      "@id": "OntoSyn:amount",
-      "rdfs:label": "Amount",
-      "rdfs:comment": "The amount of reagent added.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:Add"
-      },
-      "rdfs:range": {
-        "@id": "xsd:decimal"
-      }
-    }
-  ],
-  "owl:ObjectProperty": [
-    {
-      "@id": "OntoSyn:reagents",
-      "rdfs:label": "Reagents",
-      "rdfs:comment": "The reagents used in the synthesis.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Reagent"
-      }
-    },
-    {
-      "@id": "OntoSyn:solvents",
-      "rdfs:label": "Solvents",
-      "rdfs:comment": "The solvents used in the synthesis.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Solvent"
-      }
-    },
-    {
-      "@id": "OntoSyn:product",
-      "rdfs:label": "Solvents",
-      "rdfs:comment": "The solvents used in the synthesis.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Product"
-      }
-    },
-    {
-      "@id": "OntoSyn:hasSynthesisProcedure",
-      "rdfs:label": "SynthesisProcedure",
-      "rdfs:comment": "Step in the Synthesis",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:SynthesisProcedure"
-      }
-    },
-    {
-      "@id": "OntoSyn:equipment",
-      "rdfs:label": "Equipment",
-      "rdfs:comment": "The equipment used in the synthesis.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:ChemicalSynthesis"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Equipment"
-      }
-    },
-    {
-      "@id": "OntoSyn:hasReactionVessel",
-      "rdfs:label": "hasReactionVessel",
-      "rdfs:comment": "The vessel to which the reagent is added.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:Add"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Vessel"
-      }
-    },
-    {
-      "@id": "OntoSyn:usedVessel",
-      "rdfs:label": "Used Vessel",
-      "rdfs:comment": "The vessel used in the heat or chill process.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:HeatChill"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Vessel"
-      }
-    },
-    {
-      "@id": "OntoSyn:reagent",
-      "rdfs:label": "Reagent",
-      "rdfs:comment": "The reagent involved in the filtration process.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:Filter"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Reagent"
-      }
-    },
-    {
-      "@id": "OntoSyn:reactionVessel",
-      "rdfs:label": "reactionVessel",
-      "rdfs:comment": "The vessel used in the stirring process.",
-      "rdfs:domain": {
-        "@id": "OntoSyn:Stir"
-      },
-      "rdfs:range": {
-        "@id": "OntoSyn:Vessel"
-      }
-    }
-  ]
-}
-
-                                    Synthesis steps: """
     # Send the PDF text to ChatGPT
     chatgpt_api             = ChatGPTAPI()
     cost                    = 5e-6
