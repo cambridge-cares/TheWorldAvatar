@@ -1,0 +1,56 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoWasteManagement,TBox,https://www.theworldavatar.com/kg/ontowastemanagement/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoWasteManagement,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoWasteManagement,TBox,"OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoWasteManagement,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+WasteServiceCommitment,Class,https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment,IS-A,,,,General conditions for the waste services that the contracting parties agree to.,https://www.theworldavatar.com/kg/ontowastemanagement/,Waste service commitment
+WasteServiceEvent,Class,https://www.theworldavatar.com/kg/ontoservice/ServiceEvent,IS-A,,,,"A specific occurrence or instance of a waste service being performed, characterised by a particular time and context. Each event capture details such as the date, time, and/or specific actions to record and analyse individual performances for quality, efficiency, and compliance with service agreements.",https://www.theworldavatar.com/kg/ontowastemanagement/,Waste service event
+WasteService,Class,https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service,IS-A,,,,"A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials from residential, commercial, or industrial sources.",https://www.theworldavatar.com/kg/ontowastemanagement/,Waste service
+BinDeliveryService,Class,WasteService,IS-A,,,,A service that delivers an empty bin to the specified site.,https://www.theworldavatar.com/kg/ontowastemanagement/,Bin delivery service
+BinExchangeService,Class,WasteService,IS-A,,,,A service that delivers an empty bin to the specified site and tows away the full bin to a disposal site.,https://www.theworldavatar.com/kg/ontowastemanagement/,Bin exchange service
+TowAwayService,Class,WasteService,IS-A,,,,A service that collects and disposes a filled garbage bin from the service site to the disposal site. The bin will not be returned to the service site afterwards.,https://www.theworldavatar.com/kg/ontowastemanagement/,Tow away service
+TouchAndGoService,Class,WasteService,IS-A,,,,A service that brings an empty bin to collect and dispose of the waste on the service site.  The bin will not be returned to the service site afterwards.,https://www.theworldavatar.com/kg/ontowastemanagement/,Touch and go service
+DumpAndReturnService,Class,WasteService,IS-A,,,,"A service that delivers an empty bin for the collection and disposal of waste on the service site, before returning the newly emptied bin to the service site .",https://www.theworldavatar.com/kg/ontowastemanagement/,Dump and return service
+WasteDisposalFacility,Class,https://www.theworldavatar.com/kg/ontobim/Facility,IS-A,,,,A facility with waste disposal services.,https://www.theworldavatar.com/kg/ontowastemanagement/,Waste disposal facility
+Bin,Class,,,,,,A container used to carry and store waste.,https://www.theworldavatar.com/kg/ontowastemanagement/,Bin
+OTCBin,Class,Bin,IS-A,,,,A bin capable of attaching to an OTC truck.,https://www.theworldavatar.com/kg/ontowastemanagement/,Open Top Container Bin
+3ftBin,Class,OTCBin,IS-A,,,,An open top container bin with a wall height of 3 feet.,https://www.theworldavatar.com/kg/ontowastemanagement/,3-feet bin
+5ftBin,Class,OTCBin,IS-A,,,,An open top container bin with a wall height of 5 feet.,https://www.theworldavatar.com/kg/ontowastemanagement/,5-feet bin
+7ftBin,Class,OTCBin,IS-A,,,,An open top container bin with a wall height of 7 feet.,https://www.theworldavatar.com/kg/ontowastemanagement/,7-feet bin
+CompactorBin,Class,OTCBin,IS-A,,,,An open top container bin with the ability to compact waste.,https://www.theworldavatar.com/kg/ontowastemanagement/,Compactor bin
+GarbageTruck,Class,https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck,IS-A,,,,A vehicle with a space for carrying waste.,https://www.theworldavatar.com/kg/ontowastemanagement/,Garbage truck
+Waste,Class,,,,,,"Any material, substance, or by-product that is no longer useful or required after the completion of a process. It is typically discarded because it is considered worthless, defective, or surplus to requirements.",https://www.theworldavatar.com/kg/ontowastemanagement/,Waste
+IndustrialWaste,Class,Waste,IS-A,,,,Waste produced through industrial and construction process.,https://www.theworldavatar.com/kg/ontowastemanagement/,Industrial waste
+HardcoreWaste,Class,IndustrialWaste,IS-A,,,,"Construction and rubble waste. For example: concrete, brick, steel rebars.",https://www.theworldavatar.com/kg/ontowastemanagement/,Hardcore waste
+SludgeWaste,Class,IndustrialWaste,IS-A,,,,Waste composed of colloids and liquids from industrial processes.,https://www.theworldavatar.com/kg/ontowastemanagement/,Sludge waste
+BiologicalWaste,Class,Waste,IS-A,,,,Waste produced by or from plants and animals.,https://www.theworldavatar.com/kg/ontowastemanagement/,Biological waste
+HortiWaste,Class,BiologicalWaste,IS-A,,,,"Waste produced from plants, usually from farming.",https://www.theworldavatar.com/kg/ontowastemanagement/,Horticultural waste
+TreeWaste,Class,BiologicalWaste,IS-A,,,,"Waste produced from tree parts, usually from tree trimming and logging activity.",https://www.theworldavatar.com/kg/ontowastemanagement/,Tree waste
+MixedWaste,Class,Waste,IS-A,,,,Waste composed of several waste categories.,https://www.theworldavatar.com/kg/ontowastemanagement/,Mixed waste
+GeneralWaste,Class,Waste,IS-A,,,,Waste created from everyday activity.,https://www.theworldavatar.com/kg/ontowastemanagement/,General waste
+RecyclableWaste,Class,Waste,IS-A,,,,Waste that can be recycled.,https://www.theworldavatar.com/kg/ontowastemanagement/,Recycled waste
+PaperWaste,Class,RecyclableWaste,IS-A,,,,Waste composed of paper-based material.,https://www.theworldavatar.com/kg/ontowastemanagement/,Paper waste
+MetalWaste,Class,RecyclableWaste,IS-A,,,,Waste composed of metal-based material.,https://www.theworldavatar.com/kg/ontowastemanagement/,Metal waste
+PlasticWaste,Class,RecyclableWaste,IS-A,,,,Waste composed of plastic-based material.,https://www.theworldavatar.com/kg/ontowastemanagement/,Plastic waste
+GlassWaste,Class,RecyclableWaste,IS-A,,,,Waste composed of glass-based material.,https://www.theworldavatar.com/kg/ontowastemanagement/,Glass waste
+ElectronicWaste,Class,RecyclableWaste,IS-A,,,,Waste composed of electronic-based material.,https://www.theworldavatar.com/kg/ontowastemanagement/,Electronic waste
+GrossTruckWeight,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Mass,IS-A,,,,Weight of a truck and its waste before any disposal.,https://www.theworldavatar.com/kg/ontowastemanagement/,Gross truck weight
+UnladenTruckWeight,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Mass,IS-A,,,,Weight of an empty truck after waste disposal.,https://www.theworldavatar.com/kg/ontowastemanagement/,Unladen truck weight
+NetWasteWeight,Class,https://www.theworldavatar.com/kg/ontoservice/ServiceTonnage,IS-A,,,,"Weight of the waste disposed, which is calculated through the difference of gross and unladen weight.",https://www.theworldavatar.com/kg/ontowastemanagement/,Net waste weight
+BinStatus,Class,,,,,,The current state of a bin. ,https://www.theworldavatar.com/kg/ontowastemanagement/,Bin status
+BinStatusEnum,Class,,,,,,"The enumerated states belonging to the bin status: filled or empty, available or unavailable or decomissioned.",https://www.theworldavatar.com/kg/ontowastemanagement/,Bin status enum
+requestedBinType,Object Property,,,WasteServiceCommitment,Bin,minimum 1,A relationship describing the bin type for a series of waste services.,https://www.theworldavatar.com/kg/ontowastemanagement/,requested bin type
+requestedWasteCategory,Object Property,,,WasteServiceCommitment,Waste,minimum 1,A relationship describing the waste category for a series of waste services.,https://www.theworldavatar.com/kg/ontowastemanagement/,requested waste category
+assignBin,Object Property,,,WasteServiceEvent,Bin,minimum 1,A relationship assigning the bin to a service.,https://www.theworldavatar.com/kg/ontowastemanagement/,assign bin
+https://www.theworldavatar.com/kg/ontoservice/assignTransport,Object Property,,,WasteServiceEvent,GarbageTruck,,A relationship assigning the truck to a service.,https://www.theworldavatar.com/kg/ontoservice/,assign truck
+hasDisposalSite,Object Property,,,WasteServiceEvent,WasteDisposalFacility,minimum 1,A relationship describing the disposal site for a waste service.,https://www.theworldavatar.com/kg/ontowastemanagement/,has disposal site
+transports,Object Property,,,WasteServiceEvent,Waste,,A relationship describing the waste transported during a waste service.,https://www.theworldavatar.com/kg/ontowastemanagement/,transports
+hasDisposalCharge,Object Property,,,WasteDisposalFacility,BaseCharge,,A relationship describing the waste disposal charge of a disposal facility.,https://www.theworldavatar.com/kg/ontowastemanagement/,has disposal charge
+handlesWaste,Object Property,,,WasteDisposalFacility,Waste,,A relationship describing the waste category a disposal facility could handle.,https://www.theworldavatar.com/kg/ontowastemanagement/,handles waste
+hasAssignedDriver,Object Property,,,https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee,exactly 1,A relationship describing the vehicle and its assigned driver.,https://www.theworldavatar.com/kg/ontowastemanagement/,has assigned driver
+hasGrossWeight,Object Property,,,GarbageTruck,GrossWeight,exactly 1,A relationship describing the gross truck weight during the waste disposal procedure.,https://www.theworldavatar.com/kg/ontowastemanagement/,has gross weight
+hasUnladenWeight,Object Property,,,GarbageTruck,UnladenWeight,exactly 1,A relationship describing the unladen truck weight during the waste disposal procedure.,https://www.theworldavatar.com/kg/ontowastemanagement/,has unladen weight
+hasNetWeight,Object Property,,,Waste,NetWeight,exactly 1,A relationship describing the net weight of the waste collected during the service.,https://www.theworldavatar.com/kg/ontowastemanagement/,has net weight
+hasMeasurementTime,Object Property,,,GrossWeight UNION UnladenWeight,https://www.w3.org/TR/owl-time/#time:Instant,,A relationship which describes the time of truck weight measurement with waste during a job.,https://www.theworldavatar.com/kg/ontowastemanagement/,has measurement time
+hasStatus,Object Property,,,Bin,BinStatus,,A relationship describing the current bin status.,https://www.theworldavatar.com/kg/ontowastemanagement/,has status
+hasBinNumber,Data Property,,,Bin,string,exactly 1,An identifier for a bin.,https://www.theworldavatar.com/kg/ontowastemanagement/,has bin number

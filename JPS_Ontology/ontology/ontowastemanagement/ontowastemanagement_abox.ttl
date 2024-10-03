@@ -1,0 +1,32 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix owm: <https://www.theworldavatar.com/kg/ontowastemanagement/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+owm:BinStatus owl:oneOf (
+    owm:Filled
+    owm:Empty
+    owm:Available
+    owm:Unavailable
+    owm:Decomissioned
+) .
+
+owm:Filled a owm:BinStatus ;
+  rdfs:label "Filled";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is filled.".
+
+owm:Empty a owm:BinStatus ;
+  rdfs:label "Empty";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is empty.".
+
+owm:Available a owm:BinStatus ;
+  rdfs:label "Available";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is available.".
+
+owm:Unavailable a owm:BinStatus ;
+  rdfs:label "Unavailable";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is unavailable.".
+
+owm:Decomissioned a owm:BinStatus ;
+  rdfs:label "Decomissioned";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is decommisioned and not in operation.".
