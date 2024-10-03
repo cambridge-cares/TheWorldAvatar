@@ -313,6 +313,30 @@ def species_querying(client, species_label):
     query_result                    = client.perform_query(query)
     print("query result: ", query_result)
     return query_result
+def species_querying_ontosyn(client, species_label):
+    # avoid linking all to N/A instance:
+    species_label               = [item for item in species_label if item != 'N/A']
+    insert_string               = ""
+    # Loop through each element in the list
+    for label in species_label:
+        label = re.sub(r'[^\w\s,]', '', label)
+        # Append each formatted element to the result string
+        insert_string += f""" "{label}" """
+    
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT ?Species WHERE {{
+        ?Species a os:Species .
+        VALUES ?Text {{{insert_string}}}
+        ?Species (<http://www.w3.org/2000/01/rdf-schema/label> | rdfs:label|rdf:label) ?Text . 
+        }}"""
+    print("species query: ", query)
+    query_result                    = client.perform_query(query)
+    print("query result: ", query_result)
+    return query_result
 
 def mop_querying(client, CCDC_number, mop_formula, mop_name):
     CCDC_number             = remove_na(CCDC_number)
@@ -581,7 +605,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
             chemical_input                                      = upload_inputChem(standard_step["addedChemical"], synthesis_client, species_client)
         else:
             chemical_input                                      = ChemicalInput()
-        add_class                                               = Add(hasOrder=standard_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input, isStirred=standard_step['stir'], hasTargetPh=float(standard_step['targetPH']), isDropwise=standard_step["addedDropwise"], isLayered=standard_step["isLayered"], hasVesselEnvironment=atmosphere,rdfs_comment=standard_step['comment'])  
+        add_class                                               = Add(hasOrder=standard_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input, isStirred=standard_step['stir'], hasTargetPh=float(standard_step['targetPH']), isLayered=standard_step["isLayered"], hasVesselEnvironment=atmosphere,rdfs_comment=standard_step['comment'])  
         components = [add_class, vessel, duration, duration_value]
         push_component_to_kg(components, synthesis_client)
         chemicals_list.append(chemical_input)
@@ -785,11 +809,39 @@ def update_alt_label(species, species_name):
         if name not in species.altLabel:
             species.altLabel.add(name)
     return species
-
 def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
     # search the ontospecies and ontosynthesis blazegraphs for existing instances
     species_iri                                             = str(uuid.uuid4())
-    triples                                                 = species_querying(client_synthesis, species_name)
+    triples                                                 = species_querying_ontosyn(client_synthesis, species_name)
+    print("OntoSpecies results: ", triples)
+    if triples == None or triples == []:
+        triples                                             = species_querying(client_species, species_name)
+        if triples == None or triples == []:
+            species                                         = Species(label=chemical_formula, altLabel=species_name)
+            # Ontospecies uses different base IRIs for rdf type and the actual instance IRI.
+            species.instance_iri                            = f"http://www.theworldavatar.com/kb/ontospecies/Species_{species_iri}"
+        else:
+            # when pulled from species we want to instantiate a new instance. The second time it is pulled the altlabels will be updated with new ones from the paper.
+            try:
+                species                                     = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
+            except:
+                # there already exists a species with the IRI but with different labels than before -> query syn kg and add label
+                species                                     = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
+                # update if not already saved (avoids 1000s of duplicates)
+                species                                     = update_alt_label(species, species_name=species_name)
+            #species                                         = update_alt_label(species, species_name=species_name)
+
+    else:
+        print("Success: ", triples[0]["Species"])
+        # species                                             = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
+        species                                             = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
+        # update if not already saved (avoids 1000s of duplicates)
+        species                                             = update_alt_label(species, species_name=species_name)
+    return species
+def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
+    # search the ontospecies and ontosynthesis blazegraphs for existing instances
+    species_iri                                             = str(uuid.uuid4())
+    triples                                                 = species_querying_ontosyn(client_synthesis, species_name)
     print("OntoSpecies results: ", triples)
     if triples == None or triples == []:
         triples                                             = species_querying(client_species, species_name)
@@ -824,7 +876,9 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
         mop                                 = MetalOrganicPolyhedron.pull_from_kg("https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_59a84aed-e0df-496e-84d7-587af8326d71", client_synthesis)[0]
     else:
         # check if already in ontosynthesis
-        mop                                 = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis)
+        print("mop iri: ", mop_iri[0]["MOPIRI"])
+        mop                                 = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis, -1)
+        print("pulled mop: ", mop)
         if mop == []:
             mop                             = MetalOrganicPolyhedron(instance_iri=mop_iri[0]["MOPIRI"], hasCCDCNumber=ccdc_number, hasMOPFormula=chemical_formula, altLabel=mop_names)
         else:
@@ -854,7 +908,7 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
         print("output names3: ", output_names)
         chemical_output                         = ChemicalOutput(isRepresentedBy=mop, altLabel=output_names)
     else: 
-        chemical_output.pull_from_kg(output_iri[0]["chemicalOutput"], client_synthesis, recursive_depth=-1)[0]
+        chemical_output                         = ChemicalOutput.pull_from_kg(output_iri[0]["chemicalOutput"], client_synthesis, recursive_depth=-1)[0]
         update_alt_label(chemical_output, output_names)
         # if there is a mop it will be added if not it will be deleted, will be useful in postprocessing -> multiple mops
         chemical_output.isRepresentedBy.add(mop)
@@ -896,8 +950,8 @@ def chemicals_upload_json(input_path, output_path, settings=None):
                 chemical_input                              = upload_inputChem(chemical["chemical"], client_synthesis, client_species)
             else:
                 chemical_input                              = ChemicalInput()
-            if "supplierName" in chemicals and "purity" in chemicals:
-                supplier                                                    = Supplier(rdfs_label=chemicals["supplierName"])
+            if "supplierName" in chemical and "purity" in chemical:
+                supplier                                                    = Supplier(rdfs_label=chemical["supplierName"])
                 chemical_input.hasPurity.add(chemical["purity"])                                              
                 chemical_input.isSuppliedBy.add(supplier)
             chemical_list.append(chemical_input)
@@ -1080,6 +1134,7 @@ def push_component_to_kg(instances:list, client, recursive_depth=-1):
             instance                                                = instance[0]
             g_to_remove, g_to_add                                   = instance.push_to_kg(client, recursive_depth)
 def steps_preupload(standard_step, synthesis_client, vessel_list):
+    """Each step has a duration, atmosphere, and vessel except for filter that has no duration. -> The funciton computes the common instances."""
     print("standard step: ", standard_step)
     step_time, time_unit                        = extract_numbers_and_units(standard_step["duration"], "add")
     id_hash_value                               = str(uuid.uuid4())
