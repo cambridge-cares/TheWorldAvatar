@@ -169,7 +169,7 @@ public class APIAgentLauncher extends JPSAgent {
 
     private void setRdbParameters() {
         EndpointConfig endpointConfig = new EndpointConfig();
-        this.rdbUrl = endpointConfig.getDbUrl();
+        this.rdbUrl = endpointConfig.getDbUrl("postgres");
         this.rdbUser = endpointConfig.getDbUser();
         this.rdbPassword = endpointConfig.getDbPassword();
     }

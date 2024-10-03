@@ -1,6 +1,6 @@
 # Traffic Incident Agent
 
-This agent downloads real-time traffic-incident data from [http://datamall2.mytransport.sg/ltaodataservice/TrafficIncidents](http://datamall2.mytransport.sg/ltaodataservice/TrafficIncidents), processes data to wanted format, and stores them in Postgre database in the stack.
+This agent downloads real-time traffic-incident data from [LTA Datamall](https://datamall.lta.gov.sg/content/datamall/en.html), processes data to wanted format, and stores them in Postgres database in the stack.
 
 ## Building and running
 
@@ -34,3 +34,10 @@ While you have the container running, you do not need to create any database or 
 After having the container running and setting up the table as described, you can send a `POST` query with url `http://localhost:1016/traffic-incident-agent/retrieve` to get the agent running and deposit values into Postgres. One of the recommended ways is to work with Postman and build a query from there.
 
 The modeling of the Traffic Incidents is achieved by maintaining a time interval to track the start and end time of the incident. When the incident first appears, the end time field will be left as 0 and only gets updated when the incident is not appearing in the newly queried result. Hence, the accuracy of data needs to be maintained via having regular call of the query.
+
+```
+curl -L -X POST "http://localhost:3838/traffic-incident-agent/retrieve"
+```
+
+
+# Author 
