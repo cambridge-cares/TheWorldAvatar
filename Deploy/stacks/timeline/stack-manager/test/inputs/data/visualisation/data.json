@@ -3,7 +3,7 @@
     "groups": [
         {
             "name": "Buildings",
-            "stack": "http://174.138.23.221:3838"
+            "stack": "http://174.138.23.221:3838",
             "expanded": false,
             "sources": [
                 {
@@ -1035,14 +1035,14 @@
                 {
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:trajectoryDeviceId&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&viewparams=device_id:e89c62f2-c8e9-4309-8ab0-f45749799d84"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:trajectoryDeviceId&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ],
                     "id": "trajectory"
                 },
                 {
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:bufferedLineDeviceId&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&viewparams=device_id:e89c62f2-c8e9-4309-8ab0-f45749799d84"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:bufferedLineDeviceId&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ],
                     "id": "buffered_trajectory"
                 }
