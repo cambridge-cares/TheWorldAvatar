@@ -111,7 +111,7 @@ If you are developing in VSCode, please add the following `launch.json` to the `
 
 The agent currently offers the following API route(s):
 
-### 2.1 Status ROUTE: `~url~/vis-backend-agent/status`
+### 2.1 Status ROUTE: `<url>/vis-backend-agent/status`
 
 This route serves as a health check to confirm that the agent has been successfully initiated and is operating as anticipated. It can be called through a `GET` request with no parameters, as follows:
 
@@ -121,11 +121,11 @@ curl localhost:3838/vis-backend-agent/status
 
 If successful, the response will return `Agent is ready to receive requests.`.
 
-### 2.2 Form ROUTE: `~url~/vis-backend-agent/form/{type}`
+### 2.2 Form ROUTE: `<url>/vis-backend-agent/form/{type}`
 
-This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a `GET` request to `~url~/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a `GET` request to `<url>/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
-Users can also retrieve a form template for a specific instance by appending the associated `id` at the end eg `~url~/vis-backend-agent/form/{type}/{id}`.
+Users can also retrieve a form template for a specific instance by appending the associated `id` at the end eg `<url>/vis-backend-agent/form/{type}/{id}`.
 
 If successful, the response will return a form template in the following (minimal) JSON-LD format. Please note that the template does not follow any valid ontology rules at the root level, and is merely a schema for the frontend. However, its nested values complies with `SHACL` ontological rules.
 
@@ -175,9 +175,9 @@ If successful, the response will return a form template in the following (minima
 }
 ```
 
-### 2.3 Concept Metadata ROUTE: `~url~/vis-backend-agent/type/{type}`
+### 2.3 Concept Metadata ROUTE: `<url>/vis-backend-agent/type/{type}`
 
-This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `~url~/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<url>/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
 If successful, the response will return an array of objects in the following format:
 
@@ -219,7 +219,7 @@ This route serves as a `RESTful` endpoint to perform `CRUD` operations for any r
 To add a new instance, users must send a POST request with their corresponding parameters to
 
 ```
-~url~/vis-backend-agent/{type}
+<url>/vis-backend-agent/{type}
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`. The request parameters will depend on the `JSON-LD` file defined. More information on the required schema can be found in [this section](#41-instantiation).
@@ -229,7 +229,7 @@ where `{type}` is the requested identifier that must correspond to a target file
 To delete an instance, users must send a DELETE request to
 
 ```
-~url~/vis-backend-agent/{type}/{id}
+<url>/vis-backend-agent/{type}/{id}
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The instance representation will be deleted according to the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
@@ -239,7 +239,7 @@ where `{type}` is the requested identifier that must correspond to a target file
 To update an instance, users must send a PUT request with their corresponding parameters to
 
 ```
-~url~/vis-backend-agent/{type}/{id}
+<url>/vis-backend-agent/{type}/{id}
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The request parameters will depend on the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
@@ -260,7 +260,7 @@ There are several routes for retrieving instances associated with a specific `ty
 Users can send a `GET` request to
 
 ```
-~url~/vis-backend-agent/{type}
+<url>/vis-backend-agent/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
@@ -270,7 +270,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 Users can send a `GET` request to
 
 ```
-~url~/vis-backend-agent/{type}/{id}
+<url>/vis-backend-agent/{type}/{id}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
@@ -280,7 +280,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 This route retrieves all instances with human-readable fields. Users can send a `GET` request to
 
 ```
-~url~/vis-backend-agent/{type}/label
+<url>/vis-backend-agent/{type}/label
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
@@ -290,7 +290,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 This route retrieves all instances in the csv format. Users can send a `GET` request to
 
 ```
-~url~/vis-backend-agent/csv/{type}
+<url>/vis-backend-agent/csv/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
@@ -300,7 +300,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 Users can send a `GET` request to:
 
 ```
-~url~/vis-backend-agent/{parent}/{id}/{type}
+<url>/vis-backend-agent/{parent}/{id}/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, `{parent}` is the requested parent identifier that is linked to the type, and `{id}` is the specific parent instance's identifier to retrieve all instances associated with.
@@ -310,7 +310,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 Users can send a `POST` request with search criterias to:
 
 ```
-~url~/vis-backend-agent/{type}/search
+<url>/vis-backend-agent/{type}/search
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`. The search criterias should be sent as a `JSON` request body:
