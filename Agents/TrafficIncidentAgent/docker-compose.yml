@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  TrafficIncidentAgent:
+    image: traffic-incident-agent:1.3.0
+    container_name: traffic-incident-agent
+    ports:
+      - "1016:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=postgres
+      - GEOSERVER_WORKSPACE=dispersion
+      - DISPERSION_LAYER=dispersion_layer
+      - SIMULATION_DIR=/root/aermod/simulations
+      - FILE_SERVER_URL=http://file-server:8080/FileServer/
+      - DISPERSION_STYLE_NAME=dispersion_style
+      - VIS_FOLDER=/vis_data
+      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
+    volumes:
+      - logs:/root/.jps
+      - vis_data:/vis_data
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "logs"
+  vis_data:
+    name: "vis_data"
