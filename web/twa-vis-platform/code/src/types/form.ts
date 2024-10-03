@@ -23,6 +23,11 @@ export type OntologyConcept = {
   parent?: RegistryFieldValue;
 };
 
+export interface FormOptionType {
+  label: string;
+  value: string;
+}
+
 export type FormTemplate = {
   "@context": Record<string, string>;
   property: PropertyShapeOrGroup[];

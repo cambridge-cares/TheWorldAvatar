@@ -11,7 +11,7 @@
 }
 
 .keycloakSession span {
-    font-size: 1.75em;
+    font-size: 1.5em;
     color: var(--logo-colour);
     margin-right: 20px;
 }

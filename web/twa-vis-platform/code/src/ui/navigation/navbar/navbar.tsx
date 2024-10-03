@@ -19,6 +19,8 @@ interface NavbarProps {
   showMap?: boolean,
   showDash?: boolean,
   showHelp?: boolean,
+  showRegistry?: boolean,
+  showScheduler?: boolean,
   logos?: string[],
 }
 
@@ -98,6 +100,20 @@ export default function Navbar(props: Readonly<NavbarProps>) {
             tooltip="Open help page."
             icon="help"
             url={Routes.HELP} />
+        }
+        {props.showRegistry &&
+          <NavbarComponent
+            name="REGISTRY"
+            tooltip="Open registry."
+            icon="contract"
+            url="/view/agreement" />
+        }
+        {props.showScheduler &&
+          <NavbarComponent
+            name="SCHEDULER"
+            tooltip="Open scheduler"
+            icon="calendar_month"
+            url="/view/service_event" />
         }
       </div>
     </div>
