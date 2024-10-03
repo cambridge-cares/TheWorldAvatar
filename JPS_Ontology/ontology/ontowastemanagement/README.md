@@ -149,6 +149,10 @@ Figure 2: TBox representation of the contractual obligations for the waste colle
     "ontowm:WasteService" ||--|{ "ontowm:WasteDisposalFacility" : "ontowm:hasDisposalSite"
     "ontowm:WasteDisposalFacility" ||--o{ "ontobim:Facility" : "rdfs:subClassOf"
 
+    "ontowm:WasteService" {
+        isSingleStream boolean
+    }
+
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"

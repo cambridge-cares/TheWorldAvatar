@@ -269,6 +269,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/isSingleStream -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/isSingleStream">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>is single stream</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //

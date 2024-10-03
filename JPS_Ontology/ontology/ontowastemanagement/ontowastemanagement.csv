@@ -53,3 +53,4 @@ hasNetWeight,Object Property,,,Waste,NetWeight,exactly 1,A relationship describi
 hasMeasurementTime,Object Property,,,GrossWeight UNION UnladenWeight,https://www.w3.org/TR/owl-time/#time:Instant,,A relationship which describes the time of truck weight measurement with waste during a job.,https://www.theworldavatar.com/kg/ontowastemanagement/,has measurement time
 hasStatus,Object Property,,,Bin,BinStatus,,A relationship describing the current bin status.,https://www.theworldavatar.com/kg/ontowastemanagement/,has status
 hasBinNumber,Data Property,,,Bin,string,exactly 1,An identifier for a bin.,https://www.theworldavatar.com/kg/ontowastemanagement/,has bin number
+isSingleStream,Data Property,,,WasteService,boolean,exactly 1,,https://www.theworldavatar.com/kg/ontowastemanagement/,is single stream
