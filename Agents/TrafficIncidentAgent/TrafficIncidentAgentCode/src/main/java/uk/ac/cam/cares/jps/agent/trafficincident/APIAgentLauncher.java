@@ -25,6 +25,11 @@ import org.jooq.impl.DSL;
 import org.jooq.InsertValuesStepN;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 
@@ -55,7 +60,7 @@ public class APIAgentLauncher extends JPSAgent {
     private Connection conn = null;
     private DSLContext context;
     private static final SQLDialect dialect = SQLDialect.POSTGRES;
-    private static final String tableName = "\"TrafficIncident\"";
+    private static final String tableName = "\"trafficincident\"";
     private static final Field<Long> startTimeColumn = DSL.field(DSL.name("starttime"), Long.class);
     private static final Field<Long> endTimeColumn = DSL.field(DSL.name("endtime"), Long.class);
     private static final Field<String> typeColumn = DSL.field(DSL.name("type"), String.class);
@@ -163,6 +168,23 @@ public class APIAgentLauncher extends JPSAgent {
             }
         }
         LOGGER.info("Above is/are ended traffic incidents.");
+
+        //Create geoserver layer
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        String workspaceName= "twa";
+        String schema = "public";
+        geoServerClient.createWorkspace(workspaceName);
+
+        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+        virtualTable.setSql("SELECT * FROM trafficincident");
+        virtualTable.setEscapeSql(true);
+        virtualTable.setName("traffic_incident_virtual_table");
+        virtualTable.addVirtualTableGeometry("location", "Geometry", "4326"); //
+        geoServerVectorSettings.setVirtualTable(virtualTable);
+        geoServerClient.createPostGISDataStore(workspaceName,"trafficincident", "postgres", schema);
+        geoServerClient.createPostGISLayer(workspaceName, "postgres","trafficincident", geoServerVectorSettings);
+
         disconnect();
         return jsonMessage;
     }
@@ -231,7 +253,7 @@ public class APIAgentLauncher extends JPSAgent {
      * Whether incidents are ongoing is decided by its "status" field in Postgres
      */
     public HashSet<TrafficIncident> retrieveOngoingIncidents() {
-        String sql = "SELECT * FROM \"TrafficIncident\" WHERE \"status\" = \'TRUE\'";
+        String sql = "SELECT * FROM \"trafficincident\" WHERE \"status\" = \'TRUE\'";
         HashSet<TrafficIncident> ongoingTrafficIncidentSet = new HashSet<>();
         ResultSet rs;
         try {
@@ -260,7 +282,7 @@ public class APIAgentLauncher extends JPSAgent {
      * Inserts the given @param trafficIncident into Postgres
      */
     protected void insertValuesIntoPostgres(TrafficIncident trafficIncident) {
-        Table<?> table = DSL.table(DSL.name("TrafficIncident"));
+        Table<?> table = DSL.table(DSL.name("trafficincident"));
         InsertValuesStepN<?> insertValueStep = (InsertValuesStepN<?>) context.insertInto(table, startTimeColumn, endTimeColumn, typeColumn, latitudeColumn, longitudeColumn, messageColumn, statusColumn);
         insertValueStep = insertValueStep.values(trafficIncident.startTime, trafficIncident.endTime, trafficIncident.incidentType, 
             trafficIncident.latitude, trafficIncident.longitude, trafficIncident.message, trafficIncident.status);
@@ -289,7 +311,7 @@ public class APIAgentLauncher extends JPSAgent {
      * updates the end time and status of the given @param trafficIncident
      */
     private void updateTrafficIncidentEndTimeStatusPostgres(TrafficIncident trafficIncident) {
-        String sql = "UPDATE \"TrafficIncident\" SET \"endtime\" = ?, \"status\" = ? WHERE \"type\" = ? and \"starttime\" = ? and \"latitude\" = ? and \"longitude\" = ?";
+        String sql = "UPDATE \"trafficincident\" SET \"endtime\" = ?, \"status\" = ? WHERE \"type\" = ? and \"starttime\" = ? and \"latitude\" = ? and \"longitude\" = ?";
         try {
             PreparedStatement statement = this.conn.prepareStatement(sql);
             statement.setLong(1, trafficIncident.endTime);
@@ -313,7 +335,7 @@ public class APIAgentLauncher extends JPSAgent {
      */
     private void convertLongLatPairToGeom() {
         // WSG4326 coordinates used in this case
-        String sql = "UPDATE \"TrafficIncident\" SET \"location\" = ST_SETSRID(ST_MakePoint(\"TrafficIncident\".\"longitude\", \"TrafficIncident\".\"latitude\"), 4326) WHERE \"location\" IS NULL";
+        String sql = "UPDATE \"trafficincident\" SET \"location\" = ST_SETSRID(ST_MakePoint(\"trafficincident\".\"longitude\", \"trafficincident\".\"latitude\"), 4326) WHERE \"location\" IS NULL";
         try {
             PreparedStatement statement = this.conn.prepareStatement(sql);
             statement.executeUpdate();
