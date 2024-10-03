@@ -3,12 +3,13 @@
     "groups": [
         {
             "name": "Buildings",
+            "stack": "http://174.138.23.221:3838"
             "expanded": false,
             "sources": [
                 {
                     "type": "vector",
                     "tiles": [
-                        "http://174.138.23.221:3839/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://174.138.23.221:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:building_usage&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ],
                     "id": "usage"
                 }
@@ -1081,32 +1082,33 @@
         },
         {
             "name": "Dispersion",
+            "stack": "http://174.138.23.221:3838",
             "expanded": false,
             "sources": [
                 {
                     "tiles": [
-                        "http://174.138.23.221:3839/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
+                        "http://174.138.23.221:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:dispersion_contours"
                     ],
                     "id": "dispersion-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://174.138.23.221:3839/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
+                        "http://174.138.23.221:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true&bbox={bbox-epsg-3857}&layers=dispersion:weather"
                     ],
                     "id": "weather-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://174.138.23.221:3839/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
+                        "http://174.138.23.221:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:ships"
                     ],
                     "id": "ship-source",
                     "type": "vector"
                 },
                 {
                     "tiles": [
-                        "http://174.138.23.221:3839/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
+                        "http://174.138.23.221:3838/geoserver/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&bbox={bbox-epsg-3857}&layers=dispersion:sensors"
                     ],
                     "id": "sensor-source",
                     "type": "vector"

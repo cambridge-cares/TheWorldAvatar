@@ -1,6 +1,6 @@
 # Starting the stack
 
-Use port 58085 for test stack when deploying
+Use port 58085 for test stack when deploying the test stack
 
 ```bash
 ./stack.sh start timeline-test 58085
@@ -22,7 +22,7 @@ where <STACK_NAME> should be replaced by either "timeline-test" or "timeline".
 
 ## Import data from Singapore stack
 
-One of the feature info agent queries relies on imported data from the Singapore stack. Run the following SQL scripts to import data, be sure to replace the IP address and password.
+Few of the feature info agent queries relies on imported data from the Singapore stack. Run the following SQL scripts to import data, be sure to replace the IP address and password.
 
 ```sql
 CREATE EXTENSION postgres_fdw;
