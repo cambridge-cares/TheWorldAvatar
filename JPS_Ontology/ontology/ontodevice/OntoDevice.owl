@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>04 August 2024</dc:date>
+        <dc:date>23 September 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -83,6 +83,30 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasActivityType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasActivityType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>Links an activity to its corresponding type (e.g.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="walking"/>
+        <rdfs:label> running).</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasConfidenceLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasConfidenceLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
+        <rdfs:comment>Links an activity to its confidence level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has confidence level</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasControlParameter -->
 
 
@@ -131,7 +155,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasDefaultPosition">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Valve"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition"/>
-        <rdfs:comment>A relationship that describes a valve and it's default position (NC, NO etc).</rdfs:comment>
+        <rdfs:comment>A relationship that describes a valve and it&apos;s default position (NC, NO etc).</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has default position</rdfs:label>
     </owl:ObjectProperty>
@@ -165,7 +189,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.opengis.net/ont/sf#Point"/>
-        <rdfs:comment>A relationship that describes a device's location.</rdfs:comment>
+        <rdfs:comment>A relationship that describes a device&apos;s location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has geo location</rdfs:label>
     </owl:ObjectProperty>
@@ -346,7 +370,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasProperty">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OperatingParameter"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OperatingProperty"/>
-        <rdfs:comment>A relationship between a operating parameter and it's property.</rdfs:comment>
+        <rdfs:comment>A relationship between a operating parameter and it&apos;s property.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has property</rdfs:label>
     </owl:ObjectProperty>
@@ -645,6 +669,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/prov:wasAssociatedWith -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/prov:wasAssociatedWith">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OntoDevice:Smartphone"/>
+        <rdfs:comment>Relates an activity with the device that detected it.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.w3.org/ns/prov#"/>
+        <rdfs:label>was associated with</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -666,6 +702,20 @@
         <rdfs:comment>A relationship that describes the ID assigned to a device.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/xsd:int"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/xsd:string"/>
+        <rdfs:comment>Represents the numerical confidence value.</rdfs:comment>
+        <rdfs:comment>Represents the type of activity as a string.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has value</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -1039,6 +1089,28 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Activity -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Activity">
+        <rdfs:comment>An event that occurs over a period of time and involves specific actions such as walking or running.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Activity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ActivityType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ActivityType">
+        <rdfs:comment>Represents the type of activity being performed (e.g.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="walking"/>
+        <rdfs:label> biking) defined by Google&apos;s activity recognition API.</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/AirCompressor -->
 
 
@@ -1167,6 +1239,17 @@
         <rdfs:comment>A device that measures the ability of a material to conduct an electrical current.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Conductivity sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel">
+        <rdfs:comment>Represents the confidence level indicating the likelihood of the activity being accurate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Confidence Level</rdfs:label>
     </owl:Class>
     
 
@@ -1452,7 +1535,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GPSDevice">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment>A device used within Earth's planetary atmosphere to determine its precise geographical location.</rdfs:comment>
+        <rdfs:comment>A device used within Earth&apos;s planetary atmosphere to determine its precise geographical location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>GPS device</rdfs:label>
     </owl:Class>
@@ -1494,7 +1577,7 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontodevice/GravityVector"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.</rdfs:comment>
+        <rdfs:comment>A sensor that detect minute localized changes in the force of Earth&apos;s gravity caused by variations in rock or other material&apos;s density underground.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Gravity sensor</rdfs:label>
     </owl:Class>
@@ -2584,6 +2667,27 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>pH level sensor</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/OntoDevice:Smartphone -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OntoDevice:Smartphone"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/xsd:int -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/xsd:int"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/xsd:string -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/xsd:string"/>
     
 
 
