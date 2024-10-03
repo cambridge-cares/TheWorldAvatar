@@ -146,6 +146,8 @@ Figure 2: TBox representation of the contractual obligations for the waste colle
     "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteService" : "fibo-fnd-rel-rel:governs"
     "ontowm:WasteService" ||--|| "ontowm:Waste" : "ontowm:requestedWasteCategory"
     "ontowm:WasteService" ||--|| "ontowm:Bin" : "ontowm:requestedBinType"
+    "ontowm:WasteService" ||--|{ "ontowm:WasteDisposalFacility" : "ontowm:hasDisposalSite"
+    "ontowm:WasteDisposalFacility" ||--o{ "ontobim:Facility" : "rdfs:subClassOf"
 
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
@@ -170,15 +172,13 @@ Figure 3: TBox representation of a waste service event
 ```mermaid
     erDiagram
     "ontowm:WasteService" ||--o{ "ontowm:WasteServiceEvent" : "ontoservice:hasEvent"
+
     "ontowm:WasteServiceEvent" ||--|| "ontoservice:ServiceStatus" : "ontoservice:hasStatus"
     "ontowm:WasteServiceEvent" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
     "ontowm:WasteServiceEvent" ||--|{ "ontowm:GarbageTruck" : "ontoservice:assignTransport"
 
     "ontowm:WasteServiceEvent" ||--|{ "ontowm:Bin" : "ontowm:assignBin"
     "ontowm:Bin" ||--|| "ontowm:BinStatus" : "ontowm:hasStatus"
-
-    "ontowm:WasteServiceEvent" ||--|{ "ontowm:WasteDisposalFacility" : "ontowm:hasDisposalSite"
-    "ontowm:WasteDisposalFacility" ||--o{ "ontobim:Facility" : "rdfs:subClassOf"
 
     "ontowm:WasteServiceEvent" ||--|{ "ontowm:Waste" : "ontowm:transports"
     "ontowm:Waste" ||--|| "ontowm:NetWeight" : "ontowm:hasNetWeight"

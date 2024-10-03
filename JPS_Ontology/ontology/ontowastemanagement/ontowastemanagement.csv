@@ -42,7 +42,7 @@ requestedBinType,Object Property,,,WasteService,Bin,minimum 1,A relationship des
 requestedWasteCategory,Object Property,,,WasteService,Waste,minimum 1,A relationship describing the waste category for a series of waste services.,https://www.theworldavatar.com/kg/ontowastemanagement/,requested waste category
 assignBin,Object Property,,,WasteServiceEvent,Bin,minimum 1,A relationship assigning the bin to a service.,https://www.theworldavatar.com/kg/ontowastemanagement/,assign bin
 https://www.theworldavatar.com/kg/ontoservice/assignTransport,Object Property,,,WasteServiceEvent,GarbageTruck,,A relationship assigning the truck to a service.,https://www.theworldavatar.com/kg/ontoservice/,assign truck
-hasDisposalSite,Object Property,,,WasteServiceEvent,WasteDisposalFacility,minimum 1,A relationship describing the disposal site for a waste service.,https://www.theworldavatar.com/kg/ontowastemanagement/,has disposal site
+hasDisposalSite,Object Property,,,WasteService,WasteDisposalFacility,minimum 1,A relationship describing the disposal site for a waste service.,https://www.theworldavatar.com/kg/ontowastemanagement/,has disposal site
 transports,Object Property,,,WasteServiceEvent,Waste,,A relationship describing the waste transported during a waste service.,https://www.theworldavatar.com/kg/ontowastemanagement/,transports
 hasDisposalCharge,Object Property,,,WasteDisposalFacility,BaseCharge,,A relationship describing the waste disposal charge of a disposal facility.,https://www.theworldavatar.com/kg/ontowastemanagement/,has disposal charge
 handlesWaste,Object Property,,,WasteDisposalFacility,Waste,,A relationship describing the waste category a disposal facility could handle.,https://www.theworldavatar.com/kg/ontowastemanagement/,handles waste

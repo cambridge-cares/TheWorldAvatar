@@ -124,7 +124,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalSite">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceEvent"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
         <rdfs:comment>A relationship describing the disposal site for a waste service.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
@@ -757,6 +757,13 @@
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalSite"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/requestedBinType"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
@@ -786,13 +793,6 @@
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/assignBin"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalSite"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>A specific occurrence or instance of a waste service being performed, characterised by a particular time and context. Each event capture details such as the date, time, and/or specific actions to record and analyse individual performances for quality, efficiency, and compliance with service agreements.</rdfs:comment>
