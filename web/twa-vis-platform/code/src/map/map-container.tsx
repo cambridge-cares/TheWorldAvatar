@@ -51,19 +51,6 @@ export default function MapContainer(props: MapContainerProps) {
     return JSON.parse(props.settings);
   }, []);
 
-  useEffect(() => {
-    if (mapData && currentScenario && selectedScenario) {
-      console.log('dataset URL', `${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`);
-      fetch(`${currentScenario.url}/getDataJson/${selectedScenario}?dataset=${currentScenario.dataset}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionSliderValue.toString());
-          setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
-        });
-    }
-  }, [dimensionSliderValue]);
-
-
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
     setMapData(null); // Always reset data when traversing states
@@ -74,14 +61,18 @@ export default function MapContainer(props: MapContainerProps) {
       fetch(`${reqScenario.url}/getDataJson/${selectedScenario}?dataset=${reqScenario.dataset}`)
         .then((res) => res.json())
         .then((data) => {
-          const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, "1");
+          // Default dimension value is set to 1 unless dimension slider value exists
+          let dimensionValue: string = "1";
+          if (dimensionSliderValue){
+            dimensionValue = dimensionSliderValue.toString();
+          }
+          const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionValue);
           setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
         });
-
     } else {
       setMapData(parseMapDataSettings(JSON.parse(props.data), mapSettings?.type));
     }
-  }, [mapSettings?.type, props.data, props.scenarios, selectedScenario, showDialog]);
+  }, [mapSettings?.type, props.data, props.scenarios, selectedScenario, showDialog, dimensionSliderValue]);
 
   // Populates the map after it has loaded and scenario selection is not required
   useEffect(() => {
