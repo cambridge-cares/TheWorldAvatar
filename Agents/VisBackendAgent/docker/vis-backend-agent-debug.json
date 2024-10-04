@@ -3,7 +3,7 @@
     "Name": "vis-backend-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cmcl-io/vis-backend-agent:0.0.1-SNAPSHOT",
+        "Image": "ghcr.io/cmcl-io/vis-backend-agent:1.0.0",
         "Env": [
           "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005",
           "NAMESPACE=kb"

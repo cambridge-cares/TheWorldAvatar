@@ -3,7 +3,7 @@ version: "3.9"
 services:
   agent:
     container_name: vis-backend-agent-test
-    image: ghcr.io/cmcl-io/vis-backend-agent-test:0.0.1-SNAPSHOT
+    image: ghcr.io/cmcl-io/vis-backend-agent-test:1.0.0
     build:
       context: ..
       target: test
