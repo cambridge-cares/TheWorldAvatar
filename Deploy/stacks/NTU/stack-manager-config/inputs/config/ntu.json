@@ -1,0 +1,10 @@
+{
+  "services": {
+    "includes": [
+      "historical-ntuenergy-agent", "feature-info-agent", "grafana"
+    ]
+  },
+  "volumes": {
+    "fia-queries": "fia-queries"
+  }
+}

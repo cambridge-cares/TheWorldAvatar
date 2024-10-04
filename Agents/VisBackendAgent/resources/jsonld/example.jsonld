@@ -1,0 +1,53 @@
+{
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": {
+    "@replace": "id",
+    "type": "iri",
+    "prefix": "https://www.example.com/kg/person/"
+  },
+  "@type": "https://www.example.com/kg/person/Person",
+  "person:hasName": {
+    "@id": {
+      "@replace": "id",
+      "type": "iri",
+      "prefix": "https://www.example.com/kg/person/name/"
+    },
+    "@type": "https://www.example.com/kg/person/PersonName",
+    "rdfs:label": {
+      "@replace": "name",
+      "type": "literal"
+    }
+  },
+  "@reverse": {
+    "person:hasChild": [
+      {
+        "@id": {
+          "@replace": "father",
+          "type": "iri"
+        },
+        "@type": "https://www.example.com/kg/person/Father",
+        "person:hasName": {
+          "@id": {
+            "@replace": "father",
+            "type": "iri"
+          },
+          "@type": "https://www.example.com/kg/person/PersonName",
+          "rdfs:label": {
+            "@replace": "name",
+            "type": "literal",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string"
+          }
+        }
+      },
+      {
+        "@id": {
+          "@replace": "mother",
+          "type": "iri"
+        },
+        "@type": "https://www.example.com/kg/person/Mother"
+      }
+    ]
+  }
+}

@@ -5,10 +5,12 @@ from entityrdfizer.tboxgenerator.csv2tbox import run_tbox_generator
 def csv2rdf_wrapper(
         csvFileOrDirPath,
         csvType,
-        outDir):
+        outDir,
+        csvTbox=None):
 
-    if csvType.lower() == 'abox':
-        run_abox_generator(csvFileOrDirPath,outDir)
+    if csvType.lower() == 'abox' or None == csvType:
+        #print( "The TBox path is '" + str(csvTbox) + "'." )
+        run_abox_generator(csvFileOrDirPath,outDir,csvTbox)
     elif csvType.lower() == 'tbox':
         run_tbox_generator(csvFileOrDirPath,outDir)
     else:

@@ -2,13 +2,12 @@ package com.cmclinnovations.stack.clients.superset;
 
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
-import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.swagger.superset.ApiClient;
 import com.cmclinnovations.swagger.superset.Configuration;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class SupersetClient extends ContainerClient implements ClientWithEndpoint {
+public class SupersetClient extends ClientWithEndpoint<SupersetEndpointConfig> {
 
     private static SupersetClient instance = null;
 
@@ -19,30 +18,25 @@ public class SupersetClient extends ContainerClient implements ClientWithEndpoin
         return instance;
     }
 
-    private final SupersetEndpointConfig supersetEndpoint;
     private final ApiClient apiClient;
 
     private SupersetClient() {
-        supersetEndpoint = readEndpointConfig(EndpointNames.SUPERSET, SupersetEndpointConfig.class);
+        super(EndpointNames.SUPERSET, SupersetEndpointConfig.class);
         apiClient = new ApiClient();
-        apiClient.setBasePath(supersetEndpoint.getUrl());
+        apiClient.setBasePath(readEndpointConfig().getUrl());
         Configuration.setDefaultApiClient(apiClient);
     }
 
-    @Override
-    public SupersetEndpointConfig getEndpoint() {
-        return supersetEndpoint;
-    }
-
     public RemoteStoreClient getRemoteStoreClient() {
-        String url = supersetEndpoint.getUrl();
+        SupersetEndpointConfig endpoint = readEndpointConfig();
+        String url = endpoint.getUrl();
         return new RemoteStoreClient(url, url,
-                supersetEndpoint.getUsername(),
-                supersetEndpoint.getPassword());
+                endpoint.getUsername(),
+                endpoint.getPassword());
     }
 
     private void setAccessToken() {
-        apiClient.setAccessToken(supersetEndpoint.getAccessToken());
+        apiClient.setAccessToken(readEndpointConfig().getAccessToken());
     }
 
     public ApiClient getApiClient() {
@@ -50,7 +44,7 @@ public class SupersetClient extends ContainerClient implements ClientWithEndpoin
     }
 
     public void refreshAccessToken() {
-        apiClient.setAccessToken(supersetEndpoint.getAccessToken());
+        apiClient.setAccessToken(readEndpointConfig().getAccessToken());
     }
 
 }

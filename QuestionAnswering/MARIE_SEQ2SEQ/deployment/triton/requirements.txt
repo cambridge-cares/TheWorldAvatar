@@ -1,0 +1,5 @@
+torch
+transformers
+levenshtein
+sentence-transformers
+optimum[onnxruntime]

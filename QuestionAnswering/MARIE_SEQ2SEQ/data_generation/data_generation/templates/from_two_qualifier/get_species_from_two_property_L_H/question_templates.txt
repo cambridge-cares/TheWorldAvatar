@@ -1,0 +1,21 @@
+Give me a list of species with {PropertyName1} lower than {value1} and {PropertyName2} higher than {value2}
+Provide a roster of chemical species possessing {PropertyName1} beneath {value1} and {PropertyName2} surpassing {value2}.
+Enumerate molecules exhibiting {PropertyName1} below {value1} and {PropertyName2} above {value2}.
+List compounds with {PropertyName1} lesser than {value1} and {PropertyName2} greater than {value2}.
+Offer a catalog of species having {PropertyName1} beneath the threshold of {value1} and {PropertyName2} exceeding {value2}.
+Outline chemical species where {PropertyName1} is less than {value1} and {PropertyName2} is greater than {value2}.
+Compile a record of molecules showcasing {PropertyName1} lower than {value1} and {PropertyName2} higher than {value2}.
+Generate a list of compounds possessing {PropertyName1} below {value1} and {PropertyName2} above {value2}.
+Present a lineup of species exhibiting {PropertyName1} less than {value1} and {PropertyName2} greater than {value2}.
+Draft a summary of chemical species with {PropertyName1} not exceeding {value1} and {PropertyName2} surpassing {value2}.
+Enlist molecules displaying {PropertyName1} under {value1} and {PropertyName2} over {value2}.
+Catalog compounds where {PropertyName1} is lower than {value1} and {PropertyName2} is higher than {value2}.
+Share a register of species containing {PropertyName1} below {value1} and {PropertyName2} exceeding {value2}.
+Create a table of chemical species manifesting {PropertyName1} beneath {value1} and {PropertyName2} above {value2}.
+Construct a list of molecules with {PropertyName1} lesser than {value1} and {PropertyName2} greater than {value2}.
+Formulate a compilation of compounds indicating {PropertyName1} not surpassing {value1} and {PropertyName2} surpassing {value2}.
+Offer an inventory of species having {PropertyName1} lower than {value1} and {PropertyName2} higher than {value2}.
+Provide a breakdown of chemical species featuring {PropertyName1} below {value1} and {PropertyName2} above {value2}.
+Deliver a collection of molecules showcasing {PropertyName1} under {value1} and {PropertyName2} over {value2}.
+Yield a list of compounds demonstrating {PropertyName1} beneath {value1} and {PropertyName2} exceeding {value2}.
+Display species with {PropertyName1} less than {value1} and {PropertyName2} greater than {value2} in an organized manner.

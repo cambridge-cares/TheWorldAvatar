@@ -1,0 +1,16 @@
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent",
+            "filter-agent",
+            "sealevelimpactagent"
+        ],
+        "excludes": []
+    },
+    "volumes": {
+        "vis-files": "webspace",
+        "fia-queries": "fia",
+        "filter-queries": "filters"
+    }
+}

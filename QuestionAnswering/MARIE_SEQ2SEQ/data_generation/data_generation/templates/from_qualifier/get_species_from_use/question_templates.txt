@@ -1,0 +1,21 @@
+Give me a list of species that are used as {Use}
+Provide a roster of chemical entities employed as {Use}.
+Enumerate the molecules utilized for {Use}.
+List the compounds applied in {Use}.
+Offer a catalog of chemical species employed for {Use}.
+Present a compilation of molecules used in {Use}.
+Detail the chemical components utilized for {Use}.
+Outline the compounds that find application in {Use}.
+Furnish a record of chemical entities utilized for {Use}.
+Give a rundown of molecular species employed in {Use}.
+Mention the substances used as {Use}.
+Name the chemical species that serve {Use}.
+Provide an inventory of compounds utilized in {Use}.
+Identify the molecules employed for {Use}.
+Offer a list of chemical components used as {Use}.
+Present a summary of species applied in {Use}.
+Enumerate the chemical entities that find application in {Use}.
+List the molecular species utilized for {Use}.
+Detail the compounds that serve {Use}.
+Outline the substances applied in {Use}.
+Furnish a compilation of chemical species employed as {Use}.

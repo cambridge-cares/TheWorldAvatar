@@ -1,0 +1,20 @@
+apply plugin: 'com.android.library'
+apply plugin: 'androidx.navigation.safeargs'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.timelinemap'
+}
+
+dependencies {
+
+    implementation 'com.mapbox.maps:android:11.3.0'
+
+    implementation project(path: ':core:utils')
+    implementation project(path: ':core:data')
+    implementation project(path: ':core:ui')
+    implementation project(path: ':core:model')
+    implementation project(path: ':core:sensor')
+    implementation project(path: ':core:login')
+}

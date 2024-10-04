@@ -3,7 +3,7 @@
 		"Name": "weather-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/weatheragent:1.2",
+				"Image": "ghcr.io/cambridge-cares/weatheragent:1.4",
 				"Env": [
 					"DATABASE=postgres",
 					"LAYERNAME=weatherstations",
@@ -30,13 +30,6 @@
 					},
 					{
 						"SecretName": "geoserver_password"
-					}
-				],
-				"Mounts": [
-					{
-						"Type": "volume",
-						"Source": "logs",
-						"Target": "/root/.jps"
 					}
 				]
 			}

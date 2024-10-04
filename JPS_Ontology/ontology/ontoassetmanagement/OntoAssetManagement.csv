@@ -107,7 +107,7 @@ hasRemainingAmount,Object Property,,,BudgetCategory,http://www.ontology-of-units
 hasWorkspaceIdentifier,Data Property,,,Workspace,String,,An identifier assigned to a workspace.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has workspace identifier
 hasExternalRemarks,Data Property,,,http://xmlns.com/foaf/0.1/Document,String,,External remarks of a document.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has external remarks
 hasInternalRemarks,Data Property,,,http://xmlns.com/foaf/0.1/Document,String,,Internal remarks of a document.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has internal remarks
-availableAt,Data Property,,,Attachment UNION DataSheet,any uri,,The URI where an attachment or data sheet is located at.,https://www.theworldavatar.com/kg/ontoassetmanagement/,available at
+availableAt,Data Property,,,Attachment UNION http://xmlns.com/foaf/0.1/Document,any uri,,The URI where an attachment or document is located at.,https://www.theworldavatar.com/kg/ontoassetmanagement/,available at
 quotationNumber,Data Property,,,Quotation,String,,A reference number of a quotation.,https://www.theworldavatar.com/kg/ontoassetmanagement/,quotation number
 purchaseOrderNumber,Data Property,,,https://purl.org/p2p-o/document#PurchaseOrder,String,,A reference number of a purchase order.,https://www.theworldavatar.com/kg/ontoassetmanagement/,purchase order number
 deliveryOrderNumber,Data Property,,,DeliveryOrder,String,,A reference number of a delivery order.,https://www.theworldavatar.com/kg/ontoassetmanagement/,delivery order number
@@ -121,3 +121,4 @@ hasProjectIdentifier,Data Property,,,Project,String,,An identifier assigned to a
 hasServiceCodeIdentifier,Data Property,,,ServiceCode,String,,An identifier assigned to a service code.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service code identifier
 hasServiceCategoryIdentifier,Data Property,,,ServiceCategory,String,,An identifier assigned to a service category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service category identifier
 hasServiceTag,Data Property,,,https://w3id.org/bot#Element UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,String,,"An identifier used to identify a product and its information (e.g. compatible accessories, service history, parts).",https://www.theworldavatar.com/kg/ontoassetmanagement/,has service tag
+hasImageURI,Data Property,,,https://purl.org/p2p-o/item#Item UNION https://w3id.org/bot#Element UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,any uri,,The URI where the image of an asset is located at.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has image uri

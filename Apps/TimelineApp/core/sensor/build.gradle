@@ -1,0 +1,47 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.sensor'
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+}
+
+
+dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.android.volley:volley:1.2.1'
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+    implementation "androidx.core:core:1.13.1"
+
+    implementation project(path: ':core:utils')
+    implementation project(path: ':core:login')
+    implementation project(path: ':core:ui')
+    implementation project(path: ':core:data')
+
+    // JUnit
+    testImplementation 'junit:junit:4.13.2'
+
+    // Mockito
+    testImplementation 'org.mockito:mockito-core:4.11.0'
+    testImplementation 'org.mockito:mockito-inline:4.11.0'
+
+    // AndroidX Test - Core library for Android tests
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    implementation "androidx.room:room-runtime:2.5.0"
+    annotationProcessor "androidx.room:room-compiler:2.5.0"
+    androidTestImplementation "androidx.room:room-testing:2.5.0"
+
+    def room_version = "2.6.1"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-rxjava3:$room_version"
+    // To use Kotlin annotation processing tool (kapt)
+    kapt "androidx.room:room-compiler:$room_version"
+
+}

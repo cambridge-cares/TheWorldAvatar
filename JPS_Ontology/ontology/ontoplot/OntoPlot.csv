@@ -1,0 +1,12 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoPlot,TBox,https://www.theworldavatar.com/kg/ontoplot/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoPlot,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoPlot,TBox,OntoPlot is an ontology developed to describe the attributes of land plots.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoPlot,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Plot,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,A plot is an area of land that is often delineated with a physical boundary to denote land ownership rights. It is frequently adopted as a basic spatial unit for a cadastre or land registration system. ,https://www.theworldavatar.com/kg/ontoplot/,Plot
+hasMaximumPermittedGFA,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship that establishes the upper limit for the gross floor area allowed on a plot. This limit is determined by multiplying the plot area with the gross plot ratio.,https://www.theworldavatar.com/kg/ontoplot/,has maximum permitted gross floor area
+hasPlotArea,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship that defines the area of a plot,https://www.theworldavatar.com/kg/ontoplot/,has plot area
+hasNeighbour ,Object Property,,,Plot,Plot,,A relationship that indicates the neighbouring plot for the specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has neighbour 
+hasOwner,Object Property,,,Plot,https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person,,A relationship that defines the owner of a land plot.,https://www.theworldavatar.com/kg/ontoplot/,has owner
+hasPrice,Object Property,,,Plot,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,A relationship that defines the price of a specified plot.,https://www.theworldavatar.com/kg/ontoplot/,has price
+isCornerPlot,Data Property,,,Plot,boolean,,A relationship that indicates if the plot is a corner plot or not.,https://www.theworldavatar.com/kg/ontoplot/,is corner plot

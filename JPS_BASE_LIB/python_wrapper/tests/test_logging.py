@@ -2,7 +2,7 @@
 # https://github.com/cambridge-cares/TheWorldAvatar/tree/f290fb98ce746b591d8b8c93cca1e89a409c959e/Agents/utils/python-utils
 
 
-from py4jps import agentlogging
+from twa import agentlogging
 
 def test_demo():
     """

@@ -28,7 +28,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.utils.AbstractTempPath;
 import com.cmclinnovations.stack.clients.utils.TempDir;
@@ -53,7 +52,6 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DefaultDockerClientConfig.Builder;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.RemoteApiVersion;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
@@ -375,6 +373,9 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     private void sendFileEntries(String containerId, String remoteDirPath, Iterable<Entry<String, byte[]>> fileEntries)
             throws IOException {
+        // Should use the Linux path separator '/'
+        remoteDirPath = remoteDirPath.replace('\\', '/');
+
         makeDir(containerId, remoteDirPath);
 
         byte[] byteArray;
@@ -478,13 +479,16 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public Map<String, byte[]> retrieveFiles(String containerId, String remoteDirPath) throws IOException {
         Map<String, byte[]> files = new HashMap<>();
+
+        remoteDirPath = remoteDirPath.replaceFirst("([^/])/*$", "$1/");
+
         try (InputStream is = internalClient.copyArchiveFromContainerCmd(containerId, remoteDirPath).exec();
                 TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(is)) {
 
             TarArchiveEntry tarArchiveEntry;
             while (null != (tarArchiveEntry = tarArchiveInputStream.getNextTarEntry())) {
                 if (!tarArchiveEntry.isDirectory()) {
-                    files.put(Path.of(remoteDirPath, tarArchiveEntry.getName()).toString(),
+                    files.put(remoteDirPath + tarArchiveEntry.getName().replaceFirst("^[^/]*/", ""),
                             tarArchiveInputStream.readAllBytes());
                 }
             }
@@ -612,16 +616,6 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
             // Either the Config has been removed externally
             // or it is currently in use and can't be removed.
         }
-    }
-
-    @Override
-    public <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
-        writeEndpointConfig(endpointConfig, this);
-    }
-
-    @Override
-    public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
-        return readEndpointConfig(endpointName, endpointConfigClass, this);
     }
 
     protected Map<String, String> getSecretLabels() {
