@@ -117,6 +117,7 @@
                                 <workingDirectory>target/generated-sources/openapi</workingDirectory>
                                 <arguments>
                                     <argument>install</argument>
+                                    <argument>-Dmaven.javadoc.skip=true</argument>
                                     <argument>-DskipTests</argument>
                                 </arguments>
                             </configuration>
@@ -132,6 +133,7 @@
                                 <workingDirectory>target/generated-sources/openapi</workingDirectory>
                                 <arguments>
                                     <argument>deploy</argument>
+                                    <argument>-Dmaven.javadoc.skip=true</argument>
                                     <argument>-DskipTests</argument>
                                 </arguments>
                             </configuration>
