@@ -3,8 +3,8 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import { FilterSpecification, Map } from 'mapbox-gl';
-import { useEffect, useState } from 'react';
+import { Map } from 'mapbox-gl';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { DataStore } from 'io/data/data-store';
@@ -39,12 +39,17 @@ export default function MapContainer(props: MapContainerProps) {
   const [currentScenario, setCurrentScenario] = useState<ScenarioDefinition>(null);
   const [showDialog, setShowDialog] = useState<boolean>(!!props.scenarios);
   const [mapData, setMapData] = useState<DataStore>(null);
-  const mapSettings: MapSettings = JSON.parse(props.settings);
+
   const selectedScenario = useSelector(getScenarioID);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
   const dimensionSliderValue = useSelector(selectDimensionSliderValue);
   const filterLayerIds: string[] = useSelector(getFilterLayerIds);
   const filterFeatureIris: string[] = useSelector(getFilterFeatureIris);
+
+  // Memoizes parsing of settings only once initially to prevent any unintended calls
+  const mapSettings: MapSettings = useMemo(() => {
+    return JSON.parse(props.settings);
+  }, []);
 
   useEffect(() => {
     if (mapData && currentScenario && selectedScenario) {
