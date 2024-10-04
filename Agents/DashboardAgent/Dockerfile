@@ -34,6 +34,8 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked m
 #==================================================================================================
 FROM builder as test
 
+RUN mkdir -p /root/.m2/repository
+
 RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
 
 COPY /agent/src/test ./src/test
