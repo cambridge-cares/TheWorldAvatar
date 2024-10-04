@@ -3,7 +3,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import { Map } from 'mapbox-gl';
+import { LayerSpecification, Map, Source } from 'mapbox-gl';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -53,30 +53,36 @@ export default function MapContainer(props: MapContainerProps) {
 
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
-    setMapData(null); // Always reset data when traversing states
-    if (selectedScenario) {
-      // Await the new definitions from the server
-      const reqScenario: ScenarioDefinition = props.scenarios.find((scenario) => scenario.id === selectedScenario);
-      setCurrentScenario(reqScenario);
-      fetch(`${reqScenario.url}/getDataJson/${selectedScenario}?dataset=${reqScenario.dataset}`)
-        .then((res) => res.json())
-        .then((data) => {
-          // Default dimension value is set to 1 unless dimension slider value exists
-          let dimensionValue: string = "1";
-          if (dimensionSliderValue){
-            dimensionValue = dimensionSliderValue.toString();
-          }
-          const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionValue);
-          setMapData(parseMapDataSettings(JSON.parse(dataString), mapSettings?.type));
-        });
-    } else {
-      setMapData(parseMapDataSettings(JSON.parse(props.data), mapSettings?.type));
+    if (!showDialog) {
+      setMapData(null); // Always reset data when traversing states
+      let mapDataStore: DataStore;
+      // If there are any scenarios, the corresponding data settings should be fetched from the server
+      if (selectedScenario) {
+        // Await the new definitions from the server
+        const reqScenario: ScenarioDefinition = props.scenarios.find((scenario) => scenario.id === selectedScenario);
+        setCurrentScenario(reqScenario);
+        fetch(`${reqScenario.url}/getDataJson/${selectedScenario}?dataset=${reqScenario.dataset}`)
+          .then((res) => res.json())
+          .then((data) => {
+            // Default dimension value is set to 1 unless dimension slider value exists
+            let dimensionValue: string = "1";
+            if (dimensionSliderValue) {
+              dimensionValue = dimensionSliderValue.toString();
+            }
+            const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionValue);
+            mapDataStore = parseMapDataSettings(JSON.parse(dataString), mapSettings?.type);
+          });
+      } else {
+        // By default, the data settings are retrieved locally
+        mapDataStore = parseMapDataSettings(JSON.parse(props.data), mapSettings?.type);
+      }
+      setMapData(mapDataStore);
     }
   }, [mapSettings?.type, props.data, props.scenarios, selectedScenario, showDialog, dimensionSliderValue]);
 
   // Populates the map after it has loaded and scenario selection is not required
   useEffect(() => {
-    if (map && !showDialog) {
+    if (map && mapData) {
       if (mapSettings?.["type"] === "mapbox") {
         // All event listeners and data must be added when the map is initialised or data changes
         addData(map, mapSettings, mapData);
@@ -87,10 +93,10 @@ export default function MapContainer(props: MapContainerProps) {
         // The same event listeners can be reused given the same underlying data
         map.on("style.load", function () {
           addData(map, mapSettings, mapData);
-        }); 
+        });
       }
     }
-  }, [dispatch, map, mapData, mapEventManager, mapSettings, showDialog]);
+  }, [dispatch, map, mapData, mapEventManager, mapSettings]);
 
   // Update the filters for the specific layers if search is required
   useEffect(() => {
