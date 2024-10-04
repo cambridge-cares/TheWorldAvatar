@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 import { Paths } from 'io/config/routes';
-import { PropertyShape } from 'types/form';
+import { PropertyShape, SEARCH_FORM_TYPE } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import FormInputField from './form-input';
 import FormDateTimePicker from './form-date-time-picker';
@@ -44,7 +44,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
       <div className={styles["form-field-container"]}>
         <div className={styles["form-input-container"]}>
           {/** Display input min max range only if this is the search form and a numerical value */}
-          {formType == Paths.SEARCH && ["integer", "decimal"].includes(props.field.datatype)
+          {formType == SEARCH_FORM_TYPE && ["integer", "decimal"].includes(props.field.datatype)
             ? <FormInputMinMaxField
               field={props.field}
               form={props.form}

@@ -3,7 +3,7 @@ import { FieldValues, useForm, UseFormReturn } from 'react-hook-form';
 import { usePathname } from 'next/navigation';
 
 import { Paths } from 'io/config/routes';
-import { FormTemplate, ID_KEY, PROPERTY_GROUP_TYPE, PropertyGroup, PropertyShape, PropertyShapeOrGroup, TYPE_KEY, VALUE_KEY } from 'types/form';
+import { FormTemplate, ID_KEY, PROPERTY_GROUP_TYPE, PropertyGroup, PropertyShape, PropertyShapeOrGroup, SEARCH_FORM_TYPE, TYPE_KEY, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
 import { HttpResponse, addEntity, deleteEntity, getFormTemplate, getMatchingInstances, updateEntity } from 'utils/server-actions';
@@ -142,7 +142,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         pendingResponse = await updateEntity(props.agentApi, formData, props.entityType);
         break;
       }
-      case Paths.SEARCH: {
+      case SEARCH_FORM_TYPE: {
         pendingResponse = await getMatchingInstances(props.agentApi, props.entityType, formData);
         if (pendingResponse.success) {
           const matchingInstances: string[] = pendingResponse.message.slice(1, -1)  // Remove the brackets '[' and ']'
