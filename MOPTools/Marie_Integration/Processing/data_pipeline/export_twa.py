@@ -103,11 +103,7 @@ class HasVacuum(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsSealed(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
-class HasStirringRate(DatatypeProperty):
-    rdfs_isDefinedBy                    = OntoSyn
 class IsRepeated(DatatypeProperty):
-    rdfs_isDefinedBy                    = OntoSyn
-class IsDropwise(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class AltLabel(DatatypeProperty):
     rdfs_isDefinedBy                    = SKOS
@@ -131,6 +127,28 @@ class Value(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSpecies
 class HasTargetPh(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
+class IsStirred(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsStirredHeatChill(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsVacuumFiltration(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class HasStirringRate(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsRepeatedTimes(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsLayered(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsWait(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class HasRotaryEvaporator(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsLayeredTransfer(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class HasPurity(DatatypeProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+
+
 ###-----------------------------------------------------------------------------------------------
 # Object Properties:
 class HasDryingTemperature(ObjectProperty):
@@ -223,6 +241,28 @@ class IsUsedAsChemical(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasVesselType(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
+class HasStirringTemperature(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsTransferedTo(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class HasSolventDissolve(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class HasSeparationSolvent(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsEvaporatedToVolume(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class HasDryingAgent(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
+class IsRemovedSpecies(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn   
+class IsSeparationType(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn  
+class HasTransferedAmount(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn  
+class HasHeatChillDevice(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn  
+class IsSuppliedBy(ObjectProperty):
+    rdfs_isDefinedBy                    = OntoSyn
 ###-----------------------------------------------------------------------------------------------
 # Classes:
 class UnitOfMeasure(BaseClass):
@@ -277,13 +317,13 @@ class ElementalAnalysisDevice(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
 class ExperimentalElementalAnalysis(ElementalAnalysis):
     rdfs_isDefinedBy                    = OntoSpecies
-    hasElementalDevice                  : Optional[HasElementalDevice[ElementalAnalysisDevice]]           = set()
+    hasElementalDevice                  : Optional[HasElementalDevice[ElementalAnalysisDevice]]         = set()
 class MolecularFormula(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
-    value                               : Optional[Value[str]]                              = set()
+    value                               : Optional[Value[str]]                                          = set()
 class AnalyticalElementalAnalysis(ElementalAnalysis):
     rdfs_isDefinedBy                    = OntoSpecies
-    isBasedOnMolecularFormula           : Optional[IsBasedOnMolecularFormula[MolecularFormula]]           = set()
+    isBasedOnMolecularFormula           : Optional[IsBasedOnMolecularFormula[MolecularFormula]]         = set()
 class Species(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
     label                               : Optional[Label[str]]                              = set()
@@ -312,9 +352,13 @@ class SinglePhase(BaseClass):
 class Material(BaseClass):
     rdfs_isDefinedBy                    = OntoCapeMaterial
     thermodynamicBehaviour              : Optional[ThermodynamicBehaviour[SinglePhase]]             = set()
+class Supplier(BaseClass):
+    rdfs_isDefinedBy                    = OntoSyn
 class ChemicalInput(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
+    isSuppliedBy                        : Optional[IsSuppliedBy[Supplier]]                          = set()
     referencesMaterial                  : Optional[ReferencesMaterial[Material]]                    = set()
+    hasPurity                           : Optional[HasPurity[str]]                          = set()
 class Doi(DatatypeProperty):
     rdfs_isDefinedBy                    = BIBO
 class Document(BaseClass):
@@ -327,6 +371,8 @@ class VesselEnvironment(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
 class LabEquipment(BaseClass):
     rdfs_isDefinedBy                    = OntoLab
+class HeatChillDevice(LabEquipment):
+    rdfs_isDefinedBy                    = OntoSyn
 class VesselType(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
 class Vessel(LabEquipment):
@@ -341,11 +387,15 @@ class SynthesisStep(BaseClass):
     hasExecutionPoint                   : Optional[HasExecutionPoint[ExecutionPoint]]               = set() 
     hasVesselEnvironment                : Optional[HasVesselEnvironment[VesselEnvironment]]         = set()
     hasStepDuration                     : Optional[HasStepDuration[Duration]]                       = set()
+class AmountOfSubstanceFraction(BaseClass):
+    rdfs_isDefinedBy                    = OM2
+    hasValue                            : Optional[HasValue[Measure]]                               = set()
 class ChemicalSynthesis(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn  
     hasSynthesisStep                    : Optional[HasSynthesisStep[SynthesisStep]]                 = set()
     retrievedFrom                       : Optional[RetrievedFrom[Document]]                         = set()
     hasChemicalInput                    : Optional[HasChemicalInput[ChemicalInput]]                 = set()
+    hasYield                            : Optional[HasYield[AmountOfSubstanceFraction]]             = set()
     # not ideal but mostly unused:
     hasEquipment                        : Optional[HasEquipment[LabEquipment]]                      = set()
 class ChemicalBuildingUnit(BaseClass):
@@ -357,32 +407,29 @@ class MetalOrganicPolyhedron(BaseClass):
     rdfs_isDefinedBy                    = OntoMOPs
     hasCCDCNumber                       : Optional[HasCCDCNumber[str]]                              = set()
     hasMOPFormula                       : Optional[HasMOPFormula[str]]                              = set()
-    mopAltLabel                         : Optional[MopAltLabel[str]]                                = set()
     hasChemicalBuildingUnit             : Optional[HasChemicalBuildingUnit[ChemicalBuildingUnit]]   = set()
-class AmountOfSubstanceFraction(BaseClass):
-    rdfs_isDefinedBy                    = OM2
-    hasValue                            : Optional[HasValue[Measure]]                               = set()
+    altLabel                            : Optional[AltLabel[str]]                                   = set()
+
 class ChemicalOutput(Species):
     rdfs_isDefinedBy                    = OntoSyn
     isRepresentedBy                     : Optional[IsRepresentedBy[MetalOrganicPolyhedron]]         = set()
-    hasYield                            : Optional[HasYield[AmountOfSubstanceFraction]]             = set()
+
 class ChemicalTransformation(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
     isDescribedBy                       : Optional[IsDescribedBy[ChemicalSynthesis]]                = set()
     hasChemicalOutput                   : Optional[HasChemicalOutput[ChemicalOutput]]               = set()
+
 class Add(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
     hasAddedChemicalInput               : Optional[HasAddedChemicalInput[ChemicalInput]]            = set()
-    isDropwise                          : Optional[IsDropwise[bool]]                                = set()
-    hasTargetPh                         : Optional[HasTargetPh[float]]                                = set()
+    hasTargetPh                         : Optional[HasTargetPh[float]]                              = set()
+    isStirred                           : Optional[IsStirred[bool]]                                 = set()
+    isLayered                           : Optional[IsLayered[bool]]                                 = set()
 class Filter(SynthesisStep):        
     rdfs_isDefinedBy                    = OntoSyn
     hasWashingSolvent                   : Optional[HasWashingSolvent[ChemicalInput]]                = set()
     isRepeated                          : Optional[IsRepeated[int]]                                 = set()
-class Stir(SynthesisStep):
-    rdfs_isDefinedBy                    = OntoSyn
-    # not the way it is supposed to be:
-    hasStirringRate                     : Optional[HasStirringRate[float]]                          = set()
+    isVacuumFiltration                  : Optional[IsVacuumFiltration[bool]]                        = set()
 class Sonication(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
 class TemperatureUnit(BaseClass):
@@ -398,6 +445,12 @@ class TemperatureRate(BaseClass):
 class Crystallization(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
     hasCrystallizationTargetTemperature : Optional[HasCrystallizationTargetTemperature[Temperature]]                   = set()
+class Stir(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+    # not the way it is supposed to be:
+    hasStirringRate                     : Optional[HasStirringRate[float]]                                  = set()
+    hasStirringTemperature              : Optional[HasStirringTemperature[Temperature]]                     = set()
+    isWait                              : Optional[IsWait[bool]]                                            = set()
 class Pressure(BaseClass):       
     rdfs_isDefinedBy                    = OM2
     hasValue                            : Optional[HasValue[Measure]]                                   = set()
@@ -405,16 +458,38 @@ class Dry(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
     hasDryingPressure                   : Optional[HasDryingPressure[Pressure]]                         = set()
     hasDryingTemperature                : Optional[HasDryingTemperature[Temperature]]                   = set()
+    hasDryingAgent                      : Optional[HasDryingAgent[ChemicalInput]]                       = set()
+class Volume(BaseClass):
+    rdfs_isDefinedBy                    = OM2
+    hasValue                            : Optional[HasValue[Measure]]                                   = set()
 class Evaporate(SynthesisStep):       
     rdfs_isDefinedBy                    = OntoSyn
-    hasEvaporationTemperature             : Optional[HasEvaporationTemperature[Temperature]]                   = set()
-    hasEvaporationPressure                : Optional[HasEvaporationPressure[Pressure]]                   = set()
+    hasEvaporationTemperature           : Optional[HasEvaporationTemperature[Temperature]]              = set()
+    hasEvaporationPressure              : Optional[HasEvaporationPressure[Pressure]]                    = set()
+    isRemovedSpecies                    : Optional[IsRemovedSpecies[ChemicalInput]]                     = set()
+    isEvaporatedToVolume                : Optional[IsEvaporatedToVolume[Volume]]                        = set()
+    hasRotaryEvaporator                 : Optional[HasRotaryEvaporator[bool]]                           = set()
+class Dissolve(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+    hasSolventDissolve                  : Optional[HasSolventDissolve[ChemicalInput]]                 = set()
+class Transfer(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+    isTransferedTo                      : Optional[IsTransferedTo[Vessel]]                              = set()
+    isLayeredTransfer                   : Optional[IsLayeredTransfer[bool]]                             = set()
+    hasTransferedAmount                 : Optional[HasTransferedAmount[Volume]]                         = set()
+class SeparationType(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+class Separate(SynthesisStep):
+    rdfs_isDefinedBy                    = OntoSyn
+    isRepeatedTimes                     : Optional[IsRepeatedTimes[int]]                                = set()
+    hasSeparationSolvent                : Optional[HasSeparationSolvent[ChemicalInput]]                 = set()
+    isSeparationType                    : Optional[IsSeparationType[SeparationType]]                    = set()
 class HeatChill(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
     hasTargetTemperature                : Optional[HasTargetTemperature[Temperature]]                   = set()
     hasTemperatureRate                  : Optional[HasTemperatureRate[TemperatureRate]]                 = set()
     hasVacuum                           : Optional[HasVacuum[bool]]                                     = set()
     isSealed                            : Optional[IsSealed[bool]]                                      = set()
-    # not the way it is supposed to be
-    hasStirringSpeed                    : Optional[HasStirringRate[float]]                              = set()
+    isStirredHeatChill                  : Optional[IsStirredHeatChill[bool]]                            = set()
+    hasHeatChillDevice                  : Optional[HasHeatChillDevice[HeatChillDevice]]                 = set()
 OntoSyn.export_to_owl('OntoSyn.ttl', format='turtle')

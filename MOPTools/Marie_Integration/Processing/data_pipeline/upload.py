@@ -97,10 +97,10 @@ def upload_predefined():
     drop                                = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/drop", rdfs_label="drop")
     unknown_unit                        = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/unknown", rdfs_label="N/A")
 
-    N2Atmo                              = VesselEnvironment(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VesselEnvironment_434aa6e1-3ac6-4a08-a208-fbc23e78a758", rdfs_label="N2 atmosphere")
-    ArAtmo                              = VesselEnvironment(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VesselEnvironment_65b5af5d-349d-467c-bd14-b239d4e94376", rdfs_label="Ar atmosphere")
-    AirAtmo                             = VesselEnvironment(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VesselEnvironment_bd2ef29a-1c5c-40eb-a9b2-84f1a3fda734", rdfs_label="Air atmosphere")
-    unknown_Atmo                        = VesselEnvironment(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#VesselEnvironment_1f70dc2c-5a37-491a-89ec-0897f9dcb7b8", rdfs_label="N/A")
+    N2Atmo                              = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_434aa6e1-3ac6-4a08-a208-fbc23e78a758", rdfs_label="N2 atmosphere")
+    ArAtmo                              = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_65b5af5d-349d-467c-bd14-b239d4e94376", rdfs_label="Ar atmosphere")
+    AirAtmo                             = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_bd2ef29a-1c5c-40eb-a9b2-84f1a3fda734", rdfs_label="Air atmosphere")
+    unknown_Atmo                        = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_1f70dc2c-5a37-491a-89ec-0897f9dcb7b8", rdfs_label="N/A")
     # unknowns
     yield_value                         = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_e60743f2-ba10-4cc3-ac54-aa13e6352d0a", hasNumericalValue=-1, hasUnit="N/A")
     yield_instance                      = AmountOfSubstanceFraction(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", hasValue=yield_value)
@@ -112,9 +112,9 @@ def upload_predefined():
     wash                                = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_61233c76-a0e5-4cb0-8c5c-ab8347955ea6", rdfs_label="washing")
     extraction                          = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_c6d7ff74-4bdb-47b8-bcd8-fc40d9fbfb87", rdfs_label="extraction")
     unknown_sep                         = SeparationType(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SeparationType_9ff2a8f7-3c9c-4419-9f3a-76b34d8629c0", rdfs_label="N/A")
-    
+    unknown_step                        = SynthesisStep(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SynthesisStep_ddb7ceda-13d2-461a-a63e-9e7df3116882", rdfs_comment="N/A")
     percentage                          = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/percent", rdfs_label="percent")
-    instances                           = [yield_value, yield_instance, unknown_mop, N2Atmo, column, extraction, unknown_sep, wash, centrifuge, ArAtmo, AirAtmo , unknown_Atmo, vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_min, duration_day, duration_h, duration_s, duration_week, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA, schlenk]
+    instances                           = [yield_value, unknown_step, yield_instance, unknown_mop, N2Atmo, column, extraction, unknown_sep, wash, centrifuge, ArAtmo, AirAtmo , unknown_Atmo, vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_min, duration_day, duration_h, duration_s, duration_week, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA, schlenk]
     push_component_to_kg(instances, client)
 
 def find_patterns_and_divide_multiply(text, multiplier_flag):
@@ -797,6 +797,9 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         chemicals_list.append(chemical_input)
         push_component_to_kg(components, synthesis_client)
         return separate, vessel_list, chemicals_list
+    else:
+        standard_class                                                  = SynthesisStep.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/SynthesisStep_ddb7ceda-13d2-461a-a63e-9e7df3116882", synthesis_client, recursive_depth=-1)[0]
+        return standard_class, vessel_list, chemicals_list
 
 def remove_na(input_candidate):
     if input_candidate == "N/A":
@@ -809,35 +812,7 @@ def update_alt_label(species, species_name):
         if name not in species.altLabel:
             species.altLabel.add(name)
     return species
-def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
-    # search the ontospecies and ontosynthesis blazegraphs for existing instances
-    species_iri                                             = str(uuid.uuid4())
-    triples                                                 = species_querying_ontosyn(client_synthesis, species_name)
-    print("OntoSpecies results: ", triples)
-    if triples == None or triples == []:
-        triples                                             = species_querying(client_species, species_name)
-        if triples == None or triples == []:
-            species                                         = Species(label=chemical_formula, altLabel=species_name)
-            # Ontospecies uses different base IRIs for rdf type and the actual instance IRI.
-            species.instance_iri                            = f"http://www.theworldavatar.com/kb/ontospecies/Species_{species_iri}"
-        else:
-            # when pulled from species we want to instantiate a new instance. The second time it is pulled the altlabels will be updated with new ones from the paper.
-            try:
-                species                                     = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
-            except:
-                # there already exists a species with the IRI but with different labels than before -> query syn kg and add label
-                species                                     = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
-                # update if not already saved (avoids 1000s of duplicates)
-                species                                     = update_alt_label(species, species_name=species_name)
-            #species                                         = update_alt_label(species, species_name=species_name)
 
-    else:
-        print("Success: ", triples[0]["Species"])
-        # species                                             = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
-        species                                             = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
-        # update if not already saved (avoids 1000s of duplicates)
-        species                                             = update_alt_label(species, species_name=species_name)
-    return species
 def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
     # search the ontospecies and ontosynthesis blazegraphs for existing instances
     species_iri                                             = str(uuid.uuid4())
@@ -850,7 +825,6 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
             # Ontospecies uses different base IRIs for rdf type and the actual instance IRI.
             species.instance_iri                            = f"http://www.theworldavatar.com/kb/ontospecies/Species_{species_iri}"
         else:
-            # when pulled from species we want to instantiate a new instance. The second time it is pulled the altlabels will be updated with new ones from the paper.
             try:
                 species                                     = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
             except:
@@ -870,28 +844,34 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
 
 def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, client_mop, client_synthesis):
     # query for existing mops either in the OntoMOPs ontology 
-    mop_iri                                 = mop_querying(client_mop, ccdc_number, chemical_formula, mop_names)
+    mop_iri                                 = mop_querying(client_synthesis, ccdc_number, chemical_formula, mop_names)
     # if no mop fits instantiate otherwise empty entry
     if mop_iri == []:
-        mop                                 = MetalOrganicPolyhedron.pull_from_kg("https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_59a84aed-e0df-496e-84d7-587af8326d71", client_synthesis)[0]
-    else:
-        # check if already in ontosynthesis
-        print("mop iri: ", mop_iri[0]["MOPIRI"])
-        mop                                 = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis, -1)
-        print("pulled mop: ", mop)
-        if mop == []:
-            mop                             = MetalOrganicPolyhedron(instance_iri=mop_iri[0]["MOPIRI"], hasCCDCNumber=ccdc_number, hasMOPFormula=chemical_formula, altLabel=mop_names)
+        mop_iri                             = mop_querying(client_mop, ccdc_number, chemical_formula, mop_names)
+        if mop_iri == []:
+            mop                             = MetalOrganicPolyhedron(hasCCDCNumber=ccdc_number, hasMOPFormula=chemical_formula, altLabel=mop_names)
         else:
-            print("mop: ", mop)
-            mop                             = update_alt_label(mop[0], mop_names)
+            # for unknown reason sometimes it fails to pull and returns iri, check if not list otherwise query again!
+            try:
+                mop                             = MetalOrganicPolyhedron(instance_iri=mop_iri[0]["MOPIRI"], hasCCDCNumber=ccdc_number, hasMOPFormula=chemical_formula, altLabel=mop_names)
+            except:
+                mop                             = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis,recursive_depth=-1)[0]
+                mop                             = update_alt_label(mop, mop_names)
+    else:
+        mop                                     = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"], client_synthesis,recursive_depth=-1)[0]
+        mop                                     = update_alt_label(mop, mop_names)
     # Yield
-    uuid_id                                 = str(uuid.uuid4())
-    unit                                    = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/percent", client_synthesis, recursive_depth=-1)[0]
+    uuid_id                                     = str(uuid.uuid4())
+    unit                                        = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/percent", client_synthesis, recursive_depth=-1)[0]
     print("yield number", yield_str)
-    yield_str                               = yield_str.replace('%', '')
-    yield_str                               = yield_str.replace("N/A", "-1")
-    yield_value                             = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_{uuid_id}", hasNumericalValue=float(yield_str), hasUnit=unit)
-    yield_instance                          = AmountOfSubstanceFraction(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/Yield_{uuid_id}", hasValue=yield_value)
+    yield_str                                   = yield_str.replace('%', '')
+    yield_str                                   = yield_str.replace("N/A", "-1")
+    try:
+        yield_val                               = float(yield_str)
+    except:
+        yield_val                               = -1
+    yield_value                                 = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_{uuid_id}", hasNumericalValue=yield_val, hasUnit=unit)
+    yield_instance                              = AmountOfSubstanceFraction(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/Yield_{uuid_id}", hasValue=yield_value)
     # output chemcial
     output_names                            = []
     print("mop names: ", mop_names)
@@ -960,17 +940,17 @@ def chemicals_upload_json(input_path, output_path, settings=None):
         mop_names.append(output_chemical["chemicalFormula"])
         mop_names.append(output_chemical["CCDCNumber"])
         syn_prod                                            = transformation_querying(client_synthesis, mop_names) 
-        print("yield: ",yield_instance) 
+        print("transformation: ",yield_instance) 
         chemical_synthesis                                  = ChemicalSynthesis(retrievedFrom=document, hasChemicalInput=chemical_list, hasYield=yield_instance) 
         # no entry => make a new one
         if syn_prod == []:
-
             chemical_transformation                         = ChemicalTransformation(hasChemicalOutput=chemical_output, isDescribedBy=chemical_synthesis)
         # otherwise use existing one
         else: 
+            print("transformation iri: ", syn_prod[0]["chemicalTrans"])
             chemical_transformation                         = ChemicalTransformation.pull_from_kg(syn_prod[0]["chemicalTrans"], sparql_client=client_synthesis, recursive_depth=-1)[0]
             chemical_transformation.isDescribedBy.add(chemical_synthesis)
-        components_output                                   = [chemical_transformation, chemical_synthesis, ]
+        components_output                                   = [chemical_transformation, chemical_synthesis]
         push_component_to_kg(components_output, client_synthesis)
 
 def elemental_analysis_upload(elemental_analysis, syn_client, chemical_output, molecular_formula, device):
@@ -1136,7 +1116,11 @@ def push_component_to_kg(instances:list, client, recursive_depth=-1):
 def steps_preupload(standard_step, synthesis_client, vessel_list):
     """Each step has a duration, atmosphere, and vessel except for filter that has no duration. -> The funciton computes the common instances."""
     print("standard step: ", standard_step)
-    step_time, time_unit                        = extract_numbers_and_units(standard_step["duration"], "add")
+    if "duration" in standard_step:
+        step_time, time_unit                    = extract_numbers_and_units(standard_step["duration"], "add")
+    else:
+        step_time                               = [-1]
+        time_unit                               = "N/A"
     id_hash_value                               = str(uuid.uuid4())
     # duration 
     duration_unit                               = get_unit(time_unit[0], synthesis_client) 

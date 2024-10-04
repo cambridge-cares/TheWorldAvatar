@@ -1261,7 +1261,7 @@ def chemicals(doi:str) -> dict:
 
     SELECT (GROUP_CONCAT(DISTINCT ?label; SEPARATOR=", ") AS ?labels) 
     WHERE {{	
-        ?Species skos:altLabel ?label .
+        ?Species <http://www.w3.org/2000/01/rdf-schema/label> ?label .
         ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
         ?SinglePhase <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
         ?Material <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehaviour> ?SinglePhase .
@@ -1400,12 +1400,6 @@ def process_papers():
     #processor               = XYZFileProcessor(os.path.abspath(os.path.join(script_dir, "../../Data/papers_with_si")), os.path.join(script_dir, "../../Data/"))
     #processor.process_files_in_directory(processor.transform_xyz_string)
     #processor.process_files_in_directory(processor.prepend_line_count)
-def remove_section(text, section_title):
-    # Define a regex pattern to match the section title and its content
-    pattern = re.compile(rf'{section_title}.*?(?=\n[A-Z])', re.DOTALL)
-    # Remove the section from the text
-    cleaned_text = re.sub(pattern, '', text)
-    return cleaned_text
 
 def append_si_to_paper(directory):
   # List all files in the directory
@@ -1435,57 +1429,4 @@ def append_si_to_paper(directory):
 
 # Example usage:
 if __name__ == "__main__":
-    input_pdf_path              = os.path.join(os.getcwd(), "../../Data/pdf_files/Synthetic Supercontainers Exhibit Distinct Solution versus Solid State Guest-Binding Behavior.pdf")
-    output_folder_path          = os.path.join(os.getcwd(), "../../Data/txt_files/")
-    chatgpt_answer_path         = "../../Data/gpt_txt/"
-    prompt                      = """Please extract the synthesis procedure for all the metal-organic polyhedra (MOPs) from the provided text.
-                                        Provide a word-for-word copy of each paragraph related to the synthesis procedures.
-                                        Only include the text from the input and do not add any additional information or commentary.
-
-                                        Here is the text: """
-    
-    prompt_syn                  = """   Provide a word-for-word copy of each paragraph related to synthesis procedures.
-                                        Answer the question as truthfully as possible using the provided context. 
-                                        Only include the text from the input and do not add any additional information or commentary.
-
-                                        Here is the text: """
-                                        
-    prompt_syn_2                = """   Provide a word-for-word copy of each paragraph related to synthesis procedures.
-                                        Please make sure to capture all the synthesis-related information. Occurrences of "°" should be written as deg.
-                                        Answer the question as truthfully as possible using the provided context. 
-                                        Only include the text from the input and do not add any additional information or commentary.
-
-                                        Here is the text: """
-    
-    prompt_syn_3                = """   Provide a word-for-word copy of each paragraph related to synthesis procedures.
-                                        Please make sure to capture the synthesis related information in the experimental section.
-                                        Answer the question as truthfully as possible using the provided context. 
-                                        Only include the text from the input and do not add any additional information or commentary.
-                                        Occurrences of "°" should be written as deg.
-
-                                        Here is the text: """
-
-    # Convert PDF to text
-    converter               = PdfConverter(input_pdf_path, output_folder_path)
-    #text, output_txt_path   = converter.convert_pdf_to_text()
-    input_text_path         = "../../Data/txt_with_si/10.1002_asia.201701647.txt"
-    # Extract the base name of the file (e.g., '10.1021_acs.inorgchem.8b01130.pdf')
-    base_name               = os.path.basename(input_text_path)
-    name, _                 = os.path.splitext(base_name)
-    text                    = converter.read_text_file(input_text_path)
-    doi                     = name.replace("_", "/")
-    mop_cbu                 = get_literature(doi)
-    print(mop_cbu)
-    
-    # Send the PDF text to ChatGPT
-    chatgpt_api             = ChatGPTAPI()
-    cost                    = 5e-6
-    model_name              = "gpt-4o-2024-05-13"
-    chatgpt_api.count_tokens_and_calculate_cost(text, model_name, cost)
-    response                = chatgpt_api.send_request(text, prompt_syn_3, model_name)
-
-    # Save the response
-    response_output_path    = os.path.join(output_folder_path, f"{name}_prompt1_4.txt")
-    converter.save_text_to_file(response, response_output_path)
-
-
+    print("main")
