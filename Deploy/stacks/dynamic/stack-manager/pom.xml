@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-manager</artifactId>
-    <version>1.37.3-separate-podman-client</version>
+    <version>1.37.4-separate-podman-client</version>
 
     <name>Stack Manager</name>
     <url>https://theworldavatar.io</url>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.37.3-separate-podman-client</version>
+            <version>1.37.4-separate-podman-client</version>
         </dependency>
 
         <dependency>
@@ -60,8 +60,7 @@
                     <archive>
                         <manifest>
                             <!-- These properties add the copied dependencies to the classpath so
-                            the .jar can
-              find them at runtime. -->
+                            the .jar can find them at runtime. -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>.</classpathPrefix>
                             <classpathLayoutType>repository</classpathLayoutType>
@@ -74,8 +73,7 @@
             </plugin>
             <plugin>
                 <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the
-                target
-        directory. -->
+                target directory. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>

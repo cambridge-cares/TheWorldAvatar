@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-clients</artifactId>
-    <version>1.37.3-separate-podman-client</version>
+    <version>1.37.4-separate-podman-client</version>
 
     <name>Stack Clients</name>
     <url>https://theworldavatar.io</url>
@@ -25,8 +25,6 @@
 
         <!--podman.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</podman.file-->
         <podman.file>${project.basedir}/src/main/swagger/podman/swagger-v4.3.yaml</podman.file>
-
-        <superset.file>${project.basedir}/src/main/swagger/superset/openapi.yaml</superset.file>
 
     </properties>
 
