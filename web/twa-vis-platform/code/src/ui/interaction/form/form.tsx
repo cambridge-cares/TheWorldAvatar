@@ -149,11 +149,12 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             .split(", ");
           if (matchingInstances[0] === "") {
             pendingResponse.success = false;
-            pendingResponse.message = "No matching feature(s) found! Please refine your search parameters.";
+            pendingResponse.message = "No matching feature found! Please refine your search parameters.";
+            dispatch(setFilterFeatureIris([]));
           } else {
             pendingResponse.message = "Found matching features! Updating the visualisation...";
+            dispatch(setFilterFeatureIris(matchingInstances));
           }
-          dispatch(setFilterFeatureIris(matchingInstances));
         }
         break;
       }

@@ -3,7 +3,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import { LayerSpecification, Map, Source } from 'mapbox-gl';
+import { Map } from 'mapbox-gl';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -12,7 +12,7 @@ import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import { selectDimensionSliderValue } from 'state/dimension-slider-slice';
-import { getFilterFeatureIris, getFilterLayerIds, getScenarioID } from 'state/map-feature-slice';
+import { getFilterFeatureIris, getFilterLayerIds, getScenarioID, setFilterFeatureIris, setFilterLayerIds } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import { MapSettings } from 'types/settings';
 import ScenarioModal from 'ui/interaction/modal/scenario';
@@ -101,8 +101,10 @@ export default function MapContainer(props: MapContainerProps) {
   // Update the filters for the specific layers if search is required
   useEffect(() => {
     if (map && mapData && filterLayerIds?.length > 0 && filterFeatureIris?.length > 0) {
-      // WIP extend the existing filter rather than overwrite
-      filterLayerIds.map(layerId => map.setFilter(layerId, ["in", ["get", "iri"], ...filterFeatureIris]));
+      filterLayerIds.map(layerId => map.setFilter(layerId, ["in", ["get", "iri"], ["literal", filterFeatureIris]]));
+      // Reset the filter features after usage
+      dispatch(setFilterFeatureIris([]));
+      dispatch(setFilterLayerIds([]));
     }
   }, [map, mapData, filterLayerIds, filterFeatureIris]);
 
