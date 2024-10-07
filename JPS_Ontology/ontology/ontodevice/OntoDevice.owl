@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>02 October 2024</dc:date>
+        <dc:date>07 October 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.6</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -2631,7 +2631,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
         <rdfs:comment>A spectrometer that measures ultraviolet and visible light.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
-        <rdfs:label>Ultraviolet-visible spectrometer</rdfs:label>
+        <rdfs:label>Ultraviolet visible spectrometer</rdfs:label>
     </owl:Class>
     
 
@@ -2738,7 +2738,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
         <rdfs:comment>A spectrometer that analyzes X-ray spectra.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
-        <rdfs:label>X-ray spectrometer</rdfs:label>
+        <rdfs:label>X ray spectrometer</rdfs:label>
     </owl:Class>
     
 
