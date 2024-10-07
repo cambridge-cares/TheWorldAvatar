@@ -3,7 +3,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import { Map } from 'mapbox-gl';
+import { FilterSpecification, Map } from 'mapbox-gl';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -20,6 +20,7 @@ import Ribbon from 'ui/interaction/ribbon/ribbon';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import { parseMapDataSettings } from 'utils/client-utils';
 import { useScenarioDimensionsService } from 'utils/data-services';
+import { SHOW_ALL_FEATURE_INDICATOR } from 'ui/interaction/modal/search/search-modal';
 
 // Type definition of incoming properties
 interface MapContainerProps {
@@ -101,7 +102,10 @@ export default function MapContainer(props: MapContainerProps) {
   // Update the filters for the specific layers if search is required
   useEffect(() => {
     if (map && mapData && filterLayerIds?.length > 0 && filterFeatureIris?.length > 0) {
-      filterLayerIds.map(layerId => map.setFilter(layerId, ["in", ["get", "iri"], ["literal", filterFeatureIris]]));
+      // If the SHOW_ALL_FEATURE_INDICATOR is added, the filters should be reset, else set the list of IRIs for filtering
+      const filter: FilterSpecification = filterFeatureIris?.length === 1 && filterFeatureIris[0] === SHOW_ALL_FEATURE_INDICATOR ?
+        null : ["in", ["get", "iri"], ["literal", filterFeatureIris]];
+      filterLayerIds.map(layerId => map.setFilter(layerId, filter));
       // Reset the filter features after usage
       dispatch(setFilterFeatureIris([]));
       dispatch(setFilterLayerIds([]));
