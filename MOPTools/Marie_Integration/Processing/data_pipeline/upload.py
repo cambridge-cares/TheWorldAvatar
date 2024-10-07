@@ -295,7 +295,7 @@ def species_querying(client, species_label):
     insert_string               = ""
     # Loop through each element in the list
     for label in species_label:
-        label = re.sub(r'[^\w\s,]', '', label)
+        #label = re.sub(r'[^\w\s,]', '', label)
         # Append each formatted element to the result string
         insert_string += f""" "{label}" """
     
@@ -376,7 +376,7 @@ def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
     # break down mop list of strings in a way to insert in a value sparql statement
     for label in mop_name:
         if label != "N/A" and label != "" and label != " " and label != 'lab':
-            label = re.sub(r'[^\w\s,]', '', label)
+            #label = re.sub(r'[^\w\s,]', '', label)
         # Append each formatted element to the result string
             insert_string += f""" "{label}" """
     # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
@@ -405,7 +405,7 @@ def transformation_querying(client, mop_name):
     for label in mop_name:
         # Append each formatted element to the result string
         if label != "N/A" and label != "" and label != " " and label != 'lab':
-            label = re.sub(r'[^\w\s,]', '', label)
+            #label = re.sub(r'[^\w\s,]', '', label)
             insert_string += f""" "{label}" """
     print("mop querying: ", insert_string)
     query = f"""
@@ -979,7 +979,7 @@ def extract_numbers_and_brackets(input_string):
         separated_strings = [s.strip() for s in input_string.split(",")]
         return separated_strings
         
-def characterisation_upload(input_path, output_path):
+def characterisation_upload(input_path, output_path, settings):
     filename_noext, subdir, syn_client, sparql_client_species, sparql_client_mop  = start_upload(input_path)
     subdir_name                                                 = subdir.split("_", 1)[0]
     characterisation_json                                       = read_json_file(f"../Data/{subdir_name}_characterisation/{filename_noext}.json")["Devices"][0]
@@ -994,15 +994,24 @@ def characterisation_upload(input_path, output_path):
     # synthesis specific information
     # http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CharacteristicPeak_f6cce625-9d69-4491-bd9d-b096114db7af
     for entry in characterisation_json["Characterisation"]:
+        print("entry: ", entry)
         mop_name                                                = entry["productNames"]
         mop_ccdc                                                = entry["productCCDCNumber"]
-        try:
-            transformation_iri                                  = transformation_querying(syn_client, mop_name=mop_name)[0]
-        except:
-            transformation_iri                                  = transformation_querying(syn_client, mop_name=mop_name)
+        print("mop_name1: ", mop_name)
+        mop_name.append(mop_ccdc)
+        print("mop names: ", mop_name, "ccdc:", mop_ccdc, "mop_name: ", mop_name)
+        transformation_iri                                      = transformation_querying(syn_client, mop_name=mop_name)
         if transformation_iri == []:
-            transformation_iri                                  = transformation_querying(syn_client, mop_name=mop_ccdc)[0]
-        chemical_transformation                                 = ChemicalTransformation.pull_from_kg(transformation_iri["chemicalTrans"], sparql_client=syn_client, recursive_depth=-1) 
+            # stop if no linkage with product is possible
+            continue
+        try:
+            chemical_transformation                                 = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client=syn_client, recursive_depth=1) 
+        except:
+            print("failed to pull IRI for: ", mop_name)
+            continue
+        if type(chemical_transformation) == str:
+            print("pulled iri only, continue")
+            continue
         chemical_output                                         = chemical_transformation[0].hasChemicalOutput
         # NMR
         nmr                                                     = entry['HNMR']
@@ -1012,12 +1021,10 @@ def characterisation_upload(input_path, output_path):
         for shift in nmr_shifts:
             if type(shift) != tuple:
                 nmr_peak                                        = CharacteristicPeak(hasX1=shift, rdfs_comment="")
-                nmr_peak.push_to_kg(syn_client, recursive_depth=-1)
             elif shift == "N/A" or shift == " N/A":
                 nmr_peak                                        = CharacteristicPeak.pull_from_kg("http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CharacteristicPeak_920795e4-f412-4ad6-807b-8da69519a332", syn_client, -1)
             else:
                 nmr_peak                                        = CharacteristicPeak(hasX1=shift[0], rdfs_comment=shift[1])
-                nmr_peak.push_to_kg(syn_client, recursive_depth=-1)
             nmr_peaks.append(nmr_peak)
             
         nmr_spectra_graph                                       = SpectraGraph(hasX1Axis="ppm", hasPeak=nmr_peaks)
@@ -1050,29 +1057,33 @@ def characterisation_upload(input_path, output_path):
             chem_out.has1H1HNMR.add(hnmr)
         push_component_to_kg(chemical_output, syn_client)
         # upload all
-        components                                              = [elemental_device, ir_device, calc_analysis_class, exp_analysis_class, spectra_graph, ft_spectra, hnmr, nmr_spectra_graph, solvent]
+        components                                              = [elemental_device, ir_device, calc_analysis_class, exp_analysis_class, spectra_graph, ft_spectra, hnmr, nmr_spectra_graph, solvent, chemical_transformation, chem_out]
         push_component_to_kg(components, syn_client)
     return
     
-def upload_cbu(input_path):    
+def upload_cbu(input_path, output_path, settings):    
     filename_noext, subdir, syn_client, sparql_client_species, sparql_client_mop  = start_upload(input_path)
     subdir_name                                                 = subdir.split("_", 1)[0]
-    cbu_json                                                    = read_json_file(f"../Data/{subdir_name}_cbu/{filename_noext}.json")
-    CCDC_num                                                    = cbu_json["mopFormula"]
-    species_iri_1                                               = species_querying(syn_client, cbu_json["cbuSpeciesNames1"])
-    species_iri_2                                               = species_querying(syn_client, cbu_json["cbuSpeciesNames2"])
-    species1                                                    = Species.pull_from_kg(species_iri_1[0]["Species"] ,syn_client,1)
-    species2                                                    = Species.pull_from_kg(species_iri_2[0]["Species"] ,syn_client,1)
-    cbu1                                                        = ChemicalBuildingUnit(hasCBUFormula=cbu_json["cbuFormula1"], isUsedAsChemical=species1)
-    cbu2                                                        = ChemicalBuildingUnit(hasCBUFormula=cbu_json["cbuFormula2"], isUsedAsChemical=species2)
-    mop_iri                                                     = mop_querying(syn_client, CCDC_num, "", "")
-    mop_instance                                                = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"] ,syn_client,1)
-    print("mop instance:", mop_instance)
-    mop_instance.hasChemicalBuildingUnit.add(cbu1)
-    mop_instance.hasChemicalBuildingUnit.add(cbu2)
-    print("mop instance", mop_instance)
-    components                                                  = [cbu1, cbu2, mop_instance]
-    #push_component_to_kg(components, syn_client)
+    cbu_json                                                    = read_json_file(f"../Data/{subdir_name}_cbu/{filename_noext}.json")["synthesisProcedures"]
+    print("json: ", cbu_json)
+    for product in cbu_json:
+        CCDC_num                                                    = product["mopFormula"]
+        print("species: ", product["cbuSpeciesNames1"])
+        species_iri_1                                               = species_querying(syn_client, product["cbuSpeciesNames1"])
+        species_iri_2                                               = species_querying(syn_client, product["cbuSpeciesNames2"])
+        species1                                                    = Species.pull_from_kg(species_iri_1[0]["Species"] ,syn_client,1)
+        species2                                                    = Species.pull_from_kg(species_iri_2[0]["Species"] ,syn_client,1)
+        cbu1                                                        = ChemicalBuildingUnit(hasCBUFormula=product["cbuFormula1"], isUsedAsChemical=species1)
+        cbu2                                                        = ChemicalBuildingUnit(hasCBUFormula=product["cbuFormula2"], isUsedAsChemical=species2)
+        mop_iri                                                     = mop_querying(syn_client, CCDC_num, "", "")
+
+        mop_instance                                                = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"] ,syn_client,1)[0]
+        print("mop instance:", mop_instance)
+        mop_instance.hasChemicalBuildingUnit.add(cbu1)
+        mop_instance.hasChemicalBuildingUnit.add(cbu2)
+        print("mop instance", mop_instance)
+        components                                                  = [cbu1, cbu2, mop_instance]
+        push_component_to_kg(components, syn_client)
 
     return
 
@@ -1189,7 +1200,7 @@ def upload_steps(input_path, output_path, settings =None):
         
         chemical_synthesis                                      = ChemicalSynthesis(hasSynthesisStep=step_list, retrievedFrom=document, hasChemicalInput=chemicals_list, hasYield=yield_instance) 
         chemical_transformation                                 = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=1)   
-        print("pulled transformation IRI")
+        print("pulled transformation IRI: ", chemical_transformation)
         chemical_transformation[0].isDescribedBy.add(chemical_synthesis)
         components                                              = [chemical_synthesis, chemical_transformation]
         print("Started pushing synthesis and transformation")
@@ -1214,7 +1225,7 @@ def upload(input_path, output_path):
     # uploadd steps
     upload_steps(input_path, "")
     # characterisation
-    #characterisation_upload(input_path, "")
+    characterisation_upload(input_path, "")
 
 def main():
     #input_path                                                  = "../Data/first10_prompt54/10.1002_anie.201900519.json"

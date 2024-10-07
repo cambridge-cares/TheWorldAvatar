@@ -1029,6 +1029,12 @@ class ChatGPTAPI:
                       "json_schema": {
                           "name": "chemicalSynthesis",
                           "schema": {
+                            "type": "object",
+                            "properties": {
+                            "synthesisProcedures": {
+                            "type": "array",
+                            "items": {
+                            
                               "type": "object",
                               "properties": {
                                   "mopFormula": {"type": "string"},
@@ -1049,7 +1055,9 @@ class ChatGPTAPI:
                                   "cbuSpeciesNames2"
                               ],
                               "additionalProperties": False  
-                          },
+                          }}},
+                        "required": ["synthesisProcedures"],
+                        "additionalProperties": False},
                       "strict": True
                       }
                   },
