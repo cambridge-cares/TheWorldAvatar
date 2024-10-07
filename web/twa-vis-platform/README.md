@@ -65,6 +65,7 @@ For deployment on the [TWA stack](https://github.com/cambridge-cares/TheWorldAva
 5. Populate this directory with your require visualisation configuration files
 6. Set up the [authorisation server](#4-authorisation) and update the relevant environment variables at `docker-compose.yml` if required.
 7. Start the stack as per usual
+8. If the visualisation is to go behind a reverse proxy at a path of a domain, then set the `BASE_PATH` prefix as the path of the visualisation. e.g. if your visualisation is going at `demo.theworldavatar.io/latest/demo` then set the `BASE_PATH` to `"/latest/demo"`
 
 > Custom Service
 
