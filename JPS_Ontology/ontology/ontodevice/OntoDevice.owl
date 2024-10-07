@@ -2631,7 +2631,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
         <rdfs:comment>A spectrometer that measures ultraviolet and visible light.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
-        <rdfs:label>Ultraviolet visible spectrometer</rdfs:label>
+        <rdfs:label>Ultraviolet-visible spectrometer</rdfs:label>
     </owl:Class>
     
 
@@ -2731,14 +2731,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Xray_Spectrometer -->
+    <!-- https://www.theworldavatar.com/kg/ontodevice/XRaySpectrometer -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Xray_Spectrometer">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/XRaySpectrometer">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
         <rdfs:comment>A spectrometer that analyzes X-ray spectra.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
-        <rdfs:label>X ray spectrometer</rdfs:label>
+        <rdfs:label>X-ray spectrometer</rdfs:label>
     </owl:Class>
     
 

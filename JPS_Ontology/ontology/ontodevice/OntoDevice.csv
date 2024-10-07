@@ -34,8 +34,8 @@ pHMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measures t
 Spectrometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device used to measure and analyze the spectrum of light.,https://www.theworldavatar.com/kg/ontodevice/,Spectrometer
 InfraredSpectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that analyzes infrared light spectra.,https://www.theworldavatar.com/kg/ontodevice/,Infrared spectrometer
 MassSpectrometer,Class,Spectrometer,IS-A,,,,A device used to measure the mass-to-charge ratio of ions.,https://www.theworldavatar.com/kg/ontodevice/,Mass spectrometer
-UltravioletVisibleSpectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that measures ultraviolet and visible light.,https://www.theworldavatar.com/kg/ontodevice/,Ultraviolet visible spectrometer
-Xray_Spectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that analyzes X-ray spectra.,https://www.theworldavatar.com/kg/ontodevice/,X ray spectrometer
+UltravioletVisibleSpectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that measures ultraviolet and visible light.,https://www.theworldavatar.com/kg/ontodevice/,Ultraviolet-visible spectrometer
+XRaySpectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that analyzes X-ray spectra.,https://www.theworldavatar.com/kg/ontodevice/,X-ray spectrometer
 GasSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the amount or existence of specific gas in the surrounding atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Gas sensor
 GravitySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.,https://www.theworldavatar.com/kg/ontodevice/,Gravity sensor
 CO2Sensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,CO2 sensor
