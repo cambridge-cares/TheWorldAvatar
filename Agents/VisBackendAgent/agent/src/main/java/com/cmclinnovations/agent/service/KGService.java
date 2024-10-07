@@ -158,7 +158,7 @@ public class KGService {
    */
   public Map<String, Object> queryForm(String query, Map<String, Object> defaultVals) {
     LOGGER.info("Querying the knowledge graph for the form template...");
-    ArrayNode results = queryJsonLd(query);
+    ArrayNode results = this.queryJsonLd(query);
     LOGGER.debug("Query is successfully executed. Parsing the results...");
     return this.formTemplateFactory.genTemplate(results, defaultVals);
   }
@@ -176,14 +176,14 @@ public class KGService {
   public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
     // Initialise a new queue to store all variables and add the first level right
     // away
-    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = queryNestedPredicates(shaclPathQuery);
+    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
 
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     String instanceQuery = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, targetId,
         hasParent);
     List<SparqlVariableOrder> varSequence = this.queryTemplateFactory.getSequence();
     LOGGER.debug("Querying the knowledge graph for the instances...");
-    Queue<SparqlBinding> instances = query(instanceQuery);
+    Queue<SparqlBinding> instances = this.query(instanceQuery);
     // If there is a variable sequence available, add the sequence to each binding,
     if (!varSequence.isEmpty()) {
       instances.forEach(instance -> instance.addSequence(varSequence));
@@ -199,7 +199,7 @@ public class KGService {
    */
   public String queryInstancesInCsv(String shaclPathQuery) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = queryNestedPredicates(shaclPathQuery);
+    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
     if (nestedVariablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
@@ -219,7 +219,7 @@ public class KGService {
    */
   public Queue<SparqlBinding> queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = queryNestedPredicates(shaclPathQuery);
+    Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
     if (nestedVariablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
@@ -227,7 +227,7 @@ public class KGService {
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     String searchQuery = this.queryTemplateFactory.genSearchTemplate(nestedVariablesAndPropertyPaths, criterias);
     LOGGER.debug("Querying the knowledge graph for the matching instances...");
-    return query(searchQuery);
+    return this.query(searchQuery);
   }
 
   /**
@@ -297,7 +297,7 @@ public class KGService {
     String firstExecutableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, "");
 
     LOGGER.debug("Executing for the first level of predicate paths and variables...");
-    Queue<SparqlBinding> variablesAndPropertyPaths = query(firstExecutableQuery);
+    Queue<SparqlBinding> variablesAndPropertyPaths = this.query(firstExecutableQuery);
     if (variablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
@@ -316,7 +316,7 @@ public class KGService {
       // path
       String executableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, replacementPath);
       // Execute and store the current level of predicate paths and variables
-      variablesAndPropertyPaths = query(executableQuery);
+      variablesAndPropertyPaths = this.query(executableQuery);
       nestedVariablesAndPropertyPaths.offer(variablesAndPropertyPaths);
       // Extend the replacement path with an /rdf:rest prefix for the next level
       replacementPath = RDF_LIST_PATH_PREFIX + replacementPath;
