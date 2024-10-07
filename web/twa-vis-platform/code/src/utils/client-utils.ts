@@ -7,8 +7,6 @@ import { DataParser } from 'io/data/data-parser';
 import { DataStore } from 'io/data/data-store';
 import { MapFeaturePayload, clearFeatures, setIri, setProperties, setStack } from 'state/map-feature-slice';
 import { JsonObject } from "types/json";
-import { OntologyConcept } from 'types/form';
-
 
 /**
  * Open full screen mode.
@@ -99,38 +97,4 @@ export function isValidIRI(iri: string): boolean {
  */
 export function getAfterDelimiter(str: string, delimiter: string): string {
     return str.includes(delimiter) ? str.split(delimiter).pop() : str;
-}
-
-/**
- * Reorder the array of concepts so that the matching concept is first.
- * 
- * @param {OntologyConcept[]} concepts Array of concepts for sorting.
- * @param {string} matchingValue Matching value input.
- */
-export function reorderConcepts(concepts: OntologyConcept[], matchingValue: string): OntologyConcept[] {
-    // Match either for label or type
-    const matchingIndex: number = concepts.findIndex(concept => concept.label.value === matchingValue || concept.type.value === matchingValue);
-    if (matchingIndex === -1) {
-        return concepts; // If no match is found, return the original
-    }
-
-    const [matchingItem] = concepts.splice(matchingIndex, 1);
-    return [matchingItem, ...concepts];
-}
-
-/**
- * Sort the concepts by their label in sequence.
- * 
- * @param {OntologyConcept[]} concepts Array of concepts for sorting.
- */
-export function sortConcepts(concepts: OntologyConcept[]): OntologyConcept[] {
-    return concepts?.toSorted((a, b) => {
-        if (a.label < b.label) {
-            return -1;
-        }
-        if (a.label > b.label) {
-            return 1;
-        }
-        return 0;
-    });
 }

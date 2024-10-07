@@ -18,7 +18,7 @@ export const LinkButtonToIRIPage = ({
   prefixPath,
 }: LinkButtonToIRIPageProps) => (
   <Link
-    href={`${prefixPath}/${encodeURIComponent(IRI)}`}
+    href={`${prefixPath}?iri=${encodeURIComponent(IRI)}`}
     className='hover:underline'
   >
     <Button variant='secondary'>View</Button>
