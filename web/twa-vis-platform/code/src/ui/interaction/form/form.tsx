@@ -145,15 +145,12 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
       case SEARCH_FORM_TYPE: {
         pendingResponse = await getMatchingInstances(props.agentApi, props.entityType, formData);
         if (pendingResponse.success) {
-          const matchingInstances: string[] = pendingResponse.message.slice(1, -1)  // Remove the brackets '[' and ']'
-            .split(", ");
-          if (matchingInstances[0] === "") {
+          if (pendingResponse.message.length === 0) {
             pendingResponse.success = false;
             pendingResponse.message = "No matching feature found! Please refine your search parameters.";
-            dispatch(setFilterFeatureIris([]));
           } else {
+            dispatch(setFilterFeatureIris(pendingResponse.message));
             pendingResponse.message = "Found matching features! Updating the visualisation...";
-            dispatch(setFilterFeatureIris(matchingInstances));
           }
         }
         break;
