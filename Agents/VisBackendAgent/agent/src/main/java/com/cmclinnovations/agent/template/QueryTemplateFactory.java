@@ -141,11 +141,11 @@ public class QueryTemplateFactory {
       String variable = currentLine.getKey();
       // Do not generate or act on any id query lines
       if (!variable.equals("id")) {
-        // note that if no criteria is passed in the API, the filter will not be added
+        // note that if no criteria or empty string is passed in the API, the filter will not be added
         if (criterias.containsKey(variable)) {
+          whereBuilder.append(currentLine.getValue());
           filters.append(genSearchCriteria(variable, criterias));
         }
-        whereBuilder.append(currentLine.getValue());
       }
     });
     String federatedWhereClause = this.genFederatedQuery(whereBuilder.append(filters).toString());
