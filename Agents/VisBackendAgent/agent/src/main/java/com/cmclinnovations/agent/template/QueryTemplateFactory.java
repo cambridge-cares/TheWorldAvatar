@@ -278,7 +278,7 @@ public class QueryTemplateFactory {
   private void genQueryLine(SparqlBinding binding, String multiPartPredicate,
       String multiPartSubPredicate, String multiPartLabelPredicate, boolean hasParent,
       Map<String, SparqlQueryLine> queryLineMappings) {
-    String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
+    String propertyName = binding.getFieldValue(NAME_VAR);
     // For existing mappings,
     if (queryLineMappings.containsKey(propertyName)) {
       SparqlQueryLine currentQueryLine = queryLineMappings.get(propertyName);
@@ -341,8 +341,9 @@ public class QueryTemplateFactory {
       StringBuilder currentLine = new StringBuilder();
       String jointPredicate = parsePredicate(queryLine.predicate(), queryLine.subPredicate());
       jointPredicate = parsePredicate(jointPredicate, queryLine.labelPredicate());
+      // Note to add a _ to the property
       StringResource.appendTriple(currentLine, "?iri", jointPredicate,
-          ShaclResource.VARIABLE_MARK + queryLine.property());
+          ShaclResource.VARIABLE_MARK + queryLine.property().replaceAll("\\s+", "_"));
 
       // Optional lines should be parsed differently
       if (queryLine.isOptional()) {
