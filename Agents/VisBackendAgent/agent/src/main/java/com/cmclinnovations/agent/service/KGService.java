@@ -22,6 +22,7 @@ import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlVariableOrder;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
+import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,6 +42,7 @@ public class KGService {
   private final FormTemplateFactory formTemplateFactory;
   private final QueryTemplateFactory queryTemplateFactory;
 
+  private static final String DEFAULT_NAMESPACE = "kb";
   private static final String JSON_MEDIA_TYPE = "application/json";
   private static final String LD_JSON_MEDIA_TYPE = "application/ld+json";
   private static final String SPARQL_MEDIA_TYPE = "application/sparql-query";
@@ -78,16 +80,29 @@ public class KGService {
   }
 
   /**
-   * Executes the query at the target endpoint to retrieve the original-format
-   * results.
+   * Overloaded method to query at the configured endpoint to retrieve the
+   * original-format results.
    * 
    * @param query the query for execution.
    * 
    * @return the query results.
    */
   public Queue<SparqlBinding> query(String query) {
+    return this.query(query, this.namespace);
+  }
+
+  /**
+   * Executes the query at the target endpoint to retrieve the original-format
+   * results.
+   * 
+   * @param query     the query for execution.
+   * @param namespace the target namespace.
+   * 
+   * @return the query results.
+   */
+  public Queue<SparqlBinding> query(String query, String namespace) {
     String results = this.client.post()
-        .uri(BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint())
+        .uri(BlazegraphClient.getInstance().getRemoteStoreClient(namespace).getQueryEndpoint())
         .accept(MediaType.valueOf(JSON_MEDIA_TYPE))
         .contentType(MediaType.valueOf(SPARQL_MEDIA_TYPE))
         .body(query)
@@ -111,13 +126,14 @@ public class KGService {
    * Executes the query at the target endpoint to retrieve results in the CSV
    * format.
    * 
-   * @param query the query for execution.
+   * @param query     the query for execution.
+   * @param namespace the target namespace.
    * 
    * @return the query results in the CSV format.
    */
-  public String queryCSV(String query) {
+  public String queryCSV(String query, String namespace) {
     return this.client.post()
-        .uri(BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint())
+        .uri(BlazegraphClient.getInstance().getRemoteStoreClient(namespace).getQueryEndpoint())
         .accept(MediaType.valueOf(CSV_MEDIA_TYPE))
         .contentType(MediaType.valueOf(SPARQL_MEDIA_TYPE))
         .body(query)
@@ -134,6 +150,9 @@ public class KGService {
    */
   public ArrayNode queryJsonLd(String query) {
     String results = this.client.post()
+        // JSON LD queries are used only for generating the form template, and thus,
+        // will always be executed on the blazegraph namespace (storing the SHACL
+        // restrictions)
         .uri(BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint())
         .accept(MediaType.valueOf(LD_JSON_MEDIA_TYPE))
         .contentType(MediaType.valueOf(SPARQL_MEDIA_TYPE))
@@ -174,16 +193,17 @@ public class KGService {
    *                       entities.
    */
   public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
+    String queryEndpoint = BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint();
     // Initialise a new queue to store all variables and add the first level right
     // away
     Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
-
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     String instanceQuery = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, targetId,
         hasParent);
+    instanceQuery = instanceQuery.replace(ShaclResource.REPLACEMENT_ENDPOINT, queryEndpoint);
     List<SparqlVariableOrder> varSequence = this.queryTemplateFactory.getSequence();
     LOGGER.debug("Querying the knowledge graph for the instances...");
-    Queue<SparqlBinding> instances = this.query(instanceQuery);
+    Queue<SparqlBinding> instances = this.query(instanceQuery, DEFAULT_NAMESPACE);
     // If there is a variable sequence available, add the sequence to each binding,
     if (!varSequence.isEmpty()) {
       instances.forEach(instance -> instance.addSequence(varSequence));
@@ -198,6 +218,7 @@ public class KGService {
    *                       the SHACL restrictions.
    */
   public String queryInstancesInCsv(String shaclPathQuery) {
+    String queryEndpoint = BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint();
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
     Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
     if (nestedVariablesAndPropertyPaths.isEmpty()) {
@@ -206,8 +227,9 @@ public class KGService {
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     String instanceQuery = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, false);
+    instanceQuery = instanceQuery.replace(ShaclResource.REPLACEMENT_ENDPOINT, queryEndpoint);
     LOGGER.debug("Querying the knowledge graph for the instances in csv format...");
-    return this.queryCSV(instanceQuery);
+    return this.queryCSV(instanceQuery, DEFAULT_NAMESPACE);
   }
 
   /**
@@ -218,6 +240,7 @@ public class KGService {
    * @param criterias      All the available search criteria inputs.
    */
   public Queue<SparqlBinding> queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
+    String queryEndpoint = BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace).getQueryEndpoint();
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
     Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
     if (nestedVariablesAndPropertyPaths.isEmpty()) {
@@ -226,8 +249,9 @@ public class KGService {
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     String searchQuery = this.queryTemplateFactory.genSearchTemplate(nestedVariablesAndPropertyPaths, criterias);
+    searchQuery = searchQuery.replace(ShaclResource.REPLACEMENT_ENDPOINT, queryEndpoint);
     LOGGER.debug("Querying the knowledge graph for the matching instances...");
-    return this.query(searchQuery);
+    return this.query(searchQuery, DEFAULT_NAMESPACE);
   }
 
   /**
@@ -297,7 +321,7 @@ public class KGService {
     String firstExecutableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, "");
 
     LOGGER.debug("Executing for the first level of predicate paths and variables...");
-    Queue<SparqlBinding> variablesAndPropertyPaths = this.query(firstExecutableQuery);
+    Queue<SparqlBinding> variablesAndPropertyPaths = this.query(firstExecutableQuery, this.namespace);
     if (variablesAndPropertyPaths.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
@@ -316,7 +340,7 @@ public class KGService {
       // path
       String executableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, replacementPath);
       // Execute and store the current level of predicate paths and variables
-      variablesAndPropertyPaths = this.query(executableQuery);
+      variablesAndPropertyPaths = this.query(executableQuery, this.namespace);
       nestedVariablesAndPropertyPaths.offer(variablesAndPropertyPaths);
       // Extend the replacement path with an /rdf:rest prefix for the next level
       replacementPath = RDF_LIST_PATH_PREFIX + replacementPath;

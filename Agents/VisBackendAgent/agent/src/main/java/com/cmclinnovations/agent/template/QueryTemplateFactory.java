@@ -76,6 +76,7 @@ public class QueryTemplateFactory {
     // Code starts after reset and validation
     LOGGER.info("Generating a query template for getting data...");
     StringBuilder query = new StringBuilder();
+    StringBuilder whereBuilder = new StringBuilder();
     // Extract the first binding class but it should not be removed from the queue
     String iriClassLine = genIriClassLine(bindings.peek().peek());
     this.sortBindings(bindings, hasParent);
@@ -94,12 +95,13 @@ public class QueryTemplateFactory {
           .append(variable.property())
           .append(" "));
     }
-    query.append(" WHERE {")
-        .append(iriClassLine);
-    this.queryLines.values().forEach(query::append);
-    this.appendOptionalIdFilters(query, filterId, hasParent);
+    query.append(" WHERE {");
+    whereBuilder.append(iriClassLine);
+    this.queryLines.values().forEach(whereBuilder::append);
+    this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
+    String federatedWhereClause = this.genFederatedQuery(whereBuilder.toString());
     // Close the query
-    return query.append("}").toString();
+    return query.append(federatedWhereClause).append("}").toString();
   }
 
   /**
@@ -127,12 +129,14 @@ public class QueryTemplateFactory {
     // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
     StringBuilder query = new StringBuilder();
+    StringBuilder whereBuilder = new StringBuilder();
     StringBuilder filters = new StringBuilder();
-    query.append("SELECT ?iri WHERE {")
-        // Extract the first binding class but it should not be removed from the queue
-        .append(genIriClassLine(bindings.peek().peek()));
+    query.append("SELECT ?iri WHERE {");
+    // Extract the first binding class but it should not be removed from the queue
+    String iriClassLine = genIriClassLine(bindings.peek().peek());
     this.sortBindings(bindings, false);
 
+    whereBuilder.append(iriClassLine);
     this.queryLines.entrySet().forEach(currentLine -> {
       String variable = currentLine.getKey();
       // Do not generate or act on any id query lines
@@ -141,11 +145,12 @@ public class QueryTemplateFactory {
         if (criterias.containsKey(variable)) {
           filters.append(genSearchCriteria(variable, criterias));
         }
-        query.append(currentLine.getValue());
+        whereBuilder.append(currentLine.getValue());
       }
     });
+    String federatedWhereClause = this.genFederatedQuery(whereBuilder.append(filters).toString());
     // Close the query
-    return query.append(filters).append("}").toString();
+    return query.append(federatedWhereClause).append("}").toString();
   }
 
   /**
@@ -179,6 +184,19 @@ public class QueryTemplateFactory {
     // Retrieve the target class from the first binding
     String targetClass = binding.getFieldValue(CLAZZ_VAR);
     return "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP;
+  }
+
+  /**
+   * Generates a federated query across ontop containers and with a replaceable
+   * endpoint [endpoint].
+   * 
+   * @param contents The SPARQL query contents.
+   */
+  private String genFederatedQuery(String contents) {
+    return "{?ontop a <https://theworldavatar.io/kg/service#Ontop>; <http://www.w3.org/ns/dcat#endpointURL> ?endpoint."
+        + "SERVICE ?endpoint {" + contents + "}" +
+        "} UNION {" +
+        "SERVICE <" + ShaclResource.REPLACEMENT_ENDPOINT + "> {" + contents + "}}";
   }
 
   /**

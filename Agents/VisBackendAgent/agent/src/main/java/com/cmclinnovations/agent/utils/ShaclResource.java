@@ -32,6 +32,7 @@ public class ShaclResource {
   // Query string elements
   public static final String FULL_STOP = ".";
   public static final String VARIABLE_MARK = "?";
+  public static final String REPLACEMENT_ENDPOINT = "[endpoint]";
 
   private ShaclResource(){
   }
