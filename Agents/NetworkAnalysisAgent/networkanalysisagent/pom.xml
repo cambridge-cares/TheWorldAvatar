@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>networkanalysisagent</artifactId>
@@ -64,7 +64,7 @@
                 </configuration>
             </plugin>
 
-                        <!-- Allows maven executions -->
+            <!-- Allows maven executions -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -107,31 +107,21 @@
             <artifactId>jps-base-lib</artifactId>
             <version>${jps.base.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>6.0.5</version>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
-            
+
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-core</artifactId>
-            
+
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-driver-remote</artifactId>
 
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-driver-bundle</artifactId>
-            <version>4.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
@@ -200,6 +190,12 @@
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
             <version>1.37.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
