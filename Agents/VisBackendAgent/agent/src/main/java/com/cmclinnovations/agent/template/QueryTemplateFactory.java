@@ -78,7 +78,7 @@ public class QueryTemplateFactory {
     StringBuilder query = new StringBuilder();
     StringBuilder whereBuilder = new StringBuilder();
     // Extract the first binding class but it should not be removed from the queue
-    String iriClassLine = genIriClassLine(bindings.peek().peek());
+    String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
     this.sortBindings(bindings, hasParent);
 
     query.append("SELECT ");
@@ -96,10 +96,9 @@ public class QueryTemplateFactory {
           .append(" "));
     }
     query.append(" WHERE {");
-    whereBuilder.append(iriClassLine);
     this.queryLines.values().forEach(whereBuilder::append);
     this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
-    String federatedWhereClause = this.genFederatedQuery(whereBuilder.toString());
+    String federatedWhereClause = this.genFederatedQuery(whereBuilder.toString(), targetClass);
     // Close the query
     return query.append(federatedWhereClause).append("}").toString();
   }
@@ -133,10 +132,9 @@ public class QueryTemplateFactory {
     StringBuilder filters = new StringBuilder();
     query.append("SELECT ?iri WHERE {");
     // Extract the first binding class but it should not be removed from the queue
-    String iriClassLine = genIriClassLine(bindings.peek().peek());
+    String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
     this.sortBindings(bindings, false);
 
-    whereBuilder.append(iriClassLine);
     this.queryLines.entrySet().forEach(currentLine -> {
       String variable = currentLine.getKey();
       // Do not generate or act on any id query lines
@@ -148,7 +146,7 @@ public class QueryTemplateFactory {
         }
       }
     });
-    String federatedWhereClause = this.genFederatedQuery(whereBuilder.append(filters).toString());
+    String federatedWhereClause = this.genFederatedQuery(whereBuilder.append(filters).toString(), targetClass);
     // Close the query
     return query.append(federatedWhereClause).append("}").toString();
   }
@@ -174,29 +172,22 @@ public class QueryTemplateFactory {
   }
 
   /**
-   * Generates the class restriction line of a query ie:
-   * ?iri a <clazz_iri>.
-   * 
-   * @param binding The SPARQL response queried from SHACL restrictions containing
-   *                the class.
-   */
-  private String genIriClassLine(SparqlBinding binding) {
-    // Retrieve the target class from the first binding
-    String targetClass = binding.getFieldValue(CLAZZ_VAR);
-    return "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP;
-  }
-
-  /**
    * Generates a federated query across ontop containers and with a replaceable
    * endpoint [endpoint].
    * 
    * @param contents The SPARQL query contents.
+   * @param targetClass Target class to reach.
    */
-  private String genFederatedQuery(String contents) {
+  private String genFederatedQuery(String contents, String targetClass) {
     return "{?ontop a <https://theworldavatar.io/kg/service#Ontop>; <http://www.w3.org/ns/dcat#endpointURL> ?endpoint."
-        + "SERVICE ?endpoint {" + contents + "}" +
+        + "SERVICE ?endpoint {"
+        // Ontop does not allow for variable path length, so that cannot be included in the ontop query
+        + "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP +
+        contents + "}" +
         "} UNION {" +
-        "SERVICE <" + ShaclResource.REPLACEMENT_ENDPOINT + "> {" + contents + "}}";
+        "SERVICE <" + ShaclResource.REPLACEMENT_ENDPOINT + "> {" +
+        "?iri a/rdfs:subClassOf* " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP
+        + contents + "}}";
   }
 
   /**
