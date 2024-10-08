@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   networkanalysisagent:
-    image: ghcr.io/cambridge-cares/networkanalysisagent:1.1.0
+    image: ghcr.io/cambridge-cares/networkanalysisagent:1.2.0-versions-SNAPSHOT
     build: .
     ports:
       - "10107:8080"

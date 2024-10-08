@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>networkanalysisagent</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0-versions-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <properties>
