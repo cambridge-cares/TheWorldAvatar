@@ -6,7 +6,7 @@ import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { Paths } from 'io/config/routes';
-import { FormOptionType, ID_KEY, PropertyShape, RegistryFieldValues, VALUE_KEY } from 'types/form';
+import { FormOptionType, ID_KEY, PropertyShape, RegistryFieldValues, SEARCH_FORM_TYPE, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
@@ -172,7 +172,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
             No {label} detected
           </p>
           )}
-          {(formType != Paths.REGISTRY && formType != Paths.REGISTRY_DELETE) && (
+          {(formType != Paths.REGISTRY && formType != Paths.REGISTRY_DELETE && formType != SEARCH_FORM_TYPE) && (
             <MaterialIconButton
               iconName={"add"}
               className={styles["button"] + " " + styles["button-layout"]}
