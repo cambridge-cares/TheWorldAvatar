@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import org.apache.commons.io.IOUtils;
 
-@WebServlet(urlPatterns = { TrajectoryQueryAgent.CREATE_LAYER_ROUTE, "/getDatesWithData", "/feature-info-agent/get" })
+@WebServlet(urlPatterns = { TrajectoryQueryAgent.CREATE_LAYER_ROUTE, "/getDatesWithData" })
 public class TrajectoryQueryAgent extends JPSAgent {
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private static final String USER_ID = "userID";
