@@ -167,11 +167,13 @@ An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleTim
 
 #### Trajectory queries
 
-`pointIriQuery`: Contents must contain one SELECT parameter, can be named anything, this is an example - [point_query.sparql](./sample/fia/point_query.sparql). Query template must contain `[IRI]` that will be replaced with the ABox IRI. Data type of time series must be PostGIS point. If query returns more than one IRI, results will be combined and sorted according to time.
+In summary, the FIA runs three queries sequentially to generate the final metadata for a selected trajectory. The first query should return IRIs that contain time series data in the form of PostGIS points, the FIA will use these IRIs to obtain the recorded points using the TimeSeriesClient. The FIA will construct a line based on the queried points, and use this line in the second query to find the list of intersected features with this line. The FIA will inject the IRIs from the second query (intersected features) into the final query to obtain the final metadata for display.
+
+`pointIriQuery`: Contents must contain one SELECT parameter, can be named anything, this is an example - [point_query.sparql](./sample/fia/point_query.sparql). The returned instances of this query must contain time series data stored as PostGIS points, the IRIs should be the measurables, similar to [queries for measurables](#queries-for-measurables-time-series). If the query returns more than one IRI, results will be combined and sorted according to time.
 
 `featureIriQuery`: Both SQL and SPARQL are allowed, the FIA is able to detect the query type. Contents must containe one SELECT parameter, can be named anything. Should contain the placeholder `[LINE_WKT]` for FIA to insert the WKT literal of trajectory. Two examples are given - [SPARQL version](./sample/fia/feature_query.sparql) and [SQL version](./sample/fia/feature_query.sql). Be sure to handle any SRID transformation if necessary.
 
-`metaQuery`: Query template must contain a variable `?Feature` in the WHERE clause. FIA will add a VALUES clause with the feature IRIs from the previous query, e.g. `VALUES ?Feature {<http://feature1> <http://feature2>}`. The SELECT parameters follow the requirements of the standard meta data queries, i.e. the first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`; any other columns are currently ignored.
+`metaQuery`: Query template must contain a variable `?Feature` in the WHERE clause. FIA will add a VALUES clause with the feature IRIs from the previous query, e.g. `VALUES ?Feature {<http://feature1> <http://feature2>}`. The SELECT parameters follow the requirements of the standard meta data queries, i.e. the first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`; any other columns are currently ignored. [Here](./sample/fia/trajectory_meta.sparql) is an example.
 
 ## Requests
 
