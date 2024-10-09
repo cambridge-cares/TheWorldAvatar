@@ -151,6 +151,10 @@ public class TrajectoryHandler {
     private List<String> getFeatures(String queryString, String trajectoryDatabase) {
         List<String> featureIriList = new ArrayList<>();
         if (isSparql(queryString)) {
+            queryString = Utils.queryInject(queryString, iri,
+                    configStore.getStackEndpoints(StackEndpointType.ONTOP),
+                    Utils.getBlazegraphEndpoints(configStore, enforcedEndpoint));
+
             String queryParameter = getSparqlQuerySelectParameter(queryString);
             List<String> endpoints = Utils.getBlazegraphURLs(configStore, enforcedEndpoint);
             JSONArray queryResult;
@@ -186,9 +190,11 @@ public class TrajectoryHandler {
     }
 
     private JSONArray getMetadata(String queryTemplate, List<String> featureIriList) {
-        String ontopURL = "<" + configStore.getStackEndpoints(StackEndpointType.ONTOP).get(0).url() + ">";
+        String queryString = Utils.queryInject(queryTemplate, iri,
+                configStore.getStackEndpoints(StackEndpointType.ONTOP),
+                Utils.getBlazegraphEndpoints(configStore, enforcedEndpoint));
 
-        Query query = QueryFactory.create(queryTemplate.replace("[ONTOP]", ontopURL));
+        Query query = QueryFactory.create(queryString);
 
         if (checkIfVariableExists(query, FEATURE_VARIABLE_NAME)) {
             // add VALUES ?Feature {<feature1> <feature2> <feature3>} to query
