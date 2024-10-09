@@ -1,11 +1,11 @@
 import styles from '../form.module.css';
 import fieldStyles from '../field/field.module.css';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { ID_KEY, PropertyShape, RegistryFieldValues, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
@@ -31,6 +31,7 @@ interface DependentFormSectionProps {
 export function DependentFormSection(props: Readonly<DependentFormSectionProps>) {
   const router = useRouter();
   const label: string = props.dependentProp.name[VALUE_KEY];
+  const queryEntityType: string = label.trim().replace(/\s+/g, "_"); // Ensure that all spaces are replaced with _
   const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const control: Control = props.form.control;
   const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -54,27 +55,6 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
     name: props.dependentProp.fieldId,
   });
 
-  // Retrieve the query entity type based on the class input
-  const getQueryEntityType = (entityClass: string): string => {
-    if (entityClass) {
-      if (entityClass.endsWith("FormalOrganization")) {
-        return "client";
-      } else if (entityClass.endsWith("Facility")) {
-        return "facility";
-      } else if (entityClass.endsWith("ServiceProvider")) {
-        return "serviceprovider";
-      } else if (entityClass.endsWith("Employee")) {
-        return "employee";
-      }
-    }
-    return "";
-  };
-
-  // Cache the result to reduce rerender calls
-  const queryEntityType: string = useMemo(
-    () => getQueryEntityType(props.dependentProp.class[ID_KEY]),
-    [props.dependentProp.class[ID_KEY]]
-  );
 
   // A hook that fetches the list of dependent entities for the dropdown selector
   // If parent options are available, the list will be refetched on parent option change
@@ -89,7 +69,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
           entities = await getData(props.agentApi, parentField, getAfterDelimiter(currentParentOption, "/"), entityType);
         }
         // If there is no valid parent option, there should be no entity
-      } else if (formType === PathNames.REGISTRY || formType === PathNames.REGISTRY_DELETE) {
+      } else if (formType === Paths.REGISTRY || formType === Paths.REGISTRY_DELETE) {
         // Retrieve only one entity to reduce query times as users cannot edit anything in view or delete mode
         entities = await getData(props.agentApi, entityType, getAfterDelimiter(field.defaultValue.value, "/"));
       } else {
@@ -117,7 +97,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   // An event handler that will navigate to the required add form when clicked
   const openAddSubEntityModal = () => {
     let url: string = `../add/${queryEntityType}`;
-    if (formType != PathNames.REGISTRY_ADD) {
+    if (formType != Paths.REGISTRY_ADD) {
       url = `../${url}`;
     }
     router.push(url);
@@ -127,7 +107,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
   const openViewSubEntityModal = () => {
     let url: string = `../view/${queryEntityType}/${getAfterDelimiter(currentOption, "/")}`;
     // Other form types will have an extra path for the entity id, except for ADD
-    if (formType != PathNames.REGISTRY_ADD) {
+    if (formType != Paths.REGISTRY_ADD) {
       url = `../${url}`;
     }
     router.push(url);
@@ -152,7 +132,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
                 selectOptions={selectElements.map(entity => entity.id.value)}
                 selectLabels={selectElements.map(entity => entity.name?.value ?? entity.first_name?.value)}
                 options={{
-                  disabled: formType == PathNames.REGISTRY || formType == PathNames.REGISTRY_DELETE
+                  disabled: formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE
                 }}
                 styles={{
                   label: [styles["form-input-label"]],
@@ -173,7 +153,7 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
             No {label} detected
           </p>
           )}
-          {(formType != PathNames.REGISTRY && formType != PathNames.REGISTRY_DELETE) && (
+          {(formType != Paths.REGISTRY && formType != Paths.REGISTRY_DELETE) && (
             <MaterialIconButton
               iconName={"add"}
               className={styles["button"] + " " + styles["button-layout"]}

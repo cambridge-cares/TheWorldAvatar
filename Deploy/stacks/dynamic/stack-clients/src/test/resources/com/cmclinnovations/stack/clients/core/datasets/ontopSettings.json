@@ -1,0 +1,6 @@
+{
+    "rules": [
+        "rules.toml",
+        "rules2.toml"
+    ]
+}

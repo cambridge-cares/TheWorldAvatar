@@ -10,8 +10,11 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Build;
+import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import org.apache.log4j.Logger;
@@ -55,7 +58,18 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     /**
      * Starts location and pressure data updates. Requires fine location permission to function properly.
      */
+    @Override
     public void start() {
+        startLocationUpdates();
+    }
+
+    // Overloaded start method that takes an Integer parameter
+    public void start(Integer integer) {
+        startLocationUpdates();
+    }
+
+    // Private method to encapsulate the logic for starting location updates
+    private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             LOGGER.warn("Location permission not granted. Location handler failed to start. Request for permission should be handled in fragment.");
             return;
@@ -72,7 +86,6 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
         }
         this.isRunning = true;
     }
-
     /**
      * Stops location and pressure data updates.
      */
@@ -164,4 +177,35 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     public SensorType getSensorType() {
         return SensorType.LOCATION;
     }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        LOGGER.info("Location provider enabled: " + provider);
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        LOGGER.info("Location provider disabled: " + provider);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        String statusMessage;
+        switch (status) {
+            case LocationProvider.OUT_OF_SERVICE:
+                statusMessage = "Provider out of service";
+                break;
+            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                statusMessage = "Provider temporarily unavailable";
+                break;
+            case LocationProvider.AVAILABLE:
+                statusMessage = "Provider available";
+                break;
+            default:
+                statusMessage = "Provider status changed: " + status;
+                break;
+        }
+        LOGGER.info("Location provider " + provider + ": " + statusMessage);
+    }
+
 }

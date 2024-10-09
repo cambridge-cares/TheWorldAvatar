@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { FieldValues, useForm, UseFormReturn } from 'react-hook-form';
 import { usePathname } from 'next/navigation';
 
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { FormTemplate, ID_KEY, PROPERTY_GROUP_TYPE, PropertyGroup, PropertyShape, PropertyShapeOrGroup, TYPE_KEY, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
-import { HttpResponse, addEntity, deleteEntity, getFormTemplate, updateEntity } from 'utils/server-actions';
+import { HttpResponse, addEntity, deleteEntity, getFormTemplate, getMatchingInstances, updateEntity } from 'utils/server-actions';
 import { FORM_STATES, initFormField } from './form-utils';
 import FormFieldComponent from './field/form-field';
 import FormSection from './section/form-section';
 import { DependentFormSection } from './section/dependent-form-section';
 import FormSchedule from './section/form-schedule';
+import { useDispatch } from 'react-redux';
+import { setFilterFeatureIris } from 'state/map-feature-slice';
 
 interface FormComponentProps {
   formRef: React.MutableRefObject<HTMLFormElement>;
@@ -34,9 +36,10 @@ interface FormComponentProps {
  */
 export function FormComponent(props: Readonly<FormComponentProps>) {
   const id: string = getAfterDelimiter(usePathname(), "/");
+  const dispatch = useDispatch();
   const [formTemplate, setFormTemplate] = useState<FormTemplate>(null);
   const [shapeToFieldName, setShapeToFieldName] = useState<Map<string, string>>(new Map<string, string>());
-  const disableAllInputs: boolean = props.formType === PathNames.REGISTRY || props.formType === PathNames.REGISTRY_DELETE;
+  const disableAllInputs: boolean = props.formType === Paths.REGISTRY || props.formType === Paths.REGISTRY_DELETE;
 
   // Sets the default value with the requested function call
   const form: UseFormReturn = useForm({
@@ -49,7 +52,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
       // Retrieve template from APIs
       let template: FormTemplate;
       // For add form, get a blank template
-      if (props.formType == PathNames.REGISTRY_ADD) {
+      if (props.formType == Paths.REGISTRY_ADD) {
         template = await getFormTemplate(props.agentApi, props.entityType);
       } else {
         // For edit and view, get template with values
@@ -115,16 +118,31 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
     }
 
     switch (props.formType.toLowerCase()) {
-      case PathNames.REGISTRY_ADD: {
+      case Paths.REGISTRY_ADD: {
         pendingResponse = await addEntity(props.agentApi, formData, props.entityType);
         break;
       }
-      case PathNames.REGISTRY_DELETE: {
+      case Paths.REGISTRY_DELETE: {
         pendingResponse = await deleteEntity(props.agentApi, formData[FORM_STATES.ID], props.entityType);
         break;
       }
-      case PathNames.REGISTRY_EDIT: {
+      case Paths.REGISTRY_EDIT: {
         pendingResponse = await updateEntity(props.agentApi, formData, props.entityType);
+        break;
+      }
+      case Paths.SEARCH: {
+        pendingResponse = await getMatchingInstances(props.agentApi, props.entityType, formData);
+        if (pendingResponse.success) {
+          const matchingInstances: string[] = pendingResponse.message.slice(1, -1)  // Remove the brackets '[' and ']'
+            .split(", ");
+          if (matchingInstances[0] === "") {
+            pendingResponse.success = false;
+            pendingResponse.message = "No matching feature(s) found! Please refine your search parameters.";
+          } else {
+            pendingResponse.message = "Found matching features! Updating the visualisation...";
+          }
+          dispatch(setFilterFeatureIris(matchingInstances));
+        }
         break;
       }
       default:
@@ -166,7 +184,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             />
           } else {
             const fieldProp: PropertyShape = field as PropertyShape;
-            const disableId: boolean = props.formType === PathNames.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
+            const disableId: boolean = props.formType === Paths.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
             if (fieldProp.class) {
               return <DependentFormSection
                 key={fieldProp.name[VALUE_KEY] + index}

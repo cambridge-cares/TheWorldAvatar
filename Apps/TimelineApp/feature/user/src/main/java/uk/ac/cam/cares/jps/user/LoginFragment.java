@@ -41,7 +41,7 @@ import uk.ac.cam.cares.jps.user.viewmodel.SensorViewModel;
  */
 @AndroidEntryPoint
 public class LoginFragment extends Fragment {
-    private static final Logger LOGGER = LogManager.getLogger(LoginFragment.class);
+    static final Logger LOGGER = LogManager.getLogger(LoginFragment.class);
 
     private FragmentLoginBinding binding;
     private LoginViewModel loginViewModel;

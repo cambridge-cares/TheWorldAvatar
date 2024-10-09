@@ -40,11 +40,27 @@ def create_app(testing=False):
             )
 
 
-    @app.route('/data', methods=['GET'])
-    def get_data():
+    @app.route('/timeseries_data', methods=['GET'])
+    def get_timeseries_data():
         try:
             response = app.response_class(
                 response=json.dumps(agent.get_data()),
+                status=200,
+                mimetype='application/json'
+            )
+            return response
+        except Exception as e:
+            app.logger.debug('get data error: %s', e)
+            return Response(
+                str(e),
+                status=500
+            )
+
+    @app.route('/meta_data', methods=['GET'])
+    def get_meta_data():
+        try:
+            response = app.response_class(
+                response=json.dumps(agent.query_meta_data()),
                 status=200,
                 mimetype='application/json'
             )

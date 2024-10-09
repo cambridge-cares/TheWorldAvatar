@@ -32,6 +32,7 @@ public final class StackClient {
     private static final String stackName;
 
     private static final Map<String, String> stackNameLabelMap;
+    private static String hostPath;
 
     static {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
@@ -137,6 +138,14 @@ public final class StackClient {
 
         return new TimeSeriesClient<>(remoteStoreClient, timeClass,
                 postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());
+    }
+
+    public static void setHostPath(String hostPath) {
+        StackClient.hostPath = hostPath;
+    }
+
+    public static String getHostPath() {
+        return hostPath;
     }
 
 }

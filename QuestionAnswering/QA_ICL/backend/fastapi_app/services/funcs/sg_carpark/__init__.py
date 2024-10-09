@@ -36,11 +36,10 @@ class SGCarparkFuncExecutor(Name2Func):
 
         timestamp = time.time()
 
-        vars, bindings = self.nearest_carpark_locator.locate(
+        _, bindings = self.nearest_carpark_locator.locate(
             lat=place.lat, lon=place.lon
         )
 
-        vars.extend(["LotAvailability", "Time"])
         for binding in bindings:
             carpark_feature_info = self.carpark_feature_info_client.query(
                 iri=binding["Carpark"]
@@ -51,7 +50,7 @@ class SGCarparkFuncExecutor(Name2Func):
             binding["LotAvailability"] = carpark_feature_info.time[0].values[0][-1]
             binding["Time"] = carpark_feature_info.time[0].time[-1]
 
-        data = [TableData.from_vars_and_bindings(vars=vars, bindings=bindings)]
+        data = [TableData.from_data(bindings)]
 
         return data
 

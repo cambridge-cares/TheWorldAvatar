@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
-import { PathNames, PageTitles, Modules } from 'io/config/routes';
+import { Paths, PageTitles, Modules } from 'io/config/routes';
 import { DefaultSettings } from 'types/settings';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 
@@ -37,6 +37,6 @@ export default function DashContainer() {
       </div>
     )
   } else {
-    redirect(PathNames.HOME);
+    redirect(Paths.HOME);
   }
 }

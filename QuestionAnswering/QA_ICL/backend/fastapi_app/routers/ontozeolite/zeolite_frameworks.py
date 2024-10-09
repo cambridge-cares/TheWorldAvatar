@@ -52,7 +52,7 @@ async def getZeoliteFrameworks(
 
 
 @router.get(
-    "/{iri:path}/cif",
+    "/cif",
     summary="Get zeolite framework's CIF geometry file",
     response_class=CIFResponse,
 )
@@ -71,7 +71,7 @@ async def getZeoliteFrameworkCIF(
 
 
 @router.get(
-    "/{iri:path}",
+    "/one",
     summary="Get zeolite framework",
     response_model=OntozeoliteZeoliteFramework,
     response_model_exclude_none=True,

@@ -12,13 +12,17 @@ interface ResponseComponentProps<> {
  * @param {HttpResponse} response Response to display.
  */
 export default function ResponseComponent(props: Readonly<ResponseComponentProps>) {
-  const textColor: string = props.response.success ? "#52B7A5" : "#D7653D";
-  return (
-    <div style={{ color: textColor, overflowY: "auto" }}>
-      <span>{props.response.message}</span>
-      {!props.response.success && (<>
-        <br /><br /><span>Contact your technical team if assistance is required.</span>
-      </>)}
-    </div>
-  );
+  if (props.response) {
+    const textColor: string = props.response?.success ? "#52B7A5" : "#D7653D";
+    return (
+      <div style={{ color: textColor, overflowY: "auto", width: "100%" }}>
+        <span>{props.response.message}</span>
+        {!props.response.success && (<>
+          <br /><br /><span>Contact your technical team if assistance is required.</span>
+        </>)}
+      </div>
+    );
+  } else {
+    return <div></div>;
+  }
 }

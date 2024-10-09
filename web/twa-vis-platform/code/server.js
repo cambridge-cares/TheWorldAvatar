@@ -110,14 +110,9 @@ app.prepare().then(() => {
     const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
     roleProtectedPages.forEach(page => {
       server.get(page, keycloak.protect(process.env.ROLE));
+      console.log('protecting page', page, 'with role', process.env.ROLE);
     });
   }
-
-  // Serve static files from the 'uploads' directory, allowing for runtime configuration via the environment variable
-  server.use(
-    "/uploads",
-    express.static(process.env.UPLOADS_PATH || "../uploads")
-  );
 
   // Handle all other requests using Next.js
   server.all("*", (req, res) => {
