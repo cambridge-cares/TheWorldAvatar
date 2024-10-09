@@ -107,8 +107,6 @@ class IsRepeated(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class AltLabel(DatatypeProperty):
     rdfs_isDefinedBy                    = SKOS
-class Label(DatatypeProperty):
-    rdfs_isDefinedBy                    = RDFS
 class HasUnit(ObjectProperty):
     rdfs_isDefinedBy                    = OM2
 class HasOrder(DatatypeProperty):
@@ -313,11 +311,9 @@ class ElementWeightPercentage(BaseClass):
 class ElementalAnalysis(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
     hasElementWeightPercentage          : Optional[HasElementWeightPercentage[ElementWeightPercentage]]           = set()
-class ElementalAnalysisDevice(BaseClass):
-    rdfs_isDefinedBy                    = OntoSpecies
 class ExperimentalElementalAnalysis(ElementalAnalysis):
     rdfs_isDefinedBy                    = OntoSpecies
-    hasElementalDevice                  : Optional[HasElementalDevice[ElementalAnalysisDevice]]         = set()
+    hasElementalDevice                  : Optional[HasElementalDevice[InstrumentType]]         = set()
 class MolecularFormula(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
     value                               : Optional[Value[str]]                                          = set()
@@ -326,7 +322,6 @@ class AnalyticalElementalAnalysis(ElementalAnalysis):
     isBasedOnMolecularFormula           : Optional[IsBasedOnMolecularFormula[MolecularFormula]]         = set()
 class Species(BaseClass):
     rdfs_isDefinedBy                    = OntoSpecies
-    label                               : Optional[Label[str]]                              = set()
     altLabel                            : Optional[AltLabel[str]]                           = set()
     has1H1HNMR                          : Optional[Has1H1HNMR[HNMRSpectra]]                 = set()
     hasFourierTransformSpectrum         : Optional[HasFourierTransformSpectrum[FourierTransformSpectrum]]   = set()
@@ -384,7 +379,6 @@ class SynthesisStep(BaseClass):
     rdfs_isDefinedBy                    = OntoSyn
     hasVessel                           : Optional[HasVessel[Vessel]]                               = set()
     hasOrder                            : Optional[HasOrder[int]]                                   = set() 
-    hasExecutionPoint                   : Optional[HasExecutionPoint[ExecutionPoint]]               = set() 
     hasVesselEnvironment                : Optional[HasVesselEnvironment[VesselEnvironment]]         = set()
     hasStepDuration                     : Optional[HasStepDuration[Duration]]                       = set()
 class AmountOfSubstanceFraction(BaseClass):
