@@ -125,19 +125,14 @@ public class ClassHandler {
                 configStore.getStackEndpoints(StackEndpointType.ONTOP),
                 Utils.getBlazegraphEndpoints(configStore, request.getEndpoint()));
 
-        // Run query
-        List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.getEndpoint());
-        JSONArray jsonResult = null;
-
-        if(endpoints.size() == 1) {
-            LOGGER.debug("Running non-federated class determination query.");
-            kgClient.setQueryEndpoint(endpoints.get(0));
-            jsonResult = kgClient.executeQuery(queryString);
-
-        } else {
-            LOGGER.debug("Running federated class determination query.");
-            jsonResult = kgClient.executeFederatedQuery(endpoints, queryString);
-        }
+         // Run query
+         List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.getEndpoint());
+         JSONArray jsonResult = null;
+ 
+         LOGGER.debug("Running class determination query.");
+         kgClient.setQueryEndpoint(endpoints.stream().filter(s -> s.contains("/kb/")).findFirst()
+            .orElseThrow(()->new RuntimeException("No 'kb' namespace present")));
+         jsonResult = kgClient.executeQuery(queryString);
 
         // Parse and return class IRIs
         return parseJSON(jsonResult);
