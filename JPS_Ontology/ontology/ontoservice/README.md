@@ -55,7 +55,7 @@ The namespace for the ontology is:
 
 The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients. This section has been split into several aspects to improve readability and understanding of the concepts - namely, (1) service agreement duration and parties, (2) payment obligations, (3) service commitment and (4) lifecycle.
 
-The service agreement will first define the duration, parties involved, requested service and location. The representation of the service location enables the association of facility to a specific building with their own geolocation as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)).
+The service agreement will first define the duration, parties involved, requested service and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)).
 
 Figure 1: TBox representation for a Service Agreement following the FIBO ontology
 
@@ -69,9 +69,9 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
         rdfs-label label_string
         rdfs-comments description_string
     }
-    "fibo-fnd-pas-pas:Service" ||--|| "ontobim:Facility" : "ontoservice:services"
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
 
+    "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
     "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
     "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-adr:hasAddress"
     "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"

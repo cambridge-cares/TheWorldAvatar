@@ -55,6 +55,13 @@
     
 
 
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt -->
+
+
+    <owl:ObjectProperty rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt"/>
+    
+
+
     <!-- https://www.omg.org/spec/Commons/Classifiers/classifies -->
 
 
@@ -233,6 +240,20 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation">
+        <rdfs:subPropertyOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
+        <rdfs:comment>A relationship describing the service location, typically a point, within the building or site.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>has service location</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/hasTimeSlot -->
 
 
@@ -281,19 +302,6 @@
         <rdfs:comment>A relationship describing the contact point for another service.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>serves as contact for</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/services -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/services">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
-        <rdfs:comment>A relationship describing the facility that the service should be executed on.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>services</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -394,6 +402,13 @@
     
 
 
+    <!-- https://w3id.org/bot#Zone -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
+    
+
+
     <!-- https://www.omg.org/spec/Commons/DatesAndTimes/ExplicitTimePeriod -->
 
 
@@ -401,10 +416,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
+    <!-- https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    <owl:Class rdf:about="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
     
 
 
