@@ -21,7 +21,6 @@ At the time of writing, the FIA has a few restrictions that all deploying develo
 - The FIA can only be run within a [TWA Stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 - The FIA can only report meta and time data that is contained within the same stack as the agent itself.
 - The FIA can only return time series data on series that uses the [Instant](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html) class.
-  - This is due to a limitation with the underlying TimeseriesClient class from the JPS Base Library.
 
 ### Class discovery
 
@@ -85,6 +84,7 @@ The configuration file should be a JSON file named `fia-config.json`, contained 
   - Optional:
     - `meta`: Object containing configurations for meta data retrieval.
     - `time`: Object containing configurations for time series retrieval.
+    - `trajectory`: Object containing configurations for trajectory retrieval.
 
 The `meta` object should contain the following parameters:
 
@@ -112,6 +112,13 @@ The `time` object should contain the following parameters:
     - "first" (furthest back time value in RDB)
   Defaults to "now".
 
+The `trajectory` object should contain the following parameters, more descriptions of the file contents are given in [here](#trajectory-queries):
+
+- Required:
+  - `pointIriQuery`: Location of file with SPARQL query used to get point IRIs containing time series (relative to configuration file).
+  - `featureIriQuery`: Location of file with SQL/SPARQL query to obtain the intersected feature IRIs (relative to configuration file).
+  - `metaQuery`: Location of file with SPARQL query to obtain metadata of the intersected features (relative to configuration file).
+
 For clarification, the `limit` value supports both positive and negative integers. For reference types of `now` and `latest` it is multiplied by **-1** then **added** to the reference time during the calculation of retrieval times. For references of `first` is is simply **added** to the reference time.
 
 For example, a value of `24` with a reference of `now` will provide all values generated within the last real-world day. Whereas a value of `24` with a reference of `first` will return all values generated between the first data point and one real-world day afterwards.
@@ -126,6 +133,7 @@ To properly parse the meta data and time series queries, the agent requires the 
 - `[ONTOP]`: The internal URL of the Ontop service within the stack (the URL will be injected by the agent).
 - `[ENDPOINTS-ALL]`: Internal URLs of all Blazegraph and Ontop endpoints, good for use with "SERVICE" keyword.
 - `[ENDPOINTS-BLAZEGRAPH]`: Internal URLs of all Blazegraph endpoints, good for use with "SERVICE" keyword.
+- `[LINE_WKT]`: Only used in trajectory query, placeholder to insert WKT literal of trajectory.
 
 #### Meta data queries
 
@@ -157,6 +165,14 @@ Required columns are `Measurable` (`Measurement` also supported for backwards co
 
 An example of a meta data SPARQL query [can be seen here](./sample/fia/CastleTime.sparql); note that this is for a sample data set defined in a simple ontology [here](./sample/sample-tboxes.csv).
 
+#### Trajectory queries
+
+`pointIriQuery`: Contents must contain one SELECT parameter, can be named anything, this is an example - [point_query.sparql](./sample/fia/point_query.sparql). Query template must contain `[IRI]` that will be replaced with the ABox IRI. Data type of time series must be PostGIS point. If query returns more than one IRI, results will be combined and sorted according to time.
+
+`featureIriQuery`: Both SQL and SPARQL are allowed, the FIA is able to detect the query type. Contents must containe one SELECT parameter, can be named anything. Should contain the placeholder `[LINE_WKT]` for FIA to insert the WKT literal of trajectory. Two examples are given - [SPARQL version](./sample/fia/feature_query.sparql) and [SQL version](./sample/fia/feature_query.sql). Be sure to handle any SRID transformation if necessary.
+
+`metaQuery`: Query template must contain a variable `?Feature` in the WHERE clause. FIA will add a VALUES clause with the feature IRIs from the previous query, e.g. `VALUES ?Feature {<http://feature1> <http://feature2>}`. The SELECT parameters follow the requirements of the standard meta data queries, i.e. the first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`; any other columns are currently ignored.
+
 ## Requests
 
 The following HTTP request routes are available for the agent:
@@ -165,6 +181,7 @@ The following HTTP request routes are available for the agent:
   - Run algorithm to gather metadata and time series.
   - Requires the `iri` parameter.
   - Supports optional `endpoint` parameter to direct KG queries to a specific endpoint rather than federating across all of them.
+  - Supports optional `lowerbound` and `upperbound` specifically for trajectories, these are the time limits for the points time series.
 
 - `/status`
   - Reports the agent's current status.
