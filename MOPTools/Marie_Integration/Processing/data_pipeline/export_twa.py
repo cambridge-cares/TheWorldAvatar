@@ -131,8 +131,6 @@ class IsStirredHeatChill(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsVacuumFiltration(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
-class HasStirringRate(DatatypeProperty):
-    rdfs_isDefinedBy                    = OntoSyn
 class IsRepeatedTimes(DatatypeProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class IsLayered(DatatypeProperty):
@@ -218,8 +216,6 @@ class HasValue(ObjectProperty):
 class HasStepDuration(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasVesselEnvironment(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoSyn
-class HasExecutionPoint(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasVessel(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
@@ -442,7 +438,6 @@ class Crystallization(SynthesisStep):
 class Stir(SynthesisStep):
     rdfs_isDefinedBy                    = OntoSyn
     # not the way it is supposed to be:
-    hasStirringRate                     : Optional[HasStirringRate[float]]                                  = set()
     hasStirringTemperature              : Optional[HasStirringTemperature[Temperature]]                     = set()
     isWait                              : Optional[IsWait[bool]]                                            = set()
 class Pressure(BaseClass):       
