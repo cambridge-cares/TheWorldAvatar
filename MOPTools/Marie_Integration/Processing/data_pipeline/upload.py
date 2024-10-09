@@ -296,7 +296,7 @@ def species_querying(client, species_label):
         PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        SELECT ?Species WHERE {{
+        SELECT distinct ?Species WHERE {{
         ?Species a os:Species .
         VALUES ?Text {{{insert_string}}}
         ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES)/os:value)|rdfs:label|rdf:label|skos:altLabel|<http://www.w3.org/2000/01/rdf-schema/label>) ?Text . 
@@ -320,7 +320,7 @@ def species_querying_ontosyn(client, species_label):
         PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        SELECT ?Species WHERE {{
+        SELECT distinct ?Species WHERE {{
         ?Species a os:Species .
         VALUES ?Text {{{insert_string}}}
         ?Species (<http://www.w3.org/2000/01/rdf-schema/label> | rdfs:label|rdf:label) ?Text . 
@@ -350,7 +350,7 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
         PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
-        SELECT ?MOPIRI
+        SELECT distinct ?MOPIRI
         WHERE {{
         ?MOPIRI a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
         VALUES ?Text {{"{CCDC_number}" "{mop_formula}" {insert_string}}}
@@ -361,7 +361,32 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
     print("used query: ", query)
     print("MOp query result returned: ", out)
     return out
+def CBU_querying(client, cbu_formula):
+    CCDC_number             = remove_na(CCDC_number)
+    mop_formula             = remove_na(mop_formula)
+    mop_name                = remove_na(mop_name)
+    print("querying for mop: ", CCDC_number, mop_formula, mop_name)
+    insert_string               = ""
+    # break down mop list of strings in a way to insert in a value sparql statement
 
+    if cbu_formula != "N/A" and cbu_formula != "" and cbu_formula != " " and cbu_formula != 'lab':
+            return []
+    # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        SELECT distinct ?CBUIRI
+        WHERE {{
+        ?CBUIRI a <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit> .
+        
+        ?CBUIRI hasCBUFormula "{cbu_formula}" .  
+        }}
+        GROUP BY ?CBUIRI"""
+    out                     = client.perform_query(query)
+    return out
 def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
     print("querying for mop: ", CCDC_number, mop_formula, mop_name)
     insert_string               = ""
@@ -379,7 +404,7 @@ def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
         PREFIX osyn:    <https://www.theworldavatar.com/kg/OntoSyn/>
-        SELECT ?chemicalOutput
+        SELECT distinct ?chemicalOutput
         WHERE {{
         ?chemicalTrans      osyn:hasChemicalOutput  ?chemicalOutput         .
         VALUES ?Text {{{insert_string}}}
@@ -400,7 +425,7 @@ def doi_querying(client, doi):
         PREFIX bibo: <http://purl.org/ontology/bibo/>
         PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
 
-        SELECT  ?doc
+        SELECT distinct ?doc
         WHERE {{
             ?ChemicalSynthesis osyn:retrievedFrom ?doc .
             ?doc bibo:doi ?provenance .
@@ -605,7 +630,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
     if "Sonicate" in standard_input:
         standard_step                                       = standard_input["Sonicate"]
         vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value         = steps_preupload(standard_step, synthesis_client, vessel_list)
-        sonication                                          = Sonication(hasStepDuration=duration, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasVesselEnvironment=atmosphere)
+        sonication                                          = Sonicate(hasStepDuration=duration, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasVesselEnvironment=atmosphere)
         components                                          = [duration_value, duration, vessel, sonication]
         push_component_to_kg(components, synthesis_client)
         return sonication, vessel_list, chemicals_list
@@ -617,7 +642,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
             chemical_input                                      = upload_inputChem(standard_step["addedChemical"], synthesis_client, species_client)
         else:
             chemical_input                                      = ChemicalInput()
-        add_class                                               = Add(hasOrder=standard_step['stepNumber'], hasVessel=vessel, hasAddedChemicalInput=chemical_input, isStirred=standard_step['stir'], hasTargetPh=float(standard_step['targetPH']), isLayered=standard_step["isLayered"], hasVesselEnvironment=atmosphere,rdfs_comment=standard_step['comment'])  
+        add_class                                               = Add(hasOrder=standard_step['stepNumber'], hasStepDuration=duration,hasVessel=vessel, hasAddedChemicalInput=chemical_input, isStirred=standard_step['stir'], hasTargetPh=float(standard_step['targetPH']), isLayered=standard_step["isLayered"], hasVesselEnvironment=atmosphere,rdfs_comment=standard_step['comment'])  
         components = [add_class, vessel, duration, duration_value]
         push_component_to_kg(components, synthesis_client)
         chemicals_list.append(chemical_input)
@@ -710,7 +735,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
 
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
         target_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetTemperature_{id_hash_value}", hasValue=temperature_value)
-        crystallization                             = Crystallization(hasOrder=standard_step["stepNumber"], hasVesselEnvironment=atmosphere, hasVessel=vessel, hasStepDuration=duration, rdfs_comment=standard_step["comment"], hasCrystallizationTargetTemperature=target_temperature)
+        crystallization                             = Crystallize(hasOrder=standard_step["stepNumber"], hasVesselEnvironment=atmosphere, hasVessel=vessel, hasStepDuration=duration, rdfs_comment=standard_step["comment"], hasCrystallizationTargetTemperature=target_temperature)
         components                                  = [crystallization]
         push_component_to_kg(components, synthesis_client)
         return crystallization, vessel_list, chemicals_list
@@ -825,10 +850,10 @@ def update_alt_label(species, species_name):
             species.altLabel.add(name)
     return species
 def replace_character(species_names):
-    characters_toReplace                                    = ["·"]
     names                                                   = []
     for name in species_names:
         names.append(name.replace("·", "x"))
+        names.append(name.replace("’", "'"))
     return names
 def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
     # search the ontospecies and ontosynthesis blazegraphs for existing instances
@@ -860,6 +885,7 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
         species                                             = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
         # update if not already saved (avoids 1000s of duplicates)
         species                                             = update_alt_label(species, species_name=species_name)
+        
     return species
 
 def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, client_mop, client_synthesis):
