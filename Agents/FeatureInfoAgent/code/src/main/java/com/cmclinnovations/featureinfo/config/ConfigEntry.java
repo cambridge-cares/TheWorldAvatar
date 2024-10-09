@@ -204,6 +204,7 @@ public class ConfigEntry {
         hash = prime * hash + (this.timeLimitValue);
         hash = prime * hash + (this.timeLimitUnit != null ? this.timeLimitUnit.hashCode() : 0);
         hash = prime * hash + (this.timeDatabase != null ? this.timeDatabase.hashCode() : 0);
+        hash = prime * hash + (this.pointIriQueryFile != null ? this.pointIriQueryFile.hashCode() : 0);
         hash = prime * hash + (this.featureIriQueryFile != null ? this.featureIriQueryFile.hashCode() : 0);
         hash = prime * hash + (this.trajectoryMetaFile != null ? this.trajectoryMetaFile.hashCode() : 0);
         hash = prime * hash + (this.trajectoryDatabase != null ? this.trajectoryDatabase.hashCode() : 0);
@@ -239,6 +240,8 @@ public class ConfigEntry {
         if (!Objects.equal(this.timeLimitUnit, that.timeLimitUnit))
             return false;
         if (!Objects.equal(this.timeDatabase, that.timeDatabase))
+            return false;
+        if (!Objects.equal(this.pointIriQueryFile, that.pointIriQueryFile))
             return false;
         if (!Objects.equal(this.featureIriQueryFile, that.featureIriQueryFile))
             return false;
