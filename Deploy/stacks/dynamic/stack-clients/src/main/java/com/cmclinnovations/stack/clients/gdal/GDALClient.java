@@ -210,7 +210,8 @@ public class GDALClient extends ContainerClient {
     private Multimap<String, String> findGeoFiles(String containerId, String dirPath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        // NB In contrast to what the GDAL documentation claims, this applies not only to raster files
+        // NB In contrast to what the GDAL documentation claims, this applies not only
+        // to raster files
         // but also vector files. -fr returns both directories and files.
         String execId = createComplexCommand(containerId, "gdalmanage", "identify", "-fr", dirPath)
                 .withOutputStream(outputStream)
@@ -290,6 +291,8 @@ public class GDALClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
         return outputStream.toString();
     }
+
+    // private
 
     private JSONArray getTimeFromGdalmdiminfo(String timeArrayName, String filePath) {
         String gdalContainerId = getContainerId(GDAL);
@@ -456,6 +459,18 @@ public class GDALClient extends ContainerClient {
                 directoryPath -> executeSimpleCommand(gdalContainerId, "chmod", "-R", "777", directoryPath.toString()));
         return postgresFiles;
     }
+
+    private String vectoriseRaster(String gdalContainerId, String databaseName, String schemaName,
+            String layerName, TempDir tempDir, String filePath, String fieldName) {
+
+        String newFilePath = filePath + ".shp";
+        executeSimpleCommand(gdalContainerId, "gdal_polygonize", filePath.toString(),
+                "-f", "ESRI Shapefile", newFilePath, layerName, fieldName);
+        return filePath;
+    }
+
+    // if options are set to vectorise in raster or vector, call the above method with relevant layer and field names
+    
 
     private Collection<String> processFile(String gdalContainerId, String inputFormat, String filePath,
             String databaseName, String schemaName, String layerName, TempDir tempDir,
