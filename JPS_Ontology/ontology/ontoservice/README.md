@@ -157,10 +157,11 @@ Figure 3: TBox representation of the contractual obligations for a service
         cmns-dt_hasTimeValue xsd_time_string
     }
     "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
-    "fibo-fnd-dt-fd:RecurrenceInterval" {
-        hasSubClass fibo-fnd-dt-fd-Monday
-        hasSubClass fibo-fnd-dt-fd-Friday
-        hasSubClass fibo-fnd-dt-fd-Sunday
+    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfWeek" {
+        NamedIndividual fibo-fnd-dt-fd-Monday
+        NamedIndividual fibo-fnd-dt-fd-Friday
+        NamedIndividual fibo-fnd-dt-fd-Sunday
     }
     "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
     "fibo-fnd-dt-bd:DayOfMonth" {
