@@ -148,7 +148,7 @@ Figure 3: TBox representation of the payment obligations stated in the service a
     "ontoservice:ServiceTonnage" ||--o{ "om:Mass"  : "ontoservice:hasQuantity"
 ```
 
-The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 4 to optimise and arrange services with executable details.
+The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 4 to optimise and arrange services with executable details. The service also have operation hours as indicated by the `cmns-dt:hasTimePeriod` property.
 
 Figure 4: TBox representation of the contractual obligations for a service
 
@@ -159,6 +159,7 @@ Figure 4: TBox representation of the contractual obligations for a service
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
     "ontoservice:ServiceCommitment" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "rdfs:subClassOf"
     "fibo-fnd-pas-pas:Service" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "ontoservice:commitsTo"
+    "fibo-fnd-pas-pas:Service" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
 
     "ontoservice:ServiceCommitment" {
         rdfs-subClassOf fibo-fnd-agr-ctr-ContractualCommitment
