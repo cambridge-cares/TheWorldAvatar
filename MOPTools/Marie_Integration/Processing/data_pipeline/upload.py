@@ -362,13 +362,6 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
     print("MOp query result returned: ", out)
     return out
 def CBU_querying(client, cbu_formula):
-    CCDC_number             = remove_na(CCDC_number)
-    mop_formula             = remove_na(mop_formula)
-    mop_name                = remove_na(mop_name)
-    print("querying for mop: ", CCDC_number, mop_formula, mop_name)
-    insert_string               = ""
-    # break down mop list of strings in a way to insert in a value sparql statement
-
     if cbu_formula != "N/A" and cbu_formula != "" and cbu_formula != " " and cbu_formula != 'lab':
             return []
     # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
@@ -1112,7 +1105,19 @@ def characterisation_upload(input_path, output_path, settings):
         components                                              = [elemental_device, ir_device, calc_analysis_class, exp_analysis_class, spectra_graph, ft_spectra, hnmr, nmr_spectra_graph, solvent, chemical_transformation, chem_out]
         push_component_to_kg(components, syn_client)
     return
-    
+def instantiate_cbu(cbu_formula, syn_client, mop_client, species):
+    cbu_iri                                 = CBU_querying(syn_client, cbu_formula)
+    if cbu_iri==[]:
+        CBU_querying(mop_client, cbu_formula)
+        if cbu_iri==[]:
+            cbu                             = ChemicalBuildingUnit(hasCBUFormula=cbu_formula, isUsedAsChemical=species)
+        else:
+            try:
+                cbu                         = ChemicalBuildingUnit.pull_from_kg(cbu_iri[0]["CBUIRI"],hasCBUFormula=cbu_formula)
+            except:
+                # there already exists a species with the IRI but with different labels than before -> query syn kg and add label
+                cbu                         = ChemicalBuildingUnit.pull_from_kg(cbu_iri[0]["CBUIRI"], syn_client, recursive_depth=-1)[0]
+    return cbu
 def upload_cbu(input_path, output_path, settings):    
     filename_noext, subdir, syn_client, sparql_client_species, sparql_client_mop  = start_upload(input_path)
     subdir_name                                                 = subdir.split("_", 1)[0]
@@ -1127,8 +1132,8 @@ def upload_cbu(input_path, output_path, settings):
         print("species iri: ", species_iri_1[0]["Species"])
         species1                                                    = Species.pull_from_kg(species_iri_1[0]["Species"] ,syn_client,1)
         species2                                                    = Species.pull_from_kg(species_iri_2[0]["Species"] ,syn_client,1)
-        cbu1                                                        = ChemicalBuildingUnit(hasCBUFormula=product["cbuFormula1"], isUsedAsChemical=species1)
-        cbu2                                                        = ChemicalBuildingUnit(hasCBUFormula=product["cbuFormula2"], isUsedAsChemical=species2)
+        cbu1                                                        = instantiate_cbu(product["cbuFormula1"], syn_client, sparql_client_mop, species1)
+        cbu2                                                        = instantiate_cbu(product["cbuFormula2"], syn_client, sparql_client_mop, species2)
         mop_iri                                                     = mop_querying(syn_client, CCDC_num, "", "")
 
         mop_instance                                                = MetalOrganicPolyhedron.pull_from_kg(mop_iri[0]["MOPIRI"] ,syn_client,1)[0]
