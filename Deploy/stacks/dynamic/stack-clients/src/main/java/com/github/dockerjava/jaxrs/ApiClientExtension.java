@@ -3,6 +3,7 @@ package com.github.dockerjava.jaxrs;
 import java.net.URI;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
@@ -13,13 +14,12 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.apache.connector.ApacheClientProperties;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
-import org.glassfish.jersey.client.ClientConfig;
 
 import com.github.dockerjava.jaxrs.filter.ResponseStatusExceptionFilter;
 
 import io.cmcl.podman.client.ApiClient;
 
-final public class ApiClientExtension extends ApiClient {
+public final class ApiClientExtension extends ApiClient {
 
     private final PoolingHttpClientConnectionManager connManager;
     private final URI dockerHost;
@@ -43,16 +43,16 @@ final public class ApiClientExtension extends ApiClient {
         };
         this.dockerHost = dockerHost;
 
-        httpClient = super.buildHttpClient(debugging);
+        httpClient = super.buildHttpClient();
     }
 
     @Override
-    protected Client buildHttpClient(boolean debugging) {
+    protected Client buildHttpClient() {
         return null;
     }
 
     @Override
-    protected void performAdditionalClientConfiguration(ClientConfig clientConfig) {
+    protected void customizeClientBuilder(ClientBuilder clientBuilder) {
         clientConfig.connectorProvider(new ApacheConnectorProvider());
         clientConfig.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
 
