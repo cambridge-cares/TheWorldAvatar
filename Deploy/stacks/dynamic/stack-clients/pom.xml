@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-clients</artifactId>
-    <version>1.37.4-separate-podman-client</version>
+    <version>1.37.4-separate-podman-client-SNAPSHOT</version>
 
     <name>Stack Clients</name>
     <url>https://theworldavatar.io</url>

@@ -1,6 +1,6 @@
 services:
   stack-client:
-    image: ghcr.io/cambridge-cares/stack-client${IMAGE_SUFFIX}:1.37.4-separate-podman-client
+    image: ghcr.io/cambridge-cares/stack-client${IMAGE_SUFFIX}:1.37.4-separate-podman-client-SNAPSHOT
     secrets:
       - blazegraph_password
       - postgis_password
