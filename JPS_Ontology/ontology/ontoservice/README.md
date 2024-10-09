@@ -86,13 +86,33 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
     "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
 ```
 
+Figure 2: TBox representation for the client's point of contact (contact service) for the service following the FIBO ontology
+
+```mermaid
+    erDiagram
+    "fibo-fnd-pas-pas:ServiceAgreement" {
+        rdfs-label agreement_no_string
+    }
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
+
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:Client" : "fibo-fnd-arr-rep:isRequestedBy"
+    "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+
+    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
+    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
+    "ontoservice:ContactService" ||--|{ "fibo-fnd-pas-pas:Service" : "ontoservice:servesAsContactFor"
+```
+
 The billing charges are described at the service agreement level, which comprise of two types of billing - base charge and variable rate:
 
 - **Base charge**: Fixed service charge
 - **Variable rate**: The rates that is being charged based on a service metric.
 - **Excess variable rate**: The rates that is being charged based on a service metric that have exceeded the cap specified.
 
-Figure 2: TBox representation of the payment obligations stated in the service agreement for any service rendered
+Figure 3: TBox representation of the payment obligations stated in the service agreement for any service rendered
 
 ```mermaid
     erDiagram
@@ -118,20 +138,13 @@ Figure 2: TBox representation of the payment obligations stated in the service a
     "ontoservice:ServiceTonnage" ||--o{ "om:Mass"  : "ontoservice:hasQuantity"
 ```
 
-The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks.
+The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 4 to optimise and arrange services with executable details.
 
-- It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 3 to optimise and arrange services with executable details.
-- Furthermore, the service will be given a contact person, who is an employee of the client. This person will play a role of a service provider who provides a contact service for the service specified in the agreement.
-
-Figure 3: TBox representation of the contractual obligations for a service
+Figure 4: TBox representation of the contractual obligations for a service
 
 ```mermaid
     erDiagram
     "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
-    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
-    "ontoservice:ContactService" ||--|{ "fibo-fnd-pas-pas:Service" : "ontoservice:servesAsContactFor"
 
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
     "ontoservice:ServiceCommitment" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "rdfs:subClassOf"
@@ -173,7 +186,7 @@ Figure 3: TBox representation of the contractual obligations for a service
 
 Service events represent the specific occurrence a service being performed, and serves as a record to be analysed for quality, efficiency, and compliance with service agreements. The scheduler agent is expected to generate a new service event instance based on the associated service commitment and payment obligations following their service intervals.
 
-Figure 4: TBox representation of a service event
+Figure 5: TBox representation of a service event
 
 ```mermaid
     erDiagram
@@ -208,7 +221,7 @@ Gross Price = Base Charge + Variable Charge + Excess Variable Charge \\
 Variable Charge = (Service Metric - Service Metric Cap) \\
 ```
 
-Figure 5: ABox representation of the provenance structure for the total service charge
+Figure 6: ABox representation of the provenance structure for the total service charge
 
 ```mermaid
     erDiagram
