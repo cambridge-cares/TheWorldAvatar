@@ -25,8 +25,6 @@ public class EndpointConfig {
         this.kgurl = blazegraphEndpointConfig.getUrl("kb");
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
-
-
     }
 
     public String getDbUrl(String dbName) {

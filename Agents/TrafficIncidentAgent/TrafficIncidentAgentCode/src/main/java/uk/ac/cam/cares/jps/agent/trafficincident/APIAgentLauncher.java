@@ -1,9 +1,14 @@
 package uk.ac.cam.cares.jps.agent.trafficincident;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,6 +19,8 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.ZoneOffset;
 import java.util.HashSet;
+import java.util.Properties;
+import java.nio.file.Path;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +74,24 @@ public class APIAgentLauncher extends JPSAgent {
     private static final Field<Double> longitudeColumn = DSL.field(DSL.name("longitude"), double.class);
     private static final Field<String> messageColumn = DSL.field(DSL.name("message"), String.class);
     private static final Field<Boolean> statusColumn = DSL.field(DSL.name("status"), Boolean.class);
+
+    private static final String PROPERTIES_PATH = "/inputs/config.properties";
+    private String dbName;
+
+    public void init() {
+        try (InputStream input = getClass().getResourceAsStream(PROPERTIES_PATH)) {
+            Properties prop = new Properties();
+            prop.load(input);
+            this.dbName = prop.getProperty("db.name");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("config.properties file not found");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
 
     // eg (sent in Postman) POST http://localhost:1016/traffic-incident-agent/retrieve
     @Override
