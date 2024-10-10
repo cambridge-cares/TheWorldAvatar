@@ -1,9 +1,9 @@
-# Self-hosting ML models for QA applications
+# Triton Inference Server
 
 This directory contains the configuration to serve the Sentence-BERT model for generating text embeddings, which plays a specific role in our Question Answering (QA) system workflow.
 
 ## Table of Contents
-- [Self-hosting ML models for QA applications](#self-hosting-ml-models-for-qa-applications)
+- [Triton Inference Server](#triton-inference-server)
   - [Table of Contents](#table-of-contents)
   - [Role of Text Embedding in the QA Workflow](#role-of-text-embedding-in-the-qa-workflow)
   - [Installation](#installation)

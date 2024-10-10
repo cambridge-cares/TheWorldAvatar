@@ -35,7 +35,7 @@ class DataSupporter:
     """
     Main controller class for processing natural lanaguage queries and transforming them into structured data.
 
-    This class orchestrates the entire process to handle a user's query from rewriting, and context retrieval to SPARSQL execution and visualisation.
+    This class orchestrates the entire process to handle a user's query from rewriting, and context retrieval to SPARQL execution and visualisation.
     """
 
     def __init__(

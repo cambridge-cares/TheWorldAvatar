@@ -129,7 +129,7 @@ Precedence: `app.local.yaml` > `app.{APP_ENV}.yaml` > `app.yaml`.
 1. Build the image, `docker build -t fastapi_app .`.
 2. Spin up the container as follows. The app will be available at `localhost:5000` on Docker host.
    ```{bash}
-   docker run --name fastapi_app \
+   docker run -d --name fastapi_app \
       -e APP_ENV=prod \
       -v "$(pwd)/data:/code/data" \
       -p 5000:8000 \

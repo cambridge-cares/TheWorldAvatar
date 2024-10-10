@@ -80,13 +80,13 @@ graph TD
 
 The project is organised into the following directories:
 
-- [`data_generation/`](data_generation/): Contains utility scripts to help with preparing datasets required by the backend. [More details](data_generation/README.md)
+- [`data_generation/`](data_generation/): Contains utility scripts to help with preparing datasets required by the backend.
 - [`backend/`](backend/)
-  - [`fastapi_app/`](backend/fastapi_app/): Source code for FastAPI application. [Setup instructions](backend/fastapi_app/README.md)
-  - [`triton_inference_server/`](backend/triton_inference_server/): Configuration for serving the Sentence-BERT model. [Docker setup](backend/triton_inference_server/README.md)
+  - [`fastapi_app/`](backend/fastapi_app/): Source code for FastAPI application.
+  - [`triton_inference_server/`](backend/triton_inference_server/): Configuration for serving the Sentence-BERT model.
 - [`frontend/`](frontend/)
-  - [`mock_backend/`](frontend/mock_backend/): Source code for Express server to mock backend API. [Native setup](frontend/mock_backend/README.md)
-  - [`next_app_marie/`](frontend/next_app_marie/): Source code for Marie's Next.js app. [Setup instructions](frontend/next_app_marie/README.md)
+  - [`mock_backend/`](frontend/mock_backend/): Source code for Express server to mock backend API.
+  - [`next_app_marie/`](frontend/next_app_marie/): Source code for Marie's Next.js app.
 
 Each linked README contains specific setup instructions for development or component-specific deployment.
 
