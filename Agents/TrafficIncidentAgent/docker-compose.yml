@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   TrafficIncidentAgent:
-    image: traffic-incident-agent:1.3.0
+    image: traffic-incident-agent:1.4.0
     container_name: traffic-incident-agent
     ports:
       - "1016:8080"

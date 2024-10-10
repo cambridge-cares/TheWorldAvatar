@@ -39,7 +39,6 @@ public class APIAgentLauncher extends JPSAgent {
 
     public static final String API_VALUES = "TRAFFICINCIDENT_API_PROPERTIES";
     public static final String CLIENT_VALUES = "TRAFFICINCIDENT_CLIENT_PROPERTIES";
-
     public static final String ARGUMENT_MISMATCH_MSG = "Argument mistmatch";
     public static final String AGENT_ERROR_MSG = "The road obstruction API input agent could not be constructed.";
     public static final String GET_READINGS_ERROR_MSG = "Error when getting reading.";
