@@ -6,7 +6,7 @@ import { Control, FieldValues, UseFormReturn, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 
 import { Paths } from 'io/config/routes';
-import { FormOptionType, ID_KEY, PropertyShape, RegistryFieldValues, SEARCH_FORM_TYPE, VALUE_KEY } from 'types/form';
+import { defaultSearchOption, FormOptionType, ID_KEY, PropertyShape, RegistryFieldValues, SEARCH_FORM_TYPE, VALUE_KEY } from 'types/form';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
@@ -77,8 +77,11 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
 
       // By default, use the first option's id
       let defaultId: string = entities[0]?.id.value;
-      // If there is a default value, search and use the option matching the default instance's local name
-      if (field.defaultValue) {
+      // Search form should always target default value
+      if (props.form.getValues(FORM_STATES.FORM_TYPE) === SEARCH_FORM_TYPE) {
+        defaultId = defaultSearchOption.type.value;
+        // If there is a default value, search and use the option matching the default instance's local name
+      } else if (field.defaultValue) {
         const defaultValueId: string = getAfterDelimiter(field.defaultValue.value, "/");
         defaultId = entities.find(entity => getAfterDelimiter(entity.id.value, "/") === defaultValueId).id.value;
       }
@@ -86,6 +89,15 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
       form.setValue(field.fieldId, defaultId);
 
       const formFields: FormOptionType[] = [];
+      // Add the default search option only if this is the search form
+      if (props.form.getValues(FORM_STATES.FORM_TYPE) === SEARCH_FORM_TYPE) {
+        // Default option should only use empty string "" as the value
+        formFields.push({
+          label: defaultSearchOption.label.value,
+          value: defaultSearchOption.type.value,
+        });
+      }
+
       // Retrieve and set the display field accordingly
       if (entities.length > 0) {
         const fields: string[] = Object.keys(entities[0]);
