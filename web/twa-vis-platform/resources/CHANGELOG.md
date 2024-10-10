@@ -3,6 +3,14 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.8.0
+
+### Features
+
+* Added sorting, filters and other functions to the registry table
+* Improve user interactions and experience in the registry table
+* Improve user interactions with the schedule form sections and the form in general
+
 ## 5.7.0
 
 ### Bug Fixes

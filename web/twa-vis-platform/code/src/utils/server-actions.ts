@@ -47,7 +47,7 @@ export async function getData(agentApi: string, entityType: string, identifier?:
  * @param {string} agentApi API endpoint.
  * @param {string} entityType Type of entity to retrieve.
  */
-export async function getLabelledData(agentApi: string, entityType: string): Promise<RegistryFieldValues[]> { 
+export async function getLabelledData(agentApi: string, entityType: string): Promise<RegistryFieldValues[]> {
   const res = await sendRequest(`${agentApi}/${entityType}/label`, "GET");
   const responseData = await res.json();
   return responseData;
@@ -90,6 +90,17 @@ export async function sendGetRequest(agentApi: string): Promise<string> {
   return res.text();
 }
 
+/**
+ * Sends a POST request with parameters to the specified agent to execute its task, and return its text if required.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {string} jsonBody Parameters in JSONIFIED string.
+ */
+export async function sendPostRequest(agentApi: string, jsonBody: string): Promise<HttpResponse> {
+  const response = await sendRequest(agentApi, "POST", "application/json", jsonBody);
+  const responseBody: string = await response.text();
+  return { success: response.ok, message: responseBody };
+}
 
 /**
  * Retrieves the form template for the associated entity type.
