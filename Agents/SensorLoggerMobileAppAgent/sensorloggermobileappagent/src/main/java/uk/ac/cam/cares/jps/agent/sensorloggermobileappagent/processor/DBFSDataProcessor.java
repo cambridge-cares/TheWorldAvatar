@@ -12,15 +12,17 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class DBFSDataProcessor extends SensorDataProcessor {
-    private String dbfsIRI;
+    private String dbfsIRI = null;
     private final List<Double> dBFSList = new ArrayList<>();
 
     public DBFSDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
         super(config, storeClient, smartphoneNode);
+        initIRIs();
     }
 
     @Override
@@ -30,23 +32,32 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Collections.singletonList(dbfsIRI);
         List<List<?>> valueList = Collections.singletonList(dBFSList);
+
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
         ts = Downsampling.downsampleTS(ts, config.getDbfsDSResolution(), config.getDbfsDSType());
 
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
+                .collect(Collectors.toList());
+
+        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(dbfsIRI));
+
         clearData();
-        return ts;
+        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
     }
 
     @Override
     public void initIRIs() {
+        if (dbfsIRI != null) {
+            // already instantiated in previous call
+            return;
+        }
+
         getIrisFromKg();
 
-        if (dbfsIRI == null || dbfsIRI.isEmpty()) {
-            dbfsIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_dbfs_" + UUID.randomUUID();
-
+        if (dbfsIRI == null) {
             isIriInstantiationNeeded = true;
             isRbdInstantiationNeeded = true;
         }
@@ -72,26 +83,36 @@ public class DBFSDataProcessor extends SensorDataProcessor {
 
     @Override
     void getIrisFromKg() {
-        Var VAR_O = Var.alloc("o");
+        Var varO = Var.alloc("o");
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("slma", SLA)
-                .addPrefix ("saref",SAREF)
+                .addPrefix("saref", SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
-                .addPrefix("om",OM)
-                .addWhere(smartphoneIRINode,"saref:consistsOf","?microphone")
-                .addWhere("?microphone","rdf:type","ontodevice:Microphone")
-                .addWhere("?microphone","ontodevice:measures","?om_soundPressureLevel")
-                .addWhere("?om_soundPressureLevel", "om:hasValue", VAR_O);
+                .addPrefix("om", OM)
+                .addWhere(smartphoneIRINode, "saref:consistsOf", "?microphone")
+                .addWhere("?microphone", "rdf:type", "ontodevice:Microphone")
+                .addWhere("?microphone", "ontodevice:measures", "?om_soundPressureLevel")
+                .addWhere("?om_soundPressureLevel", "om:hasValue", varO);
 
-        SelectBuilder sb = new SelectBuilder()
-                .addVar(VAR_O).addWhere(wb);
+        SelectBuilder sb = new SelectBuilder().addVar(varO).addWhere(wb);
 
-        JSONArray queryResult=storeClient.executeQuery(sb.buildString());
+        JSONArray queryResult;
+        try {
+            queryResult = storeClient.executeQuery(sb.buildString());
+        } catch (Exception e) {
+            // ontop does not accept queries before any mapping is added
+            return;
+        }
         if (queryResult.isEmpty()) {
             return;
         }
         dbfsIRI = queryResult.getJSONObject(0).optString("o");
+    }
+
+    @Override
+    public String getOntodeviceLabel() {
+        return "Microphone";
     }
 }

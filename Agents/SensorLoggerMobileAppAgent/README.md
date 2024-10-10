@@ -4,8 +4,8 @@ The SensorLoggerMobileAppAgent is an agent which receives HTTP POST requests con
 
 The agent functions as below:
 1) The agent receives JSON payload from the SensorLogger and parse the received JSON Array.
-2) It downsamples the received timeseries data via the [Downsampling](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/core/downsampling) library, and instantiates the data into blazegraph using the [TimeSeriesClient](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). 
-3) The [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) relations associated to each timeseries IRI are then instantiated using the [Object Graph Mapper](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/core/ogm) library.
+2) It downsamples the received timeseries data via the [Downsampling](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/core/downsampling) library, and instantiates the data using the [TimeSeriesClient](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). 
+3) The [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) triples are instantiated in Ontop.
 
 ### 1.1 Concurrency Design
 The agent manages a phone ID to recording task map, where each phone ID will have a corresponding recording task. The recording task is responsible for sensor data processing, knowldge graph instantiation and postgres table initiation and data upload. Each recording task has different types of sensor processors, which are responsible for the sensor IRI query and generation, downsampling and data formulation for individual types. The following class diagram highlight the relations between class and omit some details of some classes for simlicity.
