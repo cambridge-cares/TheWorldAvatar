@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +28,8 @@ public class QueryTemplateFactory {
   private Map<String, String> queryLines;
   private List<SparqlVariableOrder> varSequence;
   private final ObjectMapper objectMapper;
+  private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
+  private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
   private static final String ORDER_VAR = "order";
@@ -139,7 +143,8 @@ public class QueryTemplateFactory {
       String variable = currentLine.getKey();
       // Do not generate or act on any id query lines
       if (!variable.equals("id")) {
-        // note that if no criteria or empty string is passed in the API, the filter will not be added
+        // note that if no criteria or empty string is passed in the API, the filter
+        // will not be added
         if (criterias.containsKey(variable)) {
           whereBuilder.append(currentLine.getValue());
           filters.append(genSearchCriteria(variable, criterias));
@@ -175,13 +180,14 @@ public class QueryTemplateFactory {
    * Generates a federated query across ontop containers and with a replaceable
    * endpoint [endpoint].
    * 
-   * @param contents The SPARQL query contents.
+   * @param contents    The SPARQL query contents.
    * @param targetClass Target class to reach.
    */
   private String genFederatedQuery(String contents, String targetClass) {
     return "{?ontop a <https://theworldavatar.io/kg/service#Ontop>; <http://www.w3.org/ns/dcat#endpointURL> ?endpoint."
         + "SERVICE ?endpoint {"
-        // Ontop does not allow for variable path length, so that cannot be included in the ontop query
+        // Ontop does not allow for variable path length, so that cannot be included in
+        // the ontop query
         + "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP +
         contents + "}" +
         "} UNION {" +
@@ -332,10 +338,15 @@ public class QueryTemplateFactory {
       StringBuilder currentLine = new StringBuilder();
       String jointPredicate = parsePredicate(queryLine.predicate(), queryLine.subPredicate());
       jointPredicate = parsePredicate(jointPredicate, queryLine.labelPredicate());
-      // Note to add a _ to the property
-      StringResource.appendTriple(currentLine, "?iri", jointPredicate,
-          ShaclResource.VARIABLE_MARK + queryLine.property().replaceAll("\\s+", "_"));
-
+      // If query line is id with a roundabout loop to target itself
+      if (queryLine.property().equals("id") && this.verifySelfTargetIdField(jointPredicate)) {
+        // Simply bind the iri as the id
+        currentLine.append("BIND(?iri AS ?id)");
+      } else {
+        StringResource.appendTriple(currentLine, "?iri", jointPredicate,
+            // Note to add a _ to the property
+            ShaclResource.VARIABLE_MARK + queryLine.property().replaceAll("\\s+", "_"));
+      }
       // Optional lines should be parsed differently
       if (queryLine.isOptional()) {
         // If the value must conform to a specific subject variable,
@@ -352,6 +363,24 @@ public class QueryTemplateFactory {
         this.queryLines.put(queryLine.property(), currentLine.toString());
       }
     });
+  }
+
+  /**
+   * Verifies if the ID field is targeting the IRI.
+   * 
+   * @param predicate The predicate string of the ID field.
+   */
+  private boolean verifySelfTargetIdField(String predicate) {
+    // Compile the potential patterns to match
+    Pattern pattern1 = Pattern.compile(ID_PATTERN_1);
+    Pattern pattern2 = Pattern.compile(ID_PATTERN_2);
+
+    // Create matchers for both patterns
+    Matcher matcher1 = pattern1.matcher(predicate);
+    Matcher matcher2 = pattern2.matcher(predicate);
+
+    // Return true if input matches either pattern 1 or pattern 2
+    return matcher1.matches() || matcher2.matches();
   }
 
   /**
