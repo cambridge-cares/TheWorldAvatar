@@ -1,0 +1,22 @@
+{
+    "name": "sg_postcode",
+    "database": "postgres",
+    "workspace": "twa",
+    "skip": false,
+    "datasetDirectory": "sg_postcode",
+    "dataSubsets": [
+        {
+            "name": "sg_postcode",
+            "type": "vector",
+            "subdirectory": "postcode",
+            "skip": false,
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326"
+            }
+        }
+    ],
+    "mappings": [
+        "sg_postcode.obda"
+    ]
+}
