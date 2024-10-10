@@ -34,28 +34,19 @@ import java.util.Properties;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-
 public class IsochroneAgentTest {
 
     @Mock
     private RemoteStoreClient remoteStoreClient;
 
     @Mock
-    private RemoteRDBStoreClient RemoteRDBStoreClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
 
-    private IsochroneAgent agent; 
+    private IsochroneAgent agent;
 
     @Test
-    public void testProcessRequestParameters_EmptyIRIInput() {
+    public void testProcessRequestParametersEmptyIRIInput() {
 
-        //Mock response 
-        MockedConstruction<EndpointConfig> endpointConfigMock = mockConstruction(EndpointConfig.class,
-                (mock, context) -> {
-                    doReturn("test").when(mock).getDbUrl(anyString());
-                    doReturn("test").when(mock).getDbUser();
-                    doReturn("test").when(mock).getDbPassword();
-                });
-                
         agent = new IsochroneAgent();
         HttpServletRequest setRequest = mock(HttpServletRequest.class);
         when(setRequest.getRequestURI()).thenReturn("localhost:10105/isochroneagent/update?");
@@ -80,33 +71,16 @@ public class IsochroneAgentTest {
         String PROPETIES_PATH ="/resources/configTest.properties";
 
         try(InputStream input = FileReader.getStream(PROPETIES_PATH)){
-        Properties prop = new Properties();
-        prop.load(input);
+            Properties prop = new Properties();
+            prop.load(input);
         assertEquals("test",prop.getProperty("db.name"));
         assertEquals(0.0002,prop.getProperty("segmentization_length"));
-        assertEquals("", prop.getProperty("kgEndpoint"));
-
-        String populationTables = prop.getProperty("populationTables");
-        // Split the string using the comma as the delimiter
-        String[] tableNames = populationTables.split("\\s*,\\s*");
-        ArrayList<String> populationTableList = new ArrayList<String>(Arrays.asList(tableNames));
+            assertEquals("", prop.getProperty("kgEndpoint"));
         }
-        catch (Exception e) {
-        }
-    
     }
 
-
     @Test
-    public void testProcessRequestParameters_ValidInput(){
-        //Mock response 
-        MockedConstruction<EndpointConfig> endpointConfigMock = mockConstruction(EndpointConfig.class,
-                (mock, context) -> {
-                    doReturn("test").when(mock).getDbUrl(anyString());
-                    doReturn("test").when(mock).getDbUser();
-                    doReturn("test").when(mock).getDbPassword();
-                });
-
+    public void testProcessRequestParametersValidInput() {
         agent = new IsochroneAgent();
         String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women";
 
@@ -126,32 +100,39 @@ public class IsochroneAgentTest {
 
 
 
-            try (fileReaderMock;
-            endpointConfigMock;
-            routeSegmentizationMock;
-            isochroneGeneratorMock;
-            populationMapperMock;
-            geoserverClientMock;ontopClientMock;) {
+        try (fileReaderMock;
+                endpointConfigMock;
+                routeSegmentizationMock;
+                isochroneGeneratorMock;
+                populationMapperMock;
+                geoserverClientMock;
+                ontopClientMock;) {
+            JSONObject input = new JSONObject()
+                    .put("function", "15MSC")
+                    .put("timethreshold", "15")
+                    .put("timeinterval", "2");
+            agent.processRequestParameters(input);
+            verify(endpointConfigMock.constructed().get(0), times(1)).getDbUrl(anyString());
+            verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
+            verify(endpointConfigMock.constructed().get(0), times(1)).getDbPassword();
+            verify(routeSegmentizationMock.constructed().get(0), times(1)).segmentize(any(RemoteRDBStoreClient.class),
+                    anyDouble());
+            verify(isochroneGeneratorMock.constructed().get(0), times(1))
+                    .generateIsochrone(any(RemoteRDBStoreClient.class), anyInt(), anyInt(), any(Map.class));
+            verify(isochroneGeneratorMock.constructed().get(0), times(1))
+                    .createIsochroneBuilding(any(RemoteRDBStoreClient.class));
+            verify(populationMapperMock.constructed().get(0), times(1))
+                    .checkAndAddColumns(any(RemoteRDBStoreClient.class), any(ArrayList.class));
+            verify(populationMapperMock.constructed().get(0), times(1)).mapPopulation(any(RemoteRDBStoreClient.class),
+                    any(ArrayList.class));
+            verify(geoserverClientMock.constructed().get(0), times(1)).createWorkspace(anyString());
+            verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISDataStore(anyString(), anyString(),
+                    anyString(), anyString());
+            verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISLayer(anyString(), anyString(),
+                    anyString(), any(GeoServerVectorSettings.class));
+            verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));
+        }
 
-        JSONObject input = new JSONObject();
-        input.put("function", "15MSC");
-        input.put("timethreshold", "15");
-        input.put("timeinterval", "2");
-        agent.processRequestParameters(input);
-        verify(endpointConfigMock.constructed().get(0), times(1)).getDbUrl(anyString());
-        verify(endpointConfigMock.constructed().get(0), times(1)).getDbUser();
-        verify(endpointConfigMock.constructed().get(0), times(1)).getDbPassword();
-        verify(routeSegmentizationMock.constructed().get(0), times(1)).segmentize(any(RemoteRDBStoreClient.class), anyDouble());
-        verify(isochroneGeneratorMock.constructed().get(0), times(1)).generateIsochrone(any(RemoteRDBStoreClient.class), anyInt(), anyInt(),  any(Map.class));
-        verify(isochroneGeneratorMock.constructed().get(0), times(1)).createIsochroneBuilding(any(RemoteRDBStoreClient.class));
-        verify(populationMapperMock.constructed().get(0), times(1)).checkAndAddColumns(any(RemoteRDBStoreClient.class), any(ArrayList.class));
-        verify(populationMapperMock.constructed().get(0), times(1)).mapPopulation(any(RemoteRDBStoreClient.class), any(ArrayList.class));
-        verify(geoserverClientMock.constructed().get(0), times(1)).createWorkspace(anyString());
-        verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISDataStore(anyString(), anyString(), anyString(), anyString());
-        verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISLayer(anyString(), anyString(), anyString(), any(GeoServerVectorSettings.class));
-        verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));  
     }
-
-}
 
 }
