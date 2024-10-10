@@ -11,7 +11,7 @@ import { FORM_STATES, initFormField } from './form-utils';
 import FormFieldComponent from './field/form-field';
 import FormSection from './section/form-section';
 import { DependentFormSection } from './section/dependent-form-section';
-import FormSchedule from './section/form-schedule';
+import FormSchedule, { daysOfWeek } from './section/form-schedule';
 import { useDispatch } from 'react-redux';
 import { setFilterFeatureIris } from 'state/map-feature-slice';
 
@@ -98,7 +98,6 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
           return initFormField(fieldShape, initialState, fieldShape.name[VALUE_KEY]);
         }
       });
-
       setFormTemplate({
         ...template,
         property: updatedProperties
@@ -110,7 +109,20 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
   // A function to initiate the form submission process
   const onSubmit = form.handleSubmit(async (formData: FieldValues) => {
     let pendingResponse: HttpResponse;
-    if (formData[FORM_STATES.RECURRENCE]) {
+    // For single service
+    if (formData[FORM_STATES.RECURRENCE] == 0) {
+      const startDate: string = formData[FORM_STATES.START_DATE];
+      const dateObject: Date = new Date(startDate);
+      const dayOfWeek = daysOfWeek[dateObject.getUTCDay()];
+
+      formData = {
+        ...formData,
+        recurrence: "P1D",
+        "end date": startDate, // End date must correspond to start date
+        [dayOfWeek]: true, // Ensure the corresponding day of week is true
+      }
+      // For regular service
+    } else if (formData[FORM_STATES.RECURRENCE]) {
       formData = {
         ...formData,
         recurrence: `P${formData[FORM_STATES.RECURRENCE] * 7}D`,
@@ -184,6 +196,10 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             />
           } else {
             const fieldProp: PropertyShape = field as PropertyShape;
+            // If this is a hidden field, hide the field
+            if (fieldProp.maxCount && parseInt(fieldProp.maxCount[VALUE_KEY]) === 0) {
+              return <></>;
+            }
             const disableId: boolean = props.formType === Paths.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
             if (fieldProp.class) {
               return <DependentFormSection

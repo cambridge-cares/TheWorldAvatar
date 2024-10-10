@@ -11,6 +11,10 @@ const nextConfig = {
 	reactStrictMode: true,
 	basePath: "", //default 
 	compiler: { removeConsole: false },
+	env: {
+		KEYCLOAK: process.env.KEYCLOAK ?? "false",
+	}
 };
+
 
 export default nextConfig;
