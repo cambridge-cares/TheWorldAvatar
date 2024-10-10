@@ -177,7 +177,19 @@ public class APIAgentLauncher extends JPSAgent {
 
         UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-        virtualTable.setSql("SELECT * FROM trafficincident");
+        virtualTable.setSql("SELECT \r\n" + 
+                        "    type AS name, \r\n" +
+                        "    message AS description, \r\n" + 
+                        "    TO_TIMESTAMP(starttime) AS starttime, \r\n" + 
+                        "    CASE \r\n" + 
+                        "        WHEN endtime = 0 THEN NULL \r\n" + 
+                        "        ELSE TO_TIMESTAMP(endtime) \r\n" + 
+                        "    END AS endtime, \r\n" + 
+                        "    CASE \r\n" + 
+                        "        WHEN status = 't' THEN 'Ongoing' \r\n" + 
+                        "        ELSE 'Ended'  \r\n" + 
+                        "    END AS status, location \r\n" + 
+                        "FROM trafficincident");
         virtualTable.setEscapeSql(true);
         virtualTable.setName("traffic_incident_virtual_table");
         virtualTable.addVirtualTableGeometry("location", "Geometry", "4326"); //
