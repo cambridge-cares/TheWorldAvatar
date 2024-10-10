@@ -35,7 +35,7 @@ If the backend endpoint is different from the value of `NEXT_PUBLIC_BACKEND_ENDP
 
 #### Prerequisites
 
-- Linux OS (reconmmended)
+- Linux OS (recommended)
 - [Node.js 20](https://nodejs.org/en/download/package-manager) or later (which includes npm)
 
 #### Steps
