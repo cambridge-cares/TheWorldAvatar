@@ -102,6 +102,8 @@ export default function MapContainer(props: MapContainerProps) {
   // Update the filters for the specific layers if search is required
   useEffect(() => {
     if (map && mapData && filterLayerIds?.length > 0 && filterFeatureIris?.length > 0) {
+      // Reset the filters first before applying new filters
+      filterLayerIds.map(layerId => map.setFilter(layerId, null));
       // If the SHOW_ALL_FEATURE_INDICATOR is added, the filters should be reset, else set the list of IRIs for filtering
       const filter: FilterSpecification = filterFeatureIris?.length === 1 && filterFeatureIris[0] === SHOW_ALL_FEATURE_INDICATOR ?
         null : ["in", ["get", "iri"], ["literal", filterFeatureIris]];
