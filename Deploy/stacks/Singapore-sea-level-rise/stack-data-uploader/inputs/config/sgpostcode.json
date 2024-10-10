@@ -1,12 +1,12 @@
 {
-    "name": "sg_postcode",
+    "name": "sgpostcode",
     "database": "postgres",
     "workspace": "twa",
     "skip": false,
-    "datasetDirectory": "sg_postcode",
+    "datasetDirectory": "sgpostcode",
     "dataSubsets": [
         {
-            "name": "sg_postcode",
+            "name": "sgpostcode",
             "type": "vector",
             "subdirectory": "postcode",
             "skip": false,
@@ -17,6 +17,6 @@
         }
     ],
     "mappings": [
-        "sg_postcode.obda"
+        "sgpostcode.obda"
     ]
 }

@@ -1,0 +1,19 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+rdfs:	http://www.w3.org/2000/01/rdf-schema#
+:       https://www.theworldavatar.com/kg/
+bim:    https://www.theworldavatar.com/kg/ontobim/
+geo:    http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId	Singapore Postcode
+target		bim:postalcode/{postal_code} a bim:PostalCode ;
+                :hasPostalCode {postal_code} ;
+                :hasAddress {address} ;
+                :hasBlockNumber {block_number} ;
+                :hasBuilding {building} ;
+                :hasRoadName {road_name} ;
+                :hasSearchValue {search_value} ;
+                :asWKT "{geom}"^^geo:wktLiteral.
+source		SELECT postal_code, address, block_number, building, road_name, search_value, ST_ASTEXT (wkb_geometry) as geom FROM sg_postcode
+]]
