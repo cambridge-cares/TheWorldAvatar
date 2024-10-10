@@ -12,40 +12,50 @@ The namespace for the ontology is:
 - [2. Data Model](#2-data-model)
   - [Legend](#legend)
   - [2.1 Service Agreement](#21-service-agreement)
-  - [2.2 Service Events](#22-service-events)
+  - [2.2 Service Agreement Lifecycle](#22-service-agreement-lifecycle)
+    - [2.2.1 Creation and Expiration Stage](#221-creation-and-expiration-stage)
+    - [2.2.2 Service Execution Stage](#222-service-execution-stage)
   - [2.3 Reporting](#23-reporting)
 
 # 2. Data Model
 
 ## Legend
 
-| Prefix            | Namespace                                                                                 |
-| ----------------- | ----------------------------------------------------------------------------------------- |
-| bot               | `https://w3id.org/bot#`                                                                   |
-| cmns-dt           | `https://www.omg.org/spec/Commons/DatesAndTimes/`                                         |
-| cmns-pts          | `https://www.omg.org/spec/Commons/PartiesAndSituations/`                                  |
-| cmns-rlcmp        | `https://www.omg.org/spec/Commons/RolesAndCompositions/`                                  |
-| fibo-fnd-agr-ctr  | `https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/`                     |
-| fibo-fnd-arr-rep  | `https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/`                   |
-| fibo-fnd-pas-pas  | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/`  |
-| fibo-fnd-pas-psch | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/` |
-| fibo-fnd-rel-rel  | `https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations`                       |
-| fibo-fnd-org-fm   | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/`        |
-| om                | `http://www.ontology-of-units-of-measure.org/resource/om-2/`                              |
-| sf                | `http://www.opengis.net/ont/sf#`                                                          |
-| geo               | `http://opengis.net/ont/geosparql#`                                                       |
-| rdfs              | `http://www.w3.org/2000/01/rdf-schema#`                                                   |
-| ontobim           | `https://www.theworldavatar.com/kg/ontobim/`                                              |
-| ontoderivation    | `https://www.theworldavatar.com/kg/ontoderivation/`                                       |
-| ontoprofile       | `https://www.theworldavatar.com/kg/ontoprofile/`                                          |
-| ontoservice       | `https://www.theworldavatar.com/kg/ontoservice/`                                          |
-| vc                | `https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/`                               |
+| Prefix            | Namespace                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
+| bot               | `https://w3id.org/bot#`                                                                          |
+| cmns-cls          | `https://www.omg.org/spec/Commons/Classifiers/`                                                  |
+| cmns-col          | `https://www.omg.org/spec/Commons/Collections/`                                                  |
+| cmns-dt           | `https://www.omg.org/spec/Commons/DatesAndTimes/`                                                |
+| cmns-pts          | `https://www.omg.org/spec/Commons/PartiesAndSituations/`                                         |
+| cmns-rlcmp        | `https://www.omg.org/spec/Commons/RolesAndCompositions/`                                         |
+| fibo-fbc-pas-fpas | `https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices` |
+| fibo-fnd-agr-ctr  | `https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/`                            |
+| fibo-fnd-arr-lif  | `https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/`                         |
+| fibo-fnd-arr-rep  | `https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/`                          |
+| fibo-fnd-dt-oc    | `https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/`                       |
+| fibo-fnd-pas-pas  | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/`         |
+| fibo-fnd-pas-psch | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/`        |
+| fibo-fnd-plc-adr  | `https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/`                                |
+| fibo-fnd-plc-loc  | `https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/`                                |
+| fibo-fnd-rel-rel  | `https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations`                              |
+| fibo-fnd-org-fm   | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/`               |
+| lcc-cr            | `https://www.omg.org/spec/LCC/Countries/CountryRepresentation/`                                  |
+| om                | `http://www.ontology-of-units-of-measure.org/resource/om-2/`                                     |
+| sf                | `http://www.opengis.net/ont/sf#`                                                                 |
+| geo               | `http://opengis.net/ont/geosparql#`                                                              |
+| rdfs              | `http://www.w3.org/2000/01/rdf-schema#`                                                          |
+| ontobim           | `https://www.theworldavatar.com/kg/ontobim/`                                                     |
+| ontoderivation    | `https://www.theworldavatar.com/kg/ontoderivation/`                                              |
+| ontoprofile       | `https://www.theworldavatar.com/kg/ontoprofile/`                                                 |
+| ontoservice       | `https://www.theworldavatar.com/kg/ontoservice/`                                                 |
+| vc                | `https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/`                                      |
 
 ## 2.1. Service Agreement
 
-The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients. This section has been split into three figures to improve readability and understanding of the concepts - namely, (1) service agreement duration and parties, (2) payment obligations and (3) service commitment.
+The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients. This section has been split into several aspects to improve readability and understanding of the concepts - namely, (1) service agreement duration and parties, (2) payment obligations, (3) service commitment and (4) lifecycle.
 
-The service agreement will first define the duration, parties involved, requested service and location. The representation of the service location enables the association of facility to a specific building with their own geolocation as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)).
+The service agreement will first define the duration, parties involved, requested service and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)).
 
 Figure 1: TBox representation for a Service Agreement following the FIBO ontology
 
@@ -59,9 +69,9 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
         rdfs-label label_string
         rdfs-comments description_string
     }
-    "fibo-fnd-pas-pas:Service" ||--|| "ontobim:Facility" : "ontoservice:services"
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
 
+    "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
     "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
     "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-adr:hasAddress"
     "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
@@ -86,13 +96,33 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
     "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
 ```
 
+Figure 2: TBox representation for the client's point of contact (contact service) for the service following the FIBO ontology
+
+```mermaid
+    erDiagram
+    "fibo-fnd-pas-pas:ServiceAgreement" {
+        rdfs-label agreement_no_string
+    }
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
+
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:Client" : "fibo-fnd-arr-rep:isRequestedBy"
+    "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+
+    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
+    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
+    "ontoservice:ContactService" ||--|{ "fibo-fnd-pas-pas:Service" : "ontoservice:servesAsContactFor"
+```
+
 The billing charges are described at the service agreement level, which comprise of two types of billing - base charge and variable rate:
 
 - **Base charge**: Fixed service charge
 - **Variable rate**: The rates that is being charged based on a service metric.
 - **Excess variable rate**: The rates that is being charged based on a service metric that have exceeded the cap specified.
 
-Figure 2: TBox representation of the payment obligations stated in the service agreement for any service rendered
+Figure 3: TBox representation of the payment obligations stated in the service agreement for any service rendered
 
 ```mermaid
     erDiagram
@@ -118,24 +148,18 @@ Figure 2: TBox representation of the payment obligations stated in the service a
     "ontoservice:ServiceTonnage" ||--o{ "om:Mass"  : "ontoservice:hasQuantity"
 ```
 
-The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks.
+The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 4 to optimise and arrange services with executable details. The service also have operation hours as indicated by the `cmns-dt:hasTimePeriod` property.
 
-- It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 3 to optimise and arrange services with executable details.
-- Furthermore, the service will be given a contact person, who is an employee of the client. This person will play a role of a service provider who provides a contact service for the service specified in the agreement.
-
-Figure 3: TBox representation of the contractual obligations for a service
+Figure 4: TBox representation of the contractual obligations for a service
 
 ```mermaid
     erDiagram
     "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
-    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
-    "ontoservice:ContactService" ||--|{ "fibo-fnd-pas-pas:Service" : "ontoservice:servesAsContactFor"
 
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
     "ontoservice:ServiceCommitment" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "rdfs:subClassOf"
     "fibo-fnd-pas-pas:Service" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "ontoservice:commitsTo"
+    "fibo-fnd-pas-pas:Service" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
 
     "ontoservice:ServiceCommitment" {
         rdfs-subClassOf fibo-fnd-agr-ctr-ContractualCommitment
@@ -157,10 +181,11 @@ Figure 3: TBox representation of the contractual obligations for a service
         cmns-dt_hasTimeValue xsd_time_string
     }
     "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
-    "fibo-fnd-dt-fd:RecurrenceInterval" {
-        hasSubClass fibo-fnd-dt-fd-Monday
-        hasSubClass fibo-fnd-dt-fd-Friday
-        hasSubClass fibo-fnd-dt-fd-Sunday
+    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfWeek" {
+        NamedIndividual fibo-fnd-dt-fd-Monday
+        NamedIndividual fibo-fnd-dt-fd-Friday
+        NamedIndividual fibo-fnd-dt-fd-Sunday
     }
     "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
     "fibo-fnd-dt-bd:DayOfMonth" {
@@ -168,34 +193,148 @@ Figure 3: TBox representation of the contractual obligations for a service
     }
 ```
 
-## 2.2. Service events
+## 2.2. Service Agreement Lifecycle
 
-Service events represent the specific occurrence a service being performed, and serves as a record to be analysed for quality, efficiency, and compliance with service agreements. The scheduler agent is expected to generate a new service event instance based on the associated service commitment and payment obligations following their service intervals.
+The events occurring during the service agreement can be represented within a contract lifecycle. This usually consists of three stages in sequence of creation, service execution, and expiration. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can include a date time, location, as well as remarks. The following subsections will describe the events occurring within each stage of the lifecycle.
 
-Figure 4: TBox representation of a service event
+Figure 5: TBox representation of the service agreement's overall lifecycle
 
 ```mermaid
     erDiagram
-    "fibo-fnd-pas-pas:Service" ||--o{ "ontoservice:ServiceEvent" : "ontoservice:hasEvent"
+    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fnd-pas-pas:ServiceAgreement" : "fibo-fnd-arr-lif:isLifecycleOf"
 
-    "ontoservice:ServiceEvent" ||--|| "ontoservice:ServiceStatus" : "ontoservice:hasStatus"
-    "ontoservice:ServiceEvent" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
-    "ontoservice:ServiceEvent" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
+    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-arr-lif:hasStage"
+    "ontoservice:CreationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
+    "ontoservice:ServiceExecutionStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
+    "ontoservice:ExpirationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
+    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:CreationStage" : "cmns-dt:succeeds"
+    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
 
-    "ontoservice:ServiceEvent" {
-        ontoservice-hasOrderNumber string
-        ontoservice-scheduledOn xsd_date_time
-        ontoservice-completedOn xsd_date
+    "fibo-fbc-pas-fpas:ContractLifecycleStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "cmns-col:comprises"
+    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "lcc-cr:Location" ||--|{ "geo:Feature" : "rdfs:subClassOf"
+
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
+        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
+        rdfs-comment remark-string
     }
 ```
 
-Note that the service status are represented as enums in the corresponding ABox. The available statuses are as follows:
+## 2.2.1 Creation and Expiration Stage
 
-- Awaiting scheduling
-- In review
-- In queue
-- In progress
-- Completed
+In the creation stage, the service agreement will need to be created before it is approved, as represented by the `ContractCreation` and `ContractApproval` events. During the expiration stage, the service agreement can end in four situations:
+
+1. All contractually stipulated services have been performed successfully - `ContractDischarge`
+2. Agreement was created in fradulent circumstances and services need not be fulfilled - `ContractRescission`
+3. Early termination of an agreement initiated and agreed upon both parties - `ContractTermination`
+4. Early termination of this agreement when amendments are required, and a separate new agreement should be created - `ContractTermination`
+
+Each of these events should occur once, with one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required.
+
+Figure 6: TBox representation of the service agreement's creation and expiration lifecycle stage
+
+```mermaid
+    erDiagram
+   "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:CreationStage" : "cmns-dt:succeeds"
+    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
+
+    "ontoservice:CreationStage" ||--o{ "ontoservice:ContractCreation" : "cmns-col:comprises"
+    "ontoservice:CreationStage" ||--o{ "ontoservice:ContractApproval" : "cmns-col:comprises"
+    "ontoservice:ContractApproval" ||--o{ "ontoservice:ContractCreation" : "cmns-dt:succeeds"
+    "ontoservice:ContractCreation" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:ContractApproval" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+
+    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractDischarge" : "cmns-col:comprises"
+    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractRescission" : "cmns-col:comprises"
+    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractTermination" : "cmns-col:comprises"
+    "ontoservice:ContractDischarge" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:ContractRescission" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:ContractTermination" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+
+    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
+        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
+        rdfs-comment remark-string
+    }
+```
+
+## 2.2.2 Service Execution Stage
+
+In the service execution stage, the possible events are as follows:
+
+1. `PendingService`: A service event that is currently scheduled but has not yet started
+2. `TerminatedService`: A service event that has not started and will not be delivered
+3. `ServiceInProgress`: A service event that is currently in progress
+4. `CompletedService`: A service event that has completed successfully
+5. `UncompletedService`: A service event that has been started but is not completed
+
+The flow of service events is depicted as follows:
+
+```mermaid
+flowchart LR
+    PendingService --Received request from client to cancel scheduled service--> TerminatedService
+    PendingService --Start the scheduled service--> ServiceInProgress
+    ServiceInProgress --Successful completion--> CompletedService
+    ServiceInProgress --Unable to find client at service site--> UncompletedService
+```
+
+Multiple occurrences of each event can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date time and location. Remarks are optional to assign. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements. Additionally, the occurrence of each service in progress, completed or uncompleted service can be assigned a transport if required. Furthermore, completed service occurrences can also be assigned a monetary charge.
+
+Figure 7: TBox representation of the service agreement's service execution lifecycle stage
+
+```mermaid
+    erDiagram
+    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:CreationStage" : "cmns-dt:succeeds"
+    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
+    "ontoservice:ServiceExecutionStage" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "cmns-col:comprises"
+    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
+        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
+        rdfs-comment remark-string
+    }
+
+    "ontoservice:PendingService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:ServiceInProgress" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:TerminatedService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:CompletedService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:UncompletedService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+
+    "ontoservice:PendingService" o{--|| "ontoservice:ServiceInProgress" : "cmns-dt:succeeds"
+    "ontoservice:PendingService" o{--|| "ontoservice:TerminatedService" : "cmns-dt:succeeds"
+    "ontoservice:ServiceInProgress" o{--|| "ontoservice:CompletedService" : "cmns-dt:succeeds"
+    "ontoservice:ServiceInProgress" o{--|| "ontoservice:UncompletedService" : "cmns-dt:succeeds"
+```
+
+Figure 8: TBox representation of the service events and their occurrences
+
+```mermaid
+    erDiagram
+
+    "ontoservice:PendingService" o{--|| "ontoservice:ServiceInProgress" : "cmns-dt:succeeds"
+    "ontoservice:PendingService" o{--|| "ontoservice:TerminatedService" : "cmns-dt:succeeds"
+    "ontoservice:ServiceInProgress" o{--|| "ontoservice:CompletedService" : "cmns-dt:succeeds"
+    "ontoservice:ServiceInProgress" o{--|| "ontoservice:UncompletedService" : "cmns-dt:succeeds"
+
+    "ontoservice:ServiceInProgress" ||--|{ "ontoservice:ServiceInProgressOccurrence" : "cmns-cls:classifies"
+    "ontoservice:ServiceInProgressOccurrence" {
+        rdfs-subClassOf fibo-fbc-pas-fpas-ContractLifecycleEventOccurrence
+    }
+    "ontoservice:CompletedService" ||--|{ "ontoservice:CompletedServiceOccurrence" : "cmns-cls:classifies"
+    "ontoservice:CompletedServiceOccurrence" {
+        rdfs-subClassOf fibo-fbc-pas-fpas-ContractLifecycleEventOccurrence
+    }
+    "ontoservice:UncompletedService" ||--|{ "ontoservice:UncompletedServiceOccurrence" : "cmns-cls:classifies"
+    "ontoservice:UncompletedServiceOccurrence" {
+        rdfs-subClassOf fibo-fbc-pas-fpas-ContractLifecycleEventOccurrence
+    }
+
+    "ontoservice:ServiceInProgressOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
+    "ontoservice:CompletedServiceOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
+    "ontoservice:CompletedServiceOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
+    "ontoservice:UncompletedServiceOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
+```
 
 ## 2.3 Reporting
 
@@ -207,7 +346,7 @@ Gross Price = Base Charge + Variable Charge + Excess Variable Charge \\
 Variable Charge = (Service Metric - Service Metric Cap) \\
 ```
 
-Figure 5: ABox representation of the provenance structure for the total service charge
+Figure 9: ABox representation of the provenance structure for the total service charge
 
 ```mermaid
     erDiagram
