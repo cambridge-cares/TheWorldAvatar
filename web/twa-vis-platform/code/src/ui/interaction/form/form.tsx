@@ -149,7 +149,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             pendingResponse.success = false;
             pendingResponse.message = "No matching feature found! Please refine your search parameters.";
           } else {
-            dispatch(setFilterFeatureIris(pendingResponse.message));
+            dispatch(setFilterFeatureIris(JSON.parse(pendingResponse.message)));
             pendingResponse.message = "Found matching features! Updating the visualisation...";
           }
         }

@@ -104,9 +104,14 @@ export default function MapContainer(props: MapContainerProps) {
     if (map && mapData && filterLayerIds?.length > 0 && filterFeatureIris?.length > 0) {
       // Reset the filters first before applying new filters
       filterLayerIds.map(layerId => map.setFilter(layerId, null));
-      // If the SHOW_ALL_FEATURE_INDICATOR is added, the filters should be reset, else set the list of IRIs for filtering
-      const filter: FilterSpecification = filterFeatureIris?.length === 1 && filterFeatureIris[0] === SHOW_ALL_FEATURE_INDICATOR ?
-        null : ["in", ["get", "iri"], ["literal", filterFeatureIris]];
+      // By default, show all feature will have reset filters
+      let filter: FilterSpecification = null;
+      // The filter settings should only be updated if there is no SHOW_ALL_FEATURE_INDICATOR
+      if (!(filterFeatureIris?.length === 1 && filterFeatureIris[0] === SHOW_ALL_FEATURE_INDICATOR)) {
+        // Use exact match to ensure only matching values are shown, do not use in, contains or other expressions with possible substrings
+        const valueResultMap: (string | boolean)[] = filterFeatureIris.flatMap(iri => [iri, true]);
+        filter = ["match", ["string", ["get", "iri"]], ...valueResultMap, false]
+      };
       filterLayerIds.map(layerId => map.setFilter(layerId, filter));
       // Reset the filter features after usage
       dispatch(setFilterFeatureIris([]));
