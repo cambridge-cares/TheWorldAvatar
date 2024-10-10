@@ -214,25 +214,28 @@ public class DockerClientTest {
     }
 
     @Test
-    public void testExecuteCommandIOFromFile() {
+    public void testExecuteCommandIOFromFile() throws IOException {
 
         Assume.assumeFalse(
                 "Passing a non-null value to ComplexCommand::withInputStream doesn't work when calling Docker via the Windows named pipe.",
                 SystemUtils.IS_OS_WINDOWS);
 
-        InputStream inputStream = DockerClientTest.class.getResourceAsStream("testFile.txt");
+        try (
+                InputStream inputStream = DockerClientTest.class.getResourceAsStream("testFile.txt");
 
-        OutputStream outputStream = new ByteArrayOutputStream();
+                InputStream expectedInputStream = DockerClientTest.class.getResourceAsStream("outputFile.txt");) {
+            OutputStream outputStream = new ByteArrayOutputStream();
 
-        dockerAPI.createComplexCommand(containerId, "head", "-n", "3")
-                .withInputStream(inputStream)
-                .withOutputStream(outputStream)
-                .withErrorStream(outputStream)
-                .exec();
+            dockerAPI.createComplexCommand(containerId, "head", "-n", "3")
+                    .withInputStream(inputStream)
+                    .withOutputStream(outputStream)
+                    .withErrorStream(outputStream)
+                    .exec();
 
-        String result = outputStream.toString();
-        String expected = "1.abcd\r\n2.efdh\r\n3.abcd\r\n";
-        Assert.assertEquals(expected, result);
+            String result = outputStream.toString();
+            String expected = new String(expectedInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            Assert.assertEquals(expected, result);
+        }
     }
 
 }
