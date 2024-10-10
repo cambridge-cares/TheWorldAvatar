@@ -145,11 +145,15 @@ public class QueryTemplateFactory {
       if (!variable.equals("id")) {
         // note that if no criteria or empty string is passed in the API, the filter
         // will not be added
-        if (criterias.containsKey(variable)) {
-          whereBuilder.append(currentLine.getValue());
-          filters.append(genSearchCriteria(variable, criterias));
+        if (criterias.containsKey(variable) && !criterias.get(variable).isEmpty()) {
+          // If there is no search filters to be added, this variable should not be added
+            String searchFilters = genSearchCriteria(variable, criterias);
+            if (!searchFilters.isEmpty()) {
+              whereBuilder.append(currentLine.getValue());
+              filters.append(searchFilters);
+            }
+          }
         }
-      }
     });
     String federatedWhereClause = this.genFederatedQuery(whereBuilder.append(filters).toString(), targetClass);
     // Close the query
