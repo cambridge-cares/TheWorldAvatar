@@ -140,11 +140,16 @@ OperatingProperty,Class,,,,,,A property of an operating parameter of a device (e
 OperatingRange,Class,OperatingProperty,IS-A,,,,The range for an operating parameter of a device (e.g. range of an operating temperature).,https://www.theworldavatar.com/kg/ontodevice/,Operating range
 OperatingTemperatureRange,Class,OperatingRange,IS-A,,,,The operating temperature range of a device.,https://www.theworldavatar.com/kg/ontodevice/,Operating temperature range
 Activity,Class,,,,,,An event that occurs over a period of time and involves specific actions such as walking or running.,https://www.theworldavatar.com/kg/ontodevice/,Activity
-ActivityType,Class,,,,,,Represents the type of activity being performed (e.g., walking, biking) defined by Google's activity recognition API.,https://www.theworldavatar.com/kg/ontodevice/,Activity Type
+ActivityType,Class,,,,,,Represents the type of activity being performed (e.g., walking, biking).,https://www.theworldavatar.com/kg/ontodevice/,Activity Type
+OnFoot,Class,ActivityType,IS-A,,,,The device is on a user who is walking or running.,http://www.theworldavatar.com/kg/ontodevice/,On Foot
+InVehicle,Class,ActivityType,IS-A,,,,The device is in a vehicle.,http://www.theworldavatar.com/kg/ontodevice/,In Vehicle
+OnBicycle,Class,ActivityType,IS-A,,,,The device is on a bicycle.,http://www.theworldavatar.com/kg/ontodevice/,On Bicycle
+Running,Class,OnFoot,IS-A,,,,A sub-activity of on foot where the user is running.,http://www.theworldavatar.com/kg/ontodevice/,Running
+Walking,Class,OnFoot,IS-A,,,,A sub-activity of on foot where the user is walking.,http://www.theworldavatar.com/kg/ontodevice/,Walking
 ConfidenceLevel,Class,,,,,,Represents the confidence level indicating the likelihood of the activity being accurate.,https://www.theworldavatar.com/kg/ontodevice/,Confidence Level
 hasActivityType,Object Property,,Activity,ActivityType,,only,Links an activity to its corresponding type (e.g., walking, running).,https://www.theworldavatar.com/kg/ontodevice/,has activity type
 hasConfidenceLevel,Object Property,,Activity,ConfidenceLevel,,only,Links an activity to its confidence level.,https://www.theworldavatar.com/kg/ontodevice/,has confidence level
-prov:wasAssociatedWith,Object Property,,prov:Activity,OntoDevice:Smartphone,,only,Relates an activity with the device that detected it.,https://www.w3.org/ns/prov#,was associated with
+detectedByDevice, Object Property,,prov:Activity, Smartphone,,only,Relates an activity with the device that detected it.,https://www.w3.org/ns/prov#,was associated with
 hasValue,Data Property,,ConfidenceLevel,xsd:int,,only,Represents the numerical confidence value.,https://www.theworldavatar.com/kg/ontodevice/,has value
 hasValue,Data Property,,ActivityType,xsd:string,,only,Represents the type of activity as a string.,https://www.theworldavatar.com/kg/ontodevice/,has value
 services,Object Property,,,Device UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,https://w3id.org/bot#Zone,,A relationship between a device or technical system and the zone it is servicing or providing a service for.,https://www.theworldavatar.com/kg/ontodevice/,services

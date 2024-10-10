@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>23 September 2024</dc:date>
+        <dc:date>10 October 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.5</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -669,18 +669,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/prov:wasAssociatedWith -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/prov:wasAssociatedWith">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OntoDevice:Smartphone"/>
-        <rdfs:comment>Relates an activity with the device that detected it.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.w3.org/ns/prov#"/>
-        <rdfs:label>was associated with</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -1106,7 +1094,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ActivityType">
         <rdfs:comment>Represents the type of activity being performed (e.g.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="walking"/>
-        <rdfs:label> biking) defined by Google&apos;s activity recognition API.</rdfs:label>
+        <rdfs:label> biking).</rdfs:label>
     </owl:Class>
     
 
@@ -1674,6 +1662,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/InVehicle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/InVehicle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>The device is in a vehicle.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>In Vehicle</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/Laptop -->
 
 
@@ -1909,6 +1909,30 @@
         <rdfs:comment>A device for measuring the flow of oil.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Oil meter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/OnBicycle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OnBicycle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>The device is on a bicycle.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>On Bicycle</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/OnFoot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OnFoot">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>The device is on a user who is walking or running.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>On Foot</rdfs:label>
     </owl:Class>
     
 
@@ -2271,6 +2295,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Running -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Running">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OnFoot"/>
+        <rdfs:comment>A sub-activity of on foot where the user is running.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Running</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/SSD -->
 
 
@@ -2610,6 +2646,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Walking -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Walking">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OnFoot"/>
+        <rdfs:comment>A sub-activity of on foot where the user is walking.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Walking</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/WaterChiller -->
 
 
@@ -2667,13 +2715,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>pH level sensor</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/OntoDevice:Smartphone -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OntoDevice:Smartphone"/>
     
 
 
