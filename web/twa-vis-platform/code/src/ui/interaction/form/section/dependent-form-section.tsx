@@ -89,14 +89,6 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
       form.setValue(field.fieldId, defaultId);
 
       const formFields: FormOptionType[] = [];
-      // Add the default search option only if this is the search form
-      if (props.form.getValues(FORM_STATES.FORM_TYPE) === SEARCH_FORM_TYPE) {
-        // Default option should only use empty string "" as the value
-        formFields.push({
-          label: defaultSearchOption.label.value,
-          value: defaultSearchOption.type.value,
-        });
-      }
 
       // Retrieve and set the display field accordingly
       if (entities.length > 0) {
@@ -117,7 +109,18 @@ export function DependentFormSection(props: Readonly<DependentFormSectionProps>)
           formFields.push(formOption);
         })
       }
-
+      // Sort the fields by the labels
+      formFields.sort((a, b) => {
+        return a.label.localeCompare(b.label);
+      });
+      // Add the default search option only if this is the search form
+      if (props.form.getValues(FORM_STATES.FORM_TYPE) === SEARCH_FORM_TYPE) {
+        // Default option should only use empty string "" as the value
+        formFields.unshift({
+          label: defaultSearchOption.label.value,
+          value: defaultSearchOption.type.value,
+        });
+      }
       // Update select options
       setSelectElements(formFields);
       setIsFetching(false);
