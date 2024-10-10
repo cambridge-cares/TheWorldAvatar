@@ -9,6 +9,7 @@
         "population",
         "routing",
         "tbox",
-        "tree"
+        "tree",
+        "isochrone"
     ]
 }

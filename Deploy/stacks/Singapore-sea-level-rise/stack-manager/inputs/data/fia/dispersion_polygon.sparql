@@ -1,0 +1,7 @@
+PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
+
+SELECT ?Property ?Value
+WHERE {
+BIND ("Value" AS ?Property)
+SERVICE[ONTOP] {[IRI] disp:hasValue ?Value}
+}

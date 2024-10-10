@@ -1,0 +1,27 @@
+{
+    "name": "buildings-layer-bukit-merah",
+    "database": "postgres",
+    "datasetDirectory": "buildings",
+    "workspace": "twa",
+    "dataSubsets": [
+        {
+            "name": "building_bukit_merah",
+            "type": "vector",
+            "subdirectory": "consolidated_layer",
+            "sql": "@/inputs/data/buildings/consolidated_layer/geoserver_layer_bukit_merah.sql",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "building_usage",
+                    "sql": "select * from buildings_layer_bukit_merah",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Polygon",
+                        "srid": 24500
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        }
+    ]
+}
