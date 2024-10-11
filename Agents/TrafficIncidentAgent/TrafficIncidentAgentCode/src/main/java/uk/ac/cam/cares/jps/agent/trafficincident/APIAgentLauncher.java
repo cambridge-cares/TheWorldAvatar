@@ -28,10 +28,12 @@ import org.jooq.impl.DSL;
 import org.jooq.InsertValuesStepN;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.nio.file.Path;
 
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import org.jooq.SQLDialect;
 import org.jooq.Table;
@@ -65,7 +67,9 @@ public class APIAgentLauncher extends JPSAgent {
     private static final Field<String> messageColumn = DSL.field(DSL.name("message"), String.class);
     private static final Field<Boolean> statusColumn = DSL.field(DSL.name("status"), Boolean.class);
 
-    private static final String PROPERTIES_PATH = "/config/config.properties";
+    private static final String PROPERTIES_PATH = "/inputs/config.properties";
+    private static final Path obdaFile = Path.of("/inputs/trafficincident.obda");
+    private static boolean hasRun = false;
     private String dbName;
     private String apiProperties;
     private String api_url;
@@ -180,34 +184,14 @@ public class APIAgentLauncher extends JPSAgent {
             }
         }
         LOGGER.info("Above is/are ended traffic incidents.");
-
-        //Create geoserver layer
-        GeoServerClient geoServerClient = GeoServerClient.getInstance();
-        String workspaceName= "twa";
-        String schema = "public";
-        geoServerClient.createWorkspace(workspaceName);
-
-        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-        virtualTable.setSql("SELECT \r\n" + 
-                        "    type AS name, \r\n" +
-                        "    message AS description, \r\n" + 
-                        "    TO_TIMESTAMP(starttime) AS starttime, \r\n" + 
-                        "    CASE \r\n" + 
-                        "        WHEN endtime = 0 THEN NULL \r\n" + 
-                        "        ELSE TO_TIMESTAMP(endtime) \r\n" + 
-                        "    END AS endtime, \r\n" + 
-                        "    CASE \r\n" + 
-                        "        WHEN status = 't' THEN 'Ongoing' \r\n" + 
-                        "        ELSE 'Ended'  \r\n" + 
-                        "    END AS status, location \r\n" + 
-                        "FROM trafficincident");
-        virtualTable.setEscapeSql(true);
-        virtualTable.setName("traffic_incident_virtual_table");
-        virtualTable.addVirtualTableGeometry("location", "Geometry", "4326"); //
-        geoServerVectorSettings.setVirtualTable(virtualTable);
-        geoServerClient.createPostGISDataStore(workspaceName,"trafficincident", "postgres", schema);
-        geoServerClient.createPostGISLayer(workspaceName, "postgres","trafficincident", geoServerVectorSettings);
+        
+        if (!hasRun) {
+            createGeoserverLayer();
+            createOntopMapping(); // Call the function
+            hasRun = true;         // Set the flag to true after execution
+        } else {
+            System.out.println("createGeoserverLayer() and createOntopMapping() has already been run.");
+        }
 
         disconnect();
         return jsonMessage;
@@ -215,7 +199,7 @@ public class APIAgentLauncher extends JPSAgent {
 
     private void setRdbParameters() {
         EndpointConfig endpointConfig = new EndpointConfig();
-        this.rdbUrl = endpointConfig.getDbUrl("postgres");
+        this.rdbUrl = endpointConfig.getDbUrl(dbName);
         this.rdbUser = endpointConfig.getDbUser();
         this.rdbPassword = endpointConfig.getDbPassword();
     }
@@ -366,6 +350,46 @@ public class APIAgentLauncher extends JPSAgent {
         } catch (SQLException e) {
             LOGGER.error(SQL_UPDATE_ERROR_MSG, e);
             throw new JPSRuntimeException(e.getMessage());
+        }
+    }
+
+    private void createGeoserverLayer (){
+        //Create geoserver layer
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        String workspaceName= "twa";
+        String schema = "public";
+        geoServerClient.createWorkspace(workspaceName);
+
+        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+        virtualTable.setSql("SELECT \r\n" + 
+                        "    type AS name, \r\n" +
+                        "    message AS description, \r\n" + 
+                        "    TO_TIMESTAMP(starttime) AS starttime, \r\n" + 
+                        "    CASE \r\n" + 
+                        "        WHEN endtime = 0 THEN NULL \r\n" + 
+                        "        ELSE TO_TIMESTAMP(endtime) \r\n" + 
+                        "    END AS endtime, \r\n" + 
+                        "    CASE \r\n" + 
+                        "        WHEN status = 't' THEN 'Ongoing' \r\n" + 
+                        "        ELSE 'Ended'  \r\n" + 
+                        "    END AS status, location \r\n" + 
+                        "FROM trafficincident");
+        virtualTable.setEscapeSql(true);
+        virtualTable.setName("traffic_incident_virtual_table");
+        virtualTable.addVirtualTableGeometry("location", "Geometry", "4326"); //
+        geoServerVectorSettings.setVirtualTable(virtualTable);
+        geoServerClient.createPostGISDataStore(workspaceName,"trafficincident", dbName, schema);
+        geoServerClient.createPostGISLayer(workspaceName, dbName,"trafficincident", geoServerVectorSettings);
+    }
+
+    private void createOntopMapping(){
+        //Upload Isochrone Ontop mapping
+        try {
+            OntopClient ontopClient = OntopClient.getInstance();
+            ontopClient.updateOBDA(obdaFile);
+        } catch (Exception e) {
+            System.out.println("Could not retrieve isochrone .obda file.");
         }
     }
 }

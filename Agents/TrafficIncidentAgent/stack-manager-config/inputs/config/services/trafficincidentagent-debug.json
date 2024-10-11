@@ -10,8 +10,8 @@
         "Mounts": [
           {
             "Type": "bind",
-            "Source": "../../../../../../Agents/TrafficIncidentAgent/config",
-            "Target": "/config"
+            "Source": "../../../../../../Agents/TrafficIncidentAgent/inputs",
+            "Target": "/inputs"
           }
         ],
         "Configs": [
