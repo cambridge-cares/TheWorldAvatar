@@ -13,10 +13,10 @@ import android.content.pm.ServiceInfo;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Process;
+import androidx.work.Data;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +24,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -33,13 +36,18 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.sensor.source.worker.BufferFlushWorker;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
+import uk.ac.cam.cares.jps.sensor.source.worker.SensorUploadWorker;
 import uk.ac.cam.cares.jps.sensor.source.database.model.activity.ActivityRecognitionService;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
@@ -51,9 +59,6 @@ import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
 
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
-
-import android.app.PendingIntent;
-import android.content.Intent;
 
 /**
  * A foreground service that keeps sensor recording running even when the app is terminated by user or the system.
@@ -72,6 +77,7 @@ public class SensorService extends Service {
     SensorCollectionStateManager sensorCollectionStateManager;
 
 
+
     private final int FOREGROUND_ID = 100;
     private final String CHANNEL_ID = "Sensors";
     private final int SENSOR_FRAGMENT_REQUEST_CODE = 100;
@@ -79,12 +85,9 @@ public class SensorService extends Service {
     private final Logger LOGGER = Logger.getLogger(SensorService.class);
     private HandlerThread thread;
     private NetworkChangeReceiver networkChangeReceiver;
-    private static final long THIRTY_DAYS_IN_MILLIS = 30L * 24 * 60 * 60 * 1000;
-    private static final long BUFFER_FLUSH_INTERVAL = 60000; // Flush buffer every 60 seconds
-    private static final long NETWORK_SEND_INTERVAL = 60000; // 300000 - five minutes for non-tests
     private ActivityRecognitionClient activityRecognitionClient;
-
-    private Map<String, JSONArray> memoryBuffer = new HashMap<>();
+    Timer timerB = new Timer();
+    Timer timer = new Timer();
 
     @Override
     public void onCreate() {
@@ -100,6 +103,7 @@ public class SensorService extends Service {
             IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(networkChangeReceiver, filter);
         }
+
     }
 
     @Override
@@ -110,6 +114,25 @@ public class SensorService extends Service {
             // todo: check whether this return is correct
             return START_STICKY;
         }
+
+        if (!checkActivityRecognitionPermission()) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
+        String userId = intent.getExtras().getString("userId");
+
+        // Reinitialize the sensorCollectionState if it is null
+        if (sensorCollectionStateManager.getSensorCollectionState() == null) {
+            if (userId != null) {
+                sensorCollectionStateManager.initSensorCollectionState(userId);
+            } else {
+                LOGGER.warn("UserId is null. Stopping service.");
+                stopSelf();
+                return START_NOT_STICKY;
+            }
+        }
+
 
         String deviceId = intent.getExtras().getString("deviceId");
 
@@ -142,103 +165,59 @@ public class SensorService extends Service {
 
 
         // registering the activity recognition client
-        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(this);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0,
-                new Intent(this, ActivityRecognitionService.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        // requesting activity updates every three seconds
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
-            activityRecognitionClient.requestActivityUpdates(3000, pendingIntent);
-        } else {
-            LOGGER.warn("Activity Recognition permission not granted. Unable to start service.");
+        activityRecognitionClient = ActivityRecognition.getClient(this);
+        PendingIntent pendingIntent = PendingIntent.getService(
+                this, 0, new Intent(this, ActivityRecognitionService.class),
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        activityRecognitionClient.requestActivityUpdates(3000, pendingIntent);
+
+
+        // Convert the list of sensors to a JSONArray string
+        JSONArray jsonArray = new JSONArray();
+        for (SensorType sensor : selectedSensors) {
+            jsonArray.put(sensor.name());
         }
 
+        // Create Data object for passing parameters to the worker
+        Data uploadData = new Data.Builder()
+                .putString("deviceId", deviceId)
+                .putString("selectedSensors", jsonArray.toString())
+                .build();
 
-        Handler handler = new Handler(thread.getLooper());
-        Runnable bufferAndFlushData = new Runnable() {
+
+
+        long delayB = 60000; // delay in milliseconds
+
+        timerB.schedule(new TimerTask() {
             @Override
             public void run() {
-                Map<String, JSONArray> localData = sensorHandlerManager.collectSensorData();
-
-                // add data to memory buffer
-                for (Map.Entry<String, JSONArray> entry : localData.entrySet()) {
-                    String sensorName = entry.getKey();
-                    JSONArray newData = entry.getValue();
-
-                    if (!memoryBuffer.containsKey(sensorName)) {
-                        memoryBuffer.put(sensorName, new JSONArray());
-                    }
-
-                    // Add the new data to the existing buffered data
-                    JSONArray bufferedData = memoryBuffer.get(sensorName);
-                    for (int i = 0; i < newData.length(); i++) {
-                        try {
-                            bufferedData.put(newData.get(i));
-                        } catch (Exception e) {
-                            LOGGER.error("Error adding data to buffer", e);
-                        }
-                    }
-                }
-
-                // Write buffered data to local storage
-                sensorLocalSource.writeToDatabase(memoryBuffer);
-                // Clear the buffer after flushing to local storage
-                memoryBuffer.clear();
-
-                // Periodically flush the buffer to local storage
-                handler.postDelayed(this, BUFFER_FLUSH_INTERVAL);
-
-                long currentTime = System.currentTimeMillis();
-                long cutoffTime = currentTime - THIRTY_DAYS_IN_MILLIS;
-                sensorLocalSource.deleteHistoricalData(cutoffTime);
+                OneTimeWorkRequest bufferFlushWork = new OneTimeWorkRequest.Builder(BufferFlushWorker.class)
+                        .addTag("bufferFlushWork")
+                        .setInitialDelay(1, TimeUnit.MINUTES)
+                        .build();
+                WorkManager.getInstance(getApplicationContext()).enqueue(bufferFlushWork);
 
             }
-        };
+        }, delayB, delayB);
 
-        // Runnable for sending accumulated data from local storage to the network
-        Runnable sendDataToNetwork = new Runnable() {
-            private static final int PAGE_SIZE = 100; // # of records per page
-            private int offset = 0; // Initial offset
 
+        long delay = 60000; // delay in milliseconds
+
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                boolean hasMoreData = true;
+                OneTimeWorkRequest dataUploadWork = new OneTimeWorkRequest.Builder(
+                        SensorUploadWorker.class)
+                        .addTag("dataUploadWork")
+                        .setInitialDelay(1, TimeUnit.MINUTES)
+                        .setInputData(uploadData)
+                        .build();
+                WorkManager.getInstance(getApplicationContext()).enqueue(dataUploadWork);
 
-                while (hasMoreData) {
-                    JSONArray allSensorData = sensorLocalSource.retrieveUnUploadedSensorData(selectedSensors, PAGE_SIZE, offset);
-                    LOGGER.info("Retrieved " + allSensorData.length() + " items from local storage.");
-
-                    if (allSensorData.length() < PAGE_SIZE) {
-                        hasMoreData = false; // No more data to fetch
-                    }
-
-                    String jsonString = allSensorData.toString();
-
-
-                    // Compress the JSON string
-                    try {
-                        byte[] compressedData = compressData(jsonString);
-
-                        LOGGER.info("Size of data after compression: " + compressedData.length + " bytes");
-
-                        // Send the accumulated data to the network
-                        if (allSensorData.length() > 0) {
-                            LOGGER.info("Attempting to send " + allSensorData.length() + " items to the network.");
-                            LOGGER.info("All sensor data " + allSensorData);
-                            sensorNetworkSource.sendPostRequest(deviceId, compressedData, allSensorData);
-                            LOGGER.info("Accumulated data sent to network.");
-                        } else {
-                            LOGGER.info("No accumulated data to send to the network.");
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    offset += PAGE_SIZE;
-                }
-
-                // Schedule the next network send
-                handler.postDelayed(this, NETWORK_SEND_INTERVAL);
             }
-        };
+        }, delay, delay);
+
 
 
         // Determine if location sensor is toggled
@@ -273,11 +252,6 @@ public class SensorService extends Service {
             // For non-location sensors or if no specific type is required
             ServiceCompat.startForeground(this, FOREGROUND_ID, notification, type);
         }
-
-
-        //  buffer and flush process
-        handler.post(bufferAndFlushData);
-        handler.post(sendDataToNetwork);
 
 
         return START_STICKY;
@@ -338,8 +312,32 @@ public class SensorService extends Service {
         return notification;
     }
 
+
+    /**
+     * Checks if activity permission has been granted.
+     * @return a boolean indicating false if permission has not been granted and true if it has.
+     */
+    private boolean checkActivityRecognitionPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
+                != PackageManager.PERMISSION_GRANTED) {
+            LOGGER.warn("Activity Recognition permission not granted. Unable to start service.");
+            return false; // Permission not granted
+        }
+        return true; // Permission granted
+    }
+
+
     @Override
     public void onDestroy() {
+
+        // cancel timers for workers
+        if (timerB != null) {
+            timerB.cancel();
+        }
+        if (timer != null) {
+            timer.cancel();
+        }
+
         // Unregister the NetworkChangeReceiver when the service is destroyed
         if (networkChangeReceiver != null) {
             unregisterReceiver(networkChangeReceiver);
@@ -363,22 +361,38 @@ public class SensorService extends Service {
             activityRecognitionClient.removeActivityUpdates(pendingIntent);
         }
 
-        LOGGER.info("Stopping sensor service");
+
+        LOGGER.info("Stopping sensor service 1");
         try {
-            sensorHandlerManager.stopSensors();
+            if (sensorHandlerManager != null) {
+                sensorHandlerManager.stopSensors();
+                LOGGER.info("Sensors have been stopped.");
+            }
             String taskId = sensorCollectionStateManager.getTaskId();
             LOGGER.info("Stopping sensor service with Task ID: " + taskId);
 
-
-            sensorCollectionStateManager.setTaskId(null);
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-            thread.quit();
+
+            if (sensorCollectionStateManager.getSensorCollectionState() != null) {
+                LOGGER.info("Clearing sensor collection state.");
+                sensorCollectionStateManager.clearState(sensorCollectionStateManager.getUserId());
+            } else {
+                LOGGER.warn("SensorCollectionState is already null. No need to clear.");
+            }
+
+            if (thread != null) {
+                thread.quit();
+            }
+
+            sensorLocalSource.shutdownExecutor();
 
             LOGGER.info("Sensor service is stopped. Sensors stop recording.");
         } catch (NullPointerException exception) {
             LOGGER.warn("Foreground service has already stopped.");
         } catch (SensorCollectionStateException e) {
             throw new RuntimeException(e);
+        } finally {
+            super.onDestroy();
         }
     }
 

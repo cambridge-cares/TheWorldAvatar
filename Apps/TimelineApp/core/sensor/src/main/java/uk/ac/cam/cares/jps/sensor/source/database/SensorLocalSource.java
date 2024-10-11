@@ -11,13 +11,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.inject.Inject;
 
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.ActivityDataDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GravityDao;
@@ -65,13 +72,17 @@ public class SensorLocalSource {
     public ActivityDataDao activityDataDao;
     Logger LOGGER = Logger.getLogger(SensorLocalSource.class);
     Map<String, JSONArray> unsentData;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-
+    @Inject
     public SensorLocalSource(Context context) {
         this.context = context;
-        AppDatabase appDatabase = Room.databaseBuilder(context, AppDatabase.class, "timeline-database")
-                .fallbackToDestructiveMigrationOnDowngrade()  // Allows destructive migration on downgrade
+        AppDatabase appDatabase =  Room.databaseBuilder(context.getApplicationContext(),
+                        AppDatabase.class, "timeline-database")
+                .fallbackToDestructiveMigration()
                 .build();
+//        AppDatabase appDatabase = AppDatabase.getDatabase(context);
+
         locationDao = appDatabase.locationDao();
         accelerationDao = appDatabase.accelerationDao();
         gravityDao = appDatabase.gravityDao();
@@ -120,7 +131,7 @@ public class SensorLocalSource {
         writeToDatabaseHelper(allSensorData, "pressure", pressureDao, Pressure.class);
         writeToDatabaseHelper(allSensorData, "microphone", soundLevelDao, SoundLevel.class);
         writeToDatabaseHelper(allSensorData, "humidity", relativeHumidityDao, RelativeHumidity.class);
-
+        writeToDatabaseHelper(allSensorData, "activity", activityDataDao, ActivityData.class);
     }
 
     /**
@@ -170,7 +181,6 @@ public class SensorLocalSource {
      */
     public void insertUnsentData(UnsentData unsentData) {
         try {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 this.unsentDataDao.insert(unsentData);
             });
@@ -218,6 +228,7 @@ public class SensorLocalSource {
         pressureDao.delete(cutoffTime);
         soundLevelDao.delete(cutoffTime);
         relativeHumidityDao.delete(cutoffTime);
+        activityDataDao.delete(cutoffTime);
     }
 
 
@@ -283,6 +294,11 @@ public class SensorLocalSource {
                     allSensorData.addAll(humidityDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(humidityDataList));
                     break;
+                case ACTIVITY:
+                    List<ActivityData> activityDataListDataList = Arrays.asList(activityDataDao.getAllUnUploadedData(limit, offset));
+                    allSensorData.addAll(activityDataListDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(activityDataListDataList));
+                    break;
             }
         }
         JSONArray allSensorDataArray = new JSONArray();
@@ -337,6 +353,9 @@ public class SensorLocalSource {
             case HUMIDITY:
                 relativeHumidityDao.markAsUploaded(times);
                 break;
+            case ACTIVITY:
+                activityDataDao.markAsUploaded(times);
+                break;
         }
     }
 
@@ -355,7 +374,55 @@ public class SensorLocalSource {
         return times;
     }
 
+    /**
+     * Computes an MD5 hash of the given string.
+     *
+     * @param data The input string to hash.
+     * @return The MD5 hash as a hexadecimal string.
+     */
+    public String computeHash(String data) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+            // Convert the byte array into a hexadecimal string
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.error("MD5 algorithm not found", e);
+            return null;
+        }
+    }
 
+    /**
+     * Checks if the given data already exists in the UnsentData table.
+     *
+     * @param sensorData The sensor data as a JSONArray.
+     * @return True if data exists, false otherwise.
+     */
+    public boolean isDataInUnsentData(JSONArray sensorData) {
+        String dataString = sensorData.toString();
+        String dataHash = computeHash(dataString);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<UnsentData> future = executor.submit(() -> unsentDataDao.getUnsentDataByHash(dataHash));
+
+        try {
+            UnsentData existingData = future.get();
+            return existingData != null;
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e("SensorLocalSource", "Error checking for unsent data", e);
+            return false;
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    public void shutdownExecutor() {
+        executor.shutdown();
+    }
 
 }
 

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * A class to manage sensor handlers. It is considered as a data source level component.
  * Functionalities:
@@ -28,6 +30,7 @@ public class SensorHandlerManager {
     private Map<SensorType, Integer> samplingRatesMap;
 
 
+    @Inject
     public SensorHandlerManager(Context applicationContext) {
         android.hardware.SensorManager sensorManager = (android.hardware.SensorManager) applicationContext.getSystemService(SENSOR_SERVICE);
         sensorHandlers = new SensorHandler[]{

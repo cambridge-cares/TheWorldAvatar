@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -22,9 +21,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okio.BufferedSink;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
 
@@ -92,13 +88,19 @@ public class SensorNetworkSource {
                     // convert it to the correct format for the writeToDatabase method
                 Map<String, JSONArray> sensorDataMap = convertSensorDataToMap(sensorData);
 
-                    UnsentData unsentData = new UnsentData();
-                    String serializedData = serializeMap(sensorDataMap);
-                    unsentData.deviceId = deviceId;
-                    unsentData.data = serializedData;
-                    Log.e("network source", "data =" + serializedData);
-                    unsentData.timestamp = System.currentTimeMillis();
-                    sensorLocalSource.insertUnsentData(unsentData);
+                    String dataHash = sensorLocalSource.computeHash(sensorData.toString());
+                    // Check for duplicates before inserting
+                    if (!sensorLocalSource.isDataInUnsentData(sensorData)) {
+                        UnsentData unsentData = new UnsentData();
+                        unsentData.deviceId = deviceId;
+                        unsentData.data = sensorData.toString();
+                        unsentData.timestamp = System.currentTimeMillis();
+                        unsentData.dataHash = dataHash;
+
+                        sensorLocalSource.insertUnsentData(unsentData);
+                    } else {
+                        LOGGER.info("Data already in UnsentData. Skipping insertion.");
+                    }
                 }
         ) {
             @Override

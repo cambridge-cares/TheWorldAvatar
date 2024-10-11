@@ -1,8 +1,10 @@
-package uk.ac.cam.cares.jps.sensor.source.database;
+package uk.ac.cam.cares.jps.sensor.source.worker;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.hilt.work.HiltWorker;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -11,11 +13,12 @@ import org.json.JSONArray;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedInject;
+import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.TimeUnit;
 
 
 @HiltWorker
@@ -72,6 +75,7 @@ public class BufferFlushWorker extends Worker {
             // Handle deleting old data
             long cutoffTime = System.currentTimeMillis() - THIRTY_DAYS_IN_MILLIS;
             sensorLocalSource.deleteHistoricalData(cutoffTime);
+
 
             return Result.success();
         } catch (Exception e) {
