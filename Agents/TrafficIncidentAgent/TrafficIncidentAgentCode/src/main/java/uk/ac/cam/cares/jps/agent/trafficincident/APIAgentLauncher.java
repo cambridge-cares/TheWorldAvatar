@@ -21,6 +21,9 @@ import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Properties;
 import java.nio.file.Path;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -75,14 +78,18 @@ public class APIAgentLauncher extends JPSAgent {
     private static final Field<String> messageColumn = DSL.field(DSL.name("message"), String.class);
     private static final Field<Boolean> statusColumn = DSL.field(DSL.name("status"), Boolean.class);
 
-    private static final String PROPERTIES_PATH = "/inputs/config.properties";
+    private static final String PROPERTIES_PATH = "/config/config.properties";
     private String dbName;
+    private String apiProperties;
+    private String api_url;
 
     public void init() {
-        try (InputStream input = getClass().getResourceAsStream(PROPERTIES_PATH)) {
+        try (InputStream input = new FileInputStream(PROPERTIES_PATH)) {
             Properties prop = new Properties();
             prop.load(input);
+            this.apiProperties = prop.getProperty("trafficincident.accountKey"); // Make sure to pass the key
             this.dbName = prop.getProperty("db.name");
+            this.api_url =prop.getProperty("trafficincident.api_url");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -97,11 +104,10 @@ public class APIAgentLauncher extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         JSONObject jsonMessage = new JSONObject();
-        if(System.getenv(API_VALUES)!=null) {   
+        if( apiProperties != null) {   
             LOGGER.info("Passing Request to API Connector and Postgres Client");
-            String apiProperties = System.getenv(API_VALUES);
             
-            jsonMessage = initializeAgent(apiProperties);
+            jsonMessage = initializeAgent(apiProperties,api_url);
             jsonMessage.accumulate("Result","values has been extracted");
 
             requestParams = jsonMessage;
@@ -123,16 +129,11 @@ public class APIAgentLauncher extends JPSAgent {
      *   - compare between current and (previously deemed) ongoing incidents
      *       and mark ended incidents as complete
      */
-    public JSONObject initializeAgent(String apiProperties) {     
+    public JSONObject initializeAgent(String apiProperties, String api_url) {
         JSONObject jsonMessage = new JSONObject();
         // retrieve readings from data API and connector
         APIConnector connector;
-        try {
-            connector = new APIConnector(apiProperties);
-        } catch(IOException e) {
-            LOGGER.error(CONNECTOR_ERROR_MSG,e);
-            throw new JPSRuntimeException(CONNECTOR_ERROR_MSG,e);
-        }
+        connector = new APIConnector(api_url, apiProperties);
 
         LOGGER.info("API Connector Object Initialized");
         jsonMessage.accumulate("Result","API Connector object Initialized");

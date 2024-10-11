@@ -16,16 +16,7 @@ credentials/
 
 `repo_username.txt` should contain your GitHub username, and `repo_password.txt` contains your GitHub [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-In the same folder, you will also need to have an `api_key.txt` which can be obtained by registering from [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html). Remember to copy the API key to the `config/api.properties` to ensure the data can be correctly retrieved and remember not to publish your key on GitHub.
-
-You also need to have a copy of your credentials in single-word text files located like below:
-
-```
-docker/
-  credentials/
-    repo_password.txt
-    repo_username.txt
-```
+In the same folder, you will also need to have an `API_key` which can be obtained by registering from [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html). The API key to the `config/api.properties` to ensure the data can be correctly retrieved and remember not to publish your key on GitHub.
 
 This agent is designed to work with a stack from CMCL. Refer to [this link](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) to find out how to set up a stack. After running the command `./stack.sh build` and then `./stack.sh start <STACK NAME>` at the folder same as the link, you should be able to see a container named as `<STACK NAME>` as you specified earlier. Now you can proceed to build the image here and start it as a service by running the same two commands, but at the current folder.
 

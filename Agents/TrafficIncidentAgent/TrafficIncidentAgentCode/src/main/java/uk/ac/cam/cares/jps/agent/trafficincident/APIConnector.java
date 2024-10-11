@@ -27,37 +27,9 @@ public class APIConnector {
     public static final String ERROR_MSG = "APIConnector failed while retrieving readings.";
     public static final Logger logger = LogManager.getLogger(APIAgentLauncher.class);
 
-    public APIConnector(String URL, String date, String key) {
+    public APIConnector(String URL, String key) {
         this.API_URL = URL;
         this.accountKey = key;
-    }
-
-    public APIConnector(String filepath) throws IOException {
-        loadAPIConfig(filepath);
-    }
-
-    private void loadAPIConfig(String filepath) throws IOException {
-        File file = new File(filepath);
-        if (!file.exists()) {
-            throw new FileNotFoundException("API Config file not found in the path.");
-        }
-
-        try (InputStream input = new FileInputStream(file)) {
-            Properties prop = new Properties();
-            prop.load(input);
-
-            if (prop.containsKey("trafficincident.api_url")) {
-                this.API_URL = prop.getProperty("trafficincident.api_url");
-            } else {
-                throw new IOException("traffic incident api url not specified.");
-            }
-
-            if (prop.containsKey("trafficincident.accountKey") && !prop.getProperty("trafficincident.accountKey").equals("")) {
-                this.accountKey = prop.getProperty("trafficincident.accountKey");
-            } else {
-                throw new IOException("traffic incident api account key not specified");
-            }
-        }
     }
 
     public JSONObject getReadings() {
