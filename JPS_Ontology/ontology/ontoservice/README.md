@@ -73,7 +73,7 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
 
     "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
     "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
-    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-adr:hasAddress"
+    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-plc-adr:hasAddress"
     "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
     "fibo-fnd-plc-adr:PhysicalAddress" {
         fibo-fnd-plc-loc-hasCityName string
