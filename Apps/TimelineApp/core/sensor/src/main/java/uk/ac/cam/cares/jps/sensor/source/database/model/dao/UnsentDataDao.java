@@ -5,6 +5,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import org.json.JSONArray;
+
 import java.util.List;
 
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
@@ -45,4 +47,8 @@ public interface UnsentDataDao {
      */
     @Query("DELETE FROM unsent_data")
     void deleteAll();
+
+    @Query("SELECT * FROM unsent_data WHERE dataHash = :dataHash LIMIT 1")
+    UnsentData getUnsentDataByHash(String dataHash);
+
 }

@@ -18,17 +18,12 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.inject.Inject;
 
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
@@ -115,19 +110,22 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private Map<String, JSONArray> deserializeMap(String jsonString) {
         Map<String, JSONArray> map = new HashMap<>();
         try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            Iterator<String> keys = jsonObject.keys();
+            JSONArray jsonArray = new JSONArray(jsonString);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String sensorType = jsonObject.getString("name");
 
-            while (keys.hasNext()) {
-                String key = keys.next();
-                JSONArray jsonArray = jsonObject.getJSONArray(key);
-                map.put(key, jsonArray);
+                if (!map.containsKey(sensorType)) {
+                    map.put(sensorType, new JSONArray());
+                }
+                map.get(sensorType).put(jsonObject);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return map;
     }
+
 
 
     /**
