@@ -91,7 +91,7 @@ public class GDALClient extends ContainerClient {
     }
 
     public void uploadVectorFilesToPostGIS(String database, String schema, String layerName, String dirPath,
-            Ogr2OgrOptions options, boolean append) {
+            VectorOptions<?> vectorOptions, boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             tmpDir.copyFrom(Path.of(dirPath));
             String gdalContainerId = getContainerId(GDAL);
@@ -121,7 +121,7 @@ public class GDALClient extends ContainerClient {
                 }
 
                 for (String filePath : filesOfType) {
-                    uploadVectorToPostGIS(database, schema, layerName, filePath, options, append);
+                    uploadVectorToPostGIS(database, schema, layerName, filePath, vectorOptions, append);
                     // If inserting multiple sources into a single layer then ensure subsequent
                     // files are appended.
                     if (null != layerName) {
@@ -150,7 +150,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private void uploadVectorToPostGIS(String database, String schema, String layerName, String filePath,
-            Ogr2OgrOptions options, boolean append) {
+            VectorOptions<?> options, boolean append) {
 
         options.setSchema(schema);
 
