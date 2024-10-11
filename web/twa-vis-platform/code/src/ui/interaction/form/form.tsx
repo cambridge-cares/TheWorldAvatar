@@ -143,6 +143,18 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         break;
       }
       case SEARCH_FORM_TYPE: {
+        // For interacting with min and max fields in the search form
+        Object.keys(formData).forEach(field => {
+          // Append range key to field if they have min and max fields and values in either their min or max field
+          if (formData.hasOwnProperty(`min ${field}`) && formData.hasOwnProperty(`max ${field}`) &&
+            (formData[`min ${field}`] != undefined || formData[`max ${field}`] != undefined)) {
+            formData = {
+              ...formData,
+              [field]: "range",
+            }
+          }
+        });
+
         pendingResponse = await getMatchingInstances(props.agentApi, props.entityType, formData);
         if (pendingResponse.success) {
           if (pendingResponse.message.length === 0) {

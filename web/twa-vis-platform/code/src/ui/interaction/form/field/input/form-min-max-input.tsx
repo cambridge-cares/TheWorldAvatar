@@ -1,7 +1,7 @@
 import styles from './input.module.css';
 import fieldStyles from '../field.module.css';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
 
 import { PropertyShape, VALUE_KEY } from 'types/form';
@@ -28,11 +28,6 @@ export default function FormInputMinMaxField(props: Readonly<FormInputMinMaxFiel
   const originalField: string = props.field.fieldId;
   const minFieldId: string = "min " + originalField;
   const maxFieldId: string = "max " + originalField;
-
-  useEffect(() => {
-    // Set the original value to range so that the backend will detect and ingest the min and max parameters instead
-    props.form.setValue(originalField, "range");
-  }, [])
 
   return (
     <FormInputContainer
