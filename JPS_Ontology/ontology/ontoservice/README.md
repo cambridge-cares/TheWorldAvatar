@@ -195,7 +195,7 @@ Figure 4: TBox representation of the contractual obligations for a service
 
 ## 2.2. Service Agreement Lifecycle
 
-The events occurring during the service agreement can be represented within a contract lifecycle. This usually consists of three stages in sequence of creation, service execution, and expiration. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can include a date time, location, as well as remarks. The following subsections will describe the events occurring within each stage of the lifecycle.
+The events occurring during the service agreement can be represented within a contract lifecycle. This usually consists of three stages in sequence of creation, service execution, and expiration. It is recommended to instantiate a `cmns-dt:succeeds` relationship between this three stages as seen in the figure below. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can include a date time, location, as well as remarks. The following subsections will describe the events occurring within each stage of the lifecycle.
 
 Figure 5: TBox representation of the service agreement's overall lifecycle
 
@@ -230,7 +230,7 @@ In the creation stage, the service agreement will need to be created before it i
 3. Early termination of an agreement initiated and agreed upon both parties - `ContractTermination`
 4. Early termination of this agreement when amendments are required, and a separate new agreement should be created - `ContractTermination`
 
-Each of these events should occur once, with one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required.
+These events are recommended to be linked to their stages using the `cmns-col:comprises` property. Each of these events should occur once, with one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required.
 
 Figure 6: TBox representation of the service agreement's creation and expiration lifecycle stage
 
@@ -269,7 +269,7 @@ In the service execution stage, the possible events are as follows:
 4. `CompletedService`: A service event that has completed successfully
 5. `UncompletedService`: A service event that has been started but is not completed
 
-The flow of service events is depicted as follows:
+The flow of service events is depicted as follows and can be represented using the `cmns-dt:succeeds` relationship:
 
 ```mermaid
 flowchart LR

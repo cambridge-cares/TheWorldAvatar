@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>09 October 2024</dc:date>
+        <dc:date>11 October 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -59,70 +59,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt"/>
-    
-
-
-    <!-- https://www.omg.org/spec/Commons/Classifiers/classifies -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.omg.org/spec/Commons/Classifiers/classifies">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CompletedService"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/UncompletedService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CompletedServiceOccurrence"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgressOccurrence"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/UncompletedServiceOccurrence"/>
-        <rdfs:comment>arranges in categories according to one or more shared characteristics</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.omg.org/spec/Commons/Classifiers/"/>
-        <rdfs:label>classifies</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.omg.org/spec/Commons/Collections/comprises -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.omg.org/spec/Commons/Collections/comprises">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CreationStage"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ExpirationStage"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CompletedService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractApproval"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractCreation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractDischarge"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractRescission"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractTermination"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/PendingService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/TerminatedService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/UncompletedService"/>
-        <rdfs:comment>includes, consists of, or contains, especially within a particular scope</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.omg.org/spec/Commons/Collections/"/>
-        <rdfs:label>comprises</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.omg.org/spec/Commons/DatesAndTimes/succeeds -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CompletedService"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractApproval"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ExpirationStage"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/TerminatedService"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/UncompletedService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractCreation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CreationStage"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/PendingService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress"/>
-        <rdfs:comment>associates based on subsequent spatial or temporal proximity; follows in a logical order or sequence</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/"/>
-        <rdfs:label>succeeds</rdfs:label>
-    </owl:ObjectProperty>
     
 
 
@@ -440,18 +376,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/CompletedService">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Classifiers/classifies"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CompletedServiceOccurrence"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>A service event that has completed successfully during the service execution lifecycle stage of a contract.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Completed service</rdfs:label>
@@ -488,12 +412,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContractApproval">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractCreation"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>An event to approve the contract during the creation lifecycle stage of a contract.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Contract approval</rdfs:label>
@@ -554,18 +472,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/CreationStage">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractApproval"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractCreation"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>The phase in the lifecycle of a contract to create a new contract.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Creation stage</rdfs:label>
@@ -596,30 +502,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ExpirationStage">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractDischarge"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractRescission"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ContractTermination"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>The phase in the lifecycle of a contract where the contract has ended.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Expiration stage</rdfs:label>
@@ -668,42 +550,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CompletedService"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/PendingService"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/TerminatedService"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Collections/comprises"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/UncompletedService"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/CreationStage"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>The phase in the lifecycle of a contract where the services agreed should be executed.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Service execution stage</rdfs:label>
@@ -716,18 +562,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Classifiers/classifies"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgressOccurrence"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/PendingService"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>A service event that is currently in progress during the service execution lifecycle stage of a contract.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Service in progress</rdfs:label>
@@ -817,12 +651,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/TerminatedService">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/PendingService"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>A service event that has not started and will not be delivered during the service execution lifecycle stage of a contract. Remarks should ideally be available to indicate reason for termination.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Terminated service</rdfs:label>
@@ -847,18 +675,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/UncompletedService">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/Classifiers/classifies"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/UncompletedServiceOccurrence"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/succeeds"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceInProgress"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>A service event that has been started but is not completed during the service execution lifecycle stage of a contract. Remarks should ideally be available to indicate reason for the failure to complete.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Uncompleted service</rdfs:label>
