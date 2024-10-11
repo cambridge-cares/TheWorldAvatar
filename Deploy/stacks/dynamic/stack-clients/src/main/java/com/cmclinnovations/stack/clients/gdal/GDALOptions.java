@@ -16,6 +16,8 @@ public abstract class GDALOptions<T extends GDALOptions<T>> extends CommonOption
         super(command);
     }
 
+    // @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public final T addCreationOption(String name, String value) {
         creationOptions.put(name, value);
         return (T) this;

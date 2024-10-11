@@ -43,6 +43,7 @@ class CommonOptions<T extends CommonOptions<T>> {
         return sridIn;
     }
 
+    @SuppressWarnings("unchecked")
     public final T setSridIn(String sridIn) {
         this.sridIn = sridIn;
         return (T) this;
@@ -52,26 +53,35 @@ class CommonOptions<T extends CommonOptions<T>> {
         return sridOut;
     }
 
+    @SuppressWarnings("unchecked")
+
     public final T setSridOut(String sridOut) {
         this.sridOut = sridOut;
         return (T) this;
     }
+
+    @SuppressWarnings("unchecked")
 
     public final T addInputDatasetOpenOption(String name, String value) {
         inputDatasetOpenOptions.put(name, value);
         return (T) this;
     }
 
+    @SuppressWarnings("unchecked")
+
     public final T addOtherOption(String option, String... values) {
         otherOptions.put(option, new Option(values));
         return (T) this;
     }
+
+    @SuppressWarnings("unchecked")
 
     public final T addConfigOption(String option, String value) {
         configOptions.put(option, value);
         return (T) this;
     }
 
+    @SuppressWarnings("unchecked")
     public final T withEnv(String key, String value) {
         envVars.put(key, value);
         return (T) this;
