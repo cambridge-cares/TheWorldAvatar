@@ -157,7 +157,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
 
         pendingResponse = await getMatchingInstances(props.agentApi, props.entityType, formData);
         if (pendingResponse.success) {
-          if (pendingResponse.message.length === 0) {
+          if (pendingResponse.message === "[]") {
             pendingResponse.success = false;
             pendingResponse.message = "No matching feature found! Please refine your search parameters.";
           } else {
