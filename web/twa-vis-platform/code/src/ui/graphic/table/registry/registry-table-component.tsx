@@ -4,14 +4,14 @@ import styles from './registry.table.module.css';
 
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useRouter } from 'next/navigation';
 
 import { getIsOpenState } from 'state/modal-slice';
-import { getAfterDelimiter, parseWordsForLabels } from 'utils/client-utils';
-import { getLabelledData } from 'utils/server-actions';
-import RegistryTable from './registry-table';
-import TableRibbon from './table-ribbon';
 import { RegistryFieldValues } from 'types/form';
+import { parseWordsForLabels } from 'utils/client-utils';
+import { getLabelledData } from 'utils/server-actions';
+import LoadingSpinner from 'ui/graphic/loader/spinner';
+import RegistryTable from './registry-table';
+import TableRibbon from './ribbon/table-ribbon';
 
 interface RegistryTableComponentProps {
   entityType: string;
@@ -27,41 +27,29 @@ interface RegistryTableComponentProps {
  * @param {string} schedulerAgentApi The target endpoint for scheduler specific functionality.
  */
 export default function RegistryTableComponent(props: Readonly<RegistryTableComponentProps>) {
-  const router = useRouter();
-
   const isModalOpen: boolean = useSelector(getIsOpenState);
   const [currentInstances, setCurrentInstances] = useState<RegistryFieldValues[]>([]);
-
-  const handleClickView = (index: number): void => {
-     // Move to the view modal page for the specific entity associated with the row
-    router.push(`./${props.entityType}/${getAfterDelimiter(currentInstances[index].id.value, "/")}`);
-  };
-
-  const handleClickEdit = (index: number): void => {
-    // Move to the edit modal page for the specific entity associated with the row
-    router.push(`../edit/${props.entityType}/${getAfterDelimiter(currentInstances[index].id.value, "/")}`);
-  };
-
-  const handleClickDelete = (index: number): void => {
-    // Move to the delete modal page for the specific entity associated with the row
-    router.push(`../delete/${props.entityType}/${getAfterDelimiter(currentInstances[index].id.value, "/")}`);
-  };
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [submitScheduling, setSubmitScheduling] = useState<boolean>(false);
 
   // A hook that refetches all data when the dialogs are closed
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
+      setIsLoading(true);
       try {
         const instances: RegistryFieldValues[] = await getLabelledData(props.registryAgentApi, props.entityType);
         setCurrentInstances(instances);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching instances', error);
       }
     };
 
-    if (!isModalOpen) {
+    if (!isModalOpen || submitScheduling) {
       fetchData();
+      setSubmitScheduling(false);
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, submitScheduling]);
 
   return (
     <div className={styles["container"]}>
@@ -71,17 +59,14 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
           entityType={props.entityType}
           registryAgentApi={props.registryAgentApi}
           schedulerAgentApi={props.schedulerAgentApi}
+          setSubmitScheduling = {setSubmitScheduling}
         />
         <div className={styles["table-contents"]}>
-          <RegistryTable
-            fields={currentInstances}
-            clickEventHandlers={{
-              "view": handleClickView,
-              "edit": handleClickEdit,
-              "delete": handleClickDelete,
-            }}
+          {isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable
+            recordType={props.entityType}
+            instances={currentInstances}
             limit={3}
-          />
+          />}
         </div>
       </div>
     </div>

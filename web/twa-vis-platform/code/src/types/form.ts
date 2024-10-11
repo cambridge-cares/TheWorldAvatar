@@ -1,3 +1,4 @@
+export const SEARCH_FORM_TYPE = "search";
 export const CONTEXT_KEY = "@context";
 export const ID_KEY = "@id";
 export const TYPE_KEY = "@type";
@@ -22,6 +23,11 @@ export type OntologyConcept = {
   description: RegistryFieldValue;
   parent?: RegistryFieldValue;
 };
+
+export interface FormOptionType {
+  label: string;
+  value: string;
+}
 
 export type FormTemplate = {
   "@context": Record<string, string>;
