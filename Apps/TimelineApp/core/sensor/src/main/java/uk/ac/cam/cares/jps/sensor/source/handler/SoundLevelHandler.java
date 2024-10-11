@@ -22,7 +22,7 @@ import org.json.JSONObject;
  * with sensor handling mechanisms.
  */
 public class SoundLevelHandler extends AbstractSensorHandler {
-    private static final int SAMPLE_RATE = 44100;
+    private static final int SAMPLE_RATE = 22050; // reduced from 44100 for better thread management
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
@@ -98,10 +98,21 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     private void processAudioStream() {
         short[] buffer = new short[BUFFER_SIZE / 2];
         while (isRecording) {
-            int readResult = audioRecord.read(buffer, 0, buffer.length);
-            if (readResult > 0) {
-                double dBFS = calculateDBFS(buffer, readResult);
-                logDBFS(dBFS);
+            synchronized (this) {
+                if (audioRecord == null || audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) break;
+            }
+            try {
+                int readResult;
+                synchronized (this) {
+                    readResult = audioRecord.read(buffer, 0, buffer.length);
+                }
+                if (readResult > 0) {
+                    double dBFS = calculateDBFS(buffer, readResult);
+                    logDBFS(dBFS);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                break;
             }
         }
     }
@@ -153,17 +164,33 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      * Stops the audio recording and releases resources associated with the AudioRecord object.
      */
     @Override
-    public void stop() {
+    public synchronized void stop() {
         super.stop();
-        if (isRecording) {
-            isRecording = false;
-            if (audioRecord != null) {
+        isRecording = false;
+
+        if (audioRecord != null) {
+            try {
                 audioRecord.stop();
-                audioRecord.release();
-                audioRecord = null;
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
             }
-            initAudioRecord();
         }
+
+        if (recordingThread != null) {
+            try {
+                recordingThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            recordingThread = null;
+        }
+
+        if (audioRecord != null) {
+            audioRecord.release();
+            audioRecord = null;
+        }
+
+        initAudioRecord();
     }
 
     @Override
