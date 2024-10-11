@@ -123,31 +123,6 @@
             <version>1.34.0</version>
         </dependency>
 
-        <!-- copied from Shin Zert's sensor logger mobile app
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>            
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-driver-remote</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-jdbc-driver-bundle</artifactId>
-            <version>4.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena</artifactId>
-            <version>4.6.1</version>
-            <type>pom</type>
-        </dependency> -->
-
         <!-- For sending HTTP request to the API -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -235,5 +210,4 @@
 
     </dependencies>
 
-<!-- no dependencymanagement compared with SZ's sensor logger mobile app -->
 </project>

@@ -11,14 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-
 import java.io.*;
-import java.util.Properties;
-
-import javax.print.attribute.standard.JobHoldUntil;
 
 public class APIConnector {
     private String API_URL;

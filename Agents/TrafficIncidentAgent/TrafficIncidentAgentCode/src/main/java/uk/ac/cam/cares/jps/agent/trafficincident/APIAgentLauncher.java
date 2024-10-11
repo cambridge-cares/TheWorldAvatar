@@ -1,12 +1,9 @@
 package uk.ac.cam.cares.jps.agent.trafficincident;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -14,16 +11,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Properties;
-import java.nio.file.Path;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -47,13 +40,7 @@ import org.jooq.Table;
 public class APIAgentLauncher extends JPSAgent {
     private final Logger LOGGER = LogManager.getLogger(APIAgentLauncher.class);
 
-    public static final String API_VALUES = "TRAFFICINCIDENT_API_PROPERTIES";
-    public static final String CLIENT_VALUES = "TRAFFICINCIDENT_CLIENT_PROPERTIES";
-    public static final String ARGUMENT_MISMATCH_MSG = "Argument mistmatch";
-    public static final String AGENT_ERROR_MSG = "The road obstruction API input agent could not be constructed.";
     public static final String GET_READINGS_ERROR_MSG = "Error when getting reading.";
-    public static final String CONNECTOR_ERROR_MSG = "Error when working with APIConnector.";
-    public static final String POSTGRES_INITIALIZATION_ERROR_MSG = "Error when initializing the Postgres";
     public static final String SQL_UPDATE_ERROR_MSG = "Fail to update the record";
     public static final String SQL_INITIALIZE_ERROR_MSG = "Fail to create table in Postgres database";
 
