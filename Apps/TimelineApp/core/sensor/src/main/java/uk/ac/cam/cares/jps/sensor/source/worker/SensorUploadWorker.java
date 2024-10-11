@@ -1,11 +1,13 @@
-package uk.ac.cam.cares.jps.sensor.source.database;
+package uk.ac.cam.cares.jps.sensor.source.worker;
 
 import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.hilt.work.HiltWorker;
-import androidx.work.ListenableWorker;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -17,13 +19,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
-import javax.inject.Inject;
-
 import dagger.assisted.Assisted;
-import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
+import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
 
@@ -51,7 +52,7 @@ public class SensorUploadWorker extends Worker {
             JSONArray jsonArray = new JSONArray(selectedSensorsJson);
             for (int i = 0; i < jsonArray.length(); i++) {
                 String sensorName = jsonArray.getString(i);
-                selectedSensors.add(SensorType.valueOf(sensorName)); // Assuming SensorType is an Enum
+                selectedSensors.add(SensorType.valueOf(sensorName));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -64,10 +65,11 @@ public class SensorUploadWorker extends Worker {
         // Retrieve data and upload
         try {
             uploadSensorData();
+
             return Result.success();
         } catch (Exception e) {
             Log.e("DataUploadWorker", "Error uploading sensor data", e);
-            return Result.retry(); // Retry the work if there is a failure
+            return Result.failure(); // data should be sent to local alr
         }
     }
 
@@ -98,6 +100,8 @@ public class SensorUploadWorker extends Worker {
             }
             offset += PAGE_SIZE;
         }
+
+
     }
 
     /**
@@ -119,10 +123,5 @@ public class SensorUploadWorker extends Worker {
             throw new RuntimeException(e);
         }
     }
-
-//    @AssistedFactory
-//    public interface SensorUploadWorkerFactory {
-//        SensorUploadWorker create(@NonNull Context appContext, @NonNull WorkerParameters workerParameters);
-//    }
 
 }
