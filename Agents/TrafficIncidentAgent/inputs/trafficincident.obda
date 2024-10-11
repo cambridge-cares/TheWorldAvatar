@@ -5,16 +5,14 @@ geo:    http://www.opengis.net/ont/geosparql#
 time:   http://www.w3.org/2006/time#
 tw:     https://www.theworldavatar.com/kg/
 tfi:    https://www.theworldavatar.com/ontoTrafficIncident/
-time:   http://www.w3.org/2006/time#
 
 [MappingDeclaration] @collection [[
 mappingId	trafficincident
 target		tfi:{type}_{starttime} a tfi:TrafficIncident ;
-            a tfi:{type};
-            time:hasBeginning {starttime};
-            time:hasEnd {endtime};
-            tfi:hasDescription {description};
-            geo:asWKT "{geom}"^^geo:wktLiteral.
-
+                a tfi:{type};
+                time:hasBeginning {starttime};
+                time:hasEnd {endtime};
+                tfi:hasDescription {description};
+                geo:asWKT "{geom}"^^geo:wktLiteral.
 source      SELECT type AS name, message AS description, latitude, longitude, starttime AS starttime, CASE WHEN endtime = 0 THEN NULL ELSE endtime END AS endtime, CASE WHEN status = 't' THEN 'Ongoing' ELSE 'Ended' END AS status, ST_ASTEXT(location) as geom FROM trafficincident
 ]]
