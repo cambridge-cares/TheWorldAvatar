@@ -73,12 +73,21 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
 
     "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
     "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
-    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-plc-adr:hasAddress"
-    "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
-    "fibo-fnd-plc-adr:PhysicalAddress" {
+    "bot:Building" ||--o{ "fibo-fnd-plc-adr:ConventionalStreetAddress" : "fibo-fnd-plc-adr:hasAddress"
+    "fibo-fnd-plc-adr:ConventionalStreetAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
+    "fibo-fnd-plc-adr:ConventionalStreetAddress" ||--o{ "fibo-fnd-plc-adr:StreetAddress" : "fibo-fnd-plc-adr:hasStreetAddress"
+    "fibo-fnd-plc-adr:ConventionalStreetAddress" {
         fibo-fnd-plc-loc-hasCityName string
-        fibo-fnd-plc-adr-hasAddressLine1 string
         fibo-fnd-plc-adr-hasPostalCode string
+    }
+    "fibo-fnd-plc-adr:StreetAddress" ||--o{ "fibo-fnd-plc-adr:PrimaryAddressNumber" : "fibo-fnd-plc-adr:hasPrimaryAddressNumber"
+    "fibo-fnd-plc-adr:StreetAddress" ||--o{ "fibo-fnd-plc-adr:StreetName" : "fibo-fnd-plc-adr:hasStreetName"
+
+    "fibo-fnd-plc-adr:PrimaryAddressNumber" {
+        fibo-fnd-rel-rel-hasTag block_number_string
+    }
+    "fibo-fnd-plc-adr:StreetName" {
+        fibo-fnd-rel-rel-hasTag string
     }
 
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
