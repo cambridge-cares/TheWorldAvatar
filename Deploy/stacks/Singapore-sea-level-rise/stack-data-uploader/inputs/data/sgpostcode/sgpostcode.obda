@@ -17,5 +17,5 @@ target		bim:postalcode/{postal_code} a bim:PostalCode ;
                 :hasRoadName {road_name} ;
                 :hasSearchValue {search_value} ;
                 geo:asWKT "{geom}"^^geo:wktLiteral.
-source		SELECT postal_code, address, block_number, building, road_name, search_value, ST_ASTEXT (wkb_geometry) as geom FROM sg_postcode
+source		SELECT postal_code, address, block_number, building, road_name, search_value, ST_ASTEXT (wkb_geometry) as geom FROM sgpostcode
 ]]
