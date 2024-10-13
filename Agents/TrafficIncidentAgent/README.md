@@ -1,34 +1,57 @@
-# Traffic Incident Agent
+# TrafficIncidentAgent
+## 1. Description
 
-This agent downloads real-time traffic-incident data from [LTA Datamall](https://datamall.lta.gov.sg/content/datamall/en.html), processes data to wanted format, and stores them in Postgres database in the stack.
+This agent downloads real-time traffic-incident data from [LTA Datamall](https://datamall.lta.gov.sg/content/datamall/en.html) and stores them in Postgres database in the stack. The data collected is instantiated using [Ontop mapping](inputs/trafficincident.obda). TrafficIncidentAgent also creates a Geoserver layer for visualisation purposes.  
 
-## Building and running
+## 2. Prerequisites
 
-This section specifies the minimum requirement to build the docker image.
+This agent is developed as part of the [Singapore-sea-level-rise stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/Singapore-sea-level-rise). 
 
-This agent uses the Maven repository at [https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/) (in addition to Maven central). You'll need to provide your credentials in single-word text files located like this:
+### 2.1. Stack Set Up
+The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
 
+## 3. Agent Configuration
+### 3.1 Config Properties
+You need to have an `API_key` which can be obtained by registering from [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html). The API key needs to entered in the file [config.properties](inputs/config.properties) at `trafficincident.accountKey=` to retrieve the data from LTA API.
+
+## 4. Build
+### 4.1. GitHub Credentials
+The docker image uses TheWorldAvatar [maven repository](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/`).
+You will need to provide your credentials (GitHub username/personal access token) in single-word text files as follows:
+
+```bash
+./credentials/
+        repo_username.txt
+        repo_password.txt
 ```
-credentials/
-  repo_password.txt
-  repo_username.txt
-```
+## 5. Deployment
 
-`repo_username.txt` should contain your GitHub username, and `repo_password.txt` contains your GitHub [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
+### 5.1 Retrieving TrafficIncidentAgent's image
 
-In the same folder, you will also need to have an `API_key` which can be obtained by registering from [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html). The API key to the `config/api.properties` to ensure the data can be correctly retrieved and remember not to publish your key on GitHub.
+The TrafficIncidentAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/traffic-incident-agent) using ` docker pull ghcr.io/cambridge-cares/traffic-incident-agent:<LATEST-VERSION>`
 
-This agent is designed to work with a stack from CMCL. Refer to [this link](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) to find out how to set up a stack. After running the command `./stack.sh build` and then `./stack.sh start <STACK NAME>` at the folder same as the link, you should be able to see a container named as `<STACK NAME>` as you specified earlier. Now you can proceed to build the image here and start it as a service by running the same two commands, but at the current folder.
+### 5.2 Starting with the stack-manager
 
-While you have the container running, you do not need to create any database or table as it is already automated. The PostGIS extension is also automatically enabled. You can view the data in stack. By opening the Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the Server and the value from the postgis_password file as the Password. The Database slot is the default `postgres` and the table is named as `TrafficIncident`. The table should include `starttime:bigint`, `endtime:bigint`, `type:character varing`, `message:character varying`, `latitude:double precision`, `longitude:double precision`, `location: geography NULL`, `status:Boolean`.
+The agent has been implemented to work in the stack, which requires the TrafficIncidentAgent Docker container to be deployed in the stack. To do so, place [TrafficIncidentAgent.json](stack-manager-config/inputs/config/services/TrafficIncidentAgent.json) in the [stack-manager config directory].
 
-After having the container running and setting up the table as described, you can send a `POST` query with url `http://localhost:1016/traffic-incident-agent/retrieve` to get the agent running and deposit values into Postgres. One of the recommended ways is to work with Postman and build a query from there.
+Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
-The modeling of the Traffic Incidents is achieved by maintaining a time interval to track the start and end time of the incident. When the incident first appears, the end time field will be left as 0 and only gets updated when the incident is not appearing in the newly queried result. Hence, the accuracy of data needs to be maintained via having regular call of the query.
+### 5.3 Running the Agent
+
+The agent is reachable at the `/retrieve` endpoint.
 
 ```
 curl -L -X POST "http://localhost:3838/traffic-incident-agent/retrieve"
 ```
 
+The modeling of the Traffic Incidents is achieved by maintaining a time interval to track the start and end time of the incident. When the incident first appears, the end time field will be left as 0 and only gets updated when the incident is not appearing in the newly queried result. Hence, the accuracy of data needs to be maintained via having regular call of the query. While you have the container running, you do not need to create any database or table as it is already automated. By opening the Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. The Database slot is the default `postgres` and the table is named as `TrafficIncident`. The table should include `starttime:bigint`, `endtime:bigint`, `type:character varing`, `message:character varying`, `latitude:double precision`, `longitude:double precision`, `location: geography NULL`, `status:Boolean`.
 
 # Author 
+Phua Shin Zert (shinzert.phua@cares.cam.ac.uk) <br>
+Sun Xin Yu (https://github.com/Echomo-Xinyu) <br>
+October 2024 
+
+
+[stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
+[stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
+[stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
