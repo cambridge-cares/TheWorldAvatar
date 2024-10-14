@@ -178,7 +178,7 @@ public class TrafficIncidentAgent implements Runnable {
         int hour = Integer.parseInt(timeRawString.split(":")[0]);
         int minute = Integer.parseInt(timeRawString.split(":")[1]);
         // the parsed time is already in SGT and no need to offset
-        OffsetDateTime result = OffsetDateTime.of(year, month, day, hour, minute, 0, 0, ZoneOffset.UTC);
+        OffsetDateTime result = OffsetDateTime.of(year, month, day, hour, minute, 0, 0, TrafficIncidentAgent.offset);
         return result.toInstant().getEpochSecond();
     }
 
@@ -201,20 +201,20 @@ public class TrafficIncidentAgent implements Runnable {
         UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
         virtualTable.setSql("SELECT \n" +
-                "iri,\n" +
-                "    type AS name, \n" +
-                "    message AS description, \n" +
-                "    TO_TIMESTAMP(start_time) AS start_time, \n" +
-                "    CASE \n" +
-                "        WHEN end_time= 0 THEN NULL \n" +
-                "        ELSE TO_TIMESTAMP(end_time) \n" +
-                "    END AS end_time, \n" +
-                "    CASE \n" +
-                "        WHEN status = 't' THEN 'Ongoing' \n" +
-                "        ELSE 'Ended'  \n" +
-                "    END AS status, \n" +
-                "    geom\n" +
-                "FROM trafficincident");
+                        "    iri,\n" +
+                        "    type AS name,\n" +
+                        "    message AS description,\n" +
+                        "    TO_TIMESTAMP(start_time) AT TIME ZONE 'Asia/Singapore' AS start_time,\n" +
+                        "    CASE \n" +
+                        "        WHEN end_time = 0 THEN NULL\n" +
+                        "        ELSE TO_TIMESTAMP(end_time) AT TIME ZONE 'Asia/Singapore'\n" +
+                        "    END AS end_time,\n" +
+                        "    CASE \n" +
+                        "        WHEN status = 't' THEN 'Ongoing'\n" +
+                        "        ELSE 'Ended'\n" +
+                        "    END AS status,\n" +
+                        "    geom\n" +
+                        "FROM trafficincident");
         virtualTable.setEscapeSql(true);
         virtualTable.setName("traffic_incident_virtual_table");
         virtualTable.addVirtualTableGeometry("location", "Geometry", "4326"); //
