@@ -385,16 +385,29 @@ Make sure to extract the input and output chemicals for for all {len(mop_formula
             dynamic_prompt                      = {}
 
             print("cbu list: ", cbu_list, "species_list:", species_list, "mop list: ", mop_list)
-            species_string                  = ""
-            prompt_syn                      =  f"""You will be given different metal organic polyhedron(MOP) CCDC numbers (identifier). Each MOP has two cbus. 
+            if cbu_list == [] or species_list == [] or mop_list == [] or species_list==[[]] or mop_list == [[]] or cbu_list == [[]]:
+                print("empty input for: ", file_path)
+                return
+            
+            for species in species_list:
+                if species != []:
+                    break
+                else:
+                    return              
+
+
+            species_string                      = ""
+            prompt_syn                          =  f"""You will be given different metal organic polyhedron(MOP) CCDC numbers (identifier). Each MOP has two cbus. 
                 Extract the relevant data from the synthesis text and structure it into a JSON file adhering to the specified schema.
                 You will also be given a list of species that are used to synthesise the MOP. 
                 The cbu formulas are just abstractions of the cbu and your task is to find the respecting equivalent(s) from the lab species list. Write the result to a JSON file
                 adhering to the specified schema. If any information is missing or uncertain, fill the cell with N/A for strings or 0 for numeric types.
                 For chemical names make sure to write each name as separate string. Wrong: ["C4H9NO, DMA, N,N'-dimethylacetamide"], Correct: ["C4H9NO", "DMA", "N,N'-dimethylacetamide"]
                 \n"""
-            for i, mop in enumerate(mop_list):
-                prompt_syn                  += (f"The {i+1}th Mop has CCDC number: {mop}. The MOP has the following two chemical building units (CBUs): {cbu_list[i]}, assign respecting equivalent(s) from the following list of chemicals: {species_list[i]} \n")
+            for i, species in enumerate(species_list):
+                if species == []:
+                    continue
+                prompt_syn                  += (f"The {i+1}th Mop has CCDC number: {mop_list[i]}. The MOP has the following two chemical building units (CBUs): {cbu_list[i]}, assign respecting equivalent(s) from the following list of chemicals: {species} \n")
             print("prompt: " ,prompt_syn)
         case 16:
             json_output         = False
@@ -586,7 +599,7 @@ def generate_backup(filename):
     curl_command = [
         "curl",
         "-X", "POST",
-        "--url", "http://68.183.227.15:3838/blazegraph/namespace/OntoSynthesis/sparql",
+        "--url", "http://68.183.227.15:3838/blazegraph/namespace/OntoSynthesisTesting/sparql",
         "--data-urlencode", "query=CONSTRUCT { ?s ?p ?o } where { ?s ?p ?o }",
         "--header", "Accept: application/x-turtle"
     ]
@@ -638,24 +651,29 @@ def main():
     out_directory                       = os.path.join(script_dir, f"../Data/{folder_name}_txt")
     folder_name                         = "fourteenth10"
     
-    create_directory(script_dir, folder_name)
-
+    #create_directory(script_dir, folder_name)
+    """
     process_files_in_directory(upload_steps,  f"../Data/{folder_name}_steps", out_directory, settings=None)
     generate_backup(f"{folder_name}_steps")
-    """
+
     folder_name                         = "fourteenth10"
     extract_synthesis(script_dir, folder_name, "characterisation")
     process_files_in_directory(characterisation_upload, f"../Data/{folder_name}_characterisation", out_directory, settings=None)
         
     
-    #folders                                 = ["sixth10", "seventh10", "eight10", "ninth10", "tenth10", "eleventh10", "twelfth10","thirteenth10"]
+    folders                                 = ["sixth10", "seventh10", "eight10", "ninth10", "tenth10", "eleventh10", "twelfth10","thirteenth10", "fourteenth10"]
     folders                                 = ["fourteenth10"]
     """
-    """
+    # failed: "sixth10", 
+    folders                                 = ["fourteenth10"]
+    #folders                                 = ["sixth10"]
     for folder in folders:
         folder_name                         = folder
-        extract_synthesis(script_dir, "fourteenth10", "cbu")
-    
+        #extract_synthesis(script_dir, folder_name, "cbu")
+        process_files_in_directory(upload_cbu, f"../Data/{folder_name}_cbu", out_directory, settings=None)
+        generate_backup(f"{folder_name}_cbu")
+
+    """
     folder_name                         = "sixth10"
     folder_name                         = "fourteenth10"
     extraction                          = "chemicals"
