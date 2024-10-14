@@ -18,7 +18,7 @@ public class APIConnector {
     private String accountKey;
 
     public static final String ERROR_MSG = "APIConnector failed while retrieving readings.";
-    public static final Logger logger = LogManager.getLogger(APIAgentLauncher.class);
+    public static final Logger logger = LogManager.getLogger(TrafficIncidentAgent.class);
 
     public APIConnector(String URL, String key) {
         this.API_URL = URL;

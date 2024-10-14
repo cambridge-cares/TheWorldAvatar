@@ -3,7 +3,7 @@
     "Name": "trafficincidentagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "traffic-incident-agent:1.4.0",
+        "Image": "traffic-incident-agent:1.5.0",
         "Env": [
           "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
         ],
@@ -48,8 +48,8 @@
   },
   "endpoints": {
     "trafficincidentagent": {
-      "url": "http://localhost:8080/traffic-incident-agent/retrieve",
-      "externalPath": "/traffic-incident-agent/retrieve"
+      "url": "http://localhost:8080/traffic-incident-agent/start",
+      "externalPath": "/traffic-incident-agent/start"
     }
   }
 }

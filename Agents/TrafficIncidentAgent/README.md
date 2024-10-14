@@ -38,10 +38,10 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 
 ### 5.3 Running the Agent
 
-The agent is reachable at the `/retrieve` endpoint.
+The agent is reachable at the `/start` endpoint.
 
 ```
-curl -L -X POST "http://localhost:3838/traffic-incident-agent/retrieve"
+curl -L -X POST "http://localhost:3838/traffic-incident-agent/start"
 ```
 
 The modeling of the Traffic Incidents is achieved by maintaining a time interval to track the start and end time of the incident. When the incident first appears, the end time field will be left as 0 and only gets updated when the incident is not appearing in the newly queried result. Hence, the accuracy of data needs to be maintained via having regular call of the query. While you have the container running, you do not need to create any database or table as it is already automated. By opening the Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. The Database slot is the default `postgres` and the table is named as `TrafficIncident`. The table should include `starttime:bigint`, `endtime:bigint`, `type:character varing`, `message:character varying`, `latitude:double precision`, `longitude:double precision`, `location: geography NULL`, `status:Boolean`.

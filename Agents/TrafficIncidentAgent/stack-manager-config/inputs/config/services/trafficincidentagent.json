@@ -3,7 +3,7 @@
       "Name": "trafficincidentagent",
       "TaskTemplate": {
         "ContainerSpec": {
-          "Image": "traffic-incident-agent:1.4.0",
+          "Image": "ghcr.io/cambridge-cares/traffic-incident-agent:1.5.0",
           "Mounts": [
             {
               "Type": "bind",
@@ -45,8 +45,8 @@
     },
     "endpoints": {
       "trafficincidentagent": {
-        "url": "http://localhost:8080/traffic-incident-agent/retrieve",
-        "externalPath": "/traffic-incident-agent/retrieve"
+        "url": "http://localhost:8080/traffic-incident-agent/start",
+        "externalPath": "/traffic-incident-agent/start"
       }
     }
   }
