@@ -1,5 +1,6 @@
 {
     "name": "Traffic Incident",
+    "expanded": false,
     "sources": [
         {
             "id": "traffic_incident",  
@@ -12,6 +13,7 @@
     ],
     "groups": [ {
         "name": "Active Traffic Incidents",
+        "expanded": false,
         "stack": "http://localhost:3838",
         "layers": [
             {
@@ -349,6 +351,7 @@
     },  
     {
         "name": "Past Traffic Incidents",
+        "expanded": false,
         "stack": "http://localhost:3838",
         "layers": [
             {
@@ -641,7 +644,7 @@
                 ],
                 "order": 9,
                 "layout": {
-                    "visibility": "visible",
+                    "visibility": "none",
                     "icon-image": "traffic-diversion",
                     "icon-allow-overlap": true,
                     "icon-ignore-placement": true,
