@@ -3,9 +3,6 @@ package uk.ac.cam.cares.jps.agent.trafficincident;
 import java.util.UUID;
 
 public class TrafficIncident {
-    // TODO: to be updated
-    public static final String IRI_PREFIX = "https://www.theworldavatar.com/kg/ontoroad/TrafficIncident_";
-
     public long startTime;
     public long endTime;
     public String incidentType;
@@ -14,7 +11,7 @@ public class TrafficIncident {
     // message field can be updated during different call, depending on specific scenario
     public String message;
     public boolean status; // true : incident is ongoing
-    public String iri; // IRI_PREFIX + random UUID
+    public String iri; 
 
     public TrafficIncident(String incidentType, double latitude, double longitude, String message, long startTime, boolean status) {
         this.startTime = startTime;
@@ -24,7 +21,7 @@ public class TrafficIncident {
         this.longitude = longitude;
         this.message = message;
         this.status = status;
-        this.iri = TrafficIncident.IRI_PREFIX + UUID.randomUUID().toString();
+        this.iri = UUID.randomUUID().toString();
     }
 
     public TrafficIncident(String iri, String incidentType, double latitude, double longitude, String message, long startTime, boolean status) {

@@ -8,11 +8,11 @@ tfi:    https://www.theworldavatar.com/ontoTrafficIncident/
 
 [MappingDeclaration] @collection [[
 mappingId	trafficincident
-target		tfi:{type}_{starttime} a tfi:TrafficIncident ;
+target		tfi:{iri} a tfi:TrafficIncident ;
                 a tfi:{type};
-                time:hasBeginning {starttime};
-                time:hasEnd {endtime};
+                time:hasBeginning {start_time};
+                time:hasEnd {end_time};
                 tfi:hasDescription {description};
                 geo:asWKT "{geom}"^^geo:wktLiteral.
-source      SELECT type, message AS description, latitude, longitude, starttime, endtime, CASE WHEN status = 't' THEN 'Ongoing' ELSE 'Ended' END AS status, ST_ASTEXT(location) as geom FROM trafficincident
+source      SELECT iri, type, message AS description, latitude, longitude, start_time, end_time, CASE WHEN status = 't' THEN 'Ongoing' ELSE 'Ended' END AS status, ST_ASTEXT(geom) as geom FROM trafficincident
 ]]

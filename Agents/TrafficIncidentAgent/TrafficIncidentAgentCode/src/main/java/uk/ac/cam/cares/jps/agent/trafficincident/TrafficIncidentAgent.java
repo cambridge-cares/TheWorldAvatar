@@ -62,7 +62,7 @@ public class TrafficIncidentAgent implements Runnable {
             throw new JPSRuntimeException(e);
         }
 
-        jsonMessage = initializeAgent(api_url, apiProperties);
+        jsonMessage = initializeAgent(apiProperties, api_url);
         jsonMessage.accumulate("Result","values has been extracted");
     }
 
@@ -200,18 +200,20 @@ public class TrafficIncidentAgent implements Runnable {
 
         UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-        virtualTable.setSql("SELECT \r\n" +
-                "    type AS name, \r\n" +
-                "    message AS description, \r\n" +
-                "    TO_TIMESTAMP(starttime) AS starttime, \r\n" +
-                "    CASE \r\n" +
-                "        WHEN endtime = 0 THEN NULL \r\n" +
-                "        ELSE TO_TIMESTAMP(endtime) \r\n" +
-                "    END AS endtime, \r\n" +
-                "    CASE \r\n" +
-                "        WHEN status = 't' THEN 'Ongoing' \r\n" +
-                "        ELSE 'Ended'  \r\n" +
-                "    END AS status, location \r\n" +
+        virtualTable.setSql("SELECT \n" +
+                "iri,\n" +
+                "    type AS name, \n" +
+                "    message AS description, \n" +
+                "    TO_TIMESTAMP(start_time) AS start_time, \n" +
+                "    CASE \n" +
+                "        WHEN end_time= 0 THEN NULL \n" +
+                "        ELSE TO_TIMESTAMP(end_time) \n" +
+                "    END AS end_time, \n" +
+                "    CASE \n" +
+                "        WHEN status = 't' THEN 'Ongoing' \n" +
+                "        ELSE 'Ended'  \n" +
+                "    END AS status, \n" +
+                "    geom\n" +
                 "FROM trafficincident");
         virtualTable.setEscapeSql(true);
         virtualTable.setName("traffic_incident_virtual_table");
