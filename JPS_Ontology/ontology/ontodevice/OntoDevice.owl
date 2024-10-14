@@ -56,6 +56,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/detectedByDevice -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/detectedByDevice">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/prov:Activity"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+        <rdfs:comment>Relates an activity with the device that detected it.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>detected by device</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasA -->
 
 
@@ -83,23 +96,12 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/hasActivityType -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasActivityType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
-        <rdfs:comment>Links an activity to its corresponding type (e.g.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="walking"/>
-        <rdfs:label> running).</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasConfidenceLevel -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasConfidenceLevel">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Activity"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
         <rdfs:comment>Links an activity to its confidence level.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has confidence level</rdfs:label>
@@ -694,15 +696,25 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasNumericalValue -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasNumericalValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Represents the numerical confidence value.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasValue -->
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasValue">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>Represents the numerical confidence value.</rdfs:comment>
         <rdfs:comment>Represents the type of activity as a string.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has value</rdfs:label>
@@ -2717,6 +2729,13 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>pH level sensor</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/prov:Activity -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/prov:Activity"/>
     
 
 
