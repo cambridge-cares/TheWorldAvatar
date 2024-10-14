@@ -1034,10 +1034,9 @@ class ChatGPTAPI:
                             "synthesisProcedures": {
                             "type": "array",
                             "items": {
-                            
                               "type": "object",
                               "properties": {
-                                  "mopFormula": {"type": "string"},
+                                  "mopCCDCNumber": {"type": "string"},
                                   "cbuFormula1": {"type": "string"},
                                   "cbuSpeciesNames1": {
                                       "type": "array",
@@ -1050,7 +1049,7 @@ class ChatGPTAPI:
                                   }
                               },
                               "required": [
-                                  "mopFormula", "cbuFormula1", 
+                                  "mopCCDCNumber", "cbuFormula1", 
                                   "cbuSpeciesNames1", "cbuFormula2", 
                                   "cbuSpeciesNames2"
                               ],
@@ -1266,10 +1265,11 @@ def chemicals(doi:str) -> dict:
     query                               = f"""
     PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
     SELECT (GROUP_CONCAT(DISTINCT ?label; SEPARATOR=", ") AS ?labels) 
     WHERE {{	
-        ?Species <http://www.w3.org/2000/01/rdf-schema/label> ?label .
+        ?Species (<http://www.w3.org/2000/01/rdf-schema/label> | rdfs:label) ?label .
         ?PhaseComponent <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf> ?Species .
         ?SinglePhase <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem> ?PhaseComponent .
         ?Material <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehaviour> ?SinglePhase .
@@ -1408,6 +1408,8 @@ def process_papers():
     #processor               = XYZFileProcessor(os.path.abspath(os.path.join(script_dir, "../../Data/papers_with_si")), os.path.join(script_dir, "../../Data/"))
     #processor.process_files_in_directory(processor.transform_xyz_string)
     #processor.process_files_in_directory(processor.prepend_line_count)
+
+
 
 def append_si_to_paper(directory):
   # List all files in the directory

@@ -14,6 +14,8 @@ import uuid
 import re
 import os
 import sys
+import matplotlib.pyplot as plt
+import numpy as np
 PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
@@ -94,10 +96,10 @@ def upload_predefined():
     AirAtmo                             = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_bd2ef29a-1c5c-40eb-a9b2-84f1a3fda734", rdfs_label="Air atmosphere")
     unknown_Atmo                        = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_1f70dc2c-5a37-491a-89ec-0897f9dcb7b8", rdfs_label="N/A")
     # unknowns
-    yield_value                         = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_e60743f2-ba10-4cc3-ac54-aa13e6352d0a", hasNumericalValue=-1, hasUnit="N/A")
+    yield_value                         = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_3ed5e18b-5206-405d-ada0-382071f73f74", hasNumericalValue=-1, hasUnit=unknown_unit)
     yield_instance                      = AmountOfSubstanceFraction(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", hasValue=yield_value)
-        
-    unknown_mop                         = MetalOrganicPolyhedron(rdfs_label="N/A", instance_iri="https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_59a84aed-e0df-496e-84d7-587af8326d71")
+    chemical_input                      = ChemicalInput(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", rdfs_label="N/A")
+    unknown_mop                         = MetalOrganicPolyhedron(rdfs_label="N/A", instance_iri="https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_1d981ba2-4072-47ef-9ecd-b9f5cc06a50a")
     # separation types
     centrifuge                          = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8", rdfs_label="centrifuge")
     column                              = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_aea2a49f-067f-4818-8abc-544dd8696ba8", rdfs_label="column")
@@ -106,7 +108,7 @@ def upload_predefined():
     unknown_sep                         = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_9ff2a8f7-3c9c-4419-9f3a-76b34d8629c0", rdfs_label="N/A")
     unknown_step                        = SynthesisStep(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SynthesisStep_ddb7ceda-13d2-461a-a63e-9e7df3116882", rdfs_comment="N/A")
     percentage                          = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/percent", rdfs_label="percent")
-    instances                           = [yield_value, unknown_step, yield_instance, unknown_mop, N2Atmo, column, extraction, unknown_sep, wash, centrifuge, ArAtmo, AirAtmo , unknown_Atmo, vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_min, duration_day, duration_h, duration_s, duration_week, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA, schlenk]
+    instances                           = [yield_value, chemical_input, yield_value, unknown_step, yield_instance, unknown_mop, N2Atmo, column, extraction, unknown_sep, wash, centrifuge, ArAtmo, AirAtmo , unknown_Atmo, vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_min, duration_day, duration_h, duration_s, duration_week, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA, schlenk]
     push_component_to_kg(instances, client)
 
 def find_patterns_and_divide_multiply(text, multiplier_flag):
@@ -289,7 +291,10 @@ def species_querying(client, species_label):
     for label in species_label:
         #label = re.sub(r'[^\w\s,]', '', label)
         # Append each formatted element to the result string
-        insert_string += f""" "{label}" """
+        if '"' in label:
+            insert_string += f' """{label}""" '
+        else: 
+            insert_string += f""" "{label}" """
     
     query = f"""
         PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
@@ -305,6 +310,7 @@ def species_querying(client, species_label):
     query_result                    = client.perform_query(query)
     print("query result: ", query_result)
     return query_result
+
 def species_querying_ontosyn(client, species_label):
     # avoid linking all to N/A instance:
     species_label               = [item for item in species_label if item != 'N/A']
@@ -313,7 +319,10 @@ def species_querying_ontosyn(client, species_label):
     for label in species_label:
         #label = re.sub(r'[^\w\s,]', '', label)
         # Append each formatted element to the result string
-        insert_string += f""" "{label}" """
+        if '"' in label:
+            insert_string += f' """{label}""" '
+        else: 
+            insert_string += f""" "{label}" """
     
     query = f"""
         PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
@@ -341,7 +350,10 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
         if label != "N/A" and label != "" and label != " " and label != 'lab':
             #label = re.sub(r'[^\w\s,]', '', label)
         # Append each formatted element to the result string
-            insert_string += f""" "{label}" """
+            if '"' in label:
+                insert_string += f' """{label}""" '
+            else: 
+                insert_string += f""" "{label}" """
     print("mop querying: ", insert_string)
     # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
     query = f"""
@@ -362,9 +374,12 @@ def mop_querying(client, CCDC_number, mop_formula, mop_name):
     print("MOp query result returned: ", out)
     return out
 def CBU_querying(client, cbu_formula):
-    if cbu_formula != "N/A" and cbu_formula != "" and cbu_formula != " " and cbu_formula != 'lab':
+    if cbu_formula == "N/A" and cbu_formula == "" and cbu_formula == " " and cbu_formula =='lab':
             return []
+    if "[" not in cbu_formula:
+        cbu_formula             = "["+cbu_formula+"]"
     # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
+    print("querying for cbu: ", cbu_formula)
     query = f"""
         PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
         PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
@@ -373,12 +388,14 @@ def CBU_querying(client, cbu_formula):
         PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
         SELECT distinct ?CBUIRI
         WHERE {{
-        ?CBUIRI a <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit> .
+        ?CBUIRI a <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> .
         
-        ?CBUIRI hasCBUFormula "{cbu_formula}" .  
+        ?CBUIRI om:hasCBUFormula "{cbu_formula}" .  
         }}
         GROUP BY ?CBUIRI"""
+    print("query cbu: ", query)
     out                     = client.perform_query(query)
+    print("iri cbu: ", out)
     return out
 def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
     print("querying for mop: ", CCDC_number, mop_formula, mop_name)
@@ -388,7 +405,10 @@ def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
         if label != "N/A" and label != "" and label != " " and label != 'lab':
             #label = re.sub(r'[^\w\s,]', '', label)
         # Append each formatted element to the result string
-            insert_string += f""" "{label}" """
+            if '"' in label:
+                insert_string += f' """{label}""" '
+            else: 
+                insert_string += f""" "{label}" """
     # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
     query = f"""
         PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
@@ -428,6 +448,7 @@ def doi_querying(client, doi):
     out                     = client.perform_query(query)
     print("used query: ", query)
     return out
+
 def transformation_querying(client, mop_name):
     print("mop name: ", mop_name)
     insert_string               = ""
@@ -435,7 +456,10 @@ def transformation_querying(client, mop_name):
         # Append each formatted element to the result string
         if label != "N/A" and label != "" and label != " " and label != 'lab':
             #label = re.sub(r'[^\w\s,]', '', label)
-            insert_string += f""" "{label}" """
+            if '"' in label:
+                insert_string += f' """{label}""" '
+            else: 
+                insert_string += f""" "{label}" """
     print("mop querying: ", insert_string)
     query = f"""
         PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
@@ -613,6 +637,7 @@ def upload_inputChem(chemicals, synthesis_client, species_client):
     single_phase                                                = SinglePhase(isComposedOfSubsystem=phase_components, hasComposition=composition)     
     material                                                    = Material(thermodynamicBehaviour=single_phase)
     chemical_input                                              = ChemicalInput(referencesMaterial=material)
+    print("species names: ", species.rdfs_label) 
     components = [phase_component_concentration, phase_component, composition, single_phase, material, chemical_input]
     push_component_to_kg(components, synthesis_client)
     return chemical_input
@@ -634,7 +659,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["addedChemical"] != []:
             chemical_input                                      = upload_inputChem(standard_step["addedChemical"], synthesis_client, species_client)
         else:
-            chemical_input                                      = ChemicalInput()
+            chemical_input                                      = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)
         add_class                                               = Add(hasOrder=standard_step['stepNumber'], hasStepDuration=duration,hasVessel=vessel, hasAddedChemicalInput=chemical_input, isStirred=standard_step['stir'], hasTargetPh=float(standard_step['targetPH']), isLayered=standard_step["isLayered"], hasVesselEnvironment=atmosphere,rdfs_comment=standard_step['comment'])  
         components = [add_class, vessel, duration, duration_value]
         push_component_to_kg(components, synthesis_client)
@@ -690,7 +715,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["washingSolvent"] != []:
             chemical_input                                  = upload_inputChem(standard_step["washingSolvent"], synthesis_client, species_client)
         else:
-            chemical_input                                  = ChemicalInput()
+            chemical_input                                  = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
         filter_class                                        = Filter(hasOrder=standard_step["stepNumber"], hasVesselEnvironment=atmosphere, isRepeated=standard_step["numberOfFiltrations"], isVacuumFiltration=standard_step["vacuumFiltration"],hasWashingSolvent=chemical_input, rdfs_comment=standard_step["comment"], hasVessel=vessel)  
         components = [filter_class]
         push_component_to_kg(components, synthesis_client)
@@ -745,8 +770,9 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["dryingAgent"] != []:
             chemical_input                          = upload_inputChem(standard_step["dryingAgent"], synthesis_client, species_client)
         else:
-            chemical_input                          = ChemicalInput()
-
+            chemical_input                          = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
+        
+        chemicals_list.append(chemical_input)
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit, rdfs_comment=standard_step["temperature"])
         #pressure_value                              = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/PressureValue_{id_hash_value}",hasNumericalValue=pres[0], hasUnit=pressure_unit, rdfs_comment=standard_step["pressure"])
         drying_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/DryingTemperature_{id_hash_value}", hasValue=temperature_value)
@@ -774,7 +800,8 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["removedSpecies"] != []:
             chemical_input                          = upload_inputChem(standard_step["removedSpecies"], synthesis_client, species_client)
         else:
-            chemical_input                          = ChemicalInput()
+            chemical_input                          = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
+        chemicals_list.append(chemical_input)
         volume_value                                = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/VolumeValue_{id_hash_value}",hasNumericalValue=vol[0], hasUnit=volume_unit, rdfs_comment=standard_step["targetVolume"])
         target_volume                               = Volume(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TargetVolume_{id_hash_value}", hasValue=volume_value)
         evaporate                                   = Evaporate(hasStepDuration=duration, isEvaporatedToVolume=target_volume, isRemovedSpecies=chemical_input, hasRotaryEvaporator=standard_step["rotaryEvaporator"],hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasEvaporationTemperature=evap_temperature, hasEvaporationPressure=evap_pressure, rdfs_comment=standard_step["comment"])  
@@ -807,7 +834,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["solvent"] != []:
             chemical_input                                              = upload_inputChem(standard_step["solvent"], synthesis_client, species_client)
         else:
-            chemical_input                                              = ChemicalInput()
+            chemical_input                                              = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
         dissolve                                                        = Dissolve(hasStepDuration=duration, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasSolventDissolve=chemical_input, rdfs_comment=standard_step["comment"])
         components                                                      = [dissolve]
         chemicals_list.append(chemical_input)
@@ -820,7 +847,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         if standard_step["solvent"] != []:
             chemical_input                                              = upload_inputChem(standard_step["solvent"], synthesis_client, species_client)
         else:
-            chemical_input                                              = ChemicalInput()
+            chemical_input                                              = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", synthesis_client, recursive_depth=-1)[0]
         separation_type                                                 = match_separation(standard_step["separationType"], synthesis_client)
         separate                                                        = Separate(hasStepDuration=duration, isSeparationType=separation_type, hasVesselEnvironment=atmosphere, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasSeparationSolvent=chemical_input , rdfs_comment=standard_step["comment"])
         components                                                      = [separate]
@@ -845,8 +872,15 @@ def update_alt_label(species, species_name):
 def replace_character(species_names):
     names                                                   = []
     for name in species_names:
-        names.append(name.replace("·", "x"))
-        names.append(name.replace("’", "'"))
+        name                = name.replace("·", "x")
+        name                = name.replace("’", "'")
+        name                = name.replace("”", '"')
+        name                = name.replace("–", '-')
+        name                = name.replace("·", 'x')
+        name                = name.replace("•", 'x')
+        names.append(name)
+        
+        
     return names
 def instantiate_input(chemical_formula, species_name, client_species, client_synthesis):
     # search the ontospecies and ontosynthesis blazegraphs for existing instances
@@ -859,18 +893,20 @@ def instantiate_input(chemical_formula, species_name, client_species, client_syn
     if triples == None or triples == []:
         triples                                             = species_querying(client_species, species_name)
         if triples == None or triples == []:
-            species                                         = Species(rdfs_label=chemical_formula, altLabel=species_name)
+            species                                         = Species(label=chemical_formula, altLabel=species_name)
             # Ontospecies uses different base IRIs for rdf type and the actual instance IRI.
             species.instance_iri                            = f"http://www.theworldavatar.com/kb/ontospecies/Species_{species_iri}"
         else:
             try:
-                species                                     = Species(instance_iri=triples[0]["Species"] ,rdfs_label=chemical_formula, altLabel=species_name)
+                species                                     = Species(instance_iri=triples[0]["Species"] ,label=chemical_formula, altLabel=species_name)
             except:
                 # there already exists a species with the IRI but with different labels than before -> query syn kg and add label
                 species                                     = Species.pull_from_kg(triples[0]["Species"], client_synthesis, recursive_depth=-1)[0]
                 # update if not already saved (avoids 1000s of duplicates)
                 species                                     = update_alt_label(species, species_name=species_name)
             #species                                         = update_alt_label(species, species_name=species_name)
+            # upload here as well
+            
 
     else:
         print("Success: ", triples[0]["Species"])
@@ -891,7 +927,7 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
         mop_iri                                 = mop_querying(client_mop, ccdc_number, chemical_formula, mop_names)
         if mop_iri == []:
             # couldn't link with a mop, instantiate unknown mop to indicate failed linkage:
-            mop                                 = MetalOrganicPolyhedron.pull_from_kg("https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_59a84aed-e0df-496e-84d7-587af8326d71", client_synthesis, recursive_depth=-1)[0]
+            mop                                 = MetalOrganicPolyhedron.pull_from_kg("https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_1d981ba2-4072-47ef-9ecd-b9f5cc06a50a", client_synthesis, recursive_depth=-1)[0]
         else:
             # for unknown reason sometimes it fails to pull and returns iri, check if not list otherwise query again!
             try:
@@ -907,22 +943,23 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
     unit                                        = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/percent", client_synthesis, recursive_depth=-1)[0]
     print("yield number", yield_str)
     yield_str                                   = yield_str.replace('%', '')
-    yield_str                                   = yield_str.replace("N/A", "-1")
-    try:
-        yield_val                               = float(yield_str)
-    except:
-        yield_val                               = -1
-    yield_value                                 = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_{uuid_id}", hasNumericalValue=yield_val, hasUnit=unit)
-    yield_instance                              = AmountOfSubstanceFraction(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/Yield_{uuid_id}", hasValue=yield_value)
-    # output chemcial
-    output_names                            = []
-    print("mop names: ", mop_names)
-    print("chemical formula: ", chemical_formula)
-    print("ccdc number: ", ccdc_number)
+    if yield_str == "-1" or yield_str == "N/A":
+        yield_instance                          = AmountOfSubstanceFraction.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", client_synthesis, recursive_depth=-1)[0]
+        print("unknown yield: ", yield_instance)
+    else:
+        try:
+            yield_val                               = float(yield_str)
+            yield_value                             = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_{uuid_id}", hasNumericalValue=yield_val, hasUnit=unit)
+            yield_instance                          = AmountOfSubstanceFraction(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/Yield_{uuid_id}", hasValue=yield_value)
+        except:
+            yield_instance                          = AmountOfSubstanceFraction.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", client_synthesis, recursive_depth=-1)[0]
+        
+ # output chemical
+    output_names                                = []
+    print("yield: ", yield_instance)
+
     output_names.append(chemical_formula)
-    print("output names1: ", output_names)
     output_names.append(ccdc_number)
-    print("output names2: ", output_names)
     for mop_name in mop_names:
         output_names.append(mop_name)
     output_iri                                  = chemicalOutput_querying(client_synthesis, ccdc_number, chemical_formula, mop_names)
@@ -974,7 +1011,7 @@ def chemicals_upload_json(input_path, output_path, settings=None):
             if chemical["chemical"] != []:
                 chemical_input                              = upload_inputChem(chemical["chemical"], client_synthesis, client_species)
             else:
-                chemical_input                              = ChemicalInput()
+                chemical_input                                              = ChemicalInput.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", client_synthesis, recursive_depth=-1)[0]
             if "supplierName" in chemical and "purity" in chemical:
                 supplier                                                    = Supplier(rdfs_label=chemical["supplierName"])
                 chemical_input.hasPurity.add(chemical["purity"])                                              
@@ -1108,15 +1145,18 @@ def characterisation_upload(input_path, output_path, settings):
 def instantiate_cbu(cbu_formula, syn_client, mop_client, species):
     cbu_iri                                 = CBU_querying(syn_client, cbu_formula)
     if cbu_iri==[]:
-        CBU_querying(mop_client, cbu_formula)
+        cbu_iri                             = CBU_querying(mop_client, cbu_formula)
+        print("cbu iri: ", cbu_iri[0]["CBUIRI"])
         if cbu_iri==[]:
             cbu                             = ChemicalBuildingUnit(hasCBUFormula=cbu_formula, isUsedAsChemical=species)
         else:
             try:
-                cbu                         = ChemicalBuildingUnit.pull_from_kg(cbu_iri[0]["CBUIRI"],hasCBUFormula=cbu_formula)
+                cbu                         = ChemicalBuildingUnit(instance_iri=cbu_iri[0]["CBUIRI"],hasCBUFormula=cbu_formula)
             except:
                 # there already exists a species with the IRI but with different labels than before -> query syn kg and add label
                 cbu                         = ChemicalBuildingUnit.pull_from_kg(cbu_iri[0]["CBUIRI"], syn_client, recursive_depth=-1)[0]
+    else:
+        cbu                                 = ChemicalBuildingUnit.pull_from_kg(cbu_iri[0]["CBUIRI"], syn_client, recursive_depth=-1)[0]
     return cbu
 def upload_cbu(input_path, output_path, settings):    
     filename_noext, subdir, syn_client, sparql_client_species, sparql_client_mop  = start_upload(input_path)
@@ -1163,7 +1203,14 @@ def parse_element_string(element_string, syn_client):
             element                                             = "N/A"
             value                                               = 0
         # Add the element and its float value to the dictionary
-        value                                                   = float(value)
+        print("element: ", element, "value: ", value)
+        try:
+            value                                                   = float(value)
+        except:
+            # swap element and value to test if the other way around works
+            ele                                                 = value
+            value                                               = element
+            element                                             = ele
         id_hash_value                                           = str(uuid.uuid4())
         unit                                                    = UnitOfMeasure.pull_from_kg("http://www.ontology-of-units-of-measure.org/resource/om-2/percent", syn_client, recursive_depth=-1)[0]
         measure                                                 = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/MassFractionValue_{id_hash_value}", hasNumericalValue=value, hasUnit=unit)
@@ -1173,6 +1220,7 @@ def parse_element_string(element_string, syn_client):
         element_percentages.append(element_weight_precentage)
         components                                              = [measure, mass_fraction, element_weight_precentage]
         push_component_to_kg(components, syn_client)
+
     return element_percentages
 
 def push_component_to_kg(instances:list, client, recursive_depth=-1):
@@ -1229,7 +1277,7 @@ def upload_steps(input_path, output_path, settings =None):
         print("mop_name: ", mop_name)
         transformation_iri                                      = transformation_querying(sparql_client_synthesis, mop_name=mop_name)
         # set yield to unknown yield as default
-        yield_instance                                          = AmountOfSubstanceFraction.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", sparql_client_synthesis)[0]
+        yield_instance                                          = AmountOfSubstanceFraction.pull_from_kg("https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", sparql_client_synthesis, recursive_depth=-1)[0]
         print("transformation iri: ", transformation_iri)
         if transformation_iri == []:
             print(f"generating new Transformation! MOP values: CCDC={entry["productCCDCNumber"]} and productName= {entry["productNames"]}. ")
@@ -1254,8 +1302,11 @@ def upload_steps(input_path, output_path, settings =None):
             step_list.append(step_class)
             
         print("finished steps!")
-        
-        chemical_synthesis                                      = ChemicalSynthesis(hasSynthesisStep=step_list, retrievedFrom=document, hasChemicalInput=chemicals_list, hasYield=yield_instance) 
+        try:
+            chemical_synthesis                                      = ChemicalSynthesis(hasSynthesisStep=step_list, retrievedFrom=document, hasChemicalInput=chemicals_list, hasYield=yield_instance) 
+        except: 
+            # chemical list too long? do it in postprocessing
+            chemical_synthesis                                      = ChemicalSynthesis(hasSynthesisStep=step_list, retrievedFrom=document, hasYield=yield_instance) 
         chemical_transformation                                 = ChemicalTransformation.pull_from_kg(transformation_iri[0]["chemicalTrans"], sparql_client_synthesis, recursive_depth=1)   
         print("pulled transformation IRI: ", chemical_transformation)
         chemical_transformation[0].isDescribedBy.add(chemical_synthesis)
@@ -1264,6 +1315,68 @@ def upload_steps(input_path, output_path, settings =None):
         push_component_to_kg(components, sparql_client_synthesis, 2)
         print("Ended pushing synthesis and transformation")
 
+def barplot_grouped(labels, data, title="Bar Plot", xlabel="X-axis", ylabel="Y-axis", color=None):
+    """
+    Generates a grouped bar plot with three bars per x-axis label.
+
+    Parameters:
+        labels (list or array-like): The labels for each x-axis group.
+        data (list of lists): A 2D list where each sublist contains the heights of the bars for each group.
+                              Should contain three sublists, one for each set of bars per x-axis label.
+        title (str): The title of the plot. Default is "Bar Plot".
+        xlabel (str): The label for the x-axis. Default is "X-axis".
+        ylabel (str): The label for the y-axis. Default is "Y-axis".
+        color (list): A list of colors for each group. Should contain three colors. Default is None.
+    """
+    num_groups              = len(labels)
+    num_bars                = 3  # As specified, there should be three bars for each x-axis instance
+
+    # Default color scheme if no color is provided
+    if color is None:
+        color               = ['blue', 'green', 'red']
+
+    # Check that data and color lists match the required dimensions
+    assert len(data) == num_bars, "Data should contain exactly three sub-lists."
+    assert len(color) == num_bars, "Color should contain exactly three colors."
+
+    # Set the width of each bar and the positions
+    bar_width               = 0.25
+    x = np.arange(num_groups)  # X-axis label locations
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(x + 0 * bar_width, data[0], width=bar_width, color=color[0], label=f'All procedures')
+    plt.bar(x + 1 * bar_width, data[1], width=bar_width, color=color[1], label=f'Linked to MOP')
+    plt.bar(x + 2 * bar_width, data[2], width=bar_width, color=color[2], label=f'Not linked to MOP')
+    
+    font_size                = 16
+    plt.title(title, fontsize=font_size + 4)   # Increase title font size
+    plt.xlabel(xlabel, weight='bold', fontsize=font_size)
+    plt.ylabel(ylabel, weight='bold', fontsize=font_size)
+    plt.xticks(x + bar_width, labels, fontsize=font_size)  # Increase font size for x-axis labels
+    plt.yticks(fontsize=font_size)  # Increase font size for y-axis labels
+    plt.legend(fontsize=font_size)  # Increase font size for the legend
+    plt.show()
+
+def barplot(labels, data, title="Bar Plot", xlabel="X-axis", ylabel="Y-axis", color="blue"):
+    """
+    Generates a bar plot.
+
+    Parameters:
+        data (list or array-like): The heights of the bars.
+        labels (list or array-like): The labels for each bar.
+        title (str): The title of the plot. Default is "Bar Plot".
+        xlabel (str): The label for the x-axis. Default is "X-axis".
+        ylabel (str): The label for the y-axis. Default is "Y-axis".
+        color (str or list): The color of the bars. Can be a single color or a list of colors. Default is "blue".
+    """
+    print("data: ", data)
+    plt.figure(figsize=(10, 6))
+    plt.bar(labels, data, color=color)
+    plt.title(title)
+    plt.xlabel(xlabel, weight='bold')
+    plt.ylabel(ylabel, weight='bold')
+    plt.show()
+    return 
 def start_upload(input_path):
     sparql_client_synthesis                                 = get_client("OntoSynthesisConnection")
     sparql_client_species                                   = get_client("OntoSpeciesConnection") 
@@ -1288,8 +1401,16 @@ def main():
     #input_path                                                  = "../Data/first10_prompt54/10.1002_anie.201900519.json"
     #upload(input_path, "")
     #OntoSyn         = "http://www.theworldavatar.com/ontology/ontosyn/OntoSyn.owl"
-    upload_predefined()
+    #upload_predefined()
+    #data                                = [1232, 366, 360, 145, 133, 106, 95, 65, 62, 30, 2234]
+    #labels                              = ["Add", "HeatChill", "Filter", "Dry", "Stir", "Separate", "Dissolve", "Evaporate", "Transfer", "Sonicate", "All steps"]
+    #data                                = [1232, 366, 360, 145, 133, 106, 95, 65, 62, 30]
+    #labels                              = ["Add", "HeatChill", "Filter", "Dry", "Stir", "Separate", "Dissolve", "Evaporate", "Transfer", "Sonicate"]
     
+    data                                = [[203, 79, 124], [31, 18, 13], [3, 1, 2], [3, 2,1], [1,1,0]]
+    data                                = [[203,31,3,3,1], [79,18,1,2,1], [124, 13, 2, 1,0]]
+    labels                              = ["1", "2", "3", "4", "5"]
+    barplot_grouped(labels, data, "Extracted Synthesis", "Number of procedures for single product", "Number of occurences" )
     input_path                                              = f"../Data/fift10_chemicals1/10.1021_acsami.8b02015.json"
     #chemicals_upload_json(input_path=input_path, output_path="")
     #upload(input_path, "")
