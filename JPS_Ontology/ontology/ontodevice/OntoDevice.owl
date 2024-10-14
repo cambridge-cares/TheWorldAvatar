@@ -698,8 +698,10 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasValue">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Integer"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/String"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>Represents the numerical confidence value.</rdfs:comment>
         <rdfs:comment>Represents the type of activity as a string.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
@@ -1234,17 +1236,10 @@
     <!-- https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Confidencelevel -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Confidencelevel">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel">
         <rdfs:comment>Represents the confidence level indicating the likelihood of the activity being accurate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
-        <rdfs:label>Confidence Level</rdfs:label>
+        <rdfs:label>Confidence level</rdfs:label>
     </owl:Class>
     
 
@@ -1678,13 +1673,6 @@
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>In vehicle</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Integer -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Integer"/>
     
 
 
@@ -2491,13 +2479,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Status sensor</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/String -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/String"/>
     
 
 
