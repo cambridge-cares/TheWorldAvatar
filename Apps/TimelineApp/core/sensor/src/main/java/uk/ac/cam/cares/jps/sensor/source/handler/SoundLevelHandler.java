@@ -106,25 +106,22 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     private void processAudioStream() {
         short[] buffer = new short[BUFFER_SIZE / 2];
         while (true) {
+            int readResult;
+
             synchronized (audioRecordLock) {
                 if (audioRecord == null || audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
                     break;
                 }
+                readResult = audioRecord.read(buffer, 0, buffer.length);
             }
 
-            try {
-                int readResult = audioRecord.read(buffer, 0, buffer.length);
-
-                if (readResult > 0) {
-                    double dBFS = calculateDBFS(buffer, readResult);
-                    logDBFS(dBFS);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                break;
+            if (readResult > 0) {
+                double dBFS = calculateDBFS(buffer, readResult);
+                logDBFS(dBFS);
             }
         }
     }
+
 
 
     /**
