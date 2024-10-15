@@ -135,8 +135,10 @@ public class SensorHandlerManager {
         // Directly add all elements of each sensor's data to the single array
         for(SensorHandler handler : sensorHandlersMap.values()) {
             if (handler.isRunning()) {
-                JSONArray sensorData = handler.getSensorData();
-                localStorageData.put(handler.getSensorName(), sensorData);
+                synchronized (handler.getSensorDataLock()) {
+                    JSONArray sensorData = handler.getSensorData();
+                    localStorageData.put(handler.getSensorName(), sensorData);
+                }
             }
         }
 

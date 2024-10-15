@@ -29,6 +29,8 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     private Context context;
     private AudioRecord audioRecord;
     private Thread recordingThread;
+    private final Object audioRecordLock = new Object();
+
 
     /**
      * Constructs a new SoundLevelHandler.
@@ -40,7 +42,6 @@ public class SoundLevelHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_ALL);
         this.context = context;
         this.sensorName = "Microphone";
-        initAudioRecord();
     }
 
     /**
@@ -105,13 +106,14 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     private void processAudioStream() {
         short[] buffer = new short[BUFFER_SIZE / 2];
         while (true) {
-            AudioRecord localAudioRecord = audioRecord; // local reference to prevent NullPointerException
-            if (localAudioRecord == null || localAudioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
-                break;
+            synchronized (audioRecordLock) {
+                if (audioRecord == null || audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+                    break;
+                }
             }
 
             try {
-                int readResult = localAudioRecord.read(buffer, 0, buffer.length);
+                int readResult = audioRecord.read(buffer, 0, buffer.length);
 
                 if (readResult > 0) {
                     double dBFS = calculateDBFS(buffer, readResult);
@@ -123,6 +125,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             }
         }
     }
+
 
     /**
      * Calculates the dBFS from the audio buffer.
@@ -159,7 +162,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             dataPoint.put("time", System.currentTimeMillis() * 1000000);
             dataPoint.put("values", values);
 
-            synchronized (sensorData) {
+            synchronized (sensorDataLock) {
                 sensorData.put(dataPoint);
             }
         } catch (JSONException e) {
@@ -174,13 +177,17 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     public synchronized void stop() {
         super.stop();
 
-        if (audioRecord != null) {
-            try {
-                if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                    audioRecord.stop();
+        synchronized (audioRecordLock) {
+            if (audioRecord != null) {
+                try {
+                    if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                        audioRecord.stop();
+                    }
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
                 }
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
+                audioRecord.release();
+                audioRecord = null;
             }
         }
 
@@ -193,10 +200,6 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             recordingThread = null;
         }
 
-        if (audioRecord != null) {
-            audioRecord.release();
-            audioRecord = null;
-        }
     }
 
 
