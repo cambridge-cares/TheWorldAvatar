@@ -79,9 +79,7 @@ public class SensorLocalSource {
         this.context = context;
         AppDatabase appDatabase =  Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, "timeline-database")
-                .fallbackToDestructiveMigration()
                 .build();
-//        AppDatabase appDatabase = AppDatabase.getDatabase(context);
 
         locationDao = appDatabase.locationDao();
         accelerationDao = appDatabase.accelerationDao();
@@ -202,7 +200,6 @@ public class SensorLocalSource {
 
     public void deleteUnsentData(UnsentData unsentData) {
         try {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
         unsentDataDao.deleteById(unsentData.id);
             });
@@ -375,36 +372,11 @@ public class SensorLocalSource {
     }
 
     /**
-     * Computes an MD5 hash of the given string.
-     *
-     * @param data The input string to hash.
-     * @return The MD5 hash as a hexadecimal string.
-     */
-    public String computeHash(String data) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
-            // Convert the byte array into a hexadecimal string
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                hexString.append(String.format("%02x", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("MD5 algorithm not found", e);
-            return null;
-        }
-    }
-
-    /**
      * Checks if the given data already exists in the UnsentData table.
-     *
-     * @param sensorData The sensor data as a JSONArray.
+     * @param dataHash hash code that identifies the data
      * @return True if data exists, false otherwise.
      */
-    public boolean isDataInUnsentData(JSONArray sensorData) {
-        String dataString = sensorData.toString();
-        String dataHash = computeHash(dataString);
+    public boolean isDataInUnsentData(String dataHash) {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<UnsentData> future = executor.submit(() -> unsentDataDao.getUnsentDataByHash(dataHash));

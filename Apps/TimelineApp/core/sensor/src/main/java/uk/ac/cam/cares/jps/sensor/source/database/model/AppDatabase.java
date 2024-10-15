@@ -46,44 +46,4 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UnsentDataDao unsentDataDao();
     public abstract ActivityDataDao activityDataDao();
 
-    private static volatile AppDatabase INSTANCE;
-
-//
-//    static final Migration MIGRATION_3_4  = new Migration(3, 4) {
-//        @Override
-//        public void migrate(@NonNull SupportSQLiteDatabase database) {
-//            // Create a new table with the correct constraints
-//            database.execSQL("CREATE TABLE activity_data_new (" +
-//                    "time INTEGER NOT NULL, " +
-//                    "activityType TEXT, " +
-//                    "confidence INTEGER NOT NULL, " +
-//                    "uploaded INTEGER NOT NULL DEFAULT 0, " +
-//                    "PRIMARY KEY(time))");
-//
-//            // Copy data from the old table to the new table
-//            database.execSQL("INSERT INTO activity_data_new (time, activityType, confidence, uploaded) " +
-//                    "SELECT time, activityType, confidence, COALESCE(uploaded, 0) FROM activity_data");
-//
-//            // Drop the old table and rename the new table to the original name
-//            database.execSQL("DROP TABLE activity_data");
-//            database.execSQL("ALTER TABLE activity_data_new RENAME TO activity_data");
-//        }
-//    };
-//
-//
-//
-//    public static AppDatabase getDatabase(final Context context) {
-//        if (INSTANCE == null) {
-//            synchronized (AppDatabase.class) {
-//                if (INSTANCE == null) {
-//                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-//                                    AppDatabase.class, "timeline-database")
-//                            .addMigrations(MIGRATION_3_4)
-//                            .build();
-//                }
-//            }
-//        }
-//        return INSTANCE;
-//    }
-
 }

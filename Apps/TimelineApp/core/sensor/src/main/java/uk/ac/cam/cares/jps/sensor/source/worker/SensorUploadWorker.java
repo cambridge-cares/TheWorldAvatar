@@ -5,9 +5,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.hilt.work.HiltWorker;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -15,12 +12,10 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPOutputStream;
+import static uk.ac.cam.cares.jps.utils.di.UtilsModule.compressData;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedInject;
@@ -104,24 +99,5 @@ public class SensorUploadWorker extends Worker {
 
     }
 
-    /**
-     * Compresses a given string into a GZIP-compressed byte array.
-     * This method uses the GZIP compression algorithm to reduce the size of the input string.
-     *
-     * @param data The input string to be compressed.
-     * @return A byte array containing the GZIP-compressed data.
-     * @throws IOException If an I/O error occurs during the compression process.
-     */
-    public static byte[] compressData(String data) throws IOException {
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-            gzipOutputStream.write(data.getBytes("UTF-8"));
-            gzipOutputStream.close();
-            return byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }
