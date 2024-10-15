@@ -49,15 +49,10 @@ public class BufferFlushWorker extends Worker {
                 String sensorName = entry.getKey();
                 JSONArray newData = entry.getValue();
 
-                if (!memoryBuffer.containsKey(sensorName)) {
-                    memoryBuffer.put(sensorName, new JSONArray());
-                }
+                JSONArray bufferedData = memoryBuffer.computeIfAbsent(sensorName, k -> new JSONArray());
 
-                // Add the new data to the existing buffered data
-                JSONArray bufferedData = memoryBuffer.get(sensorName);
                 for (int i = 0; i < newData.length(); i++) {
                     try {
-                        assert bufferedData != null;
                         bufferedData.put(newData.get(i));
                     } catch (Exception e) {
                         LOGGER.error("Error adding data to buffer", e);
