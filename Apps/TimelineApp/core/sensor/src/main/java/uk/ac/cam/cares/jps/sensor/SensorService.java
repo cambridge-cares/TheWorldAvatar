@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -15,7 +16,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Process;
 import androidx.work.Data;
 
 import androidx.annotation.NonNull;
@@ -25,14 +25,16 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,21 +83,20 @@ public class SensorService extends Service {
     private final int FOREGROUND_ID = 100;
     private final String CHANNEL_ID = "Sensors";
     private final int SENSOR_FRAGMENT_REQUEST_CODE = 100;
-    private static final long SEND_INTERVAL = 5000;
     private final Logger LOGGER = Logger.getLogger(SensorService.class);
     private HandlerThread thread;
     private NetworkChangeReceiver networkChangeReceiver;
     private ActivityRecognitionClient activityRecognitionClient;
-    Timer timerB = new Timer();
-    Timer timer = new Timer();
+    Timer bufferWorkerTimer = new Timer();
+    Timer uploadWorkerTimer = new Timer();
+    private PendingIntent activityRecognitionPendingIntent;
+    private Map<String, Integer> sensorSettingsMap;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        thread = new HandlerThread("ServiceStartArguments",
-                Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
 
         // Register the NetworkChangeReceiver
         if (networkChangeReceiver == null) {
@@ -104,20 +105,43 @@ public class SensorService extends Service {
             registerReceiver(networkChangeReceiver, filter);
         }
 
+        sensorSettingsMap = loadSensorSettingsConfig(this);
+
+    }
+
+    private Map<String, Integer> loadSensorSettingsConfig(Context context) {
+        Map<String, Integer> settings = new HashMap<>();
+        try {
+            InputStream is = context.getAssets().open("sensor_settings_config.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            String json = new String(buffer, StandardCharsets.UTF_8);
+            JSONObject configJson = new JSONObject(json);
+            settings.put("activity_request_code", configJson.optInt("activity_recognition_request_code", 0));
+            settings.put("activity_recognition_update_interval", configJson.optInt("activity_recognition_update_interval"));
+            settings.put("buffer_delay", configJson.optInt("buffer_delay"));
+            settings.put("worker_delay", configJson.optInt("worker_delay"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return settings;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (!checkActivityRecognitionPermission()) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
         if (intent == null || intent.getExtras() == null) {
             LOGGER.warn("Self stop because deviceId unknown");
             stopSelf();
             // todo: check whether this return is correct
             return START_STICKY;
-        }
-
-        if (!checkActivityRecognitionPermission()) {
-            stopSelf();
-            return START_NOT_STICKY;
         }
 
         String userId = intent.getExtras().getString("userId");
@@ -133,17 +157,6 @@ public class SensorService extends Service {
             }
         }
 
-
-        String deviceId = intent.getExtras().getString("deviceId");
-
-        // Get the list of selected sensors
-        List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
-
-        if (selectedSensors == null || selectedSensors.isEmpty()) {
-            LOGGER.warn("No sensors selected or sensor list is empty.");
-            stopSelf();
-            return START_STICKY;
-        }
 
         // Only generate a new task ID if there is no existing recording session
         String taskId;
@@ -161,16 +174,28 @@ public class SensorService extends Service {
             taskId = UUID.randomUUID().toString();
             sensorCollectionStateManager.setTaskId(taskId);  // Store task ID using SensorCollectionStateManager
         }
+
+        String deviceId = intent.getExtras().getString("deviceId");
+
+        // Get the list of selected sensors
+        List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
+
+        if (selectedSensors == null || selectedSensors.isEmpty()) {
+            LOGGER.warn("No sensors selected or sensor list is empty.");
+            stopSelf();
+            return START_STICKY;
+        }
+
         sensorHandlerManager.startSelectedSensors(selectedSensors);
 
 
         // registering the activity recognition client
         activityRecognitionClient = ActivityRecognition.getClient(this);
-        PendingIntent pendingIntent = PendingIntent.getService(
-                this, 0, new Intent(this, ActivityRecognitionService.class),
+        activityRecognitionPendingIntent = PendingIntent.getService(
+                this, sensorSettingsMap.get("activity_request_code"), new Intent(this, ActivityRecognitionService.class),
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        activityRecognitionClient.requestActivityUpdates(3000, pendingIntent);
+        activityRecognitionClient.requestActivityUpdates(sensorSettingsMap.get("activity_recognition_update_interval"), activityRecognitionPendingIntent);
 
 
         // Convert the list of sensors to a JSONArray string
@@ -187,9 +212,9 @@ public class SensorService extends Service {
 
 
 
-        long delayB = 60000; // delay in milliseconds
+        long BUFFER_DELAY = sensorSettingsMap.get("buffer_delay"); // delay in milliseconds
 
-        timerB.schedule(new TimerTask() {
+        bufferWorkerTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 OneTimeWorkRequest bufferFlushWork = new OneTimeWorkRequest.Builder(BufferFlushWorker.class)
@@ -199,12 +224,12 @@ public class SensorService extends Service {
                 WorkManager.getInstance(getApplicationContext()).enqueue(bufferFlushWork);
 
             }
-        }, delayB, delayB);
+        }, BUFFER_DELAY, BUFFER_DELAY);
 
 
-        long delay = 60000; // delay in milliseconds
+        long WORKER_DELAY = sensorSettingsMap.get("worker_delay"); // delay in milliseconds
 
-        timer.schedule(new TimerTask() {
+        uploadWorkerTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 OneTimeWorkRequest dataUploadWork = new OneTimeWorkRequest.Builder(
@@ -216,7 +241,7 @@ public class SensorService extends Service {
                 WorkManager.getInstance(getApplicationContext()).enqueue(dataUploadWork);
 
             }
-        }, delay, delay);
+        }, WORKER_DELAY, WORKER_DELAY);
 
 
 
@@ -331,11 +356,11 @@ public class SensorService extends Service {
     public void onDestroy() {
 
         // cancel timers for workers
-        if (timerB != null) {
-            timerB.cancel();
+        if (bufferWorkerTimer != null) {
+            bufferWorkerTimer.cancel();
         }
-        if (timer != null) {
-            timer.cancel();
+        if (uploadWorkerTimer != null) {
+            uploadWorkerTimer.cancel();
         }
 
         // Unregister the NetworkChangeReceiver when the service is destroyed
@@ -345,24 +370,17 @@ public class SensorService extends Service {
         }
 
         // Stop activity recognition updates
-        if (activityRecognitionClient != null) {
-            PendingIntent pendingIntent = PendingIntent.getService(this, 0,
-                    new Intent(this, ActivityRecognitionService.class), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        if (activityRecognitionClient != null && activityRecognitionPendingIntent != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+                LOGGER.warn("Activity Recognition permission not granted. Unable to remove activity updates.");
                 return;
             }
-            activityRecognitionClient.removeActivityUpdates(pendingIntent);
+            activityRecognitionClient.removeActivityUpdates(activityRecognitionPendingIntent);
         }
 
 
-        LOGGER.info("Stopping sensor service 1");
+
+        LOGGER.info("Stopping sensor service");
         try {
             if (sensorHandlerManager != null) {
                 sensorHandlerManager.stopSensors();
@@ -380,10 +398,6 @@ public class SensorService extends Service {
                 LOGGER.warn("SensorCollectionState is already null. No need to clear.");
             }
 
-            if (thread != null) {
-                thread.quit();
-            }
-
             sensorLocalSource.shutdownExecutor();
 
             LOGGER.info("Sensor service is stopped. Sensors stop recording.");
@@ -391,9 +405,8 @@ public class SensorService extends Service {
             LOGGER.warn("Foreground service has already stopped.");
         } catch (SensorCollectionStateException e) {
             throw new RuntimeException(e);
-        } finally {
-            super.onDestroy();
         }
+            super.onDestroy();
     }
 
     @Nullable
