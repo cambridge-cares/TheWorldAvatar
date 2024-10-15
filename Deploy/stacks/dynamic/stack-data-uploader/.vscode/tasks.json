@@ -7,12 +7,17 @@
             "type": "shell",
             "label": "compose-build",
             "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "args": [
                 "build"
             ],
-            "options": {
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             },
             "group": {
@@ -24,6 +29,9 @@
             "type": "shell",
             "label": "compose-deploy-internal",
             "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "args": [
                 "start",
                 "${input:stackName}",
