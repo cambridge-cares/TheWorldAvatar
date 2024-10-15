@@ -31,8 +31,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -42,7 +41,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPOutputStream;
+
 
 import javax.inject.Inject;
 
@@ -50,7 +49,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.sensor.source.worker.BufferFlushWorker;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.worker.SensorUploadWorker;
-import uk.ac.cam.cares.jps.sensor.source.database.model.activity.ActivityRecognitionService;
+import uk.ac.cam.cares.jps.sensor.source.activity.ActivityRecognitionService;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
@@ -122,7 +121,7 @@ public class SensorService extends Service {
             settings.put("activity_request_code", configJson.optInt("activity_recognition_request_code", 0));
             settings.put("activity_recognition_update_interval", configJson.optInt("activity_recognition_update_interval"));
             settings.put("buffer_delay", configJson.optInt("buffer_delay"));
-            settings.put("worker_delay", configJson.optInt("worker_delay"));
+            settings.put("upload_delay", configJson.optInt("upload_delay"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -227,7 +226,7 @@ public class SensorService extends Service {
         }, BUFFER_DELAY, BUFFER_DELAY);
 
 
-        long WORKER_DELAY = sensorSettingsMap.get("worker_delay"); // delay in milliseconds
+        long upload_delay = sensorSettingsMap.get("upload_delay"); // delay in milliseconds
 
         uploadWorkerTimer.schedule(new TimerTask() {
             @Override
@@ -241,7 +240,7 @@ public class SensorService extends Service {
                 WorkManager.getInstance(getApplicationContext()).enqueue(dataUploadWork);
 
             }
-        }, WORKER_DELAY, WORKER_DELAY);
+        }, upload_delay, upload_delay);
 
 
 
@@ -282,26 +281,6 @@ public class SensorService extends Service {
         return START_STICKY;
     }
 
-
-    /**
-     * Compresses a given string into a GZIP-compressed byte array.
-     * This method uses the GZIP compression algorithm to reduce the size of the input string.
-     *
-     * @param data The input string to be compressed.
-     * @return A byte array containing the GZIP-compressed data.
-     * @throws IOException If an I/O error occurs during the compression process.
-     */
-    public static byte[] compressData(String data) throws IOException {
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-            gzipOutputStream.write(data.getBytes("UTF-8"));
-            gzipOutputStream.close();
-            return byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
     /**

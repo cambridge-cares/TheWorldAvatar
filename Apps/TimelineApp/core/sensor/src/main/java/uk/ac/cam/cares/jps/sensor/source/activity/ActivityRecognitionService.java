@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.sensor.source.database.model.activity;
+package uk.ac.cam.cares.jps.sensor.source.activity;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -29,7 +29,6 @@ public class ActivityRecognitionService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        sensorLocalSource = new SensorLocalSource(getApplicationContext());
     }
 
 
