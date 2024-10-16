@@ -8,7 +8,7 @@
             "type": "java",
             "name": "Debug",
             "request": "attach",
-            "hostName": "localhost",
+            "hostName": "127.0.0.1",
             "port": "${input:debug.port}",
             "preLaunchTask": "compose-deploy",
             "projectName": "${workspaceFolderBasename}"
@@ -17,7 +17,7 @@
             "type": "java",
             "name": "Build and Debug",
             "request": "attach",
-            "hostName": "localhost",
+            "hostName": "127.0.0.1",
             "port": "${input:debug.port}",
             "preLaunchTask": "compose-build-deploy",
             "projectName": "${workspaceFolderBasename}"
@@ -26,7 +26,7 @@
             "type": "java",
             "name": "Reattach and Debug",
             "request": "attach",
-            "hostName": "localhost",
+            "hostName": "127.0.0.1",
             "port": "${input:debug.port.read}",
             "projectName": "${workspaceFolderBasename}"
         }
