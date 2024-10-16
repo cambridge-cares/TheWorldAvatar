@@ -1,18 +1,26 @@
 [PrefixDeclaration]
-xsd:    http://www.w3.org/2001/XMLSchema#
-bot:    https://w3id.org/bot#
 geo:    http://www.opengis.net/ont/geosparql#
 time:   http://www.w3.org/2006/time#
-tw:     https://www.theworldavatar.com/kg/
-tfi:    https://www.theworldavatar.com/ontoTrafficIncident/
+tfi:    https://www.theworldavatar.com/ontotrafficincident/
+dbr:    https://dbpedia.org/page/
+sf:     http://www.opengis.net/ont/sf
 
 [MappingDeclaration] @collection [[
 mappingId	trafficincident
 target		tfi:{iri} a tfi:TrafficIncident ;
-                a tfi:{type};
-                time:hasBeginning {start_time};
-                time:hasEnd {end_time};
                 tfi:hasDescription {description};
-                geo:asWKT "{geom}"^^geo:wktLiteral.
+                a sf:Point; 
+                geo:asWKT "{geom}"^^geo:wktLiteral;
+                tfi:hasTrafficIncidentType {type};
+                tfi:hasTimeInterval tfi:interval_{iri}.
+            tfi:interval_{iri} a time:Interval;
+                time:hasBeginning tfi:{iri}_{start_time};
+                time:hasEnd tfi:{iri}_{end_time}.
+            tfi:{iri}_{start_time} a time:Instant;
+                time:hasTRS dbr:Unix_time;
+                time:numericPosition {start_time}.
+            tfi:{iri}_{end_time} a time:Instant;
+                time:hasTRS dbr:Unix_time;
+                time:numericPosition {end_time}.
 source      SELECT iri, type, message AS description, latitude, longitude, start_time, end_time, CASE WHEN status = 't' THEN 'Ongoing' ELSE 'Ended' END AS status, ST_ASTEXT(geom) as geom FROM trafficincident
 ]]
