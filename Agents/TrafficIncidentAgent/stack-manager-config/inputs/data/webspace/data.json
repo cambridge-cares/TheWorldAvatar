@@ -216,7 +216,7 @@
             },
             {
                 "id": "active_heavy_traffic",
-                "name": "Active heavy traffic",
+                "name": "Active Heavy Traffic",
                 "source": "traffic_incident",
                 "type": "symbol",
                 "order": 7,
@@ -554,7 +554,7 @@
             },
             {
                 "id": "past_heavy_traffic",
-                "name": "Past heavy traffic",
+                "name": "Past Heavy Traffic",
                 "source": "traffic_incident",
                 "type": "symbol",
                 "order": 7,
