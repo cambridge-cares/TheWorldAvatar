@@ -7,16 +7,17 @@
             "type": "shell",
             "label": "build-manager",
             "command": "./stack.sh",
-            "linux": {
-                "command": "./stack.sh"
-            },
             "args": [
                 "build"
             ],
             "options": {
-                "cwd": "${cwd}/../stack-manager",
-                "shell": {
-                    "executable": "bash"
+                "cwd": "${cwd}/../stack-manager"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             },
             "group": {
@@ -28,16 +29,17 @@
             "type": "shell",
             "label": "build-data-uploader",
             "command": "./stack.sh",
-            "linux": {
-                "command": "./stack.sh"
+            "options": {
+                "cwd": "${cwd}/../stack-data-uploader"
             },
             "args": [
                 "build"
             ],
-            "options": {
-                "cwd": "${cwd}/../stack-data-uploader",
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             },
             "group": {
@@ -61,10 +63,8 @@
         {
             "type": "shell",
             "label": "compose-build",
-            "command": "./stack.sh",
-            "linux": {
-                "command": "./stack.sh"
-            },
+                        "command": "./stack.sh",
+
             "args": [
                 "build"
             ],
@@ -105,9 +105,11 @@
                 "--debug-port",
                 "${input:debug.port}"
             ],
-            "options": {
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             }
         },
