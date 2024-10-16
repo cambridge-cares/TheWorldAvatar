@@ -13,6 +13,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -25,19 +26,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 
-@WebServlet(urlPatterns = "/update")
+@WebServlet(urlPatterns = { "/update", "/instantiate" })
 
 public class SensorLoggerMobileAppAgent extends JPSAgent {
-    Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
     private RemoteStoreClient storeClient;
+    private RemoteStoreClient ontopClient;
     private RemoteRDBStoreClient rdbStoreClient;
     private AgentConfig agentConfig;
     private ExecutorService addDataExecutor;
@@ -50,8 +46,10 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         agentConfig = new AgentConfig();
 
         EndpointConfig endpointConfig = new EndpointConfig();
-        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
+                endpointConfig.getDbpassword());
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        ontopClient = new RemoteStoreClient(endpointConfig.getOntopUrl());
 
         addDataExecutor = Executors.newFixedThreadPool(5);
         sendDataExecutor = Executors.newFixedThreadPool(5);
@@ -76,7 +74,8 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                     }
 
                     if (!inactiveTask.isEmpty()) {
-                        LOGGER.info(String.format("tasks: %s are inactive and has been removed from the hashmap", String.join(",", inactiveTask)));
+                        LOGGER.info(String.format("tasks: %s are inactive and has been removed from the hashmap",
+                                String.join(",", inactiveTask)));
                         inactiveTask.forEach(smartphoneHashmap::remove);
                     }
                 }
@@ -93,48 +92,56 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     }
 
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-        if (!validateInput(requestParams)) {
-            JSONObject result = new JSONObject();
-            result.put("message", "one or more of the request params is missing");
-        }
-
-        // extract the compressed data string from the request
-        String deviceId = requestParams.getString("deviceId");
-        LOGGER.info(deviceId + ": receive request");
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         JSONObject result = new JSONObject();
-        result.put("message", deviceId + ": receive request");
+        if (request.getServletPath().contentEquals("/instantiate")) {
+            String deviceId = requestParams.getString("deviceId");
 
-        SmartphoneRecordingTask task = getSmartphoneRecordingTask(deviceId);
-        addDataExecutor.submit(() -> {
-            try {
-                if (requestParams.has("compressedData")) {
-                    String compressedDataString = requestParams.getString("compressedData");
-
-                    LOGGER.info(deviceId + " is fetched and start to add data");
-
-                    byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
-                    String decompressedData = decompressGzip(compressedData);
-                    JSONArray payload = new JSONArray(decompressedData);
-                    HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
-
-                    task.addData(dataHashmap);
-                } else {
-                    // retrieving non-compressed data
-                    JSONArray payload = new JSONArray(requestParams.getString("payload"));
-                    HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
-                    LOGGER.info(deviceId + " is fetched and start to add data");
-                    task.addData(dataHashmap);
-                }
-            } catch (JsonProcessingException jsonError) {
-                // handle JsonProcessingException
-            } catch (IOException ioError) {
-                // handle IOException
+            SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, agentConfig,
+                    deviceId, ontopClient);
+            task.instantiate();
+            result.put("message", "instantiated deviceId = " + deviceId);
+        } else {
+            if (!validateInput(requestParams)) {
+                result.put("message", "one or more of the request params is missing");
             }
-        });
 
-        LOGGER.info(deviceId + " data being added");
-        result.put("message", "data being processed");
+            // extract the compressed data string from the request
+            String deviceId = requestParams.getString("deviceId");
+            LOGGER.info(deviceId + ": receive request");
+            result.put("message", deviceId + ": receive request");
+
+            SmartphoneRecordingTask task = getSmartphoneRecordingTask(deviceId);
+            addDataExecutor.submit(() -> {
+                try {
+                    if (requestParams.has("compressedData")) {
+                        String compressedDataString = requestParams.getString("compressedData");
+
+                        LOGGER.info(deviceId + " is fetched and start to add data");
+
+                        byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
+                        String decompressedData = decompressGzip(compressedData);
+                        JSONArray payload = new JSONArray(decompressedData);
+                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+
+                        task.addData(dataHashmap);
+                    } else {
+                        // retrieving non-compressed data
+                        JSONArray payload = requestParams.getJSONArray("payload");
+                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+                        LOGGER.info(deviceId + " is fetched and start to add data");
+                        task.addData(dataHashmap);
+                    }
+                } catch (JsonProcessingException jsonError) {
+                    // handle JsonProcessingException
+                } catch (IOException ioError) {
+                    // handle IOException
+                }
+            });
+
+            LOGGER.info(deviceId + " data being added");
+            result.put("message", "data being processed");
+        }
         return result;
     }
 
@@ -148,8 +155,8 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     private String decompressGzip(byte[] compressedData) throws IOException {
         try (GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(compressedData));
-             InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8);
-             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
 
             StringBuilder outStr = new StringBuilder();
             String line;
@@ -160,7 +167,6 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         }
     }
 
-
     private SmartphoneRecordingTask getSmartphoneRecordingTask(String deviceId) {
         synchronized (smartphoneHashmap) {
             if (smartphoneHashmap.containsKey(deviceId)) {
@@ -168,43 +174,44 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             }
 
             LOGGER.info(deviceId + ": creating new task");
-            SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, agentConfig, deviceId);
+            SmartphoneRecordingTask task = new SmartphoneRecordingTask(storeClient, rdbStoreClient, agentConfig,
+                    deviceId, ontopClient);
             smartphoneHashmap.put(deviceId, task);
             return task;
         }
     }
 
     private HashMap<String, List<?>> processRequestQueue(JSONArray payload) throws JsonProcessingException {
-        //Accelerometer list
+        // Accelerometer list
         ArrayList<OffsetDateTime> accel_tsList = new ArrayList<>();
         List<Double> accelList_x = new ArrayList<>();
         List<Double> accelList_y = new ArrayList<>();
         List<Double> accelList_z = new ArrayList<>();
 
-        //Magnetometer list
+        // Magnetometer list
         ArrayList<OffsetDateTime> magnetometer_tsList = new ArrayList<>();
         List<Double> magnetometerList_x = new ArrayList<>();
         List<Double> magnetometerList_y = new ArrayList<>();
         List<Double> magnetometerList_z = new ArrayList<>();
 
-        //Gravity sensor list
+        // Gravity sensor list
         ArrayList<OffsetDateTime> gravity_tsList = new ArrayList<>();
         List<Double> gravityList_x = new ArrayList<>();
         List<Double> gravityList_y = new ArrayList<>();
         List<Double> gravityList_z = new ArrayList<>();
 
-        //Location list
+        // Location list
         ArrayList<OffsetDateTime> location_tsList = new ArrayList<>();
         List<Double> bearingList = new ArrayList<>();
         List<Double> speedList = new ArrayList<>();
         List<Double> altitudeList = new ArrayList<>();
         List<Point> geomLocationList = new ArrayList<>();
 
-        //Microphone lists
+        // Microphone lists
         ArrayList<OffsetDateTime> dBFS_tsList = new ArrayList<>();
         List<Double> dBFSList = new ArrayList<>();
 
-        //Light value lists
+        // Light value lists
         ArrayList<OffsetDateTime> lightValue_tsList = new ArrayList<>();
         List<Double> lightValueList = new ArrayList<>();
 
@@ -219,7 +226,8 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             JsonNode timeEPOCH = node.get("time");
             JsonNode sensor = node.get("name");
             JsonNode values = node.get("values");
-            Instant instant = Instant.ofEpochSecond(timeEPOCH.longValue() / 1000000000, timeEPOCH.longValue() % 1000000000);
+            Instant instant = Instant.ofEpochSecond(timeEPOCH.longValue() / 1000000000,
+                    timeEPOCH.longValue() % 1000000000);
             OffsetDateTime timestamp = OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 
             if (sensor.textValue().equals("accelerometer")) {
@@ -251,7 +259,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                 speedList.add(values.get("speed").doubleValue());
                 altitudeList.add(values.get("altitude").doubleValue());
 
-                //Parse latitude and longitude into geom_location
+                // Parse latitude and longitude into geom_location
                 double latitude = values.get("latitude").doubleValue();
                 double longitude = values.get("longitude").doubleValue();
                 Point point = new Point(longitude, latitude);
