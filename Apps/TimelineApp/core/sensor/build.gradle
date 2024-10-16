@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
+apply plugin: 'dagger.hilt.android.plugin'
 apply from: "${project.rootDir}/common.gradle"
 apply from: "${project.rootDir}/ui.gradle"
+apply from: "${project.rootDir}/worker_dependencies.gradle"
 
 android {
     namespace 'uk.ac.cam.cares.jps.sensor'
@@ -22,20 +24,6 @@ dependencies {
     implementation project(path: ':core:ui')
     implementation project(path: ':core:data')
 
-    // JUnit
-    testImplementation 'junit:junit:4.13.2'
-
-    // Mockito
-    testImplementation 'org.mockito:mockito-core:4.11.0'
-    testImplementation 'org.mockito:mockito-inline:4.11.0'
-
-    // AndroidX Test - Core library for Android tests
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
-    implementation "androidx.room:room-runtime:2.5.0"
-    annotationProcessor "androidx.room:room-compiler:2.5.0"
-    androidTestImplementation "androidx.room:room-testing:2.5.0"
 
     def room_version = "2.6.1"
     implementation "androidx.room:room-runtime:$room_version"
@@ -43,5 +31,7 @@ dependencies {
     implementation "androidx.room:room-rxjava3:$room_version"
     // To use Kotlin annotation processing tool (kapt)
     kapt "androidx.room:room-compiler:$room_version"
+
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 
 }
