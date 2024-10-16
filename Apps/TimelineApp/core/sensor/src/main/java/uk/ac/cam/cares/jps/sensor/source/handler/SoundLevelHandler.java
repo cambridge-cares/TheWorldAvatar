@@ -22,15 +22,15 @@ import org.json.JSONObject;
  * with sensor handling mechanisms.
  */
 public class SoundLevelHandler extends AbstractSensorHandler {
-    private static final int SAMPLE_RATE = 44100;
+    private static final int SAMPLE_RATE = 22050; // reduced from 44100 for better thread management
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
     private Context context;
-    private boolean isInitialized = false;
     private AudioRecord audioRecord;
     private Thread recordingThread;
-    private boolean isRecording = false;
+    private final Object audioRecordLock = new Object();
+
 
     /**
      * Constructs a new SoundLevelHandler.
@@ -42,7 +42,6 @@ public class SoundLevelHandler extends AbstractSensorHandler {
         super(sensorManager, Sensor.TYPE_ALL);
         this.context = context;
         this.sensorName = "Microphone";
-        initAudioRecord();
     }
 
     /**
@@ -50,14 +49,20 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      * Releases any previously held AudioRecord before initializing a new one.
      */
     public void initAudioRecord() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
         if (audioRecord != null) {
             audioRecord.release();
         }
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
-        isInitialized = audioRecord.getState() == AudioRecord.STATE_INITIALIZED;
+        // permissions are handled by sensorSettingFragment
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        audioRecord = new AudioRecord(
+                MediaRecorder.AudioSource.MIC,
+                SAMPLE_RATE,
+                CHANNEL_CONFIG,
+                AUDIO_FORMAT,
+                BUFFER_SIZE
+        );
     }
 
     /**
@@ -65,17 +70,20 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      * to process the audio stream.
      */
     @Override
-    public void start(Integer integer) {
-        if (!isInitialized) {
+    public synchronized void start(Integer integer) {
+        initAudioRecord();
+
+        if (audioRecord == null || audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
+            LOGGER.warn("AudioRecord not initialized properly.");
             return;
         }
 
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            LOGGER.warn("Record audio permission not granted. SoundLevel handler failed to start. Request for permission should be handled in fragment.");
+        try {
+            audioRecord.startRecording();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
             return;
         }
-        audioRecord.startRecording();
-        isRecording = true;
         startRecordingThread();
     }
 
@@ -97,14 +105,24 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      */
     private void processAudioStream() {
         short[] buffer = new short[BUFFER_SIZE / 2];
-        while (isRecording) {
-            int readResult = audioRecord.read(buffer, 0, buffer.length);
+        while (true) {
+            int readResult;
+
+            synchronized (audioRecordLock) {
+                if (audioRecord == null || audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+                    break;
+                }
+                readResult = audioRecord.read(buffer, 0, buffer.length);
+            }
+
             if (readResult > 0) {
                 double dBFS = calculateDBFS(buffer, readResult);
                 logDBFS(dBFS);
             }
         }
     }
+
+
 
     /**
      * Calculates the dBFS from the audio buffer.
@@ -141,7 +159,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             dataPoint.put("time", System.currentTimeMillis() * 1000000);
             dataPoint.put("values", values);
 
-            synchronized (this) {
+            synchronized (sensorDataLock) {
                 sensorData.put(dataPoint);
             }
         } catch (JSONException e) {
@@ -153,18 +171,34 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      * Stops the audio recording and releases resources associated with the AudioRecord object.
      */
     @Override
-    public void stop() {
+    public synchronized void stop() {
         super.stop();
-        if (isRecording) {
-            isRecording = false;
+
+        synchronized (audioRecordLock) {
             if (audioRecord != null) {
-                audioRecord.stop();
+                try {
+                    if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                        audioRecord.stop();
+                    }
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
                 audioRecord.release();
                 audioRecord = null;
             }
-            initAudioRecord();
         }
+
+        if (recordingThread != null) {
+            try {
+                recordingThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            recordingThread = null;
+        }
+
     }
+
 
     @Override
     public SensorType getSensorType() {

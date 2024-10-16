@@ -36,4 +36,10 @@ public class UnsentData {
      */
     @ColumnInfo(name = "timestamp")
     public long timestamp;
+
+    /**
+     * Hash value of data for efficient comparisons.
+     */
+    @ColumnInfo(name = "dataHash")
+    public String dataHash;
 }
