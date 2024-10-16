@@ -1,0 +1,153 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoWildfire,TBox,http://www.theworldavatar.com/kg/ontowildfire/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoWildfire,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoWildfire,TBox,OntoWildfire is an ontology developed to represent wildfires.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoWildfire,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Fire,Class,,,,,,"A general concept representing any combustion event that emits heat, light, and smoke, often causing destruction.",http://www.theworldavatar.com/kg/ontowildfire/,Fire
+Wildfire,Class,Fire,IS-A,,,,"A type of uncontrolled fire occurring in natural areas such as forests, grasslands, or prairies.",http://www.theworldavatar.com/kg/ontowildfire/,Wildfire
+StructuralFire,Class,Fire,IS-A,,,,A fire that occurs in or damages man-made structures like buildings or bridges.,http://www.theworldavatar.com/kg/ontowildfire/,Structural Fire
+SurfaceFire,Class,Fire,IS-A,,,,"A fire that burns on the ground, consuming vegetation and surface litter.",http://www.theworldavatar.com/kg/ontowildfire/,Surface Fire
+GroundFire,Class,Fire,IS-A,,,,"A fire that burns below the surface, consuming organic material in the soil like peat or roots.",http://www.theworldavatar.com/kg/ontowildfire/,Ground Fire
+CrownFire,Class,Fire,IS-A,,,,"A fire that spreads to the tops of trees or shrubs, often more intense and difficult to control.",http://www.theworldavatar.com/kg/ontowildfire/,Crown Fire
+VolcanicFire,Class,Fire,IS-A,,,,"A fire resulting from volcanic activity, typically involving lava and other volcanic material.",http://www.theworldavatar.com/kg/ontowildfire/,Volcanic Fire
+Event,Class,,,,,,"Any occurrence or incident, often associated with a particular time or place.",http://www.theworldavatar.com/kg/ontowildfire/,Event
+Interval,Class,Event,,,,,A span of time between two events or points in time.,http://www.theworldavatar.com/kg/ontowildfire/,Interval
+Instant,Class,Event,,,,,A specific moment or point in time.,http://www.theworldavatar.com/kg/ontowildfire/,Instant
+Characteristics,Class,,,,,,"Qualities or features that define or describe something, often used in the context of phenomena like fire.",http://www.theworldavatar.com/kg/ontowildfire/,Characteristics
+Anomaly,Class,Characteristics,IS-A,,,,"An unusual or irregular occurrence, often signifying a deviation from the norm.",http://www.theworldavatar.com/kg/ontowildfire/,Anomaly
+FWIAnomaly,Class,Anomaly,IS-A,,,,"A deviation from typical readings in the Fire Weather Index, indicating abnormal fire weather conditions.",http://www.theworldavatar.com/kg/ontowildfire/,FWI Anomaly
+DroughtAnomaly,Class,Anomaly,IS-A,,,,An unusual period of dry conditions that differs from normal drought patterns.,http://www.theworldavatar.com/kg/ontowildfire/,Drought Anomaly
+DuffMoistureAnomaly,Class,Anomaly,IS-A,,,,An abnormal change in the moisture content of decomposing organic material on the forest floor.,http://www.theworldavatar.com/kg/ontowildfire/,Duff Moisture Anomaly
+FineFuelMoistureAnomaly,Class,Anomaly,IS-A,,,,"An irregularity in the moisture levels of small, flammable vegetation, affecting fire behavior.",http://www.theworldavatar.com/kg/ontowildfire/,Fine Fuel Moisture Anomaly
+FireBehaviour,Class,Characteristics,IS-A,,,,"The manner in which fire ignites, spreads, and interacts with the environment.",http://www.theworldavatar.com/kg/ontowildfire/,Fire Behaviour
+FireFront,Class,FireBehaviour,IS-A,,,,The leading edge of a spreading fire.,http://www.theworldavatar.com/kg/ontowildfire/,Fire Front
+FirePerimeter,Class,FireBehaviour,IS-A,,,,The outer boundary or edge of the area affected by a fire.,http://www.theworldavatar.com/kg/ontowildfire/,Fire Perimeter
+FlameHeight,Class,FireBehaviour,IS-A,,,,The vertical measurement from the ground to the tip of a fire’s flames.,http://www.theworldavatar.com/kg/ontowildfire/,Flame Height
+FireIntensity,Class,FireBehaviour,IS-A,,,,The amount of heat energy released by a fire at a specific location.,http://www.theworldavatar.com/kg/ontowildfire/,Fire Intensity
+FireDynamics,Class,Characteristics,IS-A,,,,"The study of how a fire behaves over time, including its spread, growth, and energy release.",http://www.theworldavatar.com/kg/ontowildfire/,Fire Dynamics
+RateOfSpread,Class,FireDynamics,IS-A,,,,The speed at which a fire moves across a landscape.,http://www.theworldavatar.com/kg/ontowildfire/,Rate of Spread
+PropagationFlux,Class,FireDynamics,IS-A,,,,"The transfer of energy as the fire spreads, including heat and fuel consumption.",http://www.theworldavatar.com/kg/ontowildfire/,Propagation Flux
+Indices,Class,Characteristics,IS-A,,,,"Metrics or measurements used to assess various conditions related to fire, often in the context of weather or fire danger.",http://www.theworldavatar.com/kg/ontowildfire/,Indices
+FireWeatherIndex,Class,Indices,IS-A,,,,A numerical value indicating the potential for fire based on weather conditions.,http://www.theworldavatar.com/kg/ontowildfire/,Fire Weather Index
+InitialSpreadIndex,Class,Indices,IS-A,,,,A measure predicting the potential rate of fire spread shortly after ignition.,http://www.theworldavatar.com/kg/ontowildfire/,Initial Spread Index
+BuildUpIndex,Class,Indices,IS-A,,,,An index representing the accumulation of fuel that could contribute to fire growth.,http://www.theworldavatar.com/kg/ontowildfire/,Build Up Index
+DailySeverityRating,Class,Indices,IS-A,,,,A daily estimate of fire intensity based on weather and fuel conditions.,http://www.theworldavatar.com/kg/ontowildfire/,Daily Severity Rating
+Location,Class,,,,,,A specific geographical area where a fire or related activity occurs.,http://www.theworldavatar.com/kg/ontowildfire/,Location
+ShapeFile,Class,Location,IS-A,,,,"A digital vector storage format used for geographic information system (GIS) data, including fire boundaries.",http://www.theworldavatar.com/kg/ontowildfire/,Shape File
+http://www.opengis.net/ont/geosparql#Geometry,Class,Location,IS-A,,,,"The spatial properties and shape of fire-related features, such as fire perimeters or spread areas.",http://www.opengis.net/ont/geosparql#,Geometry
+WeatherCondition,Class,Location,IS-A,,,,"The state of the atmosphere at a particular place and time, affecting fire behavior.",http://www.theworldavatar.com/kg/ontowildfire/,Weather Condition
+organization,Class,ShapeFile,IS-A,,,,"A group or institution involved in fire management, response, or research.",http://www.theworldavatar.com/kg/ontowildfire/,organization
+FileUrl,Class,ShapeFile,IS-A,,,,A link to access digital files related to fire data or analysis.,http://www.theworldavatar.com/kg/ontowildfire/,File Url
+Sensor,Class,,,,,,"A device that detects or measures physical properties, such as temperature, smoke, or humidity, in fire-related monitoring.",http://www.theworldavatar.com/kg/ontowildfire/,Sensor
+SmokeSensor,Class,Sensor,IS-A,,,,A device that detects the presence and concentration of smoke in the air.,http://www.theworldavatar.com/kg/ontowildfire/,Smoke Sensor
+TempHumiditySensor,Class,Sensor,IS-A,,,,A device that measures both temperature and humidity levels.,http://www.theworldavatar.com/kg/ontowildfire/,Temp Humidity Sensor
+InfraredSensor,Class,Sensor,IS-A,,,,"A device that detects heat signatures, often used to monitor fire or hotspots.",http://www.theworldavatar.com/kg/ontowildfire/,Infrared Sensor
+AirQualitySensor,Class,Sensor,IS-A,,,,"A device that monitors the quality of air, often measuring pollutants related to fire.",http://www.theworldavatar.com/kg/ontowildfire/,Air Quality Sensor
+AtmosphericPressureSensor,Class,Sensor,IS-A,,,,"A device that measures the atmospheric pressure, which can affect fire behavior.",http://www.theworldavatar.com/kg/ontowildfire/,Atmospheric Pressure Sensor
+Observation,Class,,,,,,The act of monitoring or measuring fire-related phenomena.,http://www.theworldavatar.com/kg/ontowildfire/,Observation
+Detection,Class,,,,,,The identification of fire or related conditions through sensors or observations.,http://www.theworldavatar.com/kg/ontowildfire/,Detection
+AtmosphericPressureValue,Class,,,,,,A specific reading of atmospheric pressure during fire-related events.,http://www.theworldavatar.com/kg/ontowildfire/,Atmospheric Pressure Value
+InfraredValue,Class,,,,,,A specific reading from an infrared sensor indicating heat levels.,http://www.theworldavatar.com/kg/ontowildfire/,Infrared Value
+SmokeValue,Class,,,,,,A specific measurement of smoke concentration in the air.,http://www.theworldavatar.com/kg/ontowildfire/,Smoke Value
+WindCondition,Class,,,,,,"The current state of the wind, including speed and direction, which influences fire spread.",http://www.theworldavatar.com/kg/ontowildfire/,Wind Condition
+Speed,Class,WindCondition,IS-A,,,,"The velocity of wind, which can significantly affect fire behavior.",http://www.theworldavatar.com/kg/ontowildfire/,Speed
+Direction,Class,WindCondition,IS-A,,,,"The angle or course along which the wind is blowing, impacting fire direction.",http://www.theworldavatar.com/kg/ontowildfire/,Direction
+TempValue,Class,,,,,,A specific temperature reading related to fire or weather conditions.,http://www.theworldavatar.com/kg/ontowildfire/,Temperature Value
+Precipitation,Class,,,,,,"The amount of rain, snow, or other forms of water falling from the sky.",http://www.theworldavatar.com/kg/ontowildfire/,Precipitation
+24hPrecipitation,Class,Precipitation,IS-A,,,,The total amount of precipitation that falls within a 24-hour period.,http://www.theworldavatar.com/kg/ontowildfire/,24h Precipitation
+AnnualPrecipitation,Class,Precipitation,IS-A,,,,The total amount of precipitation accumulated over a year.,http://www.theworldavatar.com/kg/ontowildfire/,Annual Precipitation
+HumidityValue,Class,,,,,,"A specific measurement of moisture in the air, which can influence fire spread.",http://www.theworldavatar.com/kg/ontowildfire/,Humidity Value
+CO2Level,Class,,,,,,"The concentration of carbon dioxide in the atmosphere, often influenced by fire activity.",http://www.theworldavatar.com/kg/ontowildfire/,CO2 Level
+FeatureOfInterest,Class,,,,,,"A specific object, area, or event being monitored, often related to fire management.",http://www.theworldavatar.com/kg/ontowildfire/,Feature of Interest
+NoRisk,Class,,,,,,A condition where there is no immediate risk of fire or related hazards.,http://www.theworldavatar.com/kg/ontowildfire/,No Risk
+LowRisk,Class,,,,,,A condition where the potential for fire is minimal.,http://www.theworldavatar.com/kg/ontowildfire/,Low Risk
+ModerateRisk,Class,,,,,,"A condition where the likelihood of fire is moderate, requiring caution.",http://www.theworldavatar.com/kg/ontowildfire/,Moderate Risk
+HighRisk,Class,,,,,,"A condition where the potential for fire is significant, necessitating preventive actions.",http://www.theworldavatar.com/kg/ontowildfire/,High Risk
+Dataset,Class,,,,,,"A collection of data, often used in analyzing or predicting fire behavior.",http://www.theworldavatar.com/kg/ontowildfire/,Dataset
+Alert,Class,,,,,,A warning or notification regarding fire or related emergencies.,http://www.theworldavatar.com/kg/ontowildfire/,Alert
+MediaItem,Class,,,,,,"Digital content such as images, videos, or documents related to fire events or response.",http://www.theworldavatar.com/kg/ontowildfire/,Media Item
+Response,Class,Wildfire,IS-A,,,,"Actions taken to manage, mitigate, or extinguish a fire.",http://www.theworldavatar.com/kg/ontowildfire/,Response
+ResponseAction,Class,Response,IS-A,,,,Specific tasks or strategies employed in fire management or firefighting efforts.,http://www.theworldavatar.com/kg/ontowildfire/,Response Action
+ResponseDepartment,Class,Response,IS-A,,,,An organization or team responsible for handling fire emergencies.,http://www.theworldavatar.com/kg/ontowildfire/,Response Department
+ResponseLogistics,Class,Response,IS-A,,,,The planning and coordination of resources for effective fire response.,http://www.theworldavatar.com/kg/ontowildfire/,Response Logistics
+Tactics,Class,ResponseLogistics,IS-A,,,,The methods or techniques used to combat or control a fire.,http://www.theworldavatar.com/kg/ontowildfire/,Tactics
+WaterResource,Class,ResponseLogistics,IS-A,,,,"A source of water used for firefighting, such as hydrants, lakes, or reservoirs.",http://www.theworldavatar.com/kg/ontowildfire/,Water Resource
+Equipment,Class,ResponseLogistics,IS-A,,,,Tools and machinery used in fire suppression or prevention.,http://www.theworldavatar.com/kg/ontowildfire/,Equipment
+Settlement,Class,ResponseDepartment,IS-A,,,,"A populated area that could be affected by a fire, including towns or villages.",http://www.theworldavatar.com/kg/ontowildfire/,Settlement
+Government,Class,ResponseDepartment,IS-A,,,,"The authority responsible for fire regulation, management, and emergency response.",http://www.theworldavatar.com/kg/ontowildfire/,Government
+FireBrigade,Class,ResponseDepartment,IS-A,,,,A professional team tasked with responding to and extinguishing fires.,http://www.theworldavatar.com/kg/ontowildfire/,Fire Brigade
+MedicalCentre,Class,ResponseDepartment,IS-A,,,,A facility that provides healthcare services during or after fire incidents.,http://www.theworldavatar.com/kg/ontowildfire/,Medical Centre
+Impact,Class,,,,,,"The effects or consequences of a fire on people, property, or the environment.",http://www.theworldavatar.com/kg/ontowildfire/,Impact
+AmountOfMoney,Class,Impact,IS-A,,,,The financial cost or resources required for fire response or recovery.,http://www.theworldavatar.com/kg/ontowildfire/,Amount of Money
+CausalFactor,Class,,,,,,The underlying reason or cause for a fire event.,http://www.theworldavatar.com/kg/ontowildfire/,Causal Factor
+ProductiveCause,Class,CausalFactor,IS-A,,,,"A fire cause linked to natural or essential processes, like controlled burns.",http://www.theworldavatar.com/kg/ontowildfire/,Productive Cause
+NonproductiveCause,Class,CausalFactor,IS-A,,,,A fire cause that results from unintended actions or accidents.,http://www.theworldavatar.com/kg/ontowildfire/,Nonproductive Cause
+NaturalCause,Class,CausalFactor,IS-A,,,,"A fire caused by natural phenomena, such as lightning or volcanic activity.",http://www.theworldavatar.com/kg/ontowildfire/,Natural Cause
+Population,Class,,,,,,The human community potentially affected by a fire.,http://www.theworldavatar.com/kg/ontowildfire/,Population
+EnvironmentComponent,Class,,,,,,"Parts of the natural environment impacted by fire, such as air, water, or soil.",http://www.theworldavatar.com/kg/ontowildfire/,Environment Component
+SoilErosion,Class,EnvironmentComponent,IS-A,,,,The removal or degradation of soil caused by fire or fire-related activity.,http://www.theworldavatar.com/kg/ontowildfire/,Soil Erosion
+LivingObject,Class,EnvironmentComponent,IS-A,,,,"Organisms, including plants and animals, that are affected by fire.",http://www.theworldavatar.com/kg/ontowildfire/,Living Object
+NonlivingObject,Class,EnvironmentComponent,IS-A,,,,"Inanimate objects, such as buildings or infrastructure, that may be impacted by fire.",http://www.theworldavatar.com/kg/ontowildfire/,Nonliving Object
+InfrastructureComponent,Class,,,,,,Elements of physical infrastructure that could be damaged or disrupted by fire.,http://www.theworldavatar.com/kg/ontowildfire/,Infrastructure Component
+AreaInfrastructure,Class,InfrastructureComponent,IS-A,,,,"Infrastructure in a specific geographical area, including utilities and transportation systems.",http://www.theworldavatar.com/kg/ontowildfire/,Area Infrastructure
+CommercialInfrastructure,Class,AreaInfrastructure,IS-A,,,,Buildings or systems related to businesses or economic activities affected by fire.,http://www.theworldavatar.com/kg/ontowildfire/,Commercial Infrastructure
+ResidentialInfrastructure,Class,AreaInfrastructure,IS-A,,,,Housing and living spaces that may be damaged by fire.,http://www.theworldavatar.com/kg/ontowildfire/,Residential Infrastructure
+IndustrialInfrastructure,Class,AreaInfrastructure,IS-A,,,,"Factories, warehouses, or other industrial buildings at risk from fire.",http://www.theworldavatar.com/kg/ontowildfire/,Industrial Infrastructure
+NetworkInfrastructure,Class,InfrastructureComponent,IS-A,,,,Communication or transportation networks that could be disrupted by fire.,http://www.theworldavatar.com/kg/ontowildfire/,Network Infrastructure
+MobilityNetwork,Class,NetworkInfrastructure,IS-A,,,,"Systems related to transportation, such as roads or railways, affected by fire.",http://www.theworldavatar.com/kg/ontowildfire/,Mobility Network
+ProvisioningNetwork,Class,NetworkInfrastructure,IS-A,,,,"Infrastructure for providing essential services like water, electricity, or internet that may be disrupted by fire.",http://www.theworldavatar.com/kg/ontowildfire/,Provisioning Network
+hasLocation,Object Property,,,Event,Location,,Links the event or object to its geographical location.,http://www.theworldavatar.com/kg/ontowildfire/,has Location
+hasTimeInterval,Object Property,,,Event,Interval,,Relates an event or phenomenon to a specific period or duration of time.,http://www.theworldavatar.com/kg/ontowildfire/,has Time Interval
+hasEnd,Object Property,,,Interval,Instant,,Describes the ending point of an event or time-based process.,http://www.theworldavatar.com/kg/ontowildfire/,has End
+hasBeginning,Object Property,,,Interval,Instant,,Describes the starting point of an event or time-based process.,http://www.theworldavatar.com/kg/ontowildfire/,has Beginning
+hasMonetaryValue,Object Property,,,Impact,AmountOfMoney,,"Associates an event, such as a disaster or impact, with a financial cost or valuation.",http://www.theworldavatar.com/kg/ontowildfire/,has Monetary Value
+resultIn,Object Property,,,Event,Impact,,Indicates the outcome or consequence of a particular event or process.,http://www.theworldavatar.com/kg/ontowildfire/,result In
+hasCausalFactor,Object Property,,,Event,CausalFactor,,Identifies the cause or factor that led to the occurrence of an event.,http://www.theworldavatar.com/kg/ontowildfire/,has Causal Factor
+hasCaharacteristics,Object Property,,,Wildfire,Characteristics,,"Describes the specific features or traits of an event, object, or phenomenon.",http://www.theworldavatar.com/kg/ontowildfire/,has Caharacteristics
+affects,Object Property,,,Wildfire,EnvironmentComponent Union InfrastructureComponent Union Population,,Links an event or process to the entities (such as populations or infrastructure) it influences or impacts.,http://www.theworldavatar.com/kg/ontowildfire/,affects
+hasResponse,Object Property,,,Wildfire,Response,,"Specifies the reaction or response given to an event, such as a wildfire.",http://www.theworldavatar.com/kg/ontowildfire/,has Response
+actionTaken,Object Property,,,Response,ResponseAction,,Describes the specific actions or measures undertaken in response to an event.,http://www.theworldavatar.com/kg/ontowildfire/,action Taken
+responseBy,Object Property,,,Response,ResponseDepartment,,"Indicates the organization, government, or entity responsible for carrying out a response.",http://www.theworldavatar.com/kg/ontowildfire/,response By
+usedLogistics,Object Property,,,Response,ResponseLogistics,,Refers to the logistical resources or infrastructure deployed during a response action.,http://www.theworldavatar.com/kg/ontowildfire/,used Logistics
+hasFireLocation,Object Property,,,Wildfire,Location,,Specifies the location where a fire incident has occurred.,http://www.theworldavatar.com/kg/ontowildfire/,has Fire Location
+hasShapeFile,Object Property,,,Location,ShapeFile,,Links an event or geographic feature to a shapefile used in geographic information systems (GIS).,http://www.theworldavatar.com/kg/ontowildfire/,has Shape File
+hasGeometry,Object Property,,,Location,http://www.opengis.net/ont/geosparql#Geometry,,,,
+isProducedBy,Object Property,,,ShapeFile,Organization,,"Identifies the organization or entity that created or produced a report, dataset, or analysis.",http://www.theworldavatar.com/kg/ontowildfire/,is Produced By
+hasFileUrl,Object Property,,,ShapeFile,FileUrl,,Provides a URL linking to a file or document related to the event or process.,http://www.theworldavatar.com/kg/ontowildfire/,has File URL
+hasWeatherCondition,Object Property,,,Location,WeatherCondition,,"Describes the weather conditions associated with an event, such as during a wildfire.",http://www.theworldavatar.com/kg/ontowildfire/,has Weather Condition
+analysedToProduce,Object Property,,,Dataset,Alert,,"Indicates that data or observations have been analyzed to produce an outcome, such as a report or alert.",http://www.theworldavatar.com/kg/ontowildfire/,analysedToProduce
+contains,Object Property,,,Dataset,MediaItem,,"Specifies that one entity (like a report or dataset) includes or contains another entity, such as media or additional data.",http://www.theworldavatar.com/kg/ontowildfire/,contains
+deployedAt,Object Property,,,Sensor,Location,,"Refers to the specific location or context where resources, such as firefighting equipment, were deployed.",http://www.theworldavatar.com/kg/ontowildfire/,deployed at
+detectedBy,Object Property,,,WeatherCondition,Sensor,,"Indicates the sensor, system, or entity responsible for detecting a fire or related event.",http://www.theworldavatar.com/kg/ontowildfire/,detected by
+http://www.w3.org/ns/sosa/madeObservation,Object Property,,,Sensor,Observation,,"Specifies that a sensor or system has made a particular observation, such as temperature or smoke levels.",http://www.w3.org/ns/sosa/,made Observation
+hasFeatureOfInterest,Object Property,,,Observation,FeatureOfInterest,,"Describes the specific feature or element (e.g., temperature, wind) that is the focus of an observation.",http://www.theworldavatar.com/kg/ontowildfire/,has Feature Of Interest
+recordedIn,Object Property,,,Observation,Dataset,,Links an observation or event to the dataset or system where it has been recorded.,http://www.theworldavatar.com/kg/ontowildfire/,recorded In
+enables,Object Property,,,Observation,Detection,,Indicates that a particular condition or factor enables or facilitates an event or action.,http://www.theworldavatar.com/kg/ontowildfire/,enables
+hasPressure,Object Property,,,Observation,AtmosphericPressureValue,,Relates to the atmospheric pressure value observed or recorded during an event.,http://www.theworldavatar.com/kg/ontowildfire/,has Pressure
+hasInfraredValue,Object Property,,,Observation,InfraredValue,,"Specifies the infrared reading detected by a sensor during an event, such as during fire detection.",http://www.theworldavatar.com/kg/ontowildfire/,has Infrared Value
+hasSmokeValue,Object Property,,,Observation,SmokeValue,,Refers to the concentration or amount of smoke observed by a sensor.,http://www.theworldavatar.com/kg/ontowildfire/,has Smoke Value
+hasWindCondition,Object Property,,,Observation,WindCondition,,"Describes the wind conditions, such as speed and direction, during a wildfire or event.",http://www.theworldavatar.com/kg/ontowildfire/,has Wind Condition
+hasTemperature,Object Property,,,Observation,TempValue,,Indicates the temperature value measured by a sensor during an event.,http://www.theworldavatar.com/kg/ontowildfire/,has Temperature
+hasPrecipitation,Object Property,,,Observation,Precipitation,,"Relates to the amount or rate of precipitation (rain, snow, etc.) observed during an event.",http://www.theworldavatar.com/kg/ontowildfire/,has Precipitation
+hasHumidity,Object Property,,,Observation,HumidityValue,,"Describes the humidity levels recorded during an event, which may affect wildfire behavior.",http://www.theworldavatar.com/kg/ontowildfire/,has Humidity
+hasCO2Level,Object Property,,,Observation,CO2Level,,"Specifies the carbon dioxide level measured during a fire event, providing insight into combustion and air quality.",http://www.theworldavatar.com/kg/ontowildfire/,has CO2 Level
+hasTotalMonetaryValue,Data Property,,,EnvironmentComponent Union InfrastructureComponent Union Population,float,,"This property represents the total financial loss or damage caused by the wildfire, expressed as a monetary value.",http://www.theworldavatar.com/kg/ontowildfire/,has Total Monetary Value
+hasTotalAffected,Data Property,,,EnvironmentComponent Union InfrastructureComponent Union Population,integer,,"This property indicates the total number of people, animals, or assets affected by the wildfire, measured as an integer value.",http://www.theworldavatar.com/kg/ontowildfire/,has Total Affected
+inDanger,Data Property,,,EnvironmentComponent Union InfrastructureComponent Union Population,integer,,This property indicates the number of people or assets currently at risk due to the wildfire.,http://www.theworldavatar.com/kg/ontowildfire/,in Danger
+hasCollapsed,Data Property,,,InfrastructureComponent,integer,,"This property represents whether infrastructure (e.g., buildings, bridges) has collapsed due to the wildfire. It is a boolean value (True/False).",http://www.theworldavatar.com/kg/ontowildfire/,has Collapsed
+hasPartialDamage,Data Property,,,InfrastructureComponent,integer,,This property represents whether infrastructure or assets have sustained partial damage from the wildfire. It is a boolean value (True/False).,http://www.theworldavatar.com/kg/ontowildfire/,has Partial Damage
+hasLossOfLife,Data Property,,,Population,integer,,This property represents the total number of human lives lost due to the wildfire.,http://www.theworldavatar.com/kg/ontowildfire/,has Loss of Life
+hasEvacuated,Data Property,,,Population,integer,,This property indicates the number of people evacuated from the area due to the wildfire.,http://www.theworldavatar.com/kg/ontowildfire/,has Evacuated
+hasLat,Data Property,,,Location,double,,"This property represents the latitude coordinate of a specific wildfire location, expressed as a floating-point number.",http://www.theworldavatar.com/kg/ontowildfire/,has Latitude
+hasLon,Data Property,,,Location,double,,"This property represents the longitude coordinate of a specific wildfire location, expressed as a floating-point number.",http://www.theworldavatar.com/kg/ontowildfire/,has Longitude
+lastUpdateOn,Data Property,,,ShapeFile,date time,,This property represents the timestamp of the most recent update related to the wildfire situation.,http://www.theworldavatar.com/kg/ontowildfire/,last Update On
+hastimeStamp,Data Property,,,Alert,date time,,This property stores the exact timestamp of an event or data entry related to the wildfire.,http://www.theworldavatar.com/kg/ontowildfire/,has time Stamp
+hasDescription,Data Property,,,Alert,string,,This property provides a textual description of the wildfire event or related actions.,http://www.theworldavatar.com/kg/ontowildfire/,has Description
+hasScope,Data Property,,,Alert,string,,"This property defines the scope or extent of the wildfire, indicating how widespread the event is.",http://www.theworldavatar.com/kg/ontowildfire/,has Scope
+hasSource,Data Property,,,Alert,string,,This property identifies the origin or source of information about the wildfire event.,http://www.theworldavatar.com/kg/ontowildfire/,has Source
+hasCategory,Data Property,,,Alert,string,,"This property classifies the wildfire event into a specific category, such as ""forest fire,"" ""grassland fire,"" etc.",http://www.theworldavatar.com/kg/ontowildfire/,has Category
+hasStatus,Data Property,,,Alert,string,,"This property indicates the current status of the wildfire, such as ""active,"" ""contained,"" or ""extinguished.""",http://www.theworldavatar.com/kg/ontowildfire/,has Status
+hasUrgency,Data Property,,,Alert,string,,"This property represents the urgency level of actions required in response to the wildfire, indicating whether immediate or delayed action is needed.",http://www.theworldavatar.com/kg/ontowildfire/,has Urgency
+hasSeverity,Data Property,,,Alert,string,,"This property indicates the severity of the wildfire in terms of impact on people, property, and the environment.",http://www.theworldavatar.com/kg/ontowildfire/,has Severity
+hasMediaSource,Data Property,,,Alert,string,,This property identifies the media source providing information or reports about the wildfire.,http://www.theworldavatar.com/kg/ontowildfire/,has Media Source
+hasStakeholder,Data Property,,,Alert,string,,"This property identifies key stakeholders involved in the wildfire event, such as fire departments, government agencies, or environmental organizations.",http://www.theworldavatar.com/kg/ontowildfire/,has Stakeholder
