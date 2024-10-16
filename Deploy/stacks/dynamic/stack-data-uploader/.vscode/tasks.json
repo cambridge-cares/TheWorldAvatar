@@ -6,10 +6,8 @@
         {
             "type": "shell",
             "label": "compose-build",
-            "command": "./stack.sh",
-            "linux": {
-                "command": "./stack.sh"
-            },
+                        "command": "./stack.sh",
+
             "args": [
                 "build"
             ],
@@ -28,19 +26,19 @@
         {
             "type": "shell",
             "label": "compose-deploy-internal",
-            "command": "./stack.sh",
-            "linux": {
-                "command": "./stack.sh"
-            },
+                        "command": "./stack.sh",
+
             "args": [
                 "start",
                 "${input:stackName}",
                 "--debug-port",
                 "${input:debug.port}"
             ],
-            "options": {
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             }
         },
