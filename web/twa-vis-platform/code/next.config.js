@@ -10,7 +10,12 @@
 const nextConfig = {
 	reactStrictMode: true,
 	basePath: "", //default 
+	assetPrefix: process.env.BASE_PATH ?? "",
 	compiler: { removeConsole: false },
+	env: {
+		KEYCLOAK: process.env.KEYCLOAK ?? "false",
+	}
 };
+
 
 export default nextConfig;
