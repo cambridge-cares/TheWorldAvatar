@@ -7,12 +7,17 @@
             "type": "shell",
             "label": "compose-build",
             "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "args": [
                 "build"
             ],
-            "options": {
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             },
             "group": {
@@ -24,6 +29,9 @@
             "type": "shell",
             "label": "compose-deploy-internal",
             "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "args": [
                 "start",
                 "${input:stackName}",
@@ -50,17 +58,53 @@
                         "executable": "powershell"
                     }
                 }
+            },
+            "linux": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
+                }
             }
         },
         {
             "type": "shell",
             "label": "compose-build-deploy",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "dependsOn": [
                 "compose-build",
                 "compose-deploy"
             ],
             "dependsOrder": "sequence"
-        }
+        },
+        {
+            "type": "shell",
+            "label": "get-external-port",
+            "command": "bash",
+            "linux": {
+                "command": "bash"
+            },
+            "args": [
+                "-c",
+                "echo 'Enter external port:'; read port; echo $port"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "get-debug-port",
+            "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
+            "args": [
+                "ports",
+                "read"
+            ],
+            "problemMatcher": []
+        },
     ],
     "inputs": [
         {
@@ -72,21 +116,12 @@
         {
             "id": "external.port",
             "type": "command",
-            // always require selection
-            "command": "shellCommand.execute",
-            "args": {
-                "command": "bash ./stack.sh ports 5 3838 4000"
-            }
+            "command": "get-external-port"
         },
         {
             "id": "debug.port",
             "type": "command",
-            // Get the last debug port from the cache file
-            "command": "shellCommand.execute",
-            "args": {
-                "command": "bash ./stack.sh ports read",
-                "useFirstResult": true
-            }
+            "command": "get-debug-port"
         }
     ]
 }

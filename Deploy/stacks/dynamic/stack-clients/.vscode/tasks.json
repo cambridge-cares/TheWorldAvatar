@@ -7,6 +7,9 @@
             "type": "shell",
             "label": "build-manager",
             "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "args": [
                 "build"
             ],
@@ -25,6 +28,9 @@
             "type": "shell",
             "label": "build-data-uploader",
             "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "args": [
                 "build"
             ],
@@ -56,12 +62,17 @@
             "type": "shell",
             "label": "compose-build",
             "command": "./stack.sh",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "args": [
                 "build"
             ],
-            "options": {
-                "shell": {
-                    "executable": "bash"
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "bash"
+                    }
                 }
             },
             "group": {
@@ -84,6 +95,9 @@
         {
             "type": "shell",
             "label": "compose-deploy-internal",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "command": "./stack.sh",
             "args": [
                 "start",
@@ -101,6 +115,9 @@
             "type": "shell",
             "label": "compose-deploy",
             "command": "sleep 1",
+            "linux": {
+                "command": "./stack.sh"
+            },
             "dependsOn": [
                 "compose-deploy-internal"
             ],
