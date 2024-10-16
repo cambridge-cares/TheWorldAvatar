@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   trajectoryqueryagent:
-    image: ghcr.io/cambridge-cares/trajectoryqueryagent:2.0.0-dev-timeline-stack-SNAPSHOT
+    image: ghcr.io/cambridge-cares/trajectoryqueryagent:2.0.0
