@@ -27,22 +27,30 @@
             "name": "Reattach and Debug",
             "request": "attach",
             "hostName": "localhost",
-            "port": "${input:debug.port}",
+            "port": "${input:debug.port.read}",
             "projectName": "${workspaceFolderBasename}"
         }
     ],
     "inputs": [
         {
             "id": "debug.port",
-            "type": "pickString",
+            "type": "command",
             // Get the next avaliable debug port and write it to the cache file
-            "description": "debug port",
-            "options": [
-                "5005",
-                "5006",
-                "5007"
-            ],
-            "default": "5005"
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports write",
+                "useFirstResult": true
+            }
         },
+        {
+            "id": "debug.port.read",
+            "type": "command",
+            // Get the last debug port from the cache file
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports read",
+                "useFirstResult": true
+            }
+        }
     ]
 }
