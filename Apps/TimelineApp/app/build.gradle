@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'dagger.hilt.android.plugin'
 apply from: "${project.rootDir}/common.gradle"
 apply from: "${project.rootDir}/ui.gradle"
-apply from: "${project.rootDir}/dependencies.gradle"
+apply from: "${project.rootDir}/worker_dependencies.gradle"
 
 android {
     namespace 'uk.ac.cam.cares.jps.timeline'
