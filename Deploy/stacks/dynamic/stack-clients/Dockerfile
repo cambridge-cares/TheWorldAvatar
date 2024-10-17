@@ -34,7 +34,7 @@ FROM builder AS test
 RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository2,sharing=locked mkdir -p /root/.m2/repository && cp -r /root/.m2/repository2/* /root/.m2/repository
 
 ENV TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
-ENV TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal
+ENV TESTCONTAINERS_HOST_OVERRIDE=172.17.0.1
 
 CMD ["mvn", "test"]
 
