@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+
+
 /**
  * Enum representing different types of sensors available in the application.
  * This enum implements the Parcelable interface, allowing SensorType instances to be passed between Android components.
@@ -18,7 +20,8 @@ public enum SensorType implements Parcelable {
     PRESSURE,
     GRAVITY,
     LOCATION,
-    SOUND;
+    SOUND,
+    ACTIVITY;
 
     /**
      * Describes the contents of the parcelable object.

@@ -22,9 +22,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 /**
  * Handles location updates and atmospheric pressure readings. This class integrates with both the
- * LocationManager for location updates and the SensorManager for pressure data, providing comprehensive
+ * LocationManager for location updates and the SensorHandlerManager for pressure data, providing comprehensive
  * environmental data through a unified interface.
  *
  * It provides functionality to start and stop location and pressure monitoring, handle changes, and
@@ -40,6 +41,7 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     private int mslConstant; // Mean sea level pressure constant for altitude calculations
     private Logger LOGGER = Logger.getLogger(LocationHandler.class);
     private boolean isRunning = false;
+    private final Object sensorDataLock = new Object(); // Lock object for synchronization
 
     /**
      * Constructs a LocationHandler with a specified context and initializes location and pressure sensors.
@@ -176,6 +178,11 @@ public class LocationHandler implements LocationListener, SensorHandler, SensorE
     @Override
     public SensorType getSensorType() {
         return SensorType.LOCATION;
+    }
+
+    @Override
+    public Object getSensorDataLock() {
+        return sensorDataLock;
     }
 
     @Override

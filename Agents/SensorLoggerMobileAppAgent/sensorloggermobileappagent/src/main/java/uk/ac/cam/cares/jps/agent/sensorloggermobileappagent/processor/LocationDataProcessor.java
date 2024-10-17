@@ -6,20 +6,22 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import org.postgis.Point;
+
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class LocationDataProcessor extends SensorDataProcessor {
-    private String bearingIRI;
-    private String speedIRI;
-    private String altitudeIRI;
-    private String pointIRI;
+    private String bearingIRI = null;
+    private String speedIRI = null;
+    private String altitudeIRI = null;
+    private String pointIRI = null;
 
     private final List<Double> bearingList = new ArrayList<>();
     private final List<Double> speedList = new ArrayList<>();
@@ -28,6 +30,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
 
     public LocationDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
+        initIRIs();
     }
 
     @Override
@@ -40,14 +43,17 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() {
+    public TimeSeries<Long> getProcessedTimeSeries() {
         // todo: do processing of location data
         List<String> dataIRIList = Arrays.asList(bearingIRI, speedIRI, altitudeIRI, pointIRI);
         List<List<?>> valueList = Arrays.asList(new ArrayList<>(bearingList),
                 new ArrayList<>(speedList),
                 new ArrayList<>(altitudeList),
                 new ArrayList<>(geomLocationList));
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(new ArrayList<>(timeList), dataIRIList, valueList);
+
+        List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli())
+                .collect(Collectors.toList());
+        TimeSeries<Long> ts = new TimeSeries<>(new ArrayList<>(epochlist), dataIRIList, valueList);
 
         clearData();
         return ts;
@@ -55,17 +61,13 @@ public class LocationDataProcessor extends SensorDataProcessor {
 
     @Override
     public void initIRIs() {
+        if (bearingIRI != null && speedIRI != null && altitudeIRI != null && pointIRI != null) {
+            return;
+        }
+
         getIrisFromKg();
 
-        if ((bearingIRI == null || bearingIRI.isEmpty())
-                && (speedIRI == null || speedIRI.isEmpty())
-                && (altitudeIRI == null || altitudeIRI.isEmpty())
-                && (pointIRI == null || pointIRI.isEmpty())) {
-            bearingIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_" + UUID.randomUUID();
-            speedIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_speed_" + UUID.randomUUID();
-            altitudeIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_altitude_" + UUID.randomUUID();
-            pointIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/point_" + UUID.randomUUID();
-
+        if (bearingIRI == null && speedIRI == null && altitudeIRI == null && pointIRI == null) {
             isIriInstantiationNeeded = true;
             isRbdInstantiationNeeded = true;
         }
@@ -105,19 +107,18 @@ public class LocationDataProcessor extends SensorDataProcessor {
         Var point = Var.alloc("point");
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma", SLA)
                 .addPrefix("saref", SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om", OM)
-                .addPrefix("sf",SF)
+                .addPrefix("sf", SF)
                 .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
                 .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Bearing")
-                .addWhere("?Bearing", "rdf:type", "slma:Bearing")
+                .addWhere("?Bearing", "rdf:type", "ontodevice:Bearing")
                 .addWhere("?Bearing", "om:hasValue", bearing)
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Altitude")
-                .addWhere("?Altitude", "rdf:type", "slma:Altitude")
+                .addWhere("?Altitude", "rdf:type", "ontodevice:Altitude")
                 .addWhere("?Altitude", "om:hasValue", altitude)
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Speed")
                 .addWhere("?Speed", "rdf:type", "om:Speed")
@@ -127,7 +128,13 @@ public class LocationDataProcessor extends SensorDataProcessor {
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(bearing).addVar(altitude).addVar(speed).addVar(point).addWhere(wb);
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+        JSONArray queryResult;
+        try {
+            queryResult = storeClient.executeQuery(sb.buildString());
+        } catch (Exception e) {
+            // ontop does not accept queries before any mapping is added
+            return;
+        }
         if (queryResult.isEmpty()) {
             return;
         }
@@ -135,5 +142,10 @@ public class LocationDataProcessor extends SensorDataProcessor {
         altitudeIRI = queryResult.getJSONObject(0).optString("altitude");
         speedIRI = queryResult.getJSONObject(0).optString("speed");
         pointIRI = queryResult.getJSONObject(0).optString("point");
+    }
+
+    @Override
+    public String getOntodeviceLabel() {
+        return "GPSDevice";
     }
 }
