@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RoundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Theme.TWA.UserPage" parent="Theme.TWA">
+        <item name="android:textViewStyle">@style/Theme.TWA.UserItem.Text</item>
+    </style>
+
+    <style name="Theme.TWA.UserItem" parent="Theme.TWA">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:paddingVertical">15dp</item>
+        <item name="android:paddingHorizontal">@dimen/component_margin</item>
+    </style>
+
+    <style name="Theme.TWA.UserItem.Center" parent="Theme.TWA.UserItem">
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Theme.TWA.UserItem.Text" parent="Theme.TWA">
+        <item name="android:textAppearance">@style/TextAppearance.Material3.BodyLarge</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+</resources>

@@ -13,7 +13,7 @@
 <http://p/a>  <http://q/b>  <http://r/c> .
 
 <https://theworldavatar.io/kg/4266792d-b6b3-4b1b-8568-27e08ba51983>
-        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox>;
+        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox> , <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "Dataset for testing";
         <http://purl.org/dc/terms/issued>

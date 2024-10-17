@@ -1,0 +1,42 @@
+{
+    "ServiceSpec": {
+      "Name": "trafficincidentagent",
+      "TaskTemplate": {
+        "ContainerSpec": {
+          "Image": "ghcr.io/cambridge-cares/traffic-incident-agent:1.5.0",
+          "Mounts": [
+            {
+              "Type": "bind",
+              "Source": "../../../traffic_incident_inputs",
+              "Target": "/inputs"
+            }
+          ],
+          "Configs": [
+            {
+              "ConfigName": "blazegraph"
+            },
+            {
+              "ConfigName": "postgis"
+            },
+            {
+              "ConfigName": "geoserver"
+            }
+          ],
+          "Secrets": [
+            {
+              "SecretName": "postgis_password"
+            },
+            {
+              "SecretName": "geoserver_password"
+            }
+          ]
+        }
+      }
+    },
+    "endpoints": {
+      "trafficincidentagent": {
+        "url": "http://localhost:8080/traffic-incident-agent/start",
+        "externalPath": "/traffic-incident-agent/start"
+      }
+    }
+  }

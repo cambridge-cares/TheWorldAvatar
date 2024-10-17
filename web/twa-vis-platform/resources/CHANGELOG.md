@@ -3,6 +3,46 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.7.0
+
+### Bug Fixes
+
+* Random logouts when keycloak authentication is enabled
+* Role based authorisation was broken behind docker
+
+### Changes
+
+* Updated various package dependencies to latest versions
+
+## 5.6.0
+
+### Features
+
+* Extension of the form UI for search capabilities
+* Addition of initial search capabilities for the map visualisation
+* Addition of time slots for the form schedule section
+* Modify the registry to work with the new vis backend agent
+* Consolidation of the urls of assets as constants in one file
+
+### Bug Fixes
+
+* Fix the form's css
+
+## 5.5.0
+
+### Features
+
+* Addition of the registry pages, enabling users to view, create, edit, and remove records from the knowledge graph
+* Addition of scheduling capabilities for the specific registry pages
+* Users can deploy multiple navbar logos
+* Improvements to the handling and structure of configuration settings and pages
+* Improvements to the documentation and tutorial
+
+### Bug Fixes
+
+* Fix the development mode in a Docker container
+* Improve user experience if modules are disabled by redirecting back to homepage
+
 ## 5.4.0
 
 ### Features

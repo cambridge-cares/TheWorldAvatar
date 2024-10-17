@@ -39,4 +39,4 @@ if [ ! -d "/twa/.next" ]; then
 fi
 
 # Start the application
-pnpm start
+pnpm start-docker

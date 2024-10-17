@@ -8,7 +8,6 @@ import { DataStore } from 'io/data/data-store';
 import { MapFeaturePayload, clearFeatures, setIri, setProperties, setStack } from 'state/map-feature-slice';
 import { JsonObject } from "types/json";
 
-
 /**
  * Open full screen mode.
  */
@@ -61,4 +60,41 @@ export function setSelectedFeature(selectedFeature: MapFeaturePayload, dispatch:
         dispatch(setStack(stack));
         dispatch(clearFeatures());
     }
+}
+
+/**
+ * Capitalises the words.
+ * 
+ * @param {string} str input string.
+ */
+export function parseWordsForLabels(str: string): string {
+    if (isValidIRI(str)) {
+        return getAfterDelimiter(str, "/");
+    }
+    return str.replace("_", " ")
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+}
+
+/**
+ * Checks that the input iri is valid.
+ * 
+ * @param {string} iri input iri.
+ */
+export function isValidIRI(iri: string): boolean {
+    // eslint-disable-next-line
+    const iriPattern = /^(https?|ftp|mailto|file|data|irc|tel|urn|uuid|doi):((\/\/[^\/?#]*)?[^?#]*)(\?[^#]*)?(#.*)?$/i;
+    return iriPattern.test(iri);
+}
+
+/**
+ * Retrieves the string following the delimiter if it exists. Otherwise returns the string as is.
+ * 
+ * @param {string} str input string.
+ * @param {string} delimiter delimiter of interest.
+ */
+export function getAfterDelimiter(str: string, delimiter: string): string {
+    return str.includes(delimiter) ? str.split(delimiter).pop() : str;
 }

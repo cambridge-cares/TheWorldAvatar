@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class PostgresDataSubset extends DataSubset {
@@ -64,7 +65,7 @@ public abstract class PostgresDataSubset extends DataSubset {
     public abstract void loadData(Path dataSubsetDir, String database, String baseIRI);
 
     public void runSQLPostProcess(String database) {
-        sql.map(AbstractDataObject::handleFileValues)
+        sql.map(JsonHelper::handleFileValues)
                 .ifPresent(query -> PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(query));
     }
 

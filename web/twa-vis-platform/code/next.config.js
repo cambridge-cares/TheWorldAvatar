@@ -10,8 +10,7 @@
 const nextConfig = {
 	reactStrictMode: true,
 	basePath: "", //default 
-	assetPrefix: ".",
-	compiler: { removeConsole: true },
+	compiler: { removeConsole: false },
 };
 
 export default nextConfig;

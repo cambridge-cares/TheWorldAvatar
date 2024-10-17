@@ -1,0 +1,9 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoTrafficIncident,TBox,https://www.theworldavatar.com/kg/ontosealevel/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoTrafficIncident,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoTrafficIncident,TBox,The Ontology for Sea Level is developed to represent information about sea level.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoTrafficIncident,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+TrafficIncident,Class,,,,,,A traffic incident.,https://www.theworldavatar.com/kg/ontotrafficincident/,Traffic Incident
+hasTimeInterval,Object Property,,,TrafficIncident,https://www.w3.org/TR/owl-time/#time:Interval,,A relationship between a traffic incident and its time interval.,https://www.theworldavatar.com/kg/ontotrafficincident/,hasTimeInterval
+hasDescription,Data Property,,,TrafficIncident,string,,A relationship between a traffic incident and its description.,https://www.theworldavatar.com/kg/ontotrafficincident/,hasDescription
+hasTrafficIncidentType,Data Property,,,TrafficIncident,string,,A relationship between a traffic incident and its incident type.,https://www.theworldavatar.com/kg/ontotrafficincident/,hasTrafficIncidentType

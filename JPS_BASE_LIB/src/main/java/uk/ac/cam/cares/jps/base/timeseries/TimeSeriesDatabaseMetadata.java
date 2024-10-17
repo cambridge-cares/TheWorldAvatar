@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,13 +83,16 @@ class TimeSeriesDatabaseMetadata {
         List<Boolean> hasMatchingColumn = new ArrayList<>();
         for (List<String> classSetToAdd : classSetsToAdd) {
             boolean match = false;
-            for (List<String> existingClassSet : existingClassSets) {
-                if (match) {
-                    break;
-                }
+
+            Iterator<List<String>> iterator = existingClassSets.iterator();
+
+            while (iterator.hasNext() && !match) {
+                List<String> existingClassSet = iterator.next();
+
                 for (String existingClass : existingClassSet) {
                     if (classSetToAdd.contains(existingClass)) {
                         match = true;
+                        iterator.remove();
                         break;
                     }
                 }

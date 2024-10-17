@@ -1,0 +1,26 @@
+services:
+  redis-stack:
+    image: redis/redis-stack:7.2.0-v9
+    ports:
+      - 6379:6379
+  triton:
+    build:
+      context: triton_inference_server
+    shm_size: 256m
+    ports:
+      - 8001:8001
+  fastapi:
+    build:
+      context: fastapi_app
+    container_name: fastapi_app
+    environment:
+      - APP_ENV=prod
+    volumes:
+      - type: bind
+        source: fastapi_app/data
+        target: /code/data
+    ports:
+      - 5000:8000
+    depends_on:
+      - redis-stack
+      - triton

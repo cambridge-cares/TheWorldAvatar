@@ -60,11 +60,11 @@
         "Regions": {
             "Countries": {
                 "type": "symbol",
-                "icon": "./images/legend/legend-countries.svg"
+                "icon": "/images/legend/legend-countries.svg"
             },
             "Counties": {
                 "type": "symbol",
-                "icon": "./images/legend/legend-counties.svg"
+                "icon": "/images/legend/legend-counties.svg"
             }
         },
         "Power Generation Sites": {
@@ -174,6 +174,16 @@
         "line_ukpn_high_icon": "http://localhost:3838/geoserver/www/icons/line_ukpn_high_icon.png",
         "line_ukpn_low_icon": "http://localhost:3838/geoserver/www/icons/line_ukpn_low_icon.png",
         "NG_logo": "http://localhost:3838/geoserver/www/icons/NG_logo.png",
-        "substation_icon": "http://localhost:3838/geoserver/www/icons/substation_icon.png"
+        "substation_icon": "http://localhost:3838/geoserver/www/icons/substation_icon.png",
+        "street_light": "http://localhost:3838/geoserver/www/icons/street_light.png",
+        "traffic_light": "http://localhost:3838/geoserver/www/icons/traffic_light_icon.png",
+        "street_light_failed":"http://localhost:3838/geoserver/www/icons/street_light_failed.png",
+        "charging_point": "http://localhost:3838/geoserver/www/icons/battery.png",
+        "power-primary": "/images/credo-old/power-primary.png",
+        "power-secondary": "/images/credo-old/power-secondary.png",
+        "arrow": "/images/credo-old/arrow-sdf.png",
+        "circle": "/images/credo-old/circle-sdf.png",
+        "octagon": "/images/credo-old/octagon-sdf.png",
+        "square": "/images/credo-old/square-sdf.png"
     }
 }

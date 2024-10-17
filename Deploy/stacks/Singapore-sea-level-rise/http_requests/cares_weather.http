@@ -1,0 +1,4 @@
+POST http://localhost:3838/cares-weather-station-agent/retrieve
+content-type: application/json
+
+{"agentProperties":"CARESWeatherStation_AGENTPROPERTIES","apiProperties":"CARESWeatherStation_APIPROPERTIES","clientProperties":"CARESWeatherStation_CLIENTPROPERTIES", "delay":"0","interval":"180","timeunit":"seconds"}

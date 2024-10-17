@@ -1,0 +1,12 @@
+PREFIX disp: <https://www.theworldavatar.com/kg/ontodispersion/>
+
+SELECT ?Property (AVG(?value) AS ?Value) ?Unit
+WHERE {
+  SERVICE <http://174.138.23.221:3838/ontop/sparql/> { 
+    ?Feature disp:hasValue ?value.
+  }
+  BIND("Average NOx concentration" AS ?Property)
+  BIND("&micro;g/m&sup3;" AS ?Unit)
+}
+GROUP BY ?Property ?Unit
+
