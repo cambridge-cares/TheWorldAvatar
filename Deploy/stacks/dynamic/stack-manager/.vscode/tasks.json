@@ -54,13 +54,6 @@
                         "executable": "powershell"
                     }
                 }
-            },
-            "linux": {
-                "options": {
-                    "shell": {
-                        "executable": "bash"
-                    }
-                }
             }
         },
         {
