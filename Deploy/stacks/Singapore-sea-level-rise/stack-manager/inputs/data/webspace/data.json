@@ -368,7 +368,7 @@
                 },
                 {
                     "id": "sgheritagetree",
-                    "name": "Heritage Trees",
+                    "name": "Heritage trees",
                     "source": "heritagetree",
                     "source-layer": "heritagetree",
                     "type": "circle",
@@ -629,7 +629,7 @@
             "layers": [
                 {
                     "id": "sghistoricsites",
-                    "name": "Historic Sites",
+                    "name": "Historic sites",
                     "source": "historicsite",
                     "source-layer": "historicsite",
                     "type": "circle",
@@ -671,7 +671,7 @@
                 },
                 {
                     "id": "sgtouristattractions",
-                    "name": "Tourist Attractions",
+                    "name": "Tourist attractions",
                     "source": "touristattraction",
                     "source-layer": "touristattraction",
                     "type": "circle",
@@ -3112,6 +3112,900 @@
                             0.1
                         ],
                         "icon-anchor": "bottom"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Active traffic incidents",
+            "stack": "http://localhost:3838",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "traffic_incident",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atrafficincident&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "active_accidents",
+                    "name": "Active accidents",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 1,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Accident",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-accident",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.055
+                        ]
+                    }
+                },
+                {
+                    "id": "active_road_works",
+                    "name": "Active roadworks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 2,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Roadwork",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-work",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "active_vehicle_breakdowns",
+                    "name": "Active vehicle breakdowns",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 3,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Vehicle breakdown",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-vehicle-breakdown",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.16
+                        ]
+                    }
+                },
+                {
+                    "id": "active_weathers",
+                    "name": "Active weather",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 4,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Weather",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-weather",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "active_road_obstacle",
+                    "name": "Active road obstacles",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 5,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Obstacle",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-obstacle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "active_road_block",
+                    "name": "Active roadblocks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 6,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Road Block",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-block",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.03
+                        ]
+                    }
+                },
+                {
+                    "id": "active_heavy_traffic",
+                    "name": "Active heavy traffic",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 7,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Traffic",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-heavy-traffic",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.075
+                        ]
+                    }
+                },
+                {
+                    "id": "active_misc.",
+                    "name": "Active misc.",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 8,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Misc",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-misc",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "active_diversion",
+                    "name": "Active diversion",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 9,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Diversion",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-diversion",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.05
+                        ]
+                    }
+                },
+                {
+                    "id": "active_unattended_vehicle",
+                    "name": "Active unattended vehicle",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 10,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Unattended",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ongoing",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-unattended-vehicle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Past traffic incidents",
+            "stack": "http://localhost:3838",
+            "expanded": false,
+            "sources": [
+                {
+                    "id": "traffic_incident",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Atrafficincident&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "past_accidents",
+                    "name": "Past accidents",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 1,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Accident",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-accident",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.055
+                        ]
+                    }
+                },
+                {
+                    "id": "past_road_works",
+                    "name": "Past roadworks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 2,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Roadwork",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-work",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "past_vehicle_breakdowns",
+                    "name": "Past vehicle breakdowns",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 3,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Vehicle breakdown",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-vehicle-breakdown",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.16
+                        ]
+                    }
+                },
+                {
+                    "id": "past_weathers",
+                    "name": "Past weather",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 4,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Weather",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-weather",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
+                    }
+                },
+                {
+                    "id": "past_road_obstacle",
+                    "name": "Past road obstacles",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 5,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Obstacle",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-obstacle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "past_road_block",
+                    "name": "Past roadblocks",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 6,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Road Block",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-road-block",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.03
+                        ]
+                    }
+                },
+                {
+                    "id": "past_heavy_traffic",
+                    "name": "Past heavy traffic",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 7,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Traffic",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-heavy-traffic",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.075
+                        ]
+                    }
+                },
+                {
+                    "id": "past_misc.",
+                    "name": "Past misc.",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 8,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Misc",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-misc",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.4
+                        ]
+                    }
+                },
+                {
+                    "id": "past_diversion",
+                    "name": "Past diversion",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Diversion",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "order": 9,
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-diversion",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.05
+                        ]
+                    }
+                },
+                {
+                    "id": "past_unattended_vehicle",
+                    "name": "Past unattended vehicle",
+                    "source": "traffic_incident",
+                    "type": "symbol",
+                    "order": 10,
+                    "filter": [
+                        "all",
+                        [
+                            "in",
+                            "Unattended",
+                            [
+                                "get",
+                                "name"
+                            ]
+                        ],
+                        [
+                            "in",
+                            "Ended",
+                            [
+                                "get",
+                                "status"
+                            ]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "none",
+                        "icon-image": "traffic-unattended-vehicle",
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.1
+                        ]
                     }
                 }
             ]
