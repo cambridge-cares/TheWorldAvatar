@@ -1,0 +1,6 @@
+{
+  "activity_recognition_request_code": 3332,
+  "activity_recognition_update_interval": 3000,
+  "buffer_delay": 60000,
+  "upload_delay": 60000
+}

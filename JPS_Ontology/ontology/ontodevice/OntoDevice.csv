@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoDevice,TBox,https://www.theworldavatar.com/kg/ontodevice/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoDevice,TBox,1.5,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoDevice,TBox,1.6,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoDevice,TBox,"OntoDevice is an ontology for describing devices, their capabilities and properties.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoDevice,TBox,https://saref.etsi.org/core/,http://www.w3.org/2002/07/owl#imports,,,,,,
 Device,Class,https://saref.etsi.org/core/Device,EQUIVALENT-TO,,,,An object designed and manufactured to perform one or more functions.,https://www.theworldavatar.com/kg/ontodevice/,Device
@@ -14,6 +14,9 @@ ElectronicTag,Class,https://saref.etsi.org/core/Device,IS-A,,,,"A tag that uses 
 RFIDTag,Class,ElectronicTag,IS-A,,,,An electronic tag that exchanges data with a RFID reader through radio waves.,https://www.theworldavatar.com/kg/ontodevice/,RFID tag
 PassiveRFIDTag,Class,RFIDTag,IS-A,,,,A passive RFID tag that functions via the electromagnetic energy that gets transmitted from the RFID reader. ,https://www.theworldavatar.com/kg/ontodevice/,Passive RFID tag
 ActiveRFIDTag,Class,RFIDTag,IS-A,,,,An active RFID tag that requires batteries for operation.,https://www.theworldavatar.com/kg/ontodevice/,Active RFID tag
+Transmitter,Class,https://saref.etsi.org/core/Device,IS-A,,,,"A device that sends signals or data, often in communication systems.",https://www.theworldavatar.com/kg/ontodevice/,Transmitter
+UltrasonicTransmitter,Class,Transmitter,IS-A,,,,A transmitter that sends ultrasonic waves for detection or measurement.,https://www.theworldavatar.com/kg/ontodevice/,Ultrasonic transmitter
+SignalAmplifier,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that increases the strength of a signal.,https://www.theworldavatar.com/kg/ontodevice/,Signal amplifier
 FlowMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measure and communicate amount of liquid flowing through.,https://www.theworldavatar.com/kg/ontodevice/,Flow meter
 OilMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device for measuring the flow of oil.,https://www.theworldavatar.com/kg/ontodevice/,Oil meter
 PollutionMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device for measuring air quality.,https://www.theworldavatar.com/kg/ontodevice/,Pollution meter
@@ -23,6 +26,16 @@ Manometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device used to measu
 Accelerometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A tool that measures proper acceleration.,https://www.theworldavatar.com/kg/ontodevice/,Accelerometer
 ElectricityMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,"A device that measures the amount of electric energy consumed by a residence, a business, or an electrically powered device.",https://www.theworldavatar.com/kg/ontodevice/,Electricity meter
 ThermalEnergyMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that is able to measure thermal energy and is usually used to measure energy from hydronic-based heating and cooling systems.,https://www.theworldavatar.com/kg/ontodevice/,Thermal energy meter
+Grindometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measures the particle size of ground materials.,https://www.theworldavatar.com/kg/ontodevice/,Grindometer
+Calorimeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measures the heat of chemical reactions or physical changes.,https://www.theworldavatar.com/kg/ontodevice/,Calorimeter
+DifferentialScanningCalorimeter,Class,Calorimeter,IS-A,,,,A differential scanning calorimeter used for analyzing thermal properties.,https://www.theworldavatar.com/kg/ontodevice/,Differential scanning calorimeter
+Coulometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device used to measure the amount of electricity passed through an electrolyte.,https://www.theworldavatar.com/kg/ontodevice/,Coulometer
+pHMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measures the acidity or alkalinity of a solution.,https://www.theworldavatar.com/kg/ontodevice/,pH meter
+Spectrometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device used to measure and analyze the spectrum of light.,https://www.theworldavatar.com/kg/ontodevice/,Spectrometer
+InfraredSpectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that analyzes infrared light spectra.,https://www.theworldavatar.com/kg/ontodevice/,Infrared spectrometer
+MassSpectrometer,Class,Spectrometer,IS-A,,,,A device used to measure the mass-to-charge ratio of ions.,https://www.theworldavatar.com/kg/ontodevice/,Mass spectrometer
+UltravioletVisibleSpectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that measures ultraviolet and visible light.,https://www.theworldavatar.com/kg/ontodevice/,Ultraviolet-visible spectrometer
+XRaySpectrometer,Class,Spectrometer,IS-A,,,,A spectrometer that analyzes X-ray spectra.,https://www.theworldavatar.com/kg/ontodevice/,X-ray spectrometer
 GasSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the amount or existence of specific gas in the surrounding atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Gas sensor
 GravitySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.,https://www.theworldavatar.com/kg/ontodevice/,Gravity sensor
 CO2Sensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,CO2 sensor
@@ -43,6 +56,8 @@ ElectricalCurrentSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A devic
 MassFlowSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the mass flow rate of gas or liquid.,https://www.theworldavatar.com/kg/ontodevice/,Mass flow sensor
 LevelSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,"A device designed to detect and measure the level of a substance, such as liquids, powders, or granular materials, within a container or a confined space. ",https://www.theworldavatar.com/kg/ontodevice/,Level sensor
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
+CryoCooler,Class,Fridge,IS-A,,,,A device used to achieve very low temperatures for preservation.,https://www.theworldavatar.com/kg/ontodevice/,Cryo cooler
+Freezer,Class,Fridge,IS-A,,,,A device used for storing items at sub-zero temperatures.,https://www.theworldavatar.com/kg/ontolab/,Freezer
 Oven,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used for heating up items like food using a heating element.,https://www.theworldavatar.com/kg/ontodevice/,Oven
 IceMaker,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used to create ice by freezing water.,https://www.theworldavatar.com/kg/ontodevice/,Ice maker
 Dehumidifier,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that reduces the humidity of the surrounding atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Dehumidifier
@@ -139,6 +154,19 @@ RotationalSpeed,Class,OperatingParameter,IS-A,,,,The rotational speed of a devic
 OperatingProperty,Class,,,,,,A property of an operating parameter of a device (e.g. range of an operating temperature).,https://www.theworldavatar.com/kg/ontodevice/,Operating property
 OperatingRange,Class,OperatingProperty,IS-A,,,,The range for an operating parameter of a device (e.g. range of an operating temperature).,https://www.theworldavatar.com/kg/ontodevice/,Operating range
 OperatingTemperatureRange,Class,OperatingRange,IS-A,,,,The operating temperature range of a device.,https://www.theworldavatar.com/kg/ontodevice/,Operating temperature range
+Activity,Class,,,,,,An event that occurs over a period of time and involves specific actions such as walking or running.,https://www.theworldavatar.com/kg/ontodevice/,Activity
+ActivityType,Class,,,,,,Represents the type of activity being performed (e.g. walking or biking).,https://www.theworldavatar.com/kg/ontodevice/,Activity type
+OnFoot,Class,ActivityType,IS-A,,,,The device is on a user who is walking or running.,http://www.theworldavatar.com/kg/ontodevice/,On foot
+InVehicle,Class,ActivityType,IS-A,,,,The device is in a vehicle.,http://www.theworldavatar.com/kg/ontodevice/,In vehicle
+OnBicycle,Class,ActivityType,IS-A,,,,The device is on a bicycle.,http://www.theworldavatar.com/kg/ontodevice/,On bicycle
+Running,Class,OnFoot,IS-A,,,,A sub-activity of on foot where the user is running.,http://www.theworldavatar.com/kg/ontodevice/,Running
+Walking,Class,OnFoot,IS-A,,,,A sub-activity of on foot where the user is walking.,http://www.theworldavatar.com/kg/ontodevice/,Walking
+ConfidenceLevel,Class,,,,,,Represents the confidence level indicating the likelihood of the activity being accurate.,https://www.theworldavatar.com/kg/ontodevice/,Confidence level
+hasActivityType,Object Property,,,Activity,ActivityType,,Links an activity to its corresponding type (e.g. OnFoot or InVehicle).,https://www.theworldavatar.com/kg/ontodevice/,has activity type
+hasConfidenceLevel,Object Property,,,Activity,ConfidenceLevel,,Links an activity to its confidence level.,https://www.theworldavatar.com/kg/ontodevice/,has confidence level
+detectedByDevice,Object Property,,,Activity,Device,,Relates an activity with the device that detected it.,https://www.theworldavatar.com/kg/ontodevice/,detected by device
+hasNumericalValue,Data Property,,,ConfidenceLevel,Integer,,Represents the numerical confidence value.,https://www.theworldavatar.com/kg/ontodevice/,has numerical value
+hasValue,Data Property,,,ActivityType,String,,Represents the type of activity as a string.,https://www.theworldavatar.com/kg/ontodevice/,has value
 services,Object Property,,,Device UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,https://w3id.org/bot#Zone,,A relationship between a device or technical system and the zone it is servicing or providing a service for.,https://www.theworldavatar.com/kg/ontodevice/,services
 observes,Object Property,,,Device,https://saref.etsi.org/core/State,,A relationship between a device and the state that it is observing.,https://www.theworldavatar.com/kg/ontodevice/,observes
 measures,Object Property,,,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity UNION Vector,,A relationship between a device and a quantity or vector that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures

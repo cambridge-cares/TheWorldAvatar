@@ -1,6 +1,9 @@
+
 apply plugin: 'com.android.application'
+apply plugin: 'dagger.hilt.android.plugin'
 apply from: "${project.rootDir}/common.gradle"
 apply from: "${project.rootDir}/ui.gradle"
+apply from: "${project.rootDir}/worker_dependencies.gradle"
 
 android {
     namespace 'uk.ac.cam.cares.jps.timeline'
@@ -14,9 +17,10 @@ android {
 }
 
 dependencies {
+
     implementation project(path: ':core:ui')
-//    implementation project(path: ':feature:locationtracking')
-//    implementation project(path: ':feature:routing')
     implementation project(path: ':feature:timeline')
     implementation project(path: ':feature:user')
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 }

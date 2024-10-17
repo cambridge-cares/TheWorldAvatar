@@ -1,62 +1,106 @@
 # TrajectoryQueryAgent
-## 1. Description
+
 TrajectoryQueryAgent is an agent that handles trajectory related tasks. It currently supports the following functions through the endpoints:
-- `/createlayer`: create geoserver layer and postgis functions for the geoserver query
+
+- `/createLayer`: create geoserver layer and postgis functions for the geoserver query
 - `/getDatesWithData`: get dates that have trajectory data
 
-### Workflow: /createlayer
-1) Receives `userIDs`s from UserAgent.
-2) SPARQL Query for `pointIRIs`, `speedIRIs`, `altitudeIRIs` and `bearingIRIs` using `userIDs`
-3) Create postgis function in Postgres and geoserver layers in GeoServer
-4) Return `pointIRIs`, `speedIRIs`, `altitudeIRIs` and `bearingIRIs` to application as response
+## Requirements
 
-Sample request of `/createlayer`, where `<USERID>` is the id of the user. The USERID is to get the default viewparam values of the geoserver layer, one may choose to send other viewparam values to the geoserver layer for their own trajectories.
-```
-curl -X POST "localhost:3838/trajectoryqueryagent/createlayer?userID=<USERID>"
-```
-
-To use the layer created, send the request directly to the geoserver with the returned `pointIRI`, `speedIRI`, `altitudeIRI`, `bearingIRI` and a specific date in TIMESTAMPTZ format.
-```
-http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa:trajectoryLine&outputFormat=application/json&viewparams=pointiri:<POINTIRI>;speediri:<SPEEDIRI>;altitudeiri:<ALTITUDEIRI>;bearingiri:<BEARINGIRI>;date:<DATE>;
-```
-
-The layer is created in a way such that it is able to accept comma separated list of IRIs in the viewparams. Number of IRIs for each field should be the same.
-```
-pointiri:<POINTIRI_1>,<POINTIRI_2>,<POINTIRI_3>;
-```
-
-## 2. Pre-requisites
 Launch [stack](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) with the default containers and the following additional containers:
-- [UserAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1771-dev-user-agent/Agents/UserAgent)
+
 - information from [SensorLoggerMobileAppAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/SensorLoggerMobileAppAgent) to be instantiated
 
-## 3. Deploy 
-### 3.1 Retrieving TrajectoryQueryAgent's image
+## Deploy
+
+### Retrieving TrajectoryQueryAgent's image
+
 The TrajectoryQueryAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/trajectoryqueryagent) using `docker pull ghcr.io/cambridge-cares/trajectoryqueryagent:<LATEST-VERSION>`
 
-### 3.2 Starting with the stack-manager
+### Starting with the stack-manager
+
 The agent has been implemented to work in the stack, which requires the TrajectoryQueryAgent Docker container to be deployed in the stack. To do so, place [trajectoryqueryagent.json](stack-manager-config/inputs/config/services/trajectoryqueryagent.json) in the [stack-manager config directory].
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
-## 4. Develop and Debug
-## 4.1 Credentials
+## Develop and Debug
+
+### Credentials
+
 The docker image uses TheWorldAvatar maven repository (`https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/`).
 You will need to provide your credentials (GitHub username/personal access token) in single-word text files as follows:
+
 ```
 ./credentials/
         repo_username.txt
         repo_password.txt
 ```
 
-### 4.2 Building Docker Image
-In the same directory as this README, run `./stack.sh build`. This will build the TrajectoryQueryAgent local Docker Image. 
+### Building Docker Image
 
-### 4.3 Spinning up with stack-manager
-To debug the agent, replace [`trajectoryqueryagent-debug.json`](stack-manager-config/inputs/config/services/trajectoryqueryagent-debug.json) instead of [`trajectoryqueryagent.json`](stack-manager-config/inputs/config/services/trajectoryqueryagent.json) in the [stack-manager config directory]. 
+In the same directory as this README, run `./stack.sh build`. This will build the TrajectoryQueryAgent local Docker Image.
+
+### Spinning up with stack-manager
+
+To debug the agent, replace [`trajectoryqueryagent-debug.json`](stack-manager-config/inputs/config/services/trajectoryqueryagent-debug.json) instead of [`trajectoryqueryagent.json`](stack-manager-config/inputs/config/services/trajectoryqueryagent.json) in the [stack-manager config directory].
 
 Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager]'s main folder.
 The debugger port will be available at 5005.
 
+## Routes
+
+### 1. /createLayer
+
+No input parameters required for this route
+
+```bash
+curl -X POST "localhost:3838/trajectoryqueryagent/createLayer"
+```
+
+Currently, three layers are created in the twa workspace. Unix timestamp in milliseconds is used for the layers.
+
+1. trajectoryDeviceId
+2. trajectoryUserId
+3. bufferedLineDeviceId
+
+In the following sections, attributes refer to variables in the SQL view table, SQL view parameters refer to parameters passed from the URL and substituted in the SQL view, e.g. %device_id% in [line layer (device id)].
+
+SQL view parameters are specified as key:value pairs separated by semicolons in the viewparams parameter in the URL, e.g. `viewparams=p1:v1;p2:v2`, refer to the [official documentation](https://docs.geoserver.org/main/en/user/data/database/sqlview.html) for more information
+
+#### trajectoryDeviceId layer
+
+This layer consists of line segments with associated speed, altitude and bearing values, so that styling is possible. Refer to [line layer (device id)].
+
+Attributes: time, speed, altitude, bearing, iri  
+View parameters: device_id
+
+#### trajectoryUserId
+
+This layer consists of a single line, so detailed styling according to attributes such as speed is not possible. Refer to [line layer (user id)].
+
+Attributes: iri  
+View parameters: user_id
+
+#### bufferedLineDeviceId
+
+To be used in conjunction with trajectoryDeviceId, adds a 100 m buffer to the original line. lowerbound and upperbound are Unix timestamps in milliseconds.
+
+Attributes: iri  
+View parameters: device_id, lowerbound (optional), upperbound (optional)
+
+### 2. /getDatesWithData
+
+Parameters required:
+
+1. timezone (refer [here](https://www.postgresql.org/docs/current/view-pg-timezone-names.html) for permissible names)
+2. userID
+
+Response given in the form of
+```json
+{"result":[{"month":1,"year":2024,"days":"{1,2,3}"}],"message":"Succeed"}
+```
+
 [stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
 [stack-manager config directory]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+[line layer (device id)]: ./trajectoryqueryagent/src/main/resources/line_layer_device_id.sql
+[line layer (user id)]: ./trajectoryqueryagent/src/main/resources/line_layer_user_id.sql

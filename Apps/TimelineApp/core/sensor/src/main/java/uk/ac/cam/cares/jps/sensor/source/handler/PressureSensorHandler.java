@@ -41,7 +41,7 @@ public class PressureSensorHandler extends AbstractSensorHandler {
             dataPoint.put("time", System.currentTimeMillis() * 1000000);
             dataPoint.put("values", values);
 
-            synchronized (this) {
+            synchronized (sensorDataLock) {
                 sensorData.put(dataPoint);
             }
         } catch (JSONException e) {

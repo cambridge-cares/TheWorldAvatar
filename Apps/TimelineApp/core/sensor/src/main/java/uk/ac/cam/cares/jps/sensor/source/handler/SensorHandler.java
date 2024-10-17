@@ -40,5 +40,7 @@ public interface SensorHandler {
 
     SensorType getSensorType();
 
+    Object getSensorDataLock();
+
 }
 

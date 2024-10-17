@@ -55,6 +55,37 @@ PT = TypeVar("PT", bound=BaseModel)
 
 
 class DataIngester(Generic[UT, PT]):
+    """Helper to ingest datasets into Redis.
+
+    Datasets are ingested into Redis to leverage its capabilities for efficient on-demand retrieval. This helper class
+    makes the following assumptions:
+      - The datasets to be ingested are JSON files located within a subfolder under the `data` directory.
+      - The content of each JSON file is an array of entries compatible with the `UT` class.
+    
+    The ingestion involves the following steps:
+      1. Discover dataset files located within `data_dir`.
+      2. For each file:
+         2.1. If an on-disc cache of the processed dataset is found and the cache is not to be invalidated, load it into
+              memory. Otherwise, load the unprocessed dataset and apply the transformation.
+         2.2. Insert the processed data into Redis.
+      3. Create an index for the datasets.
+
+    Attributes:
+        data_dir: A `Traversable` containing dataset files for ingestion.
+        invalidate_cache: A boolean indicating whether to invalidate on-disk cache of processed datasets.
+        adapter_list_ut: A Pydantic's `TypeAdapter` to convert dict-like instances to `UT`.
+        adapter_list_pt: A Pydantic's `TypeAdapter` to convert dict-like instances to `PT`.
+        process_func: A `Callable` that transforms `UT` instances to `PT`.
+        process_batchsize: Batch size to apply `process_func`.
+        redis_client: An instance of Redis client.
+        redis_key_prefix: Prefix string prepended to the keys of the dataset entries in Redis.
+        redis_preinsert_transform: A `Callable` that transforms `PT` instances to `dict` for insertion as JSON documents
+            into Redis.
+        redis_insert_batchsize: Batch size to perform insertion into Redis.
+        redis_index_name: Name of index to be created in Redis.
+        redis_ft_schema: Schema fields to construct a document index in Redis.
+    """
+
     def __init__(
         self,
         dirname: str,
@@ -70,6 +101,14 @@ class DataIngester(Generic[UT, PT]):
         redis_index_name: str,
         redis_ft_schema: tuple[Field, ...],
     ):
+        """
+        Args:
+            dirname: Folder name under the `data` directory to look for dataset files.
+            unprocessed_type: 
+                The concrete `UT` type i.e. Pydantic class of dataset entry in each of the file in `dirname`.
+            processed_type: 
+                The concrete `PT` type i.e. Pydantic class of dataset entry after processing.
+        """
         self.data_dir = importlib.resources.files("data").joinpath(dirname)
         self.invalidate_cache = invalidate_cache
         self.adapter_list_ut = TypeAdapter(list[unprocessed_type])  # type: ignore
