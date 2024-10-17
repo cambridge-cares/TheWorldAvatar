@@ -149,8 +149,8 @@ Walking,Class,OnFoot,IS-A,,,,A sub-activity of on foot where the user is walking
 ConfidenceLevel,Class,,,,,,Represents the confidence level indicating the likelihood of the activity being accurate.,https://www.theworldavatar.com/kg/ontodevice/,Confidence level
 hasActivityType,Object Property,,,Activity,ActivityType,,Links an activity to its corresponding type (e.g. OnFoot or InVehicle).,https://www.theworldavatar.com/kg/ontodevice/,has activity type
 hasConfidenceLevel,Object Property,,,Activity,ConfidenceLevel,,Links an activity to its confidence level.,https://www.theworldavatar.com/kg/ontodevice/,has confidence level
-detectedByDevice,Object Property,,,prov:Activity,Device,,Relates an activity with the device that detected it.,https://www.theworldavatar.com/kg/ontodevice/,detected by device
-hasNumericalValue,Data Property,,,ConfidenceLevel,Integer,,Represents the numerical confidence value.,https://www.theworldavatar.com/kg/ontodevice/,has value
+detectedByDevice,Object Property,,,Activity,Device,,Relates an activity with the device that detected it.,https://www.theworldavatar.com/kg/ontodevice/,detected by device
+hasNumericalValue,Data Property,,,ConfidenceLevel,Integer,,Represents the numerical confidence value.,https://www.theworldavatar.com/kg/ontodevice/,has numerical value
 hasValue,Data Property,,,ActivityType,String,,Represents the type of activity as a string.,https://www.theworldavatar.com/kg/ontodevice/,has value
 services,Object Property,,,Device UNION http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem,https://w3id.org/bot#Zone,,A relationship between a device or technical system and the zone it is servicing or providing a service for.,https://www.theworldavatar.com/kg/ontodevice/,services
 observes,Object Property,,,Device,https://saref.etsi.org/core/State,,A relationship between a device and the state that it is observing.,https://www.theworldavatar.com/kg/ontodevice/,observes
