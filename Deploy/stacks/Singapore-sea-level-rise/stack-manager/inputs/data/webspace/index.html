@@ -103,6 +103,9 @@
                 </div>
             </div>
 
+            <!-- dropdown selections -->
+            <div id="selectionsContainer"></div>
+
             <!-- Scenario change control -->
             <div id="scenarioChangeContainer" class="controlBlock expanded" onclick="manager.showScenarioSelector()">
                 <div class="tooltip">
@@ -194,6 +197,9 @@
             relativePath = ".";
         }
 
+        var dispersionHandler = new DispersionHandler(relativePath, manager);
+        var dispersionPromise = dispersionHandler.setDispersions(dispersionHandler);
+
         // Read credentials
         var credentialPromise = manager.readCredentials();
 
@@ -201,7 +207,7 @@
         var dataPromise = manager.loadDefinitions();
 
         // Start when credentials and definitions have been loaded
-        Promise.all([credentialPromise, dataPromise]).then(() => start());
+        Promise.all([credentialPromise, dataPromise, dispersionPromise]).then(() => start());
 
         /**
          * Starts the visualisation setup process.
@@ -220,19 +226,22 @@
 
                         <p>This interface offers the following application: <br><br>
                             <b>1) Programmatic plot finder </b><br>
-                            This tool integrates land plot, land uses, and regulatory information 
-                            into one interface to support urban planners in their tasks. Namely, searching for the permissible Gross Floor Area and programmatic usage of each land plot.
+                            This tool integrates land plot, land uses, and regulatory information into one interface to support urban planners in their tasks. This includes searching for the permissible Gross Floor Area and programmatic usage of each land plot.
                             <br><br>
                             <b>2) 3D visualisation of buildings </b><br>
-                            A comprehensive visualisation of all buildings in Singapore in Level of Detail 1 (LOD1). 
+                            A comprehensive visualisation of all buildings in Singapore in Level of Detail 1 (LOD1). Some buildings are enriched with additional cross-domain information such as usages, building energy demand and solar potentials, and heat emission estimations based on the industrial classification of the buildings (data centres, chemical industries, semiconductor industries, pharmaceutical industries, precision engineering plants, food and beverage manufacturers and printing industries). 
                             <br><br>
                             <b>3) Visualisation of pollutant plumes from ships </b><br>
-                            The plumes are generated from a software called AERMOD using weather and ship data.
+                            The pollutant plumes are generated from a software called AERMOD using real-time information about ships and weather conditions.
                             <br><br>
                             <b>4) 2D visualisation of trees </b><br>
                             A visualisation of all common and heritage trees in Singapore.
                             <br><br>
                             <b>5) Park accessibility displayed as isochrones
+                            <br><br>
+                            <b>6) Population density of Singapore
+                            <br><br>
+                            <b>7) Carparks in Singapore
                             <br><br><br><br>
                         </p>
                     `);
@@ -260,23 +269,28 @@
                         // Plot the default visible data
                         manager.plotData();
                     }
-                });
+                }).then(() => {
+                    return dispersionHandler.buildDropdown(dispersionHandler);
+                }).then(() => dispersionHandler.plotData());
 
                 // Set customised legend in panel
                 manager.getPanelHandler().setLegend(`
                     <div id='legend-container'>
                         <h2>Legend</h2><br/>
                         <div style="display: flex; justify-content: center;">
-                            <img src="./img/population_general.png" width="450px"/>
+                            <img src="./img/population_general.png" width="400px"/>
                         </div>
                         <div style="display: flex; justify-content: center;">
-                            <img src="./img/population_men_women.png" width="450px"/>
+                            <img src="./img/population_men_women.png" width="400px"/>
                         </div>
                         <div style="display: flex; justify-content: center;">
-                            <img src="./img/population_children_youth_elderly.png" width="450px"/>
+                            <img src="./img/population_children_youth_elderly.png" width="400px"/>
                         </div>
                         <div style="display: flex; justify-content: center;">
-                            <img src="./img/cost.png" width="450px"/>
+                            <img src="./img/cost.png" width="400px"/>
+                        </div>
+                        <div style="display: flex; justify-content: center;">
+                            <img src="./img/heat_emissions_colorbar.png" width="400px"/>
                         </div>
                     </div>
                 `);
@@ -284,11 +298,18 @@
                 let beforeSiblingContainer = document.getElementById("helpandsearch");
                 // Create a new custom component
                 let custom_component = new SeachEntityComponent("Search Land Plot", MapHandler.MAP, {
-                    stackUrl: relativePath, plotNamespace: "plot", layerId: "0.sglandplot"
+                    stackUrl: relativePath, plotNamespace: "plot", layerId: "0.0.all-landplot"
                 });
                 // Render the custom component before the sibling container
                 custom_component.render(beforeSiblingContainer);
             });
+
+            MapHandler.MAP.doubleClickZoom.disable();
+            MapHandler.MAP.on("dblclick", (e) => {
+                dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng).done().then(() => dispersionHandler.plotData());
+            });
+
+            dispersionHandler.updateVirtualSensors();
         }
     </script>
 </body>
