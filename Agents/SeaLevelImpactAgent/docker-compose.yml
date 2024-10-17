@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   sealevelimpactagent:
-    image: ghcr.io/cambridge-cares/sealevelimpactagent:1.2.0-dev-integrate-sg-sea-level-SNAPSHOT
+    image: ghcr.io/cambridge-cares/sealevelimpactagent:1.2.0
     build: .
     ports:
       - "10110:8080"
