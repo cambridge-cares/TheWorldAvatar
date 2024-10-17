@@ -1781,6 +1781,7 @@
         <rdfs:comment>The device is in a vehicle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>In vehicle</rdfs:label>
+    </owl:Class>
 
 
 
