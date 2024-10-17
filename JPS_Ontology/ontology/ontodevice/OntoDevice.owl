@@ -10,7 +10,7 @@
      xmlns:ontodevice="https://www.theworldavatar.com/kg/ontodevice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date>07 October 2024</dc:date>
+        <dc:date>17 October 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo>1.6</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -56,6 +56,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/detectedByDevice -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/detectedByDevice">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Activity"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+        <rdfs:comment>Relates an activity with the device that detected it.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>detected by device</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasA -->
 
 
@@ -79,6 +92,32 @@
         <rdfs:comment>A relationship describing the acidity of a solution.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>has acidity</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasActivityType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasActivityType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Activity"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>Links an activity to its corresponding type (e.g. OnFoot or InVehicle).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has activity type</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasConfidenceLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasConfidenceLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Activity"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
+        <rdfs:comment>Links an activity to its confidence level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has confidence level</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -670,6 +709,32 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasNumericalValue -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasNumericalValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>Represents the numerical confidence value.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has numerical value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasValue">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>Represents the type of activity as a string.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>has value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -1039,6 +1104,28 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Activity -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Activity">
+        <rdfs:comment>An event that occurs over a period of time and involves specific actions such as walking or running.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Activity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ActivityType -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ActivityType">
+        <rdfs:comment>Represents the type of activity being performed (e.g. walking or biking).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Activity type</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/AirCompressor -->
 
 
@@ -1179,6 +1266,17 @@
         <rdfs:comment>A device that measures the ability of a material to conduct an electrical current.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Conductivity sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ConfidenceLevel">
+        <rdfs:comment>Represents the confidence level indicating the likelihood of the activity being accurate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Confidence level</rdfs:label>
     </owl:Class>
     
 
@@ -1661,11 +1759,11 @@
         <rdfs:label>In out state</rdfs:label>
     </owl:Class>
     
-
-
+    
+    
     <!-- https://www.theworldavatar.com/kg/ontodevice/InfraredSpectrometer -->
-
-
+    
+    
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/InfraredSpectrometer">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
         <rdfs:comment>A spectrometer that analyzes infrared light spectra.</rdfs:comment>
@@ -1673,6 +1771,18 @@
         <rdfs:label>Infrared spectrometer</rdfs:label>
     </owl:Class>
     
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/InVehicle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/InVehicle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>The device is in a vehicle.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>In vehicle</rdfs:label>
+    </owl:Class>
+
 
 
     <!-- https://www.theworldavatar.com/kg/ontodevice/Laptop -->
@@ -1922,6 +2032,30 @@
         <rdfs:comment>A device for measuring the flow of oil.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Oil meter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/OnBicycle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OnBicycle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>The device is on a bicycle.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>On bicycle</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/OnFoot -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OnFoot">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ActivityType"/>
+        <rdfs:comment>The device is on a user who is walking or running.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>On foot</rdfs:label>
     </owl:Class>
     
 
@@ -2280,6 +2414,18 @@
         <rdfs:comment>A device that forwards data packets in a computer network.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Router</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Running -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Running">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OnFoot"/>
+        <rdfs:comment>A sub-activity of on foot where the user is running.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Running</rdfs:label>
     </owl:Class>
     
 
@@ -2679,6 +2825,18 @@
         <rdfs:comment>A quantity that has magnitude and direction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Vector</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Walking -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Walking">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/OnFoot"/>
+        <rdfs:comment>A sub-activity of on foot where the user is walking.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Walking</rdfs:label>
     </owl:Class>
     
 
