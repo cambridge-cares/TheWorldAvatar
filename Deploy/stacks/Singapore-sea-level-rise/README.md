@@ -158,6 +158,9 @@ Execute [cares_weather.http] to instantiate and start periodic updates.
 ### nginx for PostGIS
 The stack's PostGIS is accessible at port 3840, to change the port edit [nginx-2].
 
+### Traffic incident Agent
+You need to have an `API_key` which can be obtained by registering from [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html). The API key needs to entered in the file [config.properties](./traffic_incident_inputs/config.properties) at `trafficincident.accountKey=` to retrieve the data from LTA API.
+
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
 Kok Foong Lee
