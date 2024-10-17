@@ -12,10 +12,10 @@ The OntoMOPs ontology is designed to provide and enrich semantic relationships b
 
 ### Publications
 
-[1] N. Krdzavac, S. Mosbach, D. Nurkowski, P. Buerger, J. Akroyd, J. W. Martin, A. Menon, and M. Kraft, ["An ontology and semantic web service for quantum chemistry calculations"](https://doi.org/10.1021/acs.jcim.9b00227), Journal of Chemical Information and Modeling, 59(7), 3154-3165, (2019).
+[1] A. Kondinski, A. Menon, D. Nurkowski, F. Farazi, S. Mosbach, J. Akroyd, and M. Kraft, ["Automated Rational Design of Metal–Organic Polyhedra"](https://doi.org/10.1021/jacs.2c03402), Journal of the American Chemical Society, 144(26), 11713-11728, (2022).
 
 ### Preprints
 
 [1] A. Kondinski, A. Menon, D. Nurkowski, F. Farazi, S. Mosbach, J. Akroyd, and M. Kraft, "Automated Rational Design of Metal-Organic Polyhedra", Technical Report 292, c4e-Preprint Series, Cambridge, 2022 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/OntoMOPs_preprint_4AP6w6C.pdf)).
 
-[2] D. Tran, S. D. Rihm, A. Kondniski, L. Pascazio, F. Saluz, S. Mosbach, J. Akroyd, and M. Kraft, "Natural Language Access Point to Digital Metal-Organic Polyhedra Chemistry in The World Avatar", Technical Report 327, c4e-Preprint Series, Cambridge, 2024 ([PDF]https://como.ceb.cam.ac.uk/media/preprints/c4e_327_nmdt2_MarieICL__preprint_.pdf)
+[2] D. Tran, S. D. Rihm, A. Kondniski, L. Pascazio, F. Saluz, S. Mosbach, J. Akroyd, and M. Kraft, "Natural Language Access Point to Digital Metal-Organic Polyhedra Chemistry in The World Avatar", Technical Report 327, c4e-Preprint Series, Cambridge, 2024 ([PDF](https://como.ceb.cam.ac.uk/media/preprints/c4e_327_nmdt2_MarieICL__preprint_.pdf)).

@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 import SettingsStore from 'io/config/settings';
-import { Modules, PageTitles, PathNames } from 'io/config/routes';
+import { Modules, PageTitles, Paths } from 'io/config/routes';
 import { DefaultSettings } from 'types/settings';
 import FormModal from 'ui/interaction/modal/form/form-modal';
 import FormContainerComponent from 'ui/interaction/form/form-container';
@@ -35,7 +35,7 @@ export default function InterceptFormDeletePage(props: Readonly<InterceptDeleteF
     <FormModal>
       <FormContainerComponent
         entityType={props.params?.type}
-        formType={PathNames.REGISTRY_DELETE}
+        formType={Paths.REGISTRY_DELETE}
         agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
       />
     </FormModal>

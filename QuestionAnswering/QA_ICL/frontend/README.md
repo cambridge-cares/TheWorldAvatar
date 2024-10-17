@@ -1,4 +1,6 @@
-# Frontend Development for Marie
+# Marie's Frontend and Mock Server
 
-- [`mock_backend`](./mock_backend/): minimal Express server to mock Marie's backend APIs
-- [`next_app_marie`](./next_app_marie/): Next app for Marie's frontend
+This directory contains the following: 
+
+- [`mock_backend`](./mock_backend/): A minimal Express server to mock backend APIs.
+- [`next_app_marie`](./next_app_marie/): A Next.js app serving as the web interface for Marie.

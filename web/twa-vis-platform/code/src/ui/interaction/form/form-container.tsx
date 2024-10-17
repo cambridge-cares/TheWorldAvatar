@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import { setIsOpen } from 'state/modal-slice';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
@@ -51,13 +51,13 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     router.back();
   };
 
-  const showReturnButton: boolean = props.formType === PathNames.REGISTRY || !!response;
+  const showReturnButton: boolean = props.formType === Paths.REGISTRY || !!response;
 
   return (
     <div className={styles["container"]}>
       <div className={styles["form-title"]}>
         <ReturnButton />
-        <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase()}`}</span>
+        <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase().replace("_", " ")}`}</span>
       </div>
       <div className={styles["form-contents"]}>
         <FormComponent
@@ -71,12 +71,11 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
       </div>
       <div className={styles["form-footer"]}>
         {isSubmitting && <LoadingSpinner isSmall={false} />}
-        {!isSubmitting && response && (<ResponseComponent response={response} />)}
-        {!isSubmitting && !response && (<div></div>)}
+        {!isSubmitting && (<ResponseComponent response={response} />)}
         <MaterialIconButton
           iconName={showReturnButton ? "logout" : "publish"}
           className={styles["form-button"]}
-          iconStyles={[styles["icon-button"]]}
+          iconStyles={[styles["form-button-icon"]]}
           text={{
             styles: [styles["form-button-text"]],
             content: showReturnButton ? "RETURN" : "SUBMIT"

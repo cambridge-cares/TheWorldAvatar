@@ -8,20 +8,23 @@ This document is split into three key sections: [Architecture](#1-architecture),
 
 ## Table of Contents
 
-- [1. Architecture](#1-architecture)
-  - [1.1 Routing](#11-routing)
-  - [1.2 Component Hierarchy](#12-component-hierarchy)
-  - [1.3 Server vs Client Components](#13-server-vs-client-components)
-  - [1.4 Architecture](#14-state-management)
-  - [1.5 Runtime Resources](#15-runtime-resources)
-  - [1.6 Reverse Proxy Urls](#16-reverse-proxy-urls)
-  - [1.7 Dependent-Services](#17-dependent-services)
-- [2. Style Guide](#2-style-guide)
-  - [2.1 File-extensions](#21-file-extensions)
-  - [2.2 Code Conventions](#22-code-conventions)
-  - [2.3 Client Side](#23-client-side)
-- [3. Local Development Workflow](#3-local-development-workflow)
-  - [3.1 Requirements](#31-requirements)
+- [TWA Visualisation Platform (TWA-ViP)](#twa-visualisation-platform-twa-vip)
+  - [Table of Contents](#table-of-contents)
+  - [1. Architecture](#1-architecture)
+    - [1.1 Routing](#11-routing)
+    - [1.2 Component Hierarchy](#12-component-hierarchy)
+    - [1.3 Server vs Client components](#13-server-vs-client-components)
+    - [1.4 State Management](#14-state-management)
+    - [1.5 Runtime Resources](#15-runtime-resources)
+    - [1.6 Reverse Proxy urls](#16-reverse-proxy-urls)
+    - [1.7 Dependent services](#17-dependent-services)
+  - [2. Style Guide](#2-style-guide)
+    - [2.1 File extensions](#21-file-extensions)
+    - [2.2 Code conventions](#22-code-conventions)
+    - [React components](#react-components)
+    - [2.3 Client-Side](#23-client-side)
+  - [3. Local Development Workflow](#3-local-development-workflow)
+    - [3.1 Requirements](#31-requirements)
   - [3.2 Installation](#32-installation)
   - [3.3 Configuration](#33-configuration)
   - [3.4 Execution](#34-execution)
@@ -156,9 +159,7 @@ class Button extends React.Component<ButtonProps> {
 
 ### 2.3 Client-Side
 
-All client-side elements using relative pathing should be wrapped around the `formatAppUrl` method in `utils/client-utils.ts`. This is necessary to ensure that the elements will properly retrieve the url when reverse proxy is utilised.
-
-Additionally, reusable components are provided to facilitate this. For navigation, `AppLink` is available at `ui/navigation/link/link.tsx`. For graphics, import either `AppImage` or `IconComponent` from `ui/graphic/image/image.tsx` and `ui/graphic/icon/icon.tsx` respectively.
+Additionally, reusable components are provided to facilitate this. For navigation, `AppLink` is available at `ui/navigation/link/link.tsx`. For graphics, use the default `<Image>` element provided by next
 
 ## 3. Local Development Workflow
 

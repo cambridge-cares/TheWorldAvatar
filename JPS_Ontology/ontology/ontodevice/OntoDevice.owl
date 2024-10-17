@@ -12,7 +12,7 @@
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
         <dc:date>17 October 2024</dc:date>
         <rdfs:comment>OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
-        <owl:versionInfo>1.5</owl:versionInfo>
+        <owl:versionInfo>1.6</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -1186,6 +1186,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Calorimeter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Calorimeter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment>A device that measures the heat of chemical reactions or physical changes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Calorimeter</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/Camera -->
 
 
@@ -1293,6 +1305,30 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Coulometer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Coulometer">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment>A device used to measure the amount of electricity passed through an electrolyte.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Coulometer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/CryoCooler -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/CryoCooler">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Fridge"/>
+        <rdfs:comment>A device used to achieve very low temperatures for preservation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Cryo cooler</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/DefaultValvePosition -->
 
 
@@ -1348,6 +1384,18 @@
         <rdfs:comment>A pump that uses a diaphragm membrane to displace gas or liquid.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Diaphragm pump</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/DifferentialScanningCalorimeter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/DifferentialScanningCalorimeter">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Calorimeter"/>
+        <rdfs:comment>A differential scanning calorimeter used for analyzing thermal properties.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Differential scanning calorimeter</rdfs:label>
     </owl:Class>
     
 
@@ -1521,6 +1569,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Freezer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Freezer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Fridge"/>
+        <rdfs:comment>A device used for storing items at sub-zero temperatures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Freezer</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/Fridge -->
 
 
@@ -1629,6 +1689,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Grindometer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Grindometer">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment>A device that measures the particle size of ground materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Grindometer</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/HumiditySensor -->
 
 
@@ -1687,6 +1759,18 @@
         <rdfs:label>In out state</rdfs:label>
     </owl:Class>
     
+    
+    
+    <!-- https://www.theworldavatar.com/kg/ontodevice/InfraredSpectrometer -->
+    
+    
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/InfraredSpectrometer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
+        <rdfs:comment>A spectrometer that analyzes infrared light spectra.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Infrared spectrometer</rdfs:label>
+    </owl:Class>
+    
 
 
     <!-- https://www.theworldavatar.com/kg/ontodevice/InVehicle -->
@@ -1697,8 +1781,7 @@
         <rdfs:comment>The device is in a vehicle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>In vehicle</rdfs:label>
-    </owl:Class>
-    
+
 
 
     <!-- https://www.theworldavatar.com/kg/ontodevice/Laptop -->
@@ -1805,6 +1888,18 @@
         <rdfs:comment>A device that measures the mass flow rate of gas or liquid.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Mass flow sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/MassSpectrometer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/MassSpectrometer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
+        <rdfs:comment>A device used to measure the mass-to-charge ratio of ions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Mass spectrometer</rdfs:label>
     </owl:Class>
     
 
@@ -2459,6 +2554,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/SignalAmplifier -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/SignalAmplifier">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment>A device that increases the strength of a signal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Signal amplifier</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/SmartPhone -->
 
 
@@ -2491,6 +2598,18 @@
         <rdfs:comment>A device that converts electrical signal from  a computer to sound waves.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>Speaker</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Spectrometer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Spectrometer">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment>A device used to measure and analyze the spectrum of light.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Spectrometer</rdfs:label>
     </owl:Class>
     
 
@@ -2602,6 +2721,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Transmitter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Transmitter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment>A device that sends signals or data, often in communication systems.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Transmitter</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/TurboPump -->
 
 
@@ -2622,6 +2753,30 @@
         <rdfs:comment>A robot that does aerial movement without human on board.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>UAV</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/UltrasonicTransmitter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/UltrasonicTransmitter">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Transmitter"/>
+        <rdfs:comment>A transmitter that sends ultrasonic waves for detection or measurement.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Ultrasonic transmitter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/UltravioletVisibleSpectrometer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/UltravioletVisibleSpectrometer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
+        <rdfs:comment>A spectrometer that measures ultraviolet and visible light.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>Ultraviolet-visible spectrometer</rdfs:label>
     </owl:Class>
     
 
@@ -2733,6 +2888,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/XRaySpectrometer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/XRaySpectrometer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Spectrometer"/>
+        <rdfs:comment>A spectrometer that analyzes X-ray spectra.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>X-ray spectrometer</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/pHLevelSensor -->
 
 
@@ -2741,6 +2908,18 @@
         <rdfs:comment>A device used to measure the acidity or alkalinity of a solution.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
         <rdfs:label>pH level sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/pHMeter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/pHMeter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment>A device that measures the acidity or alkalinity of a solution.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontodevice/"/>
+        <rdfs:label>pH meter</rdfs:label>
     </owl:Class>
     
 

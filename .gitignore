@@ -13,6 +13,11 @@
 *.hdt
 *.mod
 
+# Log files and databases are not allowed:
+*.log
+database.sqlite
+keys.json
+
 # Integrated Development Environment (IDE)-specific files/folders:
 .vscode/
 .code-workspace

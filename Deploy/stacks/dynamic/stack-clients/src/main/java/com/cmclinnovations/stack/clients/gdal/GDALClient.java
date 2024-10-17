@@ -116,6 +116,9 @@ public class GDALClient extends ContainerClient {
                         filesOfType.removeAll(filesToRemove);
                         filesOfType.addAll(filesToAdd);
                         break;
+                    case "ESRI Shapefile":
+                        filesOfType.removeIf(file -> !file.endsWith(".shp"));
+                        break;
                     default:
                         break;
                 }
@@ -210,7 +213,8 @@ public class GDALClient extends ContainerClient {
     private Multimap<String, String> findGeoFiles(String containerId, String dirPath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        // NB In contrast to what the GDAL documentation claims, this applies not only to raster files
+        // NB In contrast to what the GDAL documentation claims, this applies not only
+        // to raster files
         // but also vector files. -fr returns both directories and files.
         String execId = createComplexCommand(containerId, "gdalmanage", "identify", "-fr", dirPath)
                 .withOutputStream(outputStream)

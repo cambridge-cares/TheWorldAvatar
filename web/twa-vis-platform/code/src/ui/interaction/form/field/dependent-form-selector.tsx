@@ -3,7 +3,7 @@ import styles from './field.module.css';
 import React from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
 
-import { getRegisterOptions } from 'ui/interaction/form/form-utils';
+import { FORM_STATES, getRegisterOptions } from 'ui/interaction/form/form-utils';
 import { PropertyShape } from 'types/form';
 import FormInputContainer from './form-input-container';
 
@@ -42,7 +42,7 @@ export default function DependentFormSelector(props: Readonly<FormSelectorProps>
         className={styles["selector"]}
         aria-label={props.field.fieldId}
         disabled={props.options?.disabled}
-        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field))}
+        {...props.form.register(props.field.fieldId, getRegisterOptions(props.field, props.form.getValues(FORM_STATES.FORM_TYPE)))}
       >
         {props.selectOptions.map((option, index) => (
           <option key={option} value={option}>
