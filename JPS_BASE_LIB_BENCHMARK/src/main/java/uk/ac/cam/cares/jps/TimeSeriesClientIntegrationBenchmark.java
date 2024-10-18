@@ -50,7 +50,6 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 
 import uk.ac.cam.cares.jps.base.BlazegraphContainer;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
