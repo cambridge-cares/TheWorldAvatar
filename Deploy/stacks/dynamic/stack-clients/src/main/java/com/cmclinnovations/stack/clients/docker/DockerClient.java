@@ -132,7 +132,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
         private InputStream inputStream = null;
         private OutputStream outputStream = null;
-        private OutputStream errorStream = null;
+        private OutputStream errorStream = new ByteArrayOutputStream();
 
         private String hereDocument = null;
 
