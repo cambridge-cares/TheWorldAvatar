@@ -47,6 +47,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
     <dependencies>
         <dependency>
+            <groupId>uk.ac.cam.cares.jps</groupId>
+            <artifactId>jps-base-lib</artifactId>
+            <version>1.44.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-core</artifactId>
             <version>${jmh.version}</version>
@@ -85,29 +90,15 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <artifactId>junit-jupiter</artifactId>
             <version>1.20.0</version>
         </dependency>
-        <dependency>
-            <groupId>uk.ac.cam.cares.jps</groupId>
-            <artifactId>jps-base-lib</artifactId>
-            <version>1.44.0</version>
-        </dependency>
     </dependencies>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!--
-            JMH version to use with this project.
-          -->
+        <!--JMH version to use with this project.-->
         <jmh.version>1.37</jmh.version>
-
-        <!--
-            Java source/target to use for compilation.
-          -->
+        <!--Java source/target to use for compilation.-->
         <javac.target>1.8</javac.target>
-
-        <!--
-            Name of the benchmark Uber-JAR to generate.
-          -->
+        <!--Name of the benchmark Uber-JAR to generate.-->
         <uberjar.name>benchmarks</uberjar.name>
     </properties>
 
@@ -143,10 +134,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
                             </transformers>
                             <filters>
                                 <filter>
-                                    <!--
-                                        Shading signed JARs will fail without this.
-                                        http://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar
-                                    -->
+                                    <!--Shading signed JARs will fail without this.
+                                        http://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar -->
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.SF</exclude>
@@ -160,46 +149,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 </executions>
             </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.5</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.3</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.17</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 
 </project>
