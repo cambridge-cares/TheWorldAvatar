@@ -161,10 +161,10 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value         = uputil.steps_preupload(standard_step, synthesis_client, vessel_list)
         if standard_step["targetTemperature"] == "room temperature":
             temp                                    = [25.0]
-            temperature_unit                        = get_unit("C", synthesis_client) 
+            temperature_unit                        = uputil.get_unit("C", synthesis_client) 
         else:
             temp, temp_unit                         = uputil.extract_numbers_and_units(standard_step["targetTemperature"],"temp")
-            temperature_unit                        = get_unit(temp_unit[0], synthesis_client) 
+            temperature_unit                        = uputil.get_unit(temp_unit[0], synthesis_client) 
             print("temperature: ", temp, temp_unit)
         heat_time, time_unit                        = uputil.extract_numbers_and_units(standard_step["duration"], "add")
         heat_rate, rate_unit                        = uputil.extract_numbers_and_units(standard_step["heatingCoolingRate"], "temp")
@@ -198,7 +198,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
                     new_vessel                              = False
         # instantiate new vessel if none matches
         if new_vessel:
-            vessel_type                                     = match_vessel(standard_step['usedVesselType'], synthesis_client)
+            vessel_type                                     = uputil.match_vessel(standard_step['usedVesselType'], synthesis_client)
             vessel                                          = Vessel(rdfs_label=standard_step["usedVesselName"], hasVesselType=vessel_type)
             vessel_list.append(vessel)
         # atmosphere    
@@ -218,10 +218,10 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value     = uputil.steps_preupload(standard_step, synthesis_client, vessel_list)
         if standard_step["temperature"] == "room temperature" or standard_step["temperature"] == "RT":
             temp                                    = [25.0]
-            temperature_unit                        = get_unit("C", synthesis_client) 
+            temperature_unit                        = uputil.get_unit("C", synthesis_client) 
         else:
             temp, temp_unit                         = uputil.extract_numbers_and_units(standard_step["temperature"], "temp")
-            temperature_unit                        = get_unit(temp_unit[0], synthesis_client) 
+            temperature_unit                        = uputil.get_unit(temp_unit[0], synthesis_client) 
             print("temperature: ", temp, temp_unit)
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
         target_temperature                          = Temperature(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/StirTemperature_{id_hash_value}", hasValue=temperature_value)
@@ -236,10 +236,10 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value     = uputil.steps_preupload(standard_step, synthesis_client, vessel_list)
         if standard_step["targetTemperature"] == "room temperature" or standard_step["targetTemperature"] == "RT":
             temp                                    = [25.0]
-            temperature_unit                        = get_unit("C", synthesis_client) 
+            temperature_unit                        = uputil.get_unit("C", synthesis_client) 
         else:
             temp, temp_unit                         = uputil.extract_numbers_and_units(standard_step["targetTemperature"], "temp")
-            temperature_unit                        = get_unit(temp_unit[0], synthesis_client) 
+            temperature_unit                        = uputil.get_unit(temp_unit[0], synthesis_client) 
             print("temperature: ", temp, temp_unit)
 
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit)
@@ -254,10 +254,10 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value     = uputil.steps_preupload(standard_step, synthesis_client, vessel_list)
         if standard_step["temperature"] == "room temperature" or standard_step["temperature"] == "RT":
             temp                                    = [25.0]
-            temperature_unit                        = get_unit("C", synthesis_client) 
+            temperature_unit                        = uputil.get_unit("C", synthesis_client) 
         else:
             temp, temp_unit                         = uputil.extract_numbers_and_units(standard_step["temperature"], "temp")
-            temperature_unit                        = get_unit(temp_unit[0], synthesis_client) 
+            temperature_unit                        = uputil.get_unit(temp_unit[0], synthesis_client) 
         if standard_step["dryingAgent"] != []:
             chemical_input                          = upload_inputChem(standard_step["dryingAgent"], synthesis_client, species_client)
         else:
@@ -278,10 +278,10 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value     = uputil.steps_preupload(standard_step, synthesis_client, vessel_list)
         if standard_step["temperature"] == "room temperature" or standard_step["temperature"] == "RT":
             temp                                    = [25.0]
-            temperature_unit                        = get_unit("C", synthesis_client) 
+            temperature_unit                        = uputil.get_unit("C", synthesis_client) 
         else:
             temp, temp_unit                         = uputil.extract_numbers_and_units(standard_step["temperature"], "temp")
-            temperature_unit                        = get_unit(temp_unit[0], synthesis_client) 
+            temperature_unit                        = uputil.get_unit(temp_unit[0], synthesis_client) 
         vol, vol_unit                               = uputil.extract_numbers_and_units(standard_step["targetVolume"], "temp")
         volume_unit                                 = uputil.get_unit(vol_unit[0], synthesis_client) 
         temperature_value                           = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/TemperatureValue_{id_hash_value}",hasNumericalValue=temp[0], hasUnit=temperature_unit, rdfs_comment=standard_step["temperature"])
@@ -305,7 +305,7 @@ def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_
         # target vessel
         vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value     = uputil.steps_preupload(standard_step, synthesis_client, vessel_list)
         if vessel.rdfs_label != standard_step["targetVesselName"]:
-            targetvessel_type                       = match_vessel(standard_step["targetVesselType"], synthesis_client)
+            targetvessel_type                       = uputil.match_vessel(standard_step["targetVesselType"], synthesis_client)
             targetvessel                            = Vessel(rdfs_label=standard_step["targetVesselName"], hasVesselType=targetvessel_type)
         else: 
             targetvessel                            = vessel
