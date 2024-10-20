@@ -4,6 +4,24 @@ import re
 import os
 import secret_parameter as spara
 import fitz  # PyMuPDF
+import json
+from twa.kg_operations import PySparqlClient
+from rework_ontomops.update_kg  import config_a_box_updates
+
+
+def read_json_file(file_path:str):
+    """
+    Reads a JSON file and returns the data as a dictionary.
+
+    Args:
+    file_path (str): The path to the JSON file.
+
+    Returns:
+    dict: The data parsed from the JSON file.
+    """
+    with open(file_path, 'r') as file:
+        data            = json.load(file)
+    return data
 
 def doi_from_path(input_path: str):
     print("path:", input_path)
@@ -57,7 +75,17 @@ def extract_bracket_substrings(input_string):
         return substring1, substring2
     else:
         return None, None
-    
+def get_client(name):
+    a_box_updates_config                        = config_a_box_updates(f"../{name}.env")
+    return                                        PySparqlClient(
+        query_endpoint                          = a_box_updates_config.SPARQL_QUERY_ENDPOINT            ,
+        update_endpoint                         = a_box_updates_config.SPARQL_UPDATE_ENDPOINT           ,
+        kg_user                                 = a_box_updates_config.KG_USERNAME                      ,
+        kg_password                             = a_box_updates_config.KG_PASSWORD                      ,
+        fs_url                                  = ""                                                    ,
+        fs_user                                 = ""                                                    ,
+        fs_pwd                                  = ""        )
+
 def append_si_to_paper(directory):
   # List all files in the directory
   files = os.listdir(directory)

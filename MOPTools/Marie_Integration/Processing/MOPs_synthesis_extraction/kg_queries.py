@@ -5,6 +5,7 @@ PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pard
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
 from processing.rework_ontomops import update_kg as KG
+import upload_utils as uputils
 def query_characterisation(doi:str):
 # initialize KG class
     script_dir                          = os.path.dirname(os.path.abspath(__file__))
@@ -674,3 +675,203 @@ ORDER BY ?ChemicalSynthesis ?provenance ?stepnumber
     species_labels                        = updater.sparql_client.performQuery(query) 
     print("species: ", species_labels)
     return species_labels
+
+
+# -------------------------------------------------------------------
+# generate upload queries
+# -------------------------------------------------------------------
+def species_querying(client, species_label):
+    # avoid linking all to N/A instance:
+    species_label               = [item for item in species_label if item != 'N/A']
+    insert_string               = ""
+    # Loop through each element in the list
+    for label in species_label:
+        #label = re.sub(r'[^\w\s,]', '', label)
+        # Append each formatted element to the result string
+        if '"' in label:
+            insert_string += f' """{label}""" '
+        else: 
+            insert_string += f""" "{label}" """
+    
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT distinct ?Species WHERE {{
+        ?Species a os:Species .
+        VALUES ?Text {{{insert_string}}}
+        ?Species (((os:hasIUPACName|os:hasMolecularFormula|os:hasSMILES)/os:value)|rdfs:label|rdf:label|skos:altLabel|<http://www.w3.org/2000/01/rdf-schema/label>) ?Text . 
+        }}"""
+    print("species query: ", query)
+    query_result                    = client.perform_query(query)
+    print("query result: ", query_result)
+    return query_result
+
+def species_querying_ontosyn(client, species_label):
+    # avoid linking all to N/A instance:
+    species_label               = [item for item in species_label if item != 'N/A']
+    insert_string               = ""
+    # Loop through each element in the list
+    for label in species_label:
+        #label = re.sub(r'[^\w\s,]', '', label)
+        # Append each formatted element to the result string
+        if '"' in label:
+            insert_string += f' """{label}""" '
+        else: 
+            insert_string += f""" "{label}" """
+    
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT distinct ?Species WHERE {{
+        ?Species a os:Species .
+        VALUES ?Text {{{insert_string}}}
+        ?Species (<http://www.w3.org/2000/01/rdf-schema/label> | rdfs:label|rdf:label) ?Text . 
+        }}"""
+    print("species query: ", query)
+    query_result                    = client.perform_query(query)
+    print("query result: ", query_result)
+    return query_result
+
+def mop_querying(client, CCDC_number, mop_formula, mop_name):
+    CCDC_number             = uputils.remove_na(CCDC_number)
+    mop_formula             = uputils.remove_na(mop_formula)
+    mop_name                = uputils.remove_na(mop_name)
+    print("querying for mop: ", CCDC_number, mop_formula, mop_name)
+    insert_string               = ""
+    # break down mop list of strings in a way to insert in a value sparql statement
+    for label in mop_name:
+        if label != "N/A" and label != "" and label != " " and label != 'lab':
+            #label = re.sub(r'[^\w\s,]', '', label)
+        # Append each formatted element to the result string
+            if '"' in label:
+                insert_string += f' """{label}""" '
+            else: 
+                insert_string += f""" "{label}" """
+    print("mop querying: ", insert_string)
+    # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        SELECT distinct ?MOPIRI
+        WHERE {{
+        ?MOPIRI a <https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedron>                        .
+        VALUES ?Text {{"{CCDC_number}" "{mop_formula}" {insert_string}}}
+        ?MOPIRI (<https://www.theworldavatar.com/kg/ontomops/hasMOPFormula>|skos:altLabel|<https://www.theworldavatar.com/kg/ontomops/hasCCDCNumber>) ?Text .  
+        }}
+        GROUP BY ?MOPIRI"""
+    out                     = client.perform_query(query)
+    print("used query: ", query)
+    print("MOp query result returned: ", out)
+    return out
+def CBU_querying(client, cbu_formula):
+    if cbu_formula == "N/A" and cbu_formula == "" and cbu_formula == " " and cbu_formula =='lab':
+            return []
+    if "[" not in cbu_formula:
+        cbu_formula             = "["+cbu_formula+"]"
+    # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
+    print("querying for cbu: ", cbu_formula)
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        SELECT distinct ?CBUIRI
+        WHERE {{
+        ?CBUIRI a <https://www.theworldavatar.com/kg/ontomops/ChemicalBuildingUnit> .
+        
+        ?CBUIRI om:hasCBUFormula "{cbu_formula}" .  
+        }}
+        GROUP BY ?CBUIRI"""
+    print("query cbu: ", query)
+    out                     = client.perform_query(query)
+    print("iri cbu: ", out)
+    return out
+def chemicalOutput_querying(client, CCDC_number, mop_formula, mop_name):
+    print("querying for mop: ", CCDC_number, mop_formula, mop_name)
+    insert_string               = ""
+    # break down mop list of strings in a way to insert in a value sparql statement
+    for label in mop_name:
+        if label != "N/A" and label != "" and label != " " and label != 'lab':
+            #label = re.sub(r'[^\w\s,]', '', label)
+        # Append each formatted element to the result string
+            if '"' in label:
+                insert_string += f' """{label}""" '
+            else: 
+                insert_string += f""" "{label}" """
+    # somehow the python derivation agent query fails with both numbers and strings in value so it is split for ccdc and not
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX om:      <https://www.theworldavatar.com/kg/ontomops/>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        PREFIX osyn:    <https://www.theworldavatar.com/kg/OntoSyn/>
+        SELECT distinct ?chemicalOutput
+        WHERE {{
+        ?chemicalTrans      osyn:hasChemicalOutput  ?chemicalOutput         .
+        VALUES ?Text {{{insert_string}}}
+        ?chemicalOutput  skos:altLabel ?Text .  
+                }}
+        GROUP BY ?chemicalOutput"""
+    out                     = client.perform_query(query)
+    print("used query: ", query)
+    print("MOp query result returned: ", out)
+    return out
+def doi_querying(client, doi):
+    insert_string               = ""
+    query = f"""
+        PREFIX osyn: <https://www.theworldavatar.com/kg/OntoSyn/>  
+        PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+        PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX bibo: <http://purl.org/ontology/bibo/>
+        PREFIX mop: <https://www.theworldavatar.com/kg/ontomops/>
+
+        SELECT distinct ?doc
+        WHERE {{
+            ?ChemicalSynthesis osyn:retrievedFrom ?doc .
+            ?doc bibo:doi ?provenance .
+            ?doc <http://purl.org/ontology/bibo/doi> "{doi}" .
+        }}
+        group by ?doc"""
+    out                     = client.perform_query(query)
+    print("used query: ", query)
+    return out
+
+def transformation_querying(client, mop_name):
+    print("mop name: ", mop_name)
+    insert_string               = ""
+    for label in mop_name:
+        # Append each formatted element to the result string
+        if label != "N/A" and label != "" and label != " " and label != 'lab':
+            #label = re.sub(r'[^\w\s,]', '', label)
+            if '"' in label:
+                insert_string += f' """{label}""" '
+            else: 
+                insert_string += f""" "{label}" """
+    print("mop querying: ", insert_string)
+    query = f"""
+        PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+        PREFIX om:      <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        PREFIX os:      <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: 	<http://www.w3.org/2001/XMLSchema#>
+        PREFIX osyn:    <https://www.theworldavatar.com/kg/OntoSyn/>
+        SELECT ?chemicalTrans
+        WHERE {{
+        ?chemicalTrans      osyn:hasChemicalOutput  ?chemicalOutput         .
+        VALUES ?Text {{{insert_string}}}
+        ?chemicalOutput  skos:altLabel ?Text .  
+                }}
+        GROUP BY ?chemicalTrans"""
+    out             = client.perform_query(query)
+    print("\n ----- \n", out)
+    return out

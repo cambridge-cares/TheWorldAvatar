@@ -2,17 +2,11 @@
 from __future__ import annotations
 from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty
 from twa.data_model.iris import TWA_BASE_URL
-from twa.kg_operations import PySparqlClient
 from typing import ClassVar
 from pydantic import Field
-from twa.kg_operations import PySparqlClient
-from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF
 from typing import Optional
-import uuid
-import re
-import os
-import sys
+
 
 
 class OntoSyn(BaseOntology):
