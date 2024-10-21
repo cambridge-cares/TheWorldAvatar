@@ -7,7 +7,7 @@
 
 ### Feature
 
-* Added ability to add the 'Authorization' header to WMS requests
+* Added ability to add the 'Authorization' header to GetMap requests
 
 ## 5.7.0
 
