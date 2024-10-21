@@ -9,13 +9,14 @@ import React, { useEffect, useRef } from 'react';
 import MapEventManager from 'map/map-event-manager';
 import { MapSettings } from 'types/settings';
 import { getCurrentImageryOption, getDefaultCameraPosition } from 'map/map-helper';
+import { useGeoServerProxy } from 'hooks/useGeoServerProxy';
 
 // Type definition of incoming properties
 interface MapProperties {
-  settings: MapSettings;
-  currentMap: Map;
-  setMap: React.Dispatch<React.SetStateAction<Map>>;
-  setMapEventManager: React.Dispatch<React.SetStateAction<MapEventManager>>;
+    settings: MapSettings;
+    currentMap: Map;
+    setMap: React.Dispatch<React.SetStateAction<Map>>;
+    setMapEventManager: React.Dispatch<React.SetStateAction<MapEventManager>>;
 }
 
 /**
@@ -26,72 +27,92 @@ interface MapProperties {
  * @returns React component for display.
  */
 export default function MapboxMapComponent(props: MapProperties) {
-  const mapContainer = useRef(null);
+    const mapContainer = useRef(null);
+    const { useProxy } = useGeoServerProxy()
 
-  // Run when component loaded
-  useEffect(() => {
-    initialiseMap();
+    // Run when component loaded
+    useEffect(() => {
+        initialiseMap();
 
-    return () => {
-      if (props.currentMap) {
-        props.currentMap.remove(); // Remove the map instance
-        props.setMap(null); // Reset the map ref
-      }
+        return () => {
+            if (props.currentMap) {
+                props.currentMap.remove(); // Remove the map instance
+                props.setMap(null); // Reset the map ref
+            }
+        };
+    }, [useProxy]);
+
+    // Initialise the map object
+    const initialiseMap = async () => {
+        props.currentMap?.remove();
+
+        const response = await fetch(("./api/map/settings"), {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+        const respJson = await response.json();
+        // Set credentials
+        mapboxgl.accessToken = respJson.token;
+
+        // Get default camera position
+        const defaultPosition = getDefaultCameraPosition(props.settings.camera);
+        let styleObject = getCurrentImageryOption(props.settings.imagery);
+
+        const map: Map = new mapboxgl.Map({
+            container: mapContainer.current,
+            style: styleObject.url,
+            center: defaultPosition["center"],
+            zoom: defaultPosition["zoom"],
+            bearing: defaultPosition["bearing"],
+            pitch: defaultPosition["pitch"],
+            transformRequest: (url) => {
+                if (useProxy) {
+                    try {
+                        const urlObject = new URL(url);
+                        const params = new URLSearchParams(urlObject.search);
+                        if (params.get('request') === 'GetMap') {
+                            // not sure if this will work across all conditions
+                            const serverUrl = `${window.location.protocol}//${window.location.host}`;
+                            const proxyUrl = `${serverUrl}/geoserver-proxy?url=${encodeURIComponent(url)}`;
+                            console.log('proxyUrl is ' + proxyUrl);
+                            return {
+                                url: proxyUrl
+                            }
+                        }
+                    } catch { }
+                } else {
+                    return { url: url }
+                }
+            }
+        });
+
+        map.addControl(new mapboxgl.ScaleControl() as mapboxgl.IControl, "bottom-right");
+        map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+
+        console.info("Initialised a new Mapbox map object.");
+
+        map.on("style.load", function () {
+            // Update time if using new v3 standard style
+            styleObject = getCurrentImageryOption(props.settings.imagery);
+            if (styleObject.time != null) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (map as any).setConfigProperty(
+                    "basemap",
+                    "lightPreset",
+                    styleObject.time
+                );
+            }
+            // Map is only settable after the styles have loaded
+            props.setMap(map);
+            props.setMapEventManager(new MapEventManager(map));
+        });
     };
-  }, []);
 
-  // Initialise the map object
-  const initialiseMap = async () => {
-    props.currentMap?.remove();
-
-    const response = await fetch(("./api/map/settings"), {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const respJson = await response.json();
-    // Set credentials
-    mapboxgl.accessToken = respJson.token;
-
-    // Get default camera position
-    const defaultPosition = getDefaultCameraPosition(props.settings.camera);
-    let styleObject = getCurrentImageryOption(props.settings.imagery);
-
-    const map: Map = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: styleObject.url,
-      center: defaultPosition["center"],
-      zoom: defaultPosition["zoom"],
-      bearing: defaultPosition["bearing"],
-      pitch: defaultPosition["pitch"],
-    });
-
-    map.addControl(new mapboxgl.ScaleControl() as mapboxgl.IControl, "bottom-right");
-    map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
-
-    console.info("Initialised a new Mapbox map object.");
-
-    map.on("style.load", function () {
-      // Update time if using new v3 standard style
-      styleObject = getCurrentImageryOption(props.settings.imagery);
-      if (styleObject.time != null) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (map as any).setConfigProperty(
-          "basemap",
-          "lightPreset",
-          styleObject.time
-        );
-      }
-      // Map is only settable after the styles have loaded
-      props.setMap(map);
-      props.setMapEventManager(new MapEventManager(map));
-    });
-  };
-
-  return (
-    <div id="mapContainer" ref={mapContainer} className="mapContainer">
-      {/* Map will be generated here. */}
-    </div>
-  );
+    return (
+        <div id="mapContainer" ref={mapContainer} className="mapContainer">
+            {/* Map will be generated here. */}
+        </div>
+    );
 }
 
 MapboxMapComponent.displayName = "MapboxMapComponent";
