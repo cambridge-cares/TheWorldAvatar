@@ -3,6 +3,12 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.8.0
+
+### Feature
+
+* Added ability to add the 'Authorization' header to WMS requests
+
 ## 5.7.0
 
 ### Bug Fixes
