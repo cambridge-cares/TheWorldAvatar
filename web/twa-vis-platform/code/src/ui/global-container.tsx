@@ -66,6 +66,8 @@ export default function GlobalContainer(
           showMap={modules.map}
           showDash={modules.dashboard}
           showHelp={modules.help}
+          showRegistry={modules.registry}
+          showScheduler={modules.scheduler}
           logos={branding.navbar}
         />
 
