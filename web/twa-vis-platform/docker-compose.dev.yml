@@ -18,6 +18,7 @@ services:
       PROTECTED_PAGES: / ## pages that a user must be logged in to see
       ROLE_PROTECTED_PAGES: /add/* ## pages that require a user to have a given REALM or CLIENT role
       ROLE: protected ## the role required for the above list
+      REACT_APP_USE_GEOSERVER_PROXY: false
 
       REDIS_HOST: host.docker.internal
     secrets:
