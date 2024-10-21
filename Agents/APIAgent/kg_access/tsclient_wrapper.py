@@ -119,9 +119,11 @@ def create_postgres_db_if_not_exists(db_url, db_usr, db_pw):
     conn = None
     dburls = db_url.split('/')
     db_name = dburls[-1]
+    db_host = dburls[2].split(':')[0]
+    db_port = dburls[2].split(':')[1]
     try:
         # Connect to PostgreSQL server (via DEFAULT host and port)
-        conn = psycopg2.connect(user=db_usr, password=db_pw, host='localhost')
+        conn = psycopg2.connect(user=db_usr, password=db_pw, host=db_host, port=db_port)
         conn.autocommit = True
         # Create cursor object
         cur = conn.cursor()

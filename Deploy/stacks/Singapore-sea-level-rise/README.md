@@ -105,7 +105,79 @@ Once the stack-manager is fully spin up. In the [stack-data-uploader](stack-data
 ./stack.sh start sea-level
 ```
 
+### Landplot layer
+Execute [landplot_matching.http] to match buildings with landplot. This should create a table public.landplot_buildings, mapping ogc_fid of landplots to building_uuid. Required to highlight buildings with GFA exceeded.
+
+Execute [landplot_layer.sql] to create a new materialised view, and update SQL view of twa:landplot in GeoServer GUI manually to
+```
+SELECT * FROM landplot_layer
+```
+Manually add this ontop mapping to the ontop container, prefixes are dependent on current state of the ontop mapping:
+```
+mappingId	landplot to buildings
+target		tw:landplot/{ogc_fid} tw:ontoplot/containsBuilding tw:Building/{building_uuid} . 
+source		SELECT ogc_fid, building_uuid from landplot_buildings
+```
+
+### Carpark
+Create carpark namespace in Blazegraph and carpark database in PostGIS.
+Add postgis password to db.password in [client.properties] and carpark API token in ./carpark_config/api.properties.
+Run the following requests from the command line or use the convenience file [carpark.http]:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/carpark-agent/retrieve
+```
+
+```
+curl -X POST http://localhost:3838/carpark-agent/create
+```
+
+### City furniture
+Execute [cityfurniture-footprint-height.sql] first to add city furniture footprint into the cityobject_genericattrib table.
+
+### Company
+Then run the data uploader for the "company" and "" dataset, which is not in the list of datasets in sea-level.json.
+
+Not run together with data uploader due to the SQL script requiring the city furniture footprint first.
+
+Finally run [company.http] to match entities to the closest buildings.
+
+### Update buildings layer
+Previously the stack data uploader executed a script to create the GeoServer layer for buildings, but it does not have city furniture and company data. Execute [geoserver_layer.sql] to update the layer.
+
+### CARES weather station
+Create `caresweather` namespace in Blazegraph. 
+
+Modify [api.properties (weather)] with credentials from https://www.dropbox.com/scl/fo/24gyly40ezoyx04i6xomi/AHLZ6DHl_IVFNXy6Ym2-oFc?rlkey=xpvzka6b5smg53cppe3f98zt8&st=mleraqpx&dl=0
+
+Update db.password in [client.properties (weather)].
+
+Time series data for CARES weather station is stored in the main database (postgres) due to it sharing the same rdf type with virtual weather station and virtual sensors.
+
+Execute [cares_weather.http] to instantiate and start periodic updates.
+
+### nginx for PostGIS
+The stack's PostGIS is accessible at port 3840, to change the port edit [nginx-2].
+
+### Traffic incident Agent
+You need to have an `API_key` which can be obtained by registering from [Land Transport Data Mall](https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html). The API key needs to entered in the file [config.properties](./traffic_incident_inputs/config.properties) at `trafficincident.accountKey=` to retrieve the data from LTA API.
+
+To trigger the agent, run
+```bash
+curl -L -X POST "http://localhost:3838/traffic-incident-agent/start"
+```
+Refer [TrafficIncidentAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/TrafficIncidentAgent) for more details.
+
 ## Authors
 Shin Zert Phua (shinzert.phua@cares.cam.ac.uk), May 2024
+Kok Foong Lee
 
 [sea-level.json]: ./stack-manager/inputs/config/sea-level.json
+[landplot_matching.http]: ./http_requests/landplot_matching.http
+[landplot_layer.sql]: ./additional_sql_scripts/landplot_layer.sql
+[cityfurniture-footprint-height.sql]: ./additional_sql_scripts/cityfurniture-footprint-height.sql
+[company.http]: ./http_requests/company.http
+[geoserver_layer.sql]: ./additional_sql_scripts/geoserver_layer.sql
+[api.properties (weather)]: ./cares_weather_config/api.properties
+[client.properties (weather)]: ./cares_weather_config/client.properties
+[cares_weather.http]: ./http_requests/cares_weather.http
+[nginx-2]: ./stack-manager/inputs/config/services/nginx-2.json

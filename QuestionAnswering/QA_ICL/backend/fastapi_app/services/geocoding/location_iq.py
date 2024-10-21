@@ -42,8 +42,13 @@ class LocationIQGeocoder(IGeocoder):
     def search(self, location: str):
         query_params = {"key": self.api_key, "q": location, "format": "json"}
         res = requests.get(self.URL, params=query_params)
-        res.raise_for_status()
 
+        try:
+            res.raise_for_status()
+        except Exception as e:
+            e.args = e.args + (res.raw,)
+            raise e
+        
         entries = self.geocode_res_adapter.validate_json(res.text)
         if not entries:
             return None

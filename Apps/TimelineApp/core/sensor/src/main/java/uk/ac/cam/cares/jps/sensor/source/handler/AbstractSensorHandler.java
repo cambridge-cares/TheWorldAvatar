@@ -29,6 +29,8 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     protected String sensorName;
     private boolean isRunning = false;
     Logger LOGGER = Logger.getLogger(getClass());
+    protected final Object sensorDataLock = new Object();
+
 
     /**
      * Constructs an AbstractSensorHandler that initializes the sensor and sensor data management.
@@ -79,7 +81,9 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
      */
     @Override
     public JSONArray getSensorData() {
-        return sensorData;
+        synchronized (sensorDataLock) {
+            return sensorData;
+        }
     }
 
     /**
@@ -101,7 +105,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
             dataPoint.put("time", System.currentTimeMillis() * 1000000);
             dataPoint.put("values", values);
 
-            synchronized (this) {
+            synchronized (sensorDataLock) {
                 sensorData.put(dataPoint);
             }
         } catch (JSONException e) {
@@ -114,7 +118,9 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
      */
     @Override
     public void clearSensorData() {
-        sensorData = new JSONArray();
+        synchronized (sensorDataLock) {
+            sensorData = new JSONArray();
+        }
     }
 
     /**
@@ -137,5 +143,10 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     public Boolean isRunning() {
         return isRunning;
     }
+
+    public Object getSensorDataLock() {
+        return sensorDataLock;
+    }
+
 
 }
