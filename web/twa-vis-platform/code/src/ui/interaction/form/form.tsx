@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { FieldValues, useForm, UseFormReturn } from 'react-hook-form';
 import { usePathname } from 'next/navigation';
 
 import { Paths } from 'io/config/routes';
+import { setFilterFeatureIris, setFilterTimes } from 'state/map-feature-slice';
 import { FormTemplate, ID_KEY, PROPERTY_GROUP_TYPE, PropertyGroup, PropertyShape, PropertyShapeOrGroup, SEARCH_FORM_TYPE, TYPE_KEY, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { getAfterDelimiter } from 'utils/client-utils';
@@ -12,8 +14,7 @@ import FormFieldComponent from './field/form-field';
 import FormSection from './section/form-section';
 import { DependentFormSection } from './section/dependent-form-section';
 import FormSchedule, { daysOfWeek } from './section/form-schedule';
-import { useDispatch } from 'react-redux';
-import { setFilterFeatureIris } from 'state/map-feature-slice';
+import FormSearchPeriod from './section/form-search-period';
 
 interface FormComponentProps {
   formRef: React.MutableRefObject<HTMLFormElement>;
@@ -164,6 +165,17 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             dispatch(setFilterFeatureIris(JSON.parse(pendingResponse.message)));
             pendingResponse.message = "Found matching features! Updating the visualisation...";
           }
+          if (formData[FORM_STATES.START_TIME_PERIOD] && formData[FORM_STATES.END_TIME_PERIOD]) {
+            // Only display this message if there is no features based on static meta data but the search period is required
+            if (!pendingResponse.success) {
+              pendingResponse.success = true;
+              pendingResponse.message = "No matching feature found! Attempting to display all features within the selected time period...";
+            }
+            // Convert date to UNIX Epoch Timestamp
+            const startTime: number = Math.floor(new Date(formData[FORM_STATES.START_TIME_PERIOD]).getTime() / 1000);
+            const endTime: number = Math.floor(new Date(formData[FORM_STATES.END_TIME_PERIOD]).getTime() / 1000);
+            dispatch(setFilterTimes([startTime, endTime]));
+          }
         }
         break;
       }
@@ -212,6 +224,12 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             }
             const disableId: boolean = props.formType === Paths.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
             if (fieldProp.class) {
+              if (props.formType === SEARCH_FORM_TYPE && fieldProp.class[ID_KEY] === "https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries") {
+                return <FormSearchPeriod
+                  key={fieldProp.name[VALUE_KEY] + index}
+                  form={form}
+                />;
+              }
               return <DependentFormSection
                 key={fieldProp.name[VALUE_KEY] + index}
                 agentApi={props.agentApi}

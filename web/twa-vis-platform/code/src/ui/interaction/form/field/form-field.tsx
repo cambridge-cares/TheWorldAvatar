@@ -4,7 +4,6 @@ import generalStyles from '../form.module.css';
 import React, { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
-import { Paths } from 'io/config/routes';
 import { PropertyShape, SEARCH_FORM_TYPE, VALUE_KEY } from 'types/form';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import FormInputField from './form-input';

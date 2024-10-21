@@ -16,6 +16,8 @@ export const FORM_STATES: Record<string, string> = {
   SUN: "sunday",
   START_DATE: "start date",
   END_DATE: "end date",
+  START_TIME_PERIOD: "search period from",
+  END_TIME_PERIOD: "search period to",
   TIME_SLOT_START: "time slot start",
   TIME_SLOT_END: "time slot end",
 };
@@ -97,7 +99,9 @@ export function getRegisterOptions(field: PropertyShape, formType: string): Regi
   const options: RegisterOptions = {};
 
   // The field is required if this is currently not the search form and SHACL defines them as optional
-  if (formType != SEARCH_FORM_TYPE && (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1)) {
+  // Also required for start and end search period
+  if ((formType != SEARCH_FORM_TYPE && (Number(field.minCount?.[VALUE_KEY]) === 1 && Number(field.maxCount?.[VALUE_KEY]) === 1)) ||
+    (field.fieldId == FORM_STATES.START_TIME_PERIOD || field.fieldId == FORM_STATES.END_TIME_PERIOD)) {
     options.required = "Required";
   }
 

@@ -12,7 +12,7 @@ import MapEventManager from 'map/map-event-manager';
 import { addData } from 'map/map-helper';
 import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import { selectDimensionSliderValue } from 'state/dimension-slider-slice';
-import { getFilterFeatureIris, getFilterLayerIds, getScenarioID, setFilterFeatureIris, setFilterLayerIds } from 'state/map-feature-slice';
+import { getFilterFeatureIris, getFilterLayerIds, getFilterTimes, getScenarioID, setFilterFeatureIris, setFilterLayerIds, setFilterTimes } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import { MapSettings } from 'types/settings';
 import ScenarioModal from 'ui/interaction/modal/scenario';
@@ -46,6 +46,7 @@ export default function MapContainer(props: MapContainerProps) {
   const dimensionSliderValue = useSelector(selectDimensionSliderValue);
   const filterLayerIds: string[] = useSelector(getFilterLayerIds);
   const filterFeatureIris: string[] = useSelector(getFilterFeatureIris);
+  const filterTimes: number[] = useSelector(getFilterTimes);
 
   // Memoizes parsing of settings only once initially to prevent any unintended calls
   const mapSettings: MapSettings = useMemo(() => {
@@ -101,23 +102,33 @@ export default function MapContainer(props: MapContainerProps) {
 
   // Update the filters for the specific layers if search is required
   useEffect(() => {
-    if (map && mapData && filterLayerIds?.length > 0 && filterFeatureIris?.length > 0) {
+    if (map && mapData && filterLayerIds?.length > 0 && (filterFeatureIris?.length > 0 || filterTimes.length > 0)) {
       // Reset the filters first before applying new filters
       filterLayerIds.map(layerId => map.setFilter(layerId, null));
       // By default, show all feature will have reset filters
-      let filter: FilterSpecification = null;
+      let filter: FilterSpecification = ["all"];
       // The filter settings should only be updated if there is no SHOW_ALL_FEATURE_INDICATOR
       if (!(filterFeatureIris?.length === 1 && filterFeatureIris[0] === SHOW_ALL_FEATURE_INDICATOR)) {
         // Use exact match to ensure only matching values are shown, do not use in, contains or other expressions with possible substrings
         const valueResultMap: (string | boolean)[] = filterFeatureIris.flatMap(iri => [iri, true]);
-        filter = ["match", ["string", ["get", "iri"]], ...valueResultMap, false]
+        filter.push(["match", ["string", ["get", "iri"]], ...valueResultMap, false]);
       };
+      // Add filter times if they exist - start and end period is in first and second position respectively
+      if (filterTimes.length != 0) {
+        filter.push(["<=", filterTimes[0], ["get", "time"]]);
+        filter.push(["<=", ["get", "time"], filterTimes[1]]);
+      }
+      // If no filters are added, reset it to null
+      if (filter.length === 1) {
+        filter = null;
+      }
       filterLayerIds.map(layerId => map.setFilter(layerId, filter));
       // Reset the filter features after usage
       dispatch(setFilterFeatureIris([]));
       dispatch(setFilterLayerIds([]));
+      dispatch(setFilterTimes([]));
     }
-  }, [map, mapData, filterLayerIds, filterFeatureIris]);
+  }, [map, mapData, filterLayerIds, filterFeatureIris, filterTimes]);
 
   return (
     <>
