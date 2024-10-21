@@ -74,7 +74,6 @@ export default function MapboxMapComponent(props: MapProperties) {
                             // not sure if this will work across all conditions
                             const serverUrl = `${window.location.protocol}//${window.location.host}`;
                             const proxyUrl = `${serverUrl}/geoserver-proxy?url=${encodeURIComponent(url)}`;
-                            console.log('proxyUrl is ' + proxyUrl);
                             return {
                                 url: proxyUrl
                             }
