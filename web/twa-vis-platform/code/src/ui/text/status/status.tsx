@@ -22,7 +22,7 @@ export default function StatusComponent(props: Readonly<StatusComponentProps>) {
       statusColor = "#D7653D";
       break;
     default:
-      statusColor = "#30363d";
+      statusColor = "#666";
   }
 
   return (
