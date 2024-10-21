@@ -205,7 +205,7 @@ public class GetService {
     LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     return new ResponseEntity<>(
         results.stream()
-            .map(SparqlBinding::get)
+            .map(binding -> binding.getFieldValue("iri"))
             .collect(Collectors.toList()),
         HttpStatus.OK);
   }
