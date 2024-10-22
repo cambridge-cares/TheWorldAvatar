@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -967,17 +968,18 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         // Look for the entry dataIRI in dbTable
         Table<?> table = getDSLTable(DB_TABLE_NAME);
 
-        // TODO - this may be made more efficient if not in a loop
+        List<Condition> conditions = dataIRIs.stream().map(DATA_IRI_COLUMN::eq).collect(Collectors.toList());
 
-        for (String dataIRI : dataIRIs) {
+        Condition combinedCondition = DSL.or(conditions);
 
-            if (context.fetchExists(selectFrom(table).where(DATA_IRI_COLUMN.eq(dataIRI)))) {
-                return dataIRI;
-            }
+        Result<Record> result = context.select().from(table).where(combinedCondition).fetch();
 
+        // Check if the result is non-empty and return the first element
+        if (!result.isEmpty()) {
+            return result.get(0).getValue(DATA_IRI_COLUMN.getName(), String.class);
         }
 
-        return null;
+        return null; // If no data IRI exists
     }
 
     /**
