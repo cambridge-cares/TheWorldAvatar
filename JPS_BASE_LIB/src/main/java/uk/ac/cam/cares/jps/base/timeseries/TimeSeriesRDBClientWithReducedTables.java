@@ -219,6 +219,33 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     }
 
     /**
+     * bulk version to above
+     * 
+     * @param dataIRIs
+     * @param dataClasses
+     * @param tsIRIs
+     * @param srid
+     * @param conn        connection to the RDB
+     * @return
+     */
+    @Override
+    public List<Integer> bulkInitTimeSeriesTable(List<List<String>> dataIRIs, List<List<Class<?>>> dataClasses,
+            List<String> tsIRIs, Integer srid, Connection conn) {
+        List<Integer> failedIndex = new ArrayList<>();
+        // TODO - re-factor this to be more efficient
+        for (int i = 0; i < dataIRIs.size(); i++) {
+            try {
+                initTimeSeriesTable(dataIRIs.get(i), dataClasses.get(i), tsIRIs.get(i), srid, conn);
+            } catch (JPSRuntimeException eRdbCreate) {
+                LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
+                failedIndex.add(i);
+            }
+        }
+        return failedIndex;
+
+    }
+
+    /**
      * Append time series data
      * If certain columns within the table are not provided, they will be nulls
      * 
@@ -953,7 +980,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      * Check if all given data IRI is attached to a time series in kb
      * 
      * @param dataIRIs data IRIs provided as list of string
-     * @param conn    connection to the RDB
+     * @param conn     connection to the RDB
      * @return True if any dataIRIs exist and are attached to a time series, false
      *         otherwise
      */

@@ -201,6 +201,33 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
     }
 
     /**
+     * bulk version to above
+     * 
+     * @param dataIRIs
+     * @param dataClasses
+     * @param tsIRIs
+     * @param srid
+     * @param conn        connection to the RDB
+     * @return
+     */
+    @Override
+    public List<Integer> bulkInitTimeSeriesTable(List<List<String>> dataIRIs, List<List<Class<?>>> dataClasses,
+            List<String> tsIRIs, Integer srid, Connection conn) {
+        List<Integer> failedIndex = new ArrayList<>();
+        // TODO - re-factor this to be more efficient
+        for (int i = 0; i < dataIRIs.size(); i++) {
+            try {
+                initTimeSeriesTable(dataIRIs.get(i), dataClasses.get(i), tsIRIs.get(i), srid, conn);
+            } catch (JPSRuntimeException eRdbCreate) {
+                LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
+                failedIndex.add(i);
+            }
+        }
+        return failedIndex;
+
+    }
+
+    /**
      * Append time series data to an already existing RDB table
      * If certain columns within the table are not provided, they will be nulls
      * 
