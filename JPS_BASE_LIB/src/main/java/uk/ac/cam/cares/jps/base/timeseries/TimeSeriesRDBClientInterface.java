@@ -361,5 +361,15 @@ interface TimeSeriesRDBClientInterface<T> {
 
     boolean checkDataHasTimeSeries(String dataIRI);
 
+    /**
+     * Check if all given data IRI is attached to a time series in kb
+     * 
+     * @param dataIRIs data IRIs provided as list of string
+     * @param conn    connection to the RDB
+     * @return the first dataIRI that exists and is attached to a time series, null
+     *         otherwise
+     */
+    String checkAnyDataHasTimeSeries(List<String> dataIRIs, Connection conn);
+
     Connection getConnection() throws SQLException;
 }

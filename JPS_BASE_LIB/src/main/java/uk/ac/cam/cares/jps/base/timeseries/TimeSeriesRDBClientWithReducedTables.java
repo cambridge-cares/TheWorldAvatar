@@ -159,11 +159,10 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
             // Check if any data has already been initialised (i.e. is associated with
             // different tsIRI)
-            for (String s : dataIRIList) {
-                if (checkDataHasTimeSeries(s, conn)) {
-                    throw new JPSRuntimeException(
-                            exceptionPrefix + "<" + s + "> already has an assigned time series instance");
-                }
+            String faultyDataIRI = checkAnyDataHasTimeSeries(dataIRIList, conn);
+            if (faultyDataIRI != null) {
+                throw new JPSRuntimeException(
+                        exceptionPrefix + "<" + faultyDataIRI + "> already has an assigned time series instance");
             }
 
             // Ensure that there is a class for each data IRI
@@ -947,6 +946,38 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         } catch (SQLException e) {
             throw new JPSRuntimeException(String.format("Error making connection to %s", rdbURL), e);
         }
+    }
+
+    /**
+     * Check if all given data IRI is attached to a time series in kb
+     * 
+     * @param dataIRIs data IRIs provided as list of string
+     * @param conn    connection to the RDB
+     * @return True if any dataIRIs exist and are attached to a time series, false
+     *         otherwise
+     */
+    @Override
+    public String checkAnyDataHasTimeSeries(List<String> dataIRIs, Connection conn) {
+        DSLContext context = DSL.using(conn, DIALECT);
+
+        if (!checkCentralTableExists(conn)) {
+            return null;
+        }
+
+        // Look for the entry dataIRI in dbTable
+        Table<?> table = getDSLTable(DB_TABLE_NAME);
+
+        // TODO - this may be made more efficient if not in a loop
+
+        for (String dataIRI : dataIRIs) {
+
+            if (context.fetchExists(selectFrom(table).where(DATA_IRI_COLUMN.eq(dataIRI)))) {
+                return dataIRI;
+            }
+
+        }
+
+        return null;
     }
 
     /**
