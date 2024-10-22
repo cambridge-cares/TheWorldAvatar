@@ -124,6 +124,7 @@ The following fields are optional utility fields that does not affect the catego
 
 1. `order`: A `number` that can be set at either the group and property level to arrange the form accordingly
 2. `defaultValue`: An optional `string` at each `property` that contains the corresponding value of the specific entity instance
+3. `maxCount = 0`: Indicates that the field is a hidden property that should be hidden on the form
 
 ### 2.3. Form validation
 
