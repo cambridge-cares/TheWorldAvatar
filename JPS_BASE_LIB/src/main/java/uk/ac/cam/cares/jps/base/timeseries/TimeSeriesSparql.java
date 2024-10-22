@@ -436,7 +436,7 @@ public class TimeSeriesSparql {
         // Check that the data IRIs are not attached to a different time series IRI
         // already
         List<String> dataIRI = timeSeriesKgMetadata.getDataIriList();
-        if (hasExistingTimeSeries(dataIRI)) {
+        if (hasAnyExistingTimeSeries(dataIRI)) {
             throw new JPSRuntimeException(
                     exceptionPrefix + "One or more of the provided data IRI has an existing time series");
         }
@@ -548,26 +548,6 @@ public class TimeSeriesSparql {
             }
         });
         kbClient.executeUpdate(modify.getQueryString());
-    }
-
-    /**
-     * returns true if any of the given data IRIs has a time series attached
-     * 
-     * @param dataIRI
-     * @return
-     */
-    boolean checkAnyTimeSeriesExists(List<String> dataIRI) {
-        SelectQuery query = Queries.SELECT();
-        Variable data = query.var();
-        Variable ts = query.var();
-        ValuesPattern valuesPattern = new ValuesPattern(data,
-                dataIRI.stream().map(Rdf::iri).collect(Collectors.toList()));
-
-        query.where(data.has(hasTimeSeries, ts), valuesPattern).prefix(PREFIX_ONTOLOGY).limit(1);
-
-        JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
-
-        return queryResult.length() > 0;
     }
 
     /**
@@ -943,7 +923,7 @@ public class TimeSeriesSparql {
 
         // Check that the data IRIs are not attached to a different time series IRI
         // already
-        if (hasExistingTimeSeries(timeSeriesKgMetadata.getDataIriList())) {
+        if (hasAnyExistingTimeSeries(timeSeriesKgMetadata.getDataIriList())) {
             throw new JPSRuntimeException(
                     exceptionPrefix + "One or more of the provided data IRI has an existing time series");
         }
@@ -973,7 +953,7 @@ public class TimeSeriesSparql {
      * @param dataIriList
      * @return
      */
-    boolean hasExistingTimeSeries(List<String> dataIriList) {
+    boolean hasAnyExistingTimeSeries(List<String> dataIriList) {
         SelectQuery query = Queries.SELECT();
         Variable timeSeriesVar = query.var();
         Variable dataVar = query.var();

@@ -292,7 +292,7 @@ public class TimeSeriesClient<T> {
         List<String> singleListDataIri = new ArrayList<>();
         dataIRIs.forEach(singleListDataIri::addAll);
 
-        if (rdfClient.checkAnyTimeSeriesExists(singleListDataIri)) {
+        if (rdfClient.hasAnyExistingTimeSeries(singleListDataIri)) {
             throw new JPSRuntimeException(
                     exceptionPrefix + "One or more of the provided data IRI already has a time series attached. " +
                             "Instantiate them individually with initTimeSeries if needed.");
