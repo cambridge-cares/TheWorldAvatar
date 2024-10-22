@@ -563,7 +563,7 @@ public class TimeSeriesSparql {
         ValuesPattern valuesPattern = new ValuesPattern(data,
                 dataIRI.stream().map(Rdf::iri).collect(Collectors.toList()));
 
-        query.where(data.has(hasTimeSeries, ts), valuesPattern).prefix(PREFIX_ONTOLOGY);
+        query.where(data.has(hasTimeSeries, ts), valuesPattern).prefix(PREFIX_ONTOLOGY).limit(1);
 
         JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
 
@@ -983,7 +983,7 @@ public class TimeSeriesSparql {
 
         GraphPattern queryPattern = dataVar.has(hasTimeSeries, timeSeriesVar);
 
-        query.where(valuesPattern, queryPattern).prefix(PREFIX_ONTOLOGY).select(timeSeriesVar);
+        query.where(valuesPattern, queryPattern).prefix(PREFIX_ONTOLOGY).select(timeSeriesVar).limit(1);
 
         JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
 
