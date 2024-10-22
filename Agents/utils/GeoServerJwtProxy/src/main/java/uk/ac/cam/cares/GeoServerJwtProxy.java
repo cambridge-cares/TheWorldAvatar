@@ -38,12 +38,14 @@ public class GeoServerJwtProxy extends HttpServlet {
                 DecodedJWT decodedJWT = JWT.decode(headerValue.substring(7));
                 if (decodedJWT.getExpiresAtAsInstant().isAfter(Instant.now())) {
                     userId = decodedJWT.getSubject();
+                } else {
+                    LOGGER.error("Found JSON Web Token but it is expired.");
                 }
             }
         }
 
         if (userId == null) {
-            String errmsg = "Authorization header with Bearer not found";
+            String errmsg = "Valid user ID cannot be obtained.";
             LOGGER.error(errmsg);
             throw new RuntimeException(errmsg);
         }
@@ -61,9 +63,21 @@ public class GeoServerJwtProxy extends HttpServlet {
         }
 
         String viewParamName = System.getenv("VIEWPARAM_NAME");
-        if (userId != null && viewParamName != null) {
-            uriBuilder.addParameter("viewparams", String.format("%s:%s", viewParamName, userId));
+        String viewParams = "";
+        if (viewParamName != null) {
+            String existingViewParams = request.getParameter("viewparams");
+            if (existingViewParams != null) {
+                if (existingViewParams.endsWith(";")) {
+                    viewParams = existingViewParams + String.format("%s:%s", viewParamName, userId);
+                } else {
+                    viewParams = existingViewParams + ";" + String.format("%s:%s", viewParamName, userId);
+                }
+            } else {
+                viewParams = String.format("%s:%s", viewParamName, userId);
+            }
         }
+
+        uriBuilder.setParameter("viewparams", viewParams);
 
         URI uri;
         try {
