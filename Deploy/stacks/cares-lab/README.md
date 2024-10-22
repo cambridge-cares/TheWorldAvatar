@@ -32,7 +32,7 @@ https://www.dropbox.com/scl/fi/vnnrpz3gte71jpzew6kvu/truststore.jks?rlkey=664b2n
 3. In the [keycloak.json] and under the `Mounts` section, modify `Source` based on the location of the truststore.jks file.
 
 ### Visualisation
-1. Go to the following [dropbox folder](https://www.dropbox.com/scl/fi/hztcpc0fxz2ql8jimsm3u/data.zip?rlkey=ejdv5e85l6gmfq7ka1zadxpae&st=xcgans77&dl=0) and download the `data` folder. It should contain the glb files for the lab visualisation.
+1. Go to the following [dropbox folder](https://www.dropbox.com/scl/fi/hztcpc0fxz2ql8jimsm3u/data.zip?rlkey=ejdv5e85l6gmfq7ka1zadxpae&st=7mua6kbp&dl=0) and download the `data` folder. It should contain the glb files for the lab visualisation.
 
 2. Unzip the folder and extract the `data` folder to [webspace].
 
