@@ -90,6 +90,7 @@ https://www.dropbox.com/scl/fo/zne8c9e4bf3ikfpeymzoj/AM1dp5_i6b9rEthmzHSZQPY?rlk
 [data-bridge-agent.json]: ./stack-manager/inputs/config/services/data-bridge-agent.json
 [email-agent.json]: ./stack-manager/inputs/config/services/email-agent.json
 [feature-info-agent.json]: ./stack-manager/inputs/config/services/feature-info-agent.json
+[fh-sash-and-occupancy-agent.json]: ./stack-manager/inputs/config/services/fh-sash-and-occupancy-agent.json
 [pips-timeseries-agent.json]: ./stack-manager/inputs/config/services/pips-timeseries-agent.json
 [rfid-query-agent.json]: ./stack-manager/inputs/config/services/rfid-query-agent.json
 [rfid-update-agent.json]: ./stack-manager/inputs/config/services/rfid-update-agent.json
