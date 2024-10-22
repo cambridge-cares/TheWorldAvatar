@@ -954,19 +954,11 @@ public class TimeSeriesSparql {
      * @return
      */
     boolean hasAnyExistingTimeSeries(List<String> dataIriList) {
-        SelectQuery query = Queries.SELECT();
-        Variable timeSeriesVar = query.var();
-        Variable dataVar = query.var();
-
-        ValuesPattern valuesPattern = new ValuesPattern(dataVar,
-                dataIriList.stream().map(Rdf::iri).collect(Collectors.toList()));
-
-        GraphPattern queryPattern = dataVar.has(hasTimeSeries, timeSeriesVar);
-
-        query.where(valuesPattern, queryPattern).prefix(PREFIX_ONTOLOGY).select(timeSeriesVar).limit(1);
-
-        JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
-
-        return queryResult.length() > 0;
+        String allDataIRI = String.join(" ",
+                dataIriList.stream().map(str -> "<" + str + ">").collect(Collectors.toList()));
+        String query = String.format("ASK {?data <%s> ?ts . VALUES ?data { %s } }",
+                (TIMESERIES_NAMESPACE + "hasTimeSeries"), allDataIRI);
+        kbClient.setQuery(query);
+        return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
 }
