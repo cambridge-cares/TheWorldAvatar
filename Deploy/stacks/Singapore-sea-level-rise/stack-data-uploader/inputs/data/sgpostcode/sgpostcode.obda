@@ -16,7 +16,7 @@ target       :address/{ogc_fid} a fibo-fnd-plc-adr:ConventionalStreetAddress ;
                 fibo-fnd-plc-adr:hasStreetAddress :address/street/{ogc_fid} ;
                 fibo-fnd-plc-adr:hasPostalCode {postal_code} ;
                 fibo-fnd-plc-loc:hasCityName "Singapore"^^xsd:string ;
-                fibo-fnd-plc-loc:hasCountry <https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/Singapore> 
+                fibo-fnd-plc-loc:hasCountry <https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/Singapore> ;
                 fibo-fnd-arr-id:isIndexTo :location/{ogc_fid} .
             :address/street/{ogc_fid} a fibo-fnd-plc-adr:StreetAddress ;
                 fibo-fnd-plc-adr:hasPrimaryAddressNumber :address/street/block/{ogc_fid} ; 
