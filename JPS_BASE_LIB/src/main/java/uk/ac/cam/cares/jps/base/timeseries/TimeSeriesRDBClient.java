@@ -31,7 +31,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
 
-
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -265,24 +264,27 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             }
             dataColumnNamesMaps.add(dataColumnNames);
         }
-        
+
+        // All database interactions in try-block to ensure closure of connection
+
+        try {
+            // Add corresponding entries in central lookup table
+            bulkPopulateCentralTable(tsTableNames, dataIRIs, dataColumnNamesMaps, tsIRIs, conn);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            // Assume all data IRIs have failed at the moment
+            return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
+        }
         // TODO - re-factor this to be more efficient
         for (int i = 0; i < dataIRIs.size(); i++) {
 
             List<String> dataIRI = dataIRIs.get(i);
             List<Class<?>> dataClass = dataClasses.get(i);
-            String tsIRI = tsIRIs.get(i);
             String tsTableName = tsTableNames.get(i);
             Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
 
             try {
-
-                // All database interactions in try-block to ensure closure of connection
                 try {
-
-                    // Add corresponding entries in central lookup table
-                    populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI, conn);
-
                     // Initialise RDB table for storing time series data
                     createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
                 } catch (JPSRuntimeException e) {
@@ -849,6 +851,41 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         // Populate columns row by row
         for (String s : dataIRI) {
             insertValueStep = insertValueStep.values(s, tsIRI, tsTable, dataColumnNames.get(s));
+        }
+
+        insertValueStep.execute();
+    }
+
+    /**
+     * Add new entries to central RDB lookup table for multiple time series
+     * <p>
+     * Requires existing RDB connection
+     * 
+     * @param tsTables            name of the timeseries table provided as list of
+     *                            string
+     * @param dataIRIs            list of list of data IRIs provided as string
+     * @param dataColumnNamesMaps list of maps of column names in the tsTable
+     *                            corresponding to the data IRIs
+     * @param tsIRIs              timeseries IRI provided as list of string
+     * @param context
+     */
+    private void bulkPopulateCentralTable(List<String> tsTables, List<List<String>> dataIRIs,
+            List<Map<String, String>> dataColumnNamesMaps,
+            List<String> tsIRIs, Connection conn) {
+        DSLContext context = DSL.using(conn, DIALECT);
+        InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(
+                getDSLTable(DB_TABLE_NAME),
+                DATA_IRI_COLUMN, TS_IRI_COLUMN, TABLENAME_COLUMN, COLUMNNAME_COLUMN);
+
+        // Populate columns row by row
+        for (int i = 0; i < tsTables.size(); i++) {
+            String tsTable = tsTables.get(i);
+            String tsIRI = tsIRIs.get(i);
+            List<String> dataIRI = dataIRIs.get(i);
+            Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
+            for (String s : dataIRI) {
+                insertValueStep = insertValueStep.values(s, tsIRI, tsTable, dataColumnNames.get(s));
+            }
         }
 
         insertValueStep.execute();
