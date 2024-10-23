@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -221,6 +222,24 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         if (!checkCentralTableExists(conn)) {
             initCentralTable(conn);
         }
+
+        try {
+
+            // Check if any data has already been initialised (i.e. is associated with
+            // different tsIRI)
+            List<String> flatDataIRIs = dataIRIs.stream().flatMap(List::stream).collect(Collectors.toList());
+            String faultyDataIRI = checkAnyDataHasTimeSeries(flatDataIRIs, conn);
+            if (faultyDataIRI != null) {
+                throw new JPSRuntimeException(
+                        exceptionPrefix + "<" + faultyDataIRI
+                                + "> already has an assigned time series instance");
+            }
+        } catch (JPSRuntimeException e) {
+            LOGGER.error(e.getMessage());
+            // Assume all data IRIs have failed at the moment
+            return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
+        }
+
         // TODO - re-factor this to be more efficient
         for (int i = 0; i < dataIRIs.size(); i++) {
 
@@ -234,15 +253,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
                 // All database interactions in try-block to ensure closure of connection
                 try {
-
-                    // Check if any data has already been initialised (i.e. is associated with
-                    // different tsIRI)
-                    String faultyDataIRI = checkAnyDataHasTimeSeries(dataIRI, conn);
-                    if (faultyDataIRI != null) {
-                        throw new JPSRuntimeException(
-                                exceptionPrefix + "<" + faultyDataIRI
-                                        + "> already has an assigned time series instance");
-                    }
 
                     // Ensure that there is a class for each data IRI
                     if (dataIRI.size() != dataClass.size()) {
