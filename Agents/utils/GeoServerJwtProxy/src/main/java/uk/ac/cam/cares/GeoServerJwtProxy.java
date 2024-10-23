@@ -19,8 +19,16 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.auth0.jwk.InvalidPublicKeyException;
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.JWTVerifier;
+
+import java.security.interfaces.RSAPublicKey;
 
 @WebServlet(urlPatterns = { "/" })
 public class GeoServerJwtProxy extends HttpServlet {
@@ -30,25 +38,24 @@ public class GeoServerJwtProxy extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String userId = null;
+        String token = null;
+
         Iterator<String> headerIterator = request.getHeaders("Authorization").asIterator();
-        while (headerIterator.hasNext() && userId == null) {
+        while (headerIterator.hasNext() && token == null) {
             String headerValue = headerIterator.next();
             if (headerValue.startsWith("Bearer ")) {
-                DecodedJWT decodedJWT = JWT.decode(headerValue.substring(7));
-                if (decodedJWT.getExpiresAtAsInstant().isAfter(Instant.now())) {
-                    userId = decodedJWT.getSubject();
-                } else {
-                    LOGGER.error("Found JSON Web Token but it is expired.");
-                }
+                token = headerValue.substring(7);
             }
         }
 
-        if (userId == null) {
-            String errmsg = "Valid user ID cannot be obtained.";
+        if (token == null) {
+            String errmsg = "Valid token cannot be obtained.";
             LOGGER.error(errmsg);
             throw new RuntimeException(errmsg);
         }
+
+        DecodedJWT verifiedJwt = validateSignature(token);
+        String userId = verifiedJwt.getSubject();
 
         // Build the URL to forward the request
         String targetUrl = TARGET_URL + request.getServletPath() + "?" + request.getQueryString();
@@ -100,5 +107,46 @@ public class GeoServerJwtProxy extends HttpServlet {
 
             httpResponse.getEntity().getContent().transferTo(response.getOutputStream());
         }
+    }
+
+    private DecodedJWT validateSignature(String token) {
+        // check signature using public key from KeyCloak server
+        JwkProvider provider = JwkProviderSingleton.getInstance();
+
+        DecodedJWT unverifiedDecodedJWT = JWT.decode(token);
+
+        if (Instant.now().isAfter(unverifiedDecodedJWT.getExpiresAtAsInstant())) {
+            String errmsg = "Found token but it is expired";
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg);
+        }
+
+        String keyId = unverifiedDecodedJWT.getKeyId();
+        Jwk jwk;
+        try {
+            jwk = provider.get(keyId);
+        } catch (JwkException e) {
+            String errmsg = "Cannot find key ID";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        RSAPublicKey publicKey;
+        try {
+            publicKey = (RSAPublicKey) jwk.getPublicKey();
+        } catch (InvalidPublicKeyException e) {
+            String errmsg = "Cannot get public key from provider";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        Algorithm algorithm = Algorithm.RSA256(publicKey);
+
+        // Create the JWT verifier
+        JWTVerifier verifier = JWT.require(algorithm).build();
+
+        return verifier.verify(unverifiedDecodedJWT);
     }
 }

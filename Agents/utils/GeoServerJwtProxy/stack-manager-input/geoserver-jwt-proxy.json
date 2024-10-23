@@ -5,7 +5,9 @@
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/geoserver-jwt-proxy:1.0-SNAPSHOT",
                 "Env": [
-                    "VIEWPARAM_NAME=device_id"
+                    "VIEWPARAM_NAME=user_id",
+                    "KEYCLOAK_SERVER=http://host.docker.internal:8080",
+                    "KEYCLOAK_REALM=twa-test"
                 ],
                 "Configs": [
                     {
