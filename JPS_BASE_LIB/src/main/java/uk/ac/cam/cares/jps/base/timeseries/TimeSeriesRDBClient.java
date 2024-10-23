@@ -214,10 +214,65 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
     public List<Integer> bulkInitTimeSeriesTable(List<List<String>> dataIRIs, List<List<Class<?>>> dataClasses,
             List<String> tsIRIs, Integer srid, Connection conn) {
         List<Integer> failedIndex = new ArrayList<>();
+        // initialise schema and central table
+        if (schema != null) {
+            initSchemaIfNotExists(conn);
+        }
+        if (!checkCentralTableExists(conn)) {
+            initCentralTable(conn);
+        }
         // TODO - re-factor this to be more efficient
         for (int i = 0; i < dataIRIs.size(); i++) {
+
+            List<String> dataIRI = dataIRIs.get(i);
+            List<Class<?>> dataClass = dataClasses.get(i);
+            String tsIRI = tsIRIs.get(i);
+            // Generate UUID as unique RDB table name
+            String tsTableName = UUID.randomUUID().toString();
+
             try {
-                initTimeSeriesTable(dataIRIs.get(i), dataClasses.get(i), tsIRIs.get(i), srid, conn);
+
+                // All database interactions in try-block to ensure closure of connection
+                try {
+
+                    // Check if any data has already been initialised (i.e. is associated with
+                    // different tsIRI)
+                    String faultyDataIRI = checkAnyDataHasTimeSeries(dataIRI, conn);
+                    if (faultyDataIRI != null) {
+                        throw new JPSRuntimeException(
+                                exceptionPrefix + "<" + faultyDataIRI
+                                        + "> already has an assigned time series instance");
+                    }
+
+                    // Ensure that there is a class for each data IRI
+                    if (dataIRI.size() != dataClass.size()) {
+                        throw new JPSRuntimeException(
+                                exceptionPrefix + "Length of dataClass is different from number of data IRIs");
+                    }
+
+                    // Assign column name for each dataIRI; name for time column is fixed
+                    Map<String, String> dataColumnNames = new HashMap<>();
+                    int j = 1;
+                    for (String s : dataIRI) {
+                        dataColumnNames.put(s, "column" + j);
+                        j++;
+                    }
+
+                    // Add corresponding entries in central lookup table
+                    populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI, conn);
+
+                    // Initialise RDB table for storing time series data
+                    createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
+                } catch (JPSRuntimeException e) {
+                    // Re-throw JPSRuntimeExceptions
+                    throw e;
+                } catch (Exception e) {
+                    // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+                    // database) as JPSRuntimeException with respective message
+                    LOGGER.error(e.getMessage());
+                    throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+                }
+
             } catch (JPSRuntimeException eRdbCreate) {
                 LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
                 failedIndex.add(i);
@@ -1001,10 +1056,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
     @Override
     public String checkAnyDataHasTimeSeries(List<String> dataIRIs, Connection conn) {
         DSLContext context = DSL.using(conn, DIALECT);
-
-        if (!checkCentralTableExists(conn)) {
-            return null;
-        }
 
         Table<?> table = getDSLTable(DB_TABLE_NAME);
 
