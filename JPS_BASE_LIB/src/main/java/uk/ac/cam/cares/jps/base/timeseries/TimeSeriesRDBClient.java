@@ -31,6 +31,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
 
+
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -224,7 +225,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         }
 
         try {
-
             // Check if any data has already been initialised (i.e. is associated with
             // different tsIRI)
             List<String> flatDataIRIs = dataIRIs.stream().flatMap(List::stream).collect(Collectors.toList());
@@ -234,12 +234,17 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                         exceptionPrefix + "<" + faultyDataIRI
                                 + "> already has an assigned time series instance");
             }
+            // Ensure that there is a class for each data IRI
+            for (int i = 0; i < dataIRIs.size(); i++) {
+                if (dataIRIs.get(i).size() != dataClasses.get(i).size()) {
+                    throw new JPSRuntimeException(exceptionPrefix + "Length of dataClass is different from number of data IRIs");
+                }
+            }
         } catch (JPSRuntimeException e) {
             LOGGER.error(e.getMessage());
             // Assume all data IRIs have failed at the moment
             return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
         }
-
         // TODO - re-factor this to be more efficient
         for (int i = 0; i < dataIRIs.size(); i++) {
 
@@ -253,12 +258,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
                 // All database interactions in try-block to ensure closure of connection
                 try {
-
-                    // Ensure that there is a class for each data IRI
-                    if (dataIRI.size() != dataClass.size()) {
-                        throw new JPSRuntimeException(
-                                exceptionPrefix + "Length of dataClass is different from number of data IRIs");
-                    }
 
                     // Assign column name for each dataIRI; name for time column is fixed
                     Map<String, String> dataColumnNames = new HashMap<>();
