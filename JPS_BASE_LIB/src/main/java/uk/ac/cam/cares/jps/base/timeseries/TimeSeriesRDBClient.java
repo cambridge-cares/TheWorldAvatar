@@ -245,27 +245,40 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             // Assume all data IRIs have failed at the moment
             return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
         }
+
+        // Generate UUID as unique RDB table name
+
+        List<String> tsTableNames = IntStream.range(0, dataIRIs.size()).mapToObj(i -> UUID.randomUUID().toString())
+                .collect(Collectors.toList());
+        
+        // Assign column name for each dataIRI; name for time column is fixed
+
+        List<Map<String, String>> dataColumnNamesMaps = new ArrayList<>();
+
+        for (int i = 0; i < dataIRIs.size(); i++) {
+            List<String> dataIRI = dataIRIs.get(i);
+            Map<String, String> dataColumnNames = new HashMap<>();
+            int j = 1;
+            for (String s : dataIRI) {
+                dataColumnNames.put(s, "column" + j);
+                j++;
+            }
+            dataColumnNamesMaps.add(dataColumnNames);
+        }
+        
         // TODO - re-factor this to be more efficient
         for (int i = 0; i < dataIRIs.size(); i++) {
 
             List<String> dataIRI = dataIRIs.get(i);
             List<Class<?>> dataClass = dataClasses.get(i);
             String tsIRI = tsIRIs.get(i);
-            // Generate UUID as unique RDB table name
-            String tsTableName = UUID.randomUUID().toString();
+            String tsTableName = tsTableNames.get(i);
+            Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
 
             try {
 
                 // All database interactions in try-block to ensure closure of connection
                 try {
-
-                    // Assign column name for each dataIRI; name for time column is fixed
-                    Map<String, String> dataColumnNames = new HashMap<>();
-                    int j = 1;
-                    for (String s : dataIRI) {
-                        dataColumnNames.put(s, "column" + j);
-                        j++;
-                    }
 
                     // Add corresponding entries in central lookup table
                     populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI, conn);
