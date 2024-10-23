@@ -19,6 +19,7 @@ import org.jooq.Condition;
 import org.jooq.CreateSchemaFinalStep;
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.jooq.Field;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
@@ -214,7 +215,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
     @Override
     public List<Integer> bulkInitTimeSeriesTable(List<List<String>> dataIRIs, List<List<Class<?>>> dataClasses,
             List<String> tsIRIs, Integer srid, Connection conn) {
-        List<Integer> failedIndex = new ArrayList<>();
+
         // initialise schema and central table
         if (schema != null) {
             initSchemaIfNotExists(conn);
@@ -236,7 +237,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             // Ensure that there is a class for each data IRI
             for (int i = 0; i < dataIRIs.size(); i++) {
                 if (dataIRIs.get(i).size() != dataClasses.get(i).size()) {
-                    throw new JPSRuntimeException(exceptionPrefix + "Length of dataClass is different from number of data IRIs");
+                    throw new JPSRuntimeException(
+                            exceptionPrefix + "Length of dataClass is different from number of data IRIs");
                 }
             }
         } catch (JPSRuntimeException e) {
@@ -249,7 +251,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         List<String> tsTableNames = IntStream.range(0, dataIRIs.size()).mapToObj(i -> UUID.randomUUID().toString())
                 .collect(Collectors.toList());
-        
+
         // Assign column name for each dataIRI; name for time column is fixed
 
         List<Map<String, String>> dataColumnNamesMaps = new ArrayList<>();
@@ -275,34 +277,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             // Assume all data IRIs have failed at the moment
             return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
         }
-        // TODO - re-factor this to be more efficient
-        for (int i = 0; i < dataIRIs.size(); i++) {
 
-            List<String> dataIRI = dataIRIs.get(i);
-            List<Class<?>> dataClass = dataClasses.get(i);
-            String tsTableName = tsTableNames.get(i);
-            Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
-
-            try {
-                try {
-                    // Initialise RDB table for storing time series data
-                    createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
-                } catch (JPSRuntimeException e) {
-                    // Re-throw JPSRuntimeExceptions
-                    throw e;
-                } catch (Exception e) {
-                    // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
-                    // database) as JPSRuntimeException with respective message
-                    LOGGER.error(e.getMessage());
-                    throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-                }
-
-            } catch (JPSRuntimeException eRdbCreate) {
-                LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
-                failedIndex.add(i);
-            }
-        }
-        return failedIndex;
+        return bulkCreateEmptyTimeSeriesTable(tsTableNames, dataColumnNamesMaps, dataIRIs, dataClasses, srid, conn);
 
     }
 
@@ -867,7 +843,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      * @param dataColumnNamesMaps list of maps of column names in the tsTable
      *                            corresponding to the data IRIs
      * @param tsIRIs              timeseries IRI provided as list of string
-     * @param context
+     * @param conn
      */
     private void bulkPopulateCentralTable(List<String> tsTables, List<List<String>> dataIRIs,
             List<Map<String, String>> dataColumnNamesMaps,
@@ -986,6 +962,98 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.executeUpdate();
         }
+    }
+
+    /**
+     * Create an empty RDB table with the given data types for the respective
+     * columns
+     * <p>
+     * Requires existing RDB connection
+     * 
+     * @param tsTables            name of the timeseries table provided as list of
+     *                            string
+     * @param dataColumnNamesMaps list of maps of column names in the tsTable
+     *                            corresponding to the data IRIs
+     * @param dataIRIs            list of list of data IRIs provided as string
+     * @param dataClassrd         list of list with the corresponding Java class
+     *                            (typical
+     *                            String, double or int) for each data IRI
+     * @param srid
+     * @param conn                connection to the RDB
+     */
+    private List<Integer> bulkCreateEmptyTimeSeriesTable(List<String> tsTables,
+            List<Map<String, String>> dataColumnNamesMaps,
+            List<List<String>> dataIRIs,
+            List<List<Class<?>>> dataClasses, Integer srid, Connection conn) {
+
+        DSLContext context = DSL.using(conn, DIALECT);
+        List<Integer> failedIndex = new ArrayList<>();
+
+        // Initialise RDB table for storing time series data
+
+        List<CreateTableColumnStep> createSteps = new ArrayList<>();
+        List<Query> indexSteps = new ArrayList<>();
+        Map<String, List<String>> geomColumnsMap = new HashMap<>();
+        Map<String, List<Class<?>>> geomColumnsClassMap = new HashMap<>();
+
+        for (int i = 0; i < dataIRIs.size(); i++) {
+
+            List<String> dataIRI = dataIRIs.get(i);
+            List<Class<?>> dataClass = dataClasses.get(i);
+            String tsTable = tsTables.get(i);
+            Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
+
+            List<String> additionalGeomColumns = new ArrayList<>();
+            List<Class<?>> classForAdditionalGeomColumns = new ArrayList<>();
+            // Create table
+            CreateTableColumnStep createStep = context.createTableIfNotExists(getDSLTable(tsTable));
+
+            // Create time column
+            createStep = createStep.column(timeColumn);
+
+            // Create 1 column for each value
+            for (int j = 0; j < dataIRI.size(); j++) {
+                if (Geometry.class.isAssignableFrom(dataClass.get(j))) {
+                    // these columns will be added with their respective restrictions
+                    additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(j)));
+                    classForAdditionalGeomColumns.add(dataClass.get(j));
+                } else {
+                    createStep = createStep.column(dataColumnNames.get(dataIRI.get(j)),
+                            DefaultDataType.getDataType(DIALECT, dataClass.get(j)));
+                }
+            }
+
+            createSteps.add(createStep);
+            // create index on time column for quicker searches
+            indexSteps.add(context.createIndex().on(getDSLTable(tsTable), timeColumn));
+
+            // geometry columns need to be handled separately
+            if (!additionalGeomColumns.isEmpty()) {
+                geomColumnsMap.put(tsTable, additionalGeomColumns);
+                geomColumnsClassMap.put(tsTable, classForAdditionalGeomColumns);
+                
+            }
+        
+        }
+
+        // Execute steps in batch
+        context.batch(createSteps).execute();
+        context.batch(indexSteps).execute();
+
+        // add remaining geometry columns with restrictions
+        for (String tsTable : geomColumnsMap.keySet()) {
+            List<String> additionalGeomColumns = geomColumnsMap.get(tsTable);
+            List<Class<?>> classForAdditionalGeomColumns = geomColumnsClassMap.get(tsTable);
+            try {
+                addGeometryColumns(tsTable, additionalGeomColumns, classForAdditionalGeomColumns, srid, conn);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        return failedIndex;
+
     }
 
     /**
