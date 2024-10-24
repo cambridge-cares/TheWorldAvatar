@@ -1,0 +1,205 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoFlood,TBox,https://www.theworldavatar.com/kg/ontoflood/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoFlood,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoFlood,TBox,"The Flood Risk Monitoring ontology (OntoFlood) is an ontology developed for representing flood events as well as flood warnings, together with the risk and (potential) impacts imposed by those events.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoFlood,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+http://sweetontology.net/phen/Event,Class,,,,,,,http://sweetontology.net/phen,Event
+http://purl.obolibrary.org/obo/ENVO_01000710,Class,,,,,,,http://purl.obolibrary.org/obo/envo.owl,Flood
+http://purl.obolibrary.org/obo/ENVO_01000710,Class,http://sweetontology.net/phen/Event,IS-A,,,,,https://www.theworldavatar.com/kg/ontoflood/,Flood
+http://purl.obolibrary.org/obo/ENVO_01000711,Class,http://purl.obolibrary.org/obo/ENVO_01000710,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Coastal flood
+http://purl.obolibrary.org/obo/ENVO_01000711,Class,,,,,,,http://purl.obolibrary.org/obo/envo.owl,Tidal flood
+http://purl.obolibrary.org/obo/ENVO_01000712,Class,http://purl.obolibrary.org/obo/ENVO_01000710,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Riverine flood
+http://purl.obolibrary.org/obo/ENVO_01000712,Class,,,,,,,http://purl.obolibrary.org/obo/envo.owl,Fluvial flood
+http://purl.obolibrary.org/obo/ENVO_01000713,Class,http://purl.obolibrary.org/obo/ENVO_01000710,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Flash flood
+http://purl.obolibrary.org/obo/RO_0002354,Object Property,,,http://purl.obolibrary.org/obo/ENVO_01000710,http://purl.obolibrary.org/obo/ENVO_02500002,,,http://purl.obolibrary.org/obo/envo.owl,formed as result of
+http://purl.obolibrary.org/obo/ENVO_02500002,Class,,,,,,,http://purl.obolibrary.org/obo/envo.owl,Flooding
+http://purl.obolibrary.org/obo/ENVO_01000707,Class,http://purl.obolibrary.org/obo/ENVO_02500002,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Coastal flooding
+http://purl.obolibrary.org/obo/ENVO_01000708,Class,http://purl.obolibrary.org/obo/ENVO_02500002,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Riverine flooding
+http://purl.obolibrary.org/obo/ENVO_01000709,Class,http://purl.obolibrary.org/obo/ENVO_02500002,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Flash flooding
+http://purl.obolibrary.org/obo/ENVO_01000717,Class,http://purl.obolibrary.org/obo/ENVO_02500002,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Aerial flooding
+http://purl.obolibrary.org/obo/ENVO_01000718,Class,http://purl.obolibrary.org/obo/ENVO_02500002,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Urban flooding
+http://purl.obolibrary.org/obo/ENVO_01000710,Class,http://sweetontology.net/phenHydro/Flood,EQUIVALENT-TO,,,,,https://www.theworldavatar.com/kg/ontoflood/,Flood
+hasIntensity,Object Property,,,http://purl.obolibrary.org/obo/ENVO_01000710,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,"A relationship between a Flood and associated quantities describing its intensity (e.g. water depth, flow velocity).",https://www.theworldavatar.com/kg/ontoflood/,has intensity
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/symbol,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,string,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+WaterVelocity,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Velocity,IS-A,,,,Flow velocity of the water forming a flood.,https://www.theworldavatar.com/kg/ontoflood/,Water velocity
+FloodDepth,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Depth,IS-A,,,,Relative height above ground of the water forming a flood.,https://www.theworldavatar.com/kg/ontoflood/,Flood depth
+ArealDistribution,Class,,,,,,The geospatial distribution of a physical quantity over an area.,https://www.theworldavatar.com/kg/ontoflood/,Areal distribution
+hasGeospatialDistribution,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,ArealDistribution,exactly 1,A relationship between a quantity and its geospatial field distribution.,https://www.theworldavatar.com/kg/ontoflood/,has geospatial distribution
+EnvironmentalComponent,Class,,,,,,"Natural components of the environment (e.g. biodiversity, natural habitats, animal species, etc.).",https://www.theworldavatar.com/kg/ontoflood/,Environmental component
+LivingBeing,Class,,,,,,"including humans and animals, that may be impacted by earthquakes.",https://www.theworldavatar.com/kg/ontoflood/,Living Being
+Population,Class,LivingBeing,IS-A,,,,People who inhabit a territory or state.,https://www.theworldavatar.com/kg/ontoflood/,Population
+Animal,Class,LivingBeing,IS-A,,,,Non-human living organisms potentially affected by a hazard,http://www.theworldavatar.com/kg/ontoearthquake,
+InfrastructureComponent,Class,,,,,,Manmade basic structures or features needed for the functioning of a system or organization.,https://www.theworldavatar.com/kg/ontoflood/,Infrastructure component
+affects,Object Property,,,http://purl.obolibrary.org/obo/ENVO_01000710,EnvironmentalComponent UNION Population UNION InfrastructureComponent,,A relationship between a Flood and affected entities.,https://www.theworldavatar.com/kg/ontoflood/,affects
+hasTotalCount,Data Property,,,Population UNION InfrastructureComponent,integer,,"The total number of affected entities (e.g. people, particular infrastructure components)",https://www.theworldavatar.com/kg/ontoflood/,has count
+hasTotalAffectedArea,Object Property,,,InfrastructureComponent,http://www.ontology-of-units-of-measure.org/resource/om-2/Area,,A relationship between an affected Infrastructure Component and the corresponding total area affected.,https://www.theworldavatar.com/kg/ontoflood/,has affected area
+hasTotalMonetaryValue,Object Property,,,InfrastructureComponent,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,A relationship between an affected Infrastructure Component and the corresponding financial damage estimate.,https://www.theworldavatar.com/kg/ontoflood/,has total monetary value
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Area UNION http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has value
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,float,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has numerical value
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has unit
+http://www.ontology-of-units-of-measure.org/resource/om-2/symbol,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,string,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,symbol
+Building,Class,InfrastructureComponent,IS-A,,,,Manmade structures with walls and roof which stand more or less permanently in one place.,https://www.theworldavatar.com/kg/ontoflood/,Building
+Vehicle,Class,InfrastructureComponent,IS-A,,,,Conveyances used to transport people or objects.,https://www.theworldavatar.com/kg/ontoflood/,Vehicle
+NetworkInfrastructure,Class,InfrastructureComponent,IS-A,,,,"Network systems, i.e. installations and facilities spreading across land.",https://www.theworldavatar.com/kg/ontoflood/,Network infrastructure
+ArealInfrastructure,Class,InfrastructureComponent,IS-A,,,,Areal installations and land-uses.,https://www.theworldavatar.com/kg/ontoflood/,Areal infrastructure
+MobilityNetwork,Class,NetworkInfrastructure,IS-A,,,,"Network-shaped infrastructure to enable transport of people and goods (e.g. roads, railroads).",https://www.theworldavatar.com/kg/ontoflood/,Mobility network
+ProvisioningNetwork,Class,NetworkInfrastructure,IS-A,,,,"Network-shaped infrastructure for provisioning goods (e.g. electricity, gas, water).",https://www.theworldavatar.com/kg/ontoflood/,Provisioning network
+ResidentialArea,Class,ArealInfrastructure,IS-A,,,,Material infrastructure in form of residential buildings.,https://www.theworldavatar.com/kg/ontoflood/,ResidentialArea
+CommercialArea,Class,ArealInfrastructure,IS-A,,,,Material infrastructure in form of commercial buildings.,https://www.theworldavatar.com/kg/ontoflood/,CommercialArea
+IndustrialArea,Class,ArealInfrastructure,IS-A,,,,Material infrastructure in form of industrial buildings.,https://www.theworldavatar.com/kg/ontoflood/,IndustrialArea
+Impact,Class,,,,,,Consequences of an event taking place.,https://www.theworldavatar.com/kg/ontoflood/,Impact
+resultsIn,Object Property,,,http://sweetontology.net/phen/Event,Impact,,A relationship between an Event and its effects.,https://www.theworldavatar.com/kg/ontoflood/,results in
+hasMonetaryValue,Object Property,,,Impact,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,exactly 1,A relationship between an Impact and the quantification of its cumulative effects in monetary terms.,https://www.theworldavatar.com/kg/ontoflood/,has monetary value
+hasClassification,Data Property,,,Impact,string,,Textual description (and classification) of an impact beyond quantification.,https://www.theworldavatar.com/kg/ontoflood/,has classification
+hasTimeInterval,Object Property,,,http://sweetontology.net/phen/Event,http://www.w3.org/2006/time#Interval,exactly 1,A relationship between an event and the time interval associated with the duration of the event.,https://www.theworldavatar.com/kg/ontoflood/,has time interval
+http://www.w3.org/2006/time#hasBeginning,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has beginning
+http://www.w3.org/2006/time#hasEnd,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has end
+http://www.w3.org/2006/time#hasXSDDuration,Data Property,,,http://www.w3.org/2006/time#Interval,duration,,,https://www.w3.org/2006/time,has duration
+http://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,http://www.w3.org/2006/time#Instant,dateTimeStamp,,,https://www.w3.org/2006/time,has time stamp
+Location,Class,,,,,,The location associated with an event.,https://www.theworldavatar.com/kg/ontoflood/,Location
+ArealExtentPolygon,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,Polygon describing the footprint of an event.,https://www.theworldavatar.com/kg/ontoflood/,Areal extent polygon
+AdministrativeDistrict,Class,,,,,,"An area defined for administrative purposes, e.g. a county or postal code district.",https://www.theworldavatar.com/kg/ontoflood/,Administrative district
+hasAdministrativeDistrict,Object Property,,,Location,AdministrativeDistrict,,A relationship between a location and an encompassing administrative district.,https://www.theworldavatar.com/kg/ontoflood/,has administrative district
+hasArealExtent,Object Property,,,Location,ArealExtentPolygon,,Geospatial extent of an event's footprint.,https://www.theworldavatar.com/kg/ontoflood/,has areal extent
+hasWGS84LatitudeLongitude,Data Property,,,Location,http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,exactly 1,Centerpoint of an event's footprint in WGS84 coordinates.,https://www.theworldavatar.com/kg/ontoflood/,has WGS84 latitude longitude
+hasLocation,Object Property,,,http://sweetontology.net/phen/Event UNION FloodForecast UNION http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,Location,exactly 1,A relationship between a (forecasted) event and its geospatial location.,https://www.theworldavatar.com/kg/ontoflood/,has location
+http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,Class,,,,,,Area for which a flood warning or alert service is provided (i.e. area to which a flood warning/alert applies).,https://www.theworldavatar.com/kg/ontoflood/,Flood area
+FloodForecast,Class,,,,,,A forecast of flood risk providing the indication of potential flooding a few days into the future.,https://www.theworldavatar.com/kg/ontoflood/,Flood forecast
+RiskLevel,Class,,,,,,A measure of hazard potential defined by expected likelihood and forecasted impact.,https://www.theworldavatar.com/kg/ontoflood/,Risk level
+Likelihood,Class,,,,,,The probability of a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Likelihood
+hasLikelihood,Object Property,,,RiskLevel,Likelihood,exactly 1,A relationship between a risk level and the underlying likelihood.,https://www.theworldavatar.com/kg/ontoflood/,has likelihood
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Likelihood,string,exactly 1,"Textual description of the likelihood of a flood event (e.g. very low, low, medium, high).",https://www.theworldavatar.com/kg/ontoflood/,has textual description
+hasLikelihoodScore,Data Property,,,Likelihood,integer,exactly 1,Numerical categorisation of the likelihood of a flood event (e.g. on a linear scale from 1 to 4).,https://www.theworldavatar.com/kg/ontoflood/,has likelihood score
+VeryLowLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with very low probability for a flood to materialise (e.g. < 20%),https://www.theworldavatar.com/kg/ontoflood/,Very likelihood
+LowLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with low probability for a flood to materialise (e.g. 20-40%),https://www.theworldavatar.com/kg/ontoflood/,Low likelihood
+MediumLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with medium probability for a flood to materialise (e.g. 40-60%),https://www.theworldavatar.com/kg/ontoflood/,Medium likelihood
+HighLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with high probability for a flood to materialise (e.g. > 60%),https://www.theworldavatar.com/kg/ontoflood/,High likelihood
+PotentialImpact,Class,,,,,,The potential impacts of a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Potential impact
+hasPotentialImpact,Object Property,,,RiskLevel,PotentialImpact,exactly 1,A relationship between a risk level and the underlying impact potential.,https://www.theworldavatar.com/kg/ontoflood/,has potential impact
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PotentialImpact,string,exactly 1,"Textual description of the impact potential of a flood event (e.g. minimal, minor, significant, severe).",https://www.theworldavatar.com/kg/ontoflood/,has textual description
+hasImpactLevel,Data Property,,,PotentialImpact,integer,exactly 1,Numerical categorisation of the impact potential of a flood event (e.g. on a linear scale from 1 to 4).,https://www.theworldavatar.com/kg/ontoflood/,has impact level
+MinimalImpact,Class,PotentialImpact,IS-A,,,,Minimal impacts expected from a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Minimal impact
+MinorImpact,Class,PotentialImpact,IS-A,,,,Minor impacts expected from a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Minor impact
+SignificantImpact,Class,PotentialImpact,IS-A,,,,Significant impacts expected from a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Significant impact
+SevereImpact,Class,PotentialImpact,IS-A,,,,Severe impacts expected from a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Severe impact
+hasRiskLevel,Object Property,,,FloodForecast,RiskLevel,exactly 1,A relationship between a flood forecast and its anticipated risk.,https://www.theworldavatar.com/kg/ontoflood/,has risk level
+hasEffectiveDate,Data Property,,,FloodForecast,date,exactly 1,A relationship between a flood forecast and the date it applies to.,https://www.theworldavatar.com/kg/ontoflood/,has date
+FloodSource,Class,,,,,,The source of water causing the forecasted flooding.,https://www.theworldavatar.com/kg/ontoflood/,Flood source
+hasFloodSource,Object Property,,,FloodForecast,FloodSource,,A relationship between a flood forecast and its water source.,https://www.theworldavatar.com/kg/ontoflood/,has flood source
+CoastalWater,Class,FloodSource,IS-A,,,,Forecasted flooding due to coastal waters (e.g. high tide).,https://www.theworldavatar.com/kg/ontoflood/,Coastal water
+GroundWater,Class,FloodSource,IS-A,,,,Forecasted flooding due to ground water.,https://www.theworldavatar.com/kg/ontoflood/,Ground water
+RiverWater,Class,FloodSource,IS-A,,,,Forecasted flooding due to river water.,https://www.theworldavatar.com/kg/ontoflood/,River water
+SurfaceWater,Class,FloodSource,IS-A,,,,Forecasted flooding due to surface water/rain.,https://www.theworldavatar.com/kg/ontoflood/,Surface water
+predicts,Object Property,,,FloodForecast,http://purl.obolibrary.org/obo/ENVO_01000710,exactly 1,A relationship between a flood forecast and the actual flood event it refers to.,https://www.theworldavatar.com/kg/ontoflood/,predicts
+http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,Class,http://environment.data.gov.uk/flood-monitoring/def/core/FloodWarningArea,EQUIVALENT-TO,,,,,https://www.theworldavatar.com/kg/ontoflood/,FloodArea
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,string,,A relationship between a Flood Area and its textual description.,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://purl.obolibrary.org/obo/ENVO_00000063,Class,,,,,,,http://purl.obolibrary.org/obo/envo.owl,Water body
+hasAttachedWaterBody,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,http://purl.obolibrary.org/obo/ENVO_00000063,,,https://www.theworldavatar.com/kg/ontoflood/,attached water body
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,http://purl.obolibrary.org/obo/ENVO_00000063,string,,A relationship between a water body and its textual description.,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://purl.obolibrary.org/obo/ENVO_00000014,Class,http://purl.obolibrary.org/obo/ENVO_00000063,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Canal
+http://purl.obolibrary.org/obo/ENVO_00000016,Class,http://purl.obolibrary.org/obo/ENVO_00000063,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Sea
+http://purl.obolibrary.org/obo/ENVO_00000020,Class,http://purl.obolibrary.org/obo/ENVO_00000063,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Lake
+http://purl.obolibrary.org/obo/ENVO_00000022,Class,http://purl.obolibrary.org/obo/ENVO_00000063,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,River
+hasAreaIdentifier,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,string,exactly 1,A unique identifier of the Flood Area (e.g. Flood Warnings Direct (FWD) identifier in the UK),https://www.theworldavatar.com/kg/ontoflood/,has areal identifier
+FloodAlertOrWarningHistory,Class,,,,,,A collection of all previously issued flood warnings and alerts.,https://www.theworldavatar.com/kg/ontoflood/,Flood alert history
+hasAlertOrWarningHistory,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,FloodAlertOrWarningHistory,exactly 1,A relationship between a Flood Area and its collection of previous flood warnings and alerts.,https://www.theworldavatar.com/kg/ontoflood/,has historical warning
+https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,FloodAlertOrWarningHistory,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,exactly 1,A relationship between the collection of previous flood warnings and alerts and their actual time series history.,https://www.theworldavatar.com/kg/ontoflood/,has time series
+https://www.theworldavatar.com/kg/ontotimeseries/hasTimeUnit,Data Property,,,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,string,,,https://www.theworldavatar.com/kg/ontotimeseries/,has time unit
+https://www.theworldavatar.com/kg/ontotimeseries/hasRDB,Data Property,,,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,string,,,https://www.theworldavatar.com/kg/ontotimeseries/,has RDB link
+http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,Class,,,,,,,https://www.theworldavatar.com/kg/ontoflood/,Flood alert or warning
+http://environment.data.gov.uk/flood-monitoring/def/core/currentWarning,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,,,https://www.theworldavatar.com/kg/ontoflood/,current warning
+http://environment.data.gov.uk/flood-monitoring/def/core/timeSeverityChanged,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,dateTime,exactly 1,,https://www.theworldavatar.com/kg/ontoflood/,time severity changed
+http://environment.data.gov.uk/flood-monitoring/def/core/timeMessageChanged,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,dateTime,exactly 1,,https://www.theworldavatar.com/kg/ontoflood/,time message changed
+http://environment.data.gov.uk/flood-monitoring/def/core/timeRaised,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,dateTime,exactly 1,,https://www.theworldavatar.com/kg/ontoflood/,time raised
+http://environment.data.gov.uk/flood-monitoring/def/core/message,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,string,exactly 1,,https://www.theworldavatar.com/kg/ontoflood/,message
+Severity,Class,,,,,,The potential impact of the flood associated with a flood warning/alert.,https://www.theworldavatar.com/kg/ontoflood/,Severity
+FloodAlert,Class,Severity,IS-A,,,,Flood alert/warning indicating that flooding is possible (i.e. one should be prepared).,https://www.theworldavatar.com/kg/ontoflood/,Flood alert
+FloodWarning,Class,Severity,IS-A,,,,Flood alert/warning indicating that flooding is expected (i.e. immediate action required).,https://www.theworldavatar.com/kg/ontoflood/,Flood warning
+InactiveFloodWarning,Class,Severity,IS-A,,,,Flood alert/warning indicating that the flood warning is no longer active.,https://www.theworldavatar.com/kg/ontoflood/,Inactive Flood Warning
+SevereFloodWarning,Class,Severity,IS-A,,,,Flood alert/warning indicating that severe flooding is expected (i.e. danger to life).,https://www.theworldavatar.com/kg/ontoflood/,Severe flood warning
+WarningNoLongerInForce,Class,Severity,IS-A,,,,Flood alert/warning indicating that the warning is no longer in force.,https://www.theworldavatar.com/kg/ontoflood/,Inactive flood warning
+hasSeverity,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,Severity,exactly 1,A relationship between a Flood Alert/Warning and its severity.,https://www.theworldavatar.com/kg/ontoflood/,has severity
+hasSeverityLevel,Data Property,,,Severity,integer,exactly 1,Numerical categorisation of the severity level of a flood warning/alert (e.g. on a linear scale from 1 to 4).,https://www.theworldavatar.com/kg/ontoflood/,has severity level
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Severity,string,exactly 1,"Textual description of the severity of a flood warning/alert (e.g. minimal, minor, significant, severe).",https://www.theworldavatar.com/kg/ontoflood/,label
+warnsAbout,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,http://purl.obolibrary.org/obo/ENVO_01000710,exactly 1,A relationship between a Flood Alert/Warning and the actual flood event it refers to.,https://www.theworldavatar.com/kg/ontoflood/,warns about
+hasAreaIdentifier,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,string,,,https://www.theworldavatar.com/kg/ontoflood/,has areal identifier
+hasAlertOrWarningHistory,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,FloodAlertOrWarningHistory,,,https://www.theworldavatar.com/kg/ontoflood/,has historical warning
+https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,FloodAlertOrWarningHistory,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontoflood/,has time series
+http://environment.data.gov.uk/flood-monitoring/def/core/timeSeverityChanged,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,dateTime,,,https://www.theworldavatar.com/kg/ontoflood/,time severity changed
+http://environment.data.gov.uk/flood-monitoring/def/core/timeMessageChanged,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,dateTime,,,https://www.theworldavatar.com/kg/ontoflood/,time message changed
+http://environment.data.gov.uk/flood-monitoring/def/core/timeRaised,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,dateTime,,,https://www.theworldavatar.com/kg/ontoflood/,time raised
+http://environment.data.gov.uk/flood-monitoring/def/core/message,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,string,,,https://www.theworldavatar.com/kg/ontoflood/,message
+hasSeverity,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,Severity,,,https://www.theworldavatar.com/kg/ontoflood/,has severity
+hasSeverityLevel,Data Property,,,Severity,integer,,,https://www.theworldavatar.com/kg/ontoflood/,has severity level
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Severity,string,,,https://www.theworldavatar.com/kg/ontoflood/,label
+warnsAbout,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,http://purl.obolibrary.org/obo/ENVO_01000710,,,https://www.theworldavatar.com/kg/ontoflood/,warns about
+hasGeospatialDistribution,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,ArealDistribution,,,https://www.theworldavatar.com/kg/ontoflood/,has geospatial distribution
+hasMonetaryValue,Object Property,,,Impact,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,,https://www.theworldavatar.com/kg/ontoflood/,has monetary value
+hasTimeInterval,Object Property,,,http://sweetontology.net/phen/Event,http://www.w3.org/2006/time#Interval,,,https://www.theworldavatar.com/kg/ontoflood/,has time interval
+hasWGS84LatitudeLongitude,Data Property,,,Location,http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,,,https://www.theworldavatar.com/kg/ontoflood/,has WGS84 latitude longitude
+hasLocation,Object Property,,,http://sweetontology.net/phen/Event UNION FloodForecast UNION http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,Location,,,https://www.theworldavatar.com/kg/ontoflood/,has location
+hasLikelihood,Object Property,,,RiskLevel,Likelihood,,,https://www.theworldavatar.com/kg/ontoflood/,has likelihood
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Likelihood,string,,,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+hasLikelihoodScore,Data Property,,,Likelihood,integer,,,https://www.theworldavatar.com/kg/ontoflood/,has likelihood score
+hasPotentialImpact,Object Property,,,RiskLevel,PotentialImpact,,,https://www.theworldavatar.com/kg/ontoflood/,has potential impact
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PotentialImpact,string,,,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+hasImpactLevel,Data Property,,,PotentialImpact,integer,,,https://www.theworldavatar.com/kg/ontoflood/,has impact level
+hasRiskLevel,Object Property,,,FloodForecast,RiskLevel,,,https://www.theworldavatar.com/kg/ontoflood/,has risk level
+hasEffectiveDate,Data Property,,,FloodForecast,date,,,https://www.theworldavatar.com/kg/ontoflood/,has date
+predicts,Object Property,,,FloodForecast,http://purl.obolibrary.org/obo/ENVO_01000710,,,https://www.theworldavatar.com/kg/ontoflood/,predicts
+InputParameter,Class,,,,,,Represents data input required for flood forecasting models.,https://www.theworldavatar.com/kg/ontoflood/,Input Parameter
+hasInputParameter,Object Property,,FloodForecastModel,InputParameter,,,Relates a flood forecast model to its input parameters.,https://www.theworldavatar.com/kg/ontoflood/,has Input Parameter
+FloodForecastModel,Class,,,,,,A model used to predict flood events based on various input parameters.,https://www.theworldavatar.com/kg/ontoflood/,Flood Forecast Model
+Timestamp,Class,,,,,,Captures the exact time when a specific flood-related event occurs.,https://www.theworldavatar.com/kg/ontoflood/,Timestamp
+FloodPoint,Class,,,,,,Represents a specific geographic location where a flood event is recorded or forecasted.,https://www.theworldavatar.com/kg/ontoflood/,Flood Point
+Geomorphology,Class,,,,,,Refers to the study of the physical features of the earth's surface that affect flood behavior.,https://www.theworldavatar.com/kg/ontoflood/,Geomorphology
+LandUseLandCover,Class,,,,,,"Represents the classification of land based on usage and vegetation, influencing flood dynamics.",https://www.theworldavatar.com/kg/ontoflood/,Land Use Land Cover
+SoilMoisture,Class,,,,,,"Defines the amount of water contained in the soil, a key factor in flood modeling.",https://www.theworldavatar.com/kg/ontoflood/,Soil Moisture
+Rainfall,Class,,,,,,"Measures precipitation levels, crucial for flood forecasting.",https://www.theworldavatar.com/kg/ontoflood/,Rainfall
+WaterLevel,Class,,,,,,"Represents the height of water in rivers, lakes, or other bodies during a flood event.",https://www.theworldavatar.com/kg/ontoflood/,Water Level
+WaterStorage,Class,,,,,,"Refers to the capacity of reservoirs or natural features to store water, relevant to flood risk.",https://www.theworldavatar.com/kg/ontoflood/,Water Storage
+CoastalProximity,Class,,,,,,"Describes the distance of an area from the coast, affecting flood vulnerability.",https://www.theworldavatar.com/kg/ontoflood/,Coastal Proximity
+SeaSurfaceTemperature,Class,,,,,,"Represents the temperature of the sea surface, relevant in coastal flood modeling.",https://www.theworldavatar.com/kg/ontoflood/,Sea Surface Temperature
+CoastalTides,Class,,,,,,Defines tidal movements that can influence coastal flooding events.,https://www.theworldavatar.com/kg/ontoflood/,Coastal Tides
+CoastalCurrent,Class,,,,,,"Refers to ocean currents near the coast, impacting flood predictions in coastal regions.",https://www.theworldavatar.com/kg/ontoflood/,Coastal Current
+CoastalWaveHeight,Class,,,,,,Describes the height of waves that contribute to coastal flood risks.,https://www.theworldavatar.com/kg/ontoflood/,Coastal Wave Height
+CoastalBathymetry,Class,,,,,,Refers to the underwater topography affecting flood behavior in coastal areas.,https://www.theworldavatar.com/kg/ontoflood/,Coastal Bathymetry
+RiverDensity,Class,,,,,,"Measures the number and concentration of rivers in an area, influencing flood potential.",https://www.theworldavatar.com/kg/ontoflood/,River Density
+Evapotranspiration,Class,,,,,,"Defines the process of water evaporation and plant transpiration, affecting flood dynamics.",https://www.theworldavatar.com/kg/ontoflood/,Evapo-transpiration
+DischargeFromRiverLakes,Class,,,,,,Represents the volume of water flowing out of rivers and lakes during floods.,https://www.theworldavatar.com/kg/ontoflood/,Discharge From Rive rLakes
+WaterStorage,Class,,,,,,Indicates the capability of natural or artificial features to store water and mitigate flooding.,https://www.theworldavatar.com/kg/ontoflood/,Water Storage
+SeaLevel,Class,,,,,,"Refers to the average height of the ocean's surface, critical in flood forecasting for coastal areas.",https://www.theworldavatar.com/kg/ontoflood/,Sea Level
+Elevation,Class,,,,,,"Describes the height above sea level, influencing flood risk and water flow.",https://www.theworldavatar.com/kg/ontoflood/,Elevation
+SlopeOfArea,Class,,,,,,"Measures the gradient of the land surface, affecting water runoff and flood likelihood.",https://www.theworldavatar.com/kg/ontoflood/,Slope Of Area
+AtmosphericPressure,Class,,,,,,"Represents the pressure exerted by the atmosphere, relevant for weather conditions tied to floods.",https://www.theworldavatar.com/kg/ontoflood/,Atmospheric Pressure
+OutputParameter,Class,,,,,,Refers to the result or outcome produced by flood forecast models.,https://www.theworldavatar.com/kg/ontoflood/,Output Parameter
+FloodDepth,Class,,,,,,"Measures the depth of water in a flooded area, important for assessing flood severity.",https://www.theworldavatar.com/kg/ontoflood/,Flood Depth
+FloodMagnitude,Class,,,,,,Represents the overall intensity or scale of a flood event.,https://www.theworldavatar.com/kg/ontoflood/,Flood Magnitude
+hasOutputParameter,Object Property,,FloodForecastModel,OutputParameter,,,Relates a flood forecast model to its output parameters.,https://www.theworldavatar.com/kg/ontoflood/,has Output Parameter
+reducesImpactOf,Object Property,,FloodProtectionInfrastructure,http://purl.obolibrary.org/obo/ENVO_01000710,,,Describes the relationship between flood protection infrastructure and its mitigation of flood impacts.,https://www.theworldavatar.com/kg/ontoflood/,reduces Impact Of
+FloodPreparednessMeasure,Class,,,,,,Represents strategies or actions taken to prepare for and mitigate flood risks.,https://www.theworldavatar.com/kg/ontoflood/,Flood Preparedness Measure
+FloodProtectionInfrastructure,Class,,,,,,Refers to physical structures built to protect against flood damage.,https://www.theworldavatar.com/kg/ontoflood/,FloodProtectionInfrastructure
+includesDevelopmentOf,Object Property,,FloodPreparednessMeasure,FloodProtectionInfrastructure,,,Links flood preparedness measures to the development of flood protection infrastructure.,https://www.theworldavatar.com/kg/ontoflood/,includes Development Of
+Government,Class,,,,,,Represents any form of governmental authority involved in flood management.,https://www.theworldavatar.com/kg/ontoflood/,Government
+Central Government,Class,,,,,,Refers to the national or federal level of government overseeing flood management.,https://www.theworldavatar.com/kg/ontoflood/,Central Government
+Regional Government,Class,,,,,,Refers to a sub-national level of government responsible for flood management within a region.,https://www.theworldavatar.com/kg/ontoflood/,Regional Government
+Local Government,Class,,,,,,Refers to the municipal or local authority managing flood-related activities.,https://www.theworldavatar.com/kg/ontoflood/,Local Government
+FloodEmbankment,Class,,,,,,A raised structure built to prevent water from flooding adjacent land.,https://www.theworldavatar.com/kg/ontoflood/,Flood Embankment
+Dam,Class,,,,,,A barrier constructed to hold back water and control floods.,https://www.theworldavatar.com/kg/ontoflood/,Dam
+Gate,Class,,,,,,A movable structure controlling the flow of water in flood defense systems.,https://www.theworldavatar.com/kg/ontoflood/,Gate
+DiversionChannel,Class,,,,,,An artificial channel designed to redirect excess water to prevent flooding.,https://www.theworldavatar.com/kg/ontoflood/,Diversion Channel
+Sluice,Class,,,,,,A device used to control water flow in flood management systems.,https://www.theworldavatar.com/kg/ontoflood/,Sluice
+LocalStructuralProvision,Class,,,,,,"Refers to small-scale, local infrastructure designed to mitigate floods.",https://www.theworldavatar.com/kg/ontoflood/,Local Structural Provision
+FloodProtectionBund,Class,,,,,,A raised embankment designed to contain or redirect floodwaters.,https://www.theworldavatar.com/kg/ontoflood/,Flood Protection Bund
+RoadCulvert,Class,,,,,,"A structure allowing water to flow under a road, preventing flooding of the road.",https://www.theworldavatar.com/kg/ontoflood/,Road Culvert
+RailCulvert,Class,,,,,,"A culvert designed to allow water to pass beneath a railway line, mitigating flood risks.",https://www.theworldavatar.com/kg/ontoflood/,Rail Culvert
+LandDrainage,Class,,,,,,"Refers to systems designed to remove excess water from the land, reducing flood risk.",https://www.theworldavatar.com/kg/ontoflood/,Land Drainage
+RiverDiversionWork,Class,,,,,,Projects aimed at diverting rivers to reduce flood risks in vulnerable areas.,https://www.theworldavatar.com/kg/ontoflood/,River Diversion Work
+LocalFloodStorageArea,Class,,,,,,A designated area designed to temporarily hold floodwaters and reduce downstream flooding.,https://www.theworldavatar.com/kg/ontoflood/,Local Flood Storage Area
+LocalEmbankment,Class,,,,,, A smaller embankment used for local flood protection efforts.,https://www.theworldavatar.com/kg/ontoflood/,Local Embankment
+RaisedArea,Class,,,,,,"An elevated area designed to stay dry during floods, providing refuge or protection.",https://www.theworldavatar.com/kg/ontoflood/,Raised Area
+SandbagStack,Class,,,,,,A temporary flood defense structure made by stacking sandbags to block or divert water.,https://www.theworldavatar.com/kg/ontoflood/,Sandbag Stack
+LocalRunOff,Class,,,,,,"Refers to water that flows over the land surface in a localized area, often contributing to floods.",https://www.theworldavatar.com/kg/ontoflood/,Local Run Off
+storesLocalFloodWaterFrom,Object Property,,LocalFloodStorageArea,LocalRunOff,,,Describes how a local flood storage area holds water from local runoff sources.,https://www.theworldavatar.com/kg/ontoflood/,stores Local Flood Water From
