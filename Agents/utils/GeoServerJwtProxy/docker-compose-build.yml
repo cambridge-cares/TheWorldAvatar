@@ -1,0 +1,3 @@
+services:
+  geoserver-jwt-proxy:
+    build: .

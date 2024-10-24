@@ -5,7 +5,9 @@
             "user-agent",
             "trajectoryqueryagent",
             "visualisation",
-            "feature-info-agent"
+            "feature-info-agent",
+            "geoserver-jwt-proxy",
+            "keycloak-test"
         ],
         "excludes": [
             "citydbimpexp",
