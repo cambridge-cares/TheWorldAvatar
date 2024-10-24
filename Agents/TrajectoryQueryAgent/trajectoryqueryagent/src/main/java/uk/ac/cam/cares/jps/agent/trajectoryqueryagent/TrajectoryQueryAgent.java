@@ -19,16 +19,27 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+
 import org.apache.commons.io.IOUtils;
+
+import com.auth0.jwk.InvalidPublicKeyException;
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
+import java.security.interfaces.RSAPublicKey;
 
 @WebServlet(urlPatterns = { TrajectoryQueryAgent.CREATE_LAYER_ROUTE, "/getDatesWithData" })
 public class TrajectoryQueryAgent extends JPSAgent {
     private RemoteRDBStoreClient remoteRDBStoreClient;
-    private static final String USER_ID = "userID";
     private static final String TIMEZONE = "timezone";
     private static final Logger LOGGER = LogManager.getLogger(TrajectoryQueryAgent.class);
     public static final String CREATE_LAYER_ROUTE = "/createLayer";
@@ -43,13 +54,17 @@ public class TrajectoryQueryAgent extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        String url = request.getRequestURI();
-
         if (request.getServletPath().contentEquals(GET_DATES_ROUTE)) {
-            if (!validateInput(requestParams, url)) {
-                throw new JPSRuntimeException("Unable to validate request sent to the agent.");
+            if (!requestParams.has(TIMEZONE)) {
+                String errmsg = "timezone parameter is missing";
+                LOGGER.error(errmsg);
+                throw new JPSRuntimeException(errmsg);
             }
-            return getDatesWithData(requestParams);
+
+            String timezone = requestParams.getString(TIMEZONE);
+            String userId = getUserId(request);
+
+            return getDatesWithData(timezone, userId);
         } else if (request.getServletPath().contentEquals(CREATE_LAYER_ROUTE)) {
             return createLayer();
         }
@@ -77,7 +92,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
         return response;
     }
 
-    public JSONObject getDatesWithData(JSONObject requestParams) {
+    public JSONObject getDatesWithData(String timezone, String userId) {
         String sqlTemplate = null;
         try (InputStream is = new ClassPathResource("get_dates_with_data.sql").getInputStream()) {
             sqlTemplate = IOUtils.toString(is, StandardCharsets.UTF_8);
@@ -88,8 +103,7 @@ public class TrajectoryQueryAgent extends JPSAgent {
 
         JSONObject response = new JSONObject();
         if (sqlTemplate != null) {
-            String sql = String.format(sqlTemplate, requestParams.getString(TIMEZONE),
-                    requestParams.getString(USER_ID));
+            String sql = String.format(sqlTemplate, timezone, userId);
             JSONArray result = remoteRDBStoreClient.executeQuery(sql);
             response.put("message", "Succeed");
             response.put("result", result);
@@ -213,26 +227,64 @@ public class TrajectoryQueryAgent extends JPSAgent {
         }
     }
 
-    /**
-     * Check if the JSONObject in the processRequestParameters inputs are correct or
-     * missing based on the input path.
-     * All path retrieving trajectory related data will need user id
-     * 
-     * @param requestParams
-     * @return
-     * @throws BadRequestException
-     */
-    private boolean validateInput(JSONObject requestParams, String url) {
-        if (!requestParams.has(USER_ID)) {
-            LOGGER.error("userID is missing.");
-            return false;
-        }
-        if (url.contains("getDatesWithData")) {
-            if (!requestParams.has(TIMEZONE)) {
-                LOGGER.error("timezone is missing.");
-                return false;
+    String getUserId(HttpServletRequest request) {
+        String token = null;
+        Iterator<String> headerIterator = request.getHeaders("Authorization").asIterator();
+        while (headerIterator.hasNext() && token == null) {
+            String header = headerIterator.next();
+            if (header.startsWith("Bearer ")) {
+                token = header.substring(7);
             }
         }
-        return true;
+
+        DecodedJWT verifiedJwt = validateSignature(token);
+
+        return verifiedJwt.getSubject();
+    }
+
+    private DecodedJWT validateSignature(String token) {
+        // check signature using public key from KeyCloak server
+        JwkProvider provider = JwkProviderSingleton.getInstance();
+
+        DecodedJWT unverifiedDecodedJWT = JWT.decode(token);
+
+        String keyId = unverifiedDecodedJWT.getKeyId();
+        Jwk jwk;
+        try {
+            jwk = provider.get(keyId);
+        } catch (JwkException e) {
+            String errmsg = "Cannot find key ID from token";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        RSAPublicKey publicKey;
+        try {
+            publicKey = (RSAPublicKey) jwk.getPublicKey();
+        } catch (InvalidPublicKeyException e) {
+            String errmsg = "Cannot get public key from provider";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        Algorithm algorithm = Algorithm.RSA256(publicKey);
+
+        // Create the JWT verifier
+        JWTVerifier verifier = JWT.require(algorithm).build();
+
+        DecodedJWT verifiedDecodedJWT;
+
+        try {
+            verifiedDecodedJWT = verifier.verify(unverifiedDecodedJWT);
+        } catch (JWTVerificationException e) {
+            String errmsg = "Failed to verify token";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        return verifiedDecodedJWT;
     }
 }
