@@ -53,9 +53,9 @@ The namespace for the ontology is:
 
 ## 2.1. Service Agreement
 
-The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients. This section has been split into several aspects to improve readability and understanding of the concepts - namely, (1) service agreement duration and parties, (2) payment obligations, (3) service commitment and (4) lifecycle.
+The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients. This section has been split into several aspects to improve readability and understanding of the concepts - namely, (1) service agreement duration and parties, (2) payment obligations, and (3) lifecycle.
 
-The service agreement will first define the duration, parties involved, requested service and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)).
+The service agreement will first define the duration, parties involved, requested service and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)). Additional service details and remarks can also be attached to the `Service` concept when required.
 
 Figure 1: TBox representation for a Service Agreement following the FIBO ontology
 
@@ -65,10 +65,12 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
         rdfs-label agreement_no_string
     }
     "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
+    "fibo-fnd-pas-pas:Service" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
     "fibo-fnd-pas-pas:Service" {
         rdfs-label label_string
-        rdfs-comments description_string
+        rdfs-comments remarks_string
     }
+
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
 
     "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
@@ -157,56 +159,11 @@ Figure 3: TBox representation of the payment obligations stated in the service a
     "ontoservice:ServiceTonnage" ||--o{ "om:Mass"  : "ontoservice:hasQuantity"
 ```
 
-The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeatable categories. A scheduler agent is expected to detect this state and ingest the initial knowledge in Figure 4 to optimise and arrange services with executable details. The service also have operation hours as indicated by the `cmns-dt:hasTimePeriod` property.
-
-Figure 4: TBox representation of the contractual obligations for a service
-
-```mermaid
-    erDiagram
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
-
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
-    "ontoservice:ServiceCommitment" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "rdfs:subClassOf"
-    "fibo-fnd-pas-pas:Service" ||--o{ "fibo-fnd-agr-ctr:ContractualCommitment" : "ontoservice:commitsTo"
-    "fibo-fnd-pas-pas:Service" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
-
-    "ontoservice:ServiceCommitment" {
-        rdfs-subClassOf fibo-fnd-agr-ctr-ContractualCommitment
-        rdfs-comments remarks_string
-    }
-
-    "ontoservice:ServiceCommitment" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
-     "fibo-fnd-dt-fd:RegularSchedule" {
-        fibo-fnd-dt-fd-hasCount integer
-    }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:Date" : "cmns-dt:hasStartDate"
-    "cmns-dt:Date" {
-        cmns-dt-hasDateValue xsd-date
-    }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "ontoservice:hasTimeSlot"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
-    "cmns-dt:TimeOfDay" {
-        cmns-dt_hasTimeValue xsd_time_string
-    }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
-    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
-    "fibo-fnd-dt-bd:DayOfWeek" {
-        NamedIndividual fibo-fnd-dt-fd-Monday
-        NamedIndividual fibo-fnd-dt-fd-Friday
-        NamedIndividual fibo-fnd-dt-fd-Sunday
-    }
-    "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
-    "fibo-fnd-dt-bd:DayOfMonth" {
-        fibo-fnd-dt-fd-hasOrdinalNumber integer
-    }
-```
-
 ## 2.2. Service Agreement Lifecycle
 
 The events occurring during the service agreement can be represented within a contract lifecycle. This usually consists of three stages in sequence of creation, service execution, and expiration. It is recommended to instantiate a `cmns-dt:succeeds` relationship between this three stages as seen in the figure below. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can include a date time, location, as well as remarks. The following subsections will describe the events occurring within each stage of the lifecycle.
 
-Figure 5: TBox representation of the service agreement's overall lifecycle
+Figure 4: TBox representation of the service agreement's overall lifecycle
 
 ```mermaid
     erDiagram
@@ -241,7 +198,7 @@ In the creation stage, the service agreement will need to be created before it i
 
 These events are recommended to be linked to their stages using the `cmns-col:comprises` property. Each of these events should occur once, with one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required.
 
-Figure 6: TBox representation of the service agreement's creation and expiration lifecycle stage
+Figure 5: TBox representation of the service agreement's creation and expiration lifecycle stage
 
 ```mermaid
     erDiagram
@@ -290,7 +247,7 @@ flowchart LR
 
 Multiple occurrences of each event can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date time and location. Remarks are optional to assign. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements. Additionally, the occurrence of each service in progress, completed or uncompleted service can be assigned a transport if required. Furthermore, completed service occurrences can also be assigned a monetary charge.
 
-Figure 7: TBox representation of the service agreement's service execution lifecycle stage
+Figure 6: TBox representation of the service agreement's service execution lifecycle stage
 
 ```mermaid
     erDiagram
@@ -316,7 +273,7 @@ Figure 7: TBox representation of the service agreement's service execution lifec
     "ontoservice:ServiceInProgress" o{--|| "ontoservice:UncompletedService" : "cmns-dt:succeeds"
 ```
 
-Figure 8: TBox representation of the service events and their occurrences
+Figure 7: TBox representation of the service events and their occurrences
 
 ```mermaid
     erDiagram
@@ -355,7 +312,7 @@ Gross Price = Base Charge + Variable Charge + Excess Variable Charge \\
 Variable Charge = (Service Metric - Service Metric Cap) \\
 ```
 
-Figure 9: ABox representation of the provenance structure for the total service charge
+Figure 8: ABox representation of the provenance structure for the total service charge
 
 ```mermaid
     erDiagram

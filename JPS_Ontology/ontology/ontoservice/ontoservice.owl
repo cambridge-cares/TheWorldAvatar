@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>11 October 2024</dc:date>
+        <dc:date>24 October 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -92,19 +92,6 @@
         <rdfs:comment>A relationship describing the final charge of a service event.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>charges</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/commitsTo -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/commitsTo">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment"/>
-        <rdfs:comment>A relationship that links the commitments made when providing or engaging with the associated service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>commits to</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -307,13 +294,6 @@
 
 
     <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-    
-
-
-    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment -->
-
-
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment"/>
     
 
 
@@ -529,18 +509,6 @@
         <rdfs:comment>A service event that is currently scheduled but has not yet started during the service execution lifecycle stage of a contract.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Pending service</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment"/>
-        <rdfs:comment>General conditions for the services that the contracting parties agree to.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Service commitment</rdfs:label>
     </owl:Class>
     
 
