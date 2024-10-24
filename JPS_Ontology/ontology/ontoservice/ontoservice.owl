@@ -268,13 +268,6 @@
     
 
 
-    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent -->
-
-
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-    
-
-
     <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence -->
 
 
@@ -351,66 +344,6 @@
         <rdfs:comment>A service that acts as a point of contact for communication, support, or assistance.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Contact service</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ContractApproval -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContractApproval">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:comment>An event to approve the contract during the creation lifecycle stage of a contract.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Contract approval</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ContractCreation -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContractCreation">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:comment>An event to draft and create a new contract during the creation lifecycle stage of a contract.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Contract creation</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ContractDischarge -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContractDischarge">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:comment>An event ending the contract as all contractual obligations have been performed.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Contract discharge</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ContractRescission -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContractRescission">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:comment>An event rendering the contract null, void, and no longer legally binding as one contractual party is a victim of a vitiating factor during the expiration lifecycle stage of a contract.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Contract rescission</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ContractTermination -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ContractTermination">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
-        <rdfs:comment>An event ending the contract before all contractual obligations have been performed. Typically the contract may have been concluded earlier with the agreement of all parties involved.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Contract termination</rdfs:label>
     </owl:Class>
     
 

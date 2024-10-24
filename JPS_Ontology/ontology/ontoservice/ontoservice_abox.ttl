@@ -7,6 +7,11 @@ fibo-fbc-pas-fpas:ContractLifecycleEvent owl:oneOf (
   os:ServiceDeliveryEvent
   os:TerminatedServiceEvent
   os:MissedServiceEvent
+  os:ContractCreation
+  os:ContractApproval
+  os:ContractDischarge
+  os:ContractRescission
+  os:ContractTermination
 ) .
 
 os:ServiceDeliveryEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
@@ -20,3 +25,23 @@ os:TerminatedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
 os:MissedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
   rdfs:label "Missed Service Event";
   rdfs:comment "This event represents a requested service that fails to be delivered to the client".
+
+os:ContractCreation a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Creation";
+  rdfs:comment "An event to draft and create a new contract during the creation lifecycle stage of a contract.".
+
+os:ContractApproval a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Approval";
+  rdfs:comment "An event to approve the contract during the creation lifecycle stage of a contract.".
+
+os:ContractDischarge a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Discharge";
+  rdfs:comment "An event ending the contract as all contractual obligations have been performed.".
+
+os:ContractRescission a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Rescission";
+  rdfs:comment "An event rendering the contract null, void, and no longer legally binding as one contractual party is a victim of a vitiating factor during the expiration lifecycle stage of a contract.".
+
+os:ContractTermination a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Termination";
+  rdfs:comment "An event ending the contract before all contractual obligations have been performed. Typically the contract may have been concluded earlier with the agreement of all parties involved.".

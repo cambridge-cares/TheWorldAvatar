@@ -226,15 +226,15 @@ Figure 6: TBox representation of the service agreement's creation and expiration
     "ontoservice:CreationStage" ||--o{ "ontoservice:ContractCreation" : "cmns-col:comprises"
     "ontoservice:CreationStage" ||--o{ "ontoservice:ContractApproval" : "cmns-col:comprises"
     "ontoservice:ContractApproval" ||--o{ "ontoservice:ContractCreation" : "cmns-dt:succeeds"
-    "ontoservice:ContractCreation" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-    "ontoservice:ContractApproval" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:ContractCreation" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    "ontoservice:ContractApproval" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
 
     "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractDischarge" : "cmns-col:comprises"
     "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractRescission" : "cmns-col:comprises"
     "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractTermination" : "cmns-col:comprises"
-    "ontoservice:ContractDischarge" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-    "ontoservice:ContractRescission" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-    "ontoservice:ContractTermination" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
+    "ontoservice:ContractDischarge" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    "ontoservice:ContractRescission" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    "ontoservice:ContractTermination" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
 
     "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
