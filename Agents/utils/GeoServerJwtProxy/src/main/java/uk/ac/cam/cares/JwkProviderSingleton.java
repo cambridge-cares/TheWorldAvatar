@@ -28,6 +28,7 @@ public class JwkProviderSingleton {
             } catch (URISyntaxException e) {
                 String errmsg = "Failed to parse KEYCLOAK_SERVER";
                 LOGGER.error(errmsg);
+                LOGGER.error(e.getMessage());
                 throw new RuntimeException(errmsg, e);
             }
 
@@ -38,7 +39,10 @@ public class JwkProviderSingleton {
                         .cached(10, 24, TimeUnit.HOURS) // Caching keys for efficiency
                         .build();
             } catch (MalformedURLException | URISyntaxException e) {
-                throw new RuntimeException(e);
+                String errmsg = "Failed to build URL for JWK provider";
+                LOGGER.error(e.getMessage());
+                LOGGER.error(errmsg);
+                throw new RuntimeException(errmsg, e);
             }
         }
         return jwkProvider;
