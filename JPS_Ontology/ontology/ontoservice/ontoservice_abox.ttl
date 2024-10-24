@@ -1,0 +1,22 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix os: <https://www.theworldavatar.com/kg/ontoservice/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+fibo-fbc-pas-fpas:ContractLifecycleEvent owl:oneOf (
+  os:ServiceDeliveryEvent
+  os:TerminatedServiceEvent
+  os:MissedServiceEvent
+) .
+
+os:ServiceDeliveryEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Service Delivery Event";
+  rdfs:comment "This event represents a delivery for the requested service.".
+
+os:TerminatedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Terminated Service Event";
+  rdfs:comment "This event represents a requested service that has been terminated either by the service provider or the client.".
+
+os:MissedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Missed Service Event";
+  rdfs:comment "This event represents a requested service that fails to be delivered to the client".

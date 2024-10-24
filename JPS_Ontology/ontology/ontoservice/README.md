@@ -161,30 +161,48 @@ Figure 3: TBox representation of the payment obligations stated in the service a
 
 ## 2.2. Service Agreement Lifecycle
 
-The events occurring during the service agreement can be represented within a contract lifecycle. This usually consists of three stages in sequence of creation, service execution, and expiration. It is recommended to instantiate a `cmns-dt:succeeds` relationship between this three stages as seen in the figure below. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can include a date time, location, as well as remarks. The following subsections will describe the events occurring within each stage of the lifecycle.
+This section describes the lifecycle stages, events, and occurrences that occurs during the lifecycle of a service agreement. The occurences of the lifecycle, stages, and events will be represented and generated according to the real-time occurrences of the service delivered. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can either holds during a date period or occur at an instantaneous time. Each occurrence can also include a location as well as remarks.
 
 Figure 4: TBox representation of the service agreement's overall lifecycle
 
 ```mermaid
     erDiagram
     "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fnd-pas-pas:ServiceAgreement" : "fibo-fnd-arr-lif:isLifecycleOf"
+    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycle" : "fibo-fnd-rel-rel:exemplifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" : "fibo-fnd-arr-lif:hasStage"
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-rel-rel:exemplifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-col:comprises"
 
     "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-arr-lif:hasStage"
+
+    "fibo-fbc-pas-fpas:ContractLifecycleStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "cmns-col:comprises"
+    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+
+    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" ||--|{ "fibo-fnd-dt-oc:Occurrence" : "rdfs:subClassOf"
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fnd-dt-oc:Occurrence" : "rdfs:subClassOf"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "fibo-fnd-dt-oc:Occurrence" : "rdfs:subClassOf"
+
+    "fibo-fnd-dt-oc:Occurrence" ||--|{ " cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
+    "fibo-fnd-dt-oc:Occurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "lcc-cr:Location" ||--|{ "geo:Feature" : "rdfs:subClassOf"
+
+    "fibo-fnd-dt-oc:Occurrence" {
+        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
+        rdfs-comment remark-string
+    }
+```
+
+The contract lifecycle usually consists of three stages in sequence of creation, service execution, and expiration. It is recommended to instantiate a `cmns-dt:succeeds` relationship between this three stages as seen in the figure below. The following subsections will describe the events occurring within each stage of the lifecycle.
+
+Figure 5: TBox representation of the service agreement's lifecycle stage
+
+```mermaid
+    erDiagram
     "ontoservice:CreationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
     "ontoservice:ServiceExecutionStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
     "ontoservice:ExpirationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
     "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:CreationStage" : "cmns-dt:succeeds"
     "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
-
-    "fibo-fbc-pas-fpas:ContractLifecycleStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "cmns-col:comprises"
-    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "lcc-cr:Location" ||--|{ "geo:Feature" : "rdfs:subClassOf"
-
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
-        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
-        rdfs-comment remark-string
-    }
 ```
 
 ## 2.2.1 Creation and Expiration Stage
@@ -198,7 +216,7 @@ In the creation stage, the service agreement will need to be created before it i
 
 These events are recommended to be linked to their stages using the `cmns-col:comprises` property. Each of these events should occur once, with one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required.
 
-Figure 5: TBox representation of the service agreement's creation and expiration lifecycle stage
+Figure 6: TBox representation of the service agreement's creation and expiration lifecycle stage
 
 ```mermaid
     erDiagram
@@ -227,79 +245,62 @@ Figure 5: TBox representation of the service agreement's creation and expiration
 
 ## 2.2.2 Service Execution Stage
 
-In the service execution stage, the possible events are as follows:
+During the service execution stage, services can result in three kinds of outcomes. These outcomes should be represented by a corresponding instance of a `ContractLifecycleEvent` with the following labels (`rdfs:label`) and descriptions (`rdfs:comment`). In representing the upcoming events, a regular schedule is also associated with the service delivery event, which denotes the scheduled days, time slots, and total occurrences.
 
-1. `PendingService`: A service event that is currently scheduled but has not yet started
-2. `TerminatedService`: A service event that has not started and will not be delivered
-3. `ServiceInProgress`: A service event that is currently in progress
-4. `CompletedService`: A service event that has completed successfully
-5. `UncompletedService`: A service event that has been started but is not completed
+1. Delivery of the requested service: `Service Delivery Event`
+2. A requested service that has been terminated either by the service provider or the client: `Terminated Service Event`
+3. A requested service that fails to be delivered to the client: `Missed Service Event`
 
-The flow of service events is depicted as follows and can be represented using the `cmns-dt:succeeds` relationship:
+Multiple occurrences of each event can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date time and location. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements. Additionally, the occurrence of each service can be assigned a transport and/or a monetary charge if required. If the service is terminated or missed, it is recommended to instantiate a new occurrence for that event with the corresponding time stamp and reason for its occurrence (`rdfs:comment`).
 
-```mermaid
-flowchart LR
-    PendingService --Received request from client to cancel scheduled service--> TerminatedService
-    PendingService --Start the scheduled service--> ServiceInProgress
-    ServiceInProgress --Successful completion--> CompletedService
-    ServiceInProgress --Unable to find client at service site--> UncompletedService
-```
-
-Multiple occurrences of each event can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date time and location. Remarks are optional to assign. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements. Additionally, the occurrence of each service in progress, completed or uncompleted service can be assigned a transport if required. Furthermore, completed service occurrences can also be assigned a monetary charge.
-
-Figure 6: TBox representation of the service agreement's service execution lifecycle stage
+Figure 7: TBox representation of the service agreement's service execution lifecycle stage
 
 ```mermaid
     erDiagram
     "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:CreationStage" : "cmns-dt:succeeds"
     "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
     "ontoservice:ServiceExecutionStage" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "cmns-col:comprises"
+    "fibo-fbc-pas-fpas:ContractLifecycleEvent" {
+        rdfs-label name-string
+        rdfs-comment description-string
+    }
+    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
+    "fibo-fnd-dt-fd:RegularSchedule" {
+        fibo-fnd-dt-fd-hasCount integer
+    }
+
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:Date" : "cmns-dt:hasStartDate"
+    "cmns-dt:Date" {
+        cmns-dt-hasDateValue xsd-date
+    }
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "ontoservice:hasTimeSlot"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
+    "cmns-dt:TimeOfDay" {
+        cmns-dt_hasTimeValue xsd_time_string
+    }
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
+    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfWeek" {
+        NamedIndividual fibo-fnd-dt-fd-Monday
+        NamedIndividual fibo-fnd-dt-fd-Friday
+        NamedIndividual fibo-fnd-dt-fd-Sunday
+    }
+    "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfMonth" {
+        fibo-fnd-dt-fd-hasOrdinalNumber integer
+    }
+
     "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
         fibo-fnd-dt-oc-hasEventDate xsd-dateTime
         rdfs-comment remark-string
     }
-
-    "ontoservice:PendingService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-    "ontoservice:ServiceInProgress" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-    "ontoservice:TerminatedService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-    "ontoservice:CompletedService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-    "ontoservice:UncompletedService" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdfs:subClassOf"
-
-    "ontoservice:PendingService" o{--|| "ontoservice:ServiceInProgress" : "cmns-dt:succeeds"
-    "ontoservice:PendingService" o{--|| "ontoservice:TerminatedService" : "cmns-dt:succeeds"
-    "ontoservice:ServiceInProgress" o{--|| "ontoservice:CompletedService" : "cmns-dt:succeeds"
-    "ontoservice:ServiceInProgress" o{--|| "ontoservice:UncompletedService" : "cmns-dt:succeeds"
-```
-
-Figure 7: TBox representation of the service events and their occurrences
-
-```mermaid
-    erDiagram
-
-    "ontoservice:PendingService" o{--|| "ontoservice:ServiceInProgress" : "cmns-dt:succeeds"
-    "ontoservice:PendingService" o{--|| "ontoservice:TerminatedService" : "cmns-dt:succeeds"
-    "ontoservice:ServiceInProgress" o{--|| "ontoservice:CompletedService" : "cmns-dt:succeeds"
-    "ontoservice:ServiceInProgress" o{--|| "ontoservice:UncompletedService" : "cmns-dt:succeeds"
-
-    "ontoservice:ServiceInProgress" ||--|{ "ontoservice:ServiceInProgressOccurrence" : "cmns-cls:classifies"
-    "ontoservice:ServiceInProgressOccurrence" {
-        rdfs-subClassOf fibo-fbc-pas-fpas-ContractLifecycleEventOccurrence
-    }
-    "ontoservice:CompletedService" ||--|{ "ontoservice:CompletedServiceOccurrence" : "cmns-cls:classifies"
-    "ontoservice:CompletedServiceOccurrence" {
-        rdfs-subClassOf fibo-fbc-pas-fpas-ContractLifecycleEventOccurrence
-    }
-    "ontoservice:UncompletedService" ||--|{ "ontoservice:UncompletedServiceOccurrence" : "cmns-cls:classifies"
-    "ontoservice:UncompletedServiceOccurrence" {
-        rdfs-subClassOf fibo-fbc-pas-fpas-ContractLifecycleEventOccurrence
-    }
-
-    "ontoservice:ServiceInProgressOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
-    "ontoservice:CompletedServiceOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
-    "ontoservice:CompletedServiceOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
-    "ontoservice:UncompletedServiceOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
 ```
 
 ## 2.3 Reporting
