@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.util.Iterator;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -64,7 +63,7 @@ public class GeoServerJwtProxy extends HttpServlet {
         try {
             uriBuilder = new URIBuilder(targetUrl);
         } catch (URISyntaxException e) {
-            String errmsg = "Failed to build targetUrl";
+            String errmsg = "Failed to initialise URIBuilder";
             LOGGER.error(errmsg);
             throw new RuntimeException(errmsg, e);
         }
@@ -114,12 +113,6 @@ public class GeoServerJwtProxy extends HttpServlet {
         JwkProvider provider = JwkProviderSingleton.getInstance();
 
         DecodedJWT unverifiedDecodedJWT = JWT.decode(token);
-
-        if (Instant.now().isAfter(unverifiedDecodedJWT.getExpiresAtAsInstant())) {
-            String errmsg = "Found token but it is expired";
-            LOGGER.error(errmsg);
-            throw new RuntimeException(errmsg);
-        }
 
         String keyId = unverifiedDecodedJWT.getKeyId();
         Jwk jwk;
