@@ -32,7 +32,16 @@ public class JwkProviderSingleton {
                 throw new RuntimeException(errmsg, e);
             }
 
-            keyCloakBuilder.setPath("realms/" + System.getenv("KEYCLOAK_REALM") + "/protocol/openid-connect/certs");
+            String existingPath;
+
+            if (keyCloakBuilder.getPath() != null) {
+                existingPath = keyCloakBuilder.getPath();
+            } else {
+                existingPath = "";
+            }
+
+            keyCloakBuilder.setPath(
+                    existingPath + "/realms/" + System.getenv("KEYCLOAK_REALM") + "/protocol/openid-connect/certs");
 
             try {
                 jwkProvider = new JwkProviderBuilder(keyCloakBuilder.build().toURL())
