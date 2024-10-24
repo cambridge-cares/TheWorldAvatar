@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontopoi="https://www.theworldavatar.com/kg/ontopoi/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontopoi/">
-        <dc:date>30 September 2024</dc:date>
+        <dc:date>24 October 2024</dc:date>
         <rdfs:comment>OntoPOI is an ontology developed for representing points of interest.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -93,6 +93,9 @@
     <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#hasSourceReference">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SourceReference"/>
+        <rdfs:comment>The source of the data, e.g., “Ordnance Survey”</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>has Source Reference</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -143,18 +146,6 @@
     
 
 
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontopoi/double"/>
-        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
-        <rdfs:label>has Numerical Value</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
 
 
@@ -171,7 +162,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PositionalAccuracy"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Distance"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
         <rdfs:label>has Value</rdfs:label>
@@ -244,23 +235,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/hasPositionalAccuracy -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/hasNearestITN -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasPositionalAccuracy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PositionalAccuracy"/>
-        <rdfs:comment>An object property indicating how precisely the Point of Interest (POI) location has been mapped</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>has Positional Accuracy</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontopoi/hasnearestITN -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasnearestITN">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasNearestITN">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ITN"/>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -306,6 +284,18 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
+        <rdfs:label>has Numerical Value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.opengis.net/ont/geosparql#asWKT -->
 
 
@@ -338,6 +328,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontopoi/hasMeasureOfImportance -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasMeasureOfImportance">
+        <rdfs:domain rdf:resource="http://rdfs.co/juso/Street"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>The Measure of Importance (MI) reflects how significant or large a street is</rdfs:comment>
+        <rdfs:label>has Measure Of Importance (MI)</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontopoi/hasName -->
 
 
@@ -351,15 +353,28 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/hasPointxClass -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/hasPointXClassificationCode -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasPointxClass">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasPointXClassificationCode">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>The classification or type of the POI, represented by concatenating the top-level category ID, mid-level category ID, and the POI&apos;s own unique ID, in that order</rdfs:comment>
+        <rdfs:comment>The classification code indicating the type of POI, represented by concatenating the top-level category ID, mid-level category ID, and the POI&apos;s own unique ID, in that order</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>has Pointx Class</rdfs:label>
+        <rdfs:label>has PointX Classification Code</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontopoi/hasPositionalAccuracy -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasPositionalAccuracy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>An indication of how precisely the Point of Interest (POI) location has been mapped. The positional accuracy value can be an integer between 1 and 4, where 1 means positioned at the exact address or location, usually within the building footprint; 2 means positioned near the address or location for non-addressable features; 3 means placed at the road associated with the address or location; and 4 means positioned within the general geographical locality.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>has Positional Accuracy</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -396,7 +411,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasReferenceNumber">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>A unique reference number for the POI entity</rdfs:comment>
+        <rdfs:comment>The unique reference number for the POI entity</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>has Reference Number</rdfs:label>
     </owl:DatatypeProperty>
@@ -448,6 +463,7 @@
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment>The version of the Topographic Object Identifier (TOID) of the POI or ITN</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>has TOID Version</rdfs:label>
@@ -474,7 +490,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasUPRN">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>The Unique Property Reference Number (UPRN) of the POI, which is a unique identifier for physical addresses across the UK</rdfs:comment>
+        <rdfs:comment>It indicates the Unique Property Reference Number (UPRN) of the POI, which serves as the identifier for the corresponding land or property unit in Ordnance Survey’s AddressBase</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>has UPRN</rdfs:label>
     </owl:DatatypeProperty>
@@ -490,6 +506,19 @@
         <rdfs:comment>The web address (URL) of the POI</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>has URL</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontopoi/hasUSRN -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasUSRN">
+        <rdfs:domain rdf:resource="http://rdfs.co/juso/Street"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The Unique Street Reference Number (USRN) is an 8-digit identifier that uniquely identifies every street in Great Britain</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>has USRN</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -565,6 +594,13 @@
     
 
 
+    <!-- http://rdfs.co/juso/Street -->
+
+
+    <owl:Class rdf:about="http://rdfs.co/juso/Street"/>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
 
 
@@ -593,6 +629,16 @@
         <rdfs:comment>A geographic area or neighborhood within a larger city, town, or administrative region</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://dbpedia.org/ontology"/>
         <rdfs:label>Locality</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://dbpedia.org/ontology/Street -->
+
+
+    <owl:Class rdf:about="https://dbpedia.org/ontology/Street">
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>Street</rdfs:label>
     </owl:Class>
     
 
@@ -6256,6 +6302,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest">
         <rdfs:comment>A specific location or place of significance in a geographical context</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Point Of Interest</rdfs:label>
     </owl:Class>
     
@@ -6329,18 +6376,6 @@
         <rdfs:comment>Pool and court construction is a subcategory of construction services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Pool and court construction</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PositionalAccuracy -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PositionalAccuracy">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment>A quantity indicating how precisely the location of the POI has been mapped</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>Positional Accuracy</rdfs:label>
     </owl:Class>
     
 
@@ -8501,13 +8536,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Zoos and animal collections</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontopoi/double -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/double"/>
     
 
 
