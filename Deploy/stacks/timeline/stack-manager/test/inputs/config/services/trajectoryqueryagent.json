@@ -3,7 +3,12 @@
     "Name": "trajectoryqueryagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:2.0.0",
+        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:3.0.0-dev-geoserver-proxy-SNAPSHOT",
+        "Env": [
+            "VIEWPARAM_NAME=user_id",
+            "KEYCLOAK_SERVER=http://timeline-test-keycloak:8080/keycloak",
+            "KEYCLOAK_REALM=timeline"
+        ],
         "Configs": [
           {
             "ConfigName": "blazegraph"
