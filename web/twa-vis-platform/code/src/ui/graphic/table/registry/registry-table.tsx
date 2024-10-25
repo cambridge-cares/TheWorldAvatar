@@ -1,5 +1,4 @@
 import styles from './registry.table.module.css';
-import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import React from 'react';
 import { FieldValues } from 'react-hook-form';
@@ -7,10 +6,9 @@ import { FieldValues } from 'react-hook-form';
 import { RegistryFieldValues } from 'types/form';
 import { getAfterDelimiter, isValidIRI, parseWordsForLabels } from 'utils/client-utils';
 import RegistryRowActions from './actions/registry-table-action';
-import IconComponent from 'ui/graphic/icon/icon';
 import StatusComponent from 'ui/text/status/status';
 
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import { RegistryTableTheme } from './registry-table-theme';
 
@@ -51,7 +49,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
         field,
         headerName: parseWordsForLabels(field),
         width: 150, // Adjust the width as needed
-        renderCell: (params: any) => {
+        renderCell: (params: GridRenderCellParams) => {
           // Render status differently
           if (field.toLowerCase() === "status") {
             return (<StatusComponent status={`${params.value}`} />);

@@ -110,7 +110,7 @@ export default function RibbonComponentOptions(props: Readonly<RibbonComponentOp
 function createOptions(
     options: string[],
     selectedOption: string,
-    selectAction: (selection: string) => void) {
+    selectAction: (_selection: string) => void) {
 
     return (
         <div id="ribbonDropdown" className={styles.ribbonDropdown}>

@@ -42,6 +42,7 @@
     "keycloak-connect": "^25.0.6",
     "mapbox-gl": "3.6.0",
     "markdown-it": "^14.1.0",
+    "material-symbols": "^0.25.1",
     "moment": "^2.30.1",
     "next": "^14.2.16",
     "react": "^18.3.1",

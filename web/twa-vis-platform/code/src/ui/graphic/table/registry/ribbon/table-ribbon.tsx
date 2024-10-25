@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import { sendPostRequest } from 'utils/server-actions';
 import { DownloadButton } from 'ui/interaction/download/download';
-import { sendGetRequest } from 'utils/server-actions';
 
 interface TableRibbonProps {
   entityType: string;
