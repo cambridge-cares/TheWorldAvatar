@@ -328,9 +328,9 @@ def extract_and_write_classes_in_tbox_csv_template(input_pdf_path, output_csv_pa
             comment = cls + " is a subcategory of " + category
             comment = comment.capitalize()
             data.append([
-                replace_comma_and_apostrophe(cls),     # Source
+                replace_comma_and_apostrophe(cls).title(),     # Source
                 "Class",      # Type
-                replace_comma_and_apostrophe(category),          # Target
+                replace_comma_and_apostrophe(category).title(),          # Target
                 "IS-A",       # Relation
                 "",           # Domain (empty)
                 "",           # Range (empty)
