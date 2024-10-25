@@ -55,7 +55,7 @@ The namespace for the ontology is:
 
 The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients. This section has been split into several aspects to improve readability and understanding of the concepts - namely, (1) service agreement duration and parties, (2) payment obligations, and (3) lifecycle.
 
-The service agreement will first define the duration, parties involved, requested service and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)). Additional service details and remarks can also be attached to the `Service` concept when required.
+The service agreement will first define the duration, parties involved, requested service, and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)). Additional service details and remarks can also be attached to the `Service` concept when required.
 
 Figure 1: TBox representation for a Service Agreement following the FIBO ontology
 
@@ -161,7 +161,7 @@ Figure 3: TBox representation of the payment obligations stated in the service a
 
 ## 2.2. Service Agreement Lifecycle
 
-This section describes the lifecycle stages, events, and occurrences that occurs during the lifecycle of a service agreement. The occurences of the lifecycle, stages, and events will be represented and generated according to the real-time occurrences of the service delivered. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can either holds during a date period or occur at an instantaneous time. Each occurrence can also include a location as well as remarks.
+This section describes the lifecycle stages, events, and occurrences that occurs during the lifecycle of a service agreement. The occurences of the lifecycle, stages, and events will be represented and generated according to the real-time occurrences of the service delivered. Each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can either holds during a date period or occur at an instantaneous time.
 
 Figure 4: TBox representation of the service agreement's overall lifecycle
 
@@ -183,8 +183,6 @@ Figure 4: TBox representation of the service agreement's overall lifecycle
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "fibo-fnd-dt-oc:Occurrence" : "rdfs:subClassOf"
 
     "fibo-fnd-dt-oc:Occurrence" ||--|{ " cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
-    "fibo-fnd-dt-oc:Occurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "lcc-cr:Location" ||--|{ "geo:Feature" : "rdfs:subClassOf"
 
     "fibo-fnd-dt-oc:Occurrence" {
         fibo-fnd-dt-oc-hasEventDate xsd-dateTime
@@ -192,7 +190,7 @@ Figure 4: TBox representation of the service agreement's overall lifecycle
     }
 ```
 
-The contract lifecycle usually consists of three stages in sequence of creation, service execution, and expiration. It is recommended to instantiate a `cmns-dt:succeeds` relationship between this three stages as seen in the figure below. The following subsections will describe the events occurring within each stage of the lifecycle.
+The contract lifecycle usually consists of three stages in sequence of creation, service execution, and expiration. It is recommended to instantiate a `cmns-dt:succeeds` relationship between these three stages as seen in the figure below. The following subsections will describe the events occurring within each stage of the lifecycle.
 
 Figure 5: TBox representation of the service agreement's lifecycle stage
 
@@ -247,9 +245,9 @@ Figure 6: TBox representation of the service agreement's creation and expiration
 
 During the service execution stage, services can result in three kinds of outcomes. These outcomes should be represented by a corresponding instance of a `ContractLifecycleEvent` with the following labels (`rdfs:label`) and descriptions (`rdfs:comment`). In representing the upcoming events, a regular schedule is also associated with the service delivery event, which denotes the scheduled days, time slots, and total occurrences.
 
-1. Delivery of the requested service: `Service Delivery Event`
-2. A requested service that has been terminated either by the service provider or the client: `Terminated Service Event`
-3. A requested service that fails to be delivered to the client: `Missed Service Event`
+1. `Service Delivery Event`: Delivery of the requested service
+2. `Terminated Service Event`: A requested service that has been terminated either by the service provider or the client
+3. `Missed Service Event`: A requested service that fails to be delivered to the client
 
 Multiple occurrences of each event can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date time and location. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements. Additionally, the occurrence of each service can be assigned a transport and/or a monetary charge if required. If the service is terminated or missed, it is recommended to instantiate a new occurrence for that event with the corresponding time stamp and reason for its occurrence (`rdfs:comment`).
 
