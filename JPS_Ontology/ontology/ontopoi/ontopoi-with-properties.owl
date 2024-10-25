@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontopoi="https://www.theworldavatar.com/kg/ontopoi/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontopoi/">
-        <dc:date>24 October 2024</dc:date>
+        <dc:date>25 October 2024</dc:date>
         <rdfs:comment>OntoPOI is an ontology developed for representing points of interest.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -93,7 +93,7 @@
     <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#hasSourceReference">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SourceReference"/>
-        <rdfs:comment>The source of the data, e.g., “Ordnance Survey”</rdfs:comment>
+        <rdfs:comment>The source of the data, e.g., Ordnance Survey</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
         <rdfs:label>has Source Reference</rdfs:label>
     </owl:ObjectProperty>
@@ -359,7 +359,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasPointXClassificationCode">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>The classification code indicating the type of POI, represented by concatenating the top-level category ID, mid-level category ID, and the POI&apos;s own unique ID, in that order</rdfs:comment>
+        <rdfs:comment>The classification code indicating the type of POI, represented by concatenating the top-level category ID, mid-level category ID, and the POI own unique ID, in that order</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>has PointX Classification Code</rdfs:label>
     </owl:DatatypeProperty>
@@ -490,7 +490,7 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontopoi/hasUPRN">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PointOfInterest"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>It indicates the Unique Property Reference Number (UPRN) of the POI, which serves as the identifier for the corresponding land or property unit in Ordnance Survey’s AddressBase</rdfs:comment>
+        <rdfs:comment>It indicates the Unique Property Reference Number (UPRN) of the POI, which serves as the identifier for the corresponding land or property unit in the AddressBase of Ordnance Survey</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>has UPRN</rdfs:label>
     </owl:DatatypeProperty>
@@ -690,11 +690,18 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Accommodation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/AccommodationEatingAndDrinking"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/AccommodationAndEatingAndDrinking"/>
         <rdfs:comment>Accommodation is a subcategory of accommodation, eating and drinking</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Accommodation</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontopoi/AccommodationAndEatingAndDrinking -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AccommodationAndEatingAndDrinking"/>
     
 
 
@@ -738,7 +745,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AdultServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Adult services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Adult services</rdfs:label>
@@ -750,7 +757,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AdultShops">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Adult shops is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Adult shops</rdfs:label>
@@ -762,7 +769,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AdultVenues">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen"/>
         <rdfs:comment>Adult venues is a subcategory of venues, stage and screen</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Adult venues</rdfs:label>
@@ -774,7 +781,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AdvertisingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Advertising services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Advertising services</rdfs:label>
@@ -858,7 +865,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AirlinesAndAirlineServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Airlines and airline services is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Airlines and airline services</rdfs:label>
@@ -894,7 +901,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AlcoholicDrinksIncludingOff-LicencesAndWholesalers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Alcoholic drinks including off-licences and wholesalers is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Alcoholic drinks including off-licences and wholesalers</rdfs:label>
@@ -914,10 +921,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/AlternativeNaturalAndComplementary -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/AlternativeAndNaturalAndComplementary -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AlternativeNaturalAndComplementary">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AlternativeAndNaturalAndComplementary">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HealthPractitionersAndEstablishments"/>
         <rdfs:comment>Alternative, natural and complementary is a subcategory of health practitioners and establishments</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -974,10 +981,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/AnimalFeedsPetFoodsHayAndStraw -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/AnimalFeedsAndPetFoodsAndHayAndStraw -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AnimalFeedsPetFoodsHayAndStraw">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AnimalFeedsAndPetFoodsAndHayAndStraw">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Foodstuffs"/>
         <rdfs:comment>Animal feeds, pet foods, hay and straw is a subcategory of foodstuffs</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -990,7 +997,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AnimalTransportation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Animal transportation is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Animal transportation</rdfs:label>
@@ -1110,7 +1117,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ArtAndAntiques">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Art and antiques is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Art and antiques</rdfs:label>
@@ -1130,11 +1137,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/ArtistsIllustratorsAndCalligraphers -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/ArtistsAndIllustratorsAndCalligraphers -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ArtistsIllustratorsAndCalligraphers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ArtistsAndIllustratorsAndCalligraphers">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Artists, illustrators and calligraphers is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Artists, illustrators and calligraphers</rdfs:label>
@@ -1142,11 +1149,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/AstrologersClairvoyantsAndPalmists -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/AstrologersAndClairvoyantsAndPalmists -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AstrologersClairvoyantsAndPalmists">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AstrologersAndClairvoyantsAndPalmists">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Astrologers, clairvoyants and palmists is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Astrologers, clairvoyants and palmists</rdfs:label>
@@ -1178,10 +1185,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/AuctioneersAuctionRoomsAndValuers -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/AuctioneersAndAuctionRoomsAndValuers -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AuctioneersAuctionRoomsAndValuers">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/AuctioneersAndAuctionRoomsAndValuers">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/LegalAndFinancial"/>
         <rdfs:comment>Auctioneers, auction rooms and valuers is a subcategory of legal and financial</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1202,22 +1209,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/BabyAndNurseryEquipmentAndChildrenâ€™SClothes -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/BabyAndNurseryAndPlaygroundEquipment -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BabyAndNurseryEquipmentAndChildrenâ€™SClothes">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ClothingAndAccessories"/>
-        <rdfs:comment>Baby and nursery equipment and childrenâ€™s clothes is a subcategory of clothing and accessories</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>Baby and nursery equipment and childrenâ€™s clothes</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontopoi/BabyNurseryAndPlaygroundEquipment -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BabyNurseryAndPlaygroundEquipment">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BabyAndNurseryAndPlaygroundEquipment">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Baby, nursery and playground equipment is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1226,11 +1221,23 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontopoi/BabyAndNurseryEquipmentAndChildrenClothes -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BabyAndNurseryEquipmentAndChildrenClothes">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ClothingAndAccessories"/>
+        <rdfs:comment>Baby and nursery equipment and children&apos;s clothes is a subcategory of clothing and accessories</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>Baby and nursery equipment and children&apos;s clothes</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontopoi/Bakeries -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Bakeries">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Bakeries is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Bakeries</rdfs:label>
@@ -1286,10 +1293,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/BathroomFixturesFittingsAndSanitaryEquipment -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/BathroomFixturesAndFittingsAndSanitaryEquipment -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BathroomFixturesFittingsAndSanitaryEquipment">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BathroomFixturesAndFittingsAndSanitaryEquipment">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Bathroom fixtures, fittings and sanitary equipment is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1310,10 +1317,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/BearingGearAndDriveElements -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/BearingAndGearAndDriveElements -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BearingGearAndDriveElements">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BearingAndGearAndDriveElements">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Bearing, gear and drive elements is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1394,10 +1401,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/BirdReservesCollectionsAndSanctuaries -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/BirdReservesAndCollectionsAndSanctuaries -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BirdReservesCollectionsAndSanctuaries">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BirdReservesAndCollectionsAndSanctuaries">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/BotanicalAndZoological"/>
         <rdfs:comment>Bird reserves, collections and sanctuaries is a subcategory of botanical and zoological</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1458,7 +1465,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BooksAndMaps">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Books and maps is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Books and maps</rdfs:label>
@@ -1502,10 +1509,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/BricksTilesClayAndCeramicProducts -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/BricksAndTilesAndClayAndCeramicProducts -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BricksTilesClayAndCeramicProducts">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BricksAndTilesAndClayAndCeramicProducts">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Bricks, tiles, clay and ceramic products is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1530,7 +1537,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BroadAgeRangeAndSecondaryStateSchools">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>Broad age range and secondary state schools is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Broad age range and secondary state schools</rdfs:label>
@@ -1586,11 +1593,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/BusAndCoachStationsDepotsAndCompanies -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/BusAndCoachStationsAndDepotsAndCompanies -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BusAndCoachStationsDepotsAndCompanies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/BusAndCoachStationsAndDepotsAndCompanies">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure"/>
         <rdfs:comment>Bus and coach stations, depots and companies is a subcategory of public transport, stations and infrastructure</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Bus and coach stations, depots and companies</rdfs:label>
@@ -1650,7 +1657,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Butchers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Butchers is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Butchers</rdfs:label>
@@ -1670,10 +1677,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CableWireAndFibreOptics -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CableAndWireAndFibreOptics -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CableWireAndFibreOptics">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CableAndWireAndFibreOptics">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Cable, wire and fibre optics is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1682,10 +1689,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CafesSnackBarsAndTeaRooms -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CafesAndSnackBarsAndTeaRooms -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CafesSnackBarsAndTeaRooms">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CafesAndSnackBarsAndTeaRooms">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/EatingAndDrinking"/>
         <rdfs:comment>Cafes, snack bars and tea rooms is a subcategory of eating and drinking</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1698,7 +1705,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CampingAndCaravanning">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Camping and caravanning is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Camping and caravanning</rdfs:label>
@@ -1706,10 +1713,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CampingCaravanningMobileHomesHolidayParksAndCentres -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CampingAndCaravanningAndMobileHomesAndHolidayParksAndCentres -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CampingCaravanningMobileHomesHolidayParksAndCentres">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CampingAndCaravanningAndMobileHomesAndHolidayParksAndCentres">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Accommodation"/>
         <rdfs:comment>Camping, caravanning, mobile homes, holiday parks and centres is a subcategory of accommodation</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1766,10 +1773,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CarpetsFlooringRugsAndSoftFurnishings -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CarpetsAndFlooringAndRugsAndSoftFurnishings -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CarpetsFlooringRugsAndSoftFurnishings">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CarpetsAndFlooringAndRugsAndSoftFurnishings">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Carpets, flooring, rugs and soft furnishings is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1778,11 +1785,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CarpetsRugsSoftFurnishingsAndNeedlecraft -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CarpetsAndRugsAndSoftFurnishingsAndNeedlecraft -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CarpetsRugsSoftFurnishingsAndNeedlecraft">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CarpetsAndRugsAndSoftFurnishingsAndNeedlecraft">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Carpets, rugs, soft furnishings and needlecraft is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Carpets, rugs, soft furnishings and needlecraft</rdfs:label>
@@ -1794,7 +1801,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CashAndCarry">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Cash and carry is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Cash and carry</rdfs:label>
@@ -1914,7 +1921,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CharityShops">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Charity shops is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Charity shops</rdfs:label>
@@ -1958,12 +1965,24 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontopoi/ChildrenActivityCentres -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ChildrenActivityCentres">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SportAndEntertainmentSupportServices"/>
+        <rdfs:comment>Children&apos;s activity centres is a subcategory of sport and entertainment support services</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>Children&apos;s activity centres</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontopoi/ChinaAndGlassware -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ChinaAndGlassware">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>China and glassware is a subcategory of consumer products</rdfs:comment>
         <rdfs:comment>China and glassware is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -1976,7 +1995,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Cinemas">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen"/>
         <rdfs:comment>Cinemas is a subcategory of venues, stage and screen</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Cinemas</rdfs:label>
@@ -2012,7 +2031,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CleaningServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Cleaning services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Cleaning services</rdfs:label>
@@ -2080,10 +2099,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/ClothingComponentsAndAccessories -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/ClothingAndComponentsAndAccessories -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ClothingComponentsAndAccessories">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ClothingAndComponentsAndAccessories">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Clothing, components and accessories is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -2128,10 +2147,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/ColoursChemicalsAndWaterSoftenersAndSupplies -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/ColoursAndChemicalsAndWaterSoftenersAndSupplies -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ColoursChemicalsAndWaterSoftenersAndSupplies">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ColoursAndChemicalsAndWaterSoftenersAndSupplies">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Colours, chemicals and water softeners and supplies is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -2140,10 +2159,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CombatLaserAndPaintballGames -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CombatAndLaserAndPaintballGames -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CombatLaserAndPaintballGames">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CombatAndLaserAndPaintballGames">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/OutdoorPursuits"/>
         <rdfs:comment>Combat, laser and paintball games is a subcategory of outdoor pursuits</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -2156,7 +2175,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ComicBooks">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Comic books is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Comic books</rdfs:label>
@@ -2252,7 +2271,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ComputerSecurity">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Computer security is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Computer security</rdfs:label>
@@ -2264,7 +2283,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ComputerShops">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Computer shops is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Computer shops</rdfs:label>
@@ -2276,7 +2295,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ComputerSupplies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Computer supplies is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Computer supplies</rdfs:label>
@@ -2288,7 +2307,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ComputerSystemsServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Computer systems services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Computer systems services</rdfs:label>
@@ -2300,7 +2319,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ConcertOrExhibitionOrganisersAndServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Concert or exhibition organisers and services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Concert or exhibition organisers and services</rdfs:label>
@@ -2324,7 +2343,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Confectioners">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Confectioners is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Confectioners</rdfs:label>
@@ -2336,7 +2355,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ConferenceAndExhibitionCentres">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen"/>
         <rdfs:comment>Conference and exhibition centres is a subcategory of venues, stage and screen</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Conference and exhibition centres</rdfs:label>
@@ -2468,7 +2487,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ContainerAndStorage">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Container and storage is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Container and storage</rdfs:label>
@@ -2504,7 +2523,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ConvenienceStoresAndIndependentSupermarkets">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Convenience stores and independent supermarkets is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Convenience stores and independent supermarkets</rdfs:label>
@@ -2536,10 +2555,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CosmeticsToiletriesAndPerfumes -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CosmeticsAndToiletriesAndPerfumes -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CosmeticsToiletriesAndPerfumes">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CosmeticsAndToiletriesAndPerfumes">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Cosmetics, toiletries and perfumes is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -2548,11 +2567,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CosmeticsToiletriesPerfumesAndHairdressingSupplies -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CosmeticsAndToiletriesAndPerfumesAndHairdressingSupplies -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CosmeticsToiletriesPerfumesAndHairdressingSupplies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CosmeticsAndToiletriesAndPerfumesAndHairdressingSupplies">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Cosmetics, toiletries, perfumes and hairdressing supplies is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Cosmetics, toiletries, perfumes and hairdressing supplies</rdfs:label>
@@ -2584,11 +2603,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CourierDeliveryAndMessenger -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CourierAndDeliveryAndMessenger -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CourierDeliveryAndMessenger">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CourierAndDeliveryAndMessenger">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Courier, delivery and messenger is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Courier, delivery and messenger</rdfs:label>
@@ -2596,10 +2615,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CourtsCourtServicesAndTribunals -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CourtsAndCourtServicesAndTribunals -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CourtsCourtServicesAndTribunals">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CourtsAndCourtServicesAndTribunals">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/CentralAndLocalGovernment"/>
         <rdfs:comment>Courts, court services and tribunals is a subcategory of central and local government</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -2612,7 +2631,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CraftSupplies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Craft supplies is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Craft supplies</rdfs:label>
@@ -2660,7 +2679,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CustomerServiceCentres">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Customer service centres is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Customer service centres</rdfs:label>
@@ -2680,10 +2699,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/CuttingDrillingAndWeldingServices -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/CuttingAndDrillingAndWeldingServices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CuttingDrillingAndWeldingServices">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CuttingAndDrillingAndWeldingServices">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConstructionServices"/>
         <rdfs:comment>Cutting, drilling and welding services is a subcategory of construction services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -2696,7 +2715,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CvWriters">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Cv writers is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>CV writers</rdfs:label>
@@ -2708,7 +2727,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/CyclesAndAccessories">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Cycles and accessories is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Cycles and accessories</rdfs:label>
@@ -2744,7 +2763,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DatabaseServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Database services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Database services</rdfs:label>
@@ -2780,7 +2799,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Delicatessens">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Delicatessens is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Delicatessens</rdfs:label>
@@ -2840,7 +2859,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DepartmentStores">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Department stores is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Department stores</rdfs:label>
@@ -2876,7 +2895,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DesktopPublishingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Desktop publishing services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Desktop publishing services</rdfs:label>
@@ -2888,7 +2907,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DetectiveAndInvestigationAgencies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Detective and investigation agencies is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Detective and investigation agencies</rdfs:label>
@@ -2924,7 +2943,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DiscountStores">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Discount stores is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Discount stores</rdfs:label>
@@ -2972,7 +2991,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DistributionAndHaulage">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Distribution and haulage is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Distribution and haulage</rdfs:label>
@@ -3008,7 +3027,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DiyAndHomeImprovement">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Diy and home improvement is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>DIY and home improvement</rdfs:label>
@@ -3044,7 +3063,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/DomesticAppliances">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Domestic appliances is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Domestic appliances</rdfs:label>
@@ -3140,7 +3159,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/EatingAndDrinking">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/AccommodationEatingAndDrinking"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/AccommodationAndEatingAndDrinking"/>
         <rdfs:comment>Eating and drinking is a subcategory of accommodation, eating and drinking</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Eating and drinking</rdfs:label>
@@ -3272,7 +3291,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ElectricalGoodsAndComponents">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Electrical goods and components is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Electrical goods and components</rdfs:label>
@@ -3308,7 +3327,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ElectronicAndInternetPublishers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Electronic and internet publishers is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Electronic and Internet publishers</rdfs:label>
@@ -3440,7 +3459,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/EventTicketAgentsAndBoxOffice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Event ticket agents and box office is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Event Ticket Agents and Box Office</rdfs:label>
@@ -3532,10 +3551,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/FencesGatesAndRailings -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/FencesAndGatesAndRailings -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FencesGatesAndRailings">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FencesAndGatesAndRailings">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Fences, gates and railings is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -3556,10 +3575,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/FengShuiConsultantsFurnishersAndShopFitters -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/FengShuiConsultantsAndFurnishersAndShopFitters -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FengShuiConsultantsFurnishersAndShopFitters">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FengShuiConsultantsAndFurnishersAndShopFitters">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Consultancies"/>
         <rdfs:comment>Feng shui consultants, furnishers and shop fitters is a subcategory of consultancies</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -3584,7 +3603,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FerryAndCruiseCompanies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Ferry and cruise companies is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Ferry and cruise companies</rdfs:label>
@@ -3608,7 +3627,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FilmAndVideoServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Film and video services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Film and video services</rdfs:label>
@@ -3676,11 +3695,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/FirstPrimaryAndInfantSchools -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/FirstAndPrimaryAndInfantSchools -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FirstPrimaryAndInfantSchools">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FirstAndPrimaryAndInfantSchools">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>First, primary and infant schools is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>First, primary and infant schools</rdfs:label>
@@ -3700,6 +3719,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontopoi/FishAndMeatAndPoultryProducts -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FishAndMeatAndPoultryProducts">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Foodstuffs"/>
+        <rdfs:comment>Fish, meat and poultry products is a subcategory of foodstuffs</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>Fish, meat and poultry products</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontopoi/FishAndShellfish -->
 
 
@@ -3712,23 +3743,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/FishMeatAndPoultryProducts -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FishMeatAndPoultryProducts">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Foodstuffs"/>
-        <rdfs:comment>Fish, meat and poultry products is a subcategory of foodstuffs</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>Fish, meat and poultry products</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontopoi/Fishmongers -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Fishmongers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Fishmongers is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Fishmongers</rdfs:label>
@@ -3740,7 +3759,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Florists">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Florists is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Florists</rdfs:label>
@@ -3772,6 +3791,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Retail"/>
+        <rdfs:comment>Food, drink and multi item retail is a subcategory of retail</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>Food, drink and multi item retail</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontopoi/FoodConsultants -->
 
 
@@ -3780,18 +3811,6 @@
         <rdfs:comment>Food consultants is a subcategory of consultancies</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Food consultants</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Retail"/>
-        <rdfs:comment>Food, drink and multi item retail is a subcategory of retail</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>Food, drink and multi item retail</rdfs:label>
     </owl:Class>
     
 
@@ -3898,7 +3917,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FrozenFoods">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Frozen foods is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Frozen foods</rdfs:label>
@@ -3906,10 +3925,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/FruitFlowerAndVegetableGrowers -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/FruitAndFlowerAndVegetableGrowers -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FruitFlowerAndVegetableGrowers">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FruitAndFlowerAndVegetableGrowers">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Farming"/>
         <rdfs:comment>Fruit, flower and vegetable growers is a subcategory of farming</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -3922,7 +3941,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FuelDistributorsAndSuppliers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Fuel distributors and suppliers is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Fuel distributors and suppliers</rdfs:label>
@@ -3946,7 +3965,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FuneralAndAssociatedServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Funeral and associated services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Funeral and associated services</rdfs:label>
@@ -3971,7 +3990,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Furniture">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Furniture is a subcategory of consumer products</rdfs:comment>
         <rdfs:comment>Furniture is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -3984,7 +4003,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/FurtherEducationEstablishments">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>Further education establishments is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Further education establishments</rdfs:label>
@@ -4004,11 +4023,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/GaragesGardenAndPortableBuildings -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/GaragesAndGardenAndPortableBuildings -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GaragesGardenAndPortableBuildings">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GaragesAndGardenAndPortableBuildings">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Garages, garden and portable buildings is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Garages, garden and portable buildings</rdfs:label>
@@ -4020,7 +4039,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GardenCentresAndNurseries">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Garden centres and nurseries is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Garden centres and nurseries</rdfs:label>
@@ -4044,7 +4063,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GardenMachineryAndFurniture">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Garden machinery and furniture is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Garden machinery and furniture</rdfs:label>
@@ -4052,10 +4071,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/GardeningLandscapingAndTreeSurgeryServices -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/GardeningAndLandscapingAndTreeSurgeryServices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GardeningLandscapingAndTreeSurgeryServices">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GardeningAndLandscapingAndTreeSurgeryServices">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConstructionServices"/>
         <rdfs:comment>Gardening, landscaping and tree surgery services is a subcategory of construction services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4092,7 +4111,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GeneralComputerServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>General computer services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>General computer services</rdfs:label>
@@ -4116,7 +4135,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GeneralHouseholdGoods">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>General household goods is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>General household goods</rdfs:label>
@@ -4151,7 +4170,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GiftsAndCards">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Gifts and cards is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Gifts and cards</rdfs:label>
@@ -4207,10 +4226,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/GolfRangesCoursesClubsAndProfessionals -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/GolfRangesAndCoursesAndClubsAndProfessionals -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GolfRangesCoursesClubsAndProfessionals">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GolfRangesAndCoursesAndClubsAndProfessionals">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SportsComplex"/>
         <rdfs:comment>Golf ranges, courses, clubs and professionals is a subcategory of sports complex</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4223,7 +4242,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GreenAndNewAgeGoods">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Green and new age goods is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Green and new age goods</rdfs:label>
@@ -4231,11 +4250,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/GrocersFarmShopsAndPickYourOwn -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/GrocersAndFarmShopsAndPickYourOwn -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GrocersFarmShopsAndPickYourOwn">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GrocersAndFarmShopsAndPickYourOwn">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Grocers, farm shops and pick your own is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Grocers, farm shops and pick your own</rdfs:label>
@@ -4243,10 +4262,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/GymnasiumsSportsHallsAndLeisureCentres -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/GymnasiumsAndSportsHallsAndLeisureCentres -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GymnasiumsSportsHallsAndLeisureCentres">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/GymnasiumsAndSportsHallsAndLeisureCentres">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SportsComplex"/>
         <rdfs:comment>Gymnasiums, sports halls and leisure centres is a subcategory of sports complex</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4271,7 +4290,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HairAndBeautyServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Hair and beauty services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Hair and beauty services</rdfs:label>
@@ -4291,11 +4310,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/HeadquartersAdministrationAndCentralOffices -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/HeadquartersAndAdministrationAndCentralOffices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HeadquartersAdministrationAndCentralOffices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HeadquartersAndAdministrationAndCentralOffices">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Headquarters, administration and central offices is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Headquarters, administration and central offices</rdfs:label>
@@ -4355,7 +4374,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HerbsAndSpices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Herbs and spices is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Herbs and spices</rdfs:label>
@@ -4367,7 +4386,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HigherEducationEstablishments">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>Higher education establishments is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Higher education establishments</rdfs:label>
@@ -4399,10 +4418,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/HistoricBuildingsIncludingCastlesFortsAndAbbeys -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/HistoricBuildingsIncludingCastlesAndFortsAndAbbeys -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HistoricBuildingsIncludingCastlesFortsAndAbbeys">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HistoricBuildingsIncludingCastlesAndFortsAndAbbeys">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HistoricalAndCultural"/>
         <rdfs:comment>Historic buildings including castles, forts and abbeys is a subcategory of historical and cultural</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4427,7 +4446,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HistoricalResearch">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Historical research is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Historical research</rdfs:label>
@@ -4447,12 +4466,12 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/HobbySportsAndPastimeProducts -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/HobbyAndSportsAndPastimeProducts -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HobbySportsAndPastimeProducts">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HobbyAndSportsAndPastimeProducts">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Hobby, sports and pastime products is a subcategory of consumer products</rdfs:comment>
         <rdfs:comment>Hobby, sports and pastime products is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4573,7 +4592,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HotelBookingAgencies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Hotel booking agencies is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Hotel Booking Agencies</rdfs:label>
@@ -4581,10 +4600,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/HotelsMotelsCountryHousesAndInns -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/HotelsAndMotelsAndCountryHousesAndInns -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HotelsMotelsCountryHousesAndInns">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HotelsAndMotelsAndCountryHousesAndInns">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Accommodation"/>
         <rdfs:comment>Hotels, motels, country houses and inns is a subcategory of accommodation</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4593,10 +4612,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Retail"/>
         <rdfs:comment>Household, office, leisure and garden is a subcategory of retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4680,7 +4699,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ImportAndExportServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Import and export services is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Import and export services</rdfs:label>
@@ -4692,7 +4711,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/IndependentAndPreparatorySchools">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>Independent and preparatory schools is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Independent and preparatory schools</rdfs:label>
@@ -4836,7 +4855,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/InternetServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Internet services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Internet services</rdfs:label>
@@ -4860,7 +4879,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/IntroductionAndDatingAgencies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Introduction and dating agencies is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Introduction and dating agencies</rdfs:label>
@@ -4868,10 +4887,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/CommercialServices"/>
         <rdfs:comment>It, advertising, marketing and media service s is a subcategory of commercial services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4892,10 +4911,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/JewelleryGemsClocksAndWatches -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/JewelleryAndGemsAndClocksAndWatches -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/JewelleryGemsClocksAndWatches">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/JewelleryAndGemsAndClocksAndWatches">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Jewellery, gems, clocks and watches is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4976,10 +4995,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/LaseriaObservatoriesAndPlanetaria -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/LaseriaAndObservatoriesAndPlanetaria -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LaseriaObservatoriesAndPlanetaria">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LaseriaAndObservatoriesAndPlanetaria">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Tourism"/>
         <rdfs:comment>Laseria, observatories and planetaria is a subcategory of tourism</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -4988,11 +5007,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/LeatherGoodsLuggageAndTravelAccessoriesIncludingHandbags -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/LeatherGoodsAndLuggageAndTravelAccessoriesIncludingHandbags -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LeatherGoodsLuggageAndTravelAccessoriesIncludingHandbags">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LeatherGoodsAndLuggageAndTravelAccessoriesIncludingHandbags">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Leather goods, luggage and travel accessories including handbags is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Leather goods, luggage and travel accessories including handbags</rdfs:label>
@@ -5076,7 +5095,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Lighting">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Lighting is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Lighting</rdfs:label>
@@ -5126,7 +5145,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LiteraryServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Literary services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Literary services</rdfs:label>
@@ -5150,7 +5169,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LivestockMarkets">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Livestock markets is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Livestock markets</rdfs:label>
@@ -5189,11 +5208,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/LockKeyAndSecurityServices -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/LockAndKeyAndSecurityServices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LockKeyAndSecurityServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LockAndKeyAndSecurityServices">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Lock, key and security services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Lock, key and security services</rdfs:label>
@@ -5217,7 +5236,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LondonUndergroundEntrances">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure"/>
         <rdfs:comment>London underground entrances is a subcategory of public transport, stations and infrastructure</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>London Underground entrances</rdfs:label>
@@ -5237,10 +5256,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/LuggageBagsUmbrellasAndTravelAccessories -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/LuggageAndBagsAndUmbrellasAndTravelAccessories -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LuggageBagsUmbrellasAndTravelAccessories">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/LuggageAndBagsAndUmbrellasAndTravelAccessories">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Luggage, bags, umbrellas and travel accessories is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -5253,7 +5272,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MailOrderAndCatalogueStores">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Mail order and catalogue stores is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Mail order and catalogue stores</rdfs:label>
@@ -5265,7 +5284,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MailingAndOtherInformationServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Mailing and other information services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Mailing and other information services</rdfs:label>
@@ -5313,7 +5332,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MarketingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Marketing services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Marketing services</rdfs:label>
@@ -5325,7 +5344,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Markets">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Markets is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Markets</rdfs:label>
@@ -5369,14 +5388,26 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/MedalsTrophiesCeremonialAndReligiousGoods -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/MedalsAndTrophiesAndCeremonialAndReligiousGoods -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MedalsTrophiesCeremonialAndReligiousGoods">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MedalsAndTrophiesAndCeremonialAndReligiousGoods">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Medals, trophies, ceremonial and religious goods is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Medals, trophies, ceremonial and religious goods</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontopoi/MedicalEquipmentAndSuppliesAndPharmAceuticals -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MedicalEquipmentAndSuppliesAndPharmAceuticals">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
+        <rdfs:comment>Medical equipment, supplies and pharm aceuticals is a subcategory of industrial products</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>Medical equipment, supplies and pharm aceuticals</rdfs:label>
     </owl:Class>
     
 
@@ -5389,18 +5420,6 @@
         <rdfs:comment>Medical equipment rental and leasing is a subcategory of health support services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Medical equipment rental and leasing</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontopoi/MedicalEquipmentSuppliesAndPharmAceuticals -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MedicalEquipmentSuppliesAndPharmAceuticals">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
-        <rdfs:comment>Medical equipment, supplies and pharm aceuticals is a subcategory of industrial products</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>Medical equipment, supplies and pharm aceuticals</rdfs:label>
     </owl:Class>
     
 
@@ -5445,7 +5464,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MessageAndGreetingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Message and greeting services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Message and greeting services</rdfs:label>
@@ -5453,10 +5472,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/MetalsManufacturersFabricatorsAndStockholders -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/MetalsManufacturersAndFabricatorsAndStockholders -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MetalsManufacturersFabricatorsAndStockholders">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MetalsManufacturersAndFabricatorsAndStockholders">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Metals manufacturers, fabricators and stockholders is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -5501,10 +5520,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/MillingRefiningAndFoodAdditives -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/MillingAndRefiningAndFoodAdditives -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MillingRefiningAndFoodAdditives">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MillingAndRefiningAndFoodAdditives">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Foodstuffs"/>
         <rdfs:comment>Milling, refining and food additives is a subcategory of foodstuffs</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -5601,7 +5620,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MotoringOrganisations">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Motoring organisations is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Motoring organisations</rdfs:label>
@@ -5645,10 +5664,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/MouldsDiesAndCastings -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/MouldsAndDiesAndCastings -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MouldsDiesAndCastings">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MouldsAndDiesAndCastings">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Moulds, dies and castings is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -5685,7 +5704,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MusicAndVideo">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Music and video is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Music and video</rdfs:label>
@@ -5710,7 +5729,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MusicalInstruments">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Musical instruments is a subcategory of consumer products</rdfs:comment>
         <rdfs:comment>Musical instruments is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -5719,11 +5738,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/MusiciansOrchestrasAndComposers -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/MusiciansAndOrchestrasAndComposers -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MusiciansOrchestrasAndComposers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/MusiciansAndOrchestrasAndComposers">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Musicians, orchestras and composers is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Musicians, orchestras and composers</rdfs:label>
@@ -5747,7 +5766,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Nightclubs">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen"/>
         <rdfs:comment>Nightclubs is a subcategory of venues, stage and screen</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Nightclubs</rdfs:label>
@@ -5839,10 +5858,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/OilAndGasExtractionRefineryAndProductManufacture -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/OilAndGasExtractionAndRefineryAndProductManufacture -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/OilAndGasExtractionRefineryAndProductManufacture">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/OilAndGasExtractionAndRefineryAndProductManufacture">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ExtractiveIndustries"/>
         <rdfs:comment>Oil and gas extraction, refinery and product manufacture is a subcategory of extractive industries</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -5875,11 +5894,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/OrganicHealthGourmetAndKosherFoods -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/OrganicAndHealthAndGourmetAndKosherFoods -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/OrganicHealthGourmetAndKosherFoods">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/OrganicAndHealthAndGourmetAndKosherFoods">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Organic, health, gourmet and kosher foods is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Organic, health, gourmet and kosher foods</rdfs:label>
@@ -5971,10 +5990,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PaintsVarnishesAndLacquers -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PaintsAndVarnishesAndLacquers -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PaintsVarnishesAndLacquers">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PaintsAndVarnishesAndLacquers">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Paints, varnishes and lacquers is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -6035,7 +6054,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PartyGoodsAndNovelties">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Party goods and novelties is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Party goods and novelties</rdfs:label>
@@ -6047,7 +6066,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PartyOrganisers">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Party organisers is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Party organisers</rdfs:label>
@@ -6079,10 +6098,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/CommercialServices"/>
         <rdfs:comment>Personal, consumer and other services is a subcategory of commercial services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -6095,7 +6114,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Personalisation">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Personalisation is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Personalisation</rdfs:label>
@@ -6151,11 +6170,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PetsSuppliesAndServices -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PetsAndSuppliesAndServices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PetsSuppliesAndServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PetsAndSuppliesAndServices">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Pets, supplies and services is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Pets, supplies and services</rdfs:label>
@@ -6168,7 +6187,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PhotographicAndOpticalEquipment">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Photographic and optical equipment is a subcategory of consumer products</rdfs:comment>
         <rdfs:comment>Photographic and optical equipment is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -6181,7 +6200,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PhotographicServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Photographic services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Photographic services</rdfs:label>
@@ -6249,11 +6268,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PlateMakersPrintFinishersAndTypesetters -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PlateMakersAndPrintFinishersAndTypesetters -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PlateMakersPrintFinishersAndTypesetters">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PlateMakersAndPrintFinishersAndTypesetters">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Plate makers, print finishers and typesetters is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Plate makers, print finishers and typesetters</rdfs:label>
@@ -6384,7 +6403,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PostOffices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Post offices is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Post offices</rdfs:label>
@@ -6396,7 +6415,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Potteries">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Potteries is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Potteries</rdfs:label>
@@ -6404,10 +6423,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PoultryFarmingEquipmentAndSupplies -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PoultryFarmingAndEquipmentAndSupplies -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PoultryFarmingEquipmentAndSupplies">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PoultryFarmingAndEquipmentAndSupplies">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Farming"/>
         <rdfs:comment>Poultry farming, equipment and supplies is a subcategory of farming</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -6444,7 +6463,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PressAndJournalismServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Press and journalism services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Press and journalism services</rdfs:label>
@@ -6452,10 +6471,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/EducationAndHealth"/>
         <rdfs:comment>Primary, secondary and tertiary education is a subcategory of education and health</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -6480,7 +6499,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PrintingAndPhotocopyingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Printing and photocopying services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Printing and photocopying services</rdfs:label>
@@ -6492,7 +6511,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PrintingOnGarments">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Printing on garments is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Printing on garments</rdfs:label>
@@ -6608,10 +6627,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Transport"/>
         <rdfs:comment>Public transport, stations and infrastructure is a subcategory of transport</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -6632,10 +6651,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/PubsBarsAndInns -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/PubsAndBarsAndInns -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PubsBarsAndInns">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PubsAndBarsAndInns">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/EatingAndDrinking"/>
         <rdfs:comment>Pubs, bars and inns is a subcategory of eating and drinking</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -6660,7 +6679,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/PupilReferralUnits">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>Pupil referral units is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Pupil referral units</rdfs:label>
@@ -6708,7 +6727,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RailwayRelatedServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Railway related services is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Railway related services</rdfs:label>
@@ -6716,11 +6735,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/RailwayStationsJunctionsAndHalts -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/RailwayStationsAndJunctionsAndHalts -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RailwayStationsJunctionsAndHalts">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RailwayStationsAndJunctionsAndHalts">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure"/>
         <rdfs:comment>Railway stations, junctions and halts is a subcategory of public transport, stations and infrastructure</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Railway stations, junctions and halts</rdfs:label>
@@ -6732,7 +6751,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RecordingStudiosAndRecordCompanies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Recording studios and record companies is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Recording studios and record companies</rdfs:label>
@@ -6764,6 +6783,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontopoi/RecyclingAndReclamationAndDisposal -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RecyclingAndReclamationAndDisposal">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/RecyclingServices"/>
+        <rdfs:comment>Recycling, reclamation and disposal is a subcategory of recycling services</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
+        <rdfs:label>Recycling, reclamation and disposal</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontopoi/RecyclingCentres -->
 
 
@@ -6772,18 +6803,6 @@
         <rdfs:comment>Recycling centres is a subcategory of infrastructure and facilities</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Recycling centres</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontopoi/RecyclingReclamationAndDisposal -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RecyclingReclamationAndDisposal">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/RecyclingServices"/>
-        <rdfs:comment>Recycling, reclamation and disposal is a subcategory of recycling services</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>Recycling, reclamation and disposal</rdfs:label>
     </owl:Class>
     
 
@@ -6852,7 +6871,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RemovalsAndShippingAgents">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Removals and shipping agents is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Removals and shipping agents</rdfs:label>
@@ -6968,10 +6987,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/RidingSchoolsLiveryStablesAndEquestrianCentres -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/RidingSchoolsAndLiveryStablesAndEquestrianCentres -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RidingSchoolsLiveryStablesAndEquestrianCentres">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RidingSchoolsAndLiveryStablesAndEquestrianCentres">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/OutdoorPursuits"/>
         <rdfs:comment>Riding schools, livery stables and equestrian centres is a subcategory of outdoor pursuits</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7040,10 +7059,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/RopesNetsAndCordage -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/RopesAndNetsAndCordage -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RopesNetsAndCordage">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RopesAndNetsAndCordage">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Ropes, nets and cordage is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7052,10 +7071,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/RubberSiliconesAndPlastics -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/RubberAndSiliconesAndPlastics -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RubberSiliconesAndPlastics">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/RubberAndSiliconesAndPlastics">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Rubber, silicones and plastics is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7088,10 +7107,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/SandGravelAndClayExtractionAndMerchants -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/SandAndGravelAndClayExtractionAndMerchants -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SandGravelAndClayExtractionAndMerchants">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SandAndGravelAndClayExtractionAndMerchants">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ExtractiveIndustries"/>
         <rdfs:comment>Sand, gravel and clay extraction and merchants is a subcategory of extractive industries</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7124,11 +7143,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/SculptorsWoodworkersAndStonemasons -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/SculptorsAndWoodworkersAndStonemasons -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SculptorsWoodworkersAndStonemasons">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SculptorsAndWoodworkersAndStonemasons">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Sculptors, woodworkers and stonemasons is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Sculptors, woodworkers and stonemasons</rdfs:label>
@@ -7136,10 +7155,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/SealsTapesTapsAndValves -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/SealsAndTapesAndTapsAndValves -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SealsTapesTapsAndValves">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SealsAndTapesAndTapsAndValves">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Seals, tapes, taps and valves is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7152,7 +7171,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Second-HandGoods">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Second-hand goods is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Second-hand goods</rdfs:label>
@@ -7224,7 +7243,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SewageServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Sewage services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Sewage Services</rdfs:label>
@@ -7232,10 +7251,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/ShelvingStorageSafesAndVaults -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/ShelvingAndStorageAndSafesAndVaults -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ShelvingStorageSafesAndVaults">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ShelvingAndStorageAndSafesAndVaults">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Shelving, storage, safes and vaults is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7272,7 +7291,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/ShoppingCentresAndRetailParks">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Shopping centres and retail parks is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Shopping centres and retail parks</rdfs:label>
@@ -7280,10 +7299,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/SightseeingToursViewingAndVisitorCentres -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/SightseeingAndToursAndViewingAndVisitorCentres -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SightseeingToursViewingAndVisitorCentres">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SightseeingAndToursAndViewingAndVisitorCentres">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Tourism"/>
         <rdfs:comment>Sightseeing, tours, viewing and visitor centres is a subcategory of tourism</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7332,7 +7351,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SlimmingClubsAndServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Slimming clubs and services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Slimming clubs and services</rdfs:label>
@@ -7356,7 +7375,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SocialClubs">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen"/>
         <rdfs:comment>Social clubs is a subcategory of venues, stage and screen</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Social clubs</rdfs:label>
@@ -7376,10 +7395,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/SolicitorsAdvocatesAndNotariesPublic -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/SolicitorsAndAdvocatesAndNotariesPublic -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SolicitorsAdvocatesAndNotariesPublic">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SolicitorsAndAdvocatesAndNotariesPublic">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/LegalAndFinancial"/>
         <rdfs:comment>Solicitors, advocates and notaries public is a subcategory of legal and financial</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7388,10 +7407,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/SoundLightAndVisionServiceAndEquipmentHire -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/SoundAndLightAndVisionServiceAndEquipmentHire -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SoundLightAndVisionServiceAndEquipmentHire">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SoundAndLightAndVisionServiceAndEquipmentHire">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HireServices"/>
         <rdfs:comment>Sound, light and vision service and equipment hire is a subcategory of hire services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7415,7 +7434,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Spas">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Spas is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Spas</rdfs:label>
@@ -7439,7 +7458,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SpecialSchoolsAndColleges">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>Special schools and colleges is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Special schools and colleges</rdfs:label>
@@ -7531,10 +7550,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/SportsGroundsStadiaAndPitches -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/SportsGroundsAndStadiaAndPitches -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SportsGroundsStadiaAndPitches">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SportsGroundsAndStadiaAndPitches">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SportsComplex"/>
         <rdfs:comment>Sports grounds, stadia and pitches is a subcategory of sports complex</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7547,7 +7566,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SportsServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Sports services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Sports services</rdfs:label>
@@ -7571,7 +7590,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/StationeryAndOfficeSupplies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Stationery and office supplies is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Stationery and office supplies</rdfs:label>
@@ -7579,10 +7598,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/StationeryStampsTagsAndLabels -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/StationeryAndStampsAndTagsAndLabels -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/StationeryStampsTagsAndLabels">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/StationeryAndStampsAndTagsAndLabels">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Stationery, stamps, tags and labels is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7591,10 +7610,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/StocksSharesAndUnitTrusts -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/StocksAndSharesAndUnitTrusts -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/StocksSharesAndUnitTrusts">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/StocksAndSharesAndUnitTrusts">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/LegalAndFinancial"/>
         <rdfs:comment>Stocks, shares and unit trusts is a subcategory of legal and financial</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7631,7 +7650,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SupermarketChains">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Supermarket chains is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Supermarket chains</rdfs:label>
@@ -7655,7 +7674,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/SurplusGoods">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Surplus goods is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Surplus goods</rdfs:label>
@@ -7679,7 +7698,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TailoringAndClothingAlteration">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Tailoring and clothing alteration is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Tailoring and clothing alteration</rdfs:label>
@@ -7687,10 +7706,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/TarnsPoolsAndMeres -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/TarnsAndPoolsAndMeres -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TarnsPoolsAndMeres">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TarnsAndPoolsAndMeres">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/BodiesOfWater"/>
         <rdfs:comment>Tarns, pools and meres is a subcategory of bodies of water</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7703,7 +7722,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TattooingAndPiercingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Tattooing and piercing services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Tattooing and piercing services</rdfs:label>
@@ -7715,7 +7734,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TaxiRanks">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure"/>
         <rdfs:comment>Taxi ranks is a subcategory of public transport, stations and infrastructure</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Taxi ranks</rdfs:label>
@@ -7727,7 +7746,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TaxiServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery"/>
         <rdfs:comment>Taxi services is a subcategory of transport, storage and delivery</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Taxi services</rdfs:label>
@@ -7739,7 +7758,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TeaAndCoffeeMerchants">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodDrinkAndMultiItemRetail"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/FoodAndDrinkAndMultiItemRetail"/>
         <rdfs:comment>Tea and coffee merchants is a subcategory of food, drink and multi item retail</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Tea and coffee merchants</rdfs:label>
@@ -7783,11 +7802,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/TelephoneTelexAndFaxServices -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/TelephoneAndTelexAndFaxServices -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TelephoneTelexAndFaxServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TelephoneAndTelexAndFaxServices">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Telephone, telex and fax services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Telephone, telex and fax services</rdfs:label>
@@ -7799,7 +7818,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TelephonesAndTelephoneCards">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Telephones and telephone cards is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Telephones and telephone cards</rdfs:label>
@@ -7811,7 +7830,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TelevisionAndRadioServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAdvertisingMarketingAndMediaServiceS"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ItAndAdvertisingAndMarketingAndMediaServiceS"/>
         <rdfs:comment>Television and radio services is a subcategory of it, advertising, marketing and media service s</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Television and radio services</rdfs:label>
@@ -7831,10 +7850,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/TentsMarqueesAndCampingEquipment -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/TentsAndMarqueesAndCampingEquipment -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TentsMarqueesAndCampingEquipment">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TentsAndMarqueesAndCampingEquipment">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/ConsumerProducts"/>
         <rdfs:comment>Tents, marquees and camping equipment is a subcategory of consumer products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7855,10 +7874,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/TextilesFabricsSilkAndMachinery -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/TextilesAndFabricsAndSilkAndMachinery -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TextilesFabricsSilkAndMachinery">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TextilesAndFabricsAndSilkAndMachinery">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Textiles, fabrics, silk and machinery is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -7871,7 +7890,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TheatresAndConcertHalls">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen"/>
         <rdfs:comment>Theatres and concert halls is a subcategory of venues, stage and screen</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Theatres and concert halls</rdfs:label>
@@ -7975,11 +7994,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/TramMetroAndLightRailwayStationsAndStops -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/TramAndMetroAndLightRailwayStationsAndStops -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TramMetroAndLightRailwayStationsAndStops">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TramAndMetroAndLightRailwayStationsAndStops">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure"/>
         <rdfs:comment>Tram, metro and light railway stations and stops is a subcategory of public transport, stations and infrastructure</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Tram, metro and light railway stations and stops</rdfs:label>
@@ -7999,10 +8018,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TransportStorageAndDelivery">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TransportAndStorageAndDelivery">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/CommercialServices"/>
         <rdfs:comment>Transport, storage and delivery is a subcategory of commercial services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -8015,7 +8034,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TravelAgencies">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdOfficeLeisureAndGarden"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/HouseholdAndOfficeAndLeisureAndGarden"/>
         <rdfs:comment>Travel agencies is a subcategory of household, office, leisure and garden</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Travel agencies</rdfs:label>
@@ -8051,7 +8070,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/TrophiesAndEngravingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Trophies and engraving services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Trophies and engraving services</rdfs:label>
@@ -8063,7 +8082,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/UndergroundNetworkStations">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportStationsAndInfrastructure"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PublicTransportAndStationsAndInfrastructure"/>
         <rdfs:comment>Underground network stations is a subcategory of public transport, stations and infrastructure</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Underground network stations</rdfs:label>
@@ -8087,7 +8106,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/UnspecifiedAndOtherSchools">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimarySecondaryAndTertiaryEducation"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PrimaryAndSecondaryAndTertiaryEducation"/>
         <rdfs:comment>Unspecified and other schools is a subcategory of primary, secondary and tertiary education</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Unspecified and other schools</rdfs:label>
@@ -8159,7 +8178,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/VehicleBreakdownAndRecoveryServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Vehicle breakdown and recovery services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Vehicle breakdown and recovery services</rdfs:label>
@@ -8171,7 +8190,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/VehicleCleaningServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Vehicle cleaning services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Vehicle cleaning services</rdfs:label>
@@ -8215,10 +8234,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/VehicleRepairTestingAndServicing -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/VehicleRepairAndTestingAndServicing -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/VehicleRepairTestingAndServicing">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/VehicleRepairAndTestingAndServicing">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/RepairAndServicing"/>
         <rdfs:comment>Vehicle repair, testing and servicing is a subcategory of repair and servicing</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -8251,10 +8270,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/VenuesStageAndScreen">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/VenuesAndStageAndScreen">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SportAndEntertainment"/>
         <rdfs:comment>Venues, stage and screen is a subcategory of sport and entertainment</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -8323,10 +8342,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/WasteCollectionProcessingAndDisposalEquipment -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/WasteCollectionAndProcessingAndDisposalEquipment -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WasteCollectionProcessingAndDisposalEquipment">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WasteCollectionAndProcessingAndDisposalEquipment">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Waste collection, processing and disposal equipment is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -8347,10 +8366,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/WasteStorageProcessingAndDisposal -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/WasteStorageAndProcessingAndDisposal -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WasteStorageProcessingAndDisposal">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WasteStorageAndProcessingAndDisposal">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/InfrastructureAndFacilities"/>
         <rdfs:comment>Waste storage, processing and disposal is a subcategory of infrastructure and facilities</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -8399,7 +8418,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WeatherServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Weather services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Weather services</rdfs:label>
@@ -8411,7 +8430,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WeddingServices">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Wedding services is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Wedding services</rdfs:label>
@@ -8431,10 +8450,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/WeirsSluicesAndDams -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/WeirsAndSluicesAndDams -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WeirsSluicesAndDams">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WeirsAndSluicesAndDams">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Water"/>
         <rdfs:comment>Weirs, sluices and dams is a subcategory of water</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -8459,7 +8478,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WindowCleaners">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalConsumerAndOtherServices"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/PersonalAndConsumerAndOtherServices"/>
         <rdfs:comment>Window cleaners is a subcategory of personal, consumer and other services</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
         <rdfs:label>Window cleaners</rdfs:label>
@@ -8467,10 +8486,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/WoodProductsIncludingCharcoalPaperCardAndBoard -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/WoodProductsIncludingCharcoalAndPaperAndCardAndBoard -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WoodProductsIncludingCharcoalPaperCardAndBoard">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/WoodProductsIncludingCharcoalAndPaperAndCardAndBoard">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/IndustrialProducts"/>
         <rdfs:comment>Wood products including charcoal, paper, card and board is a subcategory of industrial products</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
@@ -8551,18 +8570,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/Children&apos;SActivityCentres -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Children&apos;SActivityCentres">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/SportAndEntertainmentSupportServices"/>
-        <rdfs:comment>Children&apos;s activity centres is a subcategory of sport and entertainment support services</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
-        <rdfs:label>Children&apos;s activity centres</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontopoi/CookersAndStovesâ€“Non-Electrical -->
 
 
@@ -8587,10 +8594,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontopoi/Railways(HeritageSteamAndMiniature) -->
+    <!-- https://www.theworldavatar.com/kg/ontopoi/Railways(HeritageAndSteamAndMiniature) -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Railways(HeritageSteamAndMiniature)">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontopoi/Railways(HeritageAndSteamAndMiniature)">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontopoi/Tourism"/>
         <rdfs:comment>Railways (heritage, steam and miniature) is a subcategory of tourism</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontopoi"/>
