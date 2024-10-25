@@ -11,14 +11,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
+import uk.ac.cam.cares.jps.sensor.source.database.model.dao.ActivityDataDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GravityDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.GyroDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.LightDao;
@@ -32,6 +40,7 @@ import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Acceleration;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.AccelerationDao;
 import uk.ac.cam.cares.jps.sensor.source.database.model.AppDatabase;
 import uk.ac.cam.cares.jps.sensor.source.database.model.dao.LocationDao;
+import uk.ac.cam.cares.jps.sensor.source.database.model.entity.ActivityData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.Gravity;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.GyroData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.LightData;
@@ -60,15 +69,18 @@ public class SensorLocalSource {
     public UnsentDataDao unsentDataDao;
     public RelativeHumidityDao relativeHumidityDao;
     public SoundLevelDao soundLevelDao;
+    public ActivityDataDao activityDataDao;
     Logger LOGGER = Logger.getLogger(SensorLocalSource.class);
     Map<String, JSONArray> unsentData;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-
+    @Inject
     public SensorLocalSource(Context context) {
         this.context = context;
-        AppDatabase appDatabase = Room.databaseBuilder(context, AppDatabase.class, "timeline-database")
-                .fallbackToDestructiveMigrationOnDowngrade()  // Allows destructive migration on downgrade
+        AppDatabase appDatabase =  Room.databaseBuilder(context.getApplicationContext(),
+                        AppDatabase.class, "timeline-database")
                 .build();
+
         locationDao = appDatabase.locationDao();
         accelerationDao = appDatabase.accelerationDao();
         gravityDao = appDatabase.gravityDao();
@@ -79,8 +91,22 @@ public class SensorLocalSource {
         soundLevelDao = appDatabase.soundLevelDao();
         relativeHumidityDao = appDatabase.relativeHumidityDao();
         this.unsentDataDao = appDatabase.unsentDataDao();
+        activityDataDao = appDatabase.activityDataDao();
         this.unsentData = new HashMap<>();
 
+    }
+
+    /**
+     * Commits activity data to the local database. The data is provided through the activity
+     * recognition service class.
+     *
+     * @param activityType the type of activity detected with the highest confidence level
+     * @param confidence value 0-100 denoting how likely the activity is being performed
+     * @param timestamp time-series of when the activity was first detected
+     */
+    public void saveActivityData(String activityType, int confidence, long timestamp) {
+        ActivityData activityData = new ActivityData(activityType, confidence, timestamp);
+        activityDataDao.insert(activityData);
     }
 
 
@@ -103,7 +129,7 @@ public class SensorLocalSource {
         writeToDatabaseHelper(allSensorData, "pressure", pressureDao, Pressure.class);
         writeToDatabaseHelper(allSensorData, "microphone", soundLevelDao, SoundLevel.class);
         writeToDatabaseHelper(allSensorData, "humidity", relativeHumidityDao, RelativeHumidity.class);
-
+        writeToDatabaseHelper(allSensorData, "activity", activityDataDao, ActivityData.class);
     }
 
     /**
@@ -153,7 +179,6 @@ public class SensorLocalSource {
      */
     public void insertUnsentData(UnsentData unsentData) {
         try {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 this.unsentDataDao.insert(unsentData);
             });
@@ -175,7 +200,6 @@ public class SensorLocalSource {
 
     public void deleteUnsentData(UnsentData unsentData) {
         try {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
         unsentDataDao.deleteById(unsentData.id);
             });
@@ -201,6 +225,7 @@ public class SensorLocalSource {
         pressureDao.delete(cutoffTime);
         soundLevelDao.delete(cutoffTime);
         relativeHumidityDao.delete(cutoffTime);
+        activityDataDao.delete(cutoffTime);
     }
 
 
@@ -266,6 +291,11 @@ public class SensorLocalSource {
                     allSensorData.addAll(humidityDataList);
                     timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(humidityDataList));
                     break;
+                case ACTIVITY:
+                    List<ActivityData> activityDataListDataList = Arrays.asList(activityDataDao.getAllUnUploadedData(limit, offset));
+                    allSensorData.addAll(activityDataListDataList);
+                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(activityDataListDataList));
+                    break;
             }
         }
         JSONArray allSensorDataArray = new JSONArray();
@@ -320,6 +350,9 @@ public class SensorLocalSource {
             case HUMIDITY:
                 relativeHumidityDao.markAsUploaded(times);
                 break;
+            case ACTIVITY:
+                activityDataDao.markAsUploaded(times);
+                break;
         }
     }
 
@@ -338,7 +371,30 @@ public class SensorLocalSource {
         return times;
     }
 
+    /**
+     * Checks if the given data already exists in the UnsentData table.
+     * @param dataHash hash code that identifies the data
+     * @return True if data exists, false otherwise.
+     */
+    public boolean isDataInUnsentData(String dataHash) {
 
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<UnsentData> future = executor.submit(() -> unsentDataDao.getUnsentDataByHash(dataHash));
+
+        try {
+            UnsentData existingData = future.get();
+            return existingData != null;
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e("SensorLocalSource", "Error checking for unsent data", e);
+            return false;
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    public void shutdownExecutor() {
+        executor.shutdown();
+    }
 
 }
 

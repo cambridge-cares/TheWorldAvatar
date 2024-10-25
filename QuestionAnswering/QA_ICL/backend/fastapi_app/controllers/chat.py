@@ -20,10 +20,15 @@ logger = logging.getLogger(__name__)
 
 def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
     """Performs binary search over the integer space.
+
     Args:
-        low: lower bound of the search space
-        high: upper bound of the search space
-        fn: a monotonic function over integer domain and range
+        low (int): Lower bound of the search space.
+        high (int): Upper bound of the search space.
+        fn (Callable[[int], int]): Monotonic function over integer domain and range.
+        target (int): Target value to search for.
+    
+    Returns:
+        int: The largest input value for which fn(value) <= target.
     """
     if fn(high) <= target:
         return high
@@ -43,6 +48,14 @@ def binary_search(low: int, high: int, fn: Callable[[int], int], target: int):
 
 
 class ChatController:
+    """
+    Controller for managing chat interactions using OpenAI's API.
+
+    This class handles the construction of prompts, token management,
+    and interaction with OpenAI's API to generate responses based on
+    QA artefacts.
+    """
+
     INSTRUCTION = """### Instruction: 
 - Please answer the input question using the data retrieved from the knowledge base
 - Format your response using markdown syntax and do not render tables
@@ -75,6 +88,12 @@ class ChatController:
         data_req=None,
         is_data_truncated: bool = False,
     ):
+        """
+        Construct the full context message for the OpenAI API.
+        
+        This method combines various components of the query context
+        into a single string to be used as input for the API.
+        """
         parts = [
             cls.INSTRUCTION,
             cls.make_context_input_query(input_question),
@@ -96,6 +115,9 @@ class ChatController:
         openai_model: str,
         token_limit: int = 16000,
     ):
+        """
+        Initialise the ChatController with components and settings.
+        """
         self.qa_req_artifact_store = qa_req_artifact_store
         self.openai_client = OpenAI(base_url=openai_base_url, api_key=openai_api_key)
         self.model = openai_model
@@ -103,9 +125,26 @@ class ChatController:
         self.token_limit = token_limit
 
     def _count_tokens(self, text: str):
+        """Count the number of tokens in the given text."""
         return len(self.tokenizer.encode(text))
 
     def request_stream(self, qa_request_id: str) -> Stream[ChatCompletionChunk]:
+        """
+        Process a chat request and return a stream of response chunks.
+        
+        This method retrieves the QA artefact, constructs the API input,
+        manages token limits, and streams the API response.
+        
+        Args:
+            qa_request_id (str): ID of the QA request artifact.
+        
+        Returns:
+            Stream[ChatCompletionChunk]: Stream of response chunks from OpenAI API.
+        
+        Raises:
+            QARequestArtifactNotFound: If the specified artifact is not found.
+        """
+
         artifact = self.qa_req_artifact_store.load(qa_request_id)
         if not artifact:
             raise QARequestArtifactNotFound()
@@ -117,8 +156,8 @@ class ChatController:
             data=artifact.data,
         )
 
+        # Token limit management
         if self._count_tokens(msg) > self.token_limit:
-            # exclude data_req from LLM prompt
             msg = self.make_user_input(
                 input_question=artifact.nlq,
                 rewritten_question=artifact.nlq_rewritten,
@@ -165,6 +204,7 @@ class ChatController:
                 is_data_truncated=True,
             )
 
+        # Send request to OpenAI API
         return self.openai_client.chat.completions.create(
             model=self.model,
             messages=[
@@ -184,6 +224,15 @@ def get_chatbot_client(
         QARequestArtifactStore, Depends(get_qaReq_artifactStore)
     ],
 ):
+    """
+    Factory function to create and cache a ChatController instance.
+    
+    This function uses FastAPI's dependency injection system to obtain
+    necessary dependencies and create a ChatController instance.
+    
+    Returns:
+        ChatController: An instance of the ChatController class.
+    """
     return ChatController(
         qa_req_artifact_store=qa_req_artifact_store,
         openai_base_url=settings.chat.base_url,

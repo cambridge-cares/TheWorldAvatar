@@ -12,13 +12,14 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class MagnetometerDataProcessor extends SensorDataProcessor {
-    private String xIri;
-    private String yIri;
-    private String zIri;
+    private String xIri = null;
+    private String yIri = null;
+    private String zIri = null;
 
     private final List<Double> xList = new ArrayList<>();
     private final List<Double> yList = new ArrayList<>();
@@ -26,6 +27,7 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
 
     public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
+        initIRIs();
     }
 
     @Override
@@ -37,27 +39,33 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public TimeSeries<OffsetDateTime> getProcessedTimeSeries() throws Exception {
+    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
         List<String> dataIRIList = Arrays.asList(xIri, yIri, zIri);
         List<List<?>> valueList = Arrays.asList(xList, yList, zList);
+
         TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, dataIRIList, valueList);
+
         ts = Downsampling.downsampleTS(ts, config.getMagnetometerDSResolution(), config.getMagnetometerDSType());
 
+        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
+                .collect(Collectors.toList());
+
+        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(xIri), ts.getValuesAsDouble(yIri),
+                ts.getValuesAsDouble(zIri));
+
         clearData();
-        return ts;
+        return new TimeSeries<>(epochlist, dataIRIList, downsampledValuesList);
     }
 
     @Override
     public void initIRIs() {
+        if (xIri != null && yIri != null && zIri != null) {
+            return;
+        }
+
         getIrisFromKg();
 
-        if ((xIri == null || xIri.isEmpty())
-                && (yIri == null || yIri.isEmpty())
-                && (zIri == null || zIri.isEmpty())) {
-            xIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_x_" + UUID.randomUUID();
-            yIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_y_" + UUID.randomUUID();
-            zIri = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_z_" + UUID.randomUUID();
-
+        if (xIri == null && yIri == null && zIri == null) {
             isIriInstantiationNeeded = true;
             isRbdInstantiationNeeded = true;
         }
@@ -92,7 +100,6 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
         Var z = Var.alloc("z");
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoslma", ONTOSLMA)
                 .addPrefix("slma", SLA)
                 .addPrefix("saref", SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
@@ -101,22 +108,33 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
                 .addWhere(smartphoneIRINode, "saref:consistsOf", "?magnetometer")
                 .addWhere("?magnetometer", "rdf:type", "ontodevice:Magnetometer")
                 .addWhere("?magnetometer", "ontodevice:measures", "?vector")
-                .addWhere("?vector", "rdf:type", "ontoslma:MagneticFluxDensityVector")
-                .addWhere("?vector", "ontoslma:hasXComponent", "?quantityX")
+                .addWhere("?vector", "rdf:type", "ontodevice:MagneticFluxDensityVector")
+                .addWhere("?vector", "ontodevice:hasXComponent", "?quantityX")
                 .addWhere("?quantityX", "om:hasValue", x)
-                .addWhere("?vector", "ontoslma:hasYComponent", "?quantityY")
+                .addWhere("?vector", "ontodevice:hasYComponent", "?quantityY")
                 .addWhere("?quantityY", "om:hasValue", y)
-                .addWhere("?vector", "ontoslma:hasZComponent", "?quantityZ")
+                .addWhere("?vector", "ontodevice:hasZComponent", "?quantityZ")
                 .addWhere("?quantityZ", "om:hasValue", z);
         SelectBuilder sb = new SelectBuilder()
                 .addVar(x).addVar(y).addVar(z).addWhere(wb);
 
-        JSONArray queryResult = storeClient.executeQuery(sb.buildString());
+        JSONArray queryResult;
+        try {
+            queryResult = storeClient.executeQuery(sb.buildString());
+        } catch (Exception e) {
+            // ontop does not accept queries before any mapping is added
+            return;
+        }
         if (queryResult.isEmpty()) {
             return;
         }
         xIri = queryResult.getJSONObject(0).optString("x");
         yIri = queryResult.getJSONObject(0).optString("y");
         zIri = queryResult.getJSONObject(0).optString("z");
+    }
+
+    @Override
+    public String getOntodeviceLabel() {
+        return "Magnetometer";
     }
 }

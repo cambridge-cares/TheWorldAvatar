@@ -34,6 +34,8 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked m
 #==================================================================================================
 FROM builder as test
 
+RUN mkdir -p /root/.m2/repository
+
 RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
 
 COPY /agent/src/test ./src/test
@@ -48,7 +50,7 @@ CMD mvn test
 FROM tomcat:9.0.68-jre11-temurin as agent
 
 # Copies all files in config directory to destination
-COPY --from=builder /root/agent/output/dashboard-agent##1.0.1.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/agent/output/dashboard-agent##1.1.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

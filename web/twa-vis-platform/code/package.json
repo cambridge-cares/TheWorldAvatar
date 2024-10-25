@@ -19,14 +19,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "9": "^0.0.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.1",
     "@mui/material": "^6.1.1",
     "@mui/x-data-grid": "^7.18.0",
     "@reduxjs/toolkit": "^2.2.7",
-    "@tanstack/react-table": "^8.20.5",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.7.2",
     "@types/react": "^18.3.9",

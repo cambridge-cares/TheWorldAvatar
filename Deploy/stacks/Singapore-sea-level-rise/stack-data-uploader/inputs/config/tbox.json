@@ -13,6 +13,18 @@
             "type": "rdf",
 			"subdirectory": "building",
             "skip": false
+        },
+        {
+			"name": "kb",
+            "type": "rdf",
+			"subdirectory": "dispersion",
+            "skip": false
+        },
+        {
+			"name": "kb",
+            "type": "rdf",
+			"subdirectory": "carpark",
+            "skip": false
         }
     ]
 }
