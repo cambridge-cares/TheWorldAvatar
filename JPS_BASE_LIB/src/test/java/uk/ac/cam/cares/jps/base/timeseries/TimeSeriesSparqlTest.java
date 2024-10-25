@@ -10,6 +10,8 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.jena.vocabulary.RDFS;
@@ -38,7 +40,6 @@ public class TimeSeriesSparqlTest {
 
     // Initialise correct namespaces to use for ontology and knowledge base
     private final String TIMESERIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontotimeseries/";
-    private final String NS_TIME = "http://www.w3.org/2006/time#";
 
     // Initialise IRIs for 2 times series: 1 with 3 associated data series and 1
     // with only 1 associated data series
@@ -150,6 +151,11 @@ public class TimeSeriesSparqlTest {
         public CloseableHttpResponse executeUpdateByPost(String query) {
             executeUpdate(query);
             return null;
+        }
+
+        @Override
+        public void uploadTriple(String triple) {
+            RDFDataMgr.read(kb, new java.io.ByteArrayInputStream(triple.getBytes()), Lang.TURTLE);
         }
 
         @Override

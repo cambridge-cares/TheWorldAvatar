@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.TriplesTemplate;
+import org.eclipse.rdf4j.sparqlbuilder.core.PrefixDeclarations;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
@@ -476,9 +477,8 @@ public class TimeSeriesSparql {
             Class<?> timeClass, Class<?> rdbClientClass) {
 
         TriplesTemplate modify = SparqlBuilder.triplesTemplate();
-        InsertDataQuery insertData = Queries.INSERT_DATA();
         // set prefix declarations
-        insertData.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
+        PrefixDeclarations pd = SparqlBuilder.prefixes(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
 
         Map<CustomDuration, String> durationMap = createDurationIRIMapping();
 
@@ -549,8 +549,8 @@ public class TimeSeriesSparql {
                 modify.and(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
             }
         });
-        String queryString = insertData.getQueryString() + modify.getQueryString();
-        kbClient.executeUpdateByPost(queryString);
+        String queryString = pd.getQueryString() + modify.getQueryString().replace("{","").replace("}","");
+        kbClient.uploadTriple(queryString);
     }
 
     /**

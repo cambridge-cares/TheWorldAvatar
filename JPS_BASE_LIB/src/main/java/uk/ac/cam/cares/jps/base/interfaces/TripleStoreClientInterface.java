@@ -86,6 +86,14 @@ public interface TripleStoreClientInterface extends StoreClientInterface{
     CloseableHttpResponse executeUpdateByPost(String update);
 
     /**
+     * Upload triple in the from of string
+     * 
+     * @param triples
+     */
+    
+    void uploadTriple(String triple);
+
+    /**
      * Counts the total number of triples in the repository.
      * NOTE: this can be slow (of order of minutes) for large repositories.
      * @return

@@ -902,6 +902,46 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         }
     }
 
+    /**
+     * Upload triple in the form of string
+     * 
+     * @param triples
+     */
+    @Override
+    public void uploadTriple(String triple) {
+
+        HttpEntity entity = new StringEntity(triple, ContentType.create("application/x-turtle"));
+
+        String updateEndpoint = getUpdateEndpoint();
+        String userName = getUser();
+        String password = getPassword();
+
+        // tried a few methods to add credentials, this seems to be the only way that
+        // works
+        // i.e. setting it manually in the header
+        HttpPost postRequest = new HttpPost(updateEndpoint);
+        if ((userName != null) && (password != null)) {
+            String auth = userName + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
+        }
+
+        // add contents to the post request
+        postRequest.setEntity(entity);
+
+        LOGGER.info("Uploading {} to {}", "triples", updateEndpoint);
+        // then send the post request
+        try (CloseableHttpClient httpclient = HttpClients.createDefault();
+                CloseableHttpResponse response = httpclient.execute(postRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < 200 || statusCode > 300) {
+                throw new JPSRuntimeException("Upload triples failed. Response status code = " + statusCode);
+            }
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("Upload triples failed.", ex);
+        }
+    }
+
     public ContentType getRDFContentType(String extension) {
         final ContentType contentType;
         switch (extension) {

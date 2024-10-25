@@ -361,7 +361,7 @@ public class LocalStoreClient implements TripleStoreClientInterface {
 			LOGGER.debug("Create insert for default graph");
 			builder.addInsert(model);
 		} else {
-			LOGGER.debug("Create insert for namde graph: "+graphName);
+			LOGGER.debug("Create insert for named graph: "+graphName);
 			String graphURI = "<" + graphName + ">";
 			builder.addInsert(graphURI, model);
 		}
@@ -432,5 +432,11 @@ public class LocalStoreClient implements TripleStoreClientInterface {
 	public CloseableHttpResponse executeUpdateByPost(String update) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'executeUpdateByPost'");
+	}
+
+	@Override
+	public void uploadTriple(String triple) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'uploadTriple'");
 	}
 }
