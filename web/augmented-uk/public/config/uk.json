@@ -9,28 +9,28 @@
           "id": "gb-countries-source",
           "type": "vector",
           "tiles": [
-            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:countries_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=boundaries:countries_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
           ]
         },
         {
           "id": "ni-countries-source",
           "type": "vector",
           "tiles": [
-            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:countries_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=boundaries:countries_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
           ]
         },
         {
           "id": "gb-counties-source",
           "type": "vector",
           "tiles": [
-            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:counties_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=boundaries:counties_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
           ]
         },
         {
           "id": "ni-counties-source",
           "type": "vector",
           "tiles": [
-            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:counties_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=boundaries:counties_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
           ]
         }
       ],
@@ -42,11 +42,14 @@
           "source-layer": "countries_gb",
           "grouping": "Countries",
           "interactions": "hover-only",
-          "hover": [0.75,0.45],
+          "hover": [
+            0.75,
+            0.45
+          ],
           "type": "fill",
           "paint": {
             "fill-color": "#31ff61",
-            "fill-outline-color" : "#0F4D1D"
+            "fill-outline-color": "#0F4D1D"
           }
         },
         {
@@ -56,11 +59,14 @@
           "source-layer": "countries_ni",
           "grouping": "Countries",
           "interactions": "hover-only",
-          "hover": [0.75,0.45],
+          "hover": [
+            0.75,
+            0.45
+          ],
           "type": "fill",
           "paint": {
             "fill-color": "#31ff61",
-            "fill-outline-color" : "#0F4D1D"
+            "fill-outline-color": "#0F4D1D"
           }
         },
         {
@@ -71,10 +77,13 @@
           "grouping": "Ceremonial counties",
           "interactions": "hover-only",
           "type": "fill",
-          "hover": [0.95,0.45],
+          "hover": [
+            0.95,
+            0.45
+          ],
           "paint": {
             "fill-color": "#2edaff",
-            "fill-outline-color" : "#0E414D"
+            "fill-outline-color": "#0E414D"
           }
         },
         {
@@ -85,10 +94,13 @@
           "grouping": "Ceremonial counties",
           "interactions": "hover-only",
           "type": "fill",
-          "hover": [0.95,0.45],
+          "hover": [
+            0.95,
+            0.45
+          ],
           "paint": {
             "fill-color": "#2edaff",
-            "fill-outline-color" : "#0E414D"
+            "fill-outline-color": "#0E414D"
           }
         }
       ]
@@ -101,7 +113,7 @@
           "id": "uk-population-source",
           "type": "raster",
           "tiles": [
-            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+            "https://theworldavatar.io/demos/uk/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=population:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
           ]
         }
       ],
@@ -123,7 +135,7 @@
           "id": "forestry",
           "type": "vector",
           "tiles": [
-            "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+            "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=forestry:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
           ]
         }
       ],
@@ -137,22 +149,33 @@
           "source-layer": "forestry",
           "minzoom": 8,
           "paint": {
-            "fill-color": ["get", "colour"]
+            "fill-color": [
+              "get",
+              "colour"
+            ]
           },
           "layout": {
             "visibility": "none"
           }
-        }, {
+        },
+        {
           "id": "forestry-woodland",
           "type": "fill",
           "name": "Woodland",
           "grouping": "Woodland",
           "source": "forestry",
           "source-layer": "forestry",
-          "filter": ["==", "category", "Woodland"],
+          "filter": [
+            "==",
+            "category",
+            "Woodland"
+          ],
           "minzoom": 8,
           "paint": {
-            "fill-color": ["get", "colour"]
+            "fill-color": [
+              "get",
+              "colour"
+            ]
           },
           "layout": {
             "visibility": "none"
@@ -165,10 +188,17 @@
           "grouping": "Non-Woodland",
           "source": "forestry",
           "source-layer": "forestry",
-          "filter": ["==", "category", "Non woodland"],
+          "filter": [
+            "==",
+            "category",
+            "Non woodland"
+          ],
           "minzoom": 8,
           "paint": {
-            "fill-color": ["get", "colour"]
+            "fill-color": [
+              "get",
+              "colour"
+            ]
           },
           "layout": {
             "visibility": "none"
@@ -209,25 +239,57 @@
               "type": "circle",
               "filter": [
                 "!",
-                ["in", ["get", "type"], ["literal", ["Fossil Fuel", "Nuclear"]]]
+                [
+                  "in",
+                  [
+                    "get",
+                    "type"
+                  ],
+                  [
+                    "literal",
+                    [
+                      "Fossil Fuel",
+                      "Nuclear"
+                    ]
+                  ]
+                ]
               ],
               "layout": {
                 "visibility": "visible",
-                "circle-sort-key": ["*", -1.0, ["get", "capacity"]]
+                "circle-sort-key": [
+                  "*",
+                  -1.0,
+                  [
+                    "get",
+                    "capacity"
+                  ]
+                ]
               },
               "paint": {
                 "circle-stroke-color": "#000000",
                 "circle-stroke-width": 1,
                 "circle-opacity": [
                   "case",
-                  ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "iri"
+                    ],
+                    "[HOVERED-IRI]"
+                  ],
                   1.0,
                   0.65
                 ],
                 "circle-radius": [
                   "interpolate",
-                  ["linear"],
-                  ["get", "capacity"],
+                  [
+                    "linear"
+                  ],
+                  [
+                    "get",
+                    "capacity"
+                  ],
                   0,
                   4,
                   100,
@@ -239,17 +301,59 @@
                 ],
                 "circle-color": [
                   "case",
-                  ["==", ["get", "primary_fuel"], "Biomass"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Biomass"
+                  ],
                   "#66ff66",
-                  ["==", ["get", "primary_fuel"], "MSW"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "MSW"
+                  ],
                   "#006600",
-                  ["==", ["get", "primary_fuel"], "Wind"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Wind"
+                  ],
                   "#99ccff",
-                  ["==", ["get", "primary_fuel"], "Hydro"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Hydro"
+                  ],
                   "#006699",
-                  ["==", ["get", "primary_fuel"], "Pumped hydro"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Pumped hydro"
+                  ],
                   "#006699",
-                  ["==", ["get", "primary_fuel"], "Solar"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Solar"
+                  ],
                   "#ffff99",
                   "#FFFFFF"
                 ]
@@ -263,26 +367,54 @@
               "type": "circle",
               "filter": [
                 "in",
-                ["get", "type"],
-                ["literal", ["Fossil Fuel", "Nuclear"]]
+                [
+                  "get",
+                  "type"
+                ],
+                [
+                  "literal",
+                  [
+                    "Fossil Fuel",
+                    "Nuclear"
+                  ]
+                ]
               ],
               "layout": {
                 "visibility": "visible",
-                "circle-sort-key": ["*", -1.0, ["get", "capacity"]]
+                "circle-sort-key": [
+                  "*",
+                  -1.0,
+                  [
+                    "get",
+                    "capacity"
+                  ]
+                ]
               },
               "paint": {
                 "circle-stroke-color": "#000000",
                 "circle-stroke-width": 1,
                 "circle-opacity": [
                   "case",
-                  ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "iri"
+                    ],
+                    "[HOVERED-IRI]"
+                  ],
                   1.0,
                   0.65
                 ],
                 "circle-radius": [
                   "interpolate",
-                  ["linear"],
-                  ["get", "capacity"],
+                  [
+                    "linear"
+                  ],
+                  [
+                    "get",
+                    "capacity"
+                  ],
                   0,
                   4,
                   100,
@@ -294,15 +426,50 @@
                 ],
                 "circle-color": [
                   "case",
-                  ["==", ["get", "primary_fuel"], "Diesel/Gas Oil"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Diesel/Gas Oil"
+                  ],
                   "#cccccc",
-                  ["==", ["get", "primary_fuel"], "Coal"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Coal"
+                  ],
                   "#333333",
-                  ["==", ["get", "primary_fuel"], "Sour Gas"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Sour Gas"
+                  ],
                   "#ff9999",
-                  ["==", ["get", "primary_fuel"], "Natural Gas"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Natural Gas"
+                  ],
                   "#660000",
-                  ["==", ["get", "primary_fuel"], "Nuclear"],
+                  [
+                    "==",
+                    [
+                      "get",
+                      "primary_fuel"
+                    ],
+                    "Nuclear"
+                  ],
                   "#999900",
                   "#FFFFFF"
                 ]
@@ -320,13 +487,29 @@
               "type": "fill",
               "filter": [
                 "all",
-                ["==", ["get", "iri"], "[SELECTED-IRI]"],
+                [
+                  "==",
+                  [
+                    "get",
+                    "iri"
+                  ],
+                  "[SELECTED-IRI]"
+                ],
                 [
                   "!",
                   [
                     "in",
-                    ["get", "type"],
-                    ["literal", ["Fossil Fuel", "Nuclear"]]
+                    [
+                      "get",
+                      "type"
+                    ],
+                    [
+                      "literal",
+                      [
+                        "Fossil Fuel",
+                        "Nuclear"
+                      ]
+                    ]
                   ]
                 ]
               ],
@@ -351,8 +534,28 @@
               "type": "fill",
               "filter": [
                 "all",
-                ["==", ["get", "iri"], "[SELECTED-IRI]"],
-                ["in", ["get", "type"], ["literal", ["Fossil Fuel", "Nuclear"]]]
+                [
+                  "==",
+                  [
+                    "get",
+                    "iri"
+                  ],
+                  "[SELECTED-IRI]"
+                ],
+                [
+                  "in",
+                  [
+                    "get",
+                    "type"
+                  ],
+                  [
+                    "literal",
+                    [
+                      "Fossil Fuel",
+                      "Nuclear"
+                    ]
+                  ]
+                ]
               ],
               "layout": {
                 "visibility": "visible"
@@ -374,35 +577,35 @@
               "id": "national-grid-poles",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_poles&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=national-grid:ng_poles&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "national-grid-towers",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=national-grid:ng_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "substations-points",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_substations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=national-grid:ng_substations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "national-grid-overhead-lines",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=national-grid:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "national-grid-cables",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=national-grid:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             }
           ],
@@ -421,8 +624,12 @@
                 "icon-image": "pylon_medium_icon",
                 "icon-size": [
                   "interpolate",
-                  ["linear"],
-                  ["zoom"],
+                  [
+                    "linear"
+                  ],
+                  [
+                    "zoom"
+                  ],
                   12,
                   0.1,
                   16,
@@ -440,11 +647,18 @@
                 "visibility": "none",
                 "icon-allow-overlap": true,
                 "icon-ignore-placement": true,
-                "icon-image": ["get", "icon"],
+                "icon-image": [
+                  "get",
+                  "icon"
+                ],
                 "icon-size": [
                   "interpolate",
-                  ["linear"],
-                  ["zoom"],
+                  [
+                    "linear"
+                  ],
+                  [
+                    "zoom"
+                  ],
                   5,
                   0.02,
                   12,
@@ -467,8 +681,12 @@
                 "icon-image": "substation_icon",
                 "icon-size": [
                   "interpolate",
-                  ["linear"],
-                  ["zoom"],
+                  [
+                    "linear"
+                  ],
+                  [
+                    "zoom"
+                  ],
                   5,
                   0.15,
                   12,
@@ -489,10 +707,21 @@
                 "visibility": "none"
               },
               "paint": {
-                "line-color": ["get", "line_colour"],
+                "line-color": [
+                  "get",
+                  "line_colour"
+                ],
                 "line-width": [
                   "to-number",
-                  ["slice", ["get", "line_width"], 0, -1]
+                  [
+                    "slice",
+                    [
+                      "get",
+                      "line_width"
+                    ],
+                    0,
+                    -1
+                  ]
                 ]
               }
             },
@@ -510,7 +739,15 @@
                 "line-color": "#895a5a",
                 "line-width": [
                   "to-number",
-                  ["slice", ["get", "line_width"], 0, -1]
+                  [
+                    "slice",
+                    [
+                      "get",
+                      "line_width"
+                    ],
+                    0,
+                    -1
+                  ]
                 ]
               }
             }
@@ -525,42 +762,42 @@
               "id": "high-overhead-lines",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=ukpn:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "medium-overhead-lines",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=ukpn:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "high-distribution-overhead-lines",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_high_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=ukpn:ukpn_overhead_lines_high_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "low-distribution-overhead-lines",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_overhead_lines_low_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=ukpn:ukpn_overhead_lines_low_distribution&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "high-poles-towers",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=ukpn:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             },
             {
               "id": "medium-poles-towers",
               "type": "vector",
               "tiles": [
-                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                "https://theworldavatar.io/demos/uk/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=ukpn:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
               ]
             }
           ],
@@ -576,7 +813,15 @@
                 "line-color": "#9E151A",
                 "line-width": [
                   "to-number",
-                  ["slice", ["get", "line_width"], 0, -1]
+                  [
+                    "slice",
+                    [
+                      "get",
+                      "line_width"
+                    ],
+                    0,
+                    -1
+                  ]
                 ]
               }
             },
@@ -591,7 +836,15 @@
                 "line-color": "#DE5806",
                 "line-width": [
                   "to-number",
-                  ["slice", ["get", "line_width"], 0, -1]
+                  [
+                    "slice",
+                    [
+                      "get",
+                      "line_width"
+                    ],
+                    0,
+                    -1
+                  ]
                 ]
               }
             },
@@ -606,7 +859,15 @@
                 "line-color": "#9E151A",
                 "line-width": [
                   "to-number",
-                  ["slice", ["get", "line_width"], 0, -1]
+                  [
+                    "slice",
+                    [
+                      "get",
+                      "line_width"
+                    ],
+                    0,
+                    -1
+                  ]
                 ]
               }
             },
@@ -621,7 +882,15 @@
                 "line-color": "#FCE446",
                 "line-width": [
                   "to-number",
-                  ["slice", ["get", "line_width"], 0, -1]
+                  [
+                    "slice",
+                    [
+                      "get",
+                      "line_width"
+                    ],
+                    0,
+                    -1
+                  ]
                 ]
               }
             },
@@ -638,8 +907,12 @@
                 "icon-image": "pylon_high_icon",
                 "icon-size": [
                   "interpolate",
-                  ["linear"],
-                  ["zoom"],
+                  [
+                    "linear"
+                  ],
+                  [
+                    "zoom"
+                  ],
                   5,
                   0.02,
                   12,
@@ -662,8 +935,12 @@
                 "icon-image": "pylon_medium_icon",
                 "icon-size": [
                   "interpolate",
-                  ["linear"],
-                  ["zoom"],
+                  [
+                    "linear"
+                  ],
+                  [
+                    "zoom"
+                  ],
                   5,
                   0.02,
                   12,
@@ -1521,8 +1798,7 @@
         {
           "id": "street-lights-cambridge",
           "type": "geojson",
-          "data": 
-          "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_cambridge_table&outputFormat=application%2Fjson",
+          "data": "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_cambridge_table&outputFormat=application%2Fjson",
           "cluster": true,
           "clusterRadius": 100,
           "clusterMaxZoom": 15
@@ -1530,8 +1806,7 @@
         {
           "id": "street-lights-york",
           "type": "geojson",
-          "data": 
-            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_york_table&outputFormat=application%2Fjson",
+          "data": "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_york_table&outputFormat=application%2Fjson",
           "cluster": true,
           "clusterRadius": 100,
           "clusterMaxZoom": 15
@@ -1539,8 +1814,7 @@
         {
           "id": "street-lights-pk",
           "type": "geojson",
-          "data": 
-            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_pk_table&outputFormat=application%2Fjson",
+          "data": "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_pk_table&outputFormat=application%2Fjson",
           "cluster": true,
           "clusterRadius": 100,
           "clusterMaxZoom": 15
@@ -1552,12 +1826,11 @@
           "cluster": true,
           "clusterRadius": 100,
           "clusterMaxZoom": 15
-      },
+        },
         {
           "id": "street-lights-camden",
           "type": "geojson",
-          "data": 
-            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_camden_table&outputFormat=application%2Fjson",
+          "data": "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_camden_table&outputFormat=application%2Fjson",
           "cluster": true,
           "clusterRadius": 100,
           "clusterMaxZoom": 15
@@ -1565,8 +1838,7 @@
         {
           "id": "street-lights-bradford",
           "type": "geojson",
-          "data": 
-            "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_bradford_table&outputFormat=application%2Fjson",
+          "data": "http://localhost:3838/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=street_lighting_bradford_table&outputFormat=application%2Fjson",
           "cluster": true,
           "clusterRadius": 100,
           "clusterMaxZoom": 15
@@ -1578,7 +1850,13 @@
           "type": "symbol",
           "name": "Lights",
           "source": "street-lights-cambridge",
-          "filter":["!",["has","point_count"]],
+          "filter": [
+            "!",
+            [
+              "has",
+              "point_count"
+            ]
+          ],
           "layout": {
             "visibility": "visible",
             "icon-allow-overlap": false,
@@ -1610,52 +1888,63 @@
           "paint": {
             "circle-color": [
               "step",
-              ["get", "point_count"],
+              [
+                "get",
+                "point_count"
+              ],
               "#51bbd6",
               100,
               "#f1f075",
               750,
               "#f28cb1"
-          ],
-              "circle-radius": 
+            ],
+            "circle-radius": [
+              "step",
               [
-                "step",
-                ["get", "point_count"],
-                12.5,
-                100,
-                15,
-                750,
-                17.5
+                "get",
+                "point_count"
+              ],
+              12.5,
+              100,
+              15,
+              750,
+              17.5
             ]
           }
-      },
-      {
+        },
+        {
           "id": "cluster-count_cambridge",
           "name": "Lights",
           "type": "symbol",
           "source": "street-lights-cambridge",
           "filter": [
-              "has",
-              "point_count"
+            "has",
+            "point_count"
           ],
           "layout": {
-              "text-field": [
-                  "get",
-                  "point_count_abbreviated"
-              ],
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 15
+            "text-field": [
+              "get",
+              "point_count_abbreviated"
+            ],
+            "text-font": [
+              "DIN Offc Pro Medium",
+              "Arial Unicode MS Bold"
+            ],
+            "text-size": 15
           }
-      },
+        },
         {
           "id": "street-lights-york",
           "type": "symbol",
           "name": "Lights",
           "source": "street-lights-york",
-          "filter":["!",["has","point_count"]],
+          "filter": [
+            "!",
+            [
+              "has",
+              "point_count"
+            ]
+          ],
           "layout": {
             "visibility": "visible",
             "icon-allow-overlap": false,
@@ -1687,52 +1976,63 @@
           "paint": {
             "circle-color": [
               "step",
-              ["get", "point_count"],
+              [
+                "get",
+                "point_count"
+              ],
               "#51bbd6",
               100,
               "#f1f075",
               750,
               "#f28cb1"
-          ],
-              "circle-radius": 
+            ],
+            "circle-radius": [
+              "step",
               [
-                "step",
-                ["get", "point_count"],
-                12.5,
-                100,
-                15,
-                750,
-                17.5
+                "get",
+                "point_count"
+              ],
+              12.5,
+              100,
+              15,
+              750,
+              17.5
             ]
           }
-      },
-      {
+        },
+        {
           "id": "cluster-count_york",
           "name": "Lights",
           "type": "symbol",
           "source": "street-lights-york",
           "filter": [
-              "has",
-              "point_count"
+            "has",
+            "point_count"
           ],
           "layout": {
-              "text-field": [
-                  "get",
-                  "point_count_abbreviated"
-              ],
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 15
+            "text-field": [
+              "get",
+              "point_count_abbreviated"
+            ],
+            "text-font": [
+              "DIN Offc Pro Medium",
+              "Arial Unicode MS Bold"
+            ],
+            "text-size": 15
           }
-      },
+        },
         {
           "id": "street-lights-pk",
           "type": "symbol",
           "name": "Lights",
           "source": "street-lights-pk",
-          "filter":["!",["has","point_count"]],
+          "filter": [
+            "!",
+            [
+              "has",
+              "point_count"
+            ]
+          ],
           "layout": {
             "visibility": "visible",
             "icon-allow-overlap": false,
@@ -1764,53 +2064,63 @@
           "paint": {
             "circle-color": [
               "step",
-              ["get", "point_count"],
+              [
+                "get",
+                "point_count"
+              ],
               "#51bbd6",
               100,
               "#f1f075",
               750,
               "#f28cb1"
-          ],
-              "circle-radius": 
+            ],
+            "circle-radius": [
+              "step",
               [
-                "step",
-                ["get", "point_count"],
-                12.5,
-                100,
-                15,
-                750,
-                17.5
+                "get",
+                "point_count"
+              ],
+              12.5,
+              100,
+              15,
+              750,
+              17.5
             ]
           }
-      },
-      {
+        },
+        {
           "id": "cluster-count_pk",
           "name": "Lights",
           "type": "symbol",
           "source": "street-lights-pk",
           "filter": [
-              "has",
-              "point_count"
+            "has",
+            "point_count"
           ],
           "layout": {
-              "text-field": [
-                  "get",
-                  "point_count_abbreviated"
-              ],
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 15
+            "text-field": [
+              "get",
+              "point_count_abbreviated"
+            ],
+            "text-font": [
+              "DIN Offc Pro Medium",
+              "Arial Unicode MS Bold"
+            ],
+            "text-size": 15
           }
-      },
-      
+        },
         {
           "id": "street-lights-camden",
           "type": "symbol",
           "name": "Lights",
           "source": "street-lights-camden",
-          "filter":["!",["has","point_count"]],
+          "filter": [
+            "!",
+            [
+              "has",
+              "point_count"
+            ]
+          ],
           "layout": {
             "visibility": "visible",
             "icon-allow-overlap": false,
@@ -1842,56 +2152,74 @@
           "paint": {
             "circle-color": [
               "step",
-              ["get", "point_count"],
+              [
+                "get",
+                "point_count"
+              ],
               "#51bbd6",
               100,
               "#f1f075",
               750,
               "#f28cb1"
-          ],
-              "circle-radius": 
+            ],
+            "circle-radius": [
+              "step",
               [
-                "step",
-                ["get", "point_count"],
-                12.5,
-                100,
-                15,
-                750,
-                17.5
+                "get",
+                "point_count"
+              ],
+              12.5,
+              100,
+              15,
+              750,
+              17.5
             ]
           }
-      },
-      {
+        },
+        {
           "id": "cluster-count_camden",
           "name": "Lights",
           "type": "symbol",
           "source": "street-lights-camden",
           "filter": [
-              "has",
-              "point_count"
+            "has",
+            "point_count"
           ],
           "layout": {
-              "text-field": [
-                  "get",
-                  "point_count_abbreviated"
-              ],
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 15
+            "text-field": [
+              "get",
+              "point_count_abbreviated"
+            ],
+            "text-font": [
+              "DIN Offc Pro Medium",
+              "Arial Unicode MS Bold"
+            ],
+            "text-size": 15
           }
-      },
+        },
         {
           "id": "street-lights-kl",
           "type": "symbol",
           "name": "Lights",
           "source": "street-lights-kl",
-          "filter":["all",
-          
-          ["!",["has","point_count"]],
-          ["==",["get", "status"],0.0]
-        ],
+          "filter": [
+            "all",
+            [
+              "!",
+              [
+                "has",
+                "point_count"
+              ]
+            ],
+            [
+              "==",
+              [
+                "get",
+                "status"
+              ],
+              0.0
+            ]
+          ],
           "layout": {
             "visibility": "visible",
             "icon-allow-overlap": false,
@@ -1919,11 +2247,24 @@
           "type": "symbol",
           "name": "Failed Lights",
           "source": "street-lights-kl",
-          "filter":["all",
-          ["!",["has","point_count"]],
-          ["==",["get", "status"],1.0]
+          "filter": [
+            "all",
+            [
+              "!",
+              [
+                "has",
+                "point_count"
+              ]
+            ],
+            [
+              "==",
+              [
+                "get",
+                "status"
+              ],
+              1.0
+            ]
           ],
-
           "layout": {
             "visibility": "visible",
             "icon-allow-overlap": false,
@@ -1955,52 +2296,63 @@
           "paint": {
             "circle-color": [
               "step",
-              ["get", "point_count"],
+              [
+                "get",
+                "point_count"
+              ],
               "#51bbd6",
               100,
               "#f1f075",
               750,
               "#f28cb1"
-          ],
-              "circle-radius": 
+            ],
+            "circle-radius": [
+              "step",
               [
-                "step",
-                ["get", "point_count"],
-                12.5,
-                100,
-                15,
-                750,
-                17.5
+                "get",
+                "point_count"
+              ],
+              12.5,
+              100,
+              15,
+              750,
+              17.5
             ]
           }
-      },
-      {
+        },
+        {
           "id": "cluster-count_kl",
           "name": "Lights",
           "type": "symbol",
           "source": "street-lights-kl",
           "filter": [
-              "has",
-              "point_count"
+            "has",
+            "point_count"
           ],
           "layout": {
-              "text-field": [
-                  "get",
-                  "point_count_abbreviated"
-              ],
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 15
+            "text-field": [
+              "get",
+              "point_count_abbreviated"
+            ],
+            "text-font": [
+              "DIN Offc Pro Medium",
+              "Arial Unicode MS Bold"
+            ],
+            "text-size": 15
           }
-      },
+        },
         {
           "id": "street-lights-bradford",
           "type": "symbol",
           "name": "Lights",
           "source": "street-lights-bradford",
-          "filter":["!",["has","point_count"]],
+          "filter": [
+            "!",
+            [
+              "has",
+              "point_count"
+            ]
+          ],
           "layout": {
             "visibility": "visible",
             "icon-allow-overlap": false,
@@ -2032,46 +2384,51 @@
           "paint": {
             "circle-color": [
               "step",
-              ["get", "point_count"],
+              [
+                "get",
+                "point_count"
+              ],
               "#51bbd6",
               100,
               "#f1f075",
               750,
               "#f28cb1"
-          ],
-              "circle-radius": 
+            ],
+            "circle-radius": [
+              "step",
               [
-                "step",
-                ["get", "point_count"],
-                12.5,
-                100,
-                15,
-                750,
-                17.5
+                "get",
+                "point_count"
+              ],
+              12.5,
+              100,
+              15,
+              750,
+              17.5
             ]
           }
-      },
-      {
+        },
+        {
           "id": "cluster-count_bradford",
           "name": "Lights",
           "type": "symbol",
           "source": "street-lights-bradford",
           "filter": [
-              "has",
-              "point_count"
+            "has",
+            "point_count"
           ],
           "layout": {
-              "text-field": [
-                  "get",
-                  "point_count_abbreviated"
-              ],
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 15
+            "text-field": [
+              "get",
+              "point_count_abbreviated"
+            ],
+            "text-font": [
+              "DIN Offc Pro Medium",
+              "Arial Unicode MS Bold"
+            ],
+            "text-size": 15
           }
-      }
+        }
       ]
     },
     {
@@ -2193,7 +2550,7 @@
           ]
         }
       ],
-      "layers":[
+      "layers": [
         {
           "id": "charging_point_kl",
           "type": "symbol",
