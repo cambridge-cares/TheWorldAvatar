@@ -117,8 +117,8 @@ export default class SettingsStore {
       const data: JsonObject[] = (await Promise.all(dataPromises)).filter(Boolean);
       this.MAP_DATA_SETTINGS = JSON.stringify(data);
       console.info("Map data settings have been read and cached.");
-    } catch (error) {
-      console.info("No local data files detected...");
+    } catch (_error) {
+      console.error("No local data files detected...");
     }
   }
 
@@ -133,7 +133,7 @@ export default class SettingsStore {
       const username = this.readFile("/run/secrets/mapbox_username").trim();
       const key = this.readFile("/run/secrets/mapbox_api_key").trim();
       return { username, key };
-    } catch (error) {
+    } catch (_error) {
       // Fallback to environment variables
       const username = process.env.MAPBOX_USER;
       const key = process.env.MAPBOX_API_KEY;
