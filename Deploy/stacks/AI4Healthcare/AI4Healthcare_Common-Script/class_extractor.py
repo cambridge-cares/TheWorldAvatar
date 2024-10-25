@@ -363,10 +363,28 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
 
     print("class_code_map saved to 'class_complete_code_map.csv'")
 
+# Main execution block
 if __name__ == "__main__":
+    """
+    Script entry point for extracting classes from a PDF and saving them to a CSV file.
+
+    Usage:
+        python class_extractor.py <input_pdf_path> <output_csv_path>
+    
+    This script expects exactly two command-line arguments:
+    1. input_pdf_path (str): Path to the PDF file containing class definitions.
+    2. output_csv_path (str): Path where the extracted classes will be saved in CSV format.
+
+    Example:
+        python class_extractor.py my_classes.pdf output_classes.csv
+    """
+    # Ensure correct number of command-line arguments
     if len(sys.argv) != 3:
         print("Usage: python class_extractor.py <input_pdf_path> <output_csv_path>")
     else:
+        # Assign arguments to variables
         input_pdf_path = sys.argv[1]
         output_csv_path = sys.argv[2]
+        
+        # Call function to perform extraction and save results
         write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path)
