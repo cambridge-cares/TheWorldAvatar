@@ -270,9 +270,22 @@ def replace_comma_and_apostrophe(text):
     text = text.replace(",", " and")
     return text
 
-def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path):
+def extract_and_write_classes_in_tbox_csv_template(input_pdf_path, output_csv_path):
     """
-    If you are calling from another Python script, call this function
+    If you are calling from another Python script, call this function.
+    
+    Extracts class and category information from a PDF, processes it to generate an ontology-based structure,
+    and writes the resulting data to CSV files.
+
+    Parameters:
+    input_pdf_path (str): The path to the input PDF file containing class information.
+    output_csv_path (str): The path where the main extracted classes and categories will be saved in CSV format.
+
+    Returns:
+    None: This function does not return a value but generates two CSV files:
+          1. A CSV with extracted classes and categories based on ontology structure.
+          2. A CSV containing class-to-complete code mappings for 8-digit codes derived from the classes.
+
     """
     # Check if the file exists and is a file
     if not os.path.isfile(input_pdf_path):
@@ -387,4 +400,4 @@ if __name__ == "__main__":
         output_csv_path = sys.argv[2]
         
         # Call function to perform extraction and save results
-        write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path)
+        extract_and_write_classes_in_tbox_csv_template(input_pdf_path, output_csv_path)
