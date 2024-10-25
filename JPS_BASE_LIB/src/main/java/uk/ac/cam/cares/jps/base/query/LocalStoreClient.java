@@ -435,8 +435,14 @@ public class LocalStoreClient implements TripleStoreClientInterface {
 	}
 
 	@Override
-	public void uploadTriple(String triple) {
+	public void uploadTriples(String triple) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'uploadTriple'");
+		throw new UnsupportedOperationException("Unimplemented method 'uploadTriples'");
+	}
+
+	@Override
+	public void uploadTriples(String triple, String extension) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'uploadTriples'");
 	}
 }

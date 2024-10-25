@@ -549,8 +549,8 @@ public class TimeSeriesSparql {
                 modify.and(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
             }
         });
-        String queryString = pd.getQueryString() + modify.getQueryString().replace("{","").replace("}","");
-        kbClient.uploadTriple(queryString);
+        String queryString = pd.getQueryString() + modify.getQueryString().replace("{", "").replace("}", "");
+        kbClient.uploadTriples(queryString);
     }
 
     /**

@@ -91,7 +91,16 @@ public interface TripleStoreClientInterface extends StoreClientInterface{
      * @param triples
      */
     
-    void uploadTriple(String triple);
+    void uploadTriples(String triple);
+
+    /**
+     * Upload triple in the from of string
+     * 
+     * @param triples
+     * @param extension
+     */
+    
+     void uploadTriples(String triple, String extension);
 
     /**
      * Counts the total number of triples in the repository.

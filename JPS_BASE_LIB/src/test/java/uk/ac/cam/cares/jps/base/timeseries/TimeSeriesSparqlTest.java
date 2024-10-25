@@ -154,7 +154,7 @@ public class TimeSeriesSparqlTest {
         }
 
         @Override
-        public void uploadTriple(String triple) {
+        public void uploadTriples(String triple) {
             RDFDataMgr.read(kb, new java.io.ByteArrayInputStream(triple.getBytes()), Lang.TURTLE);
         }
 

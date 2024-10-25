@@ -467,36 +467,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      */
     public CloseableHttpResponse executeUpdateByPost(String query) {
         HttpEntity entity = new StringEntity(query, ContentType.create("application/sparql-update"));
-
-        String updateEndpoint = getUpdateEndpoint();
-        String user = getUser();
-        String password = getPassword();
-
-        // below lines follow the uploadFile(File file, String extension) method
-        HttpPost postRequest = new HttpPost(updateEndpoint);
-        if ((user != null) && (password != null)) {
-            String auth = user + ":" + password;
-            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
-        }
-        // add contents to the post request
-        postRequest.setEntity(entity);
-
-        LOGGER.info("Executing SPARQL update to {}. SPARQL update string: {}", updateEndpoint, query);
-        // then send the post request
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            // the returned CloseableHttpResponse should be handled with try-with-resources
-            CloseableHttpResponse response = httpClient.execute(postRequest);
-            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
-                throw new JPSRuntimeException(
-                        "SPARQL update execution by HTTP POST failed. Response status code ="
-                                + response.getStatusLine().getStatusCode());
-            }
-            return response;
-        } catch (IOException e) {
-            throw new JPSRuntimeException(
-                    "RemoteStoreClient: SPARQL update execution by HTTP POST failed: " + query, e);
-        }
+        return uploadByPostEntity(entity, "SPARQL update");
     }
 
     /**
@@ -564,8 +535,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         try (Statement stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
                 java.sql.ResultSet.CONCUR_READ_ONLY)) {
             java.sql.ResultSet rs = stmt.executeQuery(query);
-            JSONArray results = StoreClientHelper.convert(rs);
-            return results;
+            return StoreClientHelper.convert(rs);
         } catch (Exception e) {
             throw new JPSRuntimeException(
                     "RemoteStoreClient: error when executing SPARQL query:\n" + query, e);
@@ -872,34 +842,8 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         }
         FileEntity entity = new FileEntity(file, contentType);
 
-        String updateEndpoint = getUpdateEndpoint();
-        String userName = getUser();
-        String password = getPassword();
+        uploadByPostEntity(entity, "Upload RDF file");
 
-        // tried a few methods to add credentials, this seems to be the only way that
-        // works
-        // i.e. setting it manually in the header
-        HttpPost postRequest = new HttpPost(updateEndpoint);
-        if ((userName != null) && (password != null)) {
-            String auth = userName + ":" + password;
-            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-            postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
-        }
-
-        // add contents to the post request
-        postRequest.setEntity(entity);
-
-        LOGGER.info("Uploading {} to {}", file, updateEndpoint);
-        // then send the post request
-        try (CloseableHttpClient httpclient = HttpClients.createDefault();
-                CloseableHttpResponse response = httpclient.execute(postRequest)) {
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 300) {
-                throw new JPSRuntimeException("Upload RDF file failed. Response status code = " + statusCode);
-            }
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("Upload RDF file failed.", ex);
-        }
     }
 
     /**
@@ -907,11 +851,25 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
      * 
      * @param triples
      */
+
     @Override
-    public void uploadTriple(String triple) {
+    public void uploadTriples(String triples) {
+        uploadTriples(triples, "ttl");
+    }
 
-        HttpEntity entity = new StringEntity(triple, ContentType.create("application/x-turtle"));
+    /**
+     * Same method as above but receives extension as a separate argument
+     * 
+     * @param triples
+     * @param extension
+     */
+    @Override
+    public void uploadTriples(String triples, String extension) {
+        HttpEntity entity = new StringEntity(triples, getRDFContentType(extension));
+        uploadByPostEntity(entity, "Upload triples");
+    }
 
+    CloseableHttpResponse uploadByPostEntity(HttpEntity entity, String description) {
         String updateEndpoint = getUpdateEndpoint();
         String userName = getUser();
         String password = getPassword();
@@ -929,16 +887,19 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
         // add contents to the post request
         postRequest.setEntity(entity);
 
-        LOGGER.info("Uploading {} to {}", "triples", updateEndpoint);
+        LOGGER.info("{} to {}", description, updateEndpoint);
         // then send the post request
-        try (CloseableHttpClient httpclient = HttpClients.createDefault();
-                CloseableHttpResponse response = httpclient.execute(postRequest)) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            // the returned CloseableHttpResponse should be handled with try-with-resources
+            CloseableHttpResponse response = httpClient.execute(postRequest);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < 200 || statusCode > 300) {
-                throw new JPSRuntimeException("Upload triples failed. Response status code = " + statusCode);
+                throw new JPSRuntimeException(
+                        description + " failed. Response status code = " + statusCode);
             }
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("Upload triples failed.", ex);
+            return response;
+        } catch (IOException e) {
+            throw new JPSRuntimeException(description + " failed", e);
         }
     }
 
