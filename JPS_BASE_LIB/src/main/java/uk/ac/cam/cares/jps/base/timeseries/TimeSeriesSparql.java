@@ -21,6 +21,7 @@ import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
+import org.eclipse.rdf4j.sparqlbuilder.core.TriplesTemplate;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
@@ -33,7 +34,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
 import org.json.JSONArray;
 
@@ -474,16 +474,18 @@ public class TimeSeriesSparql {
      */
     protected void bulkInitTS(List<TimeSeriesKgMetadata> timeSeriesKgMetadataList, String rdbURL, String schema,
             Class<?> timeClass, Class<?> rdbClientClass) {
-        ModifyQuery modify = Queries.MODIFY();
+
+        TriplesTemplate modify = SparqlBuilder.triplesTemplate();
+        InsertDataQuery insertData = Queries.INSERT_DATA();
         // set prefix declarations
-        modify.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
+        insertData.prefix(PREFIX_ONTOLOGY, PREFIX_KB, PREFIX_TIME);
 
         Map<CustomDuration, String> durationMap = createDurationIRIMapping();
 
         timeSeriesKgMetadataList.stream().forEach(timeSeriesKgMetadata -> {
             Iri tsIRI = iri(timeSeriesKgMetadata.getTimeSeriesIri());
 
-            modify.insert(tsIRI.isA(timeSeriesKgMetadata.getTimeSeriesType()));
+            modify.and(tsIRI.isA(timeSeriesKgMetadata.getTimeSeriesType()));
 
             if (timeSeriesKgMetadata.getTimeSeriesType().equals(AVERAGE_TIMESERIES)) {
                 Duration duration = timeSeriesKgMetadata.getDuration();
@@ -519,35 +521,36 @@ public class TimeSeriesSparql {
                 }
 
                 if (durationIRI != null) {
-                    modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+                    modify.and(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
                 } else {
                     // Duration IRI
                     durationIRI = TIMESERIES_NAMESPACE + "AveragingPeriod_" + UUID.randomUUID();
-                    modify.insert(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
-                    modify.insert(iri(durationIRI).isA(Duration));
-                    modify.insert(iri(durationIRI).has(unitType, iri(temporalUnit)));
-                    modify.insert(iri(durationIRI).has(numericDuration, numericValue));
+                    modify.and(tsIRI.has(hasAveragingPeriod, iri(durationIRI)));
+                    modify.and(iri(durationIRI).isA(Duration));
+                    modify.and(iri(durationIRI).has(unitType, iri(temporalUnit)));
+                    modify.and(iri(durationIRI).has(numericDuration, numericValue));
                 }
             }
 
             // relational database URL and classes used by TimeSeriesClientFactory
-            modify.insert(
+            modify.and(
                     tsIRI.has(hasRDB, literalOf(rdbURL)).andHas(HAS_RDB_CLIENT_CLASS, rdbClientClass.getCanonicalName())
                             .andHas(HAS_TIME_CLASS, timeClass.getCanonicalName()).andHas(HAS_SCHEMA, schema));
 
             // link each data to time series
             for (String data : timeSeriesKgMetadata.getDataIriList()) {
                 TriplePattern tsTp = iri(data).has(hasTimeSeries, tsIRI);
-                modify.insert(tsTp);
+                modify.and(tsTp);
             }
 
             // optional: define time unit
             String timeUnit = timeSeriesKgMetadata.getTimeUnit();
             if (timeUnit != null) {
-                modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
+                modify.and(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
             }
         });
-        kbClient.executeUpdate(modify.getQueryString());
+        String queryString = insertData.getQueryString() + modify.getQueryString();
+        kbClient.executeUpdate(queryString);
     }
 
     /**
