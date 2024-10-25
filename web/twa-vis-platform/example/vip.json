@@ -16,7 +16,8 @@
                   "KEYCLOAK=false",
                   "PROTECTED_PAGES=/page,/otherpage",
                   "ROLE_PROTECTED_PAGES=/role,/protected,/pages",
-                  "ROLE=viz:protected"
+                  "ROLE=viz:protected",
+                  "ASSET_PREFIX="
                 ],
               "Secrets": [
                   {
