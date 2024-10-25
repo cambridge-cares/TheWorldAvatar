@@ -991,8 +991,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         // Initialise RDB table for storing time series data
 
-        List<CreateTableColumnStep> createSteps = new ArrayList<>();
-        List<Query> indexSteps = new ArrayList<>();
+        List<Query> allSteps = new ArrayList<>();
         Map<String, List<String>> geomColumnsMap = new HashMap<>();
         Map<String, List<Class<?>>> geomColumnsClassMap = new HashMap<>();
 
@@ -1023,9 +1022,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                 }
             }
 
-            createSteps.add(createStep);
+            allSteps.add(createStep);
             // create index on time column for quicker searches
-            indexSteps.add(context.createIndex().on(getDSLTable(tsTable), timeColumn));
+            allSteps.add(context.createIndex().on(getDSLTable(tsTable), timeColumn));
 
             // geometry columns need to be handled separately
             if (!additionalGeomColumns.isEmpty()) {
@@ -1036,9 +1035,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         
         }
 
-        // Execute steps in batch
-        context.batch(createSteps).execute();
-        context.batch(indexSteps).execute();
+        context.batch(allSteps).execute();
 
         // add remaining geometry columns with restrictions
         for (String tsTable : geomColumnsMap.keySet()) {
