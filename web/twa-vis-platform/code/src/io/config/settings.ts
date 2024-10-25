@@ -19,20 +19,11 @@ export default class SettingsStore {
   private static readonly DEFAULT_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/ui-settings.json");
   private static readonly DATA_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/data-settings.json");
   private static readonly MAP_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/map-settings.json");
-  private static readonly CSS_OVERRIDE_FILE: string = path.join(process.cwd(), "public/style-overrides.css");
 
   // Cached settings
   private static DEFAULT_SETTINGS: string | null = null;
   private static MAP_SETTINGS: string | null = null;
   private static MAP_DATA_SETTINGS: string | null = null;
-
-  /**
- * Returns true if the "style-overrides.css" file exists within
- * the hosted "uploads" directory.
- */
-  public static hasCssOverrides(): boolean {
-    return fs.existsSync(this.CSS_OVERRIDE_FILE);
-  }
 
   /**
    * Retrieves default settings

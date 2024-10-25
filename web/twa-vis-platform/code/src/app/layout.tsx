@@ -40,8 +40,6 @@ const dosis = Dosis({
 export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode; }) {
     // Initialise static content
     initialise();
-    // Check if the style-overrides.css file is available
-    const styleOverrides: boolean = SettingsStore.hasCssOverrides();
 
     // Get settings to pass to Toolbar
     const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
@@ -49,12 +47,6 @@ export default function RootLayout({ children, modal }: { children: React.ReactN
     // Root element containing all children.
     return (
         <html lang="en" className={dosis.className}>
-            <head>
-                {
-                    styleOverrides &&
-                    <link rel="stylesheet" href="/style-overrides.css" />
-                }
-            </head>
             <body>
                 <StartupLogging />
                 <GlobalContainer settings={uiSettings}>
