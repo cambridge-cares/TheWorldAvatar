@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
@@ -143,6 +144,12 @@ public class TimeSeriesSparqlTest {
         @Override
         public int executeUpdate(UpdateRequest update) {
             return executeUpdate(update.toString());
+        }
+
+        @Override
+        public CloseableHttpResponse executeUpdateByPost(String query) {
+            executeUpdate(query);
+            return null;
         }
 
         @Override

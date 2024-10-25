@@ -550,7 +550,7 @@ public class TimeSeriesSparql {
             }
         });
         String queryString = insertData.getQueryString() + modify.getQueryString();
-        kbClient.executeUpdate(queryString);
+        kbClient.executeUpdateByPost(queryString);
     }
 
     /**
