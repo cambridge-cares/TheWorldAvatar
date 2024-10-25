@@ -1038,6 +1038,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         context.batch(allSteps).execute();
 
         // add remaining geometry columns with restrictions
+        // TODO - re-factor this to be more efficient
         for (String tsTable : geomColumnsMap.keySet()) {
             List<String> additionalGeomColumns = geomColumnsMap.get(tsTable);
             List<Class<?>> classForAdditionalGeomColumns = geomColumnsClassMap.get(tsTable);

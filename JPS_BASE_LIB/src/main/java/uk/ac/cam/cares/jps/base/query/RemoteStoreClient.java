@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -377,7 +376,7 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             try {
                 // normalise the URI before checking if it contains the "/blazegraph/namespace/"
                 // so that this works on both Linux and Windows OS
-                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath().toString()
+                if (new URI(this.getUpdateEndpoint().toLowerCase()).normalize().getPath()
                         .contains("/blazegraph/namespace/")) {
                     return true;
                 }

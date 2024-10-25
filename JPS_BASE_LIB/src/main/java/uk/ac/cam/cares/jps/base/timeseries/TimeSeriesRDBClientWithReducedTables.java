@@ -988,11 +988,6 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     public String checkAnyDataHasTimeSeries(List<String> dataIRIs, Connection conn) {
         DSLContext context = DSL.using(conn, DIALECT);
 
-        if (!checkCentralTableExists(conn)) {
-            return null;
-        }
-
-        // Look for the entry dataIRI in dbTable
         Table<?> table = getDSLTable(DB_TABLE_NAME);
 
         List<Condition> conditions = dataIRIs.stream().map(DATA_IRI_COLUMN::eq).collect(Collectors.toList());
