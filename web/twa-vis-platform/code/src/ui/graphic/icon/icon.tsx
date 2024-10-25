@@ -1,7 +1,7 @@
 import { Icon } from '@mui/material';
+import Image from 'next/image';
 import SVG from 'react-inlinesvg';
 
-import AppImage from 'ui/graphic/image/image';
 
 interface IconComponentProps {
   readonly icon: string;
@@ -21,10 +21,11 @@ interface IconComponentProps {
 export default function IconComponent(props: IconComponentProps) {
   if (props.icon.endsWith(".png") || props.icon.endsWith(".jpg")) {
     return (
-      <AppImage
-        url={props.icon}
-        classes={props.classes}
-        alt="Icon" />
+      <div className={props.classes}>
+        <Image
+          src={props.icon}
+          alt="Icon" />
+      </div>
     );
   } else if (props.icon.endsWith(".svg")) {
     return (
