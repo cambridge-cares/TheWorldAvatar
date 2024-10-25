@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -232,10 +233,91 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     public List<Integer> bulkInitTimeSeriesTable(List<List<String>> dataIRIs, List<List<Class<?>>> dataClasses,
             List<String> tsIRIs, Integer srid, Connection conn) {
         List<Integer> failedIndex = new ArrayList<>();
+        // initialise schema and central table
+        if (schema != null) {
+            initSchemaIfNotExists(conn);
+        }
+        if (!checkCentralTableExists(conn)) {
+            initCentralTable(conn);
+        }
+
+        try {
+            // Check if any data has already been initialised (i.e. is associated with
+            // different tsIRI)
+            List<String> flatDataIRIs = dataIRIs.stream().flatMap(List::stream).collect(Collectors.toList());
+            String faultyDataIRI = checkAnyDataHasTimeSeries(flatDataIRIs, conn);
+            if (faultyDataIRI != null) {
+                throw new JPSRuntimeException(
+                        exceptionPrefix + "<" + faultyDataIRI
+                                + "> already has an assigned time series instance");
+            }
+            // Ensure that there is a class for each data IRI
+            for (int i = 0; i < dataIRIs.size(); i++) {
+                if (dataIRIs.get(i).size() != dataClasses.get(i).size()) {
+                    throw new JPSRuntimeException(
+                            exceptionPrefix + "Length of dataClass is different from number of data IRIs");
+                }
+            }
+        } catch (JPSRuntimeException e) {
+            LOGGER.error(e.getMessage());
+            // Assume all data IRIs have failed at the moment
+            return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
+        }
         // TODO - re-factor this to be more efficient
         for (int i = 0; i < dataIRIs.size(); i++) {
             try {
-                initTimeSeriesTable(dataIRIs.get(i), dataClasses.get(i), tsIRIs.get(i), srid, conn);
+
+                List<String> dataIRIList = dataIRIs.get(i);
+                List<Class<?>> dataClass = dataClasses.get(i);
+                String tsIRI = tsIRIs.get(i);
+
+                // All database interactions in try-block to ensure closure of connection
+                try {
+
+                    // Assign column name for each dataIRI; name for time column is fixed
+                    Map<String, String> dataColumnNames = new HashMap<>();
+
+                    String tsTableName = getTableWithMatchingTimeColumn(conn);
+                    if (tsTableName != null) {
+                        TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn,
+                                tsTableName);
+                        List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClass, srid);
+
+                        for (int j = 0; j < hasMatchingColumn.size(); j++) {
+                            if (Boolean.TRUE.equals(hasMatchingColumn.get(j))) {
+                                // use existing column
+                                String existingSuitableColumn = timeSeriesDatabaseMetadata
+                                        .getExistingSuitableColumn(dataClass.get(j), srid);
+                                dataColumnNames.put(dataIRIList.get(j), existingSuitableColumn);
+                            } else {
+                                // add new columns
+                                int columnIndex = getNumberOfDataColumns(tsTableName, conn) + 1;
+                                String columnName = "column" + columnIndex;
+                                addColumn(tsTableName, dataClass.get(j), columnName, srid, conn);
+                                dataColumnNames.put(dataIRIList.get(j), columnName);
+                            }
+                        }
+                    } else {
+                        tsTableName = "timeseries_" + UUID.randomUUID().toString().replace("-", "_");
+                        int j = 1;
+                        for (String dataIri : dataIRIList) {
+                            dataColumnNames.put(dataIri, "column" + j);
+                            j += 1;
+                        }
+                        createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRIList, dataClass, srid, conn);
+                    }
+
+                    populateCentralTable(tsTableName, dataIRIList, dataColumnNames, tsIRI, conn);
+                } catch (JPSRuntimeException e) {
+                    // Re-throw JPSRuntimeExceptions
+                    throw e;
+                } catch (Exception e) {
+                    // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+                    // database) as JPSRuntimeException with respective message
+                    LOGGER.error(e.getMessage());
+                    throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+                }
+
             } catch (JPSRuntimeException eRdbCreate) {
                 LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
                 failedIndex.add(i);
