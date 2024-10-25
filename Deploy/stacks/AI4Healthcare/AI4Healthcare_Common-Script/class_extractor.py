@@ -122,7 +122,7 @@ def clean_ocr_errors(text):
         'obse rvatories': 'observatories',
         'lochan s': 'lochans',
         'Children\'sactivity': 'Children\'s activity',
-        'children’sclothes': 'children’s clothes',
+        'children’sclothes': 'children\'s clothes',
         'Ho spices': 'Hospices',
         'surge ries': 'surgeries',
         'Coast al': 'Coastal',
@@ -254,8 +254,26 @@ def form_complete_code(cls, class_category_map, class_code_map):
 
     return final_code
 
-# If you are calling from another Python script, call this function
+def replace_comma_and_apostrophe(text):
+    """
+    Replaces each comma with " and" and removes occurrences of "'s" from the text.
+
+    Parameters:
+    text (str): The input string to be modified.
+
+    Returns:
+    str: The modified string with commas replaced by " and" and occurrences of "'s" removed.
+    """
+    # Remove occurrences of "'s"
+    text = text.replace("'s", "")
+    # Replace commas with " and"
+    text = text.replace(",", " and")
+    return text
+
 def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path):
+    """
+    If you are calling from another Python script, call this function
+    """
     # Check if the file exists and is a file
     if not os.path.isfile(input_pdf_path):
         raise FileNotFoundError(f"The file '{input_pdf_path}' does not exist or is not a valid file path.")
@@ -297,9 +315,9 @@ def write_extracted_classes_in_tbox_csv_template(input_pdf_path, output_csv_path
             comment = cls + " is a subcategory of " + category
             comment = comment.capitalize()
             data.append([
-                cls,     # Source
+                replace_comma_and_apostrophe(cls),     # Source
                 "Class",      # Type
-                category,          # Target
+                replace_comma_and_apostrophe(category),          # Target
                 "IS-A",       # Relation
                 "",           # Domain (empty)
                 "",           # Range (empty)
