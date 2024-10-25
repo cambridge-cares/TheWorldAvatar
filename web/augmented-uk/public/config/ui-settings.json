@@ -1,7 +1,9 @@
 {
   "branding": {
     "navbar": [
-      "/images/defaults/icons/twa.svg"
+      "/images/defaults/icons/twa.svg",
+      "/images/dewaste/cmcl-logo.svg",
+      "/images/dewaste/bnl.svg"
     ],
     "landing": [
       "/images/defaults/icons/twa.svg"

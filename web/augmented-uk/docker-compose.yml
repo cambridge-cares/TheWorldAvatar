@@ -11,7 +11,7 @@ services:
       PROTECTED_PAGES: /page,/otherpage ## pages that a user must be logged in to see
       ROLE_PROTECTED_PAGES: /protected/page/ ## pages that require a user to have a given REALM or CLIENT role
       ROLE: twa-test:protected ## the role required for the above list
-      BASE_PATH: demos/uk
+      BASE_PATH: /demos/uk
     secrets:
       - mapbox_username
       - mapbox_api_key
