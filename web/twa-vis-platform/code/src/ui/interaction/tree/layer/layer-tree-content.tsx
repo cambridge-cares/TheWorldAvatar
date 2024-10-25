@@ -29,7 +29,7 @@ interface LayerTreeEntryProps {
   layer: MapLayer;
   depth: number;
   currentGrouping: string;
-  handleLayerVisibility: (layerIds: string, isVisible: boolean) => void;
+  handleLayerVisibility: (_layerIds: string, _isVisible: boolean) => void;
 }
 
 /**
