@@ -2,6 +2,12 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 4.9.0 
+
+### Bug Fixes
+
+* Read in `BASE_PATH` environment variable and write it to next.js asset prefix and basepath to fix static resources behind double nginx
+
 ## 4.7.3
 
 ### Bug Fixes
