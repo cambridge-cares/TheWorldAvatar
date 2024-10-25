@@ -1,23 +1,25 @@
+const ASSET_PREFIX = process.env.ASSET_PREFIX ?? "";
+
 export const Modules: {
   [key: string]: string;
 } = {
   MAP: "map",
   DASHBOARD: "dashboard",
   REGISTRY: "registry",
-  HELP:"help",
+  HELP: "help",
 };
 
 export const Paths: {
   [key: string]: string;
 } = {
-  HOME: "/",
-  MAP: "/map",
-  DASHBOARD: "/analytics",
-  REGISTRY: "/view",
-  REGISTRY_ADD: "/add",
-  REGISTRY_EDIT: "/edit",
-  REGISTRY_DELETE: "/delete",
-  HELP: "/help",
+  HOME: `${ASSET_PREFIX}/`,
+  MAP: `${ASSET_PREFIX}/map`,
+  DASHBOARD: `${ASSET_PREFIX}/analytics`,
+  REGISTRY: `${ASSET_PREFIX}/view`,
+  REGISTRY_ADD: `${ASSET_PREFIX}/add`,
+  REGISTRY_EDIT: `${ASSET_PREFIX}/edit`,
+  REGISTRY_DELETE: `${ASSET_PREFIX}/delete`,
+  HELP: `${ASSET_PREFIX}/help`,
 };
 
 // Default routes
@@ -40,5 +42,5 @@ export const PageTitles: {
   MAP: "Explore",
   DASHBOARD: "Analytics",
   REGISTRY: "Registry",
-  HELP:"Help",
+  HELP: "Help",
 };
