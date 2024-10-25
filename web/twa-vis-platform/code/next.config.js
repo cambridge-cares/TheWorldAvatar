@@ -9,11 +9,17 @@
 
 const nextConfig = {
 	reactStrictMode: true,
-	basePath: process.env.BASE_PATH ?? "", //default 
-	assetPrefix: process.env.BASE_PATH ?? "",
+	basePath: process.env.BASE_PATH ?? "",
+	assetPrefix: process.env.ASSET_PREFIX ?? "",
 	compiler: { removeConsole: false },
+	images: {
+		loader: 'custom',
+		loaderFile: './image-loader.js',
+	},
+
 	env: {
 		KEYCLOAK: process.env.KEYCLOAK ?? "false",
+		ASSET_PREFIX: process.env.ASSET_PREFIX ?? ""
 	}
 };
 
