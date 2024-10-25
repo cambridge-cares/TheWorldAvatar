@@ -1,6 +1,4 @@
 {
-    "database": "postgres",
-    "workspace": "twa",
     "datasetDirectory": "national_grid",
     "skip": false,
     "namespace": {
@@ -98,7 +96,7 @@
                         "srid": 27700
                     }
                 },
-                "defaultStyle": "twa:underground-cables"
+                "defaultStyle": "national-grid:underground-cables"
             }
         },
         {
@@ -129,7 +127,7 @@
                         "srid": 27700
                     }
                 },
-                "defaultStyle": "twa:overhead-lines"
+                "defaultStyle": "national-grid:overhead-lines"
             }
         },
         {

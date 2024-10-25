@@ -40,7 +40,7 @@
                         "srid": 4326
                     }
                 },
-                "defaultStyle": "twa:overhead-lines"
+                "defaultStyle": "ukpn:overhead-lines"
             }
         },
         {
@@ -70,7 +70,7 @@
                         "srid": 4326
                     }
                 },
-                "defaultStyle": "twa:overhead-lines"
+                "defaultStyle": "ukpn:overhead-lines"
             }
         },
         {
@@ -99,7 +99,7 @@
                         "srid": 4326
                     }
                 },
-                "defaultStyle": "twa:poles-towers"
+                "defaultStyle": "ukpn:poles-towers"
             }
         },
         {
@@ -147,7 +147,7 @@
                         "srid": 4326
                     }
                 },
-                "defaultStyle": "twa:overhead-lines"
+                "defaultStyle": "ukpn:overhead-lines"
             }
         },
         {
@@ -176,7 +176,7 @@
                         "srid": 4326
                     }
                 },
-                "defaultStyle": "twa:poles-towers"
+                "defaultStyle": "ukpn:poles-towers"
             }
         },
         {
@@ -208,7 +208,7 @@
                         "srid": 4326
                     }
                 },
-                "defaultStyle": "twa:overhead-lines"
+                "defaultStyle": "ukpn:overhead-lines"
             }
         }
     ],

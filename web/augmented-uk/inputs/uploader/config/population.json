@@ -1,7 +1,6 @@
 {
-    "database": "postgres",
-    "workspace": "twa",
     "datasetDirectory": "./",
+    "database": "postgres",
     "skip": false,
     "dataSubsets": [
         {
@@ -10,12 +9,12 @@
             "table": "population",
             "subdirectory": "population",
             "gdalTranslateOptions": {
-				"sridIn": "EPSG:4326"
-			},
-			"geoServerSettings": {
-				"layerSettings": {
-					"defaultStyle": "twa:uk-population-style"
-				}
+                "sridIn": "EPSG:4326"
+            },
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "twa:uk-population-style"
+                }
             }
         }
     ],

@@ -1,6 +1,4 @@
 {
-    "database": "postgres",
-    "workspace": "twa",
     "datasetDirectory": "./",
     "skip": false,
     "dataSubsets": [
