@@ -50,7 +50,6 @@ export default function RootLayout({ children, modal }: { children: React.ReactN
     return (
         <html lang="en" className={dosis.className}>
             <head>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
                 {
                     styleOverrides &&
                     <link rel="stylesheet" href="/style-overrides.css" />
