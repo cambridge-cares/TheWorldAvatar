@@ -1,5 +1,6 @@
 package com.cmclinnovations.agent.template;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -65,9 +66,10 @@ public class QueryTemplateFactory {
    *                  be in the template.
    * @param filterId  An optional field to target the query at a specific
    *                  instance.
-   * @param hasParent Indicates if the query needs to filter out parent entities.
+   * @param hasParent Indicates if the query needs to filter out parent
+   *                  entities.
    */
-  public String genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent) {
+  public Queue<String> genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent) {
     // Validate inputs
     if (hasParent && filterId == null) {
       LOGGER.error("Detected a parent without a valid filter ID!");
@@ -79,32 +81,28 @@ public class QueryTemplateFactory {
     this.varSequence = new ArrayList<>();
     // Code starts after reset and validation
     LOGGER.info("Generating a query template for getting data...");
-    StringBuilder query = new StringBuilder();
+    StringBuilder selectVariableBuilder = new StringBuilder();
     StringBuilder whereBuilder = new StringBuilder();
     // Extract the first binding class but it should not be removed from the queue
     String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
     this.sortBindings(bindings, hasParent);
 
-    query.append("SELECT ");
     // Retrieve all variables if no sequence of variable is present
     if (this.varSequence.isEmpty()) {
-      query.append("*");
+      selectVariableBuilder.append("*");
     } else {
       // Else sort the variable and add them to the query
       // Sort by order first, but if the order are equal, sort by subOrder
       this.varSequence.sort(Comparator.comparing(SparqlVariableOrder::order)
           .thenComparing(SparqlVariableOrder::subOrder));
       // Append a ? before the property
-      this.varSequence.forEach(variable -> query.append(ShaclResource.VARIABLE_MARK)
+      this.varSequence.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
           .append(variable.property())
           .append(" "));
     }
-    query.append(" WHERE {");
     this.queryLines.values().forEach(whereBuilder::append);
     this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
-    String federatedWhereClause = this.genFederatedQuery(whereBuilder.toString(), targetClass);
-    // Close the query
-    return query.append(federatedWhereClause).append("}").toString();
+    return this.genFederatedQuery(selectVariableBuilder.toString(), whereBuilder.toString(), targetClass);
   }
 
   /**
@@ -123,7 +121,7 @@ public class QueryTemplateFactory {
    *                  be in the template.
    * @param criterias All the required search criteria.
    */
-  public String genSearchTemplate(Queue<Queue<SparqlBinding>> bindings, Map<String, String> criterias) {
+  public Queue<String> genSearchTemplate(Queue<Queue<SparqlBinding>> bindings, Map<String, String> criterias) {
     // Reset from previous iterations
     this.parentField = "";
     this.queryLines = new HashMap<>();
@@ -131,10 +129,8 @@ public class QueryTemplateFactory {
 
     // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
-    StringBuilder query = new StringBuilder();
     StringBuilder whereBuilder = new StringBuilder();
     StringBuilder filters = new StringBuilder();
-    query.append("SELECT ?iri WHERE {");
     // Extract the first binding class but it should not be removed from the queue
     String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
     this.sortBindings(bindings, false);
@@ -147,17 +143,15 @@ public class QueryTemplateFactory {
         // will not be added
         if (criterias.containsKey(variable) && !criterias.get(variable).isEmpty()) {
           // If there is no search filters to be added, this variable should not be added
-            String searchFilters = genSearchCriteria(variable, criterias);
-            if (!searchFilters.isEmpty()) {
-              whereBuilder.append(currentLine.getValue());
-              filters.append(searchFilters);
-            }
+          String searchFilters = genSearchCriteria(variable, criterias);
+          if (!searchFilters.isEmpty()) {
+            whereBuilder.append(currentLine.getValue());
+            filters.append(searchFilters);
           }
         }
+      }
     });
-    String federatedWhereClause = this.genFederatedQuery(whereBuilder.append(filters).toString(), targetClass);
-    // Close the query
-    return query.append(federatedWhereClause).append("}").toString();
+    return this.genFederatedQuery("?iri", whereBuilder.append(filters).toString(), targetClass);
   }
 
   /**
@@ -181,23 +175,22 @@ public class QueryTemplateFactory {
   }
 
   /**
-   * Generates a federated query across ontop containers and with a replaceable
-   * endpoint [endpoint].
+   * Generates two federated queries with a replaceable endpoint [endpoint]. The
+   * first query is for mixed endpoints; the second query is for non-ontop
+   * endpoints.
    * 
-   * @param contents    The SPARQL query contents.
-   * @param targetClass Target class to reach.
+   * @param selectVariables The variables to be selected in a SPARQL SELECT query.
+   * @param whereClause     The contents for the SPARQL query's WHERE clause.
+   * @param targetClass     Target class to reach.
    */
-  private String genFederatedQuery(String contents, String targetClass) {
-    return "{?ontop a <https://theworldavatar.io/kg/service#Ontop>; <http://www.w3.org/ns/dcat#endpointURL> ?endpoint."
-        + "SERVICE ?endpoint {"
-        // Ontop does not allow for variable path length, so that cannot be included in
-        // the ontop query
-        + "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP +
-        contents + "}" +
-        "} UNION {" +
-        "SERVICE <" + ShaclResource.REPLACEMENT_ENDPOINT + "> {" +
-        "?iri a/rdfs:subClassOf* " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP
-        + contents + "}}";
+  private Queue<String> genFederatedQuery(String selectVariables, String whereClause, String targetClass) {
+    Queue<String> results = new ArrayDeque<>();
+    String iriClass = StringResource.parseIriForQuery(targetClass);
+    results.offer(
+        "SELECT " + selectVariables + " WHERE {?iri a " + iriClass + ShaclResource.FULL_STOP + whereClause + "}");
+    results.offer("SELECT " + selectVariables + " WHERE {?iri a/rdfs:subClassOf+ " + iriClass + ShaclResource.FULL_STOP
+        + whereClause + "}");
+    return results;
   }
 
   /**
@@ -305,7 +298,7 @@ public class QueryTemplateFactory {
       // If the field is a parent field, and the template requires a parent, store the
       // parent field
       if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
-        this.parentField = propertyName;
+        this.parentField = propertyName.replaceAll("\\s+", "_");
       }
       queryLineMappings.put(propertyName,
           new SparqlQueryLine(propertyName, multiPartPredicate, multiPartSubPredicate, multiPartLabelPredicate,

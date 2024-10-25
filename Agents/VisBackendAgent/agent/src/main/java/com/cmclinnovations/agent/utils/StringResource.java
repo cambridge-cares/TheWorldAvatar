@@ -98,7 +98,7 @@ public class StringResource {
    * 
    * @param iri Input.
    */
-  private static boolean isValidIRI(String iri) {
+  public static boolean isValidIRI(String iri) {
     try {
       URI uri = new URI(iri);
       // Check if the URI has valid scheme, path, etc

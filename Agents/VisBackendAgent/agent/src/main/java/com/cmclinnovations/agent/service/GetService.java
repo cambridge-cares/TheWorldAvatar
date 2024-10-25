@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.model.SparqlEndpointType;
 import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
@@ -172,7 +174,9 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.INSTANCE_QUERY_RESOURCE,
         iriResponse.getBody());
-    Queue<SparqlBinding> results = this.kgService.query(query);
+    // Note that all concept metadata will never be stored in Ontop and will require
+    // the special property paths
+    JSONArray results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     if (results.isEmpty()) {
       LOGGER.info(
           "Request has been completed successfully with no results!");
@@ -180,9 +184,7 @@ public class GetService {
       LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     }
     return new ResponseEntity<>(
-        results.stream()
-            .map(SparqlBinding::get)
-            .collect(Collectors.toList()),
+        results,
         HttpStatus.OK);
   }
 
@@ -201,13 +203,12 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
         iriResponse.getBody());
-    Queue<SparqlBinding> results = this.kgService.queryInstancesWithCriteria(query, criterias);
+    JSONArray results = this.kgService.queryInstancesWithCriteria(query, criterias);
     LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     return new ResponseEntity<>(
-        results.stream()
-            .map(binding -> binding.getFieldValue("iri"))
-            .collect(Collectors.toList()),
+        results,
         HttpStatus.OK);
+    // .map(binding -> binding.getFieldValue("iri"))
   }
 
   /**
