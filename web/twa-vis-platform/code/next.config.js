@@ -9,7 +9,7 @@
 
 const nextConfig = {
 	reactStrictMode: true,
-	basePath: "", //default 
+	basePath: process.env.BASE_PATH ?? "", //default 
 	assetPrefix: process.env.BASE_PATH ?? "",
 	compiler: { removeConsole: false },
 	env: {
