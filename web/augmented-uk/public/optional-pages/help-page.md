@@ -5,7 +5,7 @@ slug: help
 
 <link rel="stylesheet" href="https://fonts.google.com/icons?icon.set=Material+Icons">
 
-<h1><img src="/images/defaults/icons/help.svg" width="60" height="60">&nbsp;Help Centre</h1>
+<h1><img src="/images/defaults/icons/twa.svg" width="60" height="60">&nbsp;Help</h1>
 
 ## Getting Started
 
@@ -54,3 +54,7 @@ Additionally, an information panel containing the map layers, legend, and featur
 ## Need further assistance?
 
 Contact the <a href="mailto:support@cmclinnovations.com">CMCL technical team</a> today!
+
+
+
+//TODO failure states
