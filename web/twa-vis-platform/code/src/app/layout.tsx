@@ -6,6 +6,7 @@ import 'ui/css/globals.css';
 
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
+import { Dosis } from 'next/font/google';
 
 import StartupLogging from 'io/startup-logging';
 import OptionalPages from 'io/config/optional-pages';
@@ -23,6 +24,11 @@ function initialise() {
     // Cache contents of optional static pages
     OptionalPages.loadPages();
 }
+
+const dosis = Dosis({
+    subsets: ['latin'],
+    display: 'swap',
+  })
 
 /**
  * Define a root layout template to be used for all generated HTML files.
@@ -42,9 +48,8 @@ export default function RootLayout({ children, modal }: { children: React.ReactN
 
     // Root element containing all children.
     return (
-        <html lang="en">
+        <html lang="en" className={dosis.className}>
             <head>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis" />
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
                 {
                     styleOverrides &&
