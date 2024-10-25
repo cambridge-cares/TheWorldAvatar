@@ -3,7 +3,6 @@ import iconStyles from 'ui/graphic/icon/icon-button.module.css';
 
 import React from 'react';
 import { FieldValues } from 'react-hook-form';
-import { CellContext, ColumnDef, DisplayColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 import { RegistryFieldValues } from 'types/form';
 import { getAfterDelimiter, isValidIRI, parseWordsForLabels } from 'utils/client-utils';
