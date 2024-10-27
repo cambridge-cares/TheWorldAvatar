@@ -264,21 +264,27 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
         }
         // TODO - re-factor this to be more efficient
+        String tsTableName = getTableWithMatchingTimeColumn(conn);
+        Boolean tsTableInitialised = false;
+        if (tsTableName != null) {
+            tsTableInitialised = true;
+        } else {
+            tsTableName = "timeseries_" + UUID.randomUUID().toString().replace("-", "_");
+        }
+
         for (int i = 0; i < dataIRIs.size(); i++) {
             try {
 
                 List<String> dataIRIList = dataIRIs.get(i);
                 List<Class<?>> dataClass = dataClasses.get(i);
                 String tsIRI = tsIRIs.get(i);
+                // Assign column name for each dataIRI; name for time column is fixed
+                Map<String, String> dataColumnNames = new HashMap<>();
 
                 // All database interactions in try-block to ensure closure of connection
                 try {
-
-                    // Assign column name for each dataIRI; name for time column is fixed
-                    Map<String, String> dataColumnNames = new HashMap<>();
-
-                    String tsTableName = getTableWithMatchingTimeColumn(conn);
-                    if (tsTableName != null) {
+                    
+                    if (Boolean.TRUE.equals(tsTableInitialised)) {
                         TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn,
                                 tsTableName);
                         List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClass, srid);
@@ -298,13 +304,13 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                             }
                         }
                     } else {
-                        tsTableName = "timeseries_" + UUID.randomUUID().toString().replace("-", "_");
                         int j = 1;
                         for (String dataIri : dataIRIList) {
                             dataColumnNames.put(dataIri, "column" + j);
                             j += 1;
                         }
                         createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRIList, dataClass, srid, conn);
+                        tsTableInitialised = true;
                     }
 
                     populateCentralTable(tsTableName, dataIRIList, dataColumnNames, tsIRI, conn);
