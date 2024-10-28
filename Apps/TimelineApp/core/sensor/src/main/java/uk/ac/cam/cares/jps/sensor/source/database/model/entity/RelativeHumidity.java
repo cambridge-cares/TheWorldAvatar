@@ -13,7 +13,6 @@ import org.json.JSONObject;
  */
 @Entity(tableName = "humidity")
 public class RelativeHumidity extends SensorData {
-
     /**
      * Measures the relative ambient humidity in percent (%).
      */

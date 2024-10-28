@@ -11,8 +11,6 @@ import org.json.JSONObject;
  * It provides common properties and methods for handling sensor data.
  */
 public abstract class BaseVector extends SensorData {
-    @PrimaryKey
-    public long time;
 
     public double x;
 

@@ -42,6 +42,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
+
 import javax.inject.Inject;
 
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
@@ -254,6 +255,24 @@ public class LoginSource {
     public void performActionWithFreshTokens(AuthState.AuthStateAction action) {
         authStateManager.getCurrent().performActionWithFreshTokens(authService, action);
     }
+
+    public void getAccessToken(RepositoryCallback<String> callback) {
+        AuthState authState = authStateManager.getCurrent();
+
+        if (authState.getAccessToken() == null || authState.getNeedsTokenRefresh()) {
+            performActionWithFreshTokens((accessToken, idToken, ex) -> {
+                if (ex == null) {
+                    authStateManager.replace(authState);
+                    callback.onSuccess(accessToken);
+                } else {
+                    callback.onFailure(new AccountException("Failed to refresh access token"));
+                }
+            });
+        } else {
+            callback.onSuccess(authState.getAccessToken());
+        }
+    }
+
 
     public void getUserInfo(RepositoryCallback<User> callback) {
         AuthState.AuthStateAction getUserInfoAction = (accessToken, idToken, ex) -> {

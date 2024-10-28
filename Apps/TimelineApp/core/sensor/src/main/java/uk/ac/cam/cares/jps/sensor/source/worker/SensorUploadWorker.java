@@ -11,10 +11,12 @@ import androidx.work.WorkerParameters;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static uk.ac.cam.cares.jps.utils.di.UtilsModule.compressData;
 
 import dagger.assisted.Assisted;
@@ -69,7 +71,7 @@ public class SensorUploadWorker extends Worker {
     }
 
     private void uploadSensorData() throws JSONException, IOException {
-        int PAGE_SIZE = 1500;
+        int PAGE_SIZE = 800;
         int offset = 0;
         boolean hasMoreData = true;
 
@@ -87,7 +89,10 @@ public class SensorUploadWorker extends Worker {
             // Send to the network
             if (allSensorData.length() > 0) {
                 LOGGER.info("Attempting to send " + allSensorData.length() + " items to the network.");
-                LOGGER.info("All sensor data " + allSensorData);
+                for (int i = 0; i < allSensorData.length(); i++) {
+                    JSONObject sensorDataItem = allSensorData.getJSONObject(i);
+                    LOGGER.info("Sensor Data Item " + (offset + i + 1) + ": " + sensorDataItem.toString());
+                }
                 sensorNetworkSource.sendPostRequest(deviceId, compressedData, allSensorData);
                 LOGGER.info("Accumulated data sent to network.");
             } else {

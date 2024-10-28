@@ -156,7 +156,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             values.put("dBFS", dBFS);
 
             dataPoint.put("name", "microphone");
-            dataPoint.put("time", System.currentTimeMillis() * 1000000);
+            dataPoint.put("time", System.currentTimeMillis());
             dataPoint.put("values", values);
 
             synchronized (sensorDataLock) {

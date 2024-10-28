@@ -3,7 +3,10 @@ package uk.ac.cam.cares.jps.sensor.source.database;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -17,8 +20,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,6 +78,8 @@ public class SensorLocalSource {
     Logger LOGGER = Logger.getLogger(SensorLocalSource.class);
     Map<String, JSONArray> unsentData;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private HashSet uniqueTimes = new HashSet<>();
+
 
     @Inject
     public SensorLocalSource(Context context) {
@@ -228,7 +235,6 @@ public class SensorLocalSource {
         activityDataDao.delete(cutoffTime);
     }
 
-
     /**
      * Retrieves unsent sensor data from the local database for the specified sensor types,
      * paginates the results using limit and offset, and prepares the data for upload.
@@ -366,10 +372,15 @@ public class SensorLocalSource {
     private List<Long> extractTimes(List<? extends SensorData> sensorDataList) {
         List<Long> times = new ArrayList<>();
         for (SensorData data : sensorDataList) {
-            times.add(data.time);
+            if (uniqueTimes.add(data.time)) {
+                times.add(data.time);
+            } else {
+                LOGGER.warn("Duplicate time detected: " + data.time);
+            }
         }
         return times;
     }
+
 
     /**
      * Checks if the given data already exists in the UnsentData table.

@@ -13,10 +13,6 @@ import org.json.JSONException;
  */
 public abstract class SensorData {
 
-    /**
-     * The timestamp for the sensor data record.
-     * Marked as the primary key for the database entity.
-     */
     @PrimaryKey
     public long time;
     public int uploaded;
@@ -35,7 +31,7 @@ public abstract class SensorData {
     public SensorData(JSONObject jo) {
         this.uploaded = 0;
         try {
-            this.time = jo.getLong("time");
+            this.time = jo.getLong("time") * 1000000;
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

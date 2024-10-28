@@ -39,7 +39,7 @@ public class RelativeHumiditySensorHandler extends AbstractSensorHandler {
             values.put("humidity", event.values[0]);
 
             dataPoint.put("name", this.sensorName);
-            dataPoint.put("time", System.currentTimeMillis() * 1000000);
+            dataPoint.put("time", System.currentTimeMillis());
             dataPoint.put("values", values);
 
             synchronized (sensorDataLock) {
