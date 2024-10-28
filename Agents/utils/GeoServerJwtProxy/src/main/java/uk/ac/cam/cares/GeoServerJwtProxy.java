@@ -95,15 +95,9 @@ public class GeoServerJwtProxy extends HttpServlet {
         // Create a connection to the target URL
         HttpGet get = new HttpGet(uri);
 
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-
-        try (CloseableHttpResponse httpResponse = httpClient.execute(get)) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                CloseableHttpResponse httpResponse = httpClient.execute(get)) {
             response.setStatus(httpResponse.getStatusLine().getStatusCode());
-
-            // Copy headers
-            for (org.apache.http.Header header : httpResponse.getAllHeaders()) {
-                response.setHeader(header.getName(), header.getValue());
-            }
 
             httpResponse.getEntity().getContent().transferTo(response.getOutputStream());
         }
