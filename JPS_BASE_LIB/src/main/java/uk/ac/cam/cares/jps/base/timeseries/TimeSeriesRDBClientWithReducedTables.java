@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -271,22 +272,25 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         } else {
             tsTableName = "timeseries_" + UUID.randomUUID().toString().replace("-", "_");
         }
+        List<String> tsTableNames = Collections.nCopies(dataIRIs.size(), tsTableName);
+
+        List<Map<String, String>> dataColumnNamesMaps = new ArrayList<>();
+
+        TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = new TimeSeriesDatabaseMetadata();
 
         for (int i = 0; i < dataIRIs.size(); i++) {
             try {
 
                 List<String> dataIRIList = dataIRIs.get(i);
                 List<Class<?>> dataClass = dataClasses.get(i);
-                String tsIRI = tsIRIs.get(i);
                 // Assign column name for each dataIRI; name for time column is fixed
                 Map<String, String> dataColumnNames = new HashMap<>();
 
                 // All database interactions in try-block to ensure closure of connection
                 try {
-                    
+
                     if (Boolean.TRUE.equals(tsTableInitialised)) {
-                        TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn,
-                                tsTableName);
+                        
                         List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClass, srid);
 
                         for (int j = 0; j < hasMatchingColumn.size(); j++) {
@@ -303,6 +307,12 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                                 dataColumnNames.put(dataIRIList.get(j), columnName);
                             }
                         }
+
+                        // if not all dataClass has a matching column, a new column is added. metadata will need to be updated
+                        if (!hasMatchingColumn.stream().allMatch(Boolean::booleanValue)) {
+                            timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn, tsTableName);
+                        }
+
                     } else {
                         int j = 1;
                         for (String dataIri : dataIRIList) {
@@ -311,9 +321,11 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                         }
                         createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRIList, dataClass, srid, conn);
                         tsTableInitialised = true;
+                        // get metadata for the first time
+                        timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn, tsTableName);
                     }
+                    dataColumnNamesMaps.add(dataColumnNames);
 
-                    populateCentralTable(tsTableName, dataIRIList, dataColumnNames, tsIRI, conn);
                 } catch (JPSRuntimeException e) {
                     // Re-throw JPSRuntimeExceptions
                     throw e;
@@ -329,6 +341,17 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 failedIndex.add(i);
             }
         }
+
+        try {
+            // Add corresponding entries in central lookup table
+            // TODO - this should be before the error checks above
+            bulkPopulateCentralTable(tsTableNames, dataIRIs, dataColumnNamesMaps, tsIRIs, conn);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            // Assume all data IRIs have failed at the moment
+            return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
+        }
+
         return failedIndex;
 
     }
@@ -875,6 +898,40 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         // Populate columns row by row
         for (String s : dataIRI) {
             insertValueStep = insertValueStep.values(tsTableName, s, tsIRI, dataColumnNames.get(s));
+        }
+
+        insertValueStep.execute();
+    }
+
+    /**
+     * Add new entries to central RDB lookup table for multiple time series
+     * <p>
+     * Requires existing RDB connection
+     * 
+     * @param tsTables            name of the timeseries table provided as list of
+     *                            string
+     * @param dataIRIs            list of list of data IRIs provided as string
+     * @param dataColumnNamesMaps list of maps of column names in the tsTable
+     *                            corresponding to the data IRIs
+     * @param tsIRIs              timeseries IRI provided as list of string
+     * @param context
+     */
+    private void bulkPopulateCentralTable(List<String> tsTables, List<List<String>> dataIRIs,
+            List<Map<String, String>> dataColumnNamesMaps,
+            List<String> tsIRIs, Connection conn) {
+        DSLContext context = DSL.using(conn, DIALECT);
+        InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(
+                getDSLTable(DB_TABLE_NAME), TABLENAME_COLUMN, DATA_IRI_COLUMN, TS_IRI_COLUMN, COLUMNNAME_COLUMN);
+
+        // Populate columns row by row
+        for (int i = 0; i < tsTables.size(); i++) {
+            String tsTableName = tsTables.get(i);
+            String tsIRI = tsIRIs.get(i);
+            List<String> dataIRI = dataIRIs.get(i);
+            Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
+            for (String s : dataIRI) {
+                insertValueStep = insertValueStep.values(tsTableName, s, tsIRI, dataColumnNames.get(s));
+            }
         }
 
         insertValueStep.execute();
