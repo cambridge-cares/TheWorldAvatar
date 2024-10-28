@@ -1,13 +1,13 @@
 {
     "ServiceSpec": {
-        "Name": "trajectoryqueryagent",
+        "Name": "geoserver-jwt-proxy",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:3.0.0",
+                "Image": "ghcr.io/cambridge-cares/geoserver-jwt-proxy:1.0",
                 "Env": [
+                    "VIEWPARAM_NAME=user_id",
                     "KEYCLOAK_SERVER=http://host.docker.internal:8080",
-                    "KEYCLOAK_REALM=twa-test",
-                    "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+                    "KEYCLOAK_REALM=twa-test"
                 ],
                 "Configs": [
                     {
@@ -20,7 +20,7 @@
                         "ConfigName": "geoserver"
                     },
                     {
-                        "ConfigName": "user-agent-rest"
+                        "ConfigName": "ontop"
                     }
                 ],
                 "Secrets": [
@@ -32,22 +32,12 @@
                     }
                 ]
             }
-        },
-        "EndpointSpec": {
-            "Ports": [
-                {
-                    "Name": "web",
-                    "Protocol": "tcp",
-                    "TargetPort": "5005",
-                    "PublishedPort": "5005"
-                }
-            ]
         }
     },
     "endpoints": {
-        "rest": {
-            "url": "http://localhost:8080/trajectoryqueryagent/",
-            "externalPath": "/trajectoryqueryagent/"
+        "isochroneagent": {
+            "url": "http://localhost:8080/GeoServerJwtProxy/",
+            "externalPath": "/geoserver-jwt-proxy/"
         }
     }
 }
