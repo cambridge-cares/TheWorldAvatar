@@ -38,6 +38,8 @@ public class TrajectoryNetworkSource {
     private final RequestQueue requestQueue;
     private final Context context;
     private FusedLocationProviderClient fusedLocationClient;
+    private static final String USER_ID = "f576a7a3-6853-43ff-bacb-8bf04500b0b6";
+
 
     /**
      * Constructor of the class. The instantiation is handled by dependency injection.
@@ -117,7 +119,7 @@ public class TrajectoryNetworkSource {
             }
         };
 
-        return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
+       return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -182,6 +184,7 @@ public class TrajectoryNetworkSource {
                 throw new RuntimeException(e);
             }
         };
+
 
         StringRequest srq = new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
             @Override
