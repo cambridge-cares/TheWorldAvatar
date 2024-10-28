@@ -38,7 +38,6 @@ public class TrajectoryNetworkSource {
     private final RequestQueue requestQueue;
     private final Context context;
     private FusedLocationProviderClient fusedLocationClient;
-    private static final String USER_ID = "f576a7a3-6853-43ff-bacb-8bf04500b0b6";
 
 
     /**
@@ -186,7 +185,7 @@ public class TrajectoryNetworkSource {
         };
 
 
-        StringRequest srq = new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
+        return new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -195,7 +194,5 @@ public class TrajectoryNetworkSource {
                 return headers;
             }
         };
-        LOGGER.info(srq);
-        return srq;
     }
 }
