@@ -1211,16 +1211,19 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      * @param context
      */
     private void checkDataIsInSameTable(List<String> dataIRI, DSLContext context) {
-        // Get time series IRI of first dataIRI
-        String tsIRI = getTimeSeriesIRI(dataIRI.get(0), context);
-        // Check that all further dataIRI share this time series IRI
-        if (dataIRI.size() > 1) {
-            for (int i = 1; i < dataIRI.size(); i++) {
-                String curTsIRI = getTimeSeriesIRI(dataIRI.get(i), context);
-                if (!curTsIRI.contentEquals(tsIRI)) {
-                    throw new JPSRuntimeException(exceptionPrefix + "Provided data is not within the same RDB table");
-                }
-            }
+
+        Table<?> table = getDSLTable(DB_TABLE_NAME);
+
+        List<Condition> conditions = dataIRI.stream().map(DATA_IRI_COLUMN::eq).collect(Collectors.toList());
+
+        Condition combinedCondition = DSL.or(conditions);
+
+        List<String> queryResult = context.select(TS_IRI_COLUMN).from(table).where(combinedCondition).fetch(TS_IRI_COLUMN);
+
+        boolean allIdentical = queryResult.stream().allMatch(s -> s.equals(queryResult.get(0)));
+
+        if (!allIdentical) {
+            throw new JPSRuntimeException(exceptionPrefix + "Provided data is not within the same RDB table");
         }
     }
 
