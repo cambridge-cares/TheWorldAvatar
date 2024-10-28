@@ -233,6 +233,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     @Override
     public List<Integer> bulkInitTimeSeriesTable(List<List<String>> dataIRIs, List<List<Class<?>>> dataClasses,
             List<String> tsIRIs, Integer srid, Connection conn) {
+
         List<Integer> failedIndex = new ArrayList<>();
         // initialise schema and central table
         if (schema != null) {
@@ -264,7 +265,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             // Assume all data IRIs have failed at the moment
             return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
         }
-        // TODO - re-factor this to be more efficient
+
         String tsTableName = getTableWithMatchingTimeColumn(conn);
         Boolean tsTableInitialised = false;
         if (tsTableName != null) {
@@ -290,7 +291,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 try {
 
                     if (Boolean.TRUE.equals(tsTableInitialised)) {
-                        
+
                         List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClass, srid);
 
                         for (int j = 0; j < hasMatchingColumn.size(); j++) {
@@ -308,7 +309,8 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                             }
                         }
 
-                        // if not all dataClass has a matching column, a new column is added. metadata will need to be updated
+                        // if not all dataClass has a matching column, a new column is added. metadata
+                        // will need to be updated
                         if (!hasMatchingColumn.stream().allMatch(Boolean::booleanValue)) {
                             timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn, tsTableName);
                         }
@@ -344,8 +346,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
         try {
             // Add corresponding entries in central lookup table
-            // TODO - this should be before the error checks above
-            bulkPopulateCentralTable(tsTableNames, dataIRIs, dataColumnNamesMaps, tsIRIs, conn);
+            bulkPopulateCentralTable(tsTableNames, dataIRIs, dataColumnNamesMaps, tsIRIs, failedIndex, conn);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             // Assume all data IRIs have failed at the moment
@@ -914,23 +915,26 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      * @param dataColumnNamesMaps list of maps of column names in the tsTable
      *                            corresponding to the data IRIs
      * @param tsIRIs              timeseries IRI provided as list of string
+     * @param failedIndex         timeseries that have failed
      * @param context
      */
     private void bulkPopulateCentralTable(List<String> tsTables, List<List<String>> dataIRIs,
             List<Map<String, String>> dataColumnNamesMaps,
-            List<String> tsIRIs, Connection conn) {
+            List<String> tsIRIs, List<Integer> failedIndex, Connection conn) {
         DSLContext context = DSL.using(conn, DIALECT);
         InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(
                 getDSLTable(DB_TABLE_NAME), TABLENAME_COLUMN, DATA_IRI_COLUMN, TS_IRI_COLUMN, COLUMNNAME_COLUMN);
 
         // Populate columns row by row
         for (int i = 0; i < tsTables.size(); i++) {
-            String tsTableName = tsTables.get(i);
-            String tsIRI = tsIRIs.get(i);
-            List<String> dataIRI = dataIRIs.get(i);
-            Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
-            for (String s : dataIRI) {
-                insertValueStep = insertValueStep.values(tsTableName, s, tsIRI, dataColumnNames.get(s));
+            if (!failedIndex.contains(i)) {
+                String tsTableName = tsTables.get(i);
+                String tsIRI = tsIRIs.get(i);
+                List<String> dataIRI = dataIRIs.get(i);
+                Map<String, String> dataColumnNames = dataColumnNamesMaps.get(i);
+                for (String s : dataIRI) {
+                    insertValueStep = insertValueStep.values(tsTableName, s, tsIRI, dataColumnNames.get(s));
+                }
             }
         }
 
