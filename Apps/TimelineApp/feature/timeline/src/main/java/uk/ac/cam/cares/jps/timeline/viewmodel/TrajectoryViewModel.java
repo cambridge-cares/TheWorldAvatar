@@ -67,13 +67,13 @@ public class TrajectoryViewModel extends ViewModel {
     }
 
     private long calculateLowerbound(LocalDate date) {
-        ZonedDateTime startOfDay = date.atStartOfDay(ZoneId.of("UTC"));
+        ZonedDateTime startOfDay = date.atStartOfDay(ZoneId.systemDefault());
         return startOfDay.toInstant().toEpochMilli();
     }
 
     private long calculateUpperbound(LocalDate date) {
         ZonedDateTime endOfDay = date.atTime(23, 59, 59, 999999999)
-                .atZone(ZoneId.of("UTC"));
+                .atZone(ZoneId.systemDefault());
         return endOfDay.toInstant().toEpochMilli();
     }
 
