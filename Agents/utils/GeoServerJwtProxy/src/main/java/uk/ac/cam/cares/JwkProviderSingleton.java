@@ -28,17 +28,30 @@ public class JwkProviderSingleton {
             } catch (URISyntaxException e) {
                 String errmsg = "Failed to parse KEYCLOAK_SERVER";
                 LOGGER.error(errmsg);
+                LOGGER.error(e.getMessage());
                 throw new RuntimeException(errmsg, e);
             }
 
-            keyCloakBuilder.setPath("realms/" + System.getenv("KEYCLOAK_REALM") + "/protocol/openid-connect/certs");
+            String existingPath;
+
+            if (keyCloakBuilder.getPath() != null) {
+                existingPath = keyCloakBuilder.getPath();
+            } else {
+                existingPath = "";
+            }
+
+            keyCloakBuilder.setPath(
+                    existingPath + "/realms/" + System.getenv("KEYCLOAK_REALM") + "/protocol/openid-connect/certs");
 
             try {
                 jwkProvider = new JwkProviderBuilder(keyCloakBuilder.build().toURL())
                         .cached(10, 24, TimeUnit.HOURS) // Caching keys for efficiency
                         .build();
             } catch (MalformedURLException | URISyntaxException e) {
-                throw new RuntimeException(e);
+                String errmsg = "Failed to build URL for JWK provider";
+                LOGGER.error(e.getMessage());
+                LOGGER.error(errmsg);
+                throw new RuntimeException(errmsg, e);
             }
         }
         return jwkProvider;

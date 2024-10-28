@@ -1,6 +1,6 @@
 services:
   geoserver-jwt-proxy:
-    image: ghcr.io/cambridge-cares/geoserver-jwt-proxy:1.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/geoserver-jwt-proxy:1.0
     deploy:
       mode: replicated
       replicas: 1

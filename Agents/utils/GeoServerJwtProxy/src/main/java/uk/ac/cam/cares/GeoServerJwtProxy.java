@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.util.Iterator;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -26,6 +25,7 @@ import com.auth0.jwk.JwkProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.JWTVerifier;
 
 import java.security.interfaces.RSAPublicKey;
@@ -64,7 +64,7 @@ public class GeoServerJwtProxy extends HttpServlet {
         try {
             uriBuilder = new URIBuilder(targetUrl);
         } catch (URISyntaxException e) {
-            String errmsg = "Failed to build targetUrl";
+            String errmsg = "Failed to initialise URIBuilder";
             LOGGER.error(errmsg);
             throw new RuntimeException(errmsg, e);
         }
@@ -95,15 +95,9 @@ public class GeoServerJwtProxy extends HttpServlet {
         // Create a connection to the target URL
         HttpGet get = new HttpGet(uri);
 
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-
-        try (CloseableHttpResponse httpResponse = httpClient.execute(get)) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                CloseableHttpResponse httpResponse = httpClient.execute(get)) {
             response.setStatus(httpResponse.getStatusLine().getStatusCode());
-
-            // Copy headers
-            for (org.apache.http.Header header : httpResponse.getAllHeaders()) {
-                response.setHeader(header.getName(), header.getValue());
-            }
 
             httpResponse.getEntity().getContent().transferTo(response.getOutputStream());
         }
@@ -115,18 +109,12 @@ public class GeoServerJwtProxy extends HttpServlet {
 
         DecodedJWT unverifiedDecodedJWT = JWT.decode(token);
 
-        if (Instant.now().isAfter(unverifiedDecodedJWT.getExpiresAtAsInstant())) {
-            String errmsg = "Found token but it is expired";
-            LOGGER.error(errmsg);
-            throw new RuntimeException(errmsg);
-        }
-
         String keyId = unverifiedDecodedJWT.getKeyId();
         Jwk jwk;
         try {
             jwk = provider.get(keyId);
         } catch (JwkException e) {
-            String errmsg = "Cannot find key ID";
+            String errmsg = "Cannot find key ID from token";
             LOGGER.error(e.getMessage());
             LOGGER.error(errmsg);
             throw new RuntimeException(errmsg, e);
@@ -147,6 +135,17 @@ public class GeoServerJwtProxy extends HttpServlet {
         // Create the JWT verifier
         JWTVerifier verifier = JWT.require(algorithm).build();
 
-        return verifier.verify(unverifiedDecodedJWT);
+        DecodedJWT verifiedDecodedJWT;
+
+        try {
+            verifiedDecodedJWT = verifier.verify(unverifiedDecodedJWT);
+        } catch (JWTVerificationException e) {
+            String errmsg = "Failed to verify token";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        return verifiedDecodedJWT;
     }
 }

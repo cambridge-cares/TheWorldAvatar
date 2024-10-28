@@ -20,6 +20,20 @@ then restart stack manager again:
 
 where <STACK_NAME> should be replaced by either "timeline-test" or "timeline".
 
+## KeyCloak settings
+
+Based on testing, KeyCloak version 25 requires some manual set up to include the user ID in the JWT, the following steps are not required in version 26 is used.
+- Opening the Keycloak Admin Console in your browser and logging in
+- Select the realm 'timeline' from the dropdown menu
+- Go to clients tab on the left hand side. 
+- Select twa-timeline-app, then client scopes. 
+- Under client scopes select twa-timeline-app-dedicated and select add mapper. 
+  - Select by configuration
+  - Scroll to select Subject (sub)
+  - Ensure add to access token and add to introspection are toggled 
+  - Name the mapper
+  - Click save to apply the changes. 
+
 ## Import data from Singapore stack
 
 Few of the feature info agent queries relies on imported data from the Singapore stack. Run the following SQL scripts to import data, be sure to replace the IP address and password.

@@ -77,6 +77,9 @@ importers:
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
+      material-symbols:
+        specifier: ^0.25.1
+        version: 0.25.1
       moment:
         specifier: ^2.30.1
         version: 2.30.1
@@ -1344,8 +1347,8 @@ packages:
   cheap-ruler@4.0.0:
     resolution: {integrity: sha512-0BJa8f4t141BYKQyn9NSQt1PguFQXMXwZiA5shfoaBYHAb2fFk2RAX+tiWMoQU+Agtzt3mdt0JtuyshAXqZ+Vw==}
 
-  chromedriver@129.0.2:
-    resolution: {integrity: sha512-rUEFCJAmAwOdFfaDFtveT97fFeA7NOxlkgyPyN+G09Ws4qGW39aLDxMQBbS9cxQQHhTihqZZobgF5CLVYXnmGA==}
+  chromedriver@130.0.1:
+    resolution: {integrity: sha512-JH+OxDZ7gVv02r9oXwj4mQ8JCtj62g0fCD1LMUUYdB/4mPxn/E2ys+1IzXItoE7vXM9fGVc9R1akvXLqwwuSww==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -2661,6 +2664,9 @@ packages:
   markdown-it@14.1.0:
     resolution: {integrity: sha512-a54IwgWPaeBCAAsv13YgmALOF1elABB08FxO9i+r4VFk5Vl4pKokRPeX8u5TCgSsPi6ec1otfLjdOpVcgbpshg==}
     hasBin: true
+
+  material-symbols@0.25.1:
+    resolution: {integrity: sha512-0HopmXLjRs4H99LWajFWIXAt8DpaVMf9lyhKp35HQ+ocb7JJ3eXJTJNkOwccfbJ34qIuwYDwLJQtlzheMFmizw==}
 
   mdast-util-from-markdown@2.0.1:
     resolution: {integrity: sha512-aJEUyzZ6TzlsX2s5B4Of7lN7EQtAxvtradMMglCQDyaTFgse6CmtmdJ15ElnVRlCg1vpNyVtbem0PWzlNieZsA==}
@@ -5280,7 +5286,7 @@ snapshots:
 
   cheap-ruler@4.0.0: {}
 
-  chromedriver@129.0.2:
+  chromedriver@130.0.1:
     dependencies:
       '@testim/chrome-version': 1.1.4
       axios: 1.7.7
@@ -6933,7 +6939,7 @@ snapshots:
     dependencies:
       jwk-to-pem: 2.0.6
     optionalDependencies:
-      chromedriver: 129.0.2
+      chromedriver: 130.0.1
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -7040,6 +7046,8 @@ snapshots:
       mdurl: 2.0.0
       punycode.js: 2.3.1
       uc.micro: 2.1.0
+
+  material-symbols@0.25.1: {}
 
   mdast-util-from-markdown@2.0.1:
     dependencies:

@@ -1,0 +1,305 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+prefix bot: <https://w3id.org/bot#>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix ontoas: <https://www.theworldavatar.com/kg/ontoassetmanagement/>
+prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix saref: <https://saref.etsi.org/core/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  { BIND ("Reference Label" AS ?Property )
+    [IRI] rdfs:label ?Value .
+  } UNION {
+    BIND ("IRI" AS ?Property )
+    [IRI] rdfs:label/^rdfs:label ?Value .
+  } UNION {
+    BIND ("Type" AS ?Property )
+    [IRI] a ?type .
+  BIND(REPLACE(STRAFTER(STRAFTER(STR(?type), "kg/"), "/")
+               , "(?<=[a-z])(?=[A-Z])", " ")AS ?Value)
+  }  UNION {
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/lab/sparql>{
+      BIND ("Located in" AS ?Property )
+      ?building bot:hasStorey ?storey;
+        ontobim:hasIfcRepresentation/rdfs:label ?buildingname.
+      ?storey ontobim:hasRoom ?room;
+        ontobim:hasIfcRepresentation/rdfs:label ?storeyname.
+      ?room bot:containsElement [IRI];
+        ontobim:hasIfcRepresentation/rdfs:label ?roomname.
+      BIND(CONCAT(STR(?roomname), " at ", STR(?storeyname), " of the ", STR(?buildingname)) AS ?Value)
+    }
+  } UNION {
+    BIND ("Inventory ID" AS ?Property )
+    [IRI] ontoas:hasItemInventoryIdentifier ?Value .
+  } UNION {
+    BIND ("Assigned to" AS ?Property )
+    [IRI] ontoas:assignedTo/<https://www.omg.org/spec/Commons/Designators/hasName>/<https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/hasPersonName> ?Value .
+  } UNION {
+    BIND ("Vendor" AS ?Property )
+    [IRI] ontoas:isSuppliedBy ?supplier.
+    ?supplier <https://www.omg.org/spec/Commons/Designators/hasName> ?name .
+    ?name <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName> ?Value .
+  } UNION {
+    BIND ("Purchase Price" AS ?Property )
+    [IRI] ontodevice:hasPrice ?price .
+    ?price om:hasValue/om:hasNumericalValue ?numericalAmount.
+    BIND (str(?numericalAmount) as ?Value)
+    ?price om:hasValue/om:hasUnit/om:alternativeSymbol ?Unit.
+  } UNION {
+    BIND ("Service Category" AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?item ontoas:purchasedUnder ?budgetCategory .
+    ?budgetCategory ontoas:hasServiceCategory ?serviceCategory .
+    ?serviceCategory rdf:type ontoas:ServiceCategory	.
+    ?serviceCategory ontoas:hasServiceCategoryIdentifier ?Value .
+      }
+  } UNION {
+    BIND ("Service Category Description" AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?item ontoas:purchasedUnder ?budgetCategory .
+    ?budgetCategory ontoas:hasServiceCategory ?serviceCategory .
+    ?serviceCategory rdf:type ontoas:ServiceCategory	.
+    ?serviceCategory rdfs:comment ?Value .
+      }
+  } UNION {
+    BIND ("Service Code" AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?item ontoas:purchasedUnder ?budgetCategory .
+    ?budgetCategory ontoas:hasServiceCode ?serviceCode .
+    ?serviceCode rdf:type ontoas:ServiceCode .
+    ?serviceCode ontoas:hasServiceCodeIdentifier ?Value .
+      }
+  } UNION {
+    BIND ("Service Code Description" AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?item ontoas:purchasedUnder ?budgetCategory .
+    ?budgetCategory ontoas:hasServiceCode ?serviceCode .
+    ?serviceCode rdf:type ontoas:ServiceCode .
+    ?serviceCode rdfs:comment ?Value .
+      }
+  } UNION {
+    BIND ("Invoice No." AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?invoice <https://purl.org/p2p-o/invoice#hasInvoiceLine>/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?invoice <https://purl.org/p2p-o/invoice#invoiceNumber> ?Value.
+      }
+  } UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?invoice <https://purl.org/p2p-o/invoice#hasInvoiceLine>/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?invoice <https://purl.org/p2p-o/invoice#invoiceNumber> ?invoiceNumber.
+    ?invoice ontoas:hasAttachment ?attachment.
+    ?attachment ontoas:availableAt ?Value.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Invoice No. ", STR(?invoiceNumber), " Attachment (", STR(?label), ")") AS ?Property )
+      }
+  }UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?invoice <https://purl.org/p2p-o/invoice#hasInvoiceLine>/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?invoice ontoas:hasAttachment ?attachment .
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Comments for ", STR(?label)) AS ?Property )
+    ?attachment rdfs:comment ?Value.
+      }
+  } UNION {
+    BIND ("Delivery Order No." AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?deliveryOrder ontoas:hasDeliveryOrderLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?deliveryOrder ontoas:deliveryOrderNumber ?Value.
+      }
+  } UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?deliveryOrder ontoas:hasDeliveryOrderLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?deliveryOrder ontoas:deliveryOrderNumber ?deliveryOrderNumber.
+    ?deliveryOrder ontoas:hasAttachment ?attachment.
+    ?attachment ontoas:availableAt ?Value.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Delivery Order No. ", STR(?deliveryOrderNumber), " Attachment (", STR(?label), ")") AS ?Property )
+      }
+  }UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?deliveryOrder ontoas:hasDeliveryOrderLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?deliveryOrder ontoas:hasAttachment ?attachment.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Comments for ", STR(?label)) AS ?Property )
+    ?attachment rdfs:comment ?Value.
+      }
+  } UNION {
+    BIND ("Purchase Order No." AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?purchaseOrder ontoas:hasPurchaseOrderLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?purchaseOrder ontoas:purchaseOrderNumber ?Value.
+      }
+  } UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?purchaseOrder ontoas:hasPurchaseOrderLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?purchaseOrder ontoas:purchaseOrderNumber ?purchaseOrderNumber.
+    ?purchaseOrder ontoas:hasAttachment ?attachment.
+    ?attachment ontoas:availableAt ?Value.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Purchase Order No. ", STR(?purchaseOrderNumber), " Attachment (", STR(?label), ")") AS ?Property )
+      }
+  }UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?purchaseOrder ontoas:hasPurchaseOrderLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?purchaseOrder ontoas:hasAttachment ?attachment.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Comments for ", STR(?label)) AS ?Property )
+    ?attachment rdfs:comment ?Value.
+      }
+  } UNION {
+    BIND ("Purchase Requisition No." AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?purchaseRequisition ontoas:hasPurchaseRequisitionLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?purchaseRequisition ontoas:purchaseRequisitionNumber ?Value.
+      }
+  } UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?purchaseRequisition ontoas:hasPurchaseRequisitionLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?purchaseRequisition ontoas:purchaseRequisitionNumber ?purchaseRequisitionNumber.
+    ?purchaseRequisition ontoas:hasAttachment ?attachment.
+    ?attachment ontoas:availableAt ?Value.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Purchase Requisition No. ", STR(?purchaseRequisitionNumber), " Attachment (", STR(?label), ")") AS ?Property )
+      }
+  }UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?purchaseRequisition ontoas:hasPurchaseRequisitionLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?purchaseRequisition ontoas:hasAttachment ?attachment.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Comments for ", STR(?label)) AS ?Property )
+    ?attachment rdfs:comment ?Value.
+      }
+  } UNION {
+    BIND ("Quotation No." AS ?Property )
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?quotation ontoas:hasQuotationLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?quotation ontoas:quotationNumber ?Value.
+      }
+  } UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?quotation ontoas:hasQuotationLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?quotation ontoas:quotationNumber ?quotationNumber.
+    ?quotation ontoas:hasAttachment ?attachment.
+    ?attachment ontoas:availableAt ?Value.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Quotation No. ", STR(?quotationNumber), " Attachment (", STR(?label), ")") AS ?Property )
+      }
+  }UNION {
+    ?item ontoas:references [IRI] .
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresFinance/sparql>{
+    ?quotation ontoas:hasQuotationLine/<https://purl.org/p2p-o/documentline#hasItem> ?item .
+    ?quotation ontoas:hasAttachment ?attachment.
+    ?attachment rdfs:label ?label.
+    BIND (CONCAT("Comments for ", STR(?label)) AS ?Property )
+    ?attachment rdfs:comment ?Value.
+      }
+  } UNION {
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/caresOffice/sparql>{
+    BIND ("Seat Location" AS ?Property )
+    [IRI] ontoas:isLocatedAt/ontoas:hasWorkspaceIdentifier ?Value.
+    }
+  } UNION {
+    BIND ("Serial No." AS ?Property )
+    [IRI] ontoas:serialNumber ?Value .
+  } UNION {
+    BIND ("Stored in" AS ?Property )
+    [IRI] ontoas:isStoredIn ?Value .
+  } UNION {
+    BIND ("Model No." AS ?Property )
+    [IRI] saref:hasModel ?Value .
+  } UNION {
+    BIND ("Manufacturer" AS ?Property )
+    [IRI] ontoas:isManufacturedBy ?manufacturer .
+    ?manufacturer <https://www.omg.org/spec/Commons/Designators/hasName> ?name .
+    ?name <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName> ?Value .
+  } UNION {
+    BIND ("Spec Sheet" AS ?Property )
+    [IRI] ontoas:hasDataSheet ?dataSheet .
+    ?dataSheet rdf:type ontoas:SpecSheet .
+    ?dataSheet ontoas:availableAt ?Value .
+  } UNION {
+    BIND ("Spec Sheet Comments" AS ?Property )
+    [IRI] ontoas:hasDataSheet ?dataSheet .
+    ?dataSheet rdf:type ontoas:SpecSheet .
+    ?dataSheet rdfs:comment ?Value .
+  } UNION {
+    BIND ("Manual" AS ?Property )
+    [IRI] ontoas:hasDataSheet ?dataSheet .
+    ?dataSheet rdf:type ontoas:Manual .
+    ?dataSheet ontoas:availableAt ?Value .
+  }  UNION {
+    BIND ("Manual Comments" AS ?Property )
+    [IRI] ontoas:hasDataSheet ?dataSheet .
+    ?dataSheet rdf:type ontoas:Manual .
+    ?dataSheet rdfs:comment ?Value .
+  }  UNION {
+    BIND ("Manufacture URL" AS ?Property )
+    [IRI] rdfs:seeAlso ?Value .
+} UNION {
+    BIND ("Maintenance performed at" AS ?Property )
+    [IRI] ontoas:hasMaintenanceSchedule/ontoas:hasTask/ontoas:performedAt/<http://www.w3.org/2006/time#inDateTime> ?a .
+    OPTIONAL {
+    ?a <http://www.w3.org/2006/time#year> ?year .
+    ?a <http://www.w3.org/2006/time#month> ?month .
+      BIND (CONCAT(STR(?month), " " , STR(?year)) AS ?Value)
+      }
+    OPTIONAL {
+    ?a <http://www.w3.org/2006/time#year> ?year .
+    ?a <http://www.w3.org/2006/time#month> ?month .
+    ?a <http://www.w3.org/2006/time#day> ?day .
+      BIND (CONCAT(STR(?day), " " , STR(?month), " " , STR(?year)) AS ?Value)
+      }
+      } UNION {
+    BIND ("Maintenance scheduled for" AS ?Property )
+    [IRI] ontoas:hasMaintenanceSchedule/ontoas:hasTask/ontoas:scheduledFor/<http://www.w3.org/2006/time#inDateTime> ?a .
+    OPTIONAL {
+    ?a <http://www.w3.org/2006/time#year> ?year .
+    ?a <http://www.w3.org/2006/time#month> ?month .
+      BIND (CONCAT(STR(?month), " " , STR(?year)) AS ?Value)
+      }
+    OPTIONAL {
+    ?a <http://www.w3.org/2006/time#year> ?year .
+    ?a <http://www.w3.org/2006/time#month> ?month .
+    ?a <http://www.w3.org/2006/time#day> ?day .
+      BIND (CONCAT(STR(?day), " " , STR(?month), " " , STR(?year)) AS ?Value)
+      }
+    }  UNION {
+    BIND ("Maintained by" AS ?Property )
+    [IRI] ontoas:hasMaintenanceSchedule/ontoas:hasTask/ontoas:isPerformedBy ?org .
+    ?org <https://www.omg.org/spec/Commons/Designators/hasName> ?name .
+    ?name <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName> ?Value .
+  }  UNION {
+    BIND ("Maintenance Interval" AS ?Property )
+    [IRI] ontoas:hasMaintenanceSchedule/ontoas:hasTask/ontoas:hasInterval/<http://www.w3.org/2006/time#hasDurationDescription> ?Duration .
+    OPTIONAL {
+    ?Duration <http://www.w3.org/2006/time#years> ?years .
+      BIND (CONCAT(STR(?years), " year(s)") AS ?Value)
+      }
+    OPTIONAL {
+    ?Duration <http://www.w3.org/2006/time#months> ?months .
+      BIND (CONCAT(STR(?months), " month(s)") AS ?Value)
+      }
+
+  }
+}
