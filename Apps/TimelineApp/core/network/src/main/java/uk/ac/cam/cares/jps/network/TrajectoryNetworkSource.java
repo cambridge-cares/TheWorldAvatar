@@ -1,10 +1,15 @@
 package uk.ac.cam.cares.jps.network;
 
+import android.Manifest;
 import android.content.Context;
-import android.util.Base64;
+import android.content.pm.PackageManager;
+import android.location.Location;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -14,11 +19,15 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.HttpUrl;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
  * Network source for constructing, sending and processing trajectory related requests to server
@@ -28,6 +37,7 @@ public class TrajectoryNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(TrajectoryNetworkSource.class);
     private final RequestQueue requestQueue;
     private final Context context;
+    private FusedLocationProviderClient fusedLocationClient;
 
     /**
      * Constructor of the class. The instantiation is handled by dependency injection.
@@ -37,30 +47,55 @@ public class TrajectoryNetworkSource {
     public TrajectoryNetworkSource(RequestQueue requestQueue, Context context) {
         this.requestQueue = requestQueue;
         this.context = context;
+        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
     /**
      * Get trajectory from server. It consists two steps:
      * 1. create geoserver layers and Postgres SQL functions with TrajectoryQueryAgent
      * 2. get geojson from geoserver for visualisation with iris
-     * @param userId User id for the logged in user.
-     * @param date Chosen date for visualisation
+     *
      * @param onSuccessUpper Success callback
      * @param onFailureUpper Failure callback
+     * @param lowerbound Unix timestamp for the lower bound of the date range
+     * @param upperbound Unix timestamp for the upper bound of the date range
      */
-    public void getTrajectory(String userId, String date, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getTrajectory(String accessToken, long lowerbound, long upperbound, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String createLayerUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
-                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_createlayer))
-                .addQueryParameter("userID", userId)
+                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_createLayer))
                 .build().toString();
         LOGGER.info(createLayerUri);
 
-        StringRequest createLayerRequest = buildCreateLayerRequest(onSuccessUpper, onFailureUpper, createLayerUri, date);
-        requestQueue.add(createLayerRequest);
+        // Get the user's current location and then build the request
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    // Calculate the bounding box based on the user's location
+                    double lat = location.getLatitude();
+                    double lon = location.getLongitude();
+                    double buffer = 0.01;  // 1.11 km buffer
+                    double minLat = lat - buffer;
+                    double maxLat = lat + buffer;
+                    double minLon = lon - buffer;
+                    double maxLon = lon + buffer;
+
+                    StringRequest createLayerRequest = buildCreateLayerRequest(accessToken, onSuccessUpper, onFailureUpper, createLayerUri, lowerbound, upperbound, minLat, maxLat, minLon, maxLon);
+                    requestQueue.add(createLayerRequest);
+                } else {
+                    // Handle error when location is not available
+                    LOGGER.error("Failed to get location");
+                    onFailureUpper.onErrorResponse(new VolleyError("Failed to retrieve user location"));
+                }
+            }
+        });
     }
 
     @NonNull
-    private StringRequest buildCreateLayerRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, String createLayerUri, String date) {
+    private StringRequest buildCreateLayerRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, String createLayerUri, long lowerbound, long upperbound, double minLat, double maxLat, double minLon, double maxLon) {
         Response.Listener<String> onCreateLayerSuccess = s -> {
             try {
                 // Log the full server response
@@ -73,7 +108,7 @@ public class TrajectoryNetworkSource {
                 }
                 JSONObject rawResponse = new JSONObject(s);
 
-                StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(onSuccessUpper, onFailureUpper, rawResponse, date);
+                StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(accessToken,onSuccessUpper, onFailureUpper, rawResponse, lowerbound, upperbound, minLat, maxLat, minLon, maxLon);
                 if (getTrajectoryRequest != null) {
                     requestQueue.add(getTrajectoryRequest);
                 }
@@ -82,11 +117,18 @@ public class TrajectoryNetworkSource {
             }
         };
 
-        return new StringRequest(createLayerUri, onCreateLayerSuccess, onFailureUpper);
+        return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
     }
 
 
-    private StringRequest buildGetTrajectoryRequest(Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, String date) throws JSONException {
+    private StringRequest buildGetTrajectoryRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, long lowerbound, long upperbound, double minLat, double maxLat, double minLon, double maxLon) throws JSONException {
         if (!rawResponse.has("message")) {
             throw new RuntimeException("Not able to handle the agent response. Please check the backend");
         }
@@ -102,23 +144,16 @@ public class TrajectoryNetworkSource {
             throw new RuntimeException("Not able to handle the agent response. Please check the backend");
         }
 
-        String speedIRI = rawResponse.getString("speedIRI").replace(",", "\\,");
-        String bearingIRI = rawResponse.getString("bearingIRI").replace(",", "\\,");
-        String altitudeIRI = rawResponse.getString("altitudeIRI").replace(",", "\\,");
-        String pointIRI = rawResponse.getString("pointIRI").replace(",", "\\,");
 
-        LOGGER.error("Print out speediri: " + speedIRI);
 
         String getTrajectoryUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
-                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_twa_ows))
+                .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
                 .addQueryParameter("service", "WFS")
                 .addQueryParameter("version", "1.0.0")
                 .addQueryParameter("request", "GetFeature")
-                .addQueryParameter("typeName", "twa:trajectoryLine")
+                .addQueryParameter("typeName", "twa:trajectoryUserId")
                 .addQueryParameter("outputFormat", "application/json")
-                .addQueryParameter("viewparams", String.format(Locale.ENGLISH,
-                        "pointiri:%s;speediri:%s;altitudeiri:%s;bearingiri:%s;date:%s;",
-                        pointIRI, speedIRI, altitudeIRI, bearingIRI, date))
+                .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
                 .build().toString();
 
         LOGGER.error("Print out uri: " + getTrajectoryUri);
@@ -147,7 +182,17 @@ public class TrajectoryNetworkSource {
                 throw new RuntimeException(e);
             }
         };
-        StringRequest getTrajectoryRequest = new StringRequest(getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper);
-        return getTrajectoryRequest;
+
+        StringRequest srq = new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + accessToken);
+                LOGGER.info(accessToken);
+                return headers;
+            }
+        };
+        LOGGER.info(srq);
+        return srq;
     }
 }
