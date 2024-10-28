@@ -292,6 +292,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
     @Override
     public void addTimeSeriesData(List<TimeSeries<T>> tsList, Connection conn) {
 
+        // Check if central database lookup table exists
+        if (!checkCentralTableExists(conn)) {
+            throw new JPSRuntimeException(
+                    exceptionPrefix + "Central RDB lookup table has not been initialised yet");
+        }
+
         // Initialise connection and set jOOQ DSL context
         DSLContext context = DSL.using(conn, DIALECT);
 
@@ -302,12 +308,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
             // All database interactions in try-block to ensure closure of connection
             try {
-
-                // Check if central database lookup table exists
-                if (!checkCentralTableExists(conn)) {
-                    throw new JPSRuntimeException(
-                            exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-                }
 
                 // Ensure that all provided dataIRIs/columns are located in the same RDB table
                 // (throws Exception if not)
