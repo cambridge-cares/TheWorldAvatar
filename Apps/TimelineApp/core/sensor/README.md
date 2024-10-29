@@ -3,7 +3,7 @@ The module responsible for all sensor recording logics, including:
 - Start/stop sensors
 - Get data from sensors
 - Send collected data in batches to server
-- Store collected data locally as backup copy (work in progress)
+- Store collected data locally as backup copy
 - Record the current state of sensor recording
 - Run the sensor recording, sending and storing logic as foreground service
 
@@ -23,7 +23,8 @@ Refer to the following diagram for the dependencies between classes
       sns: SensorNetworkSource
       ss: SensorService
       sm: SensorManager
-      h: Handlers
+      bfw: BufferFlushWorker
+      suw: SensorUploadWorker
       ncr: NetworkChangeReceiver 
 
       ssf --> svm
@@ -38,7 +39,8 @@ Refer to the following diagram for the dependencies between classes
       ss --> sns
       ss --> sls
       ss --> sm
-      sm --> h
+      sm --> suw
+      sm --> bfw
       
       sns --> sls : network down 
       sls --> ncr : network up - local data is retrieved via onReceive 
@@ -72,7 +74,8 @@ Refer to the following diagram for the dependencies between classes
       state :core:sensor {
         ss
         sm
-        h
+        bfw
+        suw
       }
 ```
 
@@ -87,7 +90,10 @@ Refer to the following diagram for the dependencies between classes
 - SensorNetworkSource: A network source that is responsible for sending the collected data to the remote server
 - SensorService: A foreground service that keeps the data collection, sending and storing running. It triggers the sending and storing of data.
 - SensorManager: A class that manages all the sensor handlers
-- Handlers: Handler class manages the corresponding physical sensor and collect data from the physical sensor.
+- BufferFlushWorker: Handles periodic flushing of data from memory to local storage.
+- SensorUploadWorker: Handles periodic data uploads to the server.
+- NetworkChangeReceiver: Monitors network connectivity and handles unsent data when the network is restored.
+
 
 ## Unsent Data Functionality
 Overview:
@@ -127,6 +133,8 @@ NetworkChangeReceiver before being uploaded.
 String deviceId --> id associated with the device the app is operating on.
 
 long timestamp --> time of when the unsent data is processed in sendPostRequest in SensorNetworkSource
+
+String dataHash --> unique hash code to identify the batch of unsent data
 
 Implementation Details:
 1. Insert Unsent Data

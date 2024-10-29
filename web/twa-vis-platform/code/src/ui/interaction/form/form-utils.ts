@@ -14,6 +14,8 @@ export const FORM_STATES: Record<string, string> = {
   FRI: "friday",
   SAT: "saturday",
   SUN: "sunday",
+  START_DATE: "start date",
+  END_DATE: "end date",
   TIME_SLOT_START: "time slot start",
   TIME_SLOT_END: "time slot end",
 };
@@ -58,6 +60,9 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
     // Recurrence property should have a value of 1 for the add form type, else, use the default value
     if (formType == Paths.REGISTRY_ADD || formType == Paths.SEARCH) {
       return 1;
+    }
+    if (defaultValue === "P1D") {
+      return 0;
     }
     // Retrieve and parse the recurrent digit based on default value
     const match: RegExpMatchArray = /P(\d+)D/.exec(defaultValue);

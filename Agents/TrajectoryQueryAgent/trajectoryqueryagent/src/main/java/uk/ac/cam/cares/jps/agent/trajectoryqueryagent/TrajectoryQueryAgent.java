@@ -3,122 +3,75 @@ package uk.ac.cam.cares.jps.agent.trajectoryqueryagent;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jooq.DatePart;
-import org.jooq.Field;
-import org.jooq.Query;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
+
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Iterator;
 
-import static org.jooq.impl.DSL.*;
-import static org.jooq.impl.SQLDataType.TIMESTAMP;
+import org.apache.commons.io.IOUtils;
 
-@WebServlet(urlPatterns = {"/createlayer", "/getDatesWithData"})
+import com.auth0.jwk.InvalidPublicKeyException;
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
+import java.security.interfaces.RSAPublicKey;
+
+@WebServlet(urlPatterns = { TrajectoryQueryAgent.CREATE_LAYER_ROUTE, "/getDatesWithData" })
 public class TrajectoryQueryAgent extends JPSAgent {
-    private KGQueryClient kgQueryClient;
-    private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
-    private final String USER_ID = "userID";
-    private final String TIMEZONE = "timezone";
+    private static final String TIMEZONE = "timezone";
     private static final Logger LOGGER = LogManager.getLogger(TrajectoryQueryAgent.class);
-    private String userAgentUrl;
+    public static final String CREATE_LAYER_ROUTE = "/createLayer";
+    public static final String GET_DATES_ROUTE = "/getDatesWithData";
 
-
+    @Override
     public void init() {
         EndpointConfig endpointConfig = new EndpointConfig();
-        storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        kgQueryClient = new KGQueryClient(storeClient);
-        remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        userAgentUrl = endpointConfig.getUserAgentUrl();
+        remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
+                endpointConfig.getDbpassword());
     }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        String url = request.getRequestURI();
-        if (!validateInput(requestParams, url)) {
-            throw new JPSRuntimeException("Unable to validate request sent to the agent.");
-        }
+        if (request.getServletPath().contentEquals(GET_DATES_ROUTE)) {
+            if (!requestParams.has(TIMEZONE)) {
+                String errmsg = "timezone parameter is missing";
+                LOGGER.error(errmsg);
+                throw new JPSRuntimeException(errmsg);
+            }
 
-        if (url.contains("getDatesWithData")) {
-            return getDatesWithData(requestParams);
-        } else if (url.contains("createlayer")) {
-            return createLayer(requestParams);
+            String timezone = requestParams.getString(TIMEZONE);
+            String userId = getUserId(request);
+
+            return getDatesWithData(timezone, userId);
+        } else if (request.getServletPath().contentEquals(CREATE_LAYER_ROUTE)) {
+            return createLayer();
         }
 
         JSONObject response = new JSONObject();
         response.put("message", "Path invalid, no operation performed");
         return response;
-    }
-
-    public Map<String, List<String>> getMeasurementIris (JSONObject requestParams) {
-        //Retrieve params (Although currently receiver deviceID)
-        String userID = requestParams.getString(USER_ID);
-
-        //Retrieve phoneId from User Agent with userId
-        String getPhoneIds = userAgentUrl + "getPhoneIds";
-        JSONObject phoneIdResponse = new JSONObject(AgentCaller.executeGet(getPhoneIds, "userId", userID));
-        JSONArray phoneIds = phoneIdResponse.getJSONArray("PhoneIds");
-        if (phoneIds.isEmpty()) {
-            throw new JPSRuntimeException("No phone id on this user.");
-        }
-
-        List<String> pointIRIs = new ArrayList<>();
-        List<String> altitudeIRIs = new ArrayList<>();
-        List<String> speedIRIs = new ArrayList<>();
-        List<String> bearingIRIs = new ArrayList<>();
-
-        for (int i = 0; i < phoneIdResponse.getJSONArray("PhoneIds").length(); i ++) {
-            String phoneIri = phoneIdResponse.getJSONArray("PhoneIds").getString(i);
-
-            //SPARQL query for pointIRI based on userID - Note currently userID is deviceID, needs to be changed
-            Node smartphoneIRI = NodeFactory.createURI(phoneIri);
-            String pointIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getPointIRIArray(smartphoneIRI));
-            String altitudeIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getAltitudeIRIArray(smartphoneIRI));
-            String speedIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getSpeedIRIArray(smartphoneIRI));
-            String bearingIRI = kgQueryClient.getIRIfromJSONarray(kgQueryClient.getBearingIRIArray(smartphoneIRI));
-
-            if (pointIRI == null || altitudeIRI == null || speedIRI == null || bearingIRI == null) {
-                continue;
-            }
-
-            pointIRIs.add(pointIRI);
-            altitudeIRIs.add(altitudeIRI);
-            speedIRIs.add(speedIRI);
-            bearingIRIs.add(bearingIRI);
-        }
-
-        if (pointIRIs.isEmpty() || altitudeIRIs.isEmpty() || speedIRIs.isEmpty() || bearingIRIs.isEmpty()) {
-            throw new JPSRuntimeException("Measurement IRI is missing");
-        }
-
-        Map<String, List<String>> iris = new HashMap<>();
-        iris.put("pointIRIs", pointIRIs);
-        iris.put("altitudeIRIs", altitudeIRIs);
-        iris.put("speedIRIs", speedIRIs);
-        iris.put("bearingIRIs", bearingIRIs);
-        return iris;
     }
 
     /**
@@ -130,202 +83,136 @@ public class TrajectoryQueryAgent extends JPSAgent {
      * @param requestParams
      * @return
      */
-    public JSONObject createLayer(JSONObject requestParams) {
-        try {
-            Map<String, List<String>> iriMap = getMeasurementIris(requestParams);
-            List<String> pointIRIs = iriMap.get("pointIRIs");
-            List<String> altitudeIRIs = iriMap.get("altitudeIRIs");
-            List<String> speedIRIs = iriMap.get("speedIRIs");
-            List<String> bearingIRIs = iriMap.get("bearingIRIs");
+    public JSONObject createLayer() {
+        createGeoserver();
 
-            //Create Geoserver layer
-            createGeoserver(pointIRIs.get(0), altitudeIRIs.get(0), speedIRIs.get(0), bearingIRIs.get(0));
+        JSONObject response = new JSONObject();
+        response.put("message", "Layer created");
 
-            //Return pointIRI, altitudeIRI, speedIRI, bearingIRI to app as response
-            JSONObject response = new JSONObject();
-            response.put("message", "Layer created");
-            response.put("pointIRI", String.join(",", pointIRIs));
-            response.put("altitudeIRI", String.join(",", altitudeIRIs));
-            response.put("speedIRI", String.join(",", speedIRIs));
-            response.put("bearingIRI", String.join(",", bearingIRIs));
-            return response;
-        } catch (JPSRuntimeException e) {
-            if (e.getMessage().contains("No phone id on this user.")) {
-                JSONObject response = new JSONObject();
-                response.put("message", "No phone id on this user.");
-                return response;
-            } else if (e.getMessage().contains("Measurement IRI is missing")) {
-                JSONObject response = new JSONObject();
-                response.put("message", "Measurement IRI is missing");
-                return response;
-            } else {
-                throw new JPSRuntimeException("error occur");
+        return response;
+    }
+
+    public JSONObject getDatesWithData(String timezone, String userId) {
+        String sqlTemplate = null;
+        try (InputStream is = new ClassPathResource("get_dates_with_data.sql").getInputStream()) {
+            sqlTemplate = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read get_dates_with_data.sql");
+            LOGGER.error(e.getMessage());
+        }
+
+        JSONObject response = new JSONObject();
+        if (sqlTemplate != null) {
+            String sql = String.format(sqlTemplate, timezone, userId);
+            JSONArray result = remoteRDBStoreClient.executeQuery(sql);
+            response.put("message", "Succeed");
+            response.put("result", result);
+        } else {
+            response.put("message", "Faile");
+        }
+
+        return response;
+    }
+
+    /**
+     * initialise custom functions
+     */
+    private void createPostgresFunctions() {
+        String sql = null;
+        try (InputStream is = new ClassPathResource("functions.sql").getInputStream()) {
+            sql = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read functions.sql");
+            LOGGER.error(e.getMessage());
+        }
+
+        if (sql != null) {
+            try (Connection connection = remoteRDBStoreClient.getConnection()) {
+                executeSql(connection, sql);
+            } catch (SQLException e) {
+                LOGGER.error("Error executing functions.sql");
+                throw new JPSRuntimeException(e);
             }
         }
     }
 
-    public JSONObject getDatesWithData(JSONObject requestParams) {
+    private void createGeoserver() {
         createPostgresFunctions();
 
-        Map<String, List<String>> iriMap = getMeasurementIris(requestParams);
-        String pointIRIs = String.join(",", iriMap.get("pointIRIs"));
-        String altitudeIRIs = String.join(",", iriMap.get("altitudeIRIs"));
-        String speedIRIs = String.join(",", iriMap.get("speedIRIs"));
-        String bearingIRIs = String.join(",", iriMap.get("bearingIRIs"));
-
-        Field<Timestamp> f = function("public.getLocationTable",
-                TIMESTAMP,
-                inline(pointIRIs),
-                inline(speedIRIs),
-                inline(altitudeIRIs),
-                inline(bearingIRIs));
-
-        Field<Timestamp> time = field(name("time"), TIMESTAMP);
-
-        String timezone = requestParams.getString(TIMEZONE);
-        Field<Timestamp> shiftedTime = DSL.field("{0} AT TIME ZONE '+00' AT TIME ZONE {1}", TIMESTAMP, time, inline(timezone));
-
-        Field<Integer> year = extract(shiftedTime, DatePart.YEAR).as("year");
-        Field<Integer> month = extract(shiftedTime, DatePart.MONTH).as("month");
-        Field<Integer> day = extract(shiftedTime, DatePart.DAY);
-
-        Field<Integer[]> days = arrayAggDistinct(day).orderBy(day).as("days");
-
-        Query query = using(SQLDialect.POSTGRES).select(year, month, days)
-                .from(table(f.toString()))
-                .groupBy(year, month)
-                .orderBy(year, month);
-
-        JSONArray result = remoteRDBStoreClient.executeQuery(query.getSQL());
-
-        JSONObject response = new JSONObject();
-        response.put("message", "Succeed");
-        response.put("result", result);
-        return response;
-    }
-
-    private void createPostgresFunctions() {
-        //Function retrieves column_name from dbTable given IRI
-        String getColumnNameFunction = "CREATE OR REPLACE FUNCTION getColumnName(iri VARCHAR)\n" +
-                "RETURNS VARCHAR AS\n" +
-                "$$\n" +
-                "DECLARE\n" +
-                "    column_name VARCHAR;\n" +
-                "BEGIN\n" +
-                "    SELECT \"columnName\" INTO column_name FROM \"dbTable\" WHERE \"dataIRI\" = iri;\n" +
-                "    RETURN column_name;\n" +
-                "END;\n" +
-                "$$\n" +
-                "LANGUAGE plpgsql;";
-
-        //Function retrieves table_name from dbTable given IRI
-        String getTableNameFunction = "CREATE OR REPLACE FUNCTION getTableName(iri VARCHAR)\n" +
-                "RETURNS VARCHAR AS\n" +
-                "$$\n" +
-                "DECLARE\n" +
-                "    table_name VARCHAR;\n" +
-                "BEGIN\n" +
-                "    SELECT \"tableName\" INTO table_name FROM \"dbTable\" WHERE \"dataIRI\" = iri;\n" +
-                "    RETURN table_name;\n" +
-                "END;\n" +
-                "$$\n" +
-                "LANGUAGE plpgsql;";
-
-        //Function retrieves the combined locationTable given pointiris, speediris, altitudeiris, bearingiris. Each iris is a string of iri separated by ','
-        //example of pointiris: 'https://www.theworldavatar.com/kg/sensorloggerapp/point_1,https://www.theworldavatar.com/kg/sensorloggerapp/point_2'
-        String getLocationTableFunction = "CREATE OR REPLACE FUNCTION getLocationTable(pointiri TEXT, speediri TEXT, altitudeiri TEXT, bearingiri TEXT)\n" +
-                "RETURNS TABLE (\"time\" timestamptz, \"geom\" geometry, \"speed\" double precision, \"altitude\" double precision, \"bearing\" double precision) AS $$\n" +
-                "DECLARE\n" +
-                "pointIriArray TEXT[];\n" +
-                "altitudeIriArray TEXT[];\n" +
-                "speedIriArray TEXT[];\n" +
-                "bearingIriArray TEXT[];\n" +
-                "query TEXT := '';\n" +
-                "BEGIN\n" +
-                "pointIriArray := string_to_array(pointiri, ',');\n" +
-                "altitudeIriArray := string_to_array(altitudeiri, ',');\n" +
-                "speedIriArray := string_to_array(speediri, ',');\n" +
-                "bearingIriArray := string_to_array(bearingiri, ',');\n" +
-                "\n" +
-                "FOR i IN 1..array_length(pointIriArray, 1) LOOP\n" +
-                "    IF i > 1 THEN\n" +
-                "            query := query || ' UNION ALL ';\n" +
-                "    END IF;\n" +
-                "    query := query || format('SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing FROM %I', getColumnName(pointIriArray[i]), getColumnName(speedirIArray[i]), getColumnName(altitudeIriArray[i]), getColumnName(bearingIriArray[i]), getTableName(pointIriArray[i]));\n" +
-                "END LOOP;\n" +
-                "RETURN QUERY EXECUTE query;\n" +
-                "END $$ LANGUAGE plpgsql;";
-
-        try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            executeSql(connection, getColumnNameFunction);
-            executeSql(connection, getTableNameFunction);
-            executeSql(connection, getLocationTableFunction);
-            System.out.println("Created get_geometry_table function.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
+        String lineLayerDeviceId = null;
+        try (InputStream is = new ClassPathResource("line_layer_device_id.sql").getInputStream()) {
+            lineLayerDeviceId = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read line_layer_device_id.sql");
+            LOGGER.error(e.getMessage());
         }
-    }
 
-    private void createGeoserver(String pointIRI, String altitudeIRI, String speedIRI, String bearingIRI) {
-        createPostgresFunctions();
-
-        //Create geoserver point layer
-        GeoServerClient geoServerClient = GeoServerClient.getInstance();
         String workspaceName = "twa";
         String schema = "public";
         String dbName = "postgres";
-        geoServerClient.createWorkspace(workspaceName);
-        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-        virtualTable.setSql("SELECT timeseries.time AS time,\n" +
-                "timeseries.speed AS speed,\n" +
-                "timeseries.altitude AS altitude,\n" +
-                "timeseries.geom AS geom,\n" +
-                "timeseries.bearing AS bearing\n" +
-                "FROM public.getLocationTable('%pointiri%','%speediri%','%altitudeiri%','%bearingiri%') as timeseries\n" +
-                "WHERE\n" +
-                "time > '%date%'::TIMESTAMPTZ AND time < '%date%'::TIMESTAMPTZ + INTERVAL '23 hours 59 minutes 59 seconds 999 milliseconds'\n");
-        virtualTable.setEscapeSql(true);
-        virtualTable.setName("trajectoryPointVirtualTable");
-        virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-        virtualTable.addVirtualTableParameter("pointiri", pointIRI, ".*");
-        virtualTable.addVirtualTableParameter("speediri", speedIRI, ".*");
-        virtualTable.addVirtualTableParameter("altitudeiri", altitudeIRI, ".*");
-        virtualTable.addVirtualTableParameter("bearingiri", bearingIRI, ".*");
-        virtualTable.addVirtualTableParameter("date", "0001-01-01 00:00:00.000+00", "^\\d{4,}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{2,}\\+\\d{2}$");
-        geoServerVectorSettings.setVirtualTable(virtualTable);
-        geoServerClient.createPostGISDataStore(workspaceName, "trajectoryPoint", dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryPoint", geoServerVectorSettings);
 
-        //Create line layer
-        UpdatedGSVirtualTableEncoder virtualTableLine = new UpdatedGSVirtualTableEncoder();
-        GeoServerVectorSettings geoServerVectorLineSettings = new GeoServerVectorSettings();
-        virtualTableLine.setSql(
-                "SELECT\n" +
-                "    ST_MakeLine(geom) AS geom\n" +
-                "    FROM\n" +
-                "        public.getLocationTable('%pointiri%','%speediri%','%altitudeiri%','%bearingiri%')\n" +
-                "    WHERE\n" +
-                "        time > '%date%'::TIMESTAMPTZ AND time < '%date%'::TIMESTAMPTZ + INTERVAL '23 hours 59 minutes 59 seconds 999 milliseconds'\n");
-        virtualTableLine.setEscapeSql(true);
-        virtualTableLine.setName("trajectoryLineVirtualTable");
-        virtualTableLine.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-        virtualTableLine.addVirtualTableParameter("pointiri", pointIRI, ".*");
-        virtualTableLine.addVirtualTableParameter("speediri", speedIRI, ".*");
-        virtualTableLine.addVirtualTableParameter("altitudeiri", altitudeIRI, ".*");
-        virtualTableLine.addVirtualTableParameter("bearingiri", bearingIRI, ".*");
-        virtualTableLine.addVirtualTableParameter("date", "0001-01-01 00:00:00.000+00", "^\\d{4,}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{2,}\\+\\d{2}$");
-        geoServerVectorLineSettings.setVirtualTable(virtualTableLine);
-        geoServerClient.createPostGISDataStore(workspaceName, "trajectoryLine", dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryLine", geoServerVectorLineSettings);
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
+        if (lineLayerDeviceId != null) {
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(lineLayerDeviceId);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("line_layer_device_id_table");
+            virtualTable.addVirtualTableParameter("device_id", "", ".*");
+            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryDeviceId", geoServerVectorSettings);
+        }
 
-        //Sample point request - specify pointIRI, speedIRI, altitudeIRI, bearingIRI
-        //http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3AtrajectoryPoint&outputFormat=application%2Fjson&viewparams=pointiri:https://www.theworldavatar.com/kg/sensorloggerapp/point_3bfa75a3-5b2c-45d3-b05a-63879a2e7b94;speediri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_speed_b9f3ee65-7269-4aef-a738-fd7bf9485143;altitudeiri=https://www.theworldavatar.com/kg/sensorloggerapp/measure_altitude_86b4c979-4d94-42ff-8844-a64ee1cb1229;bearingiri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_4733199d-46de-429e-ac1d-c94fca537e7a;
+        String lineLayerUserId = null;
+        try (InputStream is = new ClassPathResource("line_layer_user_id.sql").getInputStream()) {
+            lineLayerUserId = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read line_layer_user_id.sql");
+            LOGGER.error(e.getMessage());
+        }
 
-        //Sample line request - specify pointIRI, speedIRI, altitudeIRI, bearingIRI
-        //http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3AtrajectoryLine&outputFormat=application%2Fjson&viewparams=pointiri:https://www.theworldavatar.com/kg/sensorloggerapp/point_3bfa75a3-5b2c-45d3-b05a-63879a2e7b94;speediri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_speed_b9f3ee65-7269-4aef-a738-fd7bf9485143;altitudeiri=https://www.theworldavatar.com/kg/sensorloggerapp/measure_altitude_86b4c979-4d94-42ff-8844-a64ee1cb1229;bearingiri:https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_4733199d-46de-429e-ac1d-c94fca537e7a;
+        if (lineLayerUserId != null) {
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(lineLayerUserId);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("line_layer_device_id_table");
+            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326");
+            virtualTable.addVirtualTableParameter("user_id", "", ".*");
+            virtualTable.addVirtualTableParameter("upperbound", "0", "^(0|[1-9][0-9]*)$");
+            virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "trajectoryUserId", geoServerVectorSettings);
+        }
+
+        String bufferedLineDeviceId = null;
+        try (InputStream is = new ClassPathResource("buffered_line_layer_device_id.sql").getInputStream()) {
+            bufferedLineDeviceId = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error("Failed to read buffered_line_layer_device_id.sql");
+            LOGGER.error(e.getMessage());
+        }
+
+        if (bufferedLineDeviceId != null) {
+            geoServerClient.createWorkspace(workspaceName);
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+            virtualTable.setSql(bufferedLineDeviceId);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("buffered_line_device_id_table");
+            virtualTable.addVirtualTableParameter("device_id", "", ".*");
+            virtualTable.addVirtualTableParameter("upperbound", "0", "^(0|[1-9][0-9]*)$");
+            virtualTable.addVirtualTableParameter("lowerbound", "0", "^(0|[1-9][0-9]*)$");
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+            geoServerClient.createPostGISDataStore(workspaceName, "trajectory", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "bufferedLineDeviceId", geoServerVectorSettings);
+        }
     }
 
     /**
@@ -340,24 +227,64 @@ public class TrajectoryQueryAgent extends JPSAgent {
         }
     }
 
-    /**
-     * Check if the JSONObject in the processRequestParameters inputs are correct or missing based on the input path.
-     * All path retrieving trajectory related data will need user id
-     * @param requestParams
-     * @return
-     * @throws BadRequestException
-     */
-    private boolean validateInput(JSONObject requestParams, String url) {
-        if (!requestParams.has(USER_ID)) {
-            LOGGER.error("userID is missing.");
-            return false;
-        }
-        if (url.contains("getDatesWithData")) {
-            if (!requestParams.has(TIMEZONE)) {
-                LOGGER.error("timezone is missing.");
-                return false;
+    String getUserId(HttpServletRequest request) {
+        String token = null;
+        Iterator<String> headerIterator = request.getHeaders("Authorization").asIterator();
+        while (headerIterator.hasNext() && token == null) {
+            String header = headerIterator.next();
+            if (header.startsWith("Bearer ")) {
+                token = header.substring(7);
             }
         }
-        return true;
+
+        DecodedJWT verifiedJwt = validateSignature(token);
+
+        return verifiedJwt.getSubject();
+    }
+
+    private DecodedJWT validateSignature(String token) {
+        // check signature using public key from KeyCloak server
+        JwkProvider provider = JwkProviderSingleton.getInstance();
+
+        DecodedJWT unverifiedDecodedJWT = JWT.decode(token);
+
+        String keyId = unverifiedDecodedJWT.getKeyId();
+        Jwk jwk;
+        try {
+            jwk = provider.get(keyId);
+        } catch (JwkException e) {
+            String errmsg = "Cannot find key ID from token";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        RSAPublicKey publicKey;
+        try {
+            publicKey = (RSAPublicKey) jwk.getPublicKey();
+        } catch (InvalidPublicKeyException e) {
+            String errmsg = "Cannot get public key from provider";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        Algorithm algorithm = Algorithm.RSA256(publicKey);
+
+        // Create the JWT verifier
+        JWTVerifier verifier = JWT.require(algorithm).build();
+
+        DecodedJWT verifiedDecodedJWT;
+
+        try {
+            verifiedDecodedJWT = verifier.verify(unverifiedDecodedJWT);
+        } catch (JWTVerificationException e) {
+            String errmsg = "Failed to verify token";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        return verifiedDecodedJWT;
     }
 }
