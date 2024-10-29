@@ -6,8 +6,22 @@ import secret_parameter as spara
 import fitz  # PyMuPDF
 import json
 from twa.kg_operations import PySparqlClient
-from rework_ontomops.update_kg  import config_a_box_updates
+from pyderivationagent.conf import config_generic, Config
 
+class AboxUpdateConfig(Config):
+    """
+    This is a config class for the UpdateKG class.
+    It is a subclass of Config and can be extended to provide custom configurations for developed agents.
+    It has the following fields:
+      - SPARQL_QUERY_ENDPOINT:  The SPARQL endpoint to be used for querying the knowledge graph.
+      - SPARQL_UPDATE_ENDPOINT: The SPARQL endpoint to be used for updating the knowledge graph.
+      - KG_USERNAME:            The username to access the SPARQL endpoint.
+      - KG_PASSWORD:            The password to access the SPARQL endpoint.
+    """
+    SPARQL_QUERY_ENDPOINT:      str
+    SPARQL_UPDATE_ENDPOINT:     str
+    KG_USERNAME:                str
+    KG_PASSWORD:                str
 
 def read_json_file(file_path:str):
     """
@@ -75,6 +89,11 @@ def extract_bracket_substrings(input_string):
         return substring1, substring2
     else:
         return None, None
+def config_a_box_updates(env_file: str = None) -> AboxUpdateConfig:
+    """Return configurations from either environment variables or env_file."""
+    print(env_file)
+    return config_generic(AboxUpdateConfig, env_file)
+
 def get_client(name):
     a_box_updates_config                        = config_a_box_updates(f"../{name}.env")
     return                                        PySparqlClient(

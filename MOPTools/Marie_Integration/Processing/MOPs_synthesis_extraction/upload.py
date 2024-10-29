@@ -15,7 +15,6 @@ import re
 import os
 import sys
 
-
 PROCESSING_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 # Add the processing directory to the system path
 sys.path.append(PROCESSING_DIR)
@@ -26,77 +25,96 @@ from io import StringIO
 import upload_utils as uputil
 import utils
 import kg_queries as kgq
-import upload_steps as upstep
+import predefine_iris as preiri
 
 def upload_predefined():
     # put this in different file
     filename_noext, subdir, client, client_species, client_mop  = uputil.start_upload("")
 
-    Ir_NA                               = CharacteristicPeak(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CharacteristicPeak_f6cce625-9d69-4491-bd9d-b096114db7af",rdfs_label="N/A", rdfs_comment="")
-    Nmr_NA                              = CharacteristicPeak(instance_iri="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CharacteristicPeak_920795e4-f412-4ad6-807b-8da69519a332",rdfs_label="N/A", rdfs_comment="")
-    KBr                                 = Species(instance_iri="http://www.theworldavatar.com/kb/ontospecies/Species_3b6489f0-a36c-4734-962b-521c8fab639b", rdfs_label="KBr")
+    Ir_NA                               = CharacteristicPeak(instance_iri=preiri.IR_NA, rdfs_label="N/A", rdfs_comment="")
+    Nmr_NA                              = CharacteristicPeak(instance_iri=preiri.NMR_NA,rdfs_label="N/A", rdfs_comment="")
+    KBr                                 = Species(instance_iri=preiri.KBR, rdfs_label="KBr")
 
-    hydrogen                            = Element(instance_iri="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_43cfac3b-81db-4338-bfb1-b0b3386f7473", rdfs_label="Hydrogen")
-    carbon                              = Element(instance_iri="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_f1a5025b-7e20-4a6a-821e-a7b6c0473b8c", rdfs_label="Carbon")
-    oxygen                              = Element(instance_iri="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_6a6be1ce-2021-4634-aed4-6a77488765df", rdfs_label="Oxygen")
-    nitrogen                            = Element(instance_iri="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_a9a7806c-f077-4eb2-b5b0-099d51033b7b", rdfs_label="Nitrogen")
-    unknown_element                     = Element(instance_iri="http://www.daml.org/2003/01/periodictable/PeriodicTable#Element_e253b6ca-c169-4e60-b6be-46b95e045a85", rdfs_label="N/A")
+    hydrogen                            = Element(instance_iri=preiri.HYDROGEN, rdfs_label="Hydrogen")
+    carbon                              = Element(instance_iri=preiri.CARBON, rdfs_label="Carbon")
+    oxygen                              = Element(instance_iri=preiri.OXYGEN, rdfs_label="Oxygen")
+    nitrogen                            = Element(instance_iri=preiri.NITROGEN, rdfs_label="Nitrogen")
+    unknown_element                     = Element(instance_iri=preiri.UNKNOWN_ELEMENT, rdfs_label="N/A")
 
-    vessel_ss_teflon                    = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_eb0f5942-d36b-47b1-86f0-725c1549fa2e", rdfs_label="Teflon-lined stainless-steel vessel")
-    glass_vial                          = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_90589d23-44e8-4698-acdf-bee3e44df96f", rdfs_label="glass vial")
-    quartz_tube                         = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_06304c23-7926-45d2-841d-690b5de16ed0", rdfs_label="quartz tube")
-    round_bottom_flask                  = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_5a7d7ec9-44d5-4280-8467-f9f624374a9d", rdfs_label="round bottom flask")
-    glass_scintilation_vial             = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_b67ea47b-7849-4aac-b0fd-e2715a4ac034", rdfs_label="glass scintillation vial")
-    pyrex_tube                          = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_080ad74b-950d-4651-a87c-5aa96d5ffb52", rdfs_label="pyrex tube")
-    schlenk                             = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_080zd54b-230c-4341-e87g-5ta46d2fgh91", rdfs_label="schlenk flask")
-    undefined_vessel                    = VesselType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselType_183ad74b-950d-4631-a47c-5aa91d5ffb12", rdfs_label="N/A")
+    vessel_ss_teflon                    = VesselType(instance_iri=preiri.VESSEL_SS_TEFLON, rdfs_label="Teflon-lined stainless-steel vessel")
+    glass_vial                          = VesselType(instance_iri=preiri.GLASS_VIAL, rdfs_label="glass vial")
+    quartz_tube                         = VesselType(instance_iri=preiri.QUARTZ_TUBE, rdfs_label="quartz tube")
+    round_bottom_flask                  = VesselType(instance_iri=preiri.ROUND_BOTTOM_FLASK, rdfs_label="round bottom flask")
+    glass_scintilation_vial             = VesselType(instance_iri=preiri.GLASS_SCINTILATION_VIAL, rdfs_label="glass scintillation vial")
+    pyrex_tube                          = VesselType(instance_iri=preiri.PYREX_TUBE, rdfs_label="pyrex tube")
+    schlenk                             = VesselType(instance_iri=preiri.SCHLENK, rdfs_label="schlenk flask")
+    undefined_vessel                    = VesselType(instance_iri=preiri.UNDEFINED_VESSEL, rdfs_label="N/A")
       
-    degree_celsius                      = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius", rdfs_label="degree Celsius")
-    kelvin                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin", rdfs_label="kelvin")
-    degree_celsius_hour                 = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerHour", rdfs_label="degree Celsius per hour")
-    degree_celsius_min                  = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerMinute-Time", rdfs_label="degree Celsius per minute")
-    duration_h                          = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/hour", rdfs_label="hour")
-    duration_day                        = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/day", rdfs_label="day")
-    duration_s                          = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time", rdfs_label="second")
-    duration_week                       = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/week", rdfs_label="week")
-    duration_min                        = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/minute-Time", rdfs_label="minute")
+    degree_celsius                      = UnitOfMeasure(instance_iri=preiri.DEGREE_CELSIUS, rdfs_label="degree Celsius")
+    kelvin                              = UnitOfMeasure(instance_iri=preiri.KELVIN, rdfs_label="kelvin")
+    degree_celsius_hour                 = UnitOfMeasure(instance_iri=preiri.DEGREE_CELSIUS_HOUR, rdfs_label="degree Celsius per hour")
+    degree_celsius_min                  = UnitOfMeasure(instance_iri=preiri.DEGREE_CELSIUS_MIN, rdfs_label="degree Celsius per minute")
+    duration_h                          = UnitOfMeasure(instance_iri=preiri.DURATION_H, rdfs_label="hour")
+    duration_day                        = UnitOfMeasure(instance_iri=preiri.DURATION_DAY, rdfs_label="day")
+    duration_s                          = UnitOfMeasure(instance_iri=preiri.DURATION_S, rdfs_label="second")
+    duration_week                       = UnitOfMeasure(instance_iri=preiri.DURATION_WEEK, rdfs_label="week")
+    duration_min                        = UnitOfMeasure(instance_iri=preiri.DURATION_MIN, rdfs_label="minute")
     
-    temperature_rate_degs               = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsiusPerSecond-Time", rdfs_label="degree Celsius per second")
-    mole_per_litre                      = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre", rdfs_label="mole per litre")
-    grams                               = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/gram", rdfs_label="gram")
-    miligrams                           = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/milligram", rdfs_label="miligram")
-    mole                                = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/mole", rdfs_label="mole")
-    mmole                               = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/millimole", rdfs_label="mmole") 
-    mlitre                              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre", rdfs_label="mlitre")
+    temperature_rate_degs               = UnitOfMeasure(instance_iri=preiri.TEMPERATURE_RATE_DEGS, rdfs_label="degree Celsius per second")
+    mole_per_litre                      = UnitOfMeasure(instance_iri=preiri.MOLE_PER_LITRE, rdfs_label="mole per litre")
+    grams                               = UnitOfMeasure(instance_iri=preiri.GRAMS, rdfs_label="gram")
+    miligrams                           = UnitOfMeasure(instance_iri=preiri.MILI_GRAMS, rdfs_label="miligram")
+    mole                                = UnitOfMeasure(instance_iri=preiri.MOLE, rdfs_label="mole")
+    mmole                               = UnitOfMeasure(instance_iri=preiri.MMOLE, rdfs_label="mmole") 
+    mlitre                              = UnitOfMeasure(instance_iri=preiri.MLITRE, rdfs_label="mlitre")
     # from TWA branch of OM:
-    revolutions_per_minute              = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/revolutionPerMinute-Time", rdfs_label="revolution per minute", rdfs_comment="Revolution per minute is a unit of rotational speed (or rotational frequency) for rotating machines.")
-    drop                                = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/drop", rdfs_label="drop")
-    unknown_unit                        = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/unknown", rdfs_label="N/A")
+    revolutions_per_minute              = UnitOfMeasure(instance_iri=preiri.REVOLUTIONS_PER_MINUTE, rdfs_label="revolution per minute", rdfs_comment="Revolution per minute is a unit of rotational speed (or rotational frequency) for rotating machines.")
+    drop                                = UnitOfMeasure(instance_iri=preiri.DROP, rdfs_label="drop")
+    unknown_unit                        = UnitOfMeasure(instance_iri=preiri.UNKNOWN_UNIT, rdfs_label="N/A")
 
-    N2Atmo                              = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_434aa6e1-3ac6-4a08-a208-fbc23e78a758", rdfs_label="N2 atmosphere")
-    ArAtmo                              = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_65b5af5d-349d-467c-bd14-b239d4e94376", rdfs_label="Ar atmosphere")
-    AirAtmo                             = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_bd2ef29a-1c5c-40eb-a9b2-84f1a3fda734", rdfs_label="Air atmosphere")
-    unknown_Atmo                        = VesselEnvironment(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/VesselEnvironment_1f70dc2c-5a37-491a-89ec-0897f9dcb7b8", rdfs_label="N/A")
+    N2Atmo                              = VesselEnvironment(instance_iri=preiri.N2_ATMO, rdfs_label="N2 atmosphere")
+    ArAtmo                              = VesselEnvironment(instance_iri=preiri.AR_ATMO, rdfs_label="Ar atmosphere")
+    AirAtmo                             = VesselEnvironment(instance_iri=preiri.AIR_ATMO, rdfs_label="Air atmosphere")
+    unknown_Atmo                        = VesselEnvironment(instance_iri=preiri.UNKNOWN_ATMO, rdfs_label="N/A")
     # unknowns
-    yield_value                         = Measure(instance_iri=f"https://www.theworldavatar.com/kg/OntoSyn/YieldValue_3ed5e18b-5206-405d-ada0-382071f73f74", hasNumericalValue=-1, hasUnit=unknown_unit)
-    yield_instance                      = AmountOfSubstanceFraction(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/Yield_3ed5e18b-5206-405d-ada0-382071f73f74", hasValue=yield_value)
-    chemical_input                      = ChemicalInput(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/ChemicalInput_3ed5e18b-5206-405d-ada0-382071f73f74", rdfs_label="N/A")
-    unknown_mop                         = MetalOrganicPolyhedron(rdfs_label="N/A", instance_iri="https://www.theworldavatar.com/kg/ontomops/MetalOrganicPolyhedra_1d981ba2-4072-47ef-9ecd-b9f5cc06a50a")
+    yield_value                         = Measure(instance_iri=preiri.YIELD_VALUE, hasNumericalValue=-1, hasUnit=unknown_unit)
+    yield_instance                      = AmountOfSubstanceFraction(instance_iri=preiri.YIELD_INSTANCE, hasValue=yield_value)
+    chemical_input                      = ChemicalInput(instance_iri=preiri.CHEMICAL_INPUT, rdfs_label="N/A")
+    unknown_mop                         = MetalOrganicPolyhedron(rdfs_label="N/A", instance_iri=preiri.UNKNWON_MOP)
     # separation types
-    centrifuge                          = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_5aa57330-613e-437d-a22b-dc10833a50b8", rdfs_label="centrifuge")
-    column                              = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_aea2a49f-067f-4818-8abc-544dd8696ba8", rdfs_label="column")
-    wash                                = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_61233c76-a0e5-4cb0-8c5c-ab8347955ea6", rdfs_label="washing")
-    extraction                          = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_c6d7ff74-4bdb-47b8-bcd8-fc40d9fbfb87", rdfs_label="extraction")
-    unknown_sep                         = SeparationType(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SeparationType_9ff2a8f7-3c9c-4419-9f3a-76b34d8629c0", rdfs_label="N/A")
-    unknown_step                        = SynthesisStep(instance_iri="https://www.theworldavatar.com/kg/OntoSyn/SynthesisStep_ddb7ceda-13d2-461a-a63e-9e7df3116882", rdfs_comment="N/A")
-    percentage                          = UnitOfMeasure(instance_iri="http://www.ontology-of-units-of-measure.org/resource/om-2/percent", rdfs_label="percent")
+    centrifuge                          = SeparationType(instance_iri=preiri.CENTRIFUGE, rdfs_label="centrifuge")
+    column                              = SeparationType(instance_iri=preiri.COLUMN, rdfs_label="column")
+    wash                                = SeparationType(instance_iri=preiri.WASH, rdfs_label="washing")
+    extraction                          = SeparationType(instance_iri=preiri.EXTRACTION, rdfs_label="extraction")
+    unknown_sep                         = SeparationType(instance_iri=preiri.UNKNOWN_SEP, rdfs_label="N/A")
+    unknown_step                        = SynthesisStep(instance_iri=preiri.UNKNOWN_STEP, rdfs_comment="N/A")
+    percentage                          = UnitOfMeasure(instance_iri=preiri.PERCENTAGE, rdfs_label="percent")
     instances                           = [yield_value, chemical_input, yield_value, unknown_step, yield_instance, unknown_mop, N2Atmo, column, extraction, unknown_sep, wash, centrifuge, ArAtmo, AirAtmo , unknown_Atmo, vessel_ss_teflon, glass_vial, quartz_tube, round_bottom_flask, glass_scintilation_vial, pyrex_tube, degree_celsius_hour, kelvin, degree_celsius, degree_celsius_min, duration_min, duration_day, duration_h, duration_s, duration_week, temperature_rate_degs, mole_per_litre, revolutions_per_minute, grams, miligrams, mole, mmole, mlitre, undefined_vessel, unknown_unit, drop, nitrogen, hydrogen, carbon, oxygen, unknown_element, percentage, KBr, Ir_NA, Nmr_NA, schlenk]
     uputil.push_component_to_kg(instances, client)
 
 # alternative approach to unit upload -> additional query but does not require to upload them again.
-
-
 def upload_inputChem(chemicals, synthesis_client, species_client):
+    """
+    Uploads chemical input data to a knowledge graph (KG) by processing chemical components and their concentrations.
+
+    This function processes a list of chemicals, where each chemical contains a name and an optional amount. 
+    Args:
+        chemicals (list): A list of dictionaries where each dictionary represents a chemical, containing:
+            - "chemicalName" (str): The name of the chemical species.
+            - "chemicalAmount" (str, optional): The amount of the chemical, expressed in a value-unit pair.
+        synthesis_client (Client): The client used to interact with the synthesis knowledge graph.
+        species_client (Client): The client used to interact with the species knowledge graph.
+
+    Returns:
+        ChemicalInput: The instantiated `ChemicalInput` object that references the material containing the uploaded chemical data.
+
+    Raises:
+        ValueError: If required keys (e.g., "chemicalName") are missing from the input data.
+
+    Notes:
+        - If no `chemicalAmount` is provided, a default value of `-1` and unit `"N/A"` is used.
+        - If no species name is found, `"N/A"` is used as a fallback.
+    """
     phase_components                                        = []
     phase_component_concentrations                          = [] 
     for chemical in chemicals:
@@ -140,7 +158,11 @@ def upload_inputChem(chemicals, synthesis_client, species_client):
 def standard_step_upload(standard_input, vessel_list, chemicals_list, synthesis_client, species_client):
 
     if "Sonicate" in standard_input:
-        sonication, vessel_list          = upstep.upload_sonicate(standard_input, synthesis_client)
+        standard_step                                       = standard_input["Sonicate"]
+        vessel, vessel_list, duration, duration_value, atmosphere, id_hash_value         = uputil.steps_preupload(standard_step, synthesis_client, vessel_list)
+        sonication                                          = Sonicate(hasStepDuration=duration, hasOrder=standard_step["stepNumber"], hasVessel=vessel, hasVesselEnvironment=atmosphere)
+        components                                          = [duration_value, duration, vessel, sonication]
+        uputil.push_component_to_kg(components, synthesis_client)
         return sonication, vessel_list, chemicals_list
     
     elif "Add" in standard_input:
@@ -545,7 +567,7 @@ def characterisation_upload(input_path, output_path, settings):
             if type(shift) != tuple:
                 nmr_peak                                        = CharacteristicPeak(hasX1=shift, rdfs_comment="")
             elif shift == "N/A" or shift == " N/A":
-                nmr_peak                                        = CharacteristicPeak.pull_from_kg("http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CharacteristicPeak_920795e4-f412-4ad6-807b-8da69519a332", syn_client, -1)
+                nmr_peak                                        = CharacteristicPeak.pull_from_kg(preiri.NMR_NA, syn_client, -1)
             else:
                 nmr_peak                                        = CharacteristicPeak(hasX1=shift[0], rdfs_comment=shift[1])
             nmr_peaks.append(nmr_peak)
@@ -565,7 +587,7 @@ def characterisation_upload(input_path, output_path, settings):
                 peak                                            = CharacteristicPeak(hasX1=band, rdfs_comment="")
                 peak.push_to_kg(syn_client, recursive_depth=-1)
             elif band == "N/A":
-                peak                                            = CharacteristicPeak.pull_from_kg("http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#CharacteristicPeak_f6cce625-9d69-4491-bd9d-b096114db7af", syn_client, -1)
+                peak                                            = CharacteristicPeak.pull_from_kg(preiri.IR_NA, syn_client, -1)
             else:
                 peak                                            = CharacteristicPeak(hasX1=band[0], rdfs_comment=band[1])
                 peak.push_to_kg(syn_client, recursive_depth=-1)
