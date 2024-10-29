@@ -1,6 +1,5 @@
 import { Icon } from '@mui/material';
 import Image from 'next/image';
-import SVG from 'react-inlinesvg';
 
 
 interface IconComponentProps {
