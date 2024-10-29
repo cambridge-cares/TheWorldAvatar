@@ -60,7 +60,7 @@ export default class OptionalPages {
                         title: matterResult.data.title,
                         slug: matterResult.data.slug,
                         description: matterResult.data.description,
-                        content: matterResult.content,
+                        content: matterResult.content.replaceAll(/(<img\s+src=")(?!https?:\/\/)(\/)?([^"]+")/g, `$1${process.env.ASSET_PREFIX}$3`),
                         filename: fileName,
                         thumbnail: matterResult.data.thumbnail
                     };
