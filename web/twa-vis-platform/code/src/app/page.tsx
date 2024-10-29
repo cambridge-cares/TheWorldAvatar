@@ -2,7 +2,6 @@
  * Handles the default (i.e. "/") route.
  */
 
-import 'material-symbols';
 import React from 'react';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
