@@ -293,8 +293,8 @@ Figure 7: TBox representation of the service agreement's service execution lifec
 
     "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "vc:Vehicle" : "ontoservice:assignTransport"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "vc:Vehicle" : "ontoservice:hasAssignedTransport"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
         fibo-fnd-dt-oc-hasEventDate xsd-dateTime
         rdfs-comment remark-string
@@ -315,7 +315,7 @@ Figure 8: ABox representation of the provenance structure for the total service 
 
 ```mermaid
     erDiagram
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
     "ontoservice:TotalPrice" ||--|| "inst:TotalPriceDerivation" : "ontoderivation:belongsTo"
     "inst:TotalPriceDerivation" ||--|{ "ontoservice:GrossPrice" : "ontoderivation:isDerivedFrom"
     "inst:TotalPriceDerivation" ||--|{ "ontoservice:Tax" : "ontoderivation:isDerivedFrom"
