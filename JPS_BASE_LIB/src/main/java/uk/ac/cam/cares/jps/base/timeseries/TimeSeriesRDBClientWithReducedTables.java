@@ -26,6 +26,8 @@ import org.jooq.InsertValuesStepN;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.Table;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
@@ -1061,6 +1063,9 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
         String tsTableName = getTimeSeriesTableName(ts.getDataIRIs().get(0), context);
 
+        // Retrieve RDB table from table name
+        Table<?> table = getDSLTable(tsTableName);
+
         List<Field<?>> columnList = new ArrayList<>();
         // Retrieve list of corresponding column names for dataIRIs
         columnList.add(timeColumn);
@@ -1071,24 +1076,75 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
         // collect the list of time values that exist in the table
         // these rows are treated specially to avoid duplicates
+        List<Integer> rowsWithMatchingTime = new ArrayList<>();
         // Populate columns row by row
-        InsertValuesStepN<?> insertValueStep = context.insertInto(getDSLTable(tsTableName), columnList);
-
+        InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
+        int numRowsWithoutMatchingTime = 0;
         for (int i = 0; i < ts.getTimes().size(); i++) {
             // newValues is the row elements
-            Object[] newValues = new Object[dataIRIs.size() + 2];
-            newValues[0] = ts.getTimes().get(i);
-            for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-                newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
+            if (!checkTimeRowExists(tsTableName, tsIri, ts.getTimes().get(i), context)) {
+                Object[] newValues = new Object[dataIRIs.size() + 2];
+                newValues[0] = ts.getTimes().get(i);
+                for (int j = 0; j < ts.getDataIRIs().size(); j++) {
+                    newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
+                }
+                newValues[ts.getDataIRIs().size() + 1] = tsIri;
+                insertValueStep = insertValueStep.values(newValues);
+                numRowsWithoutMatchingTime = numRowsWithoutMatchingTime + 1;
+            } else {
+                rowsWithMatchingTime.add(i);
             }
-            newValues[ts.getDataIRIs().size() + 1] = tsIri;
-            insertValueStep = insertValueStep.values(newValues);
-
         }
         // open source jOOQ does not support postgis, hence not using execute() directly
         // if this gets executed when it's 0, null values will be added
-        try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
-            statement.executeUpdate();
+        if (numRowsWithoutMatchingTime != 0) {
+            // if this gets executed when it's 0, null values will be added
+            try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
+                statement.executeUpdate();
+            }
+        }
+
+        // update existing rows with matching time value
+        // only one row can be updated in a single query
+        for (int rowIndex : rowsWithMatchingTime) {
+            UpdateSetFirstStep<?> updateStep = context.update(table);
+
+            for (int i = 0; i < ts.getDataIRIs().size(); i++) {
+                String dataIRI = ts.getDataIRIs().get(i);
+
+                if (i == (ts.getDataIRIs().size() - 1)) {
+                    updateStep
+                            .set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
+                            .where(timeColumn.eq(ts.getTimes().get(rowIndex))).and(TS_IRI_COLUMN.eq(tsIri));
+
+                    // open source jOOQ does not support postgis geometries, hence not using
+                    // execute() directly
+                    try (PreparedStatement statement = conn.prepareStatement(updateStep.toString())) {
+                        statement.executeUpdate();
+                    }
+                } else {
+                    updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))),
+                            ts.getValues(dataIRI).get(rowIndex));
+                }
+            }
+        }
+    }
+
+    /**
+     * check if a row exists to prevent duplicate rows with the same time value and time series IRI
+     * 
+     * @param tsTableName
+     * @param tsIri
+     * @param time
+     * @param context
+     * @return
+     */
+    private boolean checkTimeRowExists(String tsTableName, String tsIri, T time, DSLContext context) {
+        try {
+            return context.fetchExists(selectFrom(getDSLTable(tsTableName)).where(timeColumn.eq(time)).and(TS_IRI_COLUMN.eq(tsIri)));
+        } catch (DataAccessException e) {
+            LOGGER.error(e.getMessage());
+            throw new JPSRuntimeException(exceptionPrefix + "Error in checking if a row exists for a given time value");
         }
     }
 
