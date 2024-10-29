@@ -1,6 +1,6 @@
 import { Icon } from '@mui/material';
 import Image from 'next/image';
-
+import SVG from 'react-inlinesvg';
 
 interface IconComponentProps {
   readonly icon: string;
@@ -28,12 +28,7 @@ export default function IconComponent(props: IconComponentProps) {
     );
   } else if (props.icon.endsWith(".svg")) {
     return (
-      <div className={props.classes}>
-        <Image
-          unoptimized
-          src={props.icon}
-          alt="SVG Icon" />
-      </div>
+      <SVG className={props.classes} src={process.env.ASSET_PREFIX + props.icon} />
     );
   } else {
     const iconClassNames = ["material-symbols-outlined"].concat(props.classes).join(" ");
