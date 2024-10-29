@@ -9,7 +9,6 @@
 
 const nextConfig = {
 	reactStrictMode: true,
-	basePath: process.env.BASE_PATH ?? "",
 	assetPrefix: process.env.ASSET_PREFIX ?? "",
 	compiler: { removeConsole: false },
 	images: {
