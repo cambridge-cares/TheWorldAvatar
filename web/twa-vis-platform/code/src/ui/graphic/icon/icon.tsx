@@ -29,7 +29,12 @@ export default function IconComponent(props: IconComponentProps) {
     );
   } else if (props.icon.endsWith(".svg")) {
     return (
-      <SVG className={props.classes} src={props.icon} />
+      <div className={props.classes}>
+        <Image
+          unoptimized
+          src={props.icon}
+          alt="SVG Icon" />
+      </div>
     );
   } else {
     const iconClassNames = ["material-symbols-outlined"].concat(props.classes).join(" ");
