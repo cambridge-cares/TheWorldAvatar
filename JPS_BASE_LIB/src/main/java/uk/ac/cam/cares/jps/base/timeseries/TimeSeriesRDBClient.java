@@ -919,7 +919,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         }
 
         // create index on time column for quicker searches
-        context.createIndex().on(getDSLTable(tsTable), timeColumn).execute();
+        context.createUniqueIndex().on(getDSLTable(tsTable), timeColumn).execute();
 
         // add remaining geometry columns with restrictions
         if (!additionalGeomColumns.isEmpty()) {
@@ -1024,7 +1024,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
             allSteps.add(createStep);
             // create index on time column for quicker searches
-            allSteps.add(context.createIndex().on(getDSLTable(tsTable), timeColumn));
+            allSteps.add(context.createUniqueIndex().on(getDSLTable(tsTable), timeColumn));
 
             // geometry columns need to be handled separately
             if (!additionalGeomColumns.isEmpty()) {
