@@ -315,7 +315,7 @@ Figure 8: ABox representation of the provenance structure for the total service 
 
 ```mermaid
     erDiagram
-    "ontoservice:ServiceEvent" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
     "ontoservice:TotalPrice" ||--|| "inst:TotalPriceDerivation" : "ontoderivation:belongsTo"
     "inst:TotalPriceDerivation" ||--|{ "ontoservice:GrossPrice" : "ontoderivation:isDerivedFrom"
     "inst:TotalPriceDerivation" ||--|{ "ontoservice:Tax" : "ontoderivation:isDerivedFrom"
