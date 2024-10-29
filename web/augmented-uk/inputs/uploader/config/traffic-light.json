@@ -19,7 +19,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "traffic_lighting_leeds_virtual_table",
-                    "sql": "@/inputs/config/sql/traffic-light-leeds-virtual.sql",
+                    "sql": "@/inputs/config/sql/virtualTables/traffic-light-leeds-virtual.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geometry_leeds",

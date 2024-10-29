@@ -68,6 +68,9 @@ Note that resources are optional and their configuration options can differ from
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
+> [!NOTE]
+> When specifying image paths, be sure to use absolute paths beggining with a `/`
+
 > [!NOTE]  
 > The comments seen below are for explanation purposes only, they are not valid JSON. If wishing to use this content in production, remove the comments first.
 
