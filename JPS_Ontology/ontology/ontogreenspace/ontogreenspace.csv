@@ -1,0 +1,7 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+ontogreenspace,TBox,https://www.theworldavatar.com/kg/ontogreenspace/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+ontogreenspace,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+ontogreenspace,TBox,OntoGreenspace is an ontology developed for representing greenspaces.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+ontogreenspace,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Greenspace,Class,,,,,,"A spatial area object that is partly or completely covered with grass, trees, shrubs, or other vegetation",https://www.theworldavatar.com/kg/ontogreenspace,Greenspace
+AccessPoint,Class,,,,,,A designated entry location that provides public or restricted access into a greenspace area,https://www.theworldavatar.com/kg/ontogreenspace,Access Point
