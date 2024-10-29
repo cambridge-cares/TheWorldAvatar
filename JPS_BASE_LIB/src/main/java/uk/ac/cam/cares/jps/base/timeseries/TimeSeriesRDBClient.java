@@ -1085,56 +1085,34 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         // collect the list of time values that exist in the table
         // these rows are treated specially to avoid duplicates
-        List<Integer> rowsWithMatchingTime = new ArrayList<>();
         // Populate columns row by row
         InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
-        int numRowsWithoutMatchingTime = 0;
         for (int i = 0; i < ts.getTimes().size(); i++) {
             // newValues is the row elements
-            if (!checkTimeRowExists(tsTable, ts.getTimes().get(i), context)) {
-                Object[] newValues = new Object[dataIRIs.size() + 1];
-                newValues[0] = ts.getTimes().get(i);
-                for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-                    newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
-                }
-                insertValueStep = insertValueStep.values(newValues);
-                numRowsWithoutMatchingTime += 1;
-            } else {
-                rowsWithMatchingTime.add(i);
+            Object[] newValues = new Object[dataIRIs.size() + 1];
+            newValues[0] = ts.getTimes().get(i);
+            for (int j = 0; j < ts.getDataIRIs().size(); j++) {
+                newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
             }
+            insertValueStep = insertValueStep.values(newValues);
         }
+
+        // Manually modify the query to upsert
+        // TODO: use jOOQ 3.18 or above which support upsert (requires Java 17 or above)
+        String insertStatement = insertValueStep.toString();
+        insertStatement = insertStatement + System.lineSeparator() + "on conflict (\"" + timeColumn.getName() + "\")";
+        insertStatement = insertStatement + System.lineSeparator() + "do update" + System.lineSeparator() + "set";
+        for (String data : dataIRIs) {
+            insertStatement = insertStatement + System.lineSeparator() + "\""+dataColumnNames.get(data)+"\""+" = EXCLUDED."+"\""+dataColumnNames.get(data)+"\",";
+        }
+        insertStatement = insertStatement.substring(0, insertStatement.length()-1);
+
         // open source jOOQ does not support postgis, hence not using execute() directly
-        if (numRowsWithoutMatchingTime != 0) {
-            // if this gets executed when it's 0, null values will be added
-            try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
-                statement.executeUpdate();
-            }
+
+        try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
+            statement.executeUpdate();
         }
 
-        // update existing rows with matching time value
-        // only one row can be updated in a single query
-        for (int rowIndex : rowsWithMatchingTime) {
-            UpdateSetFirstStep<?> updateStep = context.update(table);
-
-            for (int i = 0; i < ts.getDataIRIs().size(); i++) {
-                String dataIRI = ts.getDataIRIs().get(i);
-
-                if (i == (ts.getDataIRIs().size() - 1)) {
-                    updateStep
-                            .set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
-                            .where(timeColumn.eq(ts.getTimes().get(rowIndex)));
-
-                    // open source jOOQ does not support postgis geometries, hence not using
-                    // execute() directly
-                    try (PreparedStatement statement = conn.prepareStatement(updateStep.toString())) {
-                        statement.executeUpdate();
-                    }
-                } else {
-                    updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))),
-                            ts.getValues(dataIRI).get(rowIndex));
-                }
-            }
-        }
     }
 
     /**
