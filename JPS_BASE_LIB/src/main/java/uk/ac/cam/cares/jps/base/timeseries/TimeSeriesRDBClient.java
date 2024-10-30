@@ -25,9 +25,9 @@ import org.jooq.Field;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
 import org.jooq.Record;
+import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Table;
-import org.jooq.UpdateSetFirstStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
@@ -318,15 +318,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
                 String tsTableName = getTimeseriesTableName(dataIRI.get(0), context);
                 // Assign column name for each dataIRI; name for time column is fixed
-                Map<String, String> dataColumnNames = new HashMap<>();
-                for (String s : dataIRI) {
-                    dataColumnNames.put(s, getColumnName(s, context));
-                }
+                Map<String, String> dataColumnNames = bulkGetColumnName(dataIRI, context);
 
                 // Append time series data to time series table
                 // if a row with the time value exists, that row will be updated instead of
                 // creating a new row
-                String stmt = populateTimeSeriesTable(tsTableName, ts, dataColumnNames, conn);
+                String stmt = populateTimeSeriesTable(tsTableName, ts, dataIRI, dataColumnNames, conn);
                 statement.addBatch(stmt);
 
             }
@@ -1068,17 +1065,16 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      * 
      * @param tsTable         name of the timeseries table provided as string
      * @param ts              time series to write into the table
+     * @param dataIRIs        list of strings of data IRIs
      * @param dataColumnNames list of column names in the tsTable corresponding to
      *                        the data in the ts
      * @param conn            connection to the RDB
      * @throws SQLException
      */
-    private String populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String, String> dataColumnNames,
-            Connection conn) {
+    private String populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, List<String> dataIRIs,
+            Map<String, String> dataColumnNames, Connection conn) {
 
         DSLContext context = DSL.using(conn, DIALECT);
-
-        List<String> dataIRIs = ts.getDataIRIs();
 
         // Retrieve RDB table from table name
         Table<?> table = getDSLTable(tsTable);
@@ -1274,6 +1270,36 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             LOGGER.error(e.getMessage());
             throw new JPSRuntimeException(
                     exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+        }
+    }
+
+    /**
+     * Retrieve column name for provided dataIRI from central database lookup table
+     * (if it exists)
+     * <p>
+     * Requires existing RDB connection
+     * 
+     * @param dataIRI data IRI provided as string
+     * @param context
+     * @return Corresponding column name in the RDB table related to the data IRI
+     */
+    private Map<String, String> bulkGetColumnName(List<String> dataIRIs, DSLContext context) {
+        Map<String, String> dataIRIColumnMap = new HashMap<>();
+        try {
+            // Look for the entry dataIRI in dbTable
+            Table<?> table = getDSLTable(DB_TABLE_NAME);
+            Result<Record2<String, String>> queryResult = context.select(COLUMNNAME_COLUMN, DATA_IRI_COLUMN)
+                    .from(table).where(DATA_IRI_COLUMN.in(dataIRIs)).fetch();
+            for (Record result : queryResult) {
+                String dataIRI = result.getValue(DATA_IRI_COLUMN);
+                String columnValue = result.getValue(COLUMNNAME_COLUMN);
+                dataIRIColumnMap.put(dataIRI, columnValue);
+            }
+            return dataIRIColumnMap;
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.error(e.getMessage());
+            throw new JPSRuntimeException(
+                    exceptionPrefix + "At least 1 data IRI does not have an assigned time series instance");
         }
     }
 
