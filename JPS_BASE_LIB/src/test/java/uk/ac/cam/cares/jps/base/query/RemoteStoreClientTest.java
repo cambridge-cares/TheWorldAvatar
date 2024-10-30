@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.fedq.BuildInvertedIndex;
 import uk.ac.cam.cares.jps.base.query.fedq.FedqIndex;
 
 /**
@@ -581,10 +582,47 @@ public class RemoteStoreClientTest {
 		return sparqlQuery;
 	}
 
+	public static void createIndex() {
+
+		String endpoints[] = { "http://localhost:8080/blazegraph/namespace/namespace_kin/sparql",
+				"http://localhost:8080/blazegraph/namespace/namespace_compchem/sparql",
+				"http://localhost:8080/blazegraph/namespace/namespace_automotive/sparql",
+				"http://localhost:8080/blazegraph/namespace/namespace_species/sparql",
+				"http://localhost:8080/blazegraph/namespace/namespace_uken/sparql"
+		};
+
+		FedqIndex fqi = new FedqIndex("C:/Users/printer_admin/Downloads/KGs/20241030");
+
+		for (String endpointUrl : endpoints) {
+			System.out.println("Start processing endpoint: " + endpointUrl);
+			fqi.createInvertedIndex(endpointUrl);
+		}
+
+		fqi.saveIndices();
+		System.out.println("Completed and index-files are saved.");
+	}
+
+	public static void extendIndex(String endpointUrl) {
+
+		FedqIndex fqi = new FedqIndex("C:/Users/printer_admin/Downloads/KGs/20241030");
+		fqi.loadIndices();
+
+		System.out.println("Start processing endpoint: " + endpointUrl);
+		fqi.createInvertedIndex(endpointUrl);
+
+		fqi.saveIndices();
+		System.out.println("Completed and index-files are saved.");
+	}
+
 	public static void main(String[] args) {
+		// createIndex();
+
+		// extendIndex("http://localhost:8080/blazegraph/namespace/uken_1m/sparql");
+		// extendIndex("http://localhost:8080/blazegraph/namespace/uken_10m/sparql");
+		// extendIndex("http://localhost:8080/blazegraph/namespace/uken_200m/sparql");
 
 		RemoteStoreClient kbClient = new RemoteStoreClient();
-		FedqIndex fii = new FedqIndex("C:/Users/printer_admin/Downloads/KGs/tests");
+		FedqIndex fii = new FedqIndex("C:/Users/printer_admin/Downloads/KGs/20241030");
 		fii.loadIndices();
 		fii.extractClassesAndProperties(formFederatedQuery4());
 
@@ -594,7 +632,8 @@ public class RemoteStoreClientTest {
 		// endpoints.add(queryEndpointOntoSpeciesKB);
 
 		try {
-			JSONArray result = kbClient.executeFederatedQuery(endpoints, formFederatedQuery4());
+			JSONArray result = kbClient.executeFederatedQuery(endpoints,
+					formFederatedQuery4());
 			System.out.println(result.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
