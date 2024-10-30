@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -301,13 +302,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         // Initialise connection and set jOOQ DSL context
         DSLContext context = DSL.using(conn, DIALECT);
 
-        // Loop over all time series in list
-        for (TimeSeries<T> ts : tsList) {
+        // All database interactions in try-block to ensure closure of connection
 
-            List<String> dataIRI = ts.getDataIRIs();
+        try {
+            Statement statement = conn.createStatement();
 
-            // All database interactions in try-block to ensure closure of connection
-            try {
+            // Loop over all time series in list
+            for (TimeSeries<T> ts : tsList) {
+
+                List<String> dataIRI = ts.getDataIRIs();
 
                 // Ensure that all provided dataIRIs/columns are located in the same RDB table
                 // (throws Exception if not)
@@ -323,17 +326,21 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                 // Append time series data to time series table
                 // if a row with the time value exists, that row will be updated instead of
                 // creating a new row
-                populateTimeSeriesTable(tsTableName, ts, dataColumnNames, conn);
-            } catch (JPSRuntimeException e) {
-                // Re-throw JPSRuntimeExceptions
-                throw e;
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-                // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
-                // database) as JPSRuntimeException with respective message
-                throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+                String stmt = populateTimeSeriesTable(tsTableName, ts, dataColumnNames, conn);
+                statement.addBatch(stmt);
+
             }
 
+            statement.executeBatch();
+
+        } catch (JPSRuntimeException e) {
+            // Re-throw JPSRuntimeExceptions
+            throw e;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+            // database) as JPSRuntimeException with respective message
+            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
         }
     }
 
@@ -1030,9 +1037,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             if (!additionalGeomColumns.isEmpty()) {
                 geomColumnsMap.put(tsTable, additionalGeomColumns);
                 geomColumnsClassMap.put(tsTable, classForAdditionalGeomColumns);
-                
+
             }
-        
+
         }
 
         context.batch(allSteps).execute();
@@ -1066,8 +1073,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      * @param conn            connection to the RDB
      * @throws SQLException
      */
-    private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String, String> dataColumnNames,
-            Connection conn) throws SQLException {
+    private String populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String, String> dataColumnNames,
+            Connection conn) {
 
         DSLContext context = DSL.using(conn, DIALECT);
 
@@ -1099,19 +1106,31 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         // Manually modify the query to upsert
         // TODO: use jOOQ 3.18 or above which support upsert (requires Java 17 or above)
-        String insertStatement = insertValueStep.toString();
-        insertStatement = insertStatement + System.lineSeparator() + "on conflict (\"" + timeColumn.getName() + "\")";
-        insertStatement = insertStatement + System.lineSeparator() + "do update" + System.lineSeparator() + "set";
+        StringBuilder insertStatement = new StringBuilder(insertValueStep.toString());
+        insertStatement.append(System.lineSeparator())
+                .append("on conflict (\"")
+                .append(timeColumn.getName())
+                .append("\")")
+                .append(System.lineSeparator())
+                .append("do update")
+                .append(System.lineSeparator())
+                .append("set");
+
         for (String data : dataIRIs) {
-            insertStatement = insertStatement + System.lineSeparator() + "\""+dataColumnNames.get(data)+"\""+" = EXCLUDED."+"\""+dataColumnNames.get(data)+"\",";
+            insertStatement.append(System.lineSeparator())
+                    .append("\"")
+                    .append(dataColumnNames.get(data))
+                    .append("\" = EXCLUDED.\"")
+                    .append(dataColumnNames.get(data))
+                    .append("\",");
         }
-        insertStatement = insertStatement.substring(0, insertStatement.length()-1);
+
+        // Remove the last comma
+        insertStatement.setLength(insertStatement.length() - 1);
 
         // open source jOOQ does not support postgis, hence not using execute() directly
 
-        try (PreparedStatement statement = conn.prepareStatement(insertStatement)) {
-            statement.executeUpdate();
-        }
+        return insertStatement.toString();
 
     }
 
@@ -1196,7 +1215,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         Condition combinedCondition = DSL.or(conditions);
 
-        List<String> queryResult = context.select(TS_IRI_COLUMN).from(table).where(combinedCondition).fetch(TS_IRI_COLUMN);
+        List<String> queryResult = context.select(TS_IRI_COLUMN).from(table).where(combinedCondition)
+                .fetch(TS_IRI_COLUMN);
 
         boolean allIdentical = queryResult.stream().allMatch(s -> s.equals(queryResult.get(0)));
 
