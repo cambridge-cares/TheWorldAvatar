@@ -190,7 +190,7 @@ Figure 3: TBox representation for the service agreement's overall lifecycle
 
     "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:GarbageTruck" : "ontoservice:hasAssignedTransport"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "vc:Truck" : "ontoservice:hasAssignedTransport"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
         fibo-fnd-dt-oc-hasEventDate xsd-dateTime
@@ -232,11 +232,10 @@ Figure 4: TBox representation of a waste service event occurrence
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontowm:Waste" : "ontowm:transportsWaste"
     "ontowm:Waste" ||--|| "ontowm:NetWeight" : "ontowm:hasNetWeight"
 
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:GarbageTruck" : "ontoservice:hasAssignedTransport"
-    "ontowm:GarbageTruck" ||--|| "fibo-fnd-org-fm:Employee" : "ontowm:hasAssignedDriver"
-    "ontowm:GarbageTruck" ||--|{ "ontowm:GrossWeight" : "ontowm:hasGrossWeight"
-    "ontowm:GarbageTruck" ||--|{ "ontowm:UnladenWeight" : "ontowm:hasUnladenWeight"
-
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:RearEndLoaderTruck" : "ontoservice:hasAssignedTransport"
+    "ontowm:RearEndLoaderTruck" ||--|| "fibo-fnd-org-fm:Employee" : "ontowm:hasAssignedDriver"
+    "ontowm:RearEndLoaderTruck" ||--|{ "ontowm:GrossWeight" : "ontowm:hasGrossWeight"
+    "ontowm:RearEndLoaderTruck" ||--|{ "ontowm:UnladenWeight" : "ontowm:hasUnladenWeight"
 ```
 
 ## 2.2.1 Waste categories
@@ -295,7 +294,12 @@ Figure 6: TBox representation of geospatial and temporal representation of asset
 
 ### 2.3.1 Truck
 
-Figure 7: TBox representation of a garbage truck
+The following truck types are employed in the waste management sector:
+
+1. **Rear End Loader Truck**: A truck designed for municipal waste collection, featuring a rear-loading mechanism with a hydraulic lift to compact waste into the truck body.
+2. **Hooklift Truck**: A versatile truck equipped with a hydraulic hooklift system, used for transporting various container types, including heavy industrial and commercial waste containers.
+
+Figure 7: TBox representation of a truck for the waste management sector
 
 ```mermaid
     erDiagram
@@ -306,7 +310,8 @@ Figure 7: TBox representation of a garbage truck
         vc-vehicleIdentificationNumber plate_number_string
     }
 
-    "ontowm:GarbageTruck" ||--o{ "vc:Truck" : "rdfs:subClassOf"
+    "ontowm:RearEndLoaderTruck" ||--o{ "vc:Truck" : "rdfs:subClassOf"
+    "ontowm:HookliftTruck" ||--o{ "vc:Truck" : "rdfs:subClassOf"
 ```
 
 ### 2.3.2 Bin
@@ -314,9 +319,9 @@ Figure 7: TBox representation of a garbage truck
 There are six categories of bins:
 
 1. **OTC bin**: A bin for attaching to an OTC truck
-2. **3-feet bin**: An open top container bin with a wall height of 3 feet
-3. **5-feet bin**: An open top container bin with a wall height of 5 feet
-4. **7-feet bin**: An open top container bin with a wall height of 7 feet
+2. **3-feet bin**: An open top container bin with a length of 3 feet
+3. **5-feet bin**: An open top container bin with a length of 5 feet
+4. **7-feet bin**: An open top container bin with a length of 7 feet
 5. **Compactor bin**: An open top container bin with the ability to compact waste
 
 Figure 8: TBox representation of a bin

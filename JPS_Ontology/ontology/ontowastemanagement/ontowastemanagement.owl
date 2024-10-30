@@ -137,7 +137,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GarbageTruck"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
         <rdfs:comment>A relationship describing the gross truck weight during the waste disposal procedure.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
@@ -196,7 +197,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GarbageTruck"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
         <rdfs:comment>A relationship describing the unladen truck weight during the waste disposal procedure.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
@@ -453,32 +455,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/GarbageTruck -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/GarbageTruck">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>A vehicle with a space for carrying waste.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>Garbage truck</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontowastemanagement/GeneralWaste -->
 
 
@@ -530,6 +506,32 @@
         <rdfs:comment>Construction and rubble waste. For example: concrete, brick, steel rebars.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Hardcore waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A versatile truck equipped with a hydraulic hooklift system, used for transporting various container types, including heavy industrial and commercial waste containers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Hooklift truck</rdfs:label>
     </owl:Class>
     
 
@@ -633,6 +635,32 @@
         <rdfs:comment>Waste composed of plastic-based material.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Plastic waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A truck designed for municipal waste collection, featuring a rear-loading mechanism with a hydraulic lift to compact waste into the truck body.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Rear end loader truck</rdfs:label>
     </owl:Class>
     
 
@@ -784,7 +812,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/3ftBin">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin"/>
-        <rdfs:comment>An open top container bin with a wall height of 3 feet.</rdfs:comment>
+        <rdfs:comment>An open top container bin with a length of 3 feet.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>3-feet bin</rdfs:label>
     </owl:Class>
@@ -796,7 +824,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/5ftBin">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin"/>
-        <rdfs:comment>An open top container bin with a wall height of 5 feet.</rdfs:comment>
+        <rdfs:comment>An open top container bin with a length of 5 feet.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>5-feet bin</rdfs:label>
     </owl:Class>
@@ -808,7 +836,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/7ftBin">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/OTCBin"/>
-        <rdfs:comment>An open top container bin with a wall height of 7 feet.</rdfs:comment>
+        <rdfs:comment>An open top container bin with a length of 7 feet.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>7-feet bin</rdfs:label>
     </owl:Class>
