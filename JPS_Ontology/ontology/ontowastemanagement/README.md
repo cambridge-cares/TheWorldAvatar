@@ -333,33 +333,60 @@ Figure 6: TBox representation of an occurrence of the calculation of the amount 
 
 ## 2.2.1 Waste categories
 
-The following waste categories are represented in this ontology:
+The following waste categories are represented in this ontology. Please find the respective descriptions within the ontology for more details. 
 
-1. Industrial waste
-2. Hardcore waste
-3. Sludge waste
-4. Biological waste
-5. Horticultural waste
-6. Tree waste
-7. Mixed waste
-8. General waste
-9. Recycled waste
-10. Paper waste
-11. Metal waste
-12. Plastic waste
-13. Glass waste
-14. Electronic waste
+1. Ash waste
+2. Sludge waste
+3. Construction and demolition waste
+4. Electronic waste
+5. Ferrous metal waste
+6. Food waste
+7. Fish waste
+8. Vegetable waste
+9. Glass waste
+10. Horticultural waste
+11. Tree trunk waste
+12. Tree branches waste
+13. Leaves waste
+14. Non-ferrous metal waste
+15. Aluminium waste
+16. Stainless steel waste
+17. Copper waste
+18. Paper or cardboard waste
+19. Paper waste
+20. Old corrugated cardboard waste
+21. Plastics waste
+22. Polyethylene terephthalate (PET) waste
+23. High-density polyethylene (HDPE) waste
+24. Low-density polyethylene (LDPE) waste
+25. Polypropylene (PP) waste
+26. Polystyrene (PS) waste
+27. Scrap tyres waste
+28. Textile or leather waste
+29. Used slag waste
+30. Wood waste
+31. Pallet waste
+32. Furniture waste
+
+Additionally, there is also a mixed waste category, which allows users to denote the composition of waste if required.
+
+Figure 7: TBox representation of the waste composition for mixed waste
+
+```mermaid
+    erDiagram
+    "ontowm:MixedWaste" ||--|{ "owm:Waste" : "cmns-col:comprises"
+```
 
 ## 2.3 Assets
 
 This ontology provides representation of assets managed by organisation with waste operations, such as bins and garbage trucks. These assets are also intended to have geospatial and temporal representations, which will typically follow the `sf:Point` representation as follows:
 
-Figure 6: TBox representation of geospatial and temporal representation of assets
+Figure 8: TBox representation of geospatial and temporal representation of assets
 
 ```mermaid
     erDiagram
-    "sf:Point" {geo-asWKT geo-wktLiteral}
-    "sf:Point" ||--|| "time:TemporalEntity" : "time:hasTime"
+    "geo:Geometry" {geo-asWKT geo-wktLiteral}
+    "geo:Geometry" ||--|| "time:TemporalEntity" : "time:hasTime"
     "time:Instant" ||--o{ "time:TemporalEntity" : "rdfs:subClassOf"
     "time:Interval" ||--o{ "time:TemporalEntity" : "rdfs:subClassOf"
 ```
@@ -371,7 +398,7 @@ The following truck types are employed in the waste management sector:
 1. **Rear End Loader Truck**: A truck designed for municipal waste collection, featuring a rear-loading mechanism with a hydraulic lift to compact waste into the truck body.
 2. **Hooklift Truck**: A versatile truck equipped with a hydraulic hooklift system, used for transporting various container types, including heavy industrial and commercial waste containers.
 
-Figure 7: TBox representation of a truck for the waste management sector
+Figure 9: TBox representation of a truck for the waste management sector
 
 ```mermaid
     erDiagram
@@ -399,7 +426,7 @@ There are six categories of bins:
 4. **7-feet bin**: An open top container bin with a length of 7 feet
 5. **Compactor bin**: An open top container bin with the ability to compact waste
 
-Figure 8: TBox representation of a bin
+Figure 10: TBox representation of a bin
 
 ```mermaid
     erDiagram
@@ -437,7 +464,7 @@ Excess Variable Charge = (Net Waste Weight - Service Tonnage Cap) \\
 Net Waste Weight = Gross Truck Weight - Unladen Truck Weight
 ```
 
-Figure 9: ABox representation of the computation of the total price charged for each occurrence of a waste service
+Figure 11: ABox representation of the computation of the total price charged for each occurrence of a waste service
 
 ```mermaid
     erDiagram
