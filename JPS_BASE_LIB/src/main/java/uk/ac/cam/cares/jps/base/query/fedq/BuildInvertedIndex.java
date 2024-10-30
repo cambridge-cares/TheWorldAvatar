@@ -55,14 +55,14 @@ public class BuildInvertedIndex {
     }
 
     /**
-     * startProcessing works on an endpoint to retrieve class and properties through
+     * createInvertedIndex works on an endpoint to retrieve class and properties through
      * sparqlQuey to create an index
      * 
      * @param endpointUrl,
      * @param sparqlQuery
      * @return
      */
-    public void startProcessing(String endpointUrl, String sparqlQuery) {
+    public void createInvertedIndex(String endpointUrl, String sparqlQuery) {
         int counter = 0;
         // Create a Query object
         Query query = QueryFactory.create(sparqlQuery);
@@ -359,7 +359,7 @@ public class BuildInvertedIndex {
         for (String namespace : namespaces) {
             String endpointUrl = blazegraphBaseUrl + "/namespace/" + namespace + "/sparql";
             System.out.println("Start processing endpoint: " + endpointUrl);
-            kgs.startProcessing(endpointUrl, sparqlQuery);
+            kgs.createInvertedIndex(endpointUrl, sparqlQuery);
         }
 
         kgs.saveIndices();
