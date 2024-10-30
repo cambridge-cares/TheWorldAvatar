@@ -461,7 +461,7 @@ def instantiate_output(ccdc_number, chemical_formula, mop_names, yield_str, clie
         chemical_output.isRepresentedBy.add(mop)
     return chemical_output, yield_instance 
 
-def chemicals_upload(input_path, output_path, settings=None):
+def chemicals_upload(input_path, output_path):
     print("input path: ", input_path)
     filename_noext, subdir, client_synthesis, client_species, client_mop  = uputil.start_upload(input_path)
     # go through json file:
@@ -525,7 +525,7 @@ def elemental_analysis_upload(elemental_analysis, syn_client, chemical_output, m
         
     return analysis_class, chemical_output
 
-def characterisation_upload(input_path, output_path, settings):
+def characterisation_upload(input_path, output_path):
     filename_noext, subdir, syn_client, sparql_client_species, sparql_client_mop  = uputil.start_upload(input_path)
     characterisation_json                                       = utils.read_json_file(input_path)["Devices"][0]
     elemental_device_name                                       = characterisation_json["ElementalAnalysisDevice"]["deviceName"]
@@ -623,7 +623,7 @@ def instantiate_cbu(cbu_formula, syn_client, mop_client, species):
         cbu                                 = ChemicalBuildingUnit.pull_from_kg(cbu_iri[0]["CBUIRI"], syn_client, recursive_depth=-1)[0]
     return cbu
 
-def link_cbu(input_path, output_path, settings):    
+def link_cbu(input_path, output_path):    
     filename_noext, subdir, syn_client, sparql_client_species, sparql_client_mop  = uputil.start_upload(input_path)
     cbu_json                                                        = utils.read_json_file(input_path)["synthesisProcedures"]
     print("json: ", cbu_json)
@@ -689,7 +689,7 @@ def parse_element_string(element_string, syn_client):
     return element_percentages
 
 
-def upload_steps(input_path, output_path, settings =None):
+def upload_steps(input_path, output_path):
     filename_noext, subdir, sparql_client_synthesis, sparql_client_species, sparql_client_mop  = uputil.start_upload(input_path)
     # go through json file:
     print("input path: ", input_path)

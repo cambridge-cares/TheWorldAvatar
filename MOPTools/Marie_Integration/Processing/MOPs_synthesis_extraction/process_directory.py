@@ -18,6 +18,7 @@ def process_files_in_directory(func, input_dir, output_dir):
 def transform_xyz_string(file_path:str, output_dir:str) -> None:
     """
     Transforms a single-line XYZ format string into a multi-line format and writes it to a file.
+    Used to fix wrongly generated .xyz files
 
     Parameters:
     xyz_string (str): The input string in XYZ format with a single line.
@@ -132,7 +133,6 @@ def count_tokens_and_calculate_cost(file_path:str, output_dir:str) -> dict:
     print(f"Estimated costs for {base_name} : {estimated_cost} for the provided: {num_tokens} tokens.")
     return {"num_tokens": num_tokens, "estimated_cost": estimated_cost}
 
-
 def extract_synthesis(extraction):
     match extraction:
         case "chemicals":
@@ -161,34 +161,33 @@ def extract_synthesis(extraction):
             process_files_in_directory(llm.extract_characterization, in_directory, out_directory)
         case _:
             print("There was no match with extraction variable specify one of the following: chemicals, procedure, preSteps, steps, or characterisation!")
-
     return
 
 def upload_chemcials():
     in_directory                        = os.path.join(para.DATA_FOLDER, f"{para.BATCH_NAME}_chemicals1")
     print("in directory: ", in_directory)
-    process_files_in_directory(up.chemicals_upload, in_directory, in_directory, {})
+    process_files_in_directory(up.chemicals_upload, in_directory, in_directory)
 
 def upload_steps_dir():
     in_directory                        = os.path.join(para.DATA_FOLDER, f"{para.BATCH_NAME}_steps")
     print("in directory: ", in_directory)
-    process_files_in_directory(up.upload_steps, in_directory, in_directory, {})
+    process_files_in_directory(up.upload_steps, in_directory, in_directory)
 
 def upload_characterisation_dir():
     in_directory                        = os.path.join(para.DATA_FOLDER, f"{para.BATCH_NAME}_characterisation")
     print("in directory: ", in_directory)
-    process_files_in_directory(up.characterisation_upload, in_directory, in_directory, {})
+    process_files_in_directory(up.characterisation_upload, in_directory, in_directory)
 
 def link_cbu_dir():
     in_directory                        = os.path.join(para.DATA_FOLDER, f"{para.BATCH_NAME}_cbu")
     print("in directory: ", in_directory)
-    process_files_in_directory(up.link_cbu, in_directory, in_directory, {})
+    process_files_in_directory(up.link_cbu, in_directory, in_directory)
 
 def transform_txt_folder(file_dir):
     """transform pdf to txt. Expsnd readme"""
     in_directory                        = os.path.join(file_dir, f"{para.BATCH_NAME}_pdf")
     out_directory                       = os.path.join(file_dir, f"{para.BATCH_NAME}_txt")
-    process_files_in_directory(extract_text_from_pdf, in_directory, out_directory, {})
+    process_files_in_directory(extract_text_from_pdf, in_directory, out_directory)
 
 
 
