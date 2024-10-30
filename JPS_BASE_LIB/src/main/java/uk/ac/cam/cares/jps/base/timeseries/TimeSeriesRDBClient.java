@@ -1089,20 +1089,37 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         // collect the list of time values that exist in the table
         // these rows are treated specially to avoid duplicates
         // Populate columns row by row
+
         InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
+
+        List<Object[]> listNewValues = new ArrayList<>();
+
+        List<T> tsTime = ts.getTimes();
+        List<List<?>> tsValues = new ArrayList<>();
+        int numDataIRI = ts.getDataIRIs().size();
+
+        for (int j = 0; j < numDataIRI; j++) {
+            tsValues.add(ts.getValues(dataIRIs.get(j)));
+        }
+
+        for (int i = 0; i < tsTime.size(); i++) {
+            Object[] newValues = new Object[dataIRIs.size() + 1];
+            newValues[0] = tsTime.get(i);
+            for (int j = 0; j < numDataIRI; j++) {
+                newValues[j + 1] = tsValues.get(j).get(i);
+            }
+            listNewValues.add(newValues);
+        }
+
         for (int i = 0; i < ts.getTimes().size(); i++) {
             // newValues is the row elements
-            Object[] newValues = new Object[dataIRIs.size() + 1];
-            newValues[0] = ts.getTimes().get(i);
-            for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-                newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
-            }
-            insertValueStep = insertValueStep.values(newValues);
+            insertValueStep = insertValueStep.values(listNewValues.get(i));
         }
 
         // Manually modify the query to upsert
         // TODO: use jOOQ 3.18 or above which support upsert (requires Java 17 or above)
         StringBuilder insertStatement = new StringBuilder(insertValueStep.toString());
+
         insertStatement.append(System.lineSeparator())
                 .append("on conflict (\"")
                 .append(timeColumn.getName())
