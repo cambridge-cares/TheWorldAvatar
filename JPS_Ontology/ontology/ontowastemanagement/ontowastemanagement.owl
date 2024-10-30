@@ -55,19 +55,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/handlesWaste -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/handlesWaste">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
-        <rdfs:comment>A relationship describing the waste category a disposal facility could handle.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>handles waste</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedBin -->
 
 
@@ -98,7 +85,14 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinDeliveryService"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
         <rdfs:comment>A relationship describing the bin type for a series of waste services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
@@ -111,71 +105,11 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalCharge">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/BaseCharge"/>
-        <rdfs:comment>A relationship describing the waste disposal charge of a disposal facility.</rdfs:comment>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalService"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/VariableCharge"/>
+        <rdfs:comment>A relationship describing the disposal charge of a waste disposal service.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>has disposal charge</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalSite -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalSite">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
-        <rdfs:comment>A relationship describing the disposal site for a waste service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has disposal site</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
-        <rdfs:comment>A relationship describing the gross truck weight during the waste disposal procedure.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has gross weight</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasMeasurementTime -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasMeasurementTime">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="https://www.w3.org/TR/owl-time/#time:Instant"/>
-        <rdfs:comment>A relationship which describes the time of truck weight measurement with waste during a job.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has measurement time</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasNetWeight -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasNetWeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/NetWeight"/>
-        <rdfs:comment>A relationship describing the net weight of the waste collected during the service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has net weight</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -193,42 +127,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
-        <rdfs:comment>A relationship describing the unladen truck weight during the waste disposal procedure.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has unladen weight</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
         <rdfs:comment>A relationship describing the waste category for a series of waste services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>has waste type</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/transportsWaste -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/transportsWaste">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
-        <rdfs:comment>A relationship describing the waste transported during a waste service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>transports waste</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -262,7 +169,7 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/isSingleStream">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>is single stream</rdfs:label>
@@ -279,13 +186,6 @@
      -->
 
 
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Mass -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass"/>
     
 
 
@@ -340,6 +240,13 @@
     
 
 
+    <!-- https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
 
 
@@ -347,17 +254,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceTonnage -->
+    <!-- https://www.theworldavatar.com/kg/ontoservice/VariableCharge -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceTonnage"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/BaseCharge -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BaseCharge"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/VariableCharge"/>
     
 
 
@@ -376,7 +276,14 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinDeliveryService">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment>A service that delivers an empty bin to the specified site.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Bin delivery service</rdfs:label>
@@ -388,7 +295,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinExchangeService">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
         <rdfs:comment>A service that delivers an empty bin to the specified site and tows away the full bin to a disposal site.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Bin exchange service</rdfs:label>
@@ -435,7 +342,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/DumpAndReturnService">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
         <rdfs:comment>A service that delivers an empty bin for the collection and disposal of waste on the service site, before returning the newly emptied bin to the service site .</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Dump and return service</rdfs:label>
@@ -483,18 +390,11 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/GrossTruckWeight">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass"/>
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
         <rdfs:comment>Weight of a truck and its waste before any disposal.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Gross truck weight</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
     
 
 
@@ -515,20 +415,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/HookliftTruck">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>A versatile truck equipped with a hydraulic hooklift system, used for transporting various container types, including heavy industrial and commercial waste containers.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Hooklift truck</rdfs:label>
@@ -588,18 +474,11 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/NetWasteWeight">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceTonnage"/>
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
         <rdfs:comment>Weight of the waste disposed, which is calculated through the difference of gross and unladen weight.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Net waste weight</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/NetWeight -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/NetWeight"/>
     
 
 
@@ -644,20 +523,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/RearEndLoaderTruck">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasGrossWeight"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GrossWeight"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasUnladenWeight"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>A truck designed for municipal waste collection, featuring a rear-loading mechanism with a hydraulic lift to compact waste into the truck body.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Rear end loader truck</rdfs:label>
@@ -693,7 +558,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TouchAndGoService">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
         <rdfs:comment>A service that brings an empty bin to collect and dispose of the waste on the service site.  The bin will not be returned to the service site afterwards.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Touch and go service</rdfs:label>
@@ -705,7 +570,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TowAwayService">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
         <rdfs:comment>A service that collects and disposes a filled garbage bin from the service site to the disposal site. The bin will not be returned to the service site afterwards.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Tow away service</rdfs:label>
@@ -729,7 +594,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenTruckWeight">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass"/>
+        <rdfs:subClassOf rdf:resource="https://www.omg.org/spec/Commons/QuantitiesAndUnits/ScalarQuantityValue"/>
         <rdfs:comment>Weight of an empty truck after waste disposal.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Unladen truck weight</rdfs:label>
@@ -737,27 +602,39 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/UnladenWeight"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontowastemanagement/Waste -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/Waste">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasNetWeight"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/NetWeight"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment>Any material, substance, or by-product that is no longer useful or required after the completion of a process. It is typically discarded because it is considered worthless, defective, or surplus to requirements.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Waste</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials from residential, commercial, or industrial sources.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Waste collection service</rdfs:label>
     </owl:Class>
     
 
@@ -774,35 +651,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteService -->
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalService -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalService">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalSite"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials from residential, commercial, or industrial sources.</rdfs:comment>
+        <rdfs:comment>A service for the management, treatment, and disposal of waste that adheres to environmental regulations and promoting sustainability.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>Waste service</rdfs:label>
+        <rdfs:label>Waste disposal service</rdfs:label>
     </owl:Class>
     
 
@@ -840,13 +696,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>7-feet bin</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.w3.org/TR/owl-time/#time:Instant -->
-
-
-    <owl:Class rdf:about="https://www.w3.org/TR/owl-time/#time:Instant"/>
 </rdf:RDF>
 
 
