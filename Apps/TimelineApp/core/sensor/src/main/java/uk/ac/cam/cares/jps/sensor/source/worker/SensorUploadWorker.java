@@ -89,10 +89,6 @@ public class SensorUploadWorker extends Worker {
             // Send to the network
             if (allSensorData.length() > 0) {
                 LOGGER.info("Attempting to send " + allSensorData.length() + " items to the network.");
-                for (int i = 0; i < allSensorData.length(); i++) {
-                    JSONObject sensorDataItem = allSensorData.getJSONObject(i);
-                    LOGGER.info("Sensor Data Item " + (offset + i + 1) + ": " + sensorDataItem.toString());
-                }
                 sensorNetworkSource.sendPostRequest(deviceId, compressedData, allSensorData);
                 LOGGER.info("Accumulated data sent to network.");
             } else {
