@@ -224,7 +224,7 @@ class RetrievedFrom(ObjectProperty):
 class HasChemicalBuildingUnit(ObjectProperty):
     rdfs_isDefinedBy                    = OntoMOPs
 class IsUsedAsChemical(ObjectProperty):
-    rdfs_isDefinedBy                    = OntoSyn
+    rdfs_isDefinedBy                    = OntoMOPs
 class HasVesselType(ObjectProperty):
     rdfs_isDefinedBy                    = OntoSyn
 class HasStirringTemperature(ObjectProperty):
