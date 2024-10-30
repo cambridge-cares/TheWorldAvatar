@@ -60,7 +60,7 @@ The namespace for the ontology is:
 
 ## 2.1. Service agreement
 
-The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept to specify the agreed upon service requirements and terms. The general usage of this concept can be found as part of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology, including its duration, involved parties, payment obligations, and commitments, as well as the organisation profiles in the [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/) ontology. This section specifically demonstrates the extension of `OntoService` and `OntoProfile` to the waste operation industry.
+The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept to specify the agreed upon service requirements and terms. The general usage of this concept can be found as part of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology, including its duration, involved parties, payment obligations, and commitments, as well as the organisation profiles in the [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/) ontology. This ontology specifically demonstrates the extension of `OntoService` and `OntoProfile` to the waste operation industry.
 
 Figure 1: TBox representation for a Waste Service Agreement following the FIBO ontology
 
@@ -69,21 +69,43 @@ Figure 1: TBox representation for a Waste Service Agreement following the FIBO o
     "fibo-fnd-pas-pas:ServiceAgreement" {
         rdfs-label agreement_no_string
     }
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:Client" : "fibo-fnd-arr-rep:isRequestedBy"
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:ServiceProvider" : "fibo-fnd-agr-ctr:hasContractParty"
+
+    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontowm:WasteService"  : "fibo-fnd-rel-rel:provides"
+
+    "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+
     "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteService" : "fibo-fnd-rel-rel:governs"
+    "ontowm:WasteService" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
+    "ontowm:WasteService" ||--|| "ontowm:Waste" : "ontowm:hasWasteType"
+    "ontowm:WasteService" ||--|| "ontowm:Bin" : "ontowm:hasBinType"
     "ontowm:WasteService" {
         rdfs-label label_string
-        rdfs-comments description_string
+        rdfs-comments remarks_string
+        ontowm-isSingleStream boolean
     }
-    "ontowm:WasteService" ||--|| "ontobim:Facility" : "ontoservice:services"
+
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
 
+    "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
     "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
-    "bot:Building" ||--o{ "fibo-fnd-plc-adr:PhysicalAddress" : "fibo-fnd-pty-adr:hasAddress"
-    "fibo-fnd-plc-adr:PhysicalAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
-    "fibo-fnd-plc-adr:PhysicalAddress" {
+    "bot:Building" ||--o{ "fibo-fnd-plc-adr:ConventionalStreetAddress" : "fibo-fnd-plc-adr:hasAddress"
+    "fibo-fnd-plc-adr:ConventionalStreetAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
+    "fibo-fnd-plc-adr:ConventionalStreetAddress" ||--o{ "fibo-fnd-plc-adr:StreetAddress" : "fibo-fnd-plc-adr:hasStreetAddress"
+    "fibo-fnd-plc-adr:ConventionalStreetAddress" {
         fibo-fnd-plc-loc-hasCityName string
-        fibo-fnd-plc-adr-hasAddressLine1 string
         fibo-fnd-plc-adr-hasPostalCode string
+    }
+    "fibo-fnd-plc-adr:StreetAddress" ||--o{ "fibo-fnd-plc-adr:PrimaryAddressNumber" : "fibo-fnd-plc-adr:hasPrimaryAddressNumber"
+    "fibo-fnd-plc-adr:StreetAddress" ||--o{ "fibo-fnd-plc-adr:StreetName" : "fibo-fnd-plc-adr:hasStreetName"
+
+    "fibo-fnd-plc-adr:PrimaryAddressNumber" {
+        fibo-fnd-rel-rel-hasTag block_number_string
+    }
+    "fibo-fnd-plc-adr:StreetName" {
+        fibo-fnd-rel-rel-hasTag string
     }
 
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
@@ -92,76 +114,93 @@ Figure 1: TBox representation for a Waste Service Agreement following the FIBO o
     "cmns-dt:Date" {
         cmns-dt-hasDateValue xsd-date
     }
-
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:Client" : "fibo-fnd-arr-rep:isRequestedBy"
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:ServiceProvider" : "fibo-fnd-agr-ctr:hasContractParty"
-
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontowm:WasteService"  : "fibo-fnd-rel-rel:provides"
-
-    "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
 ```
-
-The service agreement will also mandate a service commitment, including the service time, schedule, and/or remarks. It is intended that this commitment does not instantiate any further attributes from their corresponding concepts but stores the repeated categories.
 
 Furthermore, the waste service will be given a contact person, who is an employee of the client. This person will play a role of a service provider who provides a contact service for the waste service specified in the agreement. The waste service is also assigned a corresponding waste category and bin type for service execution.
 
-Figure 2: TBox representation of the contractual obligations for the waste collection service
+Figure 2: TBox representation for the client's point of contact (contact service) for the service following the FIBO ontology
 
 ```mermaid
     erDiagram
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "ontoservice:ServiceCommitment" : "fibo-fnd-agr-ctr:hasContractualElement"
-
-    "ontoservice:ServiceCommitment" {
-        rdfs-comments remarks_string
+    "fibo-fnd-pas-pas:ServiceAgreement" {
+        rdfs-label agreement_no_string
     }
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
 
-    "ontoservice:ServiceCommitment" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
-     "fibo-fnd-dt-fd:RegularSchedule" {
-        fibo-fnd-dt-fd-hasCount integer
-    }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:Date" : "cmns-dt:hasStartDate"
-    "cmns-dt:Date" {
-        cmns-dt-hasDateValue xsd-date
-    }
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:Client" : "fibo-fnd-arr-rep:isRequestedBy"
+    "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
 
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "ontoservice:hasTimeSlot"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
-    "cmns-dt:TimeOfDay" {
-        cmns-dt_hasTimeValue xsd_time_string
-    }
-
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
-    "fibo-fnd-dt-fd:RecurrenceInterval" {
-        hasSubClass fibo-fnd-dt-fd-Monday
-        hasSubClass fibo-fnd-dt-fd-Friday
-        hasSubClass fibo-fnd-dt-fd-Sunday
-    }
-    "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
-    "fibo-fnd-dt-bd:DayOfMonth" {
-        fibo-fnd-dt-fd-hasOrdinalNumber integer
-    }
-
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteService" : "fibo-fnd-rel-rel:governs"
-    "ontowm:WasteService" ||--|| "ontowm:Waste" : "ontowm:requestedWasteCategory"
-    "ontowm:WasteService" ||--|| "ontowm:Bin" : "ontowm:requestedBinType"
-    "ontowm:WasteService" ||--|{ "ontowm:WasteDisposalFacility" : "ontowm:hasDisposalSite"
-    "ontowm:WasteDisposalFacility" ||--o{ "ontobim:Facility" : "rdfs:subClassOf"
-
-    "ontowm:WasteService" {
-        isSingleStream boolean
-    }
-
+    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
     "ontoservice:ContactService" ||--|{ "ontowm:WasteService" : "ontoservice:servesAsContactFor"
 ```
 
+In monitoring the services rendered during the lifecycle of a service agreement, the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology can describe, represent, and generate the occurences of the lifecycle, stages, and events according to the real-time occurrences of the service delivered. A comprehensive description of the lifecycle representation is available at [section 2.2 of OntoService](../ontoservice#22-service-agreement-lifecycle). Briefly, each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. Each occurrence can either holds during a date period or occur at an instantaneous time. Events may include missed or terminated service, which should instantiate an occurrence with descriptions/comments if they were to occur. For scheduled service events, a regular schedule represents the upcoming events within the service agreement. When the occurrences occur, they must be instantiated to link with both the event and schedule instances.
+
+Figure 3: TBox representation for the service agreement's overall lifecycle
+
+```mermaid
+    erDiagram
+    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fnd-pas-pas:ServiceAgreement" : "fibo-fnd-arr-lif:isLifecycleOf"
+    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-arr-lif:hasStage"
+    "ontoservice:CreationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
+    "ontoservice:ServiceExecutionStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
+    "ontoservice:ExpirationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
+    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:CreationStage" : "cmns-dt:succeeds"
+    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
+
+    "ontoservice:ServiceExecutionStage" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "cmns-col:comprises"
+    "fibo-fbc-pas-fpas:ContractLifecycleEvent" {
+        rdfs-label name-string
+        rdfs-comment description-string
+    }
+    "ontoservice:MissedServiceEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    "ontoservice:TerminatedServiceEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
+    "fibo-fnd-dt-fd:RegularSchedule" {
+        fibo-fnd-dt-fd-hasCount integer
+    }
+
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:Date" : "cmns-dt:hasStartDate"
+    "cmns-dt:Date" {
+        cmns-dt-hasDateValue xsd-date
+    }
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "ontoservice:hasTimeSlot"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
+    "cmns-dt:TimeOfDay" {
+        cmns-dt_hasTimeValue xsd_time_string
+    }
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
+    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfWeek" {
+        NamedIndividual fibo-fnd-dt-fd-Monday
+        NamedIndividual fibo-fnd-dt-fd-Friday
+        NamedIndividual fibo-fnd-dt-fd-Sunday
+    }
+    "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfMonth" {
+        fibo-fnd-dt-fd-hasOrdinalNumber integer
+    }
+
+    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:GarbageTruck" : "ontoservice:hasAssignedTransport"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
+        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
+        rdfs-comment remark-string
+    }
+```
+
 ## 2.2. Waste services
 
-In the waste operation industry, several waste services are available below. These services are then performed with a corresponding waste service event to represent that specific occurrence, and serves as a record to be analysed for quality, efficiency, and compliance with service agreements.
+In the waste operation industry, several waste services are available below. These services are then performed with a corresponding `ContractLifecycleEventOccurrence` to represent that specific occurrence, and serves as a record to be analysed for quality, efficiency, and compliance with service agreements.
 
 1. **Bin delivery service**: Delivery of an empty bin to site. Must be assigned to an OTC truck
 2. **Bin exchange service**: Delivery of an empty bin to site while towing away the existing full bin. Must be assigned to an OTC truck
@@ -169,32 +208,35 @@ In the waste operation industry, several waste services are available below. The
 4. **Touch and go service**: Brings an empty bin to collect and dispose of the waste on the service site without returning the bin afterwards. Must be assigned to an OTC truck
 5. **Dump and return service**: Brings an empty bin to collect and dispose of the waste on the service site and returns the bin afterwards. Must be assigned to an OTC truck
 
-This section specifically demonstrates the extension of the `ServiceEvent` concept in the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology to the waste operation industry. The scheduler agent is expected to generate a new service event instance based on the associated service commitment and payment obligations following their service intervals.
-
-Figure 3: TBox representation of a waste service event
+Figure 4: TBox representation of a waste service event occurrence
 
 ```mermaid
     erDiagram
-    "ontowm:WasteService" ||--o{ "ontowm:WasteServiceEvent" : "ontoservice:hasEvent"
+    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-col:comprises"
+    "ontoservice:ServiceDeliveryEvent" {
+        rdfs-label name-string
+        rdfs-comment description-string
+    }
+    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
+    "ontoservice:ServiceDeliveryEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ " cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
+        rdfs-comment remark-string
+    }
 
-    "ontowm:WasteServiceEvent" ||--|| "ontoservice:ServiceStatus" : "ontoservice:hasStatus"
-    "ontowm:WasteServiceEvent" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
-    "ontowm:WasteServiceEvent" ||--|{ "ontowm:GarbageTruck" : "ontoservice:assignTransport"
-
-    "ontowm:WasteServiceEvent" ||--|{ "ontowm:Bin" : "ontowm:assignBin"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontowm:Bin" : "ontowm:hasAssignedBin"
     "ontowm:Bin" ||--|| "ontowm:BinStatus" : "ontowm:hasStatus"
 
-    "ontowm:WasteServiceEvent" ||--|{ "ontowm:Waste" : "ontowm:transports"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontowm:Waste" : "ontowm:transportsWaste"
     "ontowm:Waste" ||--|| "ontowm:NetWeight" : "ontowm:hasNetWeight"
 
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:GarbageTruck" : "ontoservice:hasAssignedTransport"
+    "ontowm:GarbageTruck" ||--|| "fibo-fnd-org-fm:Employee" : "ontowm:hasAssignedDriver"
     "ontowm:GarbageTruck" ||--|{ "ontowm:GrossWeight" : "ontowm:hasGrossWeight"
     "ontowm:GarbageTruck" ||--|{ "ontowm:UnladenWeight" : "ontowm:hasUnladenWeight"
 
-    "ontowm:WasteServiceEvent" {
-        ontoservice-hasOrderNumber string
-        ontoservice-scheduledOn xsd_date_time
-        ontoservice-completedOn xsd_date
-    }
 ```
 
 ## 2.2.1 Waste categories
@@ -220,7 +262,7 @@ The following waste categories are represented in this ontology:
 
 The waste collected during a waste service often have to be disposed at a particular facility, which is represented in the following manner:
 
-Figure 4: TBox representation of waste disposal facilities
+Figure 5: TBox representation of waste disposal facilities
 
 ```mermaid
     erDiagram
@@ -241,7 +283,7 @@ Figure 4: TBox representation of waste disposal facilities
 
 This ontology provides representation of assets managed by organisation with waste operations, such as bins and garbage trucks. These assets are also intended to have geospatial and temporal representations, which will typically follow the `sf:Point` representation as follows:
 
-Figure 5: TBox representation of geospatial and temporal representation of assets
+Figure 6: TBox representation of geospatial and temporal representation of assets
 
 ```mermaid
     erDiagram
@@ -253,7 +295,7 @@ Figure 5: TBox representation of geospatial and temporal representation of asset
 
 ### 2.3.1 Truck
 
-Figure 6: TBox representation of a garbage truck
+Figure 7: TBox representation of a garbage truck
 
 ```mermaid
     erDiagram
@@ -277,7 +319,7 @@ There are six categories of bins:
 4. **7-feet bin**: An open top container bin with a wall height of 7 feet
 5. **Compactor bin**: An open top container bin with the ability to compact waste
 
-Figure 7: TBox representation of a bin
+Figure 8: TBox representation of a bin
 
 ```mermaid
     erDiagram
@@ -312,11 +354,11 @@ Excess Variable Charge = (Net Waste Weight - Service Tonnage Cap) \\
 Net Waste Weight = Gross Truck Weight - Unladen Truck Weight
 ```
 
-Figure 8: ABox representation of the computation of the total price charged for a waste service
+Figure 9: ABox representation of the computation of the total price charged for each occurrence of a waste service
 
 ```mermaid
     erDiagram
-    "ontowm:WasteServiceEvent" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
     "ontoservice:TotalPrice" ||--|| "inst:TotalPriceDerivation" : "ontoderivation:belongsTo"
     "inst:TotalPriceDerivation" ||--|{ "ontoservice:GrossPrice" : "ontoderivation:isDerivedFrom"
     "inst:TotalPriceDerivation" ||--|{ "ontoservice:Tax" : "ontoderivation:isDerivedFrom"
@@ -365,5 +407,4 @@ Figure 8: ABox representation of the computation of the total price charged for 
     "inst:NetWeightDerivation" {
         rdf-type ontoderivation-Derivation
     }
-
 ```

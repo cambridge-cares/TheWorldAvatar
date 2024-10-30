@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontowastemanagement="https://www.theworldavatar.com/kg/ontowastemanagement/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/">
-        <dc:date>03 October 2024</dc:date>
+        <dc:date>30 October 2024</dc:date>
         <rdfs:comment>OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -55,32 +55,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/assignTransport -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/assignTransport">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceEvent"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/GarbageTruck"/>
-        <rdfs:comment>A relationship assigning the truck to a service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>assign truck</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/assignBin -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/assignBin">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceEvent"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-        <rdfs:comment>A relationship assigning the bin to a service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>assign bin</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontowastemanagement/handlesWaste -->
 
 
@@ -94,6 +68,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedBin -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedBin">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+        <rdfs:comment>A relationship assigning the bin to a service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>has assigned bin</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedDriver -->
 
 
@@ -103,6 +90,19 @@
         <rdfs:comment>A relationship describing the vehicle and its assigned driver.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>has assigned driver</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+        <rdfs:comment>A relationship describing the bin type for a series of waste services.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>has bin type</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -205,41 +205,28 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/requestedBinType -->
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/requestedBinType">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-        <rdfs:comment>A relationship describing the bin type for a series of waste services.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>requested bin type</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/requestedWasteCategory -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/requestedWasteCategory">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
         <rdfs:comment>A relationship describing the waste category for a series of waste services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>requested waste category</rdfs:label>
+        <rdfs:label>has waste type</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/transports -->
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/transportsWaste -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/transports">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceEvent"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/transportsWaste">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
         <rdfs:comment>A relationship describing the waste transported during a waste service.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>transports</rdfs:label>
+        <rdfs:label>transports waste</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -322,6 +309,21 @@
     
 
 
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedBin"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
     <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee -->
 
 
@@ -340,13 +342,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceEvent -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
     
 
 
@@ -406,17 +401,6 @@
         <rdfs:comment>The current state of a bin. </rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Bin status</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/BinStatusEnum -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinStatusEnum">
-        <rdfs:comment>The enumerated states belonging to the bin status: filled or empty, available or unavailable or decomissioned.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>Bin status enum</rdfs:label>
     </owl:Class>
     
 
@@ -769,6 +753,13 @@
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasDisposalSite"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteDisposalFacility"/>
@@ -776,14 +767,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/requestedBinType"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/requestedWasteCategory"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
             </owl:Restriction>
@@ -791,25 +775,6 @@
         <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials from residential, commercial, or industrial sources.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Waste service</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceEvent -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteServiceEvent">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/assignBin"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>A specific occurrence or instance of a waste service being performed, characterised by a particular time and context. Each event capture details such as the date, time, and/or specific actions to record and analyse individual performances for quality, efficiency, and compliance with service agreements.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>Waste service event</rdfs:label>
     </owl:Class>
     
 
