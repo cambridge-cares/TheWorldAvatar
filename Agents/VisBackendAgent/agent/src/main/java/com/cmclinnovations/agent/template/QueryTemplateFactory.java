@@ -97,7 +97,7 @@ public class QueryTemplateFactory {
           .thenComparing(SparqlVariableOrder::subOrder));
       // Append a ? before the property
       this.varSequence.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
-          .append(variable.property())
+          .append(variable.property().replaceAll("\\s+", "_"))
           .append(" "));
     }
     this.queryLines.values().forEach(whereBuilder::append);
