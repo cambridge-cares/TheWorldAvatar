@@ -20,14 +20,14 @@ For more information: https://github.com/cambridge-cares/TheWorldAvatar/tree/mai
 
 ## Data Uploader
 
-The district boundary dataset offers detailed boundary measurements for Kaiserslautern, while the second dataset provides information on various parking zones and parking garages within the city. All three data files are available in GeoJSON format. 
+The district boundary dataset offers detailed boundary measurements for Kaiserslautern, while the second dataset provides information on various parking zones and parking garages within the city. Third is the 3D building models dataset, it describes three-dimensional building and structure information based on the floor plans of the real estate cadastre in various levels of detail (LoD). The LoD2 describes all buildings, structures or parts of buildings with standardized roof shapes, It is a GML file. Plots tells us about the ID, Owner, Zone, Price, the status of the plot, Previous Use of the Plot and the contamination type that exists in the plot to determine if it is a Brownfield site or a normal site. The shapefiles are created using QGIS Software. Tbox for the Kaiserslautern is created by reusing the Ontoplot, Ontozoning and OntobuiltEnv.
 
 Contents for the stack data uploader can be found at :
 1. https://opendata.kaiserslautern.de/dataset/ortsbezirksgrenzen-kaiserslautern for district boundary dataset.
 
 2. https://opendata.kaiserslautern.de/dataset/parken-in-kaiserslautern for parking zones and parking garages.
 
-
+3. https://geoshop.rlp.de/opendata-geb3dlo.html contains the 3D buildings GML files.
 
 Place the data file in ./stack-data-uploader-inputs/data
 
@@ -39,6 +39,7 @@ start the data uploader with the following command:
 ```
 ./stack.sh start <STACK_NAME>
 ```
+After running the command verify if Geoserver, PostgreSQL and Blazegraph works accurately.  
 
 ## Visualisation
 
