@@ -1,6 +1,7 @@
 package com.cmclinnovations.agent.service;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,11 @@ import java.util.stream.StreamSupport;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.federated.FedXFactory;
+import org.eclipse.rdf4j.federated.repository.FedXRepository;
+import org.eclipse.rdf4j.federated.repository.FedXRepositoryConnection;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.resultio.text.csv.SPARQLResultsCSVWriter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +32,6 @@ import com.cmclinnovations.agent.model.SparqlEndpointType;
 import com.cmclinnovations.agent.model.SparqlVariableOrder;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
-import com.cmclinnovations.agent.utils.ShaclResource;
-import com.cmclinnovations.agent.utils.StringResource;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,7 +56,6 @@ public class KGService {
   private static final String JSON_MEDIA_TYPE = "application/json";
   private static final String LD_JSON_MEDIA_TYPE = "application/ld+json";
   private static final String SPARQL_MEDIA_TYPE = "application/sparql-query";
-  private static final String CSV_MEDIA_TYPE = "text/csv";
 
   public static final String INVALID_SHACL_ERROR_MSG = "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.";
 
@@ -104,7 +107,9 @@ public class KGService {
    * A method that executes a federated query across available endpoints to
    * retrieve the original-format results.
    * 
-   * @param query the query for execution.
+   * @param query        the query for execution.
+   * @param endpointType the type of endpoint. Options include Mixed, Blazegraph,
+   *                     and Ontop.
    * 
    * @return the query results.
    */
@@ -155,19 +160,38 @@ public class KGService {
    * Executes the query at the target endpoint to retrieve results in the CSV
    * format.
    * 
-   * @param query     the query for execution.
-   * @param namespace the target namespace.
+   * @param query        the query for execution.
+   * @param endpointType the type of endpoint. Options include Mixed, Blazegraph,
+   *                     and Ontop.
    * 
-   * @return the query results in the CSV format.
+   * @return the query results as CSV rows.
    */
-  public String queryCSV(String query, String namespace) {
-    return this.client.post()
-        .uri(BlazegraphClient.getInstance().getRemoteStoreClient(namespace).getQueryEndpoint())
-        .accept(MediaType.valueOf(CSV_MEDIA_TYPE))
-        .contentType(MediaType.valueOf(SPARQL_MEDIA_TYPE))
-        .body(query)
-        .retrieve()
-        .body(String.class);
+  public String[] queryCSV(String query, SparqlEndpointType endpointType) {
+    List<String> endpoints;
+    if (endpointType.equals(SparqlEndpointType.MIXED)) {
+      endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
+      endpoints.addAll(this.getEndpoints(SparqlEndpointType.ONTOP));
+    } else {
+      endpoints = this.getEndpoints(endpointType);
+    }
+    try {
+      StringWriter stringWriter = new StringWriter();
+      FedXRepository repository = FedXFactory.createSparqlFederation(endpoints);
+      try (FedXRepositoryConnection conn = repository.getConnection()) {
+        TupleQuery tq = conn.prepareTupleQuery(query);
+        // Extend execution time as required
+        tq.setMaxExecutionTime(600);
+        SPARQLResultsCSVWriter csvWriter = new SPARQLResultsCSVWriter(stringWriter);
+        tq.evaluate(csvWriter);
+        // Results are in csv in one string
+        String csvData = stringWriter.toString();
+        // Split into rows
+        return csvData.split("\\r?\\n");
+      }
+    } catch (Exception e) {
+      LOGGER.error(e);
+    }
+    return new String[0];
   }
 
   /**
@@ -275,7 +299,22 @@ public class KGService {
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
     Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, false);
     LOGGER.debug("Querying the knowledge graph for the instances in csv format...");
-    return this.queryCSV(queries.poll(), DEFAULT_NAMESPACE);
+    // Query for direct instances
+    String[] resultRows = this.queryCSV(queries.poll(), SparqlEndpointType.MIXED);
+    // Query for secondary instances ie instances that are subclasses of parent
+    String[] secondaryResultRows = this.queryCSV(queries.poll(), SparqlEndpointType.BLAZEGRAPH);
+    StringBuilder results = new StringBuilder();
+    // First row will always be column names and should be appended
+    for (String row : resultRows) {
+      results.append(row).append(System.getProperty("line.separator"));
+    }
+    // Ignore first row of secondary results as these are duplicate column names
+    if (secondaryResultRows.length > 1) {
+      for (int i = 1; i < secondaryResultRows.length; i++) {
+        results.append(secondaryResultRows[i]).append(System.getProperty("line.separator"));
+      }
+    }
+    return results.toString();
   }
 
   /**
