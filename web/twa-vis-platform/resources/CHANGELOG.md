@@ -3,6 +3,12 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.9.1
+
+### Features
+
+* Added CMCL logo to default icons library
+
 ## 5.9.0
 
 ### Bug Fixes
