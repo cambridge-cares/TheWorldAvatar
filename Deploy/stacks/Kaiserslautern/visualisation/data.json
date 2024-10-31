@@ -1,85 +1,145 @@
 {
-  "name": "Kaiserslautern",
+  "name": "Kaiserslautern Digital Twin",
+  "stack": "http://localhost:3838",
   "groups": [
-    {
-      "name": "Parking garages",
-      "expanded": true,
-      "sources": [
-        {
-          "id": "lines-source",
-          "type": "geojson",
-          "data": "http://localhost:3838/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Aparking_garage&maxFeatures=50&outputFormat=application%2Fjson"
-        }
-      ],
-      "layers": [
-        {
-          "id": "lines-layer",
-          "name": "Sample vector paths",
-          "source": "lines-source",
-          "type": "circle",
-          "layout": {
-              "visibility": "visible"
-          },
-          "paint": {
-              "circle-radius": 5,
-              "circle-color": "#005EB8",
-              "circle-stroke-color": "#231f20",
-              "circle-stroke-width": 1
-          }
+      {
+          "name": "Plots",
+          "expanded": true,
+          "sources": [
+              {
+                  "id": "lines-source",
+                  "type": "geojson",
+                  "data": "http://localhost:3838/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3APlots&maxFeatures=50&outputFormat=application%2Fjson"
+                  
+              }
+          ],
+          "layers": [
+              {
+                  "id": "lines-layer",
+                  "name": "Plots",
+                  "source": "lines-source",
+                  "type": "fill"
+              }
+          ]
+      },
+      {
+          "name": "kaiserslautern",
+          "stack": "http://localhost:3838",
+          "sources": [
+              {
+                  "id": "bavaria-source",
+                  "type": "vector",
+                  "tiles": [
+                      "http://localhost:3838/geoserver/dispersion-kaiserslautern/wms?service=WMS&version=1.1.0&request=GetMap&layers=dispersion-kaiserslautern%3Abuilding-kaiserslautern_gsl&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                  ]
+              }
+          ],
+          "layers": [
+              {
+                  "id": "kaiserslautern-layer",
+                  "name": "kaiserslautern",
+                  "source": "bavaria-source",
+                  "source-layer": "building-kaiserslautern_gsl",
+                  "type": "fill-extrusion",
+                  "paint": {
+                      "fill-extrusion-color": "#FFFFFF",
+                      "fill-extrusion-opacity": 0.9,
+                      "fill-extrusion-base": 0,
+                      "fill-extrusion-height": [
+                          "case",
+                          [
+                              "has",
+                              "building_height"
+                          ],
+                          [
+                              "get",
+                              "building_height"
+                          ],
+                          8
+                      ]
+                  }
+              }
+          ]
+      },
+      {
+          "name": "Parking garages",
+          "expanded": true,
+          "sources": [
+              {
+                  "id": "lines-source",
+                  "type": "geojson",
+                  "data": "http://localhost:3838/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3Aparking_garage&maxFeatures=50&outputFormat=application%2Fjson"
+              }
+          ],
+          "layers": [
+              {
+                  "id": "lines-layer",
+                  "name": "Sample vector paths",
+                  "source": "lines-source",
+                  "type": "circle",
+                  "layout": {
+                      "visibility": "visible"
+                  },
+                  "paint": {
+                      "circle-radius": 5,
+                      "circle-color": "#005EB8",
+                      "circle-stroke-color": "#231f20",
+                      "circle-stroke-width": 1
+                  }
+              }
+          ]
+      },
+      {
+          "name": "District Boundary",
+          "expanded": true,
+          "sources": [
+              {
+                  "id": "lines-source",
+                  "type": "geojson",
+                  "data": "http://localhost:3838/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3ADistrict_boundary&maxFeatures=50&outputFormat=application%2Fjson"
+              }
+          ],
+          "layers": [
+              {
+                  "id": "lines-layer",
+                  "name": "Sample vector paths",
+                  "source": "lines-source",
+                  "type": "line",
+                  "layout": {
+                      "visibility": "visible"
+                  },
+                  "paint": {
+                      "line-color": "#d35230",
+                      "line-width": 3
+                  }
+              }
+          ]
+      },
+      {
+          "name": "Parking Zones",
+          "expanded": true,
+          "sources": [
+              {
+                  "id": "lines-source",
+                  "type": "geojson",
+                  "data": "http://localhost:3838/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3AParking_Zones&maxFeatures=50&outputFormat=application%2Fjson"
+              }
+          ],
+          "layers": [
+              {
+                  "id": "lines-layer",
+                  "name": "Sample vector paths",
+                  "source": "lines-source",
+                  "type": "line",
+                  "layout": {
+                      "visibility": "visible"
+                  },
+                  "paint": {
+                      "line-color": "#32a852",
+                      "line-width": 3
+                  }
+              }
+          ]
       }
-      ]
-    },
-    {
-      "name": "District Boundary",
-      "expanded": true,
-      "sources": [
-        {
-          "id": "lines-source",
-          "type": "geojson",
-          "data": "http://localhost:3838/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3ADistrict_boundary&maxFeatures=50&outputFormat=application%2Fjson"
-        }
-      ],
-      "layers": [
-        {
-          "id": "lines-layer",
-          "name": "Sample vector paths",
-          "source": "lines-source",
-          "type": "line",
-          "layout": {
-              "visibility": "visible"
-          },
-          "paint": {
-            "line-color": "#d35230",
-            "line-width": 3
-          }
-      }
-      ]
-    },
-    {
-      "name": "Parking Zones",
-      "expanded": true,
-      "sources": [
-        {
-          "id": "lines-source",
-          "type": "geojson",
-          "data": "http://localhost:3838/geoserver/the_world_avatar/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=the_world_avatar%3AParking_Zones&maxFeatures=50&outputFormat=application%2Fjson"
-        }
-      ],
-      "layers": [
-        {
-          "id": "lines-layer",
-          "name": "Sample vector paths",
-          "source": "lines-source",
-          "type": "line",
-          "layout": {
-              "visibility": "visible"
-          },
-          "paint": {
-            "line-color": "#32a852",
-            "line-width": 3
-          }
-      }
-      ]
-    }
   ]
 }
