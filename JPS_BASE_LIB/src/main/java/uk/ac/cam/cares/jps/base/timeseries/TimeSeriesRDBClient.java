@@ -1096,14 +1096,14 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         List<T> tsTime = ts.getTimes();
         List<List<?>> tsValues = new ArrayList<>();
-        int numDataIRI = ts.getDataIRIs().size();
+        int numDataIRI = dataIRIs.size();
 
         for (int j = 0; j < numDataIRI; j++) {
             tsValues.add(ts.getValues(dataIRIs.get(j)));
         }
 
         for (int i = 0; i < tsTime.size(); i++) {
-            Object[] newValues = new Object[dataIRIs.size() + 1];
+            Object[] newValues = new Object[numDataIRI + 1];
             newValues[0] = tsTime.get(i);
             for (int j = 0; j < numDataIRI; j++) {
                 newValues[j + 1] = tsValues.get(j).get(i);
@@ -1111,7 +1111,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             listNewValues.add(newValues);
         }
 
-        for (int i = 0; i < ts.getTimes().size(); i++) {
+        for (int i = 0; i < tsTime.size(); i++) {
             // newValues is the row elements
             insertValueStep = insertValueStep.values(listNewValues.get(i));
         }

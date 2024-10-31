@@ -24,6 +24,7 @@ import org.jooq.Field;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
 import org.jooq.Record;
+import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Table;
 import org.jooq.UpdateSetFirstStep;
@@ -369,6 +370,12 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     @Override
     public void addTimeSeriesData(List<TimeSeries<T>> tsList, Connection conn) {
 
+        // Check if central database lookup table exists
+        if (!checkCentralTableExists(conn)) {
+            throw new JPSRuntimeException(
+                    exceptionPrefix + "Central RDB lookup table has not been initialised yet");
+        }
+
         // Initialise connection and set jOOQ DSL context
         DSLContext context = DSL.using(conn, DIALECT);
 
@@ -380,27 +387,18 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             // All database interactions in try-block to ensure closure of connection
             try {
 
-                // Check if central database lookup table exists
-                if (!checkCentralTableExists(conn)) {
-                    throw new JPSRuntimeException(
-                            exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-                }
-
                 // Ensure that all provided dataIRIs/columns are located in the same RDB table
                 // (throws Exception if not)
                 checkDataIsInSameTable(dataIRI, context);
 
                 String tsIri = getTimeSeriesIRI(dataIRI.get(0), context);
                 // Assign column name for each dataIRI; name for time column is fixed
-                Map<String, String> dataColumnNames = new HashMap<>();
-                for (String s : dataIRI) {
-                    dataColumnNames.put(s, getColumnName(s, context));
-                }
+                Map<String, String> dataColumnNames = bulkGetColumnName(dataIRI, context);
 
                 // Append time series data to time series table
                 // if a row with the time value exists, that row will be updated instead of
                 // creating a new row
-                populateTimeSeriesTable(ts, dataColumnNames, tsIri, conn);
+                populateTimeSeriesTable(ts, dataIRI, dataColumnNames, tsIri, conn);
             } catch (JPSRuntimeException e) {
                 // Re-throw JPSRuntimeExceptions
                 throw e;
@@ -1049,19 +1047,18 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      * 
      * @param tsTable         name of the timeseries table provided as string
      * @param ts              time series to write into the table
+     * @param dataIRIs        list of strings of data IRIs
      * @param dataColumnNames list of column names in the tsTable corresponding to
      *                        the data in the ts
      * @param conn            connection to the RDB
      * @throws SQLException
      */
-    private void populateTimeSeriesTable(TimeSeries<T> ts, Map<String, String> dataColumnNames,
-            String tsIri, Connection conn) throws SQLException {
+    private void populateTimeSeriesTable(TimeSeries<T> ts, List<String> dataIRIs,
+            Map<String, String> dataColumnNames, String tsIri, Connection conn) throws SQLException {
 
         DSLContext context = DSL.using(conn, DIALECT);
 
-        List<String> dataIRIs = ts.getDataIRIs();
-
-        String tsTableName = getTimeSeriesTableName(ts.getDataIRIs().get(0), context);
+        String tsTableName = getTimeSeriesTableName(dataIRIs.get(0), context);
 
         // Retrieve RDB table from table name
         Table<?> table = getDSLTable(tsTableName);
@@ -1079,17 +1076,32 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         List<Integer> rowsWithMatchingTime = new ArrayList<>();
         // Populate columns row by row
         InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
+
+        List<Object[]> listNewValues = new ArrayList<>();
+
+        List<T> tsTime = ts.getTimes();
+        List<List<?>> tsValues = new ArrayList<>();
+        int numDataIRI = dataIRIs.size();
+
+        for (int j = 0; j < numDataIRI; j++) {
+            tsValues.add(ts.getValues(dataIRIs.get(j)));
+        }
+
+        for (int i = 0; i < tsTime.size(); i++) {
+            Object[] newValues = new Object[numDataIRI + 2];
+            newValues[0] = tsTime.get(i);
+            for (int j = 0; j < numDataIRI; j++) {
+                newValues[j + 1] = tsValues.get(j).get(i);
+            }
+            newValues[numDataIRI + 1] = tsIri;
+            listNewValues.add(newValues);
+        }
+
         int numRowsWithoutMatchingTime = 0;
-        for (int i = 0; i < ts.getTimes().size(); i++) {
+        for (int i = 0; i < tsTime.size(); i++) {
             // newValues is the row elements
-            if (!checkTimeRowExists(tsTableName, tsIri, ts.getTimes().get(i), context)) {
-                Object[] newValues = new Object[dataIRIs.size() + 2];
-                newValues[0] = ts.getTimes().get(i);
-                for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-                    newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
-                }
-                newValues[ts.getDataIRIs().size() + 1] = tsIri;
-                insertValueStep = insertValueStep.values(newValues);
+            if (!checkTimeRowExists(tsTableName, tsIri, tsTime.get(i), context)) {
+                insertValueStep = insertValueStep.values(listNewValues.get(i));
                 numRowsWithoutMatchingTime = numRowsWithoutMatchingTime + 1;
             } else {
                 rowsWithMatchingTime.add(i);
@@ -1109,13 +1121,13 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         for (int rowIndex : rowsWithMatchingTime) {
             UpdateSetFirstStep<?> updateStep = context.update(table);
 
-            for (int i = 0; i < ts.getDataIRIs().size(); i++) {
-                String dataIRI = ts.getDataIRIs().get(i);
+            for (int i = 0; i < numDataIRI; i++) {
+                String dataIRI = dataIRIs.get(i);
 
-                if (i == (ts.getDataIRIs().size() - 1)) {
+                if (i == (numDataIRI - 1)) {
                     updateStep
                             .set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
-                            .where(timeColumn.eq(ts.getTimes().get(rowIndex))).and(TS_IRI_COLUMN.eq(tsIri));
+                            .where(timeColumn.eq(tsTime.get(rowIndex))).and(TS_IRI_COLUMN.eq(tsIri));
 
                     // open source jOOQ does not support postgis geometries, hence not using
                     // execute() directly
@@ -1131,7 +1143,8 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     }
 
     /**
-     * check if a row exists to prevent duplicate rows with the same time value and time series IRI
+     * check if a row exists to prevent duplicate rows with the same time value and
+     * time series IRI
      * 
      * @param tsTableName
      * @param tsIri
@@ -1141,7 +1154,8 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      */
     private boolean checkTimeRowExists(String tsTableName, String tsIri, T time, DSLContext context) {
         try {
-            return context.fetchExists(selectFrom(getDSLTable(tsTableName)).where(timeColumn.eq(time)).and(TS_IRI_COLUMN.eq(tsIri)));
+            return context.fetchExists(
+                    selectFrom(getDSLTable(tsTableName)).where(timeColumn.eq(time)).and(TS_IRI_COLUMN.eq(tsIri)));
         } catch (DataAccessException e) {
             LOGGER.error(e.getMessage());
             throw new JPSRuntimeException(exceptionPrefix + "Error in checking if a row exists for a given time value");
@@ -1222,16 +1236,20 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      * @param context
      */
     private void checkDataIsInSameTable(List<String> dataIRI, DSLContext context) {
-        // Get time series IRI of first dataIRI
-        String tsIRI = getTimeSeriesIRI(dataIRI.get(0), context);
-        // Check that all further dataIRI share this time series IRI
-        if (dataIRI.size() > 1) {
-            for (int i = 1; i < dataIRI.size(); i++) {
-                String curTsIRI = getTimeSeriesIRI(dataIRI.get(i), context);
-                if (!curTsIRI.contentEquals(tsIRI)) {
-                    throw new JPSRuntimeException(exceptionPrefix + "Provided data is not within the same RDB table");
-                }
-            }
+
+        Table<?> table = getDSLTable(DB_TABLE_NAME);
+
+        List<Condition> conditions = dataIRI.stream().map(DATA_IRI_COLUMN::eq).collect(Collectors.toList());
+
+        Condition combinedCondition = DSL.or(conditions);
+
+        List<String> queryResult = context.select(TS_IRI_COLUMN).from(table).where(combinedCondition)
+                .fetch(TS_IRI_COLUMN);
+
+        boolean allIdentical = queryResult.stream().allMatch(s -> s.equals(queryResult.get(0)));
+
+        if (!allIdentical) {
+            throw new JPSRuntimeException(exceptionPrefix + "Provided data is not within the same RDB table");
         }
     }
 
@@ -1284,6 +1302,36 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             throw new JPSRuntimeException(
                     exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+        }
+    }
+
+    /**
+     * Retrieve column name for provided dataIRI from central database lookup table
+     * (if it exists)
+     * <p>
+     * Requires existing RDB connection
+     * 
+     * @param dataIRI data IRI provided as string
+     * @param context
+     * @return Corresponding column name in the RDB table related to the data IRI
+     */
+    private Map<String, String> bulkGetColumnName(List<String> dataIRIs, DSLContext context) {
+        Map<String, String> dataIRIColumnMap = new HashMap<>();
+        try {
+            // Look for the entry dataIRI in dbTable
+            Table<?> table = getDSLTable(DB_TABLE_NAME);
+            Result<Record2<String, String>> queryResult = context.select(COLUMNNAME_COLUMN, DATA_IRI_COLUMN)
+                    .from(table).where(DATA_IRI_COLUMN.in(dataIRIs)).fetch();
+            for (Record result : queryResult) {
+                String dataIRI = result.getValue(DATA_IRI_COLUMN);
+                String columnValue = result.getValue(COLUMNNAME_COLUMN);
+                dataIRIColumnMap.put(dataIRI, columnValue);
+            }
+            return dataIRIColumnMap;
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.error(e.getMessage());
+            throw new JPSRuntimeException(
+                    exceptionPrefix + "At least 1 data IRI does not have an assigned time series instance");
         }
     }
 
