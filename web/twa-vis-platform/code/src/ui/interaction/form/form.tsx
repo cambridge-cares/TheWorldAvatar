@@ -22,7 +22,7 @@ interface FormComponentProps {
   formType: string;
   agentApi: string;
   setResponse: React.Dispatch<React.SetStateAction<HttpResponse>>;
-  onSubmittingChange: (isSubmitting: boolean) => void;
+  onSubmittingChange: (_isSubmitting: boolean) => void;
 }
 
 /**

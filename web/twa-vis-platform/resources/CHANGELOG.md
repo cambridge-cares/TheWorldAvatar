@@ -3,6 +3,24 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.9.1
+
+### Features
+
+* Added CMCL logo to default icons library
+
+## 5.9.0
+
+### Bug Fixes
+
+* Read in `ASSET_PREFIX` environment variable and write it to next.js asset prefix and basepath to fix static resources behind double nginx
+
+## 5.8.1
+
+### Bug Fixes
+
+* Fix production build issues
+
 ## 5.8.0
 
 ### Features
@@ -27,8 +45,7 @@
 ### Features
 
 * Extension of the form UI for search capabilities
-* Addition of initial search capabilities for the map visualisation
-* Addition of time slots for the form schedule section
+* Addition of initial search capabilities for the map visualisation* Addition of time slots for the form schedule section
 * Modify the registry to work with the new vis backend agent
 * Consolidation of the urls of assets as constants in one file
 

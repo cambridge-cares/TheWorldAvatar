@@ -7,7 +7,6 @@ The uploaded content provided by the deploying developer should match the direct
 - [`config/`](#1-configuration): Contains config/settings files.
 - [`images/`](#2-assets): Custom image files.
 - [`optional-pages/`](#3-optional-pages): Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
-- [`style-overrides.css`](#4-styling-overrides): Optional CSS overrides.
 
 ## Table of Contents
 
@@ -20,7 +19,6 @@ The uploaded content provided by the deploying developer should match the direct
 - [3. Optional Pages](#3-optional-pages)
   - [3.1 Fields](#31-fields)
   - [3.2 Sample](#32-sample)
-- [4 Styling Overrides](#4-styling-overrides)
 
 ## 1. Configuration
 
@@ -69,6 +67,9 @@ Note that resources are optional and their configuration options can differ from
   - `data`: The entity of interest that acts as the page with scheduling capabilities. This should be `service` at the moment. 
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
+
+> [!NOTE]
+> When specifying image paths, be sure to use absolute paths beggining with a `/`
 
 > [!NOTE]  
 > The comments seen below are for explanation purposes only, they are not valid JSON. If wishing to use this content in production, remove the comments first.
@@ -397,7 +398,3 @@ slug: landing // This must always be set to landing for the landing page
 
 Insert your content here
 ```
-
-## 4. Styling Overrides
-
-Users can override existing styling to suit their requirements by adding a `style-overrides.css` to the root directory at `/twa/public`.
