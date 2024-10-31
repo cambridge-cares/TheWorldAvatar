@@ -20,14 +20,14 @@ For more information: https://github.com/cambridge-cares/TheWorldAvatar/tree/mai
 
 ## Data Uploader
 
-The district boundary dataset offers detailed boundary measurements for Kaiserslautern, while the second dataset provides information on various parking zones and parking garages within the city. Third is the 3D building models dataset, it describes three-dimensional building and structure information based on the floor plans of the real estate cadastre in various levels of detail (LoD). The LoD2 describes all buildings, structures or parts of buildings with standardized roof shapes, It is a GML file. Plots tells us about the ID, Owner, Zone, Price, the status of the plot, Previous Use of the Plot and the contamination type that exists in the plot to determine if it is a Brownfield site or a normal site. The shapefiles are created using QGIS Software. Tbox for the Kaiserslautern is created by reusing the Ontoplot, Ontozoning and OntobuiltEnv.
+The district boundary dataset offers detailed boundary measurements for Kaiserslautern, while the second dataset provides information on various parking zones and parking garages within the city. Third is the 3D building models dataset, it describes three-dimensional building and structure information based on the floor plans of the real estate cadastre in various levels of detail (LoD). The LoD2 describes all buildings, structures or parts of buildings with standardized roof shapes, It is a GML file. Plots tells us about the ID, Owner, Zone, Price, the status of the plot, Previous Use of the Plot and the contamination type that exists in the plot to determine if it is a Brownfield site or a normal site. The shapefiles are created using QGIS Software. Tbox for the Kaiserslautern is created by reusing the Ontoplot, Ontozoning and OntobuiltEnv. 
 
 Contents for the stack data uploader can be found at :
 1. https://opendata.kaiserslautern.de/dataset/ortsbezirksgrenzen-kaiserslautern for district boundary dataset.
 
 2. https://opendata.kaiserslautern.de/dataset/parken-in-kaiserslautern for parking zones and parking garages.
 
-3. https://geoshop.rlp.de/opendata-geb3dlo.html contains the 3D buildings GML files.
+3. Miro board link for the ontologies: https://miro.com/welcomeonboard/blBpUm9ENnhjQWZjaGIxT3RudmY4QzR4dE9IVzd3MGZlUzl4Q0w2Mm5zUnc4YlNTbldteG1IRmJaSzc5MGlDQnwzNDU4NzY0NTg4MTg3MjIxNzEyfDI=?share_link_id=389009059663 
 
 Place the data file in ./stack-data-uploader-inputs/data
 
