@@ -13,12 +13,12 @@ The namespace for the ontology is:
   - [Legend](#legend)
   - [2.1 Service Agreement](#21-service-agreement)
   - [2.2 Waste Services](#22-waste-services)
-    - [2.2 Waste Categories](#221-waste-categories)
+    - [2.2.1 Service Lifecycle](#221-service-lifecycle)
+    - [2.2.2 Waste Categories](#222-waste-categories)
   - [2.3 Assets](#23-assets)
     - [2.3.1 Truck](#231-truck)
     - [2.3.2 Bin](#232-bin)
-  - [2.4 Status](#24-status)
-  - [2.5 Reporting](#25-reporting)
+  - [2.4 Reporting](#25-reporting)
 
 # 2. Data model
 
@@ -197,6 +197,8 @@ Figure 3: TBox representation of waste services
     }
 ```
 
+### 2.2.1 Service Lifecycle
+
 In monitoring the services rendered during the lifecycle of a service agreement, the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology can describe, represent, and generate the occurences of the lifecycle, stages, and events according to the real-time occurrences of the service delivered. A comprehensive description of the lifecycle representation is available at [section 2.2 of OntoService](../ontoservice#22-service-agreement-lifecycle). Briefly, each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. These instances serves as a record to be analysed for quality, efficiency, and compliance with service agreements. Each occurrence can either holds during a date period or occur at an instantaneous time. During the service execution stage, there may be missed or terminated service events, that can be represented with the corresponding occurrence and descriptions/comments if they were to occur.
 
 Figure 4: TBox representation for the service agreement's overall lifecycle
@@ -331,9 +333,9 @@ Figure 6: TBox representation of an occurrence of the calculation of the amount 
     }
 ```
 
-## 2.2.1 Waste categories
+### 2.2.2 Waste categories
 
-The following waste categories are represented in this ontology. Please find the respective descriptions within the ontology for more details. 
+The following waste categories are represented in this ontology. Please find the respective descriptions within the ontology for more details.
 
 1. Ash waste
 2. Sludge waste
@@ -379,12 +381,13 @@ Figure 7: TBox representation of the waste composition for mixed waste
 
 ## 2.3 Assets
 
-This ontology provides representation of assets managed by organisation with waste operations, such as bins and garbage trucks. These assets are also intended to have geospatial and temporal representations, which will typically follow the `sf:Point` representation as follows:
+This ontology provides representation of assets managed by organisation with waste operations, such as bins and garbage trucks. These assets are also intended to have geospatial and temporal representations, which will typically follow the `geo:Feature` representation as follows:
 
 Figure 8: TBox representation of geospatial and temporal representation of assets
 
 ```mermaid
     erDiagram
+    "geo:Feature" ||--|{ "geo:Geometry" : "geo:hasGeometry"
     "geo:Geometry" {geo-asWKT geo-wktLiteral}
     "geo:Geometry" ||--|| "time:TemporalEntity" : "time:hasTime"
     "time:Instant" ||--o{ "time:TemporalEntity" : "rdfs:subClassOf"
@@ -403,11 +406,7 @@ Figure 9: TBox representation of a truck for the waste management sector
 ```mermaid
     erDiagram
     "vc:Truck" ||--|| "fibo-fnd-org-fm:Employee" : "ontowm:hasAssignedDriver"
-    "vc:Truck" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "lcc-cr:Location" {
-        rdfs-subClassOf geo-Geometry
-    }
-
+    "vc:Truck" ||--|| "geo:Feature" : "rdfs:subClassOf"
     "vc:Truck" {
         vc-vehicleIdentificationNumber plate_number_string
     }
@@ -430,10 +429,7 @@ Figure 10: TBox representation of a bin
 
 ```mermaid
     erDiagram
-    "ontowm:Bin" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "lcc-cr:Location" {
-        rdfs-subClassOf geo-Geometry
-    }
+    "ontowm:Bin" ||--|| "geo:Feature" : "rdfs:subClassOf"
     "ontowm:Bin" ||--|| "ontowm:BinStatus" : "ontowm:hasStatus"
 
     "ontowm:Bin" {
@@ -441,19 +437,15 @@ Figure 10: TBox representation of a bin
     }
 ```
 
-## 2.4 Status
+Bin statuses are also represented as enums in the corresponding ABox. The available statuses are as follows:
 
-The ontology represents statuses as enums in the corresponding ABox. The available statuses are as follows:
+- Filled
+- Empty
+- Available
+- Unavailable
+- Decomissioned
 
-1. Bin Status
-
-   - Filled
-   - Empty
-   - Available
-   - Unavailable
-   - Decomissioned
-
-## 2.5 Reporting
+## 2.4 Reporting
 
 This section focuses on reporting matters such as billing, specifically as an the extension of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology to the waste operation industry. The derived information framework is used in representing how the total price of a waste collection service is calculated and represented in the knowledge graph. The computation of the total price is as follows:
 
