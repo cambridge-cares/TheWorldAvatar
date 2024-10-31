@@ -255,7 +255,7 @@ Figure 5: TBox representation of a service delivery event occurrence for waste s
     "ontowm:Bin" ||--|| "ontowm:BinStatus" : "ontowm:hasStatus"
 
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:RearEndLoaderTruck/HookliftTruck" : "ontoservice:hasAssignedTransport"
-    "ontowm:RearEndLoaderTruck/HookliftTruck" ||--|| "fibo-fnd-org-fm:Employee" : "ontowm:hasAssignedDriver"
+    "ontowm:RearEndLoaderTruck/HookliftTruck" ||--|| "ontoprofile:Driver" : "ontoservice:hasAssignedDriver"
 
     "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
      "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
@@ -406,7 +406,7 @@ Figure 9: TBox representation of a truck for the waste management sector
 
 ```mermaid
     erDiagram
-    "vc:Truck" ||--|| "fibo-fnd-org-fm:Employee" : "ontowm:hasAssignedDriver"
+    "vc:Truck" ||--|| "ontoprofile:Driver" : "ontoservice:hasAssignedDriver"
     "vc:Truck" ||--|| "geo:Feature" : "rdfs:subClassOf"
     "vc:Truck" {
         vc-vehicleIdentificationNumber plate_number_string

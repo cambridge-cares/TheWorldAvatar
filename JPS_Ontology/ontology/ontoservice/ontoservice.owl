@@ -75,6 +75,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasAssignedDriver -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasAssignedDriver">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Driver"/>
+        <rdfs:comment>A relationship describing the vehicle and its assigned driver.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>has assigned driver</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/hasAssignedTransport -->
 
 
@@ -251,7 +264,15 @@
     <!-- https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle -->
 
 
-    <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoservice/hasAssignedDriver"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Driver"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
     
 
 
@@ -294,6 +315,13 @@
 
 
     <owl:Class rdf:about="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/Driver -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Driver"/>
     
 
 

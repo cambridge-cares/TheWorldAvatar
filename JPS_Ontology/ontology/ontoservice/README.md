@@ -294,6 +294,7 @@ Figure 7: TBox representation of the service agreement's service execution lifec
     "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "vc:Vehicle" : "ontoservice:hasAssignedTransport"
+    "vc:Vehicle" ||--|| "ontoprofile:Driver" : "ontoservice:hasAssignedDriver"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
         fibo-fnd-dt-oc-hasEventDate xsd-dateTime
