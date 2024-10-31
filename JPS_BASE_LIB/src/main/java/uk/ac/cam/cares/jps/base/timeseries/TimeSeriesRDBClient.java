@@ -306,9 +306,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         try {
             Statement statement = conn.createStatement();
-            List<String> listStmt = new ArrayList<>();
 
-            tsList.parallelStream().forEach(ts -> {
+            List<String> listStmt = tsList.parallelStream().map(ts -> {
                 List<String> dataIRI = ts.getDataIRIs();
 
                 // Ensure that all provided dataIRIs/columns are located in the same RDB table
@@ -322,11 +321,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
                 // Append time series data to time series table
                 // if a row with the time value exists, that row will be updated instead of
                 // creating a new row
-                String stmt = populateTimeSeriesTable(tsTableName, ts, dataIRI, dataColumnNames, conn);
-                synchronized (listStmt) {
-                    listStmt.add(stmt);
-                }
-            });
+                return populateTimeSeriesTable(tsTableName, ts, dataIRI, dataColumnNames, conn);
+            }).collect(Collectors.toList());
 
             for (String stmt : listStmt) {
                 statement.addBatch(stmt);
