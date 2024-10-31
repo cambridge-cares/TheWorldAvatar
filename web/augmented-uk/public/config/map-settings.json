@@ -163,17 +163,17 @@
         }
     },
     "icons": {
-        "pylon_superhigh_icon": "/images/augmented-uk/pylon_superhigh_icon.png",
-        "pylon_high_icon": "/images/augmented-uk/pylon_high_icon.png",
-        "pylon_medium_icon": "/images/augmented-uk/pylon_medium_icon.png",
-        "cable_ng": "/images/augmented-uk/cable_ng.png",
-        "line_ng_medium_icon": "/images/augmented-uk/line_ng_medium_icon.png",
-        "line_ng_high_icon": "/images/augmented-uk/line_ng_high_icon.png",
-        "line_ng_superhigh_icon": "/images/augmented-uk/line_ng_superhigh_icon.png",
-        "line_ukpn_medium_icon": "/images/augmented-uk/line_ukpn_medium_icon.png",
-        "line_ukpn_high_icon": "/images/augmented-uk/line_ukpn_high_icon.png",
-        "line_ukpn_low_icon": "/images/augmented-uk/line_ukpn_low_icon.png",
-        "NG_logo": "/images/augmented-uk/NG_logo.png",
-        "substation_icon": "/images/augmented-uk/substation_icon.png"
+        "pylon_superhigh_icon": "/demos/uk/images/augmented-uk/pylon_superhigh_icon.png",
+        "pylon_high_icon": "/demos/uk/images/augmented-uk/pylon_high_icon.png",
+        "pylon_medium_icon": "/demos/uk/images/augmented-uk/pylon_medium_icon.png",
+        "cable_ng": "/demos/uk/images/augmented-uk/cable_ng.png",
+        "line_ng_medium_icon": "/demos/uk/images/augmented-uk/line_ng_medium_icon.png",
+        "line_ng_high_icon": "/demos/uk/images/augmented-uk/line_ng_high_icon.png",
+        "line_ng_superhigh_icon": "/demos/uk/images/augmented-uk/line_ng_superhigh_icon.png",
+        "line_ukpn_medium_icon": "/demos/uk/images/augmented-uk/line_ukpn_medium_icon.png",
+        "line_ukpn_high_icon": "/demos/uk/images/augmented-uk/line_ukpn_high_icon.png",
+        "line_ukpn_low_icon": "/demos/uk/images/augmented-uk/line_ukpn_low_icon.png",
+        "NG_logo": "/demos/uk/images/augmented-uk/NG_logo.png",
+        "substation_icon": "/demos/uk/images/augmented-uk/substation_icon.png"
     }
 }
