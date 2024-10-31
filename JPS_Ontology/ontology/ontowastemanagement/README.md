@@ -228,7 +228,7 @@ Figure 4: TBox representation for the service agreement's overall lifecycle
     }
 ```
 
-When the service agreement is initially drafted, upcoming scheduled service events are represented within a regular schedule. For each successful delivery occurrence of the requested service, a `ContractLifecycleEventOccurrence` instance is linked to both the schedule and `ServiceDeliveryEvent` instances. This occurrence usually represents the collection and/or exchange of bins from the service site that occurs within a time period. This event occurrence will also contain information about the transport(s) and bin(s) involved
+When the service agreement is initially drafted, upcoming scheduled service events are represented within a regular schedule. For each successful delivery occurrence of the requested service, a `ContractLifecycleEventOccurrence` instance is linked to both the schedule and `ServiceDeliveryEvent` instances. This occurrence usually represents the collection and/or exchange of bins from the service site that occurs within a time period. This event occurrence will also contain information about the transport(s) and bin(s) involved. Note that the `hasAssignedBin` relationship  is intended to designate a bin that is used throughout the entire occurrence. However, if the occurrence involves multiple bins at different stages, the `hasReplacementBin` relationship can be used to represent the initial empty bin that is transported to the site to replace the existing bin, which will then be taken away for disposal.
 
 Figure 5: TBox representation of a service delivery event occurrence for waste services
 
@@ -251,6 +251,7 @@ Figure 5: TBox representation of a service delivery event occurrence for waste s
     }
 
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontowm:Bin" : "ontowm:hasAssignedBin"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontowm:Bin" : "ontowm:hasReplacementBin"
     "ontowm:Bin" ||--|| "ontowm:BinStatus" : "ontowm:hasStatus"
 
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:RearEndLoaderTruck/HookliftTruck" : "ontoservice:hasAssignedTransport"
