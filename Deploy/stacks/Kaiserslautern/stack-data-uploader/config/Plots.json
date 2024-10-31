@@ -1,0 +1,19 @@
+{
+    
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "skip": false,
+    "datasetDirectory": "Plots",
+    "dataSubsets": [
+        {
+            "name": "Plots",
+            "type": "vector",
+            "skip": false,
+            "subdirectory": "Plots",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:3857",
+                "sridOut": "EPSG:4326"
+            }
+        }
+    ]
+}
