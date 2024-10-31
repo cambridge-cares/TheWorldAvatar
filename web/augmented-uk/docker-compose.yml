@@ -8,8 +8,8 @@ services:
     restart: "always"
     environment:
       KEYCLOAK: false ## whether or not to use kc authentication on the server
-      PROTECTED_PAGES: /page,/otherpage ## pages that a user must be logged in to see
-      ROLE_PROTECTED_PAGES: /protected/page/ ## pages that require a user to have a given REALM or CLIENT role
+      PROTECTED_PAGES: /* ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /demos/uk/help ## pages that require a user to have a given REALM or CLIENT role
       ROLE: twa-test:protected ## the role required for the above list
       ASSET_PREFIX: /demos/uk
     secrets:
@@ -17,6 +17,7 @@ services:
       - mapbox_api_key
     volumes:
       - ./public:/twa/public/
+      - ./keycloak.json:/twa/keycloak.json
     ports:
       - "38384:3000"
 
