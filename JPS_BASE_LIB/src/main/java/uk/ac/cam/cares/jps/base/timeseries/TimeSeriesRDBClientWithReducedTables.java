@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -379,13 +380,13 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         // Initialise connection and set jOOQ DSL context
         DSLContext context = DSL.using(conn, DIALECT);
 
-        // Loop over all time series in list
-        for (TimeSeries<T> ts : tsList) {
+        // All database interactions in try-block to ensure closure of connection
 
-            List<String> dataIRI = ts.getDataIRIs();
+        try {
+            Statement statement = conn.createStatement();
 
-            // All database interactions in try-block to ensure closure of connection
-            try {
+            List<String> listStmt = tsList.parallelStream().map(ts -> {
+                List<String> dataIRI = ts.getDataIRIs();
 
                 // Ensure that all provided dataIRIs/columns are located in the same RDB table
                 // (throws Exception if not)
@@ -398,18 +399,25 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 // Append time series data to time series table
                 // if a row with the time value exists, that row will be updated instead of
                 // creating a new row
-                populateTimeSeriesTable(ts, dataIRI, dataColumnNames, tsIri, conn);
-            } catch (JPSRuntimeException e) {
-                // Re-throw JPSRuntimeExceptions
-                throw e;
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-                // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
-                // database) as JPSRuntimeException with respective message
-                throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+                return populateTimeSeriesTable(ts, dataIRI, dataColumnNames, tsIri, conn);
+            }).collect(Collectors.toList());
+
+            for (String stmt : listStmt) {
+                statement.addBatch(stmt);
             }
 
+            statement.executeBatch();
+
+        } catch (JPSRuntimeException e) {
+            // Re-throw JPSRuntimeExceptions
+            throw e;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+            // database) as JPSRuntimeException with respective message
+            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
         }
+
     }
 
     /**
@@ -1041,20 +1049,19 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     }
 
     /**
-     * Append time series data from TimeSeries object to (existing) RDB table
+     * Return SQL commands for appending time series data from TimeSeries object to (existing) RDB table
      * <p>
      * Requires existing RDB connection
      * 
-     * @param tsTable         name of the timeseries table provided as string
      * @param ts              time series to write into the table
      * @param dataIRIs        list of strings of data IRIs
      * @param dataColumnNames list of column names in the tsTable corresponding to
      *                        the data in the ts
+     * @param tsIri           IRI of timeseries as string
      * @param conn            connection to the RDB
-     * @throws SQLException
      */
-    private void populateTimeSeriesTable(TimeSeries<T> ts, List<String> dataIRIs,
-            Map<String, String> dataColumnNames, String tsIri, Connection conn) throws SQLException {
+    private String populateTimeSeriesTable(TimeSeries<T> ts, List<String> dataIRIs,
+            Map<String, String> dataColumnNames, String tsIri, Connection conn) {
 
         DSLContext context = DSL.using(conn, DIALECT);
 
@@ -1126,7 +1133,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         // Remove the last comma
         insertStatement.setLength(insertStatement.length() - 1);
 
-        context.execute(insertStatement.toString());
+        return insertStatement.toString();
 
     }
 

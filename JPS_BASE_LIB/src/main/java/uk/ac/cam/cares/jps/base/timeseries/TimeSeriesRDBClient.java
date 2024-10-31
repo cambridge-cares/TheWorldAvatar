@@ -1059,7 +1059,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
     }
 
     /**
-     * Append time series data from TimeSeries object to (existing) RDB table
+     * Return SQL commands for appending time series data from TimeSeries object to (existing) RDB table
      * <p>
      * Requires existing RDB connection
      * 
@@ -1069,7 +1069,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
      * @param dataColumnNames list of column names in the tsTable corresponding to
      *                        the data in the ts
      * @param conn            connection to the RDB
-     * @throws SQLException
      */
     private String populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, List<String> dataIRIs,
             Map<String, String> dataColumnNames, Connection conn) {
@@ -1140,8 +1139,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
 
         // Remove the last comma
         insertStatement.setLength(insertStatement.length() - 1);
-
-        // open source jOOQ does not support postgis, hence not using execute() directly
 
         return insertStatement.toString();
 
