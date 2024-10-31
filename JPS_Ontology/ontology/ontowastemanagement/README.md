@@ -264,7 +264,7 @@ Figure 5: TBox representation of a service delivery event occurrence for waste s
     "cmns-dt:Date" {
         cmns-dt-hasDateValue xsd-date
     }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "ontoservice:hasTimeSlot"
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
     "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
     "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
     "cmns-dt:TimeOfDay" {

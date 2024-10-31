@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>29 October 2024</dc:date>
+        <dc:date>31 October 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -156,19 +156,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/hasTimeSlot -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasTimeSlot">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule"/>
-        <rdfs:range rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/ExplicitTimePeriod"/>
-        <rdfs:comment>A relationship describing the time window for the regular schedule with a corresponding start and end time.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>has time slot</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoservice/hasTotalPrice -->
 
 
@@ -282,13 +269,6 @@
     
 
 
-    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule -->
-
-
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule"/>
-    
-
-
     <!-- https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/PaymentObligation -->
 
 
@@ -307,13 +287,6 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
-    
-
-
-    <!-- https://www.omg.org/spec/Commons/DatesAndTimes/ExplicitTimePeriod -->
-
-
-    <owl:Class rdf:about="https://www.omg.org/spec/Commons/DatesAndTimes/ExplicitTimePeriod"/>
     
 
 

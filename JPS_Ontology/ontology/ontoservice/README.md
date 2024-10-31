@@ -243,7 +243,7 @@ Figure 6: TBox representation of the service agreement's creation and expiration
 
 ## 2.2.2 Service Execution Stage
 
-During the service execution stage, services can result in three kinds of outcomes. These outcomes should be represented by a corresponding instance of a `ContractLifecycleEvent` with the following labels (`rdfs:label`) and descriptions (`rdfs:comment`). In representing the upcoming events, a regular schedule is also associated with the service delivery event, which denotes the scheduled days, time slots, and total occurrences.
+During the service execution stage, services can result in three kinds of outcomes. These outcomes should be represented by a corresponding instance of a `ContractLifecycleEvent` with the following labels (`rdfs:label`) and descriptions (`rdfs:comment`). In representing the upcoming events, a regular schedule is also associated with the service delivery event, which denotes the scheduled days, time slots, and total occurrences. Time slots are associated with the `hasTimePeriod` relationship.
 
 1. `Service Delivery Event`: Delivery of the requested service
 2. `Terminated Service Event`: A requested service that has been terminated either by the service provider or the client
@@ -273,7 +273,7 @@ Figure 7: TBox representation of the service agreement's service execution lifec
     "cmns-dt:Date" {
         cmns-dt-hasDateValue xsd-date
     }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "ontoservice:hasTimeSlot"
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
     "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
     "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
     "cmns-dt:TimeOfDay" {
