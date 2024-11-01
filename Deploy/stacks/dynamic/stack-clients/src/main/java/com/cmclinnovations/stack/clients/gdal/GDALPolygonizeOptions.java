@@ -31,4 +31,9 @@ public class GDALPolygonizeOptions extends VectorOptions<GDALPolygonizeOptions> 
     protected void processLayerNameOption(String layerName, List<String> args) {
         this.layerName = layerName;
     }
+
+    @Override
+    protected void processArgs(List<String> args) {
+        super.processArgs(args);
+    }
 }

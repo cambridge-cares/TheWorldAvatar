@@ -73,17 +73,6 @@ public abstract class VectorOptions<T extends VectorOptions<T>> extends CommonOp
         super.processArgs(args);
 
         processOtherOption(args, "-f", "PostgreSQL");
-
-        processConfigOption(args, "PG_USE_COPY", "YES");
-
-        // Setting this option prevents GDAL from "cleaning" the table and column
-        // names for Postgres, as described here:
-        // https://gdal.org/drivers/vector/pg.html#layer-creation-options
-        processLayerCreationOption(args, "LAUNDER", "NO");
-
-        datasetCreationOptions.forEach((name, value) -> processDatasetCreationOption(args, name, value));
-        layerCreationOptions.forEach((name, value) -> processLayerCreationOption(args, name, value));
-        outputDatasetOpenOptions.forEach((name, value) -> processOutputDatasetOpenOption(args, name, value));
     }
 
     public void setSchema(String schema) {
