@@ -10,11 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public abstract class VectorOptions<T extends VectorOptions<T>> extends CommonOptions<T> {
 
     @JsonProperty
-    private final Map<String, String> datasetCreationOptions = new HashMap<>();
+    protected final Map<String, String> datasetCreationOptions = new HashMap<>();
     @JsonProperty
-    private final Map<String, String> layerCreationOptions = new HashMap<>();
+    protected final Map<String, String> layerCreationOptions = new HashMap<>();
     @JsonProperty
-    private final Map<String, String> outputDatasetOpenOptions = new HashMap<>();
+    protected final Map<String, String> outputDatasetOpenOptions = new HashMap<>();
 
     public VectorOptions(String commamnd) {
         super(commamnd);
@@ -38,15 +38,15 @@ public abstract class VectorOptions<T extends VectorOptions<T>> extends CommonOp
         return (T) this;
     }
 
-    private void processDatasetCreationOption(List<String> args, String name, String value) {
+    protected void processDatasetCreationOption(List<String> args, String name, String value) {
         processKeyValuePair(args, "-dsco", name, value);
     }
 
-    private void processLayerCreationOption(List<String> args, String name, String value) {
+    protected void processLayerCreationOption(List<String> args, String name, String value) {
         processKeyValuePair(args, "-lco", name, value);
     }
 
-    private void processOutputDatasetOpenOption(List<String> args, String name, String value) {
+    protected void processOutputDatasetOpenOption(List<String> args, String name, String value) {
         processKeyValuePair(args, "-doo", name, value);
     }
 
