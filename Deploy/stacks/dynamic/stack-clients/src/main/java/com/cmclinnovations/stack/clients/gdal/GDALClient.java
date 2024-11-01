@@ -310,7 +310,7 @@ public class GDALClient extends ContainerClient {
     }
 
     private List<String> multipleGeoTiffRastersFromMultiDim(MultidimSettings mdimSettings, String filePath,
-            Path outputDirectory, String layerName, JSONArray timeArray) {
+            Path outputDirectory, JSONArray timeArray) {
 
         String variableArrayName = mdimSettings.getLayerArrayName();
         String dateTimeFormat = mdimSettings.getTimeOptions().getFormat();
@@ -509,7 +509,7 @@ public class GDALClient extends ContainerClient {
             JSONArray timeArray = getTimeFromGdalmdiminfo(timeArrayName, filePath);
 
             List<String> geoTiffFilenames = multipleGeoTiffRastersFromMultiDim(mdimSettings, filePath,
-                    geotiffsOutputDirectory, layerName, timeArray);
+                    geotiffsOutputDirectory, timeArray);
 
             Map<String, Integer> postgresOutputPathsAndNBands = multipleVrtRastersFromMultiDim(gdalContainerId,
                     mdimSettings, postgresOutputPath,
