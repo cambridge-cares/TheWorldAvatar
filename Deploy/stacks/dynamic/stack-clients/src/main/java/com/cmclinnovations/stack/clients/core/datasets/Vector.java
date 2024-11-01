@@ -3,6 +3,7 @@ package com.cmclinnovations.stack.clients.core.datasets;
 import java.nio.file.Path;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
+import com.cmclinnovations.stack.clients.gdal.GDALPolygonizeOptions;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.gdal.VectorOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
@@ -27,6 +28,16 @@ public class Vector extends GeoServerDataSubset {
     public void createLayers(String workspaceName, String database) {
         GeoServerClient.getInstance()
                 .createPostGISLayer(workspaceName, database, getSchema(), getTable(), geoServerSettings);
+    }
+
+    @JsonProperty("Ogr2OgrOptions")
+    void setOgr2Ogroptions(Ogr2OgrOptions ogr2OgrOptions) {
+        vectorOptions = ogr2OgrOptions;
+    }
+
+    @JsonProperty("gdalPolygonizeOptions")
+    void gDALPolygonizeOptions(GDALPolygonizeOptions gDALWarpOptions) {
+        vectorOptions = gDALWarpOptions;
     }
 
 }
