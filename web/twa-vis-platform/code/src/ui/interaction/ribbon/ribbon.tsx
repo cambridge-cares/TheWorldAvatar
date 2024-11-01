@@ -65,7 +65,9 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
 
   // State for map configuration settings
   const dispatch = useDispatch();
-  dispatch(addItem(ribbonContextItem));   // Add context menu item
+  useEffect(() => {
+    dispatch(addItem(ribbonContextItem));   // Add context menu item
+  }, [])
 
   if (isRibbonToggled) {
     return (
