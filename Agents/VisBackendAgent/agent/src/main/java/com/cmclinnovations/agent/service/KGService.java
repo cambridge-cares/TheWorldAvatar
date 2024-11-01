@@ -92,6 +92,30 @@ public class KGService {
   }
 
   /**
+   * Deletes the target instance and its associated properties from the KG.
+   * 
+   * @param addJsonSchema The JSON schema for adding a new instance
+   * @param targetId      The target instance IRI.
+   */
+  public ResponseEntity<String> delete(ObjectNode addJsonSchema, String targetId) {
+    // Parse the JSON schema into the corresponding delete query
+    String query = this.queryTemplateFactory.genDeleteQueryTemplate(addJsonSchema, targetId);
+    LOGGER.debug("Deleting instances...");
+
+    int statusCode = this.executeUpdate(query);
+    if (statusCode == 200) {
+      LOGGER.info("Instance has been successfully deleted!");
+      return new ResponseEntity<>(
+          "Instance has been successfully deleted!",
+          HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(
+          "Error deleting instances from the KG. Please read the logs for more information!",
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
    * Executes the query at the default endpoint `kb` to retrieve the
    * original-format results.
    * 
@@ -101,28 +125,6 @@ public class KGService {
    */
   public Queue<SparqlBinding> query(String query) {
     return this.query(query, BlazegraphClient.getInstance().getRemoteStoreClient(DEFAULT_NAMESPACE).getQueryEndpoint());
-  }
-
-  /**
-   * A method that executes a federated query across available endpoints to
-   * retrieve the original-format results.
-   * 
-   * @param query        the query for execution.
-   * @param endpointType the type of endpoint. Options include Mixed, Blazegraph,
-   *                     and Ontop.
-   * 
-   * @return the query results.
-   */
-  public JSONArray query(String query, SparqlEndpointType endpointType) {
-    List<String> endpoints;
-    if (endpointType.equals(SparqlEndpointType.MIXED)) {
-      endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
-      endpoints.addAll(this.getEndpoints(SparqlEndpointType.ONTOP));
-    } else {
-      endpoints = this.getEndpoints(endpointType);
-    }
-    return BlazegraphClient.getInstance().getRemoteStoreClient(DEFAULT_NAMESPACE)
-        .executeFederatedQuery(endpoints, query, 600);
   }
 
   /**
@@ -154,6 +156,28 @@ public class KGService {
       return this.parseResults((ArrayNode) jsonResults);
     }
     return new ArrayDeque<>();
+  }
+
+  /**
+   * A method that executes a federated query across available endpoints to
+   * retrieve results in JSONArray.
+   * 
+   * @param query        the query for execution.
+   * @param endpointType the type of endpoint. Options include Mixed, Blazegraph,
+   *                     and Ontop.
+   * 
+   * @return the query results.
+   */
+  public JSONArray query(String query, SparqlEndpointType endpointType) {
+    List<String> endpoints;
+    if (endpointType.equals(SparqlEndpointType.MIXED)) {
+      endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
+      endpoints.addAll(this.getEndpoints(SparqlEndpointType.ONTOP));
+    } else {
+      endpoints = this.getEndpoints(endpointType);
+    }
+    return BlazegraphClient.getInstance().getRemoteStoreClient(DEFAULT_NAMESPACE)
+        .executeFederatedQuery(endpoints, query, 600);
   }
 
   /**
@@ -345,48 +369,6 @@ public class KGService {
   }
 
   /**
-   * Executes the update query at the target endpoint.
-   * 
-   * @param query the query for execution.
-   * 
-   * @return the status code.
-   */
-  public int executeUpdate(String query) {
-    RemoteStoreClient kgClient = BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace);
-    // Execute the request
-    try (CloseableHttpResponse response = kgClient.executeUpdateByPost(query)) {
-      return response.getStatusLine().getStatusCode();
-    } catch (IOException e) {
-      LOGGER.error(e);
-    }
-    return 500;
-  }
-
-  /**
-   * Deletes the target instance and its associated properties from the KG.
-   * 
-   * @param addJsonSchema The JSON schema for adding a new instance
-   * @param targetId      The target instance IRI.
-   */
-  public ResponseEntity<String> delete(ObjectNode addJsonSchema, String targetId) {
-    // Parse the JSON schema into the corresponding delete query
-    String query = this.queryTemplateFactory.genDeleteQueryTemplate(addJsonSchema, targetId);
-    LOGGER.debug("Deleting instances...");
-
-    int statusCode = this.executeUpdate(query);
-    if (statusCode == 200) {
-      LOGGER.info("Instance has been successfully deleted!");
-      return new ResponseEntity<>(
-          "Instance has been successfully deleted!",
-          HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(
-          "Error deleting instances from the KG. Please read the logs for more information!",
-          HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  /**
    * Gets all available internal SPARQL endpoints within the stack of the
    * specified type.
    * 
@@ -406,6 +388,24 @@ public class KGService {
     return results.stream()
         .map(binding -> binding.getFieldValue("endpoint"))
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Executes the update query at the target endpoint.
+   * 
+   * @param query the query for execution.
+   * 
+   * @return the status code.
+   */
+  private int executeUpdate(String query) {
+    RemoteStoreClient kgClient = BlazegraphClient.getInstance().getRemoteStoreClient(this.namespace);
+    // Execute the request
+    try (CloseableHttpResponse response = kgClient.executeUpdateByPost(query)) {
+      return response.getStatusLine().getStatusCode();
+    } catch (IOException e) {
+      LOGGER.error(e);
+    }
+    return 500;
   }
 
   /**
