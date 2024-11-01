@@ -53,7 +53,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
       // Retrieve template from APIs
       let template: FormTemplate;
       // For add form, get a blank template
-      if (props.formType == Paths.REGISTRY_ADD) {
+      if (props.formType == Paths.REGISTRY_ADD || props.formType == SEARCH_FORM_TYPE) {
         template = await getFormTemplate(props.agentApi, props.entityType);
       } else {
         // For edit and view, get template with values
