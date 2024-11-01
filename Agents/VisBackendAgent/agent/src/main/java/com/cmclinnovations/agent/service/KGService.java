@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.federated.repository.FedXRepository;
 import org.eclipse.rdf4j.federated.repository.FedXRepositoryConnection;
 import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.eclipse.rdf4j.query.resultio.text.csv.SPARQLResultsCSVWriter;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -176,8 +177,22 @@ public class KGService {
     } else {
       endpoints = this.getEndpoints(endpointType);
     }
-    return BlazegraphClient.getInstance().getRemoteStoreClient(DEFAULT_NAMESPACE)
-        .executeFederatedQuery(endpoints, query, 600);
+    try {
+      StringWriter stringWriter = new StringWriter();
+      FedXRepository repository = FedXFactory.createSparqlFederation(endpoints);
+      try (FedXRepositoryConnection conn = repository.getConnection()) {
+        TupleQuery tq = conn.prepareTupleQuery(query);
+        // Extend execution time as required
+        tq.setMaxExecutionTime(600);
+        SPARQLResultsJSONWriter jsonWriter = new SPARQLResultsJSONWriter(stringWriter);
+        tq.evaluate(jsonWriter);
+        JsonNode bindings = this.objectMapper.readValue(stringWriter.toString(), ObjectNode.class).path("results").path("bindings");
+        return new JSONArray(bindings.toString());
+      }
+    } catch (Exception e) {
+      LOGGER.error(e);
+    }
+    return new JSONArray();
   }
 
   /**
