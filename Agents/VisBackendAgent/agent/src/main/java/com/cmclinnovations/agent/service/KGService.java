@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.federated.repository.FedXRepositoryConnection;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.eclipse.rdf4j.query.resultio.text.csv.SPARQLResultsCSVWriter;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -186,8 +187,11 @@ public class KGService {
         tq.setMaxExecutionTime(600);
         SPARQLResultsJSONWriter jsonWriter = new SPARQLResultsJSONWriter(stringWriter);
         tq.evaluate(jsonWriter);
-        JsonNode bindings = this.objectMapper.readValue(stringWriter.toString(), ObjectNode.class).path("results").path("bindings");
+        JsonNode bindings = this.objectMapper.readValue(stringWriter.toString(), ObjectNode.class).path("results")
+            .path("bindings");
         return new JSONArray(bindings.toString());
+      } catch (RepositoryException e) {
+        LOGGER.error(e);
       }
     } catch (Exception e) {
       LOGGER.error(e);
@@ -226,6 +230,8 @@ public class KGService {
         String csvData = stringWriter.toString();
         // Split into rows
         return csvData.split("\\r?\\n");
+      } catch (RepositoryException e) {
+        LOGGER.error(e);
       }
     } catch (Exception e) {
       LOGGER.error(e);
