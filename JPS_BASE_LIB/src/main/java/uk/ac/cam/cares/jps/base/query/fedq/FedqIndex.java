@@ -10,6 +10,11 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.system.StreamRDFBase;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFParser;
+
 import org.apache.jena.sparql.algebra.Op;
 import org.apache.jena.sparql.algebra.OpVisitorBase;
 import org.apache.jena.sparql.algebra.OpWalker;
@@ -22,6 +27,8 @@ import org.apache.jena.query.ResultSet;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The class wraps some functionality to-
@@ -117,7 +124,8 @@ public class FedqIndex {
     }
 
     /**
-     * createInvertedIndex works on an endpoint to retrieve class and properties through
+     * createInvertedIndex works on an endpoint to retrieve class and properties
+     * through
      * sparqlQuey to create an index
      * 
      * @param endpointUrl,
@@ -209,7 +217,7 @@ public class FedqIndex {
      */
     public void addTriplesAndUpdateIndex(List<Triple> newTriples, String endpointUrl) {
         for (Triple triple : newTriples) {
-            model.add(model.asStatement(triple));
+            // model.add(model.asStatement(triple));
 
             if (triple.getPredicate().equals(RDF.type.asNode())) {
                 String classUri = triple.getObject().getURI();
@@ -249,6 +257,37 @@ public class FedqIndex {
 
         // tripleCount += newTriples.size();
         System.out.println("Added " + newTriples.size() + " triples and updated the index.");
+    }
+
+    public ArrayList<Triple> extractTriples(String sparqlInsert) {
+        ArrayList<Triple> tripleList = new ArrayList<>();
+
+        // Step 1: Extract the data portion between `{` and `}` braces
+        Pattern pattern = Pattern.compile("\\{(.*?)}", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(sparqlInsert);
+        String dataContent = "";
+        if (matcher.find()) {
+            dataContent = matcher.group(1).trim();
+        }
+
+        // Step 2: Parse the extracted data content as N-Triples format
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(dataContent.getBytes());
+
+        // Step 3: Use a custom StreamRDF to collect triples
+        StreamRDF tripleCollector = new StreamRDFBase() {
+            @Override
+            public void triple(Triple triple) {
+                tripleList.add(triple);
+            }
+        };
+
+        // Step 4: Parse the triples using RDFParser
+        RDFParser.create()
+                .source(inputStream)
+                .lang(Lang.TTL)
+                .parse(tripleCollector);
+
+        return tripleList;
     }
 
     /**
@@ -449,18 +488,33 @@ public class FedqIndex {
 
     public static void main(String[] args) {
 
-        String blazegraphBaseUrl = "http://localhost:8080/blazegraph";
-        String[] namespaces = { "namespace_uken", "namespace_kin", "namespace_compchem" };
+        // String blazegraphBaseUrl = "http://localhost:8080/blazegraph";
+        // String[] namespaces = { "namespace_uken", "namespace_kin",
+        // "namespace_compchem" };
 
-        FedqIndex kgs = new FedqIndex("C:/Users/printer_admin/Downloads/KGs/tests");
+        FedqIndex fqix = new FedqIndex("C:/Users/printer_admin/Downloads/KGs/tests");
 
-        for (String namespace : namespaces) {
-            String endpointUrl = blazegraphBaseUrl + "/namespace/" + namespace + "/sparql";
-            System.out.println("Start processing endpoint: " + endpointUrl);
-            kgs.createInvertedIndex(endpointUrl);
+        String sparqlInsert = """
+                    INSERT DATA {
+                        <http://example.org/subject1> <http://example.org/predicate1> <http://example.org/object1> .
+                        <http://example.org/subject2> <http://example.org/predicate2> <http://example.org/object2> .
+                    }
+                """;
+
+        ArrayList<Triple> triples = fqix.extractTriples(sparqlInsert);
+        // addTriplesAndUpdateIndex(List<Triple> newTriples, String endpointUrl)
+        for (Triple triple : triples) {
+            System.out.println(triple.toString());
         }
 
-        kgs.saveIndices();
-        System.out.println("Completed and index-files are saved.");
+        // for (String namespace : namespaces) {
+        // String endpointUrl = blazegraphBaseUrl + "/namespace/" + namespace +
+        // "/sparql";
+        // System.out.println("Start processing endpoint: " + endpointUrl);
+        // fqix.createInvertedIndex(endpointUrl);
+        // }
+
+        // fqix.saveIndices();
+        // System.out.println("Completed and index-files are saved.");
     }
 }
