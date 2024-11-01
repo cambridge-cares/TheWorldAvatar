@@ -3,6 +3,19 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.10.0
+
+### Features
+
+* Added customisable search capabilities for the map visualisation, inclusive of metadata and time series
+* Improve the search form design and user interaction
+* Added documentation of these functions
+
+### Bug Fixes
+
+* Fix bad state calls in map container
+* Fix some of the errors logged in the console
+
 ## 5.9.1
 
 ### Features
