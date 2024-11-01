@@ -245,29 +245,25 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         }
         if (!checkCentralTableExists(conn)) {
             initCentralTable(conn);
-        }
-
-        try {
+        } else {
             // Check if any data has already been initialised (i.e. is associated with
             // different tsIRI)
             List<String> flatDataIRIs = dataIRIs.stream().flatMap(List::stream).collect(Collectors.toList());
             String faultyDataIRI = checkAnyDataHasTimeSeries(flatDataIRIs, conn);
             if (faultyDataIRI != null) {
-                throw new JPSRuntimeException(
-                        exceptionPrefix + "<" + faultyDataIRI
-                                + "> already has an assigned time series instance");
+                LOGGER.error("At least one data series already has an assigned time series instance");
+                // Assume all data IRIs have failed at the moment
+                return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
             }
-            // Ensure that there is a class for each data IRI
-            for (int i = 0; i < dataIRIs.size(); i++) {
-                if (dataIRIs.get(i).size() != dataClasses.get(i).size()) {
-                    throw new JPSRuntimeException(
-                            exceptionPrefix + "Length of dataClass is different from number of data IRIs");
-                }
+        }
+
+        // Ensure that there is a class for each data IRI
+        for (int i = 0; i < dataIRIs.size(); i++) {
+            if (dataIRIs.get(i).size() != dataClasses.get(i).size()) {
+                LOGGER.error("Length of dataClass is different from number of data IRIs");
+                // Assume all data IRIs have failed at the moment
+                return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
             }
-        } catch (JPSRuntimeException e) {
-            LOGGER.error(e.getMessage());
-            // Assume all data IRIs have failed at the moment
-            return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
         }
 
         String tsTableName = getTableWithMatchingTimeColumn(conn);
@@ -1049,7 +1045,8 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     }
 
     /**
-     * Return SQL commands for appending time series data from TimeSeries object to (existing) RDB table
+     * Return SQL commands for appending time series data from TimeSeries object to
+     * (existing) RDB table
      * <p>
      * Requires existing RDB connection
      * 
