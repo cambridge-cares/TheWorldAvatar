@@ -957,11 +957,21 @@ public class TimeSeriesSparql {
      * @return
      */
     boolean hasAnyExistingTimeSeries(List<String> dataIriList) {
-        String allDataIRI = String.join(" ",
-                dataIriList.stream().map(str -> "<" + str + ">").collect(Collectors.toList()));
-        String query = String.format("ASK {?data <%s> ?ts . VALUES ?data { %s } }",
-                (TIMESERIES_NAMESPACE + "hasTimeSeries"), allDataIRI);
+        // check if any time series exists
+        String query = String.format("ASK {?data <%s> ?ts }", TIMESERIES_NAMESPACE + "hasTimeSeries");
         kbClient.setQuery(query);
-        return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+        boolean anyExist = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+        if (anyExist) {
+            // check if time series to be created already exists
+            String allDataIRI = String.join(" ",
+                    dataIriList.stream().map(str -> "<" + str + ">").collect(Collectors.toList()));
+            query = String.format("ASK {?data <%s> ?ts . VALUES ?data { %s } }",
+                    (TIMESERIES_NAMESPACE + "hasTimeSeries"), allDataIRI);
+            kbClient.setQuery(query);
+            return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+        } else {
+            return anyExist;
+        }
+
     }
 }
