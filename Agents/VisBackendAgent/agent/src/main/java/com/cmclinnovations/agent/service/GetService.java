@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -176,7 +175,7 @@ public class GetService {
         iriResponse.getBody());
     // Note that all concept metadata will never be stored in Ontop and will require
     // the special property paths
-    JSONArray results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     if (results.isEmpty()) {
       LOGGER.info(
           "Request has been completed successfully with no results!");
@@ -184,7 +183,9 @@ public class GetService {
       LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     }
     return new ResponseEntity<>(
-        results,
+        results.stream()
+            .map(SparqlBinding::get)
+            .collect(Collectors.toList()),
         HttpStatus.OK);
   }
 
@@ -203,12 +204,13 @@ public class GetService {
     }
     String query = this.fileService.getContentsWithReplacement(FileService.SHACL_PATH_QUERY_RESOURCE,
         iriResponse.getBody());
-    JSONArray results = this.kgService.queryInstancesWithCriteria(query, criterias);
+    Queue<SparqlBinding> results = this.kgService.queryInstancesWithCriteria(query, criterias);
     LOGGER.info(SUCCESSFUL_REQUEST_MSG);
     return new ResponseEntity<>(
-        results,
+        results.stream()
+            .map(binding -> binding.getFieldValue("iri"))
+            .collect(Collectors.toList()),
         HttpStatus.OK);
-    // .map(binding -> binding.getFieldValue("iri"))
   }
 
   /**

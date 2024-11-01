@@ -20,8 +20,6 @@ import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.eclipse.rdf4j.query.resultio.text.csv.SPARQLResultsCSVWriter;
 import org.eclipse.rdf4j.repository.RepositoryException;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -170,7 +168,7 @@ public class KGService {
    * 
    * @return the query results.
    */
-  public JSONArray query(String query, SparqlEndpointType endpointType) {
+  public Queue<SparqlBinding> query(String query, SparqlEndpointType endpointType) {
     List<String> endpoints;
     if (endpointType.equals(SparqlEndpointType.MIXED)) {
       endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
@@ -189,14 +187,19 @@ public class KGService {
         tq.evaluate(jsonWriter);
         JsonNode bindings = this.objectMapper.readValue(stringWriter.toString(), ObjectNode.class).path("results")
             .path("bindings");
-        return new JSONArray(bindings.toString());
+        if (bindings.isArray()) {
+          return this.parseResults((ArrayNode) bindings);
+        }
       } catch (RepositoryException e) {
         LOGGER.error(e);
+      } catch (JsonProcessingException e) {
+        LOGGER.error(e);
+        throw new IllegalArgumentException(e);
       }
     } catch (Exception e) {
       LOGGER.error(e);
     }
-    return new JSONArray();
+    return new ArrayDeque<>();
   }
 
   /**
@@ -311,21 +314,15 @@ public class KGService {
     LOGGER.debug("Querying the knowledge graph for the instances...");
     List<SparqlVariableOrder> varSequence = this.queryTemplateFactory.getSequence();
     // Query for direct instances
-    JSONArray instances = this.query(queries.poll(), SparqlEndpointType.MIXED);
+    Queue<SparqlBinding> instances = this.query(queries.poll(), SparqlEndpointType.MIXED);
     // Query for secondary instances ie instances that are subclasses of parent
-    JSONArray secondaryInstances = this.query(queries.poll(), SparqlEndpointType.BLAZEGRAPH);
-    for (int i = 0; i < secondaryInstances.length(); i++) {
-      instances.put(secondaryInstances.getJSONObject(i));
+    Queue<SparqlBinding> secondaryInstances = this.query(queries.poll(), SparqlEndpointType.BLAZEGRAPH);
+    instances.addAll(secondaryInstances);
+    // If there is a variable sequence available, add the sequence to each binding,
+    if (!varSequence.isEmpty()) {
+      instances.forEach(instance -> instance.addSequence(varSequence));
     }
-
-    Queue<SparqlBinding> parsedInstances = new ArrayDeque<>();
-    for (int i = 0; i < instances.length(); i++) {
-      JSONObject currentInstance = instances.getJSONObject(i); // Get each JSONObject
-      SparqlBinding currentInstanceRow = new SparqlBinding(currentInstance);
-      currentInstanceRow.addSequence(varSequence);
-      parsedInstances.offer(currentInstanceRow);
-    }
-    return parsedInstances;
+    return instances;
   }
 
   /**
@@ -369,7 +366,7 @@ public class KGService {
    *                       the SHACL restrictions.
    * @param criterias      All the available search criteria inputs.
    */
-  public JSONArray queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
+  public Queue<SparqlBinding> queryInstancesWithCriteria(String shaclPathQuery, Map<String, String> criterias) {
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
     Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
     if (nestedVariablesAndPropertyPaths.isEmpty()) {
@@ -380,12 +377,10 @@ public class KGService {
     Queue<String> searchQuery = this.queryTemplateFactory.genSearchTemplate(nestedVariablesAndPropertyPaths, criterias);
     LOGGER.debug("Querying the knowledge graph for the matching instances...");
     // Query for direct instances
-    JSONArray instances = this.query(searchQuery.poll(), SparqlEndpointType.MIXED);
+    Queue<SparqlBinding> instances = this.query(searchQuery.poll(), SparqlEndpointType.MIXED);
     // Query for secondary instances ie instances that are subclasses of parent
-    JSONArray secondaryInstances = this.query(searchQuery.poll(), SparqlEndpointType.BLAZEGRAPH);
-    for (int i = 0; i < secondaryInstances.length(); i++) {
-      instances.put(secondaryInstances.getJSONObject(i));
-    }
+    Queue<SparqlBinding> secondaryInstances = this.query(searchQuery.poll(), SparqlEndpointType.BLAZEGRAPH);
+    instances.addAll(secondaryInstances);
     return instances;
   }
 
