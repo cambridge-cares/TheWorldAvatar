@@ -482,7 +482,7 @@ public class TimeSeriesSparql {
 
         Map<CustomDuration, String> durationMap = createDurationIRIMapping();
 
-        timeSeriesKgMetadataList.stream().forEach(timeSeriesKgMetadata -> {
+        timeSeriesKgMetadataList.parallelStream().forEach(timeSeriesKgMetadata -> {
             Iri tsIRI = iri(timeSeriesKgMetadata.getTimeSeriesIri());
 
             modify.and(tsIRI.isA(timeSeriesKgMetadata.getTimeSeriesType()));
