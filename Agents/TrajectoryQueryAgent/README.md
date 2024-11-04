@@ -90,10 +90,23 @@ View parameters: device_id, lowerbound (optional), upperbound (optional)
 
 ### 2. /getDatesWithData
 
+This route is primarily used by the timeline app, this route requires two additional environment variables and an additional header with the JSON web token.
+
+Environment variables:
+
+1. KEYCLOAK_SERVER
+    - Base URL of KeyCloak server that generates the JSON web token for verification
+
+2. KEYCLOAK_REALM
+    - Name of KeyCloak realm of the requesting users
+
+Needs the `Authorization` header in the following form:
+
+`Authorization: Bearer <JWT_TOKEN>`
+
 Parameters required:
 
 1. timezone (refer [here](https://www.postgresql.org/docs/current/view-pg-timezone-names.html) for permissible names)
-2. userID
 
 Response given in the form of
 ```json

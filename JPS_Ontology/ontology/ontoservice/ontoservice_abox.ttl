@@ -3,30 +3,45 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-os:ServiceStatus owl:oneOf (
-    os:AwaitingScheduling
-    os:InReview
-    os:InQueue
-    os:InProgress
-    os:Completed
+fibo-fbc-pas-fpas:ContractLifecycleEvent owl:oneOf (
+  os:ServiceDeliveryEvent
+  os:TerminatedServiceEvent
+  os:MissedServiceEvent
+  os:ContractCreation
+  os:ContractApproval
+  os:ContractDischarge
+  os:ContractRescission
+  os:ContractTermination
 ) .
 
-os:AwaitingScheduling a os:ServiceStatus ;
-  rdfs:label "Awaiting scheduling";
-  rdfs:comment "Represents the service status in the system. This status indicates that the service is currently awaiting scheduling.".
+os:ServiceDeliveryEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Service Delivery Event";
+  rdfs:comment "This event represents a delivery for the requested service.".
 
-os:InReview a os:ServiceStatus ;
-  rdfs:label "In review";
-  rdfs:comment "Represents the service status in the system. This status indicates that the service is currently in review awaiting approval.".
+os:TerminatedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Terminated Service Event";
+  rdfs:comment "This event represents a requested service that has been terminated either by the service provider or the client.".
 
-os:InQueue a os:ServiceStatus ;
-  rdfs:label "In queue";
-  rdfs:comment "Represents the service status in the system. This status indicates that the service is currently queued.".
+os:MissedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Missed Service Event";
+  rdfs:comment "This event represents a requested service that fails to be delivered to the client".
 
-os:InProgress a os:ServiceStatus ;
-  rdfs:label "In progress";
-  rdfs:comment "Represents the service status in the system. This status indicates that the service is currently in progress.".
+os:ContractCreation a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Creation";
+  rdfs:comment "An event to draft and create a new contract during the creation lifecycle stage of a contract.".
 
-os:Completed a os:ServiceStatus ;
-  rdfs:label "Completed";
-  rdfs:comment "Represents the service status in the system. This status indicates that the service has been completed.".
+os:ContractApproval a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Approval";
+  rdfs:comment "An event to approve the contract during the creation lifecycle stage of a contract.".
+
+os:ContractDischarge a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Discharge";
+  rdfs:comment "An event ending the contract as all contractual obligations have been performed.".
+
+os:ContractRescission a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Rescission";
+  rdfs:comment "An event rendering the contract null, void, and no longer legally binding as one contractual party is a victim of a vitiating factor during the expiration lifecycle stage of a contract.".
+
+os:ContractTermination a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Termination";
+  rdfs:comment "An event ending the contract before all contractual obligations have been performed. Typically the contract may have been concluded earlier with the agreement of all parties involved.".
