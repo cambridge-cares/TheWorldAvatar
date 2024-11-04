@@ -10,13 +10,14 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [1.2 Docker Deployment](#12-docker-deployment)
   - [2. Agent Route](#2-agent-route)
     - [2.1 Status ROUTE](#21-status-route-urlvis-backend-agentstatus)
-    - [2.2 Form ROUTE](#22-form-route-urlvis-backend-agentformtype)
-    - [2.3 Concept Metadata ROUTE](#23-concept-metadata-route-urlvis-backend-agenttypetype)
-    - [2.4 Instance ROUTE](#24-instance-route)
-      - [2.4.1 Add route](#241-add-route)
-      - [2.4.2 Delete route](#242-delete-route)
-      - [2.4.3 Update route](#243-update-route)
-      - [2.4.4 Get route](#244-get-route)
+    - [2.2 Geocoding ROUTE](#22-geocoding-route-urlvis-backend-agentgeocodeapi)
+    - [2.3 Form ROUTE](#23-form-route-urlvis-backend-agentformtype)
+    - [2.4 Concept Metadata ROUTE](#24-concept-metadata-route-urlvis-backend-agenttypetype)
+    - [2.5 Instance ROUTE](#25-instance-route)
+      - [2.5.1 Add route](#251-add-route)
+      - [2.5.2 Delete route](#252-delete-route)
+      - [2.5.3 Update route](#253-update-route)
+      - [2.5.4 Get route](#254-get-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -165,7 +166,7 @@ This route serves as an endpoint to retrieve the geographic coordinates. Users c
 
 If successful, the response will return the coordinates in the `[longitude, latitude]` format that is compliant with `JSON`.
 
-### 2.2 Form ROUTE: `<url>/vis-backend-agent/form/{type}`
+### 2.3 Form ROUTE: `<url>/vis-backend-agent/form/{type}`
 
 This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a `GET` request to `<url>/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
@@ -219,7 +220,7 @@ If successful, the response will return a form template in the following (minima
 }
 ```
 
-### 2.3 Concept Metadata ROUTE: `<url>/vis-backend-agent/type/{type}`
+### 2.4 Concept Metadata ROUTE: `<url>/vis-backend-agent/type/{type}`
 
 This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<url>/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
@@ -254,11 +255,11 @@ If successful, the response will return an array of objects in the following for
 }
 ```
 
-### 2.4 Instance ROUTE
+### 2.5 Instance ROUTE
 
 This route serves as a `RESTful` endpoint to perform `CRUD` operations for any resources based on the `type` specified.
 
-#### 2.4.1 Add route
+#### 2.5.1 Add route
 
 To add a new instance, users must send a POST request with their corresponding parameters to
 
@@ -268,7 +269,7 @@ To add a new instance, users must send a POST request with their corresponding p
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`. The request parameters will depend on the `JSON-LD` file defined. More information on the required schema can be found in [this section](#41-instantiation).
 
-#### 2.4.2 Delete route
+#### 2.5.2 Delete route
 
 To delete an instance, users must send a DELETE request to
 
@@ -278,7 +279,7 @@ To delete an instance, users must send a DELETE request to
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The instance representation will be deleted according to the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
 
-#### 2.4.3 Update route
+#### 2.5.3 Update route
 
 To update an instance, users must send a PUT request with their corresponding parameters to
 
@@ -288,7 +289,7 @@ To update an instance, users must send a PUT request with their corresponding pa
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The request parameters will depend on the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
 
-#### 2.4.4 Get route
+#### 2.5.4 Get route
 
 There are several routes for retrieving instances associated with a specific `type` to populate the records in the registry. The agent will automatically generate the query and parameters based on the SHACL restrictions developed. The agent will return **EITHER** a `JSON` array containing entities as their corresponding `JSON` object **OR** one Entity `JSON` object depending on which `GET` route is executed.
 
