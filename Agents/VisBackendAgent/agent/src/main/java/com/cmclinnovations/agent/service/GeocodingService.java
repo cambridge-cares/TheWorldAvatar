@@ -112,7 +112,7 @@ public class GeocodingService {
         "?address a fibo-fnd-plc-adr:ConventionalStreetAddress;" +
         "fibo-fnd-arr-id:isIndexTo/geo:asWKT ?" + LOCATION_VAR + ";" +
         queryFilters +
-        "}";
+        "} LIMIT 1";
   }
 
   /**
