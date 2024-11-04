@@ -9,7 +9,10 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}    
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-theworldavatar}
+      KC_LOG: console,file
       KC_LOG_LEVEL: info
+      KC_LOG_CONSOLE_COLOR: true
+      KC_LOG_FILE_DIR: /log/keycloak.log
       KC_DB: postgres
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
