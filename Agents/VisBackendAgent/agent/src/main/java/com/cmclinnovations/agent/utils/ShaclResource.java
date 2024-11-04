@@ -33,6 +33,7 @@ public class ShaclResource {
   public static final String FULL_STOP = ".";
   public static final String VARIABLE_MARK = "?";
   public static final String REPLACEMENT_ENDPOINT = "[endpoint]";
+  public static final String WHITE_SPACE = " ";
 
   private ShaclResource(){
   }

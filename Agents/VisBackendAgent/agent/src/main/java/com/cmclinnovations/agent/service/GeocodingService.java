@@ -132,18 +132,18 @@ public class GeocodingService {
    */
   private String genSearchQueryTemplate(String postalCode) {
     String selectVars = ShaclResource.VARIABLE_MARK + CITY_VAR +
-        " " + ShaclResource.VARIABLE_MARK + COUNTRY_VAR +
-        " " + ShaclResource.VARIABLE_MARK + STREET_VAR +
-        " " + ShaclResource.VARIABLE_MARK + BLOCK_VAR;
-    String queryFilters = this.getPredicate(GeoLocationType.POSTAL_CODE) + " " + StringResource.parseLiteral(postalCode)
+        ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + COUNTRY_VAR +
+        ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + STREET_VAR +
+        ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + BLOCK_VAR;
+    String queryFilters = this.getPredicate(GeoLocationType.POSTAL_CODE) + ShaclResource.WHITE_SPACE + StringResource.parseLiteral(postalCode)
         + ";";
-    queryFilters += this.getPredicate(GeoLocationType.CITY) + " " + ShaclResource.VARIABLE_MARK + CITY_VAR + ";";
-    queryFilters += this.getPredicate(GeoLocationType.COUNTRY) + " " + ShaclResource.VARIABLE_MARK + COUNTRY_VAR + ";";
-    queryFilters += this.getPredicate(GeoLocationType.STREET) + " " + ShaclResource.VARIABLE_MARK + STREET_VAR
+    queryFilters += this.getPredicate(GeoLocationType.CITY) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + CITY_VAR + ";";
+    queryFilters += this.getPredicate(GeoLocationType.COUNTRY) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + COUNTRY_VAR + ";";
+    queryFilters += this.getPredicate(GeoLocationType.STREET) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + STREET_VAR
         + ShaclResource.FULL_STOP;
     // Block numbers are optional
-    queryFilters += StringResource.genOptionalClause(ShaclResource.VARIABLE_MARK + ADDRESS_VAR + " " +
-        this.getPredicate(GeoLocationType.BLOCK) + " " + ShaclResource.VARIABLE_MARK + BLOCK_VAR
+    queryFilters += StringResource.genOptionalClause(ShaclResource.VARIABLE_MARK + ADDRESS_VAR + ShaclResource.WHITE_SPACE +
+        this.getPredicate(GeoLocationType.BLOCK) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + BLOCK_VAR
         + ShaclResource.FULL_STOP);
     return this.genQueryTemplate(selectVars, queryFilters);
   }
@@ -164,24 +164,24 @@ public class GeocodingService {
     String queryFilters = "fibo-fnd-arr-id:isIndexTo/geo:asWKT " + ShaclResource.VARIABLE_MARK + LOCATION_VAR + ";";
     if (postalCode != null) {
       queryFilters += this.getPredicate(GeoLocationType.POSTAL_CODE);
-      queryFilters += " " + StringResource.parseLiteral(postalCode) + ";";
+      queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(postalCode) + ";";
     }
     if (city != null) {
       queryFilters += this.getPredicate(GeoLocationType.CITY);
-      queryFilters += " " + StringResource.parseLiteral(city) + ";";
+      queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(city) + ";";
     }
     if (country != null) {
       queryFilters += this.getPredicate(GeoLocationType.COUNTRY);
-      queryFilters += " " + StringResource.parseIriForQuery(country) + ";";
+      queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseIriForQuery(country) + ";";
     }
 
     if (street != null) {
       queryFilters += this.getPredicate(GeoLocationType.STREET);
-      queryFilters += " " + StringResource.parseLiteral(street) + ";";
+      queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(street) + ";";
       // Block will only be included if there is a corresponding street
       if (block != null) {
         queryFilters += this.getPredicate(GeoLocationType.BLOCK);
-        queryFilters += " " + StringResource.parseLiteral(block) + ";";
+        queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(block) + ";";
       }
     }
     String selectVar = ShaclResource.VARIABLE_MARK + LOCATION_VAR;

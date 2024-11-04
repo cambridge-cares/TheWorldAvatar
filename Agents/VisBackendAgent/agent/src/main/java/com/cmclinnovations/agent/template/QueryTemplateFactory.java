@@ -98,7 +98,7 @@ public class QueryTemplateFactory {
       // Append a ? before the property
       this.varSequence.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
           .append(variable.property().replaceAll("\\s+", "_"))
-          .append(" "));
+          .append(ShaclResource.WHITE_SPACE));
     }
     this.queryLines.values().forEach(whereBuilder::append);
     this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
