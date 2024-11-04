@@ -11,6 +11,8 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
   - [2. Agent Route](#2-agent-route)
     - [2.1 Status ROUTE](#21-status-route-urlvis-backend-agentstatus)
     - [2.2 Geocoding ROUTE](#22-geocoding-route-urlvis-backend-agentgeocodeapi)
+      - [2.2.1 Geocoding route](#221-geocoding-route)
+      - [2.2.2 Address search route](#222-address-search-route)
     - [2.3 Form ROUTE](#23-form-route-urlvis-backend-agentformtype)
     - [2.4 Concept Metadata ROUTE](#24-concept-metadata-route-urlvis-backend-agenttypetype)
     - [2.5 Instance ROUTE](#25-instance-route)
@@ -156,7 +158,11 @@ If successful, the response will return `Agent is ready to receive requests.`.
 
 ### 2.2 Geocoding ROUTE: `<url>/vis-backend-agent/geocode/api`
 
-This route serves as an endpoint to retrieve the geographic coordinates. Users can send a `GET` request to `<url>/vis-backend-agent/geocode/api` with at least one of the following parameters:
+This route serves as a geocoding endpoint to interface with address and coordinates.
+
+#### 2.2.1 Geocoding route
+
+To retrieve the geographic coordinates, users can send a `GET` request to `<url>/vis-backend-agent/geocode/api` with at least one of the following parameters:
 
 1. `postal_code`: Postal code of the address
 2. `block`: The street block of the address; Must be sent along with the street name
@@ -165,6 +171,30 @@ This route serves as an endpoint to retrieve the geographic coordinates. Users c
 5. `country`: The country IRI of the address following [this ontology](https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes)
 
 If successful, the response will return the coordinates in the `[longitude, latitude]` format that is compliant with `JSON`.
+
+#### 2.2.2 Address search route
+
+To search for the address based on postal code, users can send a `GET` request to `<url>/vis-backend-agent/geocode/api/search` with the following parameter:
+
+1. `postal_code`: Postal code of the address
+
+If successful, the response will return the addresses as an array in the following `JSON` format:
+
+```json
+[
+  {
+    "block": "block number",
+    "street": "street name",
+    "city": "city name",
+    "country": "country IRI"
+  },
+  {
+    "street": "street name",
+    "city": "city name",
+    "country": "country IRI"
+  }
+]
+```
 
 ### 2.3 Form ROUTE: `<url>/vis-backend-agent/form/{type}`
 
