@@ -5,6 +5,12 @@
 
 ## 5.9.1
 
+### Improvements
+
+* Updated Keycloak connector to latest version v26
+
+## 5.9.1
+
 ### Features
 
 * Added CMCL logo to default icons library
