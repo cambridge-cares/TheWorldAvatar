@@ -64,6 +64,38 @@ The agent will require at least two files in order to function as a `REST` endpo
 1. `./resources/application-service.json`: A file mapping the resource identifier to the target file name in (2)
 2. At least one `JSON-LD` file at `./resources/jsonld/example.jsonld`: This file provides a structure for the instance that must be instantiated and will follow the schemas defined in [this section](#41-instantiation). Each file should correspond to one type of instance, and the resource ID defined in (1) must correspond to the respective file in order to function.
 
+**GEOCODING ENDPOINT**
+
+Users must add a geocoding endpoint to the `geocode` resource identifier at `./resources/application-service.json`. This geocoding endpoint is expected to be a `SPARQL` compliant endpoint with geocoding data instantiated. The ontology must follow the following format:
+
+```
+:                   https://www.theworldavatar.com/kg/
+fibo-fnd-arr-id:    https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/
+fibo-fnd-plc-adr:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/
+fibo-fnd-plc-loc:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/
+fibo-fnd-rel-rel:   https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/
+geo:                http://www.opengis.net/ont/geosparql#
+rdfs:	              http://www.w3.org/2000/01/rdf-schema#
+xsd:                http://www.w3.org/2001/XMLSchema#
+
+AddressInstance a fibo-fnd-plc-adr:ConventionalStreetAddress ;
+  fibo-fnd-plc-adr:hasStreetAddress StreetAddressInstance  ;
+  fibo-fnd-plc-adr:hasPostalCode {postal_code} ;
+  fibo-fnd-plc-loc:hasCityName {city} ;
+  fibo-fnd-plc-loc:hasCountry {<https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/Country>}
+  fibo-fnd-arr-id:isIndexTo LocationInstance .
+StreetAddressInstance a fibo-fnd-plc-adr:StreetAddress ;
+    fibo-fnd-plc-adr:hasPrimaryAddressNumber StreetBlockInstance ;
+    fibo-fnd-plc-adr:hasStreetName StreetNameInstance .
+StreetBlockInstance a fibo-fnd-plc-adr:PrimaryAddressNumber ;
+    fibo-fnd-rel-rel:hasTag {block_number} .
+StreetNameInstance a fibo-fnd-plc-adr:StreetName ;
+    fibo-fnd-rel-rel:hasTag {road_name} .
+LocationInstance a fibo-fnd-plc-loc:PhysicalLocation ;
+    a geo:Point;
+    geo:asWKT "{geom}"^^geo:wktLiteral .
+```
+
 ### 1.2 Docker Deployment
 
 **TEST ENVIRONMENT**
@@ -120,6 +152,18 @@ curl localhost:3838/vis-backend-agent/status
 ```
 
 If successful, the response will return `Agent is ready to receive requests.`.
+
+### 2.2 Geocoding ROUTE: `<url>/vis-backend-agent/geocode/api`
+
+This route serves as an endpoint to retrieve the geographic coordinates. Users can send a `GET` request to `<url>/vis-backend-agent/geocode/api` with at least one of the following parameters:
+
+1. `postal_code`: Postal code of the address
+2. `block`: The street block of the address; Must be sent along with the street name
+3. `street`: The street name of the address
+4. `city`: The city name of the address
+5. `country`: The country IRI of the address following [this ontology](https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes)
+
+If successful, the response will return the coordinates in the `[longitude, latitude]` format that is compliant with `JSON`.
 
 ### 2.2 Form ROUTE: `<url>/vis-backend-agent/form/{type}`
 

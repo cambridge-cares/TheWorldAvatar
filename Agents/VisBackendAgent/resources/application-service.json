@@ -1,4 +1,5 @@
 {
   "identifier": "jsonld_file_name",
-  "idtwo": "jsonld_file_name_two"
+  "idtwo": "jsonld_file_name_two",
+  "geocode" : "geocoding endpoint"
 }

@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.DeleteService;
+import com.cmclinnovations.agent.service.GeocodingService;
 import com.cmclinnovations.agent.service.GetService;
 
 @RestController
@@ -24,12 +26,15 @@ public class VisBackendAgent {
   private final AddService addService;
   private final DeleteService deleteService;
   private final GetService getService;
+  private final GeocodingService geocodingService;
   private static final Logger LOGGER = LogManager.getLogger(VisBackendAgent.class);
 
-  public VisBackendAgent(AddService addService, DeleteService deleteService, GetService getService) {
+  public VisBackendAgent(AddService addService, DeleteService deleteService, GetService getService,
+      GeocodingService geocodingService) {
     this.addService = addService;
     this.deleteService = deleteService;
     this.getService = getService;
+    this.geocodingService = geocodingService;
   }
 
   @GetMapping("/status")
@@ -38,6 +43,23 @@ public class VisBackendAgent {
     return new ResponseEntity<>(
         "Agent is ready to receive requests.",
         HttpStatus.OK);
+  }
+
+  @GetMapping("/geocode/api")
+  public ResponseEntity<?> getGeoCoordinates(
+      @RequestParam(required = false) String block,
+      @RequestParam(required = false) String street,
+      @RequestParam(required = false) String city,
+      @RequestParam(required = false) String country,
+      @RequestParam(required = false) String postal_code) {
+    LOGGER.info("Received geocoding request...");
+    if (block != null && street == null) {
+      String errorMsg = "Invalid geocoding parameters! Detected a block number but no street is provided!";
+      LOGGER.error(errorMsg);
+      return new ResponseEntity<>(errorMsg, HttpStatus.OK);
+    }
+
+    return this.geocodingService.getCoordinates(block, street, city, country, postal_code);
   }
 
   /**
