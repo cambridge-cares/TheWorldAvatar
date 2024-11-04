@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.GeoLocationType;
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
 public class GeocodingService {
@@ -52,7 +53,7 @@ public class GeocodingService {
       return geocodingEndpointResponse;
     }
     LOGGER.debug("Generating query template for retrieving coordinates...");
-    String query = this.genQueryTemplate(block, street, city, country, postalCode);
+    String query = this.genCoordinateQueryTemplate(block, street, city, country, postalCode);
     LOGGER.debug("Retrieving coordinates for postal code: {} ...", postalCode);
     Queue<SparqlBinding> results = this.kgService.query(query, geocodingEndpointResponse.getBody());
     if (results.isEmpty()) {
@@ -81,25 +82,68 @@ public class GeocodingService {
    *                   https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes.
    * @param postalCode Postal code identifier.
    */
-  private String genQueryTemplate(String block, String street, String city, String country, String postalCode) {
-    String queryFilters = "";
+  private String genCoordinateQueryTemplate(String block, String street, String city, String country,
+      String postalCode) {
+    String queryFilters = "fibo-fnd-arr-id:isIndexTo/geo:asWKT ?" + LOCATION_VAR + ";";
     if (postalCode != null) {
-      queryFilters += this.genQueryFilter(postalCode, GeoLocationType.POSTAL_CODE);
+      queryFilters += this.getPredicate(GeoLocationType.POSTAL_CODE);
+      queryFilters += " " + StringResource.parseLiteral(postalCode) + ";";
     }
     if (city != null) {
-      queryFilters += this.genQueryFilter(city, GeoLocationType.CITY);
+      queryFilters += this.getPredicate(GeoLocationType.CITY);
+      queryFilters += " " + StringResource.parseLiteral(city) + ";";
     }
     if (country != null) {
-      queryFilters += this.genQueryFilter(country, GeoLocationType.COUNTRY);
+      queryFilters += this.getPredicate(GeoLocationType.COUNTRY);
+      queryFilters += " " + StringResource.parseIriForQuery(country) + ";";
     }
 
     if (street != null) {
-      queryFilters += this.genQueryFilter(street, GeoLocationType.STREET);
+      queryFilters += this.getPredicate(GeoLocationType.STREET);
+      queryFilters += " " + StringResource.parseLiteral(street) + ";";
       // Block will only be included if there is a corresponding street
       if (block != null) {
-        queryFilters += this.genQueryFilter(block, GeoLocationType.BLOCK);
+        queryFilters += this.getPredicate(GeoLocationType.BLOCK);
+        queryFilters += " " + StringResource.parseLiteral(block) + ";";
       }
     }
+    String selectVar = "?" + LOCATION_VAR;
+    // Limit the query return to one result to improve performance
+    return this.genQueryTemplate(selectVar, queryFilters) + "LIMIT 1";
+  }
+
+  /**
+   * Get predicates based on the geolocation type.
+   * 
+   * @param geoType The types of geolocation.
+   */
+  private String getPredicate(GeoLocationType geoType) {
+    switch (geoType) {
+      case GeoLocationType.POSTAL_CODE:
+        return "fibo-fnd-plc-adr:hasPostalCode";
+      case GeoLocationType.BLOCK:
+        return " fibo-fnd-plc-adr:hasStreetAddress/fibo-fnd-plc-adr:hasPrimaryAddressNumber/fibo-fnd-rel-rel:hasTag";
+      case GeoLocationType.STREET:
+        return " fibo-fnd-plc-adr:hasStreetAddress/fibo-fnd-plc-adr:hasStreetName/fibo-fnd-rel-rel:hasTag";
+      case GeoLocationType.CITY:
+        return "fibo-fnd-plc-loc:hasCityName";
+      case GeoLocationType.COUNTRY:
+        return "fibo-fnd-plc-loc:hasCountry";
+      default:
+        String errorMessage = MessageFormat.format("Invalid geolocation Type: {}!", geoType);
+        LOGGER.error(errorMessage);
+        throw new IllegalArgumentException(errorMessage);
+    }
+  }
+
+  /**
+   * Generates the query template with the required variables and where clause
+   * lines.
+   * 
+   * @param selectVariables  The variables in the SELECT clause.
+   * @param whereClauseLines The query lines for the WHERE clause.
+   */
+  private String genQueryTemplate(String selectVariables, String whereClauseLines) {
     return "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
         "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> " +
         "PREFIX fibo-fnd-arr-id:<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/> " +
@@ -108,40 +152,10 @@ public class GeocodingService {
         "PREFIX fibo-fnd-rel-rel:<https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> " +
         "PREFIX geo:<http://www.opengis.net/ont/geosparql#> " +
         "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> " +
-        "SELECT ?" + LOCATION_VAR + " WHERE {" +
+        "SELECT " + selectVariables + " WHERE {" +
         "?address a fibo-fnd-plc-adr:ConventionalStreetAddress;" +
-        "fibo-fnd-arr-id:isIndexTo/geo:asWKT ?" + LOCATION_VAR + ";" +
-        queryFilters +
-        "} LIMIT 1";
-  }
-
-  /**
-   * Generates a query filter line depending on the geolocation type.
-   * 
-   * @param queryVal The value of the query line, which may either be an IRI or
-   *                 literal.
-   * @param geoType  The types of geolocation.
-   */
-  private String genQueryFilter(String queryVal, GeoLocationType geoType) {
-    switch (geoType) {
-      case GeoLocationType.POSTAL_CODE:
-        return "fibo-fnd-plc-adr:hasPostalCode \"" + queryVal + "\";";
-      case GeoLocationType.BLOCK:
-        return " fibo-fnd-plc-adr:hasStreetAddress/fibo-fnd-plc-adr:hasPrimaryAddressNumber/fibo-fnd-rel-rel:hasTag \""
-            + queryVal + "\";";
-      case GeoLocationType.STREET:
-        return " fibo-fnd-plc-adr:hasStreetAddress/fibo-fnd-plc-adr:hasStreetName/fibo-fnd-rel-rel:hasTag \""
-            + queryVal
-            + "\";";
-      case GeoLocationType.CITY:
-        return "fibo-fnd-plc-loc:hasCityName \"" + queryVal + "\";";
-      case GeoLocationType.COUNTRY:
-        return "fibo-fnd-plc-loc:hasCountry  <" + queryVal + ">;";
-      default:
-        String errorMessage = MessageFormat.format("Invalid geolocation Type: {}!", geoType);
-        LOGGER.error(errorMessage);
-        throw new IllegalArgumentException(errorMessage);
-    }
+        whereClauseLines +
+        "}";
   }
 
   /**

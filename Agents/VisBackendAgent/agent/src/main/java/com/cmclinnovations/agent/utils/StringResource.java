@@ -82,6 +82,15 @@ public class StringResource {
   }
 
   /**
+   * Parses the string literal for SPARQL queries ie enclosing it with "".
+   * 
+   * @param literal Target literal input.
+   */
+  public static String parseLiteral(String literal) {
+    return "\"" + literal + "\"";
+  }
+
+  /**
    * Parses the IRI for SPARQL queries ie enclosing it with <>.
    * 
    * @param iri Target iri input.
