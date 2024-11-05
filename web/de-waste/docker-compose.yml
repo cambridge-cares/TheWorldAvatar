@@ -9,7 +9,7 @@ services:
     restart: "no"
     environment:
       KEYCLOAK: true ## whether or not to use kc authentication on the server
-      PROTECTED_PAGES: /,/view/agreement,/view/service_event/,/help ## pages that a user must be logged in to see
+      PROTECTED_PAGES: /* ## pages that a user must be logged in to see
       ROLE_PROTECTED_PAGES: /add/agreement ## pages that require a user to have a given REALM or CLIENT role
       ROLE: protected ## the role required for the above list
 
