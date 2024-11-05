@@ -28,30 +28,30 @@ services:
       - ../twa-vis-platform/code/public:/twa/public/
       - ../twa-vis-platform/code/keycloak.json:/twa/keycloak.json
     ports:
-      - "3000:3000" 
-  
+      - "3000:3000"
+
   latest:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:latest
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
   semantic-snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}.${MINOR}.${PATCH}-${SNAPSHOT}
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
   major-snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}-${SNAPSHOT}
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
   snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${SNAPSHOT}
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
 secrets:
-    mapbox_username:
-      file: ./mapbox_username
-    mapbox_api_key:
-      file: ./mapbox_api_key
+  mapbox_username:
+    file: ./mapbox_username
+  mapbox_api_key:
+    file: ./mapbox_api_key
