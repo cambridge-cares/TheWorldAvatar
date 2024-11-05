@@ -15,6 +15,7 @@ import FormSection from './section/form-section';
 import { DependentFormSection } from './section/dependent-form-section';
 import FormSchedule, { daysOfWeek } from './section/form-schedule';
 import FormSearchPeriod from './section/form-search-period';
+import FormGeocoder from './section/form-geocoder';
 
 interface FormComponentProps {
   formRef: React.MutableRefObject<HTMLFormElement>;
@@ -224,6 +225,14 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             }
             const disableId: boolean = props.formType === Paths.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
             if (fieldProp.class) {
+              if (fieldProp.class[ID_KEY] === "https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location") {
+                return <FormGeocoder
+                  key={fieldProp.name[VALUE_KEY] + index}
+                  agentApi={props.agentApi}
+                  field={fieldProp}
+                  form={form}
+                />;
+              }
               if (props.formType === SEARCH_FORM_TYPE && fieldProp.class[ID_KEY] === "https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries") {
                 return <FormSearchPeriod
                   key={fieldProp.name[VALUE_KEY] + index}

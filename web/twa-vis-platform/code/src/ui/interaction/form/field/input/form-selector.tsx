@@ -78,7 +78,7 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
         let firstOption: string = props.form.getValues(props.field.fieldId);
         // WIP: Set default value Singapore for any Country Field temporarily
         // Default values should not be hardcoded here but retrieved in a config instead
-        if (props.field.name[VALUE_KEY].toLowerCase() === "country") {
+        if (props.field.name[VALUE_KEY].toLowerCase() === "country" && !firstOption) {
           firstOption = "Singapore";
         }
         // Add the default search option only if this is the search form
