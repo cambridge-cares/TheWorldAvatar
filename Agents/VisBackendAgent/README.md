@@ -25,6 +25,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
   - [4. Schemas](#4-schemas)
     - [4.1 Instantiation](#41-instantiation)
+    - [4.2 Geocoding](#42-geocoding)
 
 ## 1. Agent Deployment
 
@@ -69,35 +70,7 @@ The agent will require at least two files in order to function as a `REST` endpo
 
 **GEOCODING ENDPOINT**
 
-Users must add a geocoding endpoint to the `geocode` resource identifier at `./resources/application-service.json`. This geocoding endpoint is expected to be a `SPARQL` compliant endpoint with geocoding data instantiated. The ontology must follow the following format:
-
-```
-:                   https://www.theworldavatar.com/kg/
-fibo-fnd-arr-id:    https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/
-fibo-fnd-plc-adr:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/
-fibo-fnd-plc-loc:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/
-fibo-fnd-rel-rel:   https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/
-geo:                http://www.opengis.net/ont/geosparql#
-rdfs:	              http://www.w3.org/2000/01/rdf-schema#
-xsd:                http://www.w3.org/2001/XMLSchema#
-
-AddressInstance a fibo-fnd-plc-adr:ConventionalStreetAddress ;
-  fibo-fnd-plc-adr:hasStreetAddress StreetAddressInstance  ;
-  fibo-fnd-plc-adr:hasPostalCode {postal_code} ;
-  fibo-fnd-plc-loc:hasCityName {city} ;
-  fibo-fnd-plc-loc:hasCountry {<https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/Country>}
-  fibo-fnd-arr-id:isIndexTo LocationInstance .
-StreetAddressInstance a fibo-fnd-plc-adr:StreetAddress ;
-    fibo-fnd-plc-adr:hasPrimaryAddressNumber StreetBlockInstance ;
-    fibo-fnd-plc-adr:hasStreetName StreetNameInstance .
-StreetBlockInstance a fibo-fnd-plc-adr:PrimaryAddressNumber ;
-    fibo-fnd-rel-rel:hasTag {block_number} .
-StreetNameInstance a fibo-fnd-plc-adr:StreetName ;
-    fibo-fnd-rel-rel:hasTag {road_name} .
-LocationInstance a fibo-fnd-plc-loc:PhysicalLocation ;
-    a geo:Point;
-    geo:asWKT "{geom}"^^geo:wktLiteral .
-```
+Users must add a geocoding endpoint to the `geocode` resource identifier at `./resources/application-service.json`. This geocoding endpoint is expected to be a `SPARQL` compliant endpoint with geocoding data instantiated. For more details about the ontologies and restrictions involved, please read [section 4.2](#42-geocoding).
 
 ### 1.2 Docker Deployment
 
@@ -515,7 +488,7 @@ base:ConceptShape
 
 ## 4. Schemas
 
-## 4.1 Instantiation
+### 4.1 Instantiation
 
 The instantiation mechanism of this agent involves the employment of [`JSON-LD`](https://json-ld.org/) alongside the programmatic replacement of certain objects based on the request parameters to instantiate a new instance. Generally, the schema will follow the [`JSON-LD` specifications](https://www.w3.org/TR/json-ld/), except for values that should be dynamically replaced based on request parameters. For instance, the ontological representation of a person may be as follows.
 
@@ -539,3 +512,162 @@ It is expected that we should create a new ID and name for the person instance. 
 ```
 
 A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+
+### 4.2 Geocoding
+
+The agent requires certain ontologies and `SHACL` restrictions in order to enable geocoding services for the frontend. The data instantiated in the knowledge graph must follow the following ontology. However, there are optional concepts such as the `PrimaryAddressNumber` for `block_number` that can be excluded.
+
+```
+:                   https://www.theworldavatar.com/kg/
+fibo-fnd-arr-id:    https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/
+fibo-fnd-plc-adr:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/
+fibo-fnd-plc-loc:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/
+fibo-fnd-rel-rel:   https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/
+geo:                http://www.opengis.net/ont/geosparql#
+rdfs:	              http://www.w3.org/2000/01/rdf-schema#
+xsd:                http://www.w3.org/2001/XMLSchema#
+
+AddressInstance a fibo-fnd-plc-adr:ConventionalStreetAddress ;
+  fibo-fnd-plc-adr:hasStreetAddress StreetAddressInstance  ;
+  fibo-fnd-plc-adr:hasPostalCode {postal_code} ;
+  fibo-fnd-plc-loc:hasCityName {city} ;
+  fibo-fnd-plc-loc:hasCountry {<https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/Country>}
+  fibo-fnd-arr-id:isIndexTo LocationInstance .
+StreetAddressInstance a fibo-fnd-plc-adr:StreetAddress ;
+    fibo-fnd-plc-adr:hasPrimaryAddressNumber StreetBlockInstance ;
+    fibo-fnd-plc-adr:hasStreetName StreetNameInstance .
+StreetBlockInstance a fibo-fnd-plc-adr:PrimaryAddressNumber ;
+    fibo-fnd-rel-rel:hasTag {block_number} .
+StreetNameInstance a fibo-fnd-plc-adr:StreetName ;
+    fibo-fnd-rel-rel:hasTag {road_name} .
+LocationInstance a fibo-fnd-plc-loc:PhysicalLocation ;
+    a geo:Point;
+    geo:asWKT "{geom}"^^geo:wktLiteral .
+```
+
+The `SHACL` property shape for location must target the `https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location` concept, and include a `PropertyShape` of the geopoint as well as the address. Note that the address may take any shape, but it is recommended to follow the following definitions in `TTL` format:
+
+```
+@prefix base:             <https://www.theworldavatar.io/kg/location/> .
+@prefix address:          <https://www.theworldavatar.io/kg/address/> .
+@prefix sh:               <http://www.w3.org/ns/shacl#> .
+@prefix xsd:              <http://www.w3.org/2001/XMLSchema#> .
+@prefix ontobim:          <https://www.theworldavatar.com/kg/ontobim/> .
+@prefix ontoservice:      <https://www.theworldavatar.com/kg/ontoservice/> .
+@prefix fibo-fnd-plc-adr: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/> .
+@prefix fibo-fnd-plc-loc: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/> .
+@prefix fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> .
+@prefix lcc-cr:           <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/> .
+@prefix geo:              <http://opengis.net/ont/geosparql#> .
+
+base:ServiceLocationShape
+  a sh:NodeShape ;
+  sh:targetClass lcc-cr:Location ;
+  sh:property [
+    sh:name "id" ;
+    sh:description "Identifier for the location." ;
+    sh:order 1 ;
+    sh:path (
+      geo:asWKT
+      [sh:inversePath geo:asWKT]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "geopoint" ;
+    sh:description "The WKT serialization of the location." ;
+    sh:order 2 ;
+    sh:path (
+      geo:asWKT
+    ) ;
+    sh:datatype geo:wktLiteral ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "address" ;
+    sh:description "Address of the service site." ;
+    sh:order 3 ;
+    sh:path (
+      [sh:inversePath ontoservice:hasServiceLocation]
+      fibo-fnd-plc-adr:hasAddress
+    ) ;
+    sh:node address:ConventionalStreetAddressShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+  address:ConventionalStreetAddressShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fnd-plc-adr:ConventionalStreetAddress ;
+  sh:property [
+    sh:name "id";
+    sh:description "Identifier for the address.";
+    sh:order 1;
+    sh:path (
+      fibo-fnd-plc-adr:hasPostalCode
+      [sh:inversePath fibo-fnd-plc-adr:hasPostalCode]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "postal code";
+    sh:description "Postal code";
+    sh:order 2;
+    sh:path fibo-fnd-plc-adr:hasPostalCode ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:minLength 6 ;
+    sh:maxLength 6 ;
+    sh:pattern "^\d+$" ;
+  ] ;
+  sh:property [
+    sh:name "block";
+    sh:description "The block number on the street if any";
+    sh:order 3;
+    sh:path (
+        fibo-fnd-plc-adr:hasStreetAddress
+        fibo-fnd-plc-adr:hasPrimaryAddressNumber
+        fibo-fnd-rel-rel:hasTag
+      );
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "street";
+    sh:description "The name of the street for the address";
+    sh:order 4;
+    sh:path (
+        fibo-fnd-plc-adr:hasStreetAddress
+        fibo-fnd-plc-adr:hasStreetName
+        fibo-fnd-rel-rel:hasTag
+      );
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "city";
+    sh:description "City";
+    sh:order 5;
+    sh:path fibo-fnd-plc-loc:hasCityName ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "country";
+    sh:description "Country";
+    sh:order 6;
+    sh:path (fibo-fnd-plc-loc:hasCountry <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/hasEnglishShortName>);
+    sh:in lcc-cr:Country ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+```
