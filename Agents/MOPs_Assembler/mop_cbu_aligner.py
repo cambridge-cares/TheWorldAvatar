@@ -5,99 +5,130 @@ __status__ = "development"
 
 import os
 import json
-import glob
 import numpy as np
-from scipy.spatial.transform import Rotation as R
-
-position_files_pattern = 'Data/Assembly_Models/Output_Atoms/Position_*.json'
-cbu2_file_path = 'Data/CBUs/CBU2.json'
-output_file_template = 'Data/CBUs/CBU_{}.json'
 
 def read_json_data(file_path):
     with open(file_path, 'r') as file:
         return json.load(file)
 
-def save_json_data(data, file_path):
-    with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4)
+def calculate_normal_vector(points):
+    v1 = points[1] - points[0]
+    v2 = points[2] - points[0]
+    normal = np.cross(v1, v2)
+    norm = np.linalg.norm(normal)
+    if norm == 0:
+        # Degenerate case where points are colinear
+        return np.array([0, 0, 1])
+    normal = normal / norm
+    return normal
 
-def get_vector(from_point, to_point):
-    return np.array(to_point) - np.array(from_point)
+def rotation_matrix_around_axis(axis, theta):
+    axis = axis / np.linalg.norm(axis)
+    K = np.array([[0, -axis[2], axis[1]],
+                  [axis[2], 0, -axis[0]],
+                  [-axis[1], axis[0], 0]])
+    rotation_matrix = np.eye(3) + np.sin(theta) * K + (1 - np.cos(theta)) * np.dot(K, K)
+    return rotation_matrix
 
-def apply_translation(data, translation_vector):
-    for atom in data.values():
-        atom['coordinate_x'] += translation_vector[0]
-        atom['coordinate_y'] += translation_vector[1]
-        atom['coordinate_z'] += translation_vector[2]
+def find_optimal_rotation_weighted(X, Y, weights=None):
+    if weights is None:
+        weights = np.ones(X.shape[0])
 
-def apply_rotation(data, rotation, fixed_point):
-    for atom in data.values():
-        pos = np.array([atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z']])
-        new_pos = rotation.apply(pos - fixed_point) + fixed_point
-        atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z'] = new_pos
+    X_weighted_center = np.average(X, axis=0, weights=weights)
+    Y_weighted_center = np.average(Y, axis=0, weights=weights)
 
-def round_coordinates(data, decimals=5, epsilon=1e-10):
-    for atom in data.values():
-        atom['coordinate_x'] = round(atom['coordinate_x'], decimals) if abs(atom['coordinate_x']) > epsilon else 0.0
-        atom['coordinate_y'] = round(atom['coordinate_y'], decimals) if abs(atom['coordinate_y']) > epsilon else 0.0
-        atom['coordinate_z'] = round(atom['coordinate_z'], decimals) if abs(atom['coordinate_z']) > epsilon else 0.0
+    X_centered = X - X_weighted_center
+    Y_centered = Y - Y_weighted_center
 
-def calculate_center_of_mass(data):
-    atom_coords = np.array([[atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']] 
-                            for atom_data in data.values()])
-    center_of_mass = np.mean(atom_coords, axis=0)
-    return center_of_mass
+    X_weighted = X_centered * weights[:, np.newaxis]
+    Y_weighted = Y_centered * weights[:, np.newaxis]
 
-def find_optimal_rotation(X, Y):
-    X_centered = X - np.mean(X, axis=0)
-    Y_centered = Y - np.mean(Y, axis=0)
-    H = np.dot(X_centered.T, Y_centered)
+    H = np.dot(X_weighted.T, Y_weighted)
+
     U, S, Vt = np.linalg.svd(H)
     R = np.dot(Vt.T, U.T)
+
     if np.linalg.det(R) < 0:
-        Vt[2, :] *= -1
+        Vt[-1, :] *= -1
         R = np.dot(Vt.T, U.T)
+
     return R
 
-def calculate_dihedral(p0, p1, p2, p3):
-    b0 = -1.0 * (p1 - p0)
-    b1 = p2 - p1
-    b2 = p3 - p2
+def rotation_matrix_from_vectors(vec1, vec2):
+    a, b = (vec1 / np.linalg.norm(vec1)), (vec2 / np.linalg.norm(vec2))
+    v = np.cross(a, b)
+    c = np.dot(a, b)
+    s = np.linalg.norm(v)
 
-    b1 /= np.linalg.norm(b1)
+    if s == 0:
+        # Vectors are parallel
+        return np.eye(3) if c > 0 else -np.eye(3)
 
-    v = b0 - np.dot(b0, b1) * b1
-    w = b2 - np.dot(b2, b1) * b1
+    kmat = np.array([[0, -v[2], v[1]],
+                     [v[2], 0, -v[0]],
+                     [-v[1], v[0], 0]])
 
-    x = np.dot(v, w)
-    y = np.dot(np.cross(b1, v), w)
+    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
+    return rotation_matrix
 
-    return np.degrees(np.arctan2(y, x))
+def calculate_rotation_angle(vec1, vec2, axis):
+    vec1_proj = vec1 - np.dot(vec1, axis) * axis
+    vec2_proj = vec2 - np.dot(vec2, axis) * axis
 
-class CBU4PlanarProcessor:
-    def __init__(self, cbu_file, position_files):
+    if np.linalg.norm(vec1_proj) == 0 or np.linalg.norm(vec2_proj) == 0:
+        return 0  # No rotation needed
+
+    vec1_proj /= np.linalg.norm(vec1_proj)
+    vec2_proj /= np.linalg.norm(vec2_proj)
+
+    cos_theta = np.clip(np.dot(vec1_proj, vec2_proj), -1.0, 1.0)
+    theta = np.arccos(cos_theta)
+    cross_prod = np.cross(vec1_proj, vec2_proj)
+    if np.dot(cross_prod, axis) < 0:
+        theta = -theta
+    return theta
+
+class GenericCBUProcessor:
+    def __init__(self, cbu_file, position_files, cbu_label):
         self.cbu_data = read_json_data(cbu_file)
         self.position_files = position_files
-        print(f"Loaded CBU data from {cbu_file}")
+        self.cbu_label = cbu_label
+        #print(f"Loaded CBU data from {cbu_file}")
 
     def process(self):
-        cbu_coords = np.array([[atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']] 
-                               for atom_data in self.cbu_data.values()])
-        cbu_center = np.mean(cbu_coords, axis=0)
-        print(f"Calculated CBU center coordinates: {cbu_center}")
+        x_atoms = [(atom_id, atom_data) for atom_id, atom_data in self.cbu_data.items() if atom_data['atom'] == 'X']
+        x_atom_ids = [atom_id for atom_id, _ in x_atoms]
+        X_coords_x_atoms = np.array([[atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']] for _, atom_data in x_atoms])
 
-        x_atoms = [atom_data for atom_data in self.cbu_data.values() if atom_data['atom'] == 'X']
-        x_coords = np.array([[atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z']] for atom in x_atoms])
+        center_atom = next((atom_data for atom_data in self.cbu_data.values() if atom_data['atom'] == 'CENTER'), None)
+        if center_atom is None:
+            cbu_center = np.mean(X_coords_x_atoms, axis=0)
+            #print("No 'CENTER' atom found in CBU data. Calculated centroid as 'CENTER'.")
+            center_atom = {
+                'atom': 'CENTER',
+                'coordinate_x': cbu_center[0],
+                'coordinate_y': cbu_center[1],
+                'coordinate_z': cbu_center[2],
+                'bond': [],
+                'mmtype': 'C_R',
+                'qmmm': 'MM'
+            }
+            self.cbu_data['CENTER'] = center_atom
+        else:
+            cbu_center = np.array([center_atom['coordinate_x'], center_atom['coordinate_y'], center_atom['coordinate_z']])
+
+        alignment_atoms = x_atoms + [('CENTER', center_atom)]
+        X_coords = np.array([[atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']] for _, atom_data in alignment_atoms])
 
         for position_file in self.position_files:
             position_data = read_json_data(position_file)
-            print(f"Loaded position data from {position_file}")
+            #print(f"\nLoaded position data from {position_file}")
 
-            planar_center = np.array([position_data['X'], position_data['Y'], position_data['Z']])
-            print(f"4-planar center coordinates: {planar_center}")
+            position_center = np.array([position_data['X'], position_data['Y'], position_data['Z']])
+            #print(f"Position center coordinates: {position_center}")
 
-            translation_vector = planar_center - cbu_center
-            print(f"Calculated translation vector: {translation_vector}")
+            translation_vector = position_center - cbu_center
+            #print(f"Calculated translation vector: {translation_vector}")
 
             translated_cbu_data = {}
             for atom_id, atom_data in self.cbu_data.items():
@@ -113,188 +144,338 @@ class CBU4PlanarProcessor:
                     "qmmm": atom_data['qmmm']
                 }
 
-            dummy_coords = np.array([position_data['ClosestDummies'][key] for key in position_data['ClosestDummies']])
-            optimal_rotation_matrix = find_optimal_rotation(x_coords, dummy_coords)
-            print(f"Calculated optimal rotation matrix:\n{optimal_rotation_matrix}")
+            # Map 'X' atoms to 'ClosestDummies' and 'CENTER' to position center
+            dummy_coords_list = list(position_data['ClosestDummies'].values())
+            dummy_coords_list.append(position_center)
+            Y_coords = np.array(dummy_coords_list)
+
+            if len(X_coords) != len(Y_coords):
+                #print(f"Mismatch in number of atoms for alignment. X: {len(X_coords)}, Y: {len(Y_coords)}")
+                n = min(len(X_coords), len(Y_coords))
+                X_coords = X_coords[:n]
+                Y_coords = Y_coords[:n]
+                weights = np.ones(n)
+            else:
+                weights = np.array([1.0]*len(x_atom_ids) + [0.5])
+
+            # Compute optimal rotation
+            optimal_rotation_matrix = find_optimal_rotation_weighted(X_coords, Y_coords, weights)
+            #print(f"Calculated optimal rotation matrix:\n{optimal_rotation_matrix}")
 
             for atom_id, atom_data in translated_cbu_data.items():
                 original_coords = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
-                rotated_coords = np.dot(optimal_rotation_matrix, original_coords - planar_center) + planar_center
+                rotated_coords = np.dot(optimal_rotation_matrix, original_coords - position_center) + position_center
                 translated_cbu_data[atom_id]['coordinate_x'] = rotated_coords[0]
                 translated_cbu_data[atom_id]['coordinate_y'] = rotated_coords[1]
                 translated_cbu_data[atom_id]['coordinate_z'] = rotated_coords[2]
-                print(f"Rotated atom {atom_id} to {rotated_coords}")
 
-            output_file_path = position_file.replace('GBU_Positions', 'Translated_CBUs').replace('Position_', 'Translated_CBU1_Position_')
+            if self.cbu_label == '2-linear':
+                print("Performing additional alignment for 2-linear CBU.")
+                self.additional_alignment_2_linear(translated_cbu_data, x_atoms)
+            elif self.cbu_label.endswith('-pyramidal'):
+                print(f"Performing additional alignment for {self.cbu_label} CBU.")
+                self.additional_alignment_pyramidal(translated_cbu_data, x_atoms, position_data)
+            elif self.cbu_label.endswith('-planar'):
+                print(f"Performing additional alignment for {self.cbu_label} CBU.")
+                self.additional_alignment_planar(translated_cbu_data, x_atoms, position_data)
+            else:
+                print(f"No additional alignment needed for CBU label: {self.cbu_label}")
+
+            label = position_data.get("Label", "Unknown")
+            output_file_path = position_file.replace('GBU_Positions', 'Translated_CBUs').replace('Position_', f'Translated_CBU_{label}_Position_')
             os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
             with open(output_file_path, 'w') as f:
                 json.dump(translated_cbu_data, f, indent=4)
                 print(f"Translated and rotated CBU saved to {output_file_path}")
 
-class CBU2BentProcessor:
-    def __init__(self, cbu_file, position_files):
-        self.cbu_file = cbu_file
-        self.position_files = position_files
+    def additional_alignment_2_linear(self, translated_cbu_data, x_atoms):
+        # Existing code for 2-linear CBUs
+        x1_id, x1_data = x_atoms[0]
+        x2_id, x2_data = x_atoms[1]
 
-    def process(self):
-        for position_file in self.position_files:
-            position_data = read_json_data(position_file)
-            cbu2_data = read_json_data(self.cbu_file)
-            print(f"Processing {position_file}")
-            self.process_position(position_data, cbu2_data, position_file)
+        x1_coords = np.array([translated_cbu_data[x1_id]['coordinate_x'],
+                              translated_cbu_data[x1_id]['coordinate_y'],
+                              translated_cbu_data[x1_id]['coordinate_z']])
+        x2_coords = np.array([translated_cbu_data[x2_id]['coordinate_x'],
+                              translated_cbu_data[x2_id]['coordinate_y'],
+                              translated_cbu_data[x2_id]['coordinate_z']])
+        xx_axis = x2_coords - x1_coords
+        xx_axis = xx_axis / np.linalg.norm(xx_axis)
 
-    def process_position(self, position_data, cbu2_data, position_file_path):
-        cbu2_data, keys = self.translate_and_align(position_data, cbu2_data)
-        if cbu2_data is None:
+        non_dummy_atoms = [atom_data for atom_data in translated_cbu_data.values() if atom_data['atom'] != 'X']
+        if len(non_dummy_atoms) >= 3:
+            points = np.array([
+                [non_dummy_atoms[0]['coordinate_x'], non_dummy_atoms[0]['coordinate_y'], non_dummy_atoms[0]['coordinate_z']],
+                [non_dummy_atoms[1]['coordinate_x'], non_dummy_atoms[1]['coordinate_y'], non_dummy_atoms[1]['coordinate_z']],
+                [non_dummy_atoms[2]['coordinate_x'], non_dummy_atoms[2]['coordinate_y'], non_dummy_atoms[2]['coordinate_z']],
+            ])
+            current_normal = calculate_normal_vector(points)
+        else:
+            current_normal = np.array([0, 0, 1])
+
+        cbu_center_translated = np.mean([x1_coords, x2_coords], axis=0)
+        desired_normal = -cbu_center_translated / np.linalg.norm(cbu_center_translated)
+
+        desired_normal_proj = desired_normal - np.dot(desired_normal, xx_axis) * xx_axis
+        desired_normal_proj /= np.linalg.norm(desired_normal_proj)
+
+        current_normal_proj = current_normal - np.dot(current_normal, xx_axis) * xx_axis
+        current_normal_proj /= np.linalg.norm(current_normal_proj)
+
+        cos_theta = np.clip(np.dot(current_normal_proj, desired_normal_proj), -1.0, 1.0)
+        theta = np.arccos(cos_theta)
+        cross_prod = np.cross(current_normal_proj, desired_normal_proj)
+        if np.dot(cross_prod, xx_axis) < 0:
+            theta = -theta
+
+        rotation_axis = xx_axis
+        rotation_matrix = rotation_matrix_around_axis(rotation_axis, theta)
+
+        for atom_id, atom_data in translated_cbu_data.items():
+            coords = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
+            coords_rel = coords - x1_coords
+            rotated_coords_rel = np.dot(rotation_matrix, coords_rel)
+            rotated_coords = rotated_coords_rel + x1_coords
+            translated_cbu_data[atom_id]['coordinate_x'] = rotated_coords[0]
+            translated_cbu_data[atom_id]['coordinate_y'] = rotated_coords[1]
+            translated_cbu_data[atom_id]['coordinate_z'] = rotated_coords[2]
+
+    def additional_alignment_pyramidal(self, translated_cbu_data, x_atoms, position_data):
+        # Get base atom IDs and positions
+        base_atom_ids = [atom_id for atom_id, _ in x_atoms]
+        base_positions = np.array([
+            [translated_cbu_data[atom_id]['coordinate_x'],
+            translated_cbu_data[atom_id]['coordinate_y'],
+            translated_cbu_data[atom_id]['coordinate_z']] for atom_id in base_atom_ids
+        ])
+
+        # Get the apex position in the CBU ('CENTER' atom)
+        apex_atom_id = 'CENTER'
+        apex_position = np.array([
+            translated_cbu_data[apex_atom_id]['coordinate_x'],
+            translated_cbu_data[apex_atom_id]['coordinate_y'],
+            translated_cbu_data[apex_atom_id]['coordinate_z']
+        ])
+
+        # Calculate the centroid of the CBU (average of base positions and apex)
+        cbu_centroid = np.mean(np.vstack((base_positions, apex_position)), axis=0)
+
+        # Get the positions of the GBU dummy atoms
+        dummy_coords_list = list(position_data['ClosestDummies'].values())
+        gbu_dummy_positions = np.array(dummy_coords_list)
+
+        # Get the GBU apex position (position center)
+        gbu_apex_position = np.array([position_data['X'], position_data['Y'], position_data['Z']])
+
+        # Calculate the centroid of the GBU (average of dummy positions and apex)
+        gbu_centroid = np.mean(np.vstack((gbu_dummy_positions, gbu_apex_position)), axis=0)
+
+        # Step 1: Translate the CBU so that its centroid matches the GBU centroid
+        translation_vector = gbu_centroid - cbu_centroid
+        for atom_data in translated_cbu_data.values():
+            atom_data['coordinate_x'] += translation_vector[0]
+            atom_data['coordinate_y'] += translation_vector[1]
+            atom_data['coordinate_z'] += translation_vector[2]
+
+        # Update positions after translation
+        base_positions += translation_vector
+        apex_position += translation_vector
+        cbu_centroid += translation_vector
+
+        # Step 2: Rotate the CBU to align the vector from centroid to apex with the GBU apex vector
+        vector_cbu_to_apex = apex_position - cbu_centroid
+        vector_gbu_to_apex = gbu_apex_position - gbu_centroid
+        rotation_matrix = rotation_matrix_from_vectors(vector_cbu_to_apex, vector_gbu_to_apex)
+
+        # Rotate all atoms around the centroid
+        for atom_data in translated_cbu_data.values():
+            atom_position = np.array([atom_data['coordinate_x'],
+                                    atom_data['coordinate_y'],
+                                    atom_data['coordinate_z']])
+            shifted_position = atom_position - cbu_centroid
+            rotated_position = np.dot(rotation_matrix, shifted_position) + cbu_centroid
+            atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_position
+
+        # Update positions after rotation
+        base_positions = np.dot(rotation_matrix, (base_positions - cbu_centroid).T).T + cbu_centroid
+        apex_position = np.dot(rotation_matrix, apex_position - cbu_centroid) + cbu_centroid
+
+        # Step 3: Optimize alignment using a single X atom
+        axis_vector = apex_position - cbu_centroid
+        axis_vector /= np.linalg.norm(axis_vector)
+
+        # Select the first X atom for alignment
+        x_atom_id = base_atom_ids[0]
+        x_atom_data = translated_cbu_data[x_atom_id]
+        x_atom_position = np.array([x_atom_data['coordinate_x'],
+                                    x_atom_data['coordinate_y'],
+                                    x_atom_data['coordinate_z']])
+        x_atom_vector = x_atom_position - cbu_centroid
+
+        # Find the closest dummy position
+        distances = np.linalg.norm(gbu_dummy_positions - x_atom_position, axis=1)
+        closest_dummy_index = np.argmin(distances)
+        closest_dummy_position = gbu_dummy_positions[closest_dummy_index]
+        dummy_vector = closest_dummy_position - cbu_centroid
+
+        # Calculate the rotation angle to align x_atom_vector with dummy_vector around axis_vector
+        rotation_angle = calculate_rotation_angle(x_atom_vector, dummy_vector, axis_vector)
+
+        # Rotate all atoms around the centroid to apex axis by the calculated angle
+        rotation_matrix_axis = rotation_matrix_around_axis(axis_vector, rotation_angle)
+
+        for atom_data in translated_cbu_data.values():
+            atom_position = np.array([atom_data['coordinate_x'],
+                                    atom_data['coordinate_y'],
+                                    atom_data['coordinate_z']])
+            shifted_position = atom_position - cbu_centroid
+            rotated_position = np.dot(rotation_matrix_axis, shifted_position) + cbu_centroid
+            atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_position
+
+        print("Completed additional alignment for pyramidal CBU.")
+
+
+    def additional_alignment_planar(self, translated_cbu_data, x_atoms, position_data):
+        # New method for aligning planar CBUs
+
+        # Get base atom IDs and positions
+        base_atom_ids = [atom_id for atom_id, _ in x_atoms]
+        base_positions = np.array([
+            [translated_cbu_data[atom_id]['coordinate_x'],
+             translated_cbu_data[atom_id]['coordinate_y'],
+             translated_cbu_data[atom_id]['coordinate_z']] for atom_id in base_atom_ids
+        ])
+
+        # Calculate the centroid of the base atoms (CBU base center)
+        cbu_base_centroid = np.mean(base_positions, axis=0)
+
+        # Get the positions of the GBU dummy atoms
+        dummy_coords_list = list(position_data['ClosestDummies'].values())
+        gbu_dummy_positions = np.array(dummy_coords_list)
+
+        # Calculate the centroid of the GBU dummy positions (GBU base centroid)
+        gbu_base_centroid = np.mean(gbu_dummy_positions, axis=0)
+
+        # Step 1: Translate the CBU so that its base centroid matches the GBU base centroid
+        translation_vector = gbu_base_centroid - cbu_base_centroid
+        for atom_data in translated_cbu_data.values():
+            atom_data['coordinate_x'] += translation_vector[0]
+            atom_data['coordinate_y'] += translation_vector[1]
+            atom_data['coordinate_z'] += translation_vector[2]
+
+        # Update positions after translation
+        base_positions += translation_vector
+        cbu_base_centroid += translation_vector
+
+        # Step 2: Rotate the CBU base plane to align with the GBU base plane
+        if len(base_positions) < 3 or len(gbu_dummy_positions) < 3:
+            print("Not enough base atoms to define a plane. Skipping rotation.")
             return
-        
-        cbu2_data = self.calculate_and_add_center_of_mass(cbu2_data)
-        cbu2_data = self.adjust_rotation_to_minimize_distance(position_data, cbu2_data, keys)
-        
-        output_file_path = position_file_path.replace('GBU_Positions', 'Translated_CBUs').replace('Position_', 'Translated_CBU2_Position_')
-        os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
-        round_coordinates(cbu2_data, decimals=5, epsilon=1e-10)
-        with open(output_file_path, 'w') as f:
-            json.dump(cbu2_data, f, indent=4)
-            print(f"Final aligned geometry saved in '{output_file_path}'.")
-            
-    def translate_and_align(self, position_data, cbu2_data):
-        dummy_positions = list(position_data["ClosestDummies"].values())
-        if len(dummy_positions) < 2:
-            print(f"Error: Not enough dummy positions found in {position_data['Key']}.")
-            return None, None
-        
-        dummy_1_coords = np.array(dummy_positions[0])
-        dummy_21_coords = np.array(dummy_positions[1])
-        
-        print(f"Processing {position_data['Key']}...")
-        print(f"Dummy_1 coordinates: {dummy_1_coords}")
-        print(f"Dummy_21 coordinates: {dummy_21_coords}")
-        
-        x_atoms = {key: val for key, val in cbu2_data.items() if val['atom'] == 'X'}
-        if len(x_atoms) < 2:
-            print(f"Error: Not enough 'X' atoms found in {position_data['Key']}.")
-            return None, None
-        
-        first_x_key, second_x_key = list(x_atoms.keys())[:2]
-        first_x_atom = x_atoms[first_x_key]
-        second_x_atom = x_atoms[second_x_key]
-        
-        first_x_coords = np.array([first_x_atom['coordinate_x'], first_x_atom['coordinate_y'], first_x_atom['coordinate_z']])
-        second_x_coords = np.array([second_x_atom['coordinate_x'], second_x_atom['coordinate_y'], second_x_atom['coordinate_z']])
-        
-        translation_vector = dummy_1_coords - first_x_coords
-        
-        print(f"First X atom original coordinates: {first_x_coords}")
-        print(f"Second X atom original coordinates: {second_x_coords}")
-        print(f"Translation vector: {translation_vector}")
-        
-        apply_translation(cbu2_data, translation_vector)
-        
-        first_x_coords_translated = first_x_coords + translation_vector
-        second_x_coords_translated = second_x_coords + translation_vector
-        
-        print(f"First X atom translated coordinates: {first_x_coords_translated}")
-        print(f"Second X atom translated coordinates: {second_x_coords_translated}")
-        
-        initial_vector = second_x_coords_translated - dummy_1_coords
-        target_vector = dummy_21_coords - dummy_1_coords
-        
-        print(f"Initial vector (Dummy_1 to Second X): {initial_vector}")
-        print(f"Target vector (Dummy_1 to Dummy_21): {target_vector}")
-        
-        initial_vector_normalized = initial_vector / np.linalg.norm(initial_vector)
-        target_vector_normalized = target_vector / np.linalg.norm(target_vector)
-        
-        rotation_axis = np.cross(initial_vector_normalized, target_vector_normalized)
-        rotation_angle = np.arccos(np.dot(initial_vector_normalized, target_vector_normalized))
-        
-        print(f"Rotation axis: {rotation_axis}")
-        print(f"Rotation angle (radians): {rotation_angle}")
-        
-        if np.linalg.norm(rotation_axis) > 0:
-            rotation = R.from_rotvec(rotation_angle * rotation_axis / np.linalg.norm(rotation_axis))
-        else:
-            rotation = R.from_euler('z', 0)
-        
-        apply_rotation(cbu2_data, rotation, dummy_1_coords)
-        
-        second_x_coords_rotated = rotation.apply(second_x_coords_translated - dummy_1_coords) + dummy_1_coords
-        
-        print(f"Second X atom new coordinates after rotation: {second_x_coords_rotated}")
-        print(f"Distance from Second X atom to Dummy_21 after rotation: {np.linalg.norm(second_x_coords_rotated - dummy_21_coords)}")
-        
-        return cbu2_data, (first_x_key, second_x_key)
 
-    def calculate_and_add_center_of_mass(self, cbu2_data):
-        center_atom = next((data for key, data in cbu2_data.items() if data["atom"] == "CENTER"), None)
-        if center_atom is None:
-            center_of_mass = calculate_center_of_mass(cbu2_data)
-            cbu2_data["CENTER"] = {
-                "atom": "CENTER",
-                "coordinate_x": center_of_mass[0],
-                "coordinate_y": center_of_mass[1],
-                "coordinate_z": center_of_mass[2],
-                "bond": [],
-                "mmtype": "C_R",
-                "qmmm": "MM"
-            }
-            center_atom = cbu2_data["CENTER"]
-            print(f"Calculated center of mass at: {center_of_mass}")
-        else:
-            center_of_mass = np.array([center_atom["coordinate_x"], center_atom["coordinate_y"], center_atom["coordinate_z"]])
-            print(f"Existing CENTER atom coordinates: {center_of_mass}")
-        
-        return cbu2_data
+        # Calculate normals of the CBU base and GBU base
+        cbu_base_normal = calculate_normal_vector(base_positions[:3])
+        gbu_base_normal = calculate_normal_vector(gbu_dummy_positions[:3])
 
-    def adjust_rotation_to_minimize_distance(self, position_data, cbu2_data, keys):
-        first_x_key, second_x_key = keys
-        first_x_atom = cbu2_data[first_x_key]
-        second_x_atom = cbu2_data[second_x_key]
-        center_atom = cbu2_data["CENTER"]
+        # Calculate rotation matrix to align the CBU base normal with the GBU base normal
+        rotation_matrix_base = rotation_matrix_from_vectors(cbu_base_normal, gbu_base_normal)
 
-        first_x_coords = np.array([first_x_atom['coordinate_x'], first_x_atom['coordinate_y'], first_x_atom['coordinate_z']])
-        second_x_coords = np.array([second_x_atom['coordinate_x'], second_x_atom['coordinate_y'], second_x_atom['coordinate_z']])
-        center_coords = np.array([center_atom['coordinate_x'], center_atom['coordinate_y'], center_atom['coordinate_z']])
-        target_coords = np.array([position_data["X"], position_data["Y"], position_data["Z"]])
+        # Rotate all atoms around the base centroid
+        for atom_data in translated_cbu_data.values():
+            atom_position = np.array([atom_data['coordinate_x'],
+                                      atom_data['coordinate_y'],
+                                      atom_data['coordinate_z']])
+            shifted_position = atom_position - cbu_base_centroid
+            rotated_position = np.dot(rotation_matrix_base, shifted_position) + cbu_base_centroid
+            atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_position
 
-        midi_coords = (first_x_coords + second_x_coords) / 2.0
+        # Update positions after base alignment rotation
+        base_positions = np.dot(rotation_matrix_base, (base_positions - cbu_base_centroid).T).T + cbu_base_centroid
 
-        rotation_axis = get_vector(first_x_coords, second_x_coords)
-        rotation_axis /= np.linalg.norm(rotation_axis)
+        # Step 3: Rotate around the base normal to best fit the base atoms to the dummy atoms
+        # Project base atom positions onto the plane perpendicular to the base normal
+        base_positions_proj = base_positions - np.outer(np.dot(base_positions - cbu_base_centroid, cbu_base_normal), cbu_base_normal)
+        gbu_dummy_positions_proj = gbu_dummy_positions - np.outer(np.dot(gbu_dummy_positions - cbu_base_centroid, cbu_base_normal), cbu_base_normal)
 
-        min_distance = float('inf')
-        optimal_rotation = None
+        # Find the optimal rotation around the base normal
+        base_vectors = base_positions_proj - cbu_base_centroid
+        gbu_vectors = gbu_dummy_positions_proj - cbu_base_centroid
 
-        for angle in range(0, 360):
-            rotation = R.from_rotvec(np.radians(angle) * rotation_axis)
-            rotated_center = rotation.apply(center_coords - midi_coords) + midi_coords
-            distance = np.linalg.norm(rotated_center - target_coords)
+        # Use Kabsch algorithm in 2D (on the plane perpendicular to base normal)
+        # Define two orthogonal vectors in the plane
+        u = np.cross(cbu_base_normal, [1, 0, 0])
+        if np.linalg.norm(u) == 0:
+            u = np.cross(cbu_base_normal, [0, 1, 0])
+        u = u / np.linalg.norm(u)
+        v = np.cross(cbu_base_normal, u)
 
-            if distance < min_distance:
-                min_distance = distance
-                optimal_rotation = rotation
+        # Express vectors in the plane coordinate system
+        base_coords_2d = np.array([[np.dot(vec, u), np.dot(vec, v)] for vec in base_vectors])
+        gbu_coords_2d = np.array([[np.dot(vec, u), np.dot(vec, v)] for vec in gbu_vectors])
 
-        for key, atom in cbu2_data.items():
-            if key not in [first_x_key, second_x_key, 'CENTER']:
-                pos = np.array([atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z']])
-                new_pos = optimal_rotation.apply(pos - midi_coords) + midi_coords
-                atom['coordinate_x'], atom['coordinate_y'], atom['coordinate_z'] = new_pos
+        # Compute 2D rotation angle
+        H = np.dot(base_coords_2d.T, gbu_coords_2d)
+        U, S, Vt = np.linalg.svd(H)
+        R2D = np.dot(Vt.T, U.T)
+        if np.linalg.det(R2D) < 0:
+            Vt[-1, :] *= -1
+            R2D = np.dot(Vt.T, U.T)
 
-        rotated_center = optimal_rotation.apply(center_coords - midi_coords) + midi_coords
-        center_atom['coordinate_x'], center_atom['coordinate_y'], center_atom['coordinate_z'] = rotated_center
+        # Construct 3D rotation matrix around cbu_base_normal
+        cos_theta = R2D[0, 0]
+        sin_theta = R2D[1, 0]
+        theta = np.arctan2(sin_theta, cos_theta)
+        rotation_matrix_apex = rotation_matrix_around_axis(cbu_base_normal, theta)
 
-        print(f"Optimal rotation angle: {angle} degrees")
-        print(f"Distance from CENTER to 2-bent after rotation: {min_distance}")
+        # Rotate all atoms around the base centroid
+        for atom_data in translated_cbu_data.values():
+            atom_position = np.array([atom_data['coordinate_x'],
+                                      atom_data['coordinate_y'],
+                                      atom_data['coordinate_z']])
+            shifted_position = atom_position - cbu_base_centroid
+            rotated_position = np.dot(rotation_matrix_apex, shifted_position) + cbu_base_centroid
+            atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z'] = rotated_position
 
-        return cbu2_data
+        print("Completed additional alignment for planar CBU.")
 
-def main():
-    cbu1_processor = CBU4PlanarProcessor('Data/CBUs/CBU1.json', [f'Data/Assembly_Models/Output_Atoms/Position_{i}.json' for i in range(1, 7)])
-    cbu1_processor.process()
 
-    cbu2_processor = CBU2BentProcessor('Data/CBUs/CBU2.json', [f'Data/Assembly_Models/Output_Atoms/Position_{i}.json' for i in range(7, 19)])
-    cbu2_processor.process()
+def rotation_matrix_from_vectors(vec1, vec2):
+    a, b = (vec1 / np.linalg.norm(vec1)), (vec2 / np.linalg.norm(vec2))
+    v = np.cross(a, b)
+    c = np.dot(a, b)
+    s = np.linalg.norm(v)
 
-if __name__ == "__main__":
-    main()
+    if s == 0:
+        # Vectors are parallel
+        return np.eye(3) if c > 0 else -np.eye(3)
+
+    kmat = np.array([[0, -v[2], v[1]],
+                     [v[2], 0, -v[0]],
+                     [-v[1], v[0], 0]])
+
+    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
+    return rotation_matrix
+
+def calculate_rotation_angle(vec1, vec2, axis):
+    vec1_proj = vec1 - np.dot(vec1, axis) * axis
+    vec2_proj = vec2 - np.dot(vec2, axis) * axis
+
+    if np.linalg.norm(vec1_proj) == 0 or np.linalg.norm(vec2_proj) == 0:
+        return 0  # No rotation needed
+
+    vec1_proj /= np.linalg.norm(vec1_proj)
+    vec2_proj /= np.linalg.norm(vec2_proj)
+
+    cos_theta = np.clip(np.dot(vec1_proj, vec2_proj), -1.0, 1.0)
+    theta = np.arccos(cos_theta)
+    cross_prod = np.cross(vec1_proj, vec2_proj)
+    if np.dot(cross_prod, axis) < 0:
+        theta = -theta
+    return theta
+
+def rotation_matrix_around_axis(axis, theta):
+    axis = axis / np.linalg.norm(axis)
+    K = np.array([[0, -axis[2], axis[1]],
+                  [axis[2], 0, -axis[0]],
+                  [-axis[1], axis[0], 0]])
+    rotation_matrix = np.eye(3) + np.sin(theta) * K + (1 - np.cos(theta)) * np.dot(K, K)
+    return rotation_matrix

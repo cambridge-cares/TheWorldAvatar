@@ -1,9 +1,15 @@
+__author__ = "Aleksandar Kondinski"
+__license__ = "MIT" 
+__version__ = '0.1.0' 
+__status__ = "development" 
+
 import csv
 import os
 import json
+from datetime import datetime
 from mop_am_rescaler import AssemblyModelRescaler
 from mop_am_gbu_positions import PositionExtractor
-from mop_cbu_aligner import CBU2BentProcessor, CBU4PlanarProcessor
+from mop_cbu_aligner import GenericCBUProcessor
 from mop_jsons2xyz import JSONToXYZConverter
 
 class AssemblerWorkflow:
@@ -20,6 +26,9 @@ class AssemblerWorkflow:
             return
 
         try:
+            # Generate a timestamp for the current run
+            run_timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
             with open(file_path, mode='r') as file:
                 csv_reader = csv.reader(file)
                 headers = next(csv_reader)  # Skip the header row
@@ -37,7 +46,8 @@ class AssemblerWorkflow:
                     cbu1_path = os.path.join(self.cbus_dir, f"{cbu1}.json")
                     cbu2_path = os.path.join(self.cbus_dir, f"{cbu2}.json")
 
-                    mop_output_dir = os.path.join(self.output_dir, mop_id)
+                    # Include timestamp in the output directory name
+                    mop_output_dir = os.path.join(self.output_dir, f"{mop_id}_{run_timestamp}")
                     os.makedirs(mop_output_dir, exist_ok=True)
 
                     matched_files.append((assembly_model_path, assembly_model, cbu1_label, cbu2_label, cbu1_path, cbu2_path, mop_output_dir))
@@ -70,6 +80,14 @@ class AssemblerWorkflow:
         rescaled_dir = os.path.join(mop_output_dir, 'Rescaled')
         os.makedirs(rescaled_dir, exist_ok=True)
 
+        #print("ALL I NEED")
+        #print(f"  assembly_model_path: {temp_assembly_model_path}")
+        #print(f"  assembly_model_key: {assembly_model}")
+        #print(f"  cbu1_label: {cbu1_label}")
+        #print(f"  cbu2_label: {cbu2_label}")
+        #print(f"  cbu1_path: {cbu1_path}")
+        #print(f"  cbu2_path: {cbu2_path}")
+
         rescaler = AssemblyModelRescaler(temp_assembly_model_path, assembly_model, cbu1_label, cbu2_label, cbu1_path, cbu2_path)
         rescaler.workflow_operations(rescaled_dir)
 
@@ -91,19 +109,18 @@ class AssemblerWorkflow:
             with open(position_file, 'r') as f:
                 position_data = json.load(f)
                 label = position_data['Label']
-                if label == '4-planar':
-                    cbu_processor = CBU4PlanarProcessor(cbu1_path, [position_file])
+                if label == cbu1_label:
+                    cbu_processor = GenericCBUProcessor(cbu1_path, [position_file], cbu1_label)
                     cbu_processor.process()
-                elif label == '2-bent':
-                    cbu_processor = CBU2BentProcessor(cbu2_path, [position_file])
+                elif label == cbu2_label:
+                    cbu_processor = GenericCBUProcessor(cbu2_path, [position_file], cbu2_label)
                     cbu_processor.process()
                 else:
                     print(f"Unknown label: {label} for position {position_file}")
 
-        print(f"Converting JSON files in {translated_cbu_dir} to XYZ format")
-
         converter = JSONToXYZConverter(translated_cbu_dir, os.path.join(mop_output_dir, 'output_structure.xyz'))
         converter.convert()
+
 
 if __name__ == "__main__":
     assembly_model_file = 'Data/Assembly_Models/assembly_models.json'

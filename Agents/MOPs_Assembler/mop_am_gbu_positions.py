@@ -9,7 +9,7 @@ import os
 class PositionExtractor:
 
     """
-    PositionExtractor esentially extracts the positions of the virtual rescaled generic building units.
+    PositionExtractor essentially extracts the positions of the virtual rescaled generic building units.
     """
 
     def __init__(self, input_file, assembly_model_key, output_dir):
@@ -28,10 +28,22 @@ class PositionExtractor:
         unique_positions = {}
         dummy_positions = {atom['Key']: (atom['X'], atom['Y'], atom['Z']) for atom in data[self.assembly_model_key] if atom['Label'] == 'Dummy'}
         
+        # Extract the Center position and prepare AM_Center data
+        center_position = next((atom for atom in data[self.assembly_model_key] if atom['Label'] == 'Center'), None)
+        am_center_data = None
+        if center_position:
+            am_center_data = {
+                'Key': 'AM_Center',
+                'Label': 'AM_Center',
+                'X': center_position['X'],
+                'Y': center_position['Y'],
+                'Z': center_position['Z']
+            }
+
         for atom in data[self.assembly_model_key]:
             if atom['Label'] not in ['Dummy', 'Center']:
                 closest_dummies = {dummy: dummy_positions[dummy] for dummy in atom.get('ClosestDummies', []) if dummy in dummy_positions}
-                unique_positions[atom['Key']] = {
+                position_data = {
                     'Key': atom['Key'],
                     'Label': atom['Label'],
                     'X': atom['X'],
@@ -39,6 +51,13 @@ class PositionExtractor:
                     'Z': atom['Z'],
                     'ClosestDummies': closest_dummies
                 }
+                
+                # Add AM_Center position to each entry
+                if am_center_data:
+                    position_data['AM_Center'] = am_center_data
+
+                unique_positions[atom['Key']] = position_data
+
         return unique_positions
 
     def write_positions_to_files(self, unique_positions):
