@@ -135,14 +135,19 @@ public class GeocodingService {
         ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + COUNTRY_VAR +
         ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + STREET_VAR +
         ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + BLOCK_VAR;
-    String queryFilters = this.getPredicate(GeoLocationType.POSTAL_CODE) + ShaclResource.WHITE_SPACE + StringResource.parseLiteral(postalCode)
+    String queryFilters = this.getPredicate(GeoLocationType.POSTAL_CODE) + ShaclResource.WHITE_SPACE
+        + StringResource.parseLiteral(postalCode)
         + ";";
-    queryFilters += this.getPredicate(GeoLocationType.CITY) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + CITY_VAR + ";";
-    queryFilters += this.getPredicate(GeoLocationType.COUNTRY) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + COUNTRY_VAR + ";";
-    queryFilters += this.getPredicate(GeoLocationType.STREET) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + STREET_VAR
+    queryFilters += this.getPredicate(GeoLocationType.CITY) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK
+        + CITY_VAR + ";";
+    queryFilters += this.getPredicate(GeoLocationType.COUNTRY) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK
+        + COUNTRY_VAR + ";";
+    queryFilters += this.getPredicate(GeoLocationType.STREET) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK
+        + STREET_VAR
         + ShaclResource.FULL_STOP;
     // Block numbers are optional
-    queryFilters += StringResource.genOptionalClause(ShaclResource.VARIABLE_MARK + ADDRESS_VAR + ShaclResource.WHITE_SPACE +
+    queryFilters += StringResource.genOptionalClause(ShaclResource.VARIABLE_MARK + ADDRESS_VAR
+        + ShaclResource.WHITE_SPACE +
         this.getPredicate(GeoLocationType.BLOCK) + ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + BLOCK_VAR
         + ShaclResource.FULL_STOP);
     return this.genQueryTemplate(selectVars, queryFilters);
@@ -162,13 +167,16 @@ public class GeocodingService {
   private String genCoordinateQueryTemplate(String block, String street, String city, String country,
       String postalCode) {
     String queryFilters = "fibo-fnd-arr-id:isIndexTo/geo:asWKT " + ShaclResource.VARIABLE_MARK + LOCATION_VAR + ";";
+    String filterStatements = "";
     if (postalCode != null) {
       queryFilters += this.getPredicate(GeoLocationType.POSTAL_CODE);
       queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(postalCode) + ";";
     }
     if (city != null) {
+      // check city name via lowercase
       queryFilters += this.getPredicate(GeoLocationType.CITY);
-      queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(city) + ";";
+      queryFilters += ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + CITY_VAR + ";";
+      filterStatements += this.genLowercaseFilterStatement(CITY_VAR, city);
     }
     if (country != null) {
       queryFilters += this.getPredicate(GeoLocationType.COUNTRY);
@@ -176,17 +184,23 @@ public class GeocodingService {
     }
 
     if (street != null) {
-      queryFilters += this.getPredicate(GeoLocationType.STREET);
-      queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(street) + ";";
       // Block will only be included if there is a corresponding street
       if (block != null) {
         queryFilters += this.getPredicate(GeoLocationType.BLOCK);
-        queryFilters += ShaclResource.WHITE_SPACE + StringResource.parseLiteral(block) + ";";
+        // Blocks may contain strings and should be match in lower case
+        queryFilters += ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + BLOCK_VAR + ";";
+        filterStatements += this.genLowercaseFilterStatement(BLOCK_VAR, block);
       }
+      // check street name via lowercase
+      queryFilters += this.getPredicate(GeoLocationType.STREET);
+      queryFilters += ShaclResource.WHITE_SPACE + ShaclResource.VARIABLE_MARK + STREET_VAR + ";";
+      filterStatements += this.genLowercaseFilterStatement(STREET_VAR, street);
     }
     String selectVar = ShaclResource.VARIABLE_MARK + LOCATION_VAR;
-    // Limit the query return to one result to improve performance
-    return this.genQueryTemplate(selectVar, queryFilters) + "LIMIT 1";
+    // Filter statements must be added to the very end to prevent any bugs
+    return this.genQueryTemplate(selectVar, queryFilters + filterStatements)
+        // Limit the query return to one result to improve performance
+        + "LIMIT 1";
   }
 
   /**
@@ -211,6 +225,17 @@ public class GeocodingService {
         LOGGER.error(errorMessage);
         throw new IllegalArgumentException(errorMessage);
     }
+  }
+
+  /**
+   * Generates a filter statement to match string in lowercase.
+   * 
+   * @param variable     The variable name for filtering.
+   * @param literalValue The literal value that should be matched.
+   */
+  private String genLowercaseFilterStatement(String variable, String literalValue) {
+    return "FILTER(LCASE(" + ShaclResource.VARIABLE_MARK + variable + ")="
+        + StringResource.parseLiteral(literalValue.toLowerCase()) + ")";
   }
 
   /**
