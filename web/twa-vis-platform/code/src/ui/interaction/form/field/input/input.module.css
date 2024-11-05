@@ -1,0 +1,28 @@
+.min-max-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: 25vw;
+}
+
+.min-max-input-value {
+  width: 3rem;
+  padding: 0.2rem;
+
+  background-color: var(--background-primary);
+  font-size: var(--font-size-tertiary-text);
+  color: var(--text-color-secondary);
+}
+
+.min-max-divider {
+  width: 0.75rem;
+  margin: 0.6rem 0.25rem;
+  padding: 0 0.25rem;
+  border-top: 2px solid var(--text-color-primary);
+}
+
+@media only screen and (max-width: 480px) {
+  .min-max-divider {
+    margin: 1.5rem 0.5rem;
+  }
+}

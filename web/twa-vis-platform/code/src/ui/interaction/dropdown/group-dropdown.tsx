@@ -6,7 +6,7 @@ interface GroupDropdownFieldProps {
   placeholderText: string,
   options: string[];
   groups: string[];
-  handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleChange: (_event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 interface SelectGroupMappings {

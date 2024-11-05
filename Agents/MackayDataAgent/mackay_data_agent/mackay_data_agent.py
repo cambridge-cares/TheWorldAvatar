@@ -7,7 +7,7 @@ import logging
 import os.path
 from kg_access import tsclient_wrapper, forecast_client, api_agent_client
 from typing import List
-
+from kg_access.kgClient import KGClient
 from kg_access.tsclient_wrapper import TSClient
 from utils.conf_utils import *
 from data_classes.ts_data_classes import  ForecastMeta, KgAccessInfo, get_padded_TSInstance,parse_incomplete_time,TimeSeriesInstance,get_duration_in_days,parse_time_to_format
@@ -22,6 +22,7 @@ class MackayDataAgent:
         self.base_conf = load_conf(os.path.join(confdir, 'base.cfg'))
         self.api_agent = api_agent_client.APIAgentClient(self.base_conf["output"]["base_url"], **self.base_conf["api_agent"],**self.base_conf["kg_access"])
         data_confs = self.data_confs = load_confs_from_dir(os.path.join(confdir, 'data'))
+        self.meta_queries = load_json(os.path.join(confdir, 'data/meta_queries.json'))
         property_file = create_property_file('base', **self.base_conf['rdb_access'], **self.base_conf['kg_access'])
         self.ts_client = TSClient(property_file)
         self.name_to_iris = {d["output"]["name"]: d["output"]["target_iri"] for d in data_confs}
@@ -52,6 +53,22 @@ class MackayDataAgent:
             data[data_name] = {'time': times, 'value': values}
         logging.debug(data)
         return data
+    
+    def query_meta_data(self) -> dict:
+        data = {}
+        for meta_query in self.meta_queries.get('queries'):
+            query_endpoint = meta_query.get('url')
+            kg_user = meta_query.get('user')
+            kg_password = meta_query.get('pwd')
+            query_string = meta_query.get('query_string')
+            variable_name = meta_query.get('variable_name')
+            self.kg_client = KGClient(query_endpoint, query_endpoint, kg_user, kg_password)
+            query_response = self.kg_client.performQuery(query_string)
+            logging.info(query_response)
+            data[variable_name] = query_response[0]
+            logging.info(data)
+        return data
+        
 
     def update_model(self):
         self.update_predict()

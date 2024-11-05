@@ -1,11 +1,11 @@
-import React from 'react';
 
+import { Assets } from 'io/config/assets';
+import Image from 'next/image';
 import styles from './loader.module.css';
-import AppImage from 'ui/graphic/image/image';
 
 export default function Loader() {
   return <div className={styles.loadingContainer}>
-    <AppImage url="./images/defaults/loading.gif"
+    <Image src= {Assets.LOADING}
       width={500}
       height={500} 
       alt ="Loading animation"/>

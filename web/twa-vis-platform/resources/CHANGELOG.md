@@ -3,6 +3,88 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.9.1
+
+### Features
+
+* Added CMCL logo to default icons library
+
+## 5.9.0
+
+### Bug Fixes
+
+* Read in `ASSET_PREFIX` environment variable and write it to next.js asset prefix and basepath to fix static resources behind double nginx
+
+## 5.8.1
+
+### Bug Fixes
+
+* Fix production build issues
+
+## 5.8.0
+
+### Features
+
+* Added sorting, filters and other functions to the registry table
+* Improve user interactions and experience in the registry table
+* Improve user interactions with the schedule form sections and the form in general
+
+## 5.7.0
+
+### Bug Fixes
+
+* Random logouts when keycloak authentication is enabled
+* Role based authorisation was broken behind docker
+
+### Changes
+
+* Updated various package dependencies to latest versions
+
+## 5.6.0
+
+### Features
+
+* Extension of the form UI for search capabilities
+* Addition of initial search capabilities for the map visualisation* Addition of time slots for the form schedule section
+* Modify the registry to work with the new vis backend agent
+* Consolidation of the urls of assets as constants in one file
+
+### Bug Fixes
+
+* Fix the form's css
+
+## 5.5.0
+
+### Features
+
+* Addition of the registry pages, enabling users to view, create, edit, and remove records from the knowledge graph
+* Addition of scheduling capabilities for the specific registry pages
+* Users can deploy multiple navbar logos
+* Improvements to the handling and structure of configuration settings and pages
+* Improvements to the documentation and tutorial
+
+### Bug Fixes
+
+* Fix the development mode in a Docker container
+* Improve user experience if modules are disabled by redirecting back to homepage
+
+## 5.4.0
+
+### Features
+
+* Viz app can now be secured behind a Keycloak authentication server by configuring some environment variables. See main documentation of the project 1.1
+* Dependency management and build process optimised by using pnpm over npm for the project.
+* Docker build optimised with multi stage building and module caching
+* Rebuild should only occur if a change in a config file is detected
+* Some dependency updating and trimming down
+* NB there no longer two places to mount config files and media. All config files should go in `web/twa-vis-platform/code/public` and NOT `web/twa-vis-platform/uploads`
+
+## 5.3.3
+
+### Bug Fixes
+
+* Fix tooltips in ribbon
+
 ## 5.3.2
 
 ### Bug Fixes

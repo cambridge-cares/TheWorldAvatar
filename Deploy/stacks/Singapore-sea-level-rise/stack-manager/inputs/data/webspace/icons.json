@@ -1,2 +1,14 @@
 {
+    "carpark_image": "img/carpark.png",
+    "weather_station_image": "img/weather-station.png",
+    "traffic-accident": "img/traffic-accident.png",
+    "traffic-road-work": "img/road-work.png",
+    "traffic-vehicle-breakdown": "img/vehicle-breakdown.png",
+    "traffic-weather": "img/terrible-weather.png",
+    "traffic-obstacle": "img/road-obstacle.png",
+    "traffic-road-block": "img/road-block.png",
+    "traffic-heavy-traffic": "img/heavy-traffic.png",
+    "traffic-misc": "img/traffic-misc.png",
+    "traffic-diversion": "img/traffic-diversion.png",
+    "traffic-unattended-vehicle": "img/unattended-vehicle.png"
 }

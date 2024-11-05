@@ -2,11 +2,12 @@
 
 import styles from './page-thumbnail.module.css';
 
-import React from 'react';
 import { Tooltip } from '@mui/material';
+import React from 'react';
 
+import { Assets } from 'io/config/assets';
 import { OptionalPage } from 'io/config/optional-pages';
-import AppImage from 'ui/graphic/image/image';
+import Image from 'next/image';
 import Link from 'next/link';
 
 // Interface for incoming parameters
@@ -35,7 +36,7 @@ interface PageThumbnailTemplateProps {
  * @param {OptionalPage} page Markdown page content.
  */
 export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailProps>) {
-  const thumbnail = page.thumbnail ?? "./images/defaults/icons/info.svg";
+  const thumbnail = page.thumbnail ?? Assets.INFO;
   const url = `./${page.slug}`;
 
   return (
@@ -94,7 +95,9 @@ const ForwardedPageThumbnailTemplate = React.forwardRef<HTMLDivElement, Readonly
     const imageDescription = "Thumbnail icon for the '" + header + "' page.";
     return (
       <Link href={redirectUrl} className={styles.container}>
-        <AppImage url={icon} height={50} width={50} alt={imageDescription} classes={styles.thumbnail} />
+        <div className={styles.thumbnail}>
+          <Image src={icon} height={50} width={50} alt={imageDescription} />
+        </div>
         <div ref={ref} {...rest} className={styles.content}>
           <h3 className={styles.title}>
             {header}

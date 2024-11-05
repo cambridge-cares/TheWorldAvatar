@@ -8,9 +8,19 @@
 **/
 
 const nextConfig = {
-	basePath: "", //default 
-	assetPrefix: ".",
+	reactStrictMode: true,
+	assetPrefix: process.env.ASSET_PREFIX ?? "",
 	compiler: { removeConsole: false },
+	images: {
+		loader: 'custom',
+		loaderFile: './image-loader.js',
+	},
+
+	env: {
+		KEYCLOAK: process.env.KEYCLOAK ?? "false",
+		ASSET_PREFIX: process.env.ASSET_PREFIX ?? ""
+	}
 };
 
-module.exports = nextConfig;
+
+export default nextConfig;

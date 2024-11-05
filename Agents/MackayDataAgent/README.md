@@ -13,7 +13,7 @@ Note that this agent serves as the example of a data client that manages the upd
 # 1. Setup
 
 ## 1.1 Agent Configuration
-###1.1.1 Agent Base Configuration
+### 1.1.1 Agent Base Configuration
 Agent base configuration can be modified in [base.cfg].
 ```bash
 [rdb_access] # RDB Access
@@ -35,8 +35,14 @@ agent_iri =
 [output] # BASE URL of triples to create by this agent
 base_url = 
 ```
-###1.1.2 Data Point Configuration
-Mackay Data Agents manage the update and reading of multiple data points, each the result of a chain of derivations. Configuration files one per data point are put under [data config folder]. New data points can easily be added by creating new files in the folder following the syntax below.
+### 1.1.2 Data Point Configuration
+
+#### 1.1.2.1 Timeseries Data
+Mackay Data Agent manages the update and reading of multiple data points, each the result of a chain of derivations. Configuration files one per data point are put under [data config folder]. Some examples can be found in `./confs_files/data` folder. 
+
+Before deployment, remove any of the unused data configuration files from `./confs_files/data` folder.
+
+ New data points can easily be added by creating new files in the folder following the syntax below.
 ```bash
 [output]
 steps = forecast # Derivation Step after API download, in [forecast|calculation]
@@ -51,6 +57,13 @@ frequency = 1
 unitFrequency = year
 ```
 
+#### 1.1.2.2 Meta Data
+The Mackay Data Agent is able to handle meta data queries to the knowledge graph as well. Some examples can be found in the `./confs_files/data` folder. 
+- `variable_name` - name of the variable
+- `url` - query endpoint
+- `user` - username to access query endpoint if any exist
+- `password` - password to access query endpoint if any exist
+- `query_string` - SPARQL query strings
 
 ## 1.2 Required Derivation Markup
 `Mackay Data Agent` is a client of the [API Agent]. If any api-meta-data IRI declared in the data config files is not registered to API agent and in turn never instantiated when the Mackay Data Agent starts, `Mackay Data Agent` will register them to the [API agent] (and subsequently the API data will be instantiated). This however is on the condition that the API meta-data triples are already properly instantiated in the KG.  Refer to [API Agent] README 1.3 on how to declare API meta-data in KG.
@@ -60,18 +73,18 @@ unitFrequency = year
 Note that this design choice is made as API-downloaded data are supposed to be used by multiple agents; therefore it is conceptually not sound to keep a copy of API meta-information in this one client agent.
 
 
-##1.3. Using the Agent
-
+## 1.3. Using the Agent
 The agent image can be built via:
 ```
-docker compose -f "docker-compose-test-dockerised.yml" up -d --build
+docker compose -f "docker-compose.yml" up -d --build
 ```
 Note that the agent needs 4 other components to work:
 1. Blazegraph.
 2. PostgresSQL.
 3. [Forecasting Agent]
 4. [API Agent]
-#2. Agent Design
+
+# 2. Agent Design
 
 # 2.1 Mackay Calculator Agents
 The Singapore MacKay Carbon Calculator provides a model of the Singapore energy system that allows you to explore pathways to decarbonisation. The scenario simulation is based on an underling Mackay Calculator Model. We implement it in the TWA agent framework with two agents.
@@ -88,10 +101,6 @@ The full time-sequence diagram of Mackay Data Agent actions are illustrated as t
 2) Any required API data are managed and updated by the API Agent periodically.
 3) Client may request an update of all data managed by the Data Agent via http request. Upon request, each datapoint is updated via the DIF derivation update method, which checks the attached timestamps along the derivation chain and updates accordingly.
 4) Client may request to read the datapoints from the current KG.
-
-<p align="center">
-    <img src="./imgs/sequenceDATAAGENT.png" alt="drawing" width="800"/>
-</p>
 
 # 2.3 Ontology
 We map three Mackay inputs data to quantity instances in TWA KG. A proposed version of design can be found in [tbox_dev]. Note that this is not the finalized version.

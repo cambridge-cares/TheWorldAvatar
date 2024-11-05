@@ -11,6 +11,15 @@ services:
     restart: "no"
     environment:
       WATCHPACK_POLLING: true
+      UUID: 1000 # or your user. Run `id` in bash to find out these two
+      GUID: 1000 # or your guid. This is so you own node modules that the container makes on your host machine
+
+      KEYCLOAK: false ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: / ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /add/* ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: protected ## the role required for the above list
+
+      REDIS_HOST: host.docker.internal
     secrets:
       - mapbox_username
       - mapbox_api_key
@@ -24,7 +33,7 @@ services:
     volumes:
       - ./code:/twa/
       - /twa/node_modules/
-      - ./uploads:/twa/public
+      - /twa/.next/      
     ports:
       - "3000:3000" 
 secrets:
