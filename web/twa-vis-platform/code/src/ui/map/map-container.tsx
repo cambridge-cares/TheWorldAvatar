@@ -11,13 +11,13 @@ import { DataStore } from 'io/data/data-store';
 import { selectDimensionSliderValue } from 'state/dimension-slider-slice';
 import { getFilterFeatureIris, getFilterLayerIds, getFilterTimes, getScenarioID, setFilterFeatureIris, setFilterLayerIds, setFilterTimes } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
-import { MapSettings } from 'types/settings';
+import { CameraPosition, ImageryOption, MapSettings } from 'types/settings';
 import ScenarioModal from 'ui/interaction/modal/scenario';
 import { SHOW_ALL_FEATURE_INDICATOR } from 'ui/interaction/modal/search/search-modal';
 import Ribbon from 'ui/interaction/ribbon/ribbon';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
 import MapEventManager from 'ui/map/map-event-manager';
-import { addData } from 'ui/map/map-helper';
+import { addData, getCurrentImageryOption, getDefaultCameraPosition } from 'ui/map/map-helper';
 import MapboxMapComponent from 'ui/map/mapbox/mapbox-container';
 import { parseMapDataSettings } from 'utils/client-utils';
 import { useScenarioDimensionsService } from 'utils/data-services';
@@ -53,6 +53,20 @@ export default function MapContainer(props: MapContainerProps) {
     return JSON.parse(props.settings);
   }, []);
 
+  const defaultPosition: CameraPosition = useMemo(() => {
+    return getDefaultCameraPosition(mapSettings.camera);
+  }, []);
+
+  const currentImageryOption: ImageryOption = useMemo(() => {
+    return getCurrentImageryOption(mapSettings.imagery);
+  }, []);
+
+  useEffect(() => {
+    if (map) {
+      setMapEventManager(new MapEventManager(map));
+    }
+  }, [map]);
+
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
     if (!showDialog) {
@@ -84,7 +98,7 @@ export default function MapContainer(props: MapContainerProps) {
 
   // Populates the map after it has loaded and scenario selection is not required
   useEffect(() => {
-    if (map && mapData) {
+    if (map && mapData && mapEventManager) {
       if (mapSettings?.["type"] === "mapbox") {
         // All event listeners and data must be added when the map is initialised or data changes
         addData(map, mapSettings, mapData);
@@ -145,10 +159,10 @@ export default function MapContainer(props: MapContainerProps) {
       {/* Mapbox map */}
       {mapSettings?.["type"] === "mapbox" &&
         <MapboxMapComponent
-          settings={mapSettings}
+          defaultPosition={defaultPosition}
+          imageryOption={currentImageryOption}
           currentMap={map}
           setMap={setMap}
-          setMapEventManager={setMapEventManager}
         />
       }
 

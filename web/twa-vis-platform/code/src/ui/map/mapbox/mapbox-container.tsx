@@ -6,16 +6,15 @@ import './mapbox.css';
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useEffect, useRef } from 'react';
 
-import { MapSettings } from 'types/settings';
+import { CameraPosition, ImageryOption } from 'types/settings';
 import MapEventManager from 'ui/map/map-event-manager';
-import { getCurrentImageryOption, getDefaultCameraPosition } from 'ui/map/map-helper';
 
 // Type definition of incoming properties
 interface MapProperties {
-  settings: MapSettings;
   currentMap: Map;
+  defaultPosition: CameraPosition;
+  imageryOption?: ImageryOption;
   setMap: React.Dispatch<React.SetStateAction<Map>>;
-  setMapEventManager: React.Dispatch<React.SetStateAction<MapEventManager>>;
 }
 
 /**
@@ -44,6 +43,11 @@ export default function MapboxMapComponent(props: MapProperties) {
   const initialiseMap = async () => {
     props.currentMap?.remove();
 
+    const defaultImagery: ImageryOption = props.imageryOption ?? {
+      "name": "Light",
+      "url": "mapbox://styles/mapbox/light-v11?optimize=true"
+    };
+
     const response = await fetch(("./api/map/settings"), {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -52,17 +56,13 @@ export default function MapboxMapComponent(props: MapProperties) {
     // Set credentials
     mapboxgl.accessToken = respJson.token;
 
-    // Get default camera position
-    const defaultPosition = getDefaultCameraPosition(props.settings.camera);
-    let styleObject = getCurrentImageryOption(props.settings.imagery);
-
     const map: Map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: styleObject.url,
-      center: defaultPosition["center"],
-      zoom: defaultPosition["zoom"],
-      bearing: defaultPosition["bearing"],
-      pitch: defaultPosition["pitch"],
+      style: defaultImagery.url,
+      center: props.defaultPosition.center,
+      zoom: props.defaultPosition.zoom,
+      bearing: props.defaultPosition.bearing,
+      pitch: props.defaultPosition.pitch,
     });
 
     map.addControl(new mapboxgl.ScaleControl() as mapboxgl.IControl, "bottom-right");
@@ -72,18 +72,16 @@ export default function MapboxMapComponent(props: MapProperties) {
 
     map.on("style.load", function () {
       // Update time if using new v3 standard style
-      styleObject = getCurrentImageryOption(props.settings.imagery);
-      if (styleObject.time != null) {
+      if (defaultImagery.time != null) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (map as any).setConfigProperty(
           "basemap",
           "lightPreset",
-          styleObject.time
+          defaultImagery.time
         );
       }
       // Map is only settable after the styles have loaded
       props.setMap(map);
-      props.setMapEventManager(new MapEventManager(map));
     });
   };
 
