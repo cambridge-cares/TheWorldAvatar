@@ -53,8 +53,8 @@ export default function GeocodeMapContainer(props: GeocodeMapContainerProps) {
       // Marker must update the form values when draggred
       marker.on("dragend", () => {
         const lngLat = marker.getLngLat();
-        props.form.setValue(FORM_STATES.LATITUDE, lngLat.lat)
-        props.form.setValue(FORM_STATES.LONGITUDE, lngLat.lng)
+        props.form.setValue(FORM_STATES.LATITUDE, lngLat.lat.toString())
+        props.form.setValue(FORM_STATES.LONGITUDE, lngLat.lng.toString())
       });
       setMarker(marker);
     }

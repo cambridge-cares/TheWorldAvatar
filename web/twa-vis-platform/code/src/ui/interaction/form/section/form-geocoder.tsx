@@ -163,8 +163,8 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
       if (coordinates.length === 2) {
         // Geolocation is in longitude(x), latitude(y) format
         setHasGeolocation(true);
-        props.form.setValue(FORM_STATES.LATITUDE, coordinates[1])
-        props.form.setValue(FORM_STATES.LONGITUDE, coordinates[0])
+        props.form.setValue(FORM_STATES.LATITUDE, coordinates[1].toString())
+        props.form.setValue(FORM_STATES.LONGITUDE, coordinates[0].toString())
         break; // Stop function if found
       };
     }
