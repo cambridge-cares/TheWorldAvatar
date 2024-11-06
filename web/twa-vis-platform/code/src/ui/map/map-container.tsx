@@ -159,10 +159,11 @@ export default function MapContainer(props: MapContainerProps) {
       {/* Mapbox map */}
       {mapSettings?.["type"] === "mapbox" &&
         <MapboxMapComponent
+          currentMap={map}
+          styles="mapContainer"
+          setMap={setMap}
           defaultPosition={defaultPosition}
           imageryOption={currentImageryOption}
-          currentMap={map}
-          setMap={setMap}
         />
       }
 

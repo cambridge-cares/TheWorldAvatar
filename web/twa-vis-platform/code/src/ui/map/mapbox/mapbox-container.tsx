@@ -6,22 +6,26 @@ import './mapbox.css';
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useEffect, useRef } from 'react';
 
-import { CameraPosition, ImageryOption } from 'types/settings';
-import MapEventManager from 'ui/map/map-event-manager';
 import { Apis } from 'io/config/routes';
+import { CameraPosition, ImageryOption } from 'types/settings';
 
 // Type definition of incoming properties
 interface MapProperties {
   currentMap: Map;
+  styles: string;
+  setMap: React.Dispatch<React.SetStateAction<Map>>;
   defaultPosition: CameraPosition;
   imageryOption?: ImageryOption;
-  setMap: React.Dispatch<React.SetStateAction<Map>>;
 }
 
 /**
  * Renders a mapbox map instance. 
  *
- * @param params incoming route parameters.
+ * @param {Map} map The reference to the current map (if any).
+ * @param {string} styles The css styles for the mapbox container.
+ * @param setMap Sets the reference for the created map.
+ * @param {CameraPosition} defaultPosition The default camera position for the map.
+ * @param {ImageryOption} imageryOption An optional imagery option for the default map setup.
  *
  * @returns React component for display.
  */
@@ -87,7 +91,7 @@ export default function MapboxMapComponent(props: MapProperties) {
   };
 
   return (
-    <div id="mapContainer" ref={mapContainer} className="mapContainer">
+    <div id="mapContainer" ref={mapContainer} className={props.styles}>
       {/* Map will be generated here. */}
     </div>
   );
