@@ -258,25 +258,25 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
                 }}
                 onClick={props.form.handleSubmit(onGeocoding)}
               />
-              {hasGeolocation && <>
-                <FormFieldComponent
-                  entityType={props.field.name[VALUE_KEY]}
-                  field={latitudeShape}
-                  form={props.form}
-                  options={props.options}
-                />
-                <FormFieldComponent
-                  entityType={props.field.name[VALUE_KEY]}
-                  field={longitudeShape}
-                  form={props.form}
-                  options={props.options}
-                />
-              </>}
             </div>
           </div>}
-        {hasGeolocation && <GeocodeMapContainer
-          form={props.form}
-        />}
+        {hasGeolocation && <div className={styles["form-fieldset-contents"]}>
+          <GeocodeMapContainer
+            form={props.form}
+          />
+          <FormFieldComponent
+            entityType={props.field.name[VALUE_KEY]}
+            field={latitudeShape}
+            form={props.form}
+            options={props.options}
+          />
+          <FormFieldComponent
+            entityType={props.field.name[VALUE_KEY]}
+            field={longitudeShape}
+            form={props.form}
+            options={props.options}
+          />
+        </div>}
       </>}
     </fieldset>);
 }

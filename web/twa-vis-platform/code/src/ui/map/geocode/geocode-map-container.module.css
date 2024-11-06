@@ -1,6 +1,6 @@
 .mapContainer {
   display: flex;
-  margin: 0.5rem auto;
+  margin: 0.5rem 0.75rem;
   width: 55vw;
   height: 50vh;
   z-index: 0;
