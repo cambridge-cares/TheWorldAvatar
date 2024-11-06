@@ -49,8 +49,9 @@ export default function MapboxMapComponent(props: MapProperties) {
     props.currentMap?.remove();
 
     const defaultImagery: ImageryOption = props.imageryOption ?? {
-      "name": "Dark",
-      "url": "mapbox://styles/mapbox/dark-v11?optimize=true"
+      "name": "Standard (Night)",
+      "url": "mapbox://styles/mapbox/standard",
+      "time": "dusk"
     };
 
     const response = await fetch((Apis.MAP_SETTINGS), {
