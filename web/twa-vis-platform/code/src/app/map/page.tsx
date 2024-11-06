@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
 import { Paths, PageTitles, Modules } from 'io/config/routes';
-import MapContainer from 'map/map-container';
 import { ScenarioDefinition } from 'types/scenario';
 import { DefaultSettings } from 'types/settings';
 import { getScenarios } from 'utils/getScenarios';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
+import MapContainer from 'ui/map/map-container';
 
 export const dynamic = 'force-dynamic';
 

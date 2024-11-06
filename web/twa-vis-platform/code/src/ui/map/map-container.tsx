@@ -8,19 +8,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { DataStore } from 'io/data/data-store';
-import MapEventManager from 'map/map-event-manager';
-import { addData } from 'map/map-helper';
-import MapboxMapComponent from 'map/mapbox/mapbox-container';
 import { selectDimensionSliderValue } from 'state/dimension-slider-slice';
 import { getFilterFeatureIris, getFilterLayerIds, getFilterTimes, getScenarioID, setFilterFeatureIris, setFilterLayerIds, setFilterTimes } from 'state/map-feature-slice';
 import { ScenarioDefinition } from 'types/scenario';
 import { MapSettings } from 'types/settings';
 import ScenarioModal from 'ui/interaction/modal/scenario';
+import { SHOW_ALL_FEATURE_INDICATOR } from 'ui/interaction/modal/search/search-modal';
 import Ribbon from 'ui/interaction/ribbon/ribbon';
 import FloatingPanelContainer from 'ui/interaction/tree/floating-panel';
+import MapEventManager from 'ui/map/map-event-manager';
+import { addData } from 'ui/map/map-helper';
+import MapboxMapComponent from 'ui/map/mapbox/mapbox-container';
 import { parseMapDataSettings } from 'utils/client-utils';
 import { useScenarioDimensionsService } from 'utils/data-services';
-import { SHOW_ALL_FEATURE_INDICATOR } from 'ui/interaction/modal/search/search-modal';
 
 // Type definition of incoming properties
 interface MapContainerProps {

@@ -6,9 +6,9 @@ import './mapbox.css';
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useEffect, useRef } from 'react';
 
-import MapEventManager from 'map/map-event-manager';
 import { MapSettings } from 'types/settings';
-import { getCurrentImageryOption, getDefaultCameraPosition } from 'map/map-helper';
+import MapEventManager from 'ui/map/map-event-manager';
+import { getCurrentImageryOption, getDefaultCameraPosition } from 'ui/map/map-helper';
 
 // Type definition of incoming properties
 interface MapProperties {

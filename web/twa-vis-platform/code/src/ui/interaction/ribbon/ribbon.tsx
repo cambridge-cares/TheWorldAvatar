@@ -16,16 +16,16 @@ import {
   set3DTerrain,
   setImagery,
   togglePlacenames
-} from 'map/map-helper';
+} from 'ui/map/map-helper';
 import { addItem, selectItem } from 'state/context-menu-slice';
 import { getScenarioName, getScenarioType } from 'state/map-feature-slice';
 import { ImageryOption, MapSettings } from 'types/settings';
 import { ContextItemDefinition } from 'ui/interaction/context-menu/context-item';
+import IconComponent from 'ui/graphic/icon/icon';
 import { closeFullscreen, openFullscreen } from 'utils/client-utils';
 import RibbonComponentClick from './components/ribbon-component-click';
 import RibbonComponentOptions from './components/ribbon-component-options';
 import RibbonComponentToggle from './components/ribbon-component-toggle';
-import IconComponent from 'ui/graphic/icon/icon';
 import { scenarioTypeIcon } from '../modal/scenario';
 
 // Type definition for Ribbon parameters
