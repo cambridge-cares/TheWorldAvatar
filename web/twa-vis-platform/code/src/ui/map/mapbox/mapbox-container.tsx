@@ -8,6 +8,7 @@ import React, { useEffect, useRef } from 'react';
 
 import { CameraPosition, ImageryOption } from 'types/settings';
 import MapEventManager from 'ui/map/map-event-manager';
+import { Apis } from 'io/config/routes';
 
 // Type definition of incoming properties
 interface MapProperties {
@@ -48,7 +49,7 @@ export default function MapboxMapComponent(props: MapProperties) {
       "url": "mapbox://styles/mapbox/light-v11?optimize=true"
     };
 
-    const response = await fetch(("./api/map/settings"), {
+    const response = await fetch((Apis.MAP_SETTINGS), {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
