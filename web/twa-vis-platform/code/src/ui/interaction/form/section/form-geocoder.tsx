@@ -9,6 +9,7 @@ import { parseWordsForLabels } from 'utils/client-utils';
 import { getFormTemplate, getGeolocation, sendGetRequest } from 'utils/server-actions';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
+import ErrorComponent from 'ui/text/error/error';
 import FormFieldComponent from '../field/form-field';
 
 interface FormGeocoderProps {
@@ -33,6 +34,7 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
   const postalCodeUnderscored: string = "postal_code";
 
   const isInitialFetching: React.MutableRefObject<boolean> = useRef<boolean>(true);
+  const [isEmptyAddress, setIsEmptyAddress] = useState<boolean>(false);
   const [addressShapes, setAddressShapes] = useState<PropertyShape[]>([]);
   const [postalCodeShape, setPostalCodeShape] = useState<PropertyShape>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -78,13 +80,18 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
     // Reset states
     setAddresses([]);
     setSelectedAddress(null);
+    setIsEmptyAddress(false);
     // Start search
     const searchParams: URLSearchParams = new URLSearchParams();
     searchParams.append(postalCodeUnderscored, data[postalCode]);
 
     const url: string = `${props.agentApi}/geocode/api/search?${searchParams.toString()}`;
     const results = await sendGetRequest(url);
-    setAddresses(JSON.parse(results));
+    if (results == "There are no address associated with the parameters in the knowledge graph.") {
+      setIsEmptyAddress(true);
+    } else {
+      setAddresses(JSON.parse(results));
+    }
   }
 
   /**
@@ -166,6 +173,11 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
             onClick={props.form.handleSubmit(onSearchForAddress)}
           />
         </div>
+        {isEmptyAddress && <div style={{ margin: "0.5rem 0.75rem" }}>
+          <ErrorComponent
+            message="No address found! The postal code may be incorrect. Please enter the address manually."
+          />
+        </div>}
         {addresses.length > 0 && !selectedAddress && <div className={styles["form-menu"]}>
           {addresses.map((address, index) => (
             <button
@@ -177,29 +189,30 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
           ))}
         </div>
         }
-        {addressShapes.length > 0 && selectedAddress && <div className={styles["form-fieldset-contents"]}>
-          {addressShapes.map((shape, index) => <FormFieldComponent
-            key={shape.fieldId + index}
-            entityType={props.field.name[VALUE_KEY]}
-            agentApi={props.agentApi}
-            field={shape}
-            form={props.form}
-            options={props.options}
-          />)
-          }
-          <div className={styles["form-dependent-button-layout"]}>
-            <MaterialIconButton
-              iconName={"edit_location"}
-              className={styles["button"] + " " + styles["button-layout"]}
-              iconStyles={[styles["icon"]]}
-              text={{
-                styles: [styles["button-text"]],
-                content: "Select location"
-              }}
-              onClick={props.form.handleSubmit(onGeocoding)}
+        {addressShapes.length > 0 && (selectedAddress || isEmptyAddress) &&
+          <div className={styles["form-fieldset-contents"]}>
+            {addressShapes.map((shape, index) => <FormFieldComponent
+              key={shape.fieldId + index}
+              entityType={props.field.name[VALUE_KEY]}
+              agentApi={props.agentApi}
+              field={shape}
+              form={props.form}
+              options={props.options}
             />
-          </div>
-        </div>}
+            )}
+            <div className={styles["form-dependent-button-layout"]}>
+              <MaterialIconButton
+                iconName={"edit_location"}
+                className={styles["button"] + " " + styles["button-layout"]}
+                iconStyles={[styles["icon"]]}
+                text={{
+                  styles: [styles["button-text"]],
+                  content: "Select location"
+                }}
+                onClick={props.form.handleSubmit(onGeocoding)}
+              />
+            </div>
+          </div>}
         {/** WIP to use the geolocations for visual interactions */}
         {geolocation.length > 0 && <div>{geolocation[0]} {geolocation[1]}</div>}
       </>}
