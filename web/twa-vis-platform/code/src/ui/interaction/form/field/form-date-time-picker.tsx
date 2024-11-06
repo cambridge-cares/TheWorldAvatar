@@ -1,6 +1,6 @@
 import styles from './field.module.css';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FieldError, UseFormReturn } from 'react-hook-form';
 
 import { PropertyShape, VALUE_KEY } from 'types/form';
@@ -10,7 +10,6 @@ import FormInputContainer from './form-input-container';
 interface FormDateTimePickerProps {
   field: PropertyShape;
   form: UseFormReturn;
-  defaultDateTime?: string;
   options?: {
     disabled?: boolean;
   };
@@ -24,7 +23,6 @@ interface FormDateTimePickerProps {
  * 
  * @param {PropertyShape} field The form field data model. 
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
- * @param {string} defaultDateTime Optional default date time value for the input. Typically used for existing values.
  * @param {boolean} options.disabled Optional indicator if the field should be disabled. Defaults to false.
  * @param {string[]} styles.label Optional styles for the label element.
  */
@@ -48,20 +46,15 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
 
   // Retrieve current date or time depending on field required
   let currentDateTime: string = new Date().toISOString();
-  if (props.defaultDateTime) {
-    currentDateTime = props.defaultDateTime;
-  } else if (props.field.datatype === dateType) {
+  if (props.field.datatype === dateType) {
     currentDateTime = currentDateTime.split("T")[0];
   } else if (props.field.datatype === timeType) {
     currentDateTime = currentDateTime.split("T")[1].split(":")[0] + ":00";
   }
 
-  // Initialise default form state value if there are no default values
-  useEffect(() => {
-    if (props.form.getValues(props.field.fieldId) === "") {
-      props.form.setValue(props.field.fieldId, currentDateTime);
-    }
-  }, []);
+  if (props.form.getValues(props.field.fieldId) === "") {
+    props.form.setValue(props.field.fieldId, currentDateTime);
+  }
 
   return (
     <FormInputContainer

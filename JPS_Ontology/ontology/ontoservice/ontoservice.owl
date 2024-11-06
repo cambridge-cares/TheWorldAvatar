@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>16 September 2024</dc:date>
+        <dc:date>29 October 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
-        <owl:versionInfo>1</owl:versionInfo>
+        <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -55,42 +55,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/assignTransport -->
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/assignTransport">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:range rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
-        <rdfs:comment>A relationship assigning a transport vehicle to a service event.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>assign transport</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/charges -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/charges">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/TotalPrice"/>
-        <rdfs:comment>A relationship describing the final charge of a service event.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>charges</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/commitsTo -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/commitsTo">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment"/>
-        <rdfs:comment>A relationship that links the commitments made when providing or engaging with the associated service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>commits to</rdfs:label>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt"/>
     
 
 
@@ -103,6 +71,19 @@
         <rdfs:comment>A relationship describing the service metric that the variable rate is based on.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>depends on</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasAssignedTransport -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasAssignedTransport">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
+        <rdfs:comment>A relationship assigning a transport vehicle to an occurrence of a service event.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>has assigned transport</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -129,19 +110,6 @@
         <rdfs:comment>A relationship defining the denominator of a monetary rate, which depends on the service metric.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>has denominator</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/hasEvent -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasEvent">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:comment>A relationship defining the specific occurrences of each service performed for the corresponding service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>has event</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -174,15 +142,16 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/hasStatus -->
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasStatus">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceStatus"/>
-        <rdfs:comment>A relationship describing the current status of a service event.</rdfs:comment>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation">
+        <rdfs:subPropertyOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/isLocatedAt"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
+        <rdfs:comment>A relationship describing the service location, typically a point, within the building or site.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>has status</rdfs:label>
+        <rdfs:label>has service location</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -196,6 +165,19 @@
         <rdfs:comment>A relationship describing the time window for the regular schedule with a corresponding start and end time.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>has time slot</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasTotalPrice -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasTotalPrice">
+        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoservice/TotalPrice"/>
+        <rdfs:comment>A relationship describing the total price charged for the service rendered during a specific occurrence.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>has total price</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -236,70 +218,6 @@
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>serves as contact for</rdfs:label>
     </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/services -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/services">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
-        <rdfs:comment>A relationship describing the facility that the service should be executed on.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>services</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/completedOn -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/completedOn">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-        <rdfs:comment>A relationship describing  the actual date and time of a completed service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>completed on</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/hasOrderNumber -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasOrderNumber">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment>A relationship definining the unique identifier of a service for reporting and billing.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>has order number</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/scheduledOn -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/scheduledOn">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-        <rdfs:comment>A relationship describing  the scheduled date and time of a service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>scheduled on</rdfs:label>
-    </owl:DatatypeProperty>
     
 
 
@@ -350,10 +268,17 @@
     
 
 
-    <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment -->
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence -->
 
 
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment"/>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
     
 
 
@@ -378,6 +303,13 @@
     
 
 
+    <!-- https://w3id.org/bot#Zone -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
+    
+
+
     <!-- https://www.omg.org/spec/Commons/DatesAndTimes/ExplicitTimePeriod -->
 
 
@@ -385,10 +317,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
+    <!-- https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    <owl:Class rdf:about="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
     
 
 
@@ -416,6 +348,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/CreationStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/CreationStage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
+        <rdfs:comment>The phase in the lifecycle of a contract to create a new contract.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Creation stage</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/ExcessVariableRate -->
 
 
@@ -434,6 +378,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ExpirationStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ExpirationStage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
+        <rdfs:comment>The phase in the lifecycle of a contract where the contract has ended.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Expiration stage</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/GrossPrice -->
 
 
@@ -446,31 +402,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment -->
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceCommitment">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment"/>
-        <rdfs:comment>General conditions for the services that the contracting parties agree to.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
+        <rdfs:comment>The phase in the lifecycle of a contract where the services agreed should be executed.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Service commitment</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceEvent -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceEvent">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoservice/hasStatus"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoservice/ServiceStatus"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>A specific occurrence or instance of a service being performed, characterised by a particular time and context. Each event capture details such as the date, time, and/or specific actions to record and analyse individual performances for quality, efficiency, and compliance with service agreements.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Service event</rdfs:label>
+        <rdfs:label>Service execution stage</rdfs:label>
     </owl:Class>
     
 
@@ -506,17 +445,6 @@
         <rdfs:comment>Legally enforceable duty and payment terms for the associated service stated in a service agreement.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Service payment obligation</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceStatus -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceStatus">
-        <rdfs:comment>The current state of a service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Service status</rdfs:label>
     </owl:Class>
     
 

@@ -1,0 +1,27 @@
+{
+    "ServiceSpec": {
+        "Name": "nginx-2",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.io/nginx:1.19.6",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../postgis_nginx/nginx.conf",
+                        "Target": "/etc/nginx/nginx.conf"
+                    }
+                ]
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+				{
+                    "Name": "postgres",
+                    "Protocol": "tcp",
+                    "TargetPort": "80",
+                    "PublishedPort": "3840"
+                }
+            ]
+        }
+    }
+}

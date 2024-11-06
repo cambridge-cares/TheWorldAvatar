@@ -3,7 +3,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map-container.module.css';
 
-import { FilterSpecification, Map } from 'mapbox-gl';
+import { Map } from 'mapbox-gl';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

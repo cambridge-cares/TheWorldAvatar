@@ -22,7 +22,7 @@ SELECT DISTINCT
         ELSE CONCAT('Building ', uuid_table.cityobject_id)
     END AS name,
     COALESCE(measured_height, 100.0) AS building_height,
-    ST_Transform(geometry, 4326) AS geom,
+    geometry AS geom,
     iri_table.iri,
     u.ontobuilt,
     'http://sea-level-blazegraph:8080/blazegraph/namespace/kb/sparql' as endpoint,

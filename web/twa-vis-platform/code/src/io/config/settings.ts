@@ -19,20 +19,11 @@ export default class SettingsStore {
   private static readonly DEFAULT_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/ui-settings.json");
   private static readonly DATA_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/data-settings.json");
   private static readonly MAP_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/map-settings.json");
-  private static readonly CSS_OVERRIDE_FILE: string = path.join(process.cwd(), "public/style-overrides.css");
 
   // Cached settings
   private static DEFAULT_SETTINGS: string | null = null;
   private static MAP_SETTINGS: string | null = null;
   private static MAP_DATA_SETTINGS: string | null = null;
-
-  /**
- * Returns true if the "style-overrides.css" file exists within
- * the hosted "uploads" directory.
- */
-  public static hasCssOverrides(): boolean {
-    return fs.existsSync(this.CSS_OVERRIDE_FILE);
-  }
 
   /**
    * Retrieves default settings
@@ -117,8 +108,8 @@ export default class SettingsStore {
       const data: JsonObject[] = (await Promise.all(dataPromises)).filter(Boolean);
       this.MAP_DATA_SETTINGS = JSON.stringify(data);
       console.info("Map data settings have been read and cached.");
-    } catch (error) {
-      console.info("No local data files detected...");
+    } catch (_error) {
+      console.error("No local data files detected...");
     }
   }
 
@@ -133,7 +124,7 @@ export default class SettingsStore {
       const username = this.readFile("/run/secrets/mapbox_username").trim();
       const key = this.readFile("/run/secrets/mapbox_api_key").trim();
       return { username, key };
-    } catch (error) {
+    } catch (_error) {
       // Fallback to environment variables
       const username = process.env.MAPBOX_USER;
       const key = process.env.MAPBOX_API_KEY;

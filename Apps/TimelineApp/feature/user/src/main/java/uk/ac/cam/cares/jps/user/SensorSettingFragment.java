@@ -1,11 +1,14 @@
 package uk.ac.cam.cares.jps.user;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -45,6 +48,8 @@ public class SensorSettingFragment extends Fragment {
     private SensorAdapter adapter;
     private Runnable locationPermissionCallback;
     private Runnable audioPermissionCallback;
+    private Runnable activityRecognitionPermissionCallback;
+    private boolean activityRecognitionNeeded = true;
 
 
 
@@ -83,6 +88,10 @@ public class SensorSettingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //reduce memory
+        disableEmojiCompat(binding.startRecordTv);
+        disableEmojiCompat(binding.toggleAllBtn);
 
         sensorViewModel.checkRecordingStatusAndUpdateUI(requireContext());
 
@@ -185,17 +194,28 @@ public class SensorSettingFragment extends Fragment {
         boolean locationToggled = selectedSensorTypes.contains(SensorType.LOCATION);
         boolean audioToggled = selectedSensorTypes.contains(SensorType.SOUND);
 
+
         Runnable startRecordingRunnable =  () -> sensorViewModel.toggleRecording();
 
-        if (locationToggled && audioToggled) {
-            // Request location first, then audio
+        if (activityRecognitionNeeded) {
+            requestActivityRecognitionPermission(() -> {
+                this.activityRecognitionNeeded = false;
+                if (locationToggled) {
+                    requestLocationPermission(() -> requestAudioPermission(startRecordingRunnable));
+                } else if (audioToggled) {
+                    requestAudioPermission(startRecordingRunnable);
+                } else {
+                    startRecordingRunnable.run();
+                }
+            });
+        } else if (locationToggled && audioToggled) {
             requestLocationPermission(() -> requestAudioPermission(startRecordingRunnable));
         } else if (locationToggled) {
             requestLocationPermission(startRecordingRunnable);
         } else if (audioToggled) {
             requestAudioPermission(startRecordingRunnable);
         } else {
-            sensorViewModel.toggleRecording();
+            startRecordingRunnable.run();
         }
 
     }
@@ -218,12 +238,29 @@ public class SensorSettingFragment extends Fragment {
      */
     private void promptGrantPermissions() {
         StringBuilder permissionNotGranted = new StringBuilder();
+        List<SensorType> selectedSensorTypes = sensorViewModel.getSelectedSensors().getValue();
 
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+            permissionNotGranted.append("Activity ");
+
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && selectedSensorTypes.contains(SensorType.LOCATION)) {
+                permissionNotGranted.append("Location ");
+            }
+
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+                    && selectedSensorTypes.contains(SensorType.SOUND)) {
+                permissionNotGranted.append("Audio ");
+            }
+        } else if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && selectedSensorTypes.contains(SensorType.LOCATION)) {
             permissionNotGranted.append("Location ");
-        }
-
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+                    && selectedSensorTypes.contains(SensorType.SOUND)) {
+                permissionNotGranted.append("Audio ");
+            }
+        } else if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+                && selectedSensorTypes.contains(SensorType.SOUND)) {
             permissionNotGranted.append("Audio ");
         }
 
@@ -246,6 +283,26 @@ public class SensorSettingFragment extends Fragment {
             locationPermissionCallback  = onGranted;
         }
     }
+
+    private void requestActivityRecognitionPermission(Runnable onGranted) {
+        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+            onGranted.run();
+        } else {
+            requestActivityRecognitionPermissionLauncher.launch(android.Manifest.permission.ACTIVITY_RECOGNITION);
+            activityRecognitionPermissionCallback = onGranted;
+        }
+    }
+
+    private final ActivityResultLauncher<String> requestActivityRecognitionPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        if (isGranted && activityRecognitionPermissionCallback != null) {
+            activityRecognitionPermissionCallback.run();
+            activityRecognitionPermissionCallback = null;
+        } else {
+            Toast.makeText(requireContext(), "Activity Recognition permission is required to start recording.", Toast.LENGTH_SHORT).show();
+        }
+    });
+
+
 
     /**
      * Requests audio recording permission if it hasn't been granted. If granted, runs the provided callback.
@@ -281,6 +338,17 @@ public class SensorSettingFragment extends Fragment {
 
         }
     });
+
+    /**
+     * Disables EmojiCompat for the given TextView by directly setting a CharSequence
+     * without emoji handling.
+     *
+     * @param textView The TextView to disable EmojiCompat on.
+     */
+    private void disableEmojiCompat(TextView textView) {
+        SpannableStringBuilder plainText = new SpannableStringBuilder(textView.getText());
+        textView.setText(plainText, TextView.BufferType.SPANNABLE);
+    }
 
 
 }
