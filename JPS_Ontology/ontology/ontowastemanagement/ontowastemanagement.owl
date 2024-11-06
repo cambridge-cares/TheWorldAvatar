@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontowastemanagement="https://www.theworldavatar.com/kg/ontowastemanagement/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/">
-        <dc:date>31 October 2024</dc:date>
+        <dc:date>06 November 2024</dc:date>
         <rdfs:comment>OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -286,7 +286,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinExchangeService">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
-        <rdfs:comment>A service that delivers an empty bin to the specified site and tows away the full bin to a disposal site.</rdfs:comment>
+        <rdfs:comment>A service that delivers an empty bin to the specified site and tows away the full bin to a disposal site. The bin will not be returned to the service site afterwards.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Bin exchange service</rdfs:label>
     </owl:Class>
@@ -345,7 +345,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/DumpAndReturnService">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
-        <rdfs:comment>A service that delivers an empty bin for the collection and disposal of waste on the service site, before returning the newly emptied bin to the service site .</rdfs:comment>
+        <rdfs:comment>A service that collects the bin containing waste from the service site and disposes the waste at the disposal site, before returning the newly emptied bin to the service site.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Dump and return service</rdfs:label>
     </owl:Class>
@@ -705,7 +705,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TouchAndGoService">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
-        <rdfs:comment>A service that brings an empty bin to collect and dispose of the waste on the service site.  The bin will not be returned to the service site afterwards.</rdfs:comment>
+        <rdfs:comment>A service that brings an empty bin to collect the waste from the service site and disposes the waste at the disposal site.  The bin will not be returned to the service site afterwards.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Touch and go service</rdfs:label>
     </owl:Class>
@@ -717,7 +717,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/TowAwayService">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
-        <rdfs:comment>A service that collects and disposes a filled garbage bin from the service site to the disposal site. The bin will not be returned to the service site afterwards.</rdfs:comment>
+        <rdfs:comment>A service that collects the bin containing waste from the service site and disposes the waste at the disposal site. The bin will not be returned to the service site afterwards.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Tow away service</rdfs:label>
     </owl:Class>

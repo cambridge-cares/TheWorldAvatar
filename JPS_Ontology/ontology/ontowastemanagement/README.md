@@ -149,9 +149,9 @@ The services available in the waste operation industry are as follows:
 
 1. **Bin delivery service**: Delivery of an empty bin to site. Must be assigned to an OTC truck
 2. **Bin exchange service** `WasteCollectionService`: Delivery of an empty bin to site while towing away the existing full bin. Must be assigned to an OTC truck
-3. **Tow away service** `WasteCollectionService`: Collects and disposes of the waste from the service site without returning the bin afterwards. Must be assigned to an OTC truck
+3. **Tow away service** `WasteCollectionService`: Collects the bin containing waste from the service site and dispose the waste at the disposal site without returning the bin afterwards to the service site. Must be assigned to an OTC truck
 4. **Touch and go service** `WasteCollectionService`: Brings an empty bin to collect and dispose of the waste on the service site without returning the bin afterwards. Must be assigned to an OTC truck
-5. **Dump and return service** `WasteCollectionService`: Brings an empty bin to collect and dispose of the waste on the service site and returns the bin afterwards. Must be assigned to an OTC truck
+5. **Dump and return service** `WasteCollectionService`: An empty truck will collect the bin containing waste from the service site, and dispose the waste at the disposal site before returning the newly emptied bin afterwards. Must be assigned to an OTC truck
 
 When setting up the agreement, the bin and waste categories can be assigned through their corresponding relationships with the service. Notably, waste categories can only be assigned to waste collection services, where waste is collected and disposed. The disposal of waste must occur at specific waste disposal facilities, which will be represented with their locations, operating hours, providers, and waste categories.
 
