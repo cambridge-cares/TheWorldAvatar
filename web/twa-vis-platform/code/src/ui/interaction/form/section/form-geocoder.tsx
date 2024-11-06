@@ -9,8 +9,10 @@ import { parseWordsForLabels } from 'utils/client-utils';
 import { getFormTemplate, getGeolocation, sendGetRequest } from 'utils/server-actions';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
+import GeocodeMapContainer from 'ui/map/geocode/geocode-map-container';
 import ErrorComponent from 'ui/text/error/error';
 import FormFieldComponent from '../field/form-field';
+import { FORM_STATES } from '../form-utils';
 
 interface FormGeocoderProps {
   agentApi: string;
@@ -32,14 +34,57 @@ interface FormGeocoderProps {
 export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
   const postalCode: string = "postal code";
   const postalCodeUnderscored: string = "postal_code";
+  const latitudeShape: PropertyShape = {
+    "@id": "_:latitude",
+    "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+    name: {
+      "@value": FORM_STATES.LATITUDE,
+    },
+    description: {
+      "@value": `The latitude of the ${props.field.name[VALUE_KEY]}`,
+    },
+    datatype: "decimal",
+    fieldId: FORM_STATES.LATITUDE,
+    order: 10,
+    minCount: {
+      "@value": "1",
+      "@type": "http://www.w3.org/2001/XMLSchema#integer",
+    },
+    maxCount: {
+      "@value": "1",
+      "@type": "http://www.w3.org/2001/XMLSchema#integer",
+    },
+  };
+
+  const longitudeShape: PropertyShape = {
+    "@id": "_:longitude",
+    "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+    name: {
+      "@value": FORM_STATES.LONGITUDE,
+    },
+    description: {
+      "@value": `The longitude of the ${props.field.name[VALUE_KEY]}`
+    },
+    order: 11,
+    fieldId: FORM_STATES.LONGITUDE,
+    datatype: "decimal",
+    minCount: {
+      "@value": "1",
+      "@type": "http://www.w3.org/2001/XMLSchema#integer",
+    },
+    maxCount: {
+      "@value": "1",
+      "@type": "http://www.w3.org/2001/XMLSchema#integer",
+    },
+  };
 
   const isInitialFetching: React.MutableRefObject<boolean> = useRef<boolean>(true);
   const [isEmptyAddress, setIsEmptyAddress] = useState<boolean>(false);
+  const [hasGeolocation, setHasGeolocation] = useState<boolean>(false);
   const [addressShapes, setAddressShapes] = useState<PropertyShape[]>([]);
   const [postalCodeShape, setPostalCodeShape] = useState<PropertyShape>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address>(null);
-  const [geolocation, setGeolocation] = useState<number[]>([]);
 
   useEffect(() => {
     // Declare an async function to get all address related shapes
@@ -101,7 +146,7 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
    */
   const onGeocoding: SubmitHandler<FieldValues> = async (data: FieldValues) => {
     // Reset location
-    setGeolocation([]);
+    setHasGeolocation(false);
     // Searches for geolocation in the following steps
     const searchParamsList: Record<string, string | undefined>[] = [
       // First by postal code
@@ -117,7 +162,9 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
       // Only set coordinates if they are available
       if (coordinates.length === 2) {
         // Geolocation is in longitude(x), latitude(y) format
-        setGeolocation(coordinates);
+        setHasGeolocation(true);
+        props.form.setValue(FORM_STATES.LATITUDE, coordinates[1])
+        props.form.setValue(FORM_STATES.LONGITUDE, coordinates[0])
         break; // Stop function if found
       };
     }
@@ -211,10 +258,25 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
                 }}
                 onClick={props.form.handleSubmit(onGeocoding)}
               />
+              {hasGeolocation && <>
+                <FormFieldComponent
+                  entityType={props.field.name[VALUE_KEY]}
+                  field={latitudeShape}
+                  form={props.form}
+                  options={props.options}
+                />
+                <FormFieldComponent
+                  entityType={props.field.name[VALUE_KEY]}
+                  field={longitudeShape}
+                  form={props.form}
+                  options={props.options}
+                />
+              </>}
             </div>
           </div>}
-        {/** WIP to use the geolocations for visual interactions */}
-        {geolocation.length > 0 && <div>{geolocation[0]} {geolocation[1]}</div>}
+        {hasGeolocation && <GeocodeMapContainer
+          form={props.form}
+        />}
       </>}
     </fieldset>);
 }

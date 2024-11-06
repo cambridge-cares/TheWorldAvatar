@@ -1,0 +1,9 @@
+.mapContainer {
+  display: flex;
+  margin: 0.5rem auto;
+  width: 55vw;
+  height: 50vh;
+  z-index: 0;
+  pointer-events: all;
+  background-color: white;
+}

@@ -20,6 +20,8 @@ export const FORM_STATES: Record<string, string> = {
   END_TIME_PERIOD: "search period to",
   TIME_SLOT_START: "time slot start",
   TIME_SLOT_END: "time slot end",
+  LATITUDE: "latitude",
+  LONGITUDE: "longitude",
 };
 
 /**
