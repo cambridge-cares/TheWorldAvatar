@@ -158,18 +158,7 @@ public class TravellingSalesmanAgent extends JPSAgent {
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
             geoServerClient.createWorkspace(workspaceName);
 
-            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            virtualTable.setSql(
-                    "SELECT CONCAT('https://www.theworldavatar.com/kg/',poi_tsp_iri) as iri, poi_tsp_type, nearest_node, geom FROM "
-                            + poiTableName);
-            virtualTable.setEscapeSql(true);
-            virtualTable.setName(poiLayerName);
-            virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-            geoServerVectorSettings.setVirtualTable(virtualTable);
-            geoServerClient.createPostGISDataStore(workspaceName, poiLayerName, dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, poiLayerName,
-                    geoServerVectorSettings);
+            GeoServerInteractor.addPOIGeoserverLayer(geoServerClient, workspaceName, schema, dbName, poiTableName, poiLayerName);
 
             /**
              * Loop through the edgeTable SQL and generate two geoserver layer for each

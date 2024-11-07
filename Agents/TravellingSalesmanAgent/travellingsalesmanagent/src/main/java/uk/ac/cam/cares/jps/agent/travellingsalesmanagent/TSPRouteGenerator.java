@@ -72,7 +72,7 @@ public class TSPRouteGenerator {
                 "FROM tsp_route ";
 
         // Add TSP route as geoserver layer
-        addTSPGeoserverLayer(geoServerClient, workspaceName, schema, dbName, layerName, tspLayer);
+        GeoServerInteractor.addTSPGeoserverLayer(geoServerClient, workspaceName, schema, dbName, layerName, tspLayer);
     }
 
     /**
@@ -117,21 +117,8 @@ public class TSPRouteGenerator {
                 "FULL JOIN tsp_seq ON tsp.node = tsp_seq.id ORDER BY seq ASC";
 
         // Add TSP sequence as geoserver layer
-        addTSPGeoserverLayer(geoServerClient, workspaceName, schema, dbName, layerName, tspLayer);
+        GeoServerInteractor.addTSPGeoserverLayer(geoServerClient, workspaceName, schema, dbName, layerName, tspLayer);
 
     }
 
-    void addTSPGeoserverLayer(GeoServerClient geoServerClient, String workspaceName, String schema,
-            String dbName, String layerName, String tspLayer) {
-        UpdatedGSVirtualTableEncoder virtualTableTSPRoute = new UpdatedGSVirtualTableEncoder();
-        GeoServerVectorSettings geoServerVectorSettingsTSPRoute = new GeoServerVectorSettings();
-        virtualTableTSPRoute.setSql(tspLayer);
-        virtualTableTSPRoute.setEscapeSql(true);
-        virtualTableTSPRoute.setName(layerName);
-        virtualTableTSPRoute.addVirtualTableParameter("target", "4121", "^[\\d]+$");
-        virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-        geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
-        geoServerClient.createPostGISDataStore(workspaceName, layerName, dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName, schema, layerName, geoServerVectorSettingsTSPRoute);
-    }
 }
