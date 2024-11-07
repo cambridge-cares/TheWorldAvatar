@@ -11,10 +11,11 @@ public class TSPRouteGenerator {
     String routeTablePrefix; // prefix of OSM routing tables
     Double floodCutOff = 0.0; // Cut-off distance in meters between POI and flood; if distance is below this value, POI is consider flooded
 
-    public TSPRouteGenerator(String poiTableName, String floodTableName, String routeTablePrefix) {
+    public TSPRouteGenerator(String poiTableName, String floodTableName, String routeTablePrefix, Double floodCutOff) {
         this.poiTableName = poiTableName;
         this.floodTableName = floodTableName;
         this.routeTablePrefix = routeTablePrefix;
+        this.floodCutOff = floodCutOff;
     }
 
     /**
