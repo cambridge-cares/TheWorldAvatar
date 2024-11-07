@@ -1,4 +1,5 @@
 package uk.ac.cam.cares.jps.agent.travellingsalesmanagent;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,26 +14,26 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
-
 public class NearestNodeFinder {
-    
+
     /**
-     * Pass POI_tsp in arrays and finds the nearest nodes based on routing_ways road data.
+     * Pass POI_tsp in arrays and finds the nearest nodes based on routing_ways road
+     * data.
+     * 
      * @param remoteRDBStoreClient
-     * @param jsonArray POI_tsp in array format
+     * @param jsonArray            POI_tsp in array format
      */
     public void insertPoiData(RemoteRDBStoreClient remoteRDBStoreClient, JSONArray jsonArray) {
-
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
 
             String initialiseTable = "CREATE TABLE IF NOT EXISTS poi_tsp_nearest_node ("
-            + "poi_tsp_iri VARCHAR, "
-            + "poi_tsp_type VARCHAR, "
-            + "nearest_node BIGINT,"
-            + "geom geometry "
-            + ")";
-        
+                    + "poi_tsp_iri VARCHAR, "
+                    + "poi_tsp_type VARCHAR, "
+                    + "nearest_node BIGINT,"
+                    + "geom geometry "
+                    + ")";
+
             executeSql(connection, initialiseTable);
             System.out.println("Initialized poi_tsp_nearest_node table.");
 
@@ -62,8 +63,7 @@ public class NearestNodeFinder {
             preparedStatement.executeBatch();
 
             System.out.println("Table poi_tsp_nearest_node created.");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
@@ -71,6 +71,7 @@ public class NearestNodeFinder {
 
     /**
      * Finds the nearest node of the POI_tsp from routing_ways table
+     * 
      * @param connection
      * @param geom
      * @return
@@ -78,14 +79,13 @@ public class NearestNodeFinder {
      */
     private String findNearestNode(Connection connection, String geom) throws SQLException {
 
-        String geomConvert= "ST_GeometryFromText('"+geom+"', 4326)";
-        
+        String geomConvert = "ST_GeometryFromText('" + geom + "', 4326)";
 
         String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
                 "FROM routing_ways_vertices_pgr\n" +
                 "ORDER BY the_geom <-> " + geomConvert + "\n" +
                 "LIMIT 1;\n";
-    
+
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(findNearestNode_sql)) {
                 if (resultSet.next()) {
@@ -103,16 +103,14 @@ public class NearestNodeFinder {
 
     /**
      * Create connection to remoteStoreClient and execute SQL statement
+     * 
      * @param connection PostgreSQL connection object
-     * @param sql SQl statement to execute
+     * @param sql        SQl statement to execute
      */
     private void executeSql(Connection connection, String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }
     }
-
-
-
 
 }
