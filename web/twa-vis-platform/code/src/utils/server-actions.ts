@@ -87,6 +87,7 @@ export async function getFormTemplate(agentApi: string, entityType: string, iden
  */
 export async function sendGetRequest(agentApi: string): Promise<string> {
   const res = await sendRequest(agentApi, "GET");
+  // add the roles from API/USERINFO here
   return res.text();
 }
 
