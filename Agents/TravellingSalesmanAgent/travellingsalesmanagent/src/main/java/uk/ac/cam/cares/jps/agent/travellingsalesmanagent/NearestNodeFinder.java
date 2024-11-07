@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.postgis.Geometry;
 import org.postgis.PGgeometry;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,6 +14,12 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class NearestNodeFinder {
+
+    String tableName; // default value
+
+    public NearestNodeFinder(String tableName) {
+        this.tableName = tableName;
+    }
 
     /**
      * Pass POI_tsp in arrays and finds the nearest nodes based on routing_ways road
@@ -27,7 +32,7 @@ public class NearestNodeFinder {
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
 
-            String initialiseTable = "CREATE TABLE IF NOT EXISTS poi_tsp_nearest_node ("
+            String initialiseTable = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
                     + "poi_tsp_iri VARCHAR, "
                     + "poi_tsp_type VARCHAR, "
                     + "nearest_node BIGINT,"
@@ -35,34 +40,35 @@ public class NearestNodeFinder {
                     + ")";
 
             executeSql(connection, initialiseTable);
-            System.out.println("Initialized poi_tsp_nearest_node table.");
+            System.out.println("Initialized " + tableName + " table.");
 
-            String sql = "INSERT INTO poi_tsp_nearest_node (poi_tsp_iri, poi_tsp_type, nearest_node, geom) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO " + tableName
+                    + " (poi_tsp_iri, poi_tsp_type, nearest_node, geom) VALUES (?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject poi_tsp = jsonArray.getJSONObject(i);
-                String poi_tspIri = poi_tsp.getString("poi_iri");
-                String poi_tspType = poi_tsp.getString("poi_type");
-                // Remove the prefix from poi_tspIri, poi_tspType
-                poi_tspIri = poi_tspIri.replace("https://www.theworldavatar.com/kg/", "");
-                poi_tspType = poi_tspType.replace("https://www.theworldavatar.com/kg/", "");
+                JSONObject poiTSP = jsonArray.getJSONObject(i);
+                String poiTSPIri = poiTSP.getString("poi_iri");
+                String poiTSPType = poiTSP.getString("poi_type");
+                // Remove the prefix from poiTSPIri, poiTSPType
+                poiTSPIri = poiTSPIri.replace("https://www.theworldavatar.com/kg/", "");
+                poiTSPType = poiTSPType.replace("https://www.theworldavatar.com/kg/", "");
 
-                String geometry = poi_tsp.getString("geometry");
+                String geometry = poiTSP.getString("geometry");
                 PGgeometry pgGeometry = new PGgeometry(geometry);
                 pgGeometry.getGeometry().setSrid(4326);
 
-                String nearest_node = findNearestNode(connection, geometry);
+                String nearestNode = findNearestNode(connection, geometry);
 
-                preparedStatement.setString(1, poi_tspIri);
-                preparedStatement.setString(2, poi_tspType);
-                preparedStatement.setInt(3, Integer.parseInt(nearest_node));
+                preparedStatement.setString(1, poiTSPIri);
+                preparedStatement.setString(2, poiTSPType);
+                preparedStatement.setInt(3, Integer.parseInt(nearestNode));
                 preparedStatement.setObject(4, pgGeometry);
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
 
-            System.out.println("Table poi_tsp_nearest_node created.");
+            System.out.println("Table " + tableName + " created.");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
@@ -81,13 +87,13 @@ public class NearestNodeFinder {
 
         String geomConvert = "ST_GeometryFromText('" + geom + "', 4326)";
 
-        String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
+        String findNearestNodeSql = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
                 "FROM routing_ways_vertices_pgr\n" +
                 "ORDER BY the_geom <-> " + geomConvert + "\n" +
                 "LIMIT 1;\n";
 
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(findNearestNode_sql)) {
+            try (ResultSet resultSet = statement.executeQuery(findNearestNodeSql)) {
                 if (resultSet.next()) {
                     // Assuming 'id' and 'distance' are columns in your query result
                     int id = resultSet.getInt("id");

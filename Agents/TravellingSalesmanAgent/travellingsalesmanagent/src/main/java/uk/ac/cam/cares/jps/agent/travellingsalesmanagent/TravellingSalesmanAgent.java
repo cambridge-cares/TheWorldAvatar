@@ -109,38 +109,44 @@ public class TravellingSalesmanAgent extends JPSAgent {
         Path POI_PATH = FUNCTION_PATH.resolve("POIqueries");
         Path EDGESTABLESQL_PATH = FUNCTION_PATH.resolve("edgesSQLTable");
 
+        // common variables
+        // TODO: read from config
+        String poiTableName = "poi_tsp_nearest_node";
+        String poiLayerName = "poi_tsp_nearest_node";
+        String workspaceName = "twa";
+        String schema = "public";
+
         try {
             init();
             // Read SPARQL and SQL files.
-            Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
-            Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
+            Map<String, String> poiMap = FileReader.readPOIsparql(POI_PATH);
+            Map<String, String> edgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
             // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs
             // to the cumulative array
-            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
+            JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, poiMap);
 
             // Split road into multiple smaller segment and find the nearest_node
-            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder();
+            NearestNodeFinder nearestNodeFinder = new NearestNodeFinder(poiTableName);
 
             // Create a table to store nearest_node
             nearestNodeFinder.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
             // Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName = "twa";
-            String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
 
             UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
             GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
             virtualTable.setSql(
-                    "SELECT CONCAT('https://www.theworldavatar.com/kg/',poi_tsp_iri) as iri, poi_tsp_type, nearest_node, geom FROM poi_tsp_nearest_node");
+                    "SELECT CONCAT('https://www.theworldavatar.com/kg/',poi_tsp_iri) as iri, poi_tsp_type, nearest_node, geom FROM "
+                            + poiTableName);
             virtualTable.setEscapeSql(true);
-            virtualTable.setName("poi_tsp_nearest_node");
+            virtualTable.setName(poiLayerName);
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
-            geoServerClient.createPostGISDataStore(workspaceName, "poi_tsp_nearest_node", dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "public", "poi_tsp_nearest_node",
+            geoServerClient.createPostGISDataStore(workspaceName, poiLayerName, dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, schema, poiLayerName,
                     geoServerVectorSettings);
 
             /**
@@ -149,14 +155,15 @@ public class TravellingSalesmanAgent extends JPSAgent {
              * - TSP_route: Gives the geometry of the shortest path for all TSP points
              * - TSP_seq: Gives the sequence of order to visit all the TSP points
              */
-            
+
             TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator();
-            for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
+            for (Map.Entry<String, String> entry : edgesTableSQLMap.entrySet()) {
                 String layerName = "TSP_" + entry.getKey();
                 String sql = entry.getValue();
-                tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
+                tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql,
+                        poiTableName);
                 tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName,
-                        sql);
+                        sql, poiTableName);
             }
 
         } catch (Exception e) {
