@@ -113,6 +113,7 @@ public class TravellingSalesmanAgent extends JPSAgent {
         // TODO: read from config
         String poiTableName = "poi_tsp_nearest_node";
         String poiLayerName = "poi_tsp_nearest_node";
+        String floodTableName = "flood_polygon_single_10cm";
         String workspaceName = "twa";
         String schema = "public";
 
@@ -156,14 +157,13 @@ public class TravellingSalesmanAgent extends JPSAgent {
              * - TSP_seq: Gives the sequence of order to visit all the TSP points
              */
 
-            TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator();
+            TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator(poiTableName,floodTableName);
             for (Map.Entry<String, String> entry : edgesTableSQLMap.entrySet()) {
                 String layerName = "TSP_" + entry.getKey();
                 String sql = entry.getValue();
-                tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql,
-                        poiTableName);
+                tspRouteGenerator.generateTSPLayer(geoServerClient, workspaceName, schema, dbName, layerName, sql);
                 tspRouteGenerator.generateSequenceLayer(geoServerClient, workspaceName, schema, dbName, layerName,
-                        sql, poiTableName);
+                        sql);
             }
 
         } catch (Exception e) {

@@ -6,6 +6,14 @@ import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 public class TSPRouteGenerator {
 
+    String poiTableName; // table containing POI and nearest node information
+    String floodTableName; // table defining flooded region
+
+    public TSPRouteGenerator(String poiTableName, String floodTableName) {
+        this.poiTableName = poiTableName;
+        this.floodTableName = floodTableName;
+    }
+
     /**
      * Generate TSP route layer
      * 
@@ -17,7 +25,7 @@ public class TSPRouteGenerator {
      * @param costTable
      */
     public void generateTSPLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName,
-            String layerName, String costTable, String poiTableName) {
+            String layerName, String costTable) {
 
         String tspLayer = "WITH tsp AS (\n" +
                 "    SELECT *\n" +
@@ -28,9 +36,9 @@ public class TSPRouteGenerator {
                 "                SELECT ARRAY_APPEND(array_agg(id), (%target%))\n" +
                 "                FROM routing_ways_vertices_pgr\n" +
                 "                WHERE id IN (SELECT DISTINCT nearest_node FROM " + poiTableName
-                + ", flood_polygon_single_10cm WHERE ST_Intersects(" + poiTableName
-                + ".geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (" + poiTableName
-                + ".geom, flood_polygon_single_10cm.geom) < 0.005)\n"
+                + ", "+floodTableName+" WHERE ST_Intersects(" + poiTableName
+                + ".geom, "+floodTableName+".geom) OR ST_DISTANCE (" + poiTableName
+                + ".geom, "+floodTableName+".geom) < 0.005)\n"
                 +
                 "            ),\n" +
                 "            false\n" +
@@ -75,7 +83,7 @@ public class TSPRouteGenerator {
      * @param costTable
      */
     public void generateSequenceLayer(GeoServerClient geoServerClient, String workspaceName, String schema,
-            String dbName, String layerName, String costTable, String poiTableName) {
+            String dbName, String layerName, String costTable) {
 
         layerName = layerName + "_seq";
 
@@ -88,9 +96,9 @@ public class TSPRouteGenerator {
                 "                SELECT ARRAY_APPEND(array_agg(id), (%target%))\n" +
                 "                FROM routing_ways_vertices_pgr\n" +
                 "                WHERE id IN (SELECT DISTINCT nearest_node FROM " + poiTableName
-                + ", flood_polygon_single_10cm WHERE ST_Intersects(" + poiTableName
-                + ".geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (" + poiTableName
-                + ".geom, flood_polygon_single_10cm.geom) < 0.005)\n"
+                + ", "+floodTableName+" WHERE ST_Intersects(" + poiTableName
+                + ".geom, "+floodTableName+".geom) OR ST_DISTANCE (" + poiTableName
+                + ".geom, "+floodTableName+".geom) < 0.005)\n"
                 +
                 "            ),\n" +
                 "            false\n" +
@@ -99,10 +107,10 @@ public class TSPRouteGenerator {
                 "        (%target%)" +
                 "    )\n" +
                 "), tsp_seq AS (    SELECT nearest_node as id, " + poiTableName + ".geom\n" +
-                "    FROM poi_tsp_nearest_node, flood_polygon_single_10cm\n" +
-                "                WHERE ST_Intersects(" + poiTableName + ".geom, flood_polygon_single_10cm.geom)\n" +
+                "    FROM "+poiTableName+", "+floodTableName+"\n" +
+                "                WHERE ST_Intersects(" + poiTableName + ".geom, "+floodTableName+".geom)\n" +
                 "                    OR ST_DISTANCE(" + poiTableName
-                + ".geom, flood_polygon_single_10cm.geom) < 0.005)\n"
+                + ".geom, "+floodTableName+".geom) < 0.005)\n"
                 +
                 "SELECT DISTINCT tsp.seq -1 as seq, tsp.node, tsp.cost, tsp.agg_cost, tsp_seq.geom FROM tsp\n" +
                 "FULL JOIN tsp_seq ON tsp.node = tsp_seq.id ORDER BY seq ASC";
