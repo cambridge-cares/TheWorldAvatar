@@ -140,7 +140,7 @@ Figure 2: TBox representation for the client's point of contact (contact service
     "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
-    "ontoservice:ContactService" ||--|{ "ontowm:WasteCollectionService" : "ontoservice:servesAsContactFor"
+    "ontoservice:ContactService" ||--|{ "fibo-fnd-pas-pas:Service" : "ontoservice:servesAsContactFor"
 ```
 
 ## 2.2. Waste services
