@@ -129,8 +129,18 @@ export default function MapContainer(props: MapContainerProps) {
       };
       // Add filter times if they exist - start and end period is in first and second position respectively
       if (filterTimes.length != 0) {
-        filter.push(["<=", filterTimes[0], ["get", "time"]]);
-        filter.push(["<=", ["get", "time"], filterTimes[1]]);
+        filter.push([
+          "case",
+          ["has", "time"], // Check if the "time" property exists
+          ["all", // If "time" exists, search within the "time" property
+            ["<=", filterTimes[0], ["get", "time"]],
+            ["<=", ["get", "time"], filterTimes[1]]
+          ],
+          ["all", // Else if time does not exist, search between the "start" and "end" property
+            ["<=", filterTimes[0], ["get", "start"]],
+            ["<=", ["get", "end"], filterTimes[1]]
+          ],
+        ]);
       }
       // If no filters are added, reset it to null
       if (filter.length === 1) {
