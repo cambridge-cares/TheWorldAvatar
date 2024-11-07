@@ -38,6 +38,14 @@ public class TravellingSalesmanAgent extends JPSAgent {
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
+    private String poiTableName = "poi_tsp_nearest_node";
+    private String poiLayerName = "poi_tsp_nearest_node";
+    private String floodTableName = "flood_polygon_single_10cm";
+    private Double floodCutOff = 0.0;
+    private String routeTablePrefix = "routing_";
+    private String workspaceName = "twa";
+    private String schema = "public";
+
     /**
      * Initialise agent
      */
@@ -67,6 +75,27 @@ public class TravellingSalesmanAgent extends JPSAgent {
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
             this.kgEndpoint = prop.getProperty("kgEndpoint");
+            if (prop.getProperty("poiTableName") != null) {
+                this.poiTableName = prop.getProperty("poiTableName");
+            }
+            if (prop.getProperty("poiLayerName") != null) {
+                this.poiLayerName = prop.getProperty("poiLayerName");
+            }
+            if (prop.getProperty("floodTableName") != null) {
+                this.floodTableName = prop.getProperty("floodTableName");
+            }
+            if (prop.getProperty("floodCutOff") != null) {
+                this.floodCutOff = Double.parseDouble(prop.getProperty("floodCutOff"));
+            }
+            if (prop.getProperty("routeTablePrefix") != null) {
+                this.routeTablePrefix = prop.getProperty("routeTablePrefix");
+            }
+            if (prop.getProperty("workspaceName") != null) {
+                this.workspaceName = prop.getProperty("workspaceName");
+            }
+            if (prop.getProperty("schema") != null) {
+                this.schema = prop.getProperty("schema");
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -109,16 +138,6 @@ public class TravellingSalesmanAgent extends JPSAgent {
         Path POI_PATH = FUNCTION_PATH.resolve("POIqueries");
         Path EDGESTABLESQL_PATH = FUNCTION_PATH.resolve("edgesSQLTable");
 
-        // common variables
-        // TODO: read from config
-        String poiTableName = "poi_tsp_nearest_node";
-        String poiLayerName = "poi_tsp_nearest_node";
-        String floodTableName = "flood_polygon_single_10cm";
-        Double floodCutOff = 0.0;
-        String routeTablePrefix = "routing_";
-        String workspaceName = "twa";
-        String schema = "public";
-
         try {
             init();
             // Read SPARQL and SQL files.
@@ -159,7 +178,8 @@ public class TravellingSalesmanAgent extends JPSAgent {
              * - TSP_seq: Gives the sequence of order to visit all the TSP points
              */
 
-            TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator(poiTableName, floodTableName, routeTablePrefix, floodCutOff);
+            TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator(poiTableName, floodTableName, routeTablePrefix,
+                    floodCutOff);
             for (Map.Entry<String, String> entry : edgesTableSQLMap.entrySet()) {
                 String layerName = "TSP_" + entry.getKey();
                 String sql = entry.getValue();
