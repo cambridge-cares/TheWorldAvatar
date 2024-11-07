@@ -109,7 +109,7 @@ public class VisBackendAgent {
    * Retrieve the target instance of the specified type in the knowledge graph.
    */
   @GetMapping("/{type}/{id}")
-  public ResponseEntity<?> getInstance(@PathVariable String type, @PathVariable String id) {
+  public ResponseEntity<?> getInstance(@PathVariable String type, @PathVariable String id @QueryParameter String[] roles) {
     LOGGER.info("Received request to get a specific instance of {}...", type);
     return this.getService.getInstance(type, id);
   }
