@@ -8,10 +8,13 @@ public class TSPRouteGenerator {
 
     String poiTableName; // table containing POI and nearest node information
     String floodTableName; // table defining flooded region
+    String routeTablePrefix; // prefix of OSM routing tables
+    Double floodCutOff = 0.0; // Cut-off distance in meters between POI and flood; if distance is below this value, POI is consider flooded
 
-    public TSPRouteGenerator(String poiTableName, String floodTableName) {
+    public TSPRouteGenerator(String poiTableName, String floodTableName, String routeTablePrefix) {
         this.poiTableName = poiTableName;
         this.floodTableName = floodTableName;
+        this.routeTablePrefix = routeTablePrefix;
     }
 
     /**
@@ -34,11 +37,10 @@ public class TSPRouteGenerator {
                 "            '" + costTable + "',\n" +
                 "            (\n" +
                 "                SELECT ARRAY_APPEND(array_agg(id), (%target%))\n" +
-                "                FROM routing_ways_vertices_pgr\n" +
+                "                FROM "+routeTablePrefix+"ways_vertices_pgr\n" +
                 "                WHERE id IN (SELECT DISTINCT nearest_node FROM " + poiTableName
-                + ", "+floodTableName+" WHERE ST_Intersects(" + poiTableName
-                + ".geom, "+floodTableName+".geom) OR ST_DISTANCE (" + poiTableName
-                + ".geom, "+floodTableName+".geom) < 0.005)\n"
+                + ", "+floodTableName+" WHERE ST_DISTANCE (" + poiTableName
+                + ".geom::geography, "+floodTableName+".geom::geography) <= "+Double.toString(floodCutOff)+")\n"
                 +
                 "            ),\n" +
                 "            false\n" +
@@ -48,7 +50,7 @@ public class TSPRouteGenerator {
                 "    )\n" +
                 "),\n" +
                 "tsp_route AS (\n" +
-                "SELECT routing_ways.the_geom\n" +
+                "SELECT "+routeTablePrefix+"ways.the_geom\n" +
                 "FROM (\n" +
                 "    SELECT ROW_NUMBER() OVER() as seq, tsp.node\n" +
                 "    FROM tsp\n" +
@@ -62,7 +64,7 @@ public class TSPRouteGenerator {
                 "    n1.node,\n" +
                 "    n2.node, false\n" +
                 ") AS di ON true\n" +
-                "JOIN routing_ways ON di.edge = routing_ways.gid\n" +
+                "JOIN "+routeTablePrefix+"ways ON di.edge = "+routeTablePrefix+"ways.gid\n" +
                 "ORDER BY n1.seq\n" +
                 ")\n" +
                 "SELECT tsp_route.the_geom as geom\n" +
@@ -94,11 +96,10 @@ public class TSPRouteGenerator {
                 "            '" + costTable + "',\n" +
                 "            (\n" +
                 "                SELECT ARRAY_APPEND(array_agg(id), (%target%))\n" +
-                "                FROM routing_ways_vertices_pgr\n" +
+                "                FROM "+routeTablePrefix+"ways_vertices_pgr\n" +
                 "                WHERE id IN (SELECT DISTINCT nearest_node FROM " + poiTableName
-                + ", "+floodTableName+" WHERE ST_Intersects(" + poiTableName
-                + ".geom, "+floodTableName+".geom) OR ST_DISTANCE (" + poiTableName
-                + ".geom, "+floodTableName+".geom) < 0.005)\n"
+                + ", "+floodTableName+" WHERE ST_DISTANCE (" + poiTableName
+                + ".geom::geography, "+floodTableName+".geom::geography) <= "+Double.toString(floodCutOff)+")\n"
                 +
                 "            ),\n" +
                 "            false\n" +
@@ -108,9 +109,8 @@ public class TSPRouteGenerator {
                 "    )\n" +
                 "), tsp_seq AS (    SELECT nearest_node as id, " + poiTableName + ".geom\n" +
                 "    FROM "+poiTableName+", "+floodTableName+"\n" +
-                "                WHERE ST_Intersects(" + poiTableName + ".geom, "+floodTableName+".geom)\n" +
-                "                    OR ST_DISTANCE(" + poiTableName
-                + ".geom, "+floodTableName+".geom) < 0.005)\n"
+                "                WHERE ST_DISTANCE(" + poiTableName
+                + ".geom::geography, "+floodTableName+".geom::geography) <= "+Double.toString(floodCutOff)+")\n"
                 +
                 "SELECT DISTINCT tsp.seq -1 as seq, tsp.node, tsp.cost, tsp.agg_cost, tsp_seq.geom FROM tsp\n" +
                 "FULL JOIN tsp_seq ON tsp.node = tsp_seq.id ORDER BY seq ASC";
