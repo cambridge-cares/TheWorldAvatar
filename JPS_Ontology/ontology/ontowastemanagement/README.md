@@ -392,6 +392,7 @@ The following truck types are employed in the waste management sector:
 
 1. **Rear End Loader Truck**: A truck designed for municipal waste collection, featuring a rear-loading mechanism with a hydraulic lift to compact waste into the truck body.
 2. **Hooklift Truck**: A versatile truck equipped with a hydraulic hooklift system, used for transporting various container types, including heavy industrial and commercial waste containers.
+3. **Recycling Truck**: A truck specifically designed and equipped to collect, transport, and sometimes sort recyclable materials from various collection points to recycling facilities.
 
 Figure 9: TBox representation of a truck for the waste management sector
 
@@ -403,8 +404,9 @@ Figure 9: TBox representation of a truck for the waste management sector
         vc-vehicleIdentificationNumber plate_number_string
     }
 
-    "ontowm:RearEndLoaderTruck" ||--o{ "vc:Truck" : "rdfs:subClassOf"
     "ontowm:HookliftTruck" ||--o{ "vc:Truck" : "rdfs:subClassOf"
+    "ontowm:RearEndLoaderTruck" ||--o{ "vc:Truck" : "rdfs:subClassOf"
+    "ontowm:RecyclingTruck" ||--o{ "vc:Truck" : "rdfs:subClassOf"
 ```
 
 ### 2.3.2 Bin
