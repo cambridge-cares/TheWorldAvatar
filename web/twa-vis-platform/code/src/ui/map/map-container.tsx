@@ -87,12 +87,13 @@ export default function MapContainer(props: MapContainerProps) {
             }
             const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionValue);
             mapDataStore = parseMapDataSettings(JSON.parse(dataString), mapSettings?.type);
+            setMapData(mapDataStore);
           });
       } else {
         // By default, the data settings are retrieved locally
         mapDataStore = parseMapDataSettings(JSON.parse(props.data), mapSettings?.type);
+        setMapData(mapDataStore);
       }
-      setMapData(mapDataStore);
     }
   }, [mapSettings?.type, props.data, props.scenarios, selectedScenario, showDialog, dimensionSliderValue]);
 
