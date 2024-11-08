@@ -55,6 +55,7 @@ public class IsochroneAgent extends JPSAgent {
     private String routeTableName = "routing_ways";
     private String workspaceName = "twa";
     private String schema = "public";
+    private Boolean oncePerPOI = true;
 
     /**
      * Initialise agent
@@ -106,6 +107,9 @@ public class IsochroneAgent extends JPSAgent {
             }
             if (prop.getProperty("schema") != null) {
                 this.schema = prop.getProperty("schema");
+            }
+            if (prop.getProperty("oncePerPOI") != null) {
+                this.oncePerPOI = Boolean.parseBoolean(prop.getProperty("oncePerPOI"));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -182,7 +186,7 @@ public class IsochroneAgent extends JPSAgent {
             // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient,
             // timeThreshold, timeInterval, EdgesTableSQLMap)
             IsochroneGenerator isochroneGenerator = new IsochroneGenerator(poiTableName, routeTableName);
-            isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
+            isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap, oncePerPOI);
             isochroneGenerator.createIsochroneBuilding(remoteRDBStoreClient);
 
             // Population matcher

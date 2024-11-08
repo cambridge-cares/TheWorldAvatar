@@ -33,14 +33,14 @@ public class IsochroneGenerator {
      *                             for isochrone calculations
      */
     public void generateIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval,
-            Map<String, String> EdgesTableSQLMap) {
+            Map<String, String> EdgesTableSQLMap, boolean oncePerPOI) {
 
         generateTable(remoteRDBStoreClient);
 
         List<String> poiTypes;
         try {
             // Initialize poiTypes and get distinct poiType;
-            poiTypes = getPoiTypes(remoteRDBStoreClient);
+            poiTypes = getPoiTypes(remoteRDBStoreClient, oncePerPOI);
 
             // Outer loop: Run createIsochrone method for each poiType
             for (String poiType : poiTypes) {
@@ -145,7 +145,7 @@ public class IsochroneGenerator {
                 "FROM pgr_drivingDistance(\n" +
                 "'" + edgeTable + "', node, 10000, false) AS dd\n" + // 10000 is an arbitrary large number to ensure all
                                                                      // nodes are extracted
-                "JOIN "+routeTableName+"_segment_vertices_pgr AS v ON dd.node = v.id;\n" +
+                "JOIN " + routeTableName + "_segment_vertices_pgr AS v ON dd.node = v.id;\n" +
                 "UPDATE eventspace_etas SET the_geom = ST_SetSRID(ST_MakePoint(ST_X(the_geom), ST_Y(the_geom), agg_cost), 4326);\n"
                 + "drop table if exists eventspace_delaunay;\n" +
                 "create table eventspace_delaunay\n" +
@@ -192,8 +192,6 @@ public class IsochroneGenerator {
                 "DROP TABLE eventspace_isochrones;\n" +
                 "DROP TABLE isochrone_individual;\n" +
                 "END $$;";
-        
-                System.out.println(isochroneFunction);
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, isochroneFunction);
@@ -211,16 +209,15 @@ public class IsochroneGenerator {
      * @return
      * @throws SQLException
      */
-    public List<String> getPoiTypes(RemoteRDBStoreClient remoteRDBStoreClient) throws SQLException {
-        String getNearestNode_sql = "SELECT DISTINCT pnn.poi_type FROM " + poiTableName + " AS pnn " +
-                "LEFT JOIN isochrone_aggregated AS ia ON pnn.poi_type = ia.poi_type WHERE ia.poi_type IS NULL";
-
+    public List<String> getPoiTypes(RemoteRDBStoreClient remoteRDBStoreClient, Boolean oncePerPOI) throws SQLException {
+        String getPoiSQL = "SELECT DISTINCT pnn.poi_type FROM " + poiTableName + " AS pnn";
+        if (oncePerPOI) {
+            getPoiSQL = getPoiSQL + " LEFT JOIN isochrone_aggregated AS ia ON pnn.poi_type = ia.poi_type WHERE ia.poi_type IS NULL";
+        }
         List<String> poiTypes = new ArrayList<>();
-
         try (Connection connection = remoteRDBStoreClient.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getNearestNode_sql)) {
-
+                ResultSet resultSet = statement.executeQuery(getPoiSQL)) {
             while (resultSet.next()) {
                 poiTypes.add(resultSet.getString("poi_type"));
             }

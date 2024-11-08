@@ -33,7 +33,7 @@ public class IsochroneGeneratorTest {
 
                 IsochroneGenerator isochroneGenerator = new IsochroneGenerator("poi_nearest_node", "routing_ways");
 
-                List<String> poiTypes = isochroneGenerator.getPoiTypes(remoteRDBStoreClientMock);
+                List<String> poiTypes = isochroneGenerator.getPoiTypes(remoteRDBStoreClientMock, true);
                 
                 // Verify that the getPoiTypes method returned the expected list of poiTypes
                 assertEquals(Arrays.asList("POI1", "POI2"), poiTypes);
