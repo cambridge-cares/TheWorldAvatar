@@ -9,6 +9,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystemNotFoundException;
 import java.text.MessageFormat;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -157,12 +158,10 @@ public class FileService {
    * @param inputStream File contents as an input stream.
    */
   private String parseSparqlFile(InputStream inputStream) throws IOException {
-    StringBuilder result = new StringBuilder();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-      reader.lines()
+      return reader.lines()
           .filter(line -> !line.trim().startsWith("#")) // Remove lines starting with "#"
-          .forEach(line -> result.append(line).append("\n")); // Append each line with a newline character
+          .collect(Collectors.joining("\n")); // Append each line with a newline character
     }
-    return result.toString();
   }
 }
