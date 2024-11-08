@@ -35,15 +35,16 @@ public class NearestNodeFinder {
             String initialiseTable = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
                     + "poi_tsp_iri VARCHAR, "
                     + "poi_tsp_type VARCHAR, "
-                    + "nearest_node BIGINT,"
-                    + "geom geometry "
+                    + "nearest_node BIGINT, "
+                    + "geom geometry, "
+                    + "is_flooded BOOLEAN"
                     + ")";
 
             executeSql(connection, initialiseTable);
             System.out.println("Initialized " + tableName + " table.");
 
             String sql = "INSERT INTO " + tableName
-                    + " (poi_tsp_iri, poi_tsp_type, nearest_node, geom) VALUES (?, ?, ?, ?)";
+                    + " (poi_tsp_iri, poi_tsp_type, nearest_node, geom, is_flooded) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -64,6 +65,7 @@ public class NearestNodeFinder {
                 preparedStatement.setString(2, poiTSPType);
                 preparedStatement.setInt(3, Integer.parseInt(nearestNode));
                 preparedStatement.setObject(4, pgGeometry);
+                preparedStatement.setBoolean(5, false);
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();

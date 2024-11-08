@@ -1,6 +1,12 @@
 package uk.ac.cam.cares.jps.agent.travellingsalesmanagent;
 
+import java.sql.Connection;
+import java.sql.Statement;
+
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class TSPRouteGenerator {
 
@@ -15,6 +21,22 @@ public class TSPRouteGenerator {
         this.floodTableName = floodTableName;
         this.routeTablePrefix = routeTablePrefix;
         this.floodCutOff = floodCutOff;
+    }
+
+    public void updatePOIFloodStatus(RemoteRDBStoreClient remoteRDBStoreClient) {
+        String sql = "UPDATE " + poiTableName + " SET is_flooded = CASE WHEN nearest_node IN (" +
+                "SELECT DISTINCT nearest_node FROM " + poiTableName + ", " + floodTableName +
+                " WHERE ST_DISTANCE (" + poiTableName + ".geom::geography, " + floodTableName + ".geom::geography) <= "
+                + Double.toString(floodCutOff) + ")" + " THEN TRUE ELSE FALSE END;";
+        try (Connection connection = remoteRDBStoreClient.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(sql);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+
     }
 
     /**

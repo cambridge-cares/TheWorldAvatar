@@ -18,8 +18,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 @WebServlet(urlPatterns = "/runtsp")
 
@@ -158,7 +156,8 @@ public class TravellingSalesmanAgent extends JPSAgent {
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
             geoServerClient.createWorkspace(workspaceName);
 
-            GeoServerInteractor.addPOIGeoserverLayer(geoServerClient, workspaceName, schema, dbName, poiTableName, poiLayerName);
+            GeoServerInteractor.addPOIGeoserverLayer(geoServerClient, workspaceName, schema, dbName, poiTableName,
+                    poiLayerName);
 
             /**
              * Loop through the edgeTable SQL and generate two geoserver layer for each
@@ -169,6 +168,8 @@ public class TravellingSalesmanAgent extends JPSAgent {
 
             TSPRouteGenerator tspRouteGenerator = new TSPRouteGenerator(poiTableName, floodTableName, routeTablePrefix,
                     floodCutOff);
+
+            tspRouteGenerator.updatePOIFloodStatus(remoteRDBStoreClient);
             for (Map.Entry<String, String> entry : edgesTableSQLMap.entrySet()) {
                 String layerName = "TSP_" + entry.getKey();
                 String sql = entry.getValue();
