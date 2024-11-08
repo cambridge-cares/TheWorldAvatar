@@ -53,7 +53,7 @@ export async function getGeolocation(agentApi: string, params: Record<string, st
     // Only append the search param if there is a value
     if (value) searchParams.append(key, value);
   });
-  const url: string = `${agentApi}/geocode/api?${searchParams.toString()}`;
+  const url: string = `${agentApi}/location/geocode?${searchParams.toString()}`;
   const results = await sendGetRequest(url);
   if (results == "There are no coordinates associated with the parameters in the knowledge graph.") {
     return [];

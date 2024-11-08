@@ -130,7 +130,7 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
     const searchParams: URLSearchParams = new URLSearchParams();
     searchParams.append(postalCodeUnderscored, data[postalCode]);
 
-    const url: string = `${props.agentApi}/geocode/api/search?${searchParams.toString()}`;
+    const url: string = `${props.agentApi}/location/addresses?${searchParams.toString()}`;
     const results = await sendGetRequest(url);
     if (results == "There are no address associated with the parameters in the knowledge graph.") {
       setIsEmptyAddress(true);
