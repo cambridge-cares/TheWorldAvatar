@@ -65,3 +65,4 @@ hasReplacementBin,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FB
 hasDisposalCharge,Object Property,,,WasteDisposalService,https://www.theworldavatar.com/kg/ontoservice/VariableCharge,,A relationship describing the disposal charge of a waste disposal service.,https://www.theworldavatar.com/kg/ontowastemanagement/,has disposal charge
 hasStatus,Object Property,,,Bin,BinStatus,,A relationship describing the current bin status.,https://www.theworldavatar.com/kg/ontowastemanagement/,has status
 hasBinNumber,Data Property,,,Bin,string,exactly 1,An identifier for a bin.,https://www.theworldavatar.com/kg/ontowastemanagement/,has bin number
+isRecyclable,Data Property,,,Waste,boolean,,A property indicating if the waste is recyclable or not.,https://www.theworldavatar.com/kg/ontowastemanagement/,is recyclable

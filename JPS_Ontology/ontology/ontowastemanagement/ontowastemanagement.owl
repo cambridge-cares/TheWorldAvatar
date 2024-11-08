@@ -165,6 +165,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/isRecyclable -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/isRecyclable">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Waste"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment>A property indicating if the waste is recyclable or not.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>is recyclable</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //

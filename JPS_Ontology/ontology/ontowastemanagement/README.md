@@ -154,7 +154,7 @@ The services available in the waste operation industry are as follows:
 4. **Touch and go service** `WasteCollectionService`: Brings an empty bin to collect and dispose of the waste on the service site without returning the bin afterwards. Must be assigned to an OTC truck
 5. **Dump and return service** `WasteCollectionService`: An empty truck will collect the bin containing waste from the service site, and dispose the waste at the disposal site before returning the newly emptied bin afterwards. Must be assigned to an OTC truck
 
-When setting up the agreement, the bin and waste categories can be assigned through their corresponding relationships with the service. Notably, waste categories can only be assigned to waste collection services, where waste is collected and disposed. The disposal of waste must occur at specific waste disposal facilities, which will be represented with their locations, operating hours, providers, and waste categories.
+When setting up the agreement, the bin and waste categories can be assigned through their corresponding relationships with the service. Notably, waste categories can only be assigned to waste collection services, where waste is collected and disposed. The `isRecyclable` property is assignable to the waste if the service collects recyclable waste. The disposal of waste must occur at specific waste disposal facilities, which will be represented with their locations, operating hours, providers, and waste categories.
 
 Figure 3: TBox representation of waste services
 
@@ -168,8 +168,8 @@ Figure 3: TBox representation of waste services
     }
 
     "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteCollectionService" : "fibo-fnd-rel-rel:governs"
-    "ontowm:WasteCollectionService" ||--|| "ontowm:Waste" : "ontowm:hasWasteType"
     "ontowm:WasteCollectionService" ||--|| "ontowm:Bin" : "ontowm:hasBinType"
+    "ontowm:WasteCollectionService" ||--|| "ontowm:Waste" : "ontowm:hasWasteType"
     "ontowm:WasteCollectionService" {
         rdfs-label label_string
         rdfs-comments remarks_string
@@ -186,6 +186,9 @@ Figure 3: TBox representation of waste services
 
     "ontowm:WasteDisposalService" ||--o{ "fibo-fnd-plc-fac:Capability" : "fibo-fnd-rel-rel:provides"
     "fibo-fnd-plc-fac:Capability" ||--o{ "ontowm:Waste" : "fibo-fnd-rel-rel:involves"
+    "ontowm:Waste" { 
+        ontowm_isRecyclable boolean
+    }
 
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontowm:WasteDisposalFacility" : "fibo-fnd-pas-pas:provisions"
     "ontowm:WasteDisposalFacility" ||--o{ "fibo-fnd-plc-fac:Capability" : "fibo-fnd-rel-rel:provides"
