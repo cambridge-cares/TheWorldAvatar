@@ -53,6 +53,7 @@ public class IsochroneAgent extends JPSAgent {
     public ArrayList<String> populationTableList;
     private List<Integer> floodDepthList = Arrays.asList(10, 30, 90);
     private String poiTableName = "poi_nearest_node";
+    private String routeTableName = "routing_ways";
     private String workspaceName = "twa";
     private String schema = "public";
 
@@ -97,6 +98,9 @@ public class IsochroneAgent extends JPSAgent {
             }
             if (prop.getProperty("poiTableName") != null) {
                 this.poiTableName = prop.getProperty("poiTableName");
+            }
+            if (prop.getProperty("routeTableName") != null) {
+                this.routeTableName = prop.getProperty("routeTableName");
             }
             if (prop.getProperty("workspaceName") != null) {
                 this.workspaceName = prop.getProperty("workspaceName");
@@ -162,7 +166,7 @@ public class IsochroneAgent extends JPSAgent {
             JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
             // Split road into multiple smaller segment and find the nearest_node
-            RouteSegmentization routeSegmentization = new RouteSegmentization(poiTableName);
+            RouteSegmentization routeSegmentization = new RouteSegmentization(poiTableName, routeTableName);
             if (!routeSegmentization.doesTableExist(remoteRDBStoreClient)) {
                 // If segment table doesnt exist, segment table
                 routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);

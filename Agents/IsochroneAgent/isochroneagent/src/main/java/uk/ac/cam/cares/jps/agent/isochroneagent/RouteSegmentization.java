@@ -15,14 +15,18 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 public class RouteSegmentization {
 
     String poiTableName; // default value
+    String routeTableName;
+    String routeSegmentTableName;
 
-    public RouteSegmentization(String poiTableName) {
+    public RouteSegmentization(String poiTableName, String routeTableName) {
         this.poiTableName = poiTableName;
+        this.routeTableName = routeTableName;
+        this.routeSegmentTableName = routeTableName + "_segment";
     }
 
     /**
-     * Drop table of routing_ways_segment if it exists.
-     * Duplicate and store the segmentized roads in routing_ways_segment.
+     * Drop table of routeSegmentTableName if it exists.
+     * Duplicate and store the segmentized roads in routeSegmentTableName.
      * Recalculate the topology.
      * 
      * @param remoteRDBStoreClient
@@ -30,28 +34,27 @@ public class RouteSegmentization {
      */
     public void segmentize(RemoteRDBStoreClient remoteRDBStoreClient, double segmentization_length) {
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            String segmentization_create_table = "CREATE TABLE routing_ways_segment AS\n" +
-                    "SELECT * FROM routing_ways WHERE 1 = 0;\n";
-            String segmentization_split = "INSERT INTO routing_ways_segment\n" +
+            String segmentization_create_table = "CREATE TABLE "+routeSegmentTableName+" AS\n" +
+                    "SELECT * FROM "+routeTableName+" WHERE 1 = 0;\n";
+            String segmentization_split = "INSERT INTO "+routeSegmentTableName+"\n" +
                     "SELECT gid, osm_id, tag_id, length, length_m, name, source, target,\n" +
                     "source_osm, target_osm, cost, reverse_cost, cost_s, reverse_cost_s, rule,\n" +
                     "one_way, oneway, x1, y1, x2, y2, maxspeed_forward, maxspeed_backward, priority,\n" +
                     "(ST_DumpSegments(ST_Segmentize(the_geom, " + segmentization_length
-                    + "))).geom AS the_geom FROM routing_ways;\n" +
-                    "UPDATE routing_ways_segment\n" +
+                    + "))).geom AS the_geom FROM "+routeTableName+";\n" +
+                    "UPDATE "+routeSegmentTableName+"\n" +
                     "SET \n length = ST_Length(the_geom), length_m = ST_Length(ST_Transform(the_geom, 3857)),\n" +
-                    "cost_s = ST_Length(ST_Transform(the_geom, 3857)) / (maxspeed_forward * 1000 / 3600),\n" +
+                    "cost = null, reverse_cost = null;\n" +
+                    "UPDATE "+routeSegmentTableName+" SET\n" +
+                    "cost_s = length_m / (maxspeed_forward * 1000 / 3600),\n" +
                     "reverse_cost_s = CASE\n" +
-                    "WHEN reverse_cost_s > 0 THEN ST_Length(ST_Transform(the_geom, 3857)) / (maxspeed_backward* 1000 / 3600)\n"
-                    +
-                    "WHEN reverse_cost_s < 0 THEN -ST_Length(ST_Transform(the_geom, 3857)) / (maxspeed_backward* 1000 / 3600)\n"
-                    +
-                    "ELSE 0  -- Assuming default value when reverse_cost_s is 0\n END,\n" +
-                    "cost = null, reverse_cost = null;";
+                    "WHEN reverse_cost_s > 0 THEN length_m / (maxspeed_backward* 1000 / 3600)\n" +
+                    "WHEN reverse_cost_s < 0 THEN -length_m / (maxspeed_backward* 1000 / 3600)\n" +
+                    "ELSE 0  -- Assuming default value when reverse_cost_s is 0\n END;";
 
             String segmentization_rearrange_sql = "CREATE SEQUENCE temp_sequence;\n" +
-                    "UPDATE routing_ways_segment\n SET gid = nextval('temp_sequence');\n" +
-                    "SELECT setval('temp_sequence', (SELECT max(gid) FROM routing_ways_segment) + 1);\n" +
+                    "UPDATE "+routeSegmentTableName+"\n SET gid = nextval('temp_sequence');\n" +
+                    "SELECT setval('temp_sequence', (SELECT max(gid) FROM "+routeSegmentTableName+") + 1);\n" +
                     "DROP SEQUENCE temp_sequence;\n";
 
             executeSql(connection, segmentization_create_table);
@@ -64,22 +67,24 @@ public class RouteSegmentization {
             System.out.println("Reindexed the routes.(3/4)");
 
             System.out.println("Begin on recalculating topology, this may take awhile.");
+            // 0.00001 in 4326 is about 1 m
             executeSql(connection,
-                    ("SELECT pgr_createTopology('routing_ways_segment', 0.000001, 'the_geom', 'gid', 'source', 'target', clean := true);"));
+                    ("SELECT pgr_createTopology('"+routeSegmentTableName+"', 0.00001, 'the_geom', 'gid', 'source', 'target', clean := true);"));
             System.out.println("Recreated routing topology.");
             System.out.println("Analzye isolated edge in graph network.");
-            executeSql(connection, "SELECT pgr_analyzeGraph ('routing_ways_segment', 0.001, 'the_geom', 'gid')");
+            executeSql(connection, "SELECT pgr_analyzeGraph ('"+routeSegmentTableName+"', " + segmentization_length
+                    + ", 'the_geom', 'gid')");
             System.out.println("Dropping isolated networks  in graph network.");
             executeSql(connection, "CREATE TEMPORARY TABLE isolated AS\n" +
                     "SELECT a.gid as ways_id, b.id as source_vertice, c.id as target_vertice\n" +
-                    "FROM routing_ways_segment a, routing_ways_segment_vertices_pgr b, routing_ways_segment_vertices_pgr c\n"
+                    "FROM "+routeSegmentTableName+" a, "+routeSegmentTableName+"_vertices_pgr b, "+routeSegmentTableName+"_vertices_pgr c\n"
                     +
                     "WHERE a.source=b.id AND b.cnt=1 AND a.target=c.id AND c.cnt=1;\n" +
-                    "DELETE FROM routing_ways_segment WHERE gid IN ( SELECT ways_id FROM isolated);\n" +
-                    "DELETE FROM routing_ways_segment_vertices_pgr\n WHERE id IN ( SELECT source_vertice FROM isolated);\n"
+                    "DELETE FROM "+routeSegmentTableName+" WHERE gid IN ( SELECT ways_id FROM isolated);\n" +
+                    "DELETE FROM "+routeSegmentTableName+"_vertices_pgr\n WHERE id IN ( SELECT source_vertice FROM isolated);\n"
                     +
-                    "DELETE FROM routing_ways_segment_vertices_pgr\n WHERE id IN ( SELECT target_vertice FROM isolated);");
-            System.out.println("Segmentization completed. Routing_ways_segment table created. (4/4)");
+                    "DELETE FROM "+routeSegmentTableName+"_vertices_pgr\n WHERE id IN ( SELECT target_vertice FROM isolated);");
+            System.out.println("Segmentization completed. "+routeSegmentTableName+" table created. (4/4)");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
@@ -87,7 +92,7 @@ public class RouteSegmentization {
     }
 
     /**
-     * Pass POI in arrays and finds the nearest nodes based on routing_ways_segment
+     * Pass POI in arrays and finds the nearest nodes based on routeSegmentTableName
      * road data.
      * 
      * @param remoteRDBStoreClient
@@ -133,7 +138,7 @@ public class RouteSegmentization {
     }
 
     /**
-     * Finds the nearest node of the POI from routing_ways_segment table
+     * Finds the nearest node of the POI from routeSegmentTableName table
      * 
      * @param connection
      * @param geom
@@ -145,7 +150,7 @@ public class RouteSegmentization {
         String geomConvert = "ST_GeometryFromText('" + geom + "', 4326)";
 
         String findNearestNodeSQL = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
-                "FROM routing_ways_segment_vertices_pgr ORDER BY the_geom <-> " + geomConvert + " LIMIT 1;\n";
+                "FROM "+routeSegmentTableName+"_vertices_pgr ORDER BY the_geom <-> " + geomConvert + " LIMIT 1;\n";
 
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(findNearestNodeSQL)) {
@@ -177,7 +182,7 @@ public class RouteSegmentization {
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 // Use a ResultSet to query for the table's existence
-                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM routing_ways_segment");
+                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM "+routeSegmentTableName+"");
                 // If the query is successful, the table exists
                 return true;
             } catch (SQLException e) {
@@ -205,7 +210,7 @@ public class RouteSegmentization {
                     "st_intersects(rw.the_geom, flood_polygon_single_" + floodDepth_cm
                     + "cm.geom))) THEN (- abs(rw.reverse_cost_s))\n" +
                     "ELSE rw.reverse_cost_s END AS reverse_cost_s\n" +
-                    "FROM routing_ways_segment rw;";
+                    "FROM "+routeSegmentTableName+" rw;";
 
             executeSql(connection, createFloodTableSQL);
             System.out.println("Flood cost segmented tables created.");
