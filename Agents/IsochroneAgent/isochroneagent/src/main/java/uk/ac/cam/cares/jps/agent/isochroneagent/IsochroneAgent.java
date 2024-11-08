@@ -26,10 +26,10 @@ import com.cmclinnovations.stack.clients.ontop.OntopClient;
 @WebServlet(urlPatterns = "/update")
 
 public class IsochroneAgent extends JPSAgent {
-    
-    private static String isochroneFunction = null; 
-    private static int timeThreshold; 
-    private static int timeInterval; 
+
+    private static String isochroneFunction = null;
+    private static int timeThreshold;
+    private static int timeInterval;
     private static final String PROPETIES_PATH = "/inputs/config.properties";
     private static final Path obdaFile = Path.of("/inputs/isochrone.obda");
     private final String FUNCTION_KEY = "function";
@@ -53,14 +53,13 @@ public class IsochroneAgent extends JPSAgent {
     public void init() {
         readConfig();
 
-        if(!kgEndpoint.isEmpty() ){
+        if (!kgEndpoint.isEmpty()) {
             try {
                 this.storeClient = new RemoteStoreClient(kgEndpoint, kgEndpoint);
             } catch (Exception e) {
-             System.out.println(e + "Invalid blazegraph endpoint specified");
+                System.out.println(e + "Invalid blazegraph endpoint specified");
             }
-        }else
-        {   //Follow the running stack's blazegraph URL
+        } else { // Follow the running stack's blazegraph URL
             this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         }
 
@@ -94,7 +93,8 @@ public class IsochroneAgent extends JPSAgent {
     }
 
     /**
-     * Process request parameters and run functions within agent in the following flow
+     * Process request parameters and run functions within agent in the following
+     * flow
      * 1) Read files
      * 2) Retrieve POI locations from KG
      * 3) Segmentize road networks, find nearest_nodes of POIs
@@ -102,6 +102,7 @@ public class IsochroneAgent extends JPSAgent {
      * 5) Map population to the isochrones
      * 6) Create geoserver layer using geoserverclient
      * 7) Upload .obda mapping using ontopclient
+     * 
      * @param requestParams
      * @return
      */
@@ -120,12 +121,11 @@ public class IsochroneAgent extends JPSAgent {
         LOGGER.info("Successfully set isochroneFunction to " + isochroneFunction);
 
         JSONObject response = new JSONObject();
-        response.put("message", "Successfully set isochroneFunction to " + isochroneFunction+ ", timeInterval" + timeInterval+", timeThreshold" + timeThreshold);
+        response.put("message", "Successfully set isochroneFunction to " + isochroneFunction + ", timeInterval"
+                + timeInterval + ", timeThreshold" + timeThreshold);
 
-
-        Path POI_PATH = Path.of("/inputs/"+isochroneFunction+"/POIqueries");
-        Path EDGESTABLESQL_PATH = Path.of("/inputs/"+isochroneFunction+"/edgesSQLTable");
-
+        Path POI_PATH = Path.of("/inputs/" + isochroneFunction + "/POIqueries");
+        Path EDGESTABLESQL_PATH = Path.of("/inputs/" + isochroneFunction + "/edgesSQLTable");
 
         try {
             init();
@@ -133,16 +133,18 @@ public class IsochroneAgent extends JPSAgent {
             Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
-            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
+            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs
+            // to the cumulative array
             JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
             // Split road into multiple smaller segment and find the nearest_node
             RouteSegmentization routeSegmentization = new RouteSegmentization();
-            if (!routeSegmentization.doesTableExist(remoteRDBStoreClient)){
-            //If segment table doesnt exist, segment table
+            if (!routeSegmentization.doesTableExist(remoteRDBStoreClient)) {
+                // If segment table doesnt exist, segment table
 
-            routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
-                if (isochroneFunction.equals("UR")){
+                routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
+                if (isochroneFunction.equals("UR")) {
+                    // TODO: list of flood depth as config parameters
                     routeSegmentization.createFloodCost(remoteRDBStoreClient, 10);
                     routeSegmentization.createFloodCost(remoteRDBStoreClient, 30);
                     routeSegmentization.createFloodCost(remoteRDBStoreClient, 90);
@@ -152,8 +154,8 @@ public class IsochroneAgent extends JPSAgent {
             // Create a table to store nearest_node
             routeSegmentization.insertPoiData(remoteRDBStoreClient, cumulativePOI);
 
-
-            // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap)
+            // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient,
+            // timeThreshold, timeInterval, EdgesTableSQLMap)
             IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
             isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
             isochroneGenerator.createIsochroneBuilding(remoteRDBStoreClient);
@@ -164,38 +166,42 @@ public class IsochroneAgent extends JPSAgent {
             populationMapper.checkAndAddColumns(remoteRDBStoreClient, populationTableList);
             populationMapper.mapPopulation(remoteRDBStoreClient, populationTableList);
 
-            //Create geoserver layer
+            // Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName= "twa";
+            String workspaceName = "twa";
             String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
 
-            
             UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
             GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-            virtualTable.setSql("SELECT minute, transportmode, transportmode_iri, poi_type, CONCAT('https://www.theworldavatar.com/kg/ontoisochrone/',iri) as iri, CONCAT(transportmode,' (', poi_type,')') as name, roadcondition, roadcondition_iri, geometry_iri, "+populationTables+", ST_Force2D(geom) as geom FROM isochrone_aggregated");
+            virtualTable.setSql(
+                    "SELECT minute, transportmode, transportmode_iri, poi_type, CONCAT('https://www.theworldavatar.com/kg/ontoisochrone/',iri) as iri, CONCAT(transportmode,' (', poi_type,')') as name, roadcondition, roadcondition_iri, geometry_iri, "
+                            + populationTables + ", ST_Force2D(geom) as geom FROM isochrone_aggregated");
             virtualTable.setEscapeSql(true);
             virtualTable.setName("isochrone_aggregated_virtualTable");
             virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
-            geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "public", "isochrone_aggregated" ,geoServerVectorSettings);
+            geoServerClient.createPostGISDataStore(workspaceName, "isochrone_aggregated", dbName, schema);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "public", "isochrone_aggregated",
+                    geoServerVectorSettings);
 
-            if (isochroneFunction.equals("UR")){
-            UpdatedGSVirtualTableEncoder virtualTableUnreachable = new UpdatedGSVirtualTableEncoder();
-            GeoServerVectorSettings geoServerVectorSettingsUnreachable = new GeoServerVectorSettings();
-                virtualTableUnreachable.setSql("SELECT 'Unreachable Area' as name, af.minute, ABS(an.population - af.population) AS population, ST_UNION( ST_Intersection(ST_Difference(an.geom, af.geom), ST_ConcaveHull(ST_Points(fp30.geom),0.2, false)), ST_Difference(ST_ConcaveHull(ST_Points(fp30.geom),0.2, false), af.geom)) AS geom FROM (SELECT minute, ST_Union(geom) AS geom, SUM(population) AS population FROM isochrone_aggregated WHERE roadcondition = 'Flooded' GROUP BY minute) AS af JOIN (SELECT minute, ST_Union(geom) AS geom, SUM(population) AS population FROM isochrone_aggregated WHERE roadcondition = 'Normal' GROUP BY minute) AS an ON af.minute = an.minute CROSS JOIN flood_polygon_single_30cm AS fp30\n");
+            if (isochroneFunction.equals("UR")) {
+                UpdatedGSVirtualTableEncoder virtualTableUnreachable = new UpdatedGSVirtualTableEncoder();
+                GeoServerVectorSettings geoServerVectorSettingsUnreachable = new GeoServerVectorSettings();
+                virtualTableUnreachable.setSql(
+                        "SELECT 'Unreachable Area' as name, af.minute, ABS(an.population - af.population) AS population, ST_UNION( ST_Intersection(ST_Difference(an.geom, af.geom), ST_ConcaveHull(ST_Points(fp30.geom),0.2, false)), ST_Difference(ST_ConcaveHull(ST_Points(fp30.geom),0.2, false), af.geom)) AS geom FROM (SELECT minute, ST_Union(geom) AS geom, SUM(population) AS population FROM isochrone_aggregated WHERE roadcondition = 'Flooded' GROUP BY minute) AS af JOIN (SELECT minute, ST_Union(geom) AS geom, SUM(population) AS population FROM isochrone_aggregated WHERE roadcondition = 'Normal' GROUP BY minute) AS an ON af.minute = an.minute CROSS JOIN flood_polygon_single_30cm AS fp30\n");
                 virtualTableUnreachable.setEscapeSql(true);
                 virtualTableUnreachable.setName("unreachable");
-                virtualTableUnreachable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
+                virtualTableUnreachable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the
+                                                                                             // sql query
                 geoServerVectorSettingsUnreachable.setVirtualTable(virtualTableUnreachable);
-            geoServerClient.createPostGISDataStore(workspaceName,"unreachable" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName, "public", "unreachable" ,geoServerVectorSettingsUnreachable);
-
+                geoServerClient.createPostGISDataStore(workspaceName, "unreachable", dbName, schema);
+                geoServerClient.createPostGISLayer(workspaceName, dbName, "public", "unreachable",
+                        geoServerVectorSettingsUnreachable);
 
             }
 
-            //Upload Isochrone Ontop mapping
+            // Upload Isochrone Ontop mapping
             try {
                 OntopClient ontopClient = OntopClient.getInstance();
                 ontopClient.updateOBDA(obdaFile);
@@ -211,7 +217,9 @@ public class IsochroneAgent extends JPSAgent {
     }
 
     /**
-     * Check if the JSONObject in the processRequestParameters inputs are correct or missing.
+     * Check if the JSONObject in the processRequestParameters inputs are correct or
+     * missing.
+     * 
      * @param requestParams
      * @return
      * @throws BadRequestException
