@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.sensor.source.activity.ActivityRecognitionReceiver;
 import uk.ac.cam.cares.jps.sensor.source.worker.BufferFlushWorker;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.worker.SensorUploadWorker;
@@ -178,6 +179,8 @@ public class SensorService extends Service {
 
         // Get the list of selected sensors
         List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
+        // add activity to selected sensors
+        selectedSensors.add(SensorType.ACTIVITY);
 
         if (selectedSensors == null || selectedSensors.isEmpty()) {
             LOGGER.warn("No sensors selected or sensor list is empty.");
@@ -190,11 +193,23 @@ public class SensorService extends Service {
 
         // registering the activity recognition client
         activityRecognitionClient = ActivityRecognition.getClient(this);
-        activityRecognitionPendingIntent = PendingIntent.getService(
-                this, sensorSettingsMap.get("activity_request_code"), new Intent(this, ActivityRecognitionService.class),
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        activityRecognitionPendingIntent = PendingIntent.getBroadcast(
+                this,
+                sensorSettingsMap.get("activity_request_code"),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
 
-        activityRecognitionClient.requestActivityUpdates(sensorSettingsMap.get("activity_recognition_update_interval"), activityRecognitionPendingIntent);
+
+        // Request activity updates
+        activityRecognitionClient.requestActivityUpdates(
+                sensorSettingsMap.get("activity_recognition_update_interval"),
+                activityRecognitionPendingIntent
+        ).addOnSuccessListener(aVoid -> {
+            LOGGER.info("Successfully requested activity updates");
+        }).addOnFailureListener(e -> {
+            LOGGER.error("Failed to request activity updates", e);
+        });
 
 
         // Convert the list of sensors to a JSONArray string
@@ -265,8 +280,7 @@ public class SensorService extends Service {
 
         if (isLocationSensorToggled && type != 0) {
             // make sure that the permissions are actually enabled before recording so app doesn't crash
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 ServiceCompat.startForeground(this, FOREGROUND_ID, notification, type);
             } else {
                 LOGGER.warn("Location permission not granted. Unable to start service with location type.");
@@ -377,7 +391,7 @@ public class SensorService extends Service {
                 LOGGER.warn("SensorCollectionState is already null. No need to clear.");
             }
 
-            sensorLocalSource.shutdownExecutor();
+            // sensorLocalSource.shutdownExecutor();
 
             LOGGER.info("Sensor service is stopped. Sensors stop recording.");
         } catch (NullPointerException exception) {
