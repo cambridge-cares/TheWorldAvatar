@@ -7,11 +7,15 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -44,8 +48,12 @@ public class IsochroneAgent extends JPSAgent {
     private String kgEndpoint;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
+
     public double segmentization_length;
     public ArrayList<String> populationTableList;
+    private List<Integer> floodDepthList = Arrays.asList(10, 30, 90);
+    private String workspaceName = "twa";
+    private String schema = "public";
 
     /**
      * Initialise agent
@@ -77,12 +85,21 @@ public class IsochroneAgent extends JPSAgent {
             this.dbName = prop.getProperty("db.name");
             this.segmentization_length = Double.parseDouble(prop.getProperty("segmentization_length"));
             this.kgEndpoint = prop.getProperty("kgEndpoint");
-
             this.populationTables = prop.getProperty("populationTables");
             // Split the string using the comma as the delimiter
             String[] tableNames = populationTables.split("\\s*,\\s*");
-            this.populationTableList = new ArrayList<String>(Arrays.asList(tableNames));
-
+            this.populationTableList = new ArrayList<>(Arrays.asList(tableNames));
+            if (prop.getProperty("flood_depth_cm") != null) {
+                String floodDepthString = prop.getProperty("flood_depth_cm");
+                this.floodDepthList = Arrays.stream(floodDepthString.split(",")).map(Integer::parseInt)
+                .collect(Collectors.toList());
+            }
+            if (prop.getProperty("workspaceName") != null) {
+                this.workspaceName = prop.getProperty("workspaceName");
+            }
+            if (prop.getProperty("schema") != null) {
+                this.schema = prop.getProperty("schema");
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -116,6 +133,9 @@ public class IsochroneAgent extends JPSAgent {
         this.isochroneFunction = requestParams.getString(FUNCTION_KEY);
         this.timeThreshold = requestParams.getInt(TIMETHRESHOLD_KEY);
         this.timeInterval = requestParams.getInt(TIMEINTERVAL_KEY);
+
+        Path FUNCTION_PATH = Path.of("/inputs/" + isochroneFunction);
+
         LOGGER.info("Successfully set timeThreshold to " + timeThreshold);
         LOGGER.info("Successfully set timeInterval to " + timeInterval);
         LOGGER.info("Successfully set isochroneFunction to " + isochroneFunction);
@@ -124,8 +144,8 @@ public class IsochroneAgent extends JPSAgent {
         response.put("message", "Successfully set isochroneFunction to " + isochroneFunction + ", timeInterval"
                 + timeInterval + ", timeThreshold" + timeThreshold);
 
-        Path POI_PATH = Path.of("/inputs/" + isochroneFunction + "/POIqueries");
-        Path EDGESTABLESQL_PATH = Path.of("/inputs/" + isochroneFunction + "/edgesSQLTable");
+        Path POI_PATH = FUNCTION_PATH.resolve("POIqueries");
+        Path EDGESTABLESQL_PATH = FUNCTION_PATH.resolve("edgesSQLTable");
 
         try {
             init();
@@ -141,13 +161,11 @@ public class IsochroneAgent extends JPSAgent {
             RouteSegmentization routeSegmentization = new RouteSegmentization();
             if (!routeSegmentization.doesTableExist(remoteRDBStoreClient)) {
                 // If segment table doesnt exist, segment table
-
                 routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
                 if (isochroneFunction.equals("UR")) {
-                    // TODO: list of flood depth as config parameters
-                    routeSegmentization.createFloodCost(remoteRDBStoreClient, 10);
-                    routeSegmentization.createFloodCost(remoteRDBStoreClient, 30);
-                    routeSegmentization.createFloodCost(remoteRDBStoreClient, 90);
+                    for (Integer floodDepth : floodDepthList) {
+                        routeSegmentization.createFloodCost(remoteRDBStoreClient, floodDepth);
+                    }
                 }
             }
 
@@ -168,8 +186,6 @@ public class IsochroneAgent extends JPSAgent {
 
             // Create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            String workspaceName = "twa";
-            String schema = "public";
             geoServerClient.createWorkspace(workspaceName);
 
             UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
