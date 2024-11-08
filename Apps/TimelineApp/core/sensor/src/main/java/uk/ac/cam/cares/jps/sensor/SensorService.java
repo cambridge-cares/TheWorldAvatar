@@ -192,11 +192,12 @@ public class SensorService extends Service {
 
 
         // registering the activity recognition client
+        Intent activityIntent = new Intent(this, ActivityRecognitionReceiver.class);
         activityRecognitionClient = ActivityRecognition.getClient(this);
         activityRecognitionPendingIntent = PendingIntent.getBroadcast(
                 this,
                 sensorSettingsMap.get("activity_request_code"),
-                intent,
+                activityIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
         );
 

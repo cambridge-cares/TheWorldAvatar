@@ -10,6 +10,8 @@ import com.google.android.gms.location.DetectedActivity;
 import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import dagger.hilt.android.EntryPointAccessors;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
@@ -21,6 +23,7 @@ public class ActivityRecognitionReceiver extends BroadcastReceiver {
 
     SensorLocalSource sensorLocalSource;
     private final Logger LOGGER = Logger.getLogger(ActivityRecognitionReceiver.class);
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -72,7 +75,9 @@ public class ActivityRecognitionReceiver extends BroadcastReceiver {
         if (confidence > 75) {
             String activity = mapActivityType(activityType);
             notifyActivityChange(context, activity);
-            sensorLocalSource.saveActivityData(activity, confidence, timestamp);
+            executorService.execute(() -> {
+                sensorLocalSource.saveActivityData(activity, confidence, timestamp);
+            });
         } else {
             LOGGER.info("Activity confidence too low to record.");
         }
