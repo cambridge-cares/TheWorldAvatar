@@ -33,6 +33,8 @@ The namespace for the ontology is:
 | fibo-fnd-agr-ctr  | `https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/`                            |
 | fibo-fnd-arr-lif  | `https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/`                         |
 | fibo-fnd-arr-rep  | `https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/`                          |
+| fibo-fnd-dt-fd    | `https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/`                       |
+| fibo-fnd-dt-bd    | `https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/BusinessDates/`                       |
 | fibo-fnd-dt-oc    | `https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/`                       |
 | fibo-fnd-pas-pas  | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/`         |
 | fibo-fnd-pas-psch | `https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/`        |
@@ -209,7 +211,7 @@ Figure 5: TBox representation of the service agreement's lifecycle stage
     "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
 ```
 
-## 2.2.1 Creation and Expiration Stage
+### 2.2.1 Creation and Expiration Stage
 
 In the creation stage, the service agreement will need to be created before it is approved, as represented by the `ContractCreation` and `ContractApproval` events. During the expiration stage, the service agreement can end in four situations:
 
@@ -247,7 +249,7 @@ Figure 6: TBox representation of the service agreement's creation and expiration
     }
 ```
 
-## 2.2.2 Service Execution Stage
+### 2.2.2 Service Execution Stage
 
 During the service execution stage, services can result in three kinds of outcomes. These outcomes should be represented by a corresponding instance of a `ContractLifecycleEvent` with the following labels (`rdfs:label`) and descriptions (`rdfs:comment`). In representing the upcoming events, a regular schedule is also associated with the service delivery event, which denotes the scheduled days, time slots, and total occurrences. Time slots are associated with the `hasTimePeriod` relationship.
 
@@ -271,31 +273,6 @@ Figure 7: TBox representation of the service agreement's service execution lifec
     "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
     "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
     "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
-    "fibo-fnd-dt-fd:RegularSchedule" {
-        fibo-fnd-dt-fd-hasCount integer
-    }
-
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:Date" : "cmns-dt:hasStartDate"
-    "cmns-dt:Date" {
-        cmns-dt-hasDateValue xsd-date
-    }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
-    "cmns-dt:TimeOfDay" {
-        cmns-dt_hasTimeValue xsd_time_string
-    }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
-    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
-    "fibo-fnd-dt-bd:DayOfWeek" {
-        NamedIndividual fibo-fnd-dt-fd-Monday
-        NamedIndividual fibo-fnd-dt-fd-Friday
-        NamedIndividual fibo-fnd-dt-fd-Sunday
-    }
-    "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-fd:RecurrenceInterval" : "rdfs:subClassOf"
-    "fibo-fnd-dt-bd:DayOfMonth" {
-        fibo-fnd-dt-fd-hasOrdinalNumber integer
-    }
 
     "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "fibo-fnd-plc-loc:PhysicalLocation" : "fibo-fnd-plc-loc:isLocatedAt"
@@ -305,6 +282,62 @@ Figure 7: TBox representation of the service agreement's service execution lifec
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
         fibo-fnd-dt-oc-hasEventDate xsd-dateTime
         rdfs-comment remark-string
+    }
+```
+
+#### Regular Schedule
+
+Regular schedules can be represented as per Figure 8. The start date of the schedule must follow the `StartDate` instance linked to the service execution lifecycle stage. The representation of the requested service time employs the `cmns-dt:ExplicitTimePeriod` concept via the `cmns-dt:hasTimePeriod` relationship. In representing the recurrence interval ie weekly on every monday and tuesday, users can employ the `fibo-fnd-dt-fd:hasRecurrenceInterval` relationship along with an [`fibo-fnd-dt-fd:ExplicitRecurrenceInterval`](https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/ExplicitRecurrenceInterval) concept. This will have a corresponding ISO 8601 duration string literal linked by the `hasDurationValue` relationship. For example, daily = `P1D`, weekly = `P7D`, and alternate day = `P2D`. In the case where services must be delivered for multiple days within a week, additional `fibo-fnd-dt-bd:BusinessRecurrenceInterval` recurrence intervals can be instantiated to represent the day of week or day of month required.
+
+Figure 8: TBox representation of a regular schedule
+
+```mermaid
+    erDiagram
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "ontoservice:ServiceExecutionStage" : "fibo-fnd-rel-rel:exemplifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
+    "cmns-dt:DatePeriod" ||--o{ "inst:EndDate" : "cmns-dt:hasEndDate"
+    "cmns-dt:DatePeriod" ||--o{ "inst:StartDate" : "cmns-dt:hasStartDate"
+    "inst:EndDate" ||--o{ "cmns-dt:Date" : "rdfs:subClassOf"
+    "inst:StartDate" ||--o{ "cmns-dt:Date" : "rdfs:subClassOf"
+
+    "cmns-dt:Date" {
+        cmns-dt-hasDateValue xsd-date
+    }
+
+    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-col:comprises"
+    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
+
+    "fibo-fnd-dt-fd:RegularSchedule" {
+        fibo-fnd-dt-fd-hasCount integer
+    }
+
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "inst:StartDate" : "cmns-dt:hasStartDate"
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
+    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
+    "cmns-dt:TimeOfDay" {
+        cmns-dt_hasTimeValue xsd_time_string
+    }
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:ExplicitRecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
+    "fibo-fnd-dt-fd:ExplicitRecurrenceInterval"{
+        cmns-dt_hasDurationValue ISO8601_duration
+    }
+
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-bd:BusinessRecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
+
+    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-bd:BusinessRecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfWeek" {
+        NamedIndividual fibo-fnd-dt-fd-Monday
+        NamedIndividual fibo-fnd-dt-fd-Tuesday
+        NamedIndividual fibo-fnd-dt-fd-Wednesday
+        NamedIndividual fibo-fnd-dt-fd-Thursday
+        NamedIndividual fibo-fnd-dt-fd-Friday
+        NamedIndividual fibo-fnd-dt-fd-Saturday
+        NamedIndividual fibo-fnd-dt-fd-Sunday
+    }
+    "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-bd:BusinessRecurrenceInterval" : "rdfs:subClassOf"
+    "fibo-fnd-dt-bd:DayOfMonth" {
+        fibo-fnd-dt-fd-hasOrdinalNumber integer
     }
 ```
 
@@ -318,7 +351,7 @@ Gross Price = Base Charge + Variable Charge + Excess Variable Charge \\
 Variable Charge = (Service Metric - Service Metric Cap) \\
 ```
 
-Figure 8: ABox representation of the provenance structure for the total service charge
+Figure 9: ABox representation of the provenance structure for the total service charge
 
 ```mermaid
     erDiagram
