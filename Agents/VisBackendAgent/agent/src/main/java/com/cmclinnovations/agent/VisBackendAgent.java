@@ -45,7 +45,7 @@ public class VisBackendAgent {
         HttpStatus.OK);
   }
 
-  @GetMapping("/geocode/api")
+  @GetMapping("/location/geocode")
   public ResponseEntity<?> getGeoCoordinates(
       @RequestParam(required = false) String block,
       @RequestParam(required = false) String street,
@@ -62,7 +62,7 @@ public class VisBackendAgent {
     return this.geocodingService.getCoordinates(block, street, city, country, postal_code);
   }
 
-  @GetMapping("/geocode/api/search")
+  @GetMapping("/location/addresses")
   public ResponseEntity<?> getAddress(@RequestParam(required = true) String postal_code) {
     LOGGER.info("Received request to search for address...");
     return this.geocodingService.getAddress(postal_code);

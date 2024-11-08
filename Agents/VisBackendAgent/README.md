@@ -10,7 +10,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [1.2 Docker Deployment](#12-docker-deployment)
   - [2. Agent Route](#2-agent-route)
     - [2.1 Status Route](#21-status-route-baseurlvis-backend-agentstatus)
-    - [2.2 Geocoding Route](#22-geocoding-route-baseurlvis-backend-agentgeocodeapi)
+    - [2.2 Geocoding Route](#22-geocoding-route-baseurlvis-backend-agentlocation)
       - [2.2.1 Geocoding route](#221-geocoding-route)
       - [2.2.2 Address search route](#222-address-search-route)
     - [2.3 Form Route](#23-form-route-baseurlvis-backend-agentformtype)
@@ -129,13 +129,13 @@ curl localhost:3838/vis-backend-agent/status
 
 If successful, the response will return `Agent is ready to receive requests.`.
 
-### 2.2 Geocoding Route: `<baseURL>/vis-backend-agent/geocode/api`
+### 2.2 Geocoding Route: `<baseURL>/vis-backend-agent/location`
 
-This route serves as a geocoding endpoint to interface with address and coordinates.
+This route serves as a geocoding endpoint to interface with addresses and coordinates.
 
 #### 2.2.1 Geocoding route
 
-To retrieve the geographic coordinates, users can send a `GET` request to `<baseURL>/vis-backend-agent/geocode/api` with at least one of the following parameters:
+To retrieve the geographic coordinates, users can send a `GET` request to `<baseURL>/vis-backend-agent/location/geocode` with at least one of the following parameters:
 
 1. `postal_code`: Postal code of the address
 2. `block`: The street block of the address; Must be sent along with the street name
@@ -147,7 +147,7 @@ If successful, the response will return the coordinates in the `[longitude, lati
 
 #### 2.2.2 Address search route
 
-To search for the address based on postal code, users can send a `GET` request to `<baseURL>/vis-backend-agent/geocode/api/search` with the following parameter:
+To search for the address based on postal code, users can send a `GET` request to `<baseURL>/vis-backend-agent/location/addresses` with the following parameter:
 
 1. `postal_code`: Postal code of the address
 
