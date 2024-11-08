@@ -103,12 +103,13 @@ public class RouteSegmentization {
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
 
             String initialiseTable = "CREATE TABLE IF NOT EXISTS " + poiTableName + " ("
-                    + "poi_iri VARCHAR, poi_type VARCHAR, nearest_node BIGINT, geom geometry)";
+                    + "poi_iri VARCHAR UNIQUE, poi_type VARCHAR, nearest_node BIGINT, geom geometry)";
 
             executeSql(connection, initialiseTable);
             System.out.println("Initialized " + poiTableName + " table.");
 
-            String sql = "INSERT INTO " + poiTableName + " (poi_iri, poi_type, nearest_node, geom) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO " + poiTableName + " (poi_iri, poi_type, nearest_node, geom) VALUES (?, ?, ?, ?)" +
+            "ON CONFLICT (poi_iri) DO UPDATE SET poi_type = EXCLUDED.poi_type, nearest_node = EXCLUDED.nearest_node , geom = EXCLUDED.geom";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             for (int i = 0; i < jsonArray.length(); i++) {
