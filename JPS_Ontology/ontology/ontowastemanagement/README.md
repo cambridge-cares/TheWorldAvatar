@@ -89,8 +89,9 @@ Figure 1: TBox representation for a Service Agreement in the waste management se
 
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
 
-    "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
-    "lcc-cr:Location" ||--|{ "geo:Geometry" : "rdfs:subClassOf"
+    "bot:Building" ||--|| "fibo-fnd-plc-loc:PhysicalLocation" : "ontoservice:hasServiceLocation"
+    "fibo-fnd-plc-loc:PhysicalLocation" ||--|{ "geo:Feature" : "rdfs:subClassOf"
+    "geo:Feature" ||--|{ "geo:Geometry" : "geo:hasGeometry"
     "geo:Geometry" {
         geo-asWKT wktLiteral
     }
@@ -191,9 +192,9 @@ Figure 3: TBox representation of waste services
     "ontowm:WasteDisposalFacility" {
         rdfs-subClassOf ontobim_Facility
     }
-    "ontowm:WasteDisposalFacility" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "lcc-cr:Location" {
-        rdfs-subClassOf geo-Geometry
+    "ontowm:WasteDisposalFacility" ||--|{ "fibo-fnd-plc-loc:PhysicalLocation" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fnd-plc-loc:PhysicalLocation" {
+        rdfs-subClassOf geo-Feature
     }
 ```
 
@@ -244,7 +245,7 @@ Figure 5: TBox representation of a service delivery event occurrence for waste s
 
     "ontoservice:ServiceDeliveryEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
 
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "fibo-fnd-plc-loc:PhysicalLocation" : "fibo-fnd-plc-loc:isLocatedAt"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ " cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
         rdfs-comment remark-string
@@ -306,8 +307,8 @@ Figure 6: TBox representation of an occurrence of the calculation of the amount 
         rdfs-comment remark-string
     }
 
-    "fibo-fnd-dt-oc:Calculation" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
-    "ontowm:WasteDisposalFacility" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fnd-dt-oc:Calculation" ||--|{ "fibo-fnd-plc-loc:PhysicalLocation" : "fibo-fnd-plc-loc:isLocatedAt"
+    "ontowm:WasteDisposalFacility" ||--|{ "fibo-fnd-plc-loc:PhysicalLocation" : "fibo-fnd-plc-loc:isLocatedAt"
 
     "fibo-fnd-dt-oc:Calculation" ||--|{ "ontowm:NetWasteWeight" : "cmns-qtu:hasQuantityValue"
     "ontowm:NetWasteWeight" ||--|{ "owm:tonne" : "cmns-qtu:hasMeasurementUnit"

@@ -73,7 +73,13 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
 
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
 
-    "bot:Building" ||--|| "lcc-cr:Location" : "ontoservice:hasServiceLocation"
+    "bot:Building" ||--|| "fibo-fnd-plc-loc:PhysicalLocation" : "ontoservice:hasServiceLocation"
+    "fibo-fnd-plc-loc:PhysicalLocation" ||--|{ "geo:Feature" : "rdfs:subClassOf"
+    "geo:Feature" ||--|{ "geo:Geometry" : "geo:hasGeometry"
+    "geo:Geometry" {
+        geo-asWKT wktLiteral
+    }
+
     "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
     "bot:Building" ||--o{ "fibo-fnd-plc-adr:ConventionalStreetAddress" : "fibo-fnd-plc-adr:hasAddress"
     "fibo-fnd-plc-adr:ConventionalStreetAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
@@ -292,7 +298,7 @@ Figure 7: TBox representation of the service agreement's service execution lifec
     }
 
     "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "lcc-cr:Location" : "fibo-fnd-plc-loc:isLocatedAt"
+    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "fibo-fnd-plc-loc:PhysicalLocation" : "fibo-fnd-plc-loc:isLocatedAt"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "vc:Vehicle" : "ontoservice:hasAssignedTransport"
     "vc:Vehicle" ||--|| "ontoprofile:Driver" : "ontoservice:hasAssignedDriver"
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
