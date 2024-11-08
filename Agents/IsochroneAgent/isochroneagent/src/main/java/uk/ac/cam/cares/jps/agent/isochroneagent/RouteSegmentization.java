@@ -14,6 +14,12 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class RouteSegmentization {
 
+    String poiTableName; // default value
+
+    public RouteSegmentization(String poiTableName) {
+        this.poiTableName = poiTableName;
+    }
+
     /**
      * Drop table of routing_ways_segment if it exists.
      * Duplicate and store the segmentized roads in routing_ways_segment.
@@ -70,7 +76,8 @@ public class RouteSegmentization {
                     +
                     "WHERE a.source=b.id AND b.cnt=1 AND a.target=c.id AND c.cnt=1;\n" +
                     "DELETE FROM routing_ways_segment WHERE gid IN ( SELECT ways_id FROM isolated);\n" +
-                    "DELETE FROM routing_ways_segment_vertices_pgr\n WHERE id IN ( SELECT source_vertice FROM isolated);\n" +
+                    "DELETE FROM routing_ways_segment_vertices_pgr\n WHERE id IN ( SELECT source_vertice FROM isolated);\n"
+                    +
                     "DELETE FROM routing_ways_segment_vertices_pgr\n WHERE id IN ( SELECT target_vertice FROM isolated);");
             System.out.println("Segmentization completed. Routing_ways_segment table created. (4/4)");
         } catch (Exception e) {
@@ -90,13 +97,13 @@ public class RouteSegmentization {
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
 
-            String initialiseTable = "CREATE TABLE IF NOT EXISTS poi_nearest_node ("
+            String initialiseTable = "CREATE TABLE IF NOT EXISTS " + poiTableName + " ("
                     + "poi_iri VARCHAR, poi_type VARCHAR, nearest_node BIGINT, geom geometry)";
 
             executeSql(connection, initialiseTable);
-            System.out.println("Initialized poi_nearest_node table.");
+            System.out.println("Initialized " + poiTableName + " table.");
 
-            String sql = "INSERT INTO poi_nearest_node (poi_iri, poi_type, nearest_node, geom) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO " + poiTableName + " (poi_iri, poi_type, nearest_node, geom) VALUES (?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -108,17 +115,17 @@ public class RouteSegmentization {
                 poiType = poiType.replace("https://www.theworldavatar.com/kg/ontobuiltenv/", "");
 
                 String geometry = poi.getString("geometry");
-                String nearest_node = findNearestNode(connection, geometry);
+                String nearestNode = findNearestNode(connection, geometry);
 
                 preparedStatement.setString(1, poiIri);
                 preparedStatement.setString(2, poiType);
-                preparedStatement.setInt(3, Integer.parseInt(nearest_node));
+                preparedStatement.setInt(3, Integer.parseInt(nearestNode));
                 preparedStatement.setObject(4, new PGgeometry(geometry));
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
 
-            System.out.println("Table poi_nearest_node created.");
+            System.out.println("Table " + poiTableName + " created.");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
@@ -137,11 +144,11 @@ public class RouteSegmentization {
 
         String geomConvert = "ST_GeometryFromText('" + geom + "', 4326)";
 
-        String findNearestNode_sql = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
+        String findNearestNodeSQL = "SELECT id, ST_Distance(the_geom, " + geomConvert + ") AS distance\n" +
                 "FROM routing_ways_segment_vertices_pgr ORDER BY the_geom <-> " + geomConvert + " LIMIT 1;\n";
 
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(findNearestNode_sql)) {
+            try (ResultSet resultSet = statement.executeQuery(findNearestNodeSQL)) {
                 if (resultSet.next()) {
                     // Assuming 'id' and 'distance' are columns in your query result
                     int id = resultSet.getInt("id");
@@ -191,10 +198,12 @@ public class RouteSegmentization {
                     " MATERIALIZED VIEW IF NOT EXISTS flood_cost_" + floodDepth_cm + "cm_segment AS\n" +
                     "SELECT rw.gid AS id, rw.tag_id as tag_id, rw.source, rw.target,\n" +
                     "CASE WHEN (EXISTS (SELECT 1 FROM flood_polygon_single_" + floodDepth_cm + "cm WHERE\n" +
-                    "st_intersects(rw.the_geom, flood_polygon_single_" + floodDepth_cm + "cm.geom))) THEN (- abs(rw.cost_s))\n" +
+                    "st_intersects(rw.the_geom, flood_polygon_single_" + floodDepth_cm
+                    + "cm.geom))) THEN (- abs(rw.cost_s))\n" +
                     "ELSE rw.cost_s END AS cost_s,\n" +
                     "CASE WHEN (EXISTS (SELECT 1 FROM flood_polygon_single_" + floodDepth_cm + "cm WHERE\n" +
-                    "st_intersects(rw.the_geom, flood_polygon_single_" + floodDepth_cm + "cm.geom))) THEN (- abs(rw.reverse_cost_s))\n" +
+                    "st_intersects(rw.the_geom, flood_polygon_single_" + floodDepth_cm
+                    + "cm.geom))) THEN (- abs(rw.reverse_cost_s))\n" +
                     "ELSE rw.reverse_cost_s END AS reverse_cost_s\n" +
                     "FROM routing_ways_segment rw;";
 

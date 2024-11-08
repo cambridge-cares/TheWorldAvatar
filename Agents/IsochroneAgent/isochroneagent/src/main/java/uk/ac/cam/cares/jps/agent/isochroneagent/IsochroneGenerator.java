@@ -11,6 +11,13 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class IsochroneGenerator {
+
+    String poiTableName; // default value
+
+    public IsochroneGenerator(String poiTableName) {
+        this.poiTableName = poiTableName;
+    }
+
     /**
      * Generates isochrone based on time threshold, time interval, transportmode and
      * road conditions.
@@ -40,7 +47,6 @@ public class IsochroneGenerator {
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
                     // Get transport mode and replace the .sql with empty spaces
                     String strippedFileExtension = entry.getKey().replaceAll("\\.sql$", "");
-                    ;
 
                     String[] parts = strippedFileExtension.split("_");
                     if (parts.length == 2) {
@@ -125,7 +131,7 @@ public class IsochroneGenerator {
                 "id bigint, minute integer, transportmode VARCHAR, transportmode_iri VARCHAR,\n" +
                 "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, geom geometry\n" +
                 ");\n" +
-                "FOR node IN (SELECT DISTINCT nearest_node FROM poi_nearest_node WHERE poi_type = '" + poiType
+                "FOR node IN (SELECT DISTINCT nearest_node FROM " + poiTableName + " WHERE poi_type = '" + poiType
                 + "') LOOP\n" +
                 "TRUNCATE TABLE  eventspace_etas;\n" +
                 "TRUNCATE TABLE  eventspace_isochrones;\n" +
@@ -202,7 +208,7 @@ public class IsochroneGenerator {
      * @throws SQLException
      */
     public List<String> getPoiTypes(RemoteRDBStoreClient remoteRDBStoreClient) throws SQLException {
-        String getNearestNode_sql = "SELECT DISTINCT pnn.poi_type FROM poi_nearest_node AS pnn " +
+        String getNearestNode_sql = "SELECT DISTINCT pnn.poi_type FROM " + poiTableName + " AS pnn " +
                 "LEFT JOIN isochrone_aggregated AS ia ON pnn.poi_type = ia.poi_type WHERE ia.poi_type IS NULL";
 
         List<String> poiTypes = new ArrayList<>();
@@ -267,7 +273,7 @@ public class IsochroneGenerator {
                 "CREATE TABLE isochrone_building_ref AS\n" +
                 "SELECT DISTINCT ia.iri, pno.poi_iri, pno.poi_type\n" +
                 "FROM isochrone_aggregated AS ia\n" +
-                "LEFT JOIN poi_nearest_node AS pno ON ia.poi_type = pno.poi_type\n" +
+                "LEFT JOIN " + poiTableName + " AS pno ON ia.poi_type = pno.poi_type\n" +
                 "ORDER BY ia.iri;";
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, createIsochroneBuildingTable_sqlString);

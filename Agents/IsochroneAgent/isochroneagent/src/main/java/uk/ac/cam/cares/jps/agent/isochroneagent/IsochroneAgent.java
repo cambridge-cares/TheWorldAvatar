@@ -52,6 +52,7 @@ public class IsochroneAgent extends JPSAgent {
     public double segmentization_length;
     public ArrayList<String> populationTableList;
     private List<Integer> floodDepthList = Arrays.asList(10, 30, 90);
+    private String poiTableName = "poi_nearest_node";
     private String workspaceName = "twa";
     private String schema = "public";
 
@@ -93,6 +94,9 @@ public class IsochroneAgent extends JPSAgent {
                 String floodDepthString = prop.getProperty("flood_depth_cm");
                 this.floodDepthList = Arrays.stream(floodDepthString.split(",")).map(Integer::parseInt)
                 .collect(Collectors.toList());
+            }
+            if (prop.getProperty("poiTableName") != null) {
+                this.poiTableName = prop.getProperty("poiTableName");
             }
             if (prop.getProperty("workspaceName") != null) {
                 this.workspaceName = prop.getProperty("workspaceName");
@@ -158,7 +162,7 @@ public class IsochroneAgent extends JPSAgent {
             JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
             // Split road into multiple smaller segment and find the nearest_node
-            RouteSegmentization routeSegmentization = new RouteSegmentization();
+            RouteSegmentization routeSegmentization = new RouteSegmentization(poiTableName);
             if (!routeSegmentization.doesTableExist(remoteRDBStoreClient)) {
                 // If segment table doesnt exist, segment table
                 routeSegmentization.segmentize(remoteRDBStoreClient, segmentization_length);
@@ -174,7 +178,7 @@ public class IsochroneAgent extends JPSAgent {
 
             // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient,
             // timeThreshold, timeInterval, EdgesTableSQLMap)
-            IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
+            IsochroneGenerator isochroneGenerator = new IsochroneGenerator(poiTableName);
             isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
             isochroneGenerator.createIsochroneBuilding(remoteRDBStoreClient);
 
