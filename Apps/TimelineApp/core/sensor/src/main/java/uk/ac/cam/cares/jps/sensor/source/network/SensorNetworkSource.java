@@ -63,8 +63,6 @@ public class SensorNetworkSource {
         String compressedDataString = Base64.encodeToString(compressedData, Base64.NO_WRAP);
         LOGGER.info("Size of compressed data string: " + compressedDataString.getBytes("UTF-8").length + " bytes");
 
-        checkForDuplicateTimestamps(sensorData);
-
         // Create a JSON object to include both metadata and the compressed data
         JSONObject postData = new JSONObject();
         try {
@@ -117,24 +115,7 @@ public class SensorNetworkSource {
         requestQueue.add(postRequest);
     }
 
-    private void checkForDuplicateTimestamps(JSONArray sensorData) {
-        for (int i = 0; i < sensorData.length(); i++) {
-            try {
-                JSONObject dataObject = sensorData.getJSONObject(i);
-                String name = dataObject.optString("name", "");
-                if ("location".equals(name)) {
-                    long time = dataObject.optLong("time", -1);
-                    if (time != -1) {
-                        if (!locationTimestamps.add(time)) {
-                            LOGGER.warn("Duplicate timestamp detected in location data: " + time);
-                        }
-                    }
-                }
-            } catch (JSONException e) {
-                LOGGER.error("Error parsing sensor data at index " + i, e);
-            }
-        }
-    }
+
 
 
     private int generateMessageId() {

@@ -12,4 +12,5 @@ dependencies {
 
     implementation project(path: ':core:utils')
     implementation project(path: ':core:model')
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
 }

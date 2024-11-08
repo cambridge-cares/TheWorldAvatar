@@ -48,8 +48,9 @@ public class SensorUploadWorker extends Worker {
         try {
             JSONArray jsonArray = new JSONArray(selectedSensorsJson);
             for (int i = 0; i < jsonArray.length(); i++) {
-                String sensorName = jsonArray.getString(i);
+                String sensorName = jsonArray.getString(i).toUpperCase();
                 selectedSensors.add(SensorType.valueOf(sensorName));
+                LOGGER.info(SensorType.valueOf(sensorName));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -77,7 +78,6 @@ public class SensorUploadWorker extends Worker {
 
         while (hasMoreData) {
             JSONArray allSensorData = sensorLocalSource.retrieveUnUploadedSensorData(selectedSensors, PAGE_SIZE, offset);
-            Log.i("DataUploadWorker", "Retrieved " + allSensorData.length() + " items from local storage.");
 
             if (allSensorData.length() < PAGE_SIZE) {
                 hasMoreData = false;
