@@ -541,8 +541,10 @@ StreetBlockInstance a fibo-fnd-plc-adr:PrimaryAddressNumber ;
 StreetNameInstance a fibo-fnd-plc-adr:StreetName ;
     fibo-fnd-rel-rel:hasTag {road_name} .
 LocationInstance a fibo-fnd-plc-loc:PhysicalLocation ;
-    a geo:Point;
-    geo:asWKT "{geom}"^^geo:wktLiteral .
+    geo:hasGeometry [
+      a geo:Point;
+      geo:asWKT "{geom}"^^geo:wktLiteral .
+    ]
 ```
 
 The `SHACL` property shape for location must target the `https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location` concept, and include a `PropertyShape` of the geopoint as well as the address. Note that the address may take any shape, but it is recommended to follow the following definitions in `TTL` format:
