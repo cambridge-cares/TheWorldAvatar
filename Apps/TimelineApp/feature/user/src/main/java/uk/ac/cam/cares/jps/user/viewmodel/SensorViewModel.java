@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.user.viewmodel;
 
 import android.content.Context;
-import android.util.Log;
+import android.content.SharedPreferences;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,8 +12,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -43,6 +45,7 @@ public class SensorViewModel extends ViewModel {
     public final LiveData<Boolean> isRecording = _isRecording;
     private final MutableLiveData<Boolean> _hasAccountError = new MutableLiveData<>();
     private final LiveData<Boolean> hasAccountError = _hasAccountError;
+    private final SharedPreferences sharedPreferences;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
@@ -54,7 +57,8 @@ public class SensorViewModel extends ViewModel {
     SensorViewModel(
             SensorRepository repository,
             SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository,
-            UserPhoneRepository userPhoneRepository
+            UserPhoneRepository userPhoneRepository,
+            SharedPreferences sharedPreferences
 
     ) {
         BasicConfigurator.configure();
@@ -63,6 +67,7 @@ public class SensorViewModel extends ViewModel {
         this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
         this.userPhoneRepository = userPhoneRepository;
         this.sensorItems = new ArrayList<>();
+        this.sharedPreferences = sharedPreferences;
 
         sensorCollectionStateManagerRepository.getRecordingStatus(new RepositoryCallback<>() {
             @Override
@@ -76,6 +81,7 @@ public class SensorViewModel extends ViewModel {
             }
         });
         loadSensorItems();
+        loadSelectedSensors();
     }
 
     public void loadSensorItems() {
@@ -107,6 +113,17 @@ public class SensorViewModel extends ViewModel {
             currentSelectedSensors.add(sensorItem);  // Add sensor if toggled on
         }
         selectedSensors.setValue(currentSelectedSensors);
+        saveSelectedSensors(currentSelectedSensors);
+    }
+
+    private void saveSelectedSensors(List<SensorType> sensors) {
+        Set<String> sensorNames = new HashSet<>();
+        for (SensorType sensor : sensors) {
+            sensorNames.add(sensor.name());
+        }
+        sharedPreferences.edit()
+                .putStringSet("selected_sensors", sensorNames)
+                .apply();
     }
 
 
@@ -233,11 +250,36 @@ public class SensorViewModel extends ViewModel {
         }
         selectedSensors.setValue(updatedSensorTypes);
         allToggledOn.setValue(toggle);
+        saveSelectedSensors(updatedSensorTypes);
+
     }
 
     public List<SensorItem> getSensorItems() {
         return sensorItems;
     }
+
+    private void loadSelectedSensors() {
+        Set<String> selectedSensorNames = sharedPreferences.getStringSet("selected_sensors", new HashSet<>());
+        List<SensorType> loadedSelectedSensors = new ArrayList<>();
+
+        for (String sensorName : selectedSensorNames) {
+            try {
+                SensorType sensorType = SensorType.valueOf(sensorName);
+                loadedSelectedSensors.add(sensorType);
+
+                for (SensorItem item : sensorItems) {
+                    if (item.getSensorType() == sensorType) {
+                        item.setToggled(true);
+                        break;
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        selectedSensors.setValue(loadedSelectedSensors);
+        allToggledOn.setValue(loadedSelectedSensors.size() == sensorItems.size());
+    }
+
 
 
 }

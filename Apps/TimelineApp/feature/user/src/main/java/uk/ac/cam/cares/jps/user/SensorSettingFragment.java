@@ -66,7 +66,7 @@ public class SensorSettingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentSensorSettingBinding.inflate(inflater);
-        sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
+        sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
             if (!hasAccountError) {
@@ -88,10 +88,6 @@ public class SensorSettingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //reduce memory
-        disableEmojiCompat(binding.startRecordTv);
-        disableEmojiCompat(binding.toggleAllBtn);
 
         sensorViewModel.checkRecordingStatusAndUpdateUI(requireContext());
 
@@ -304,6 +300,7 @@ public class SensorSettingFragment extends Fragment {
 
 
 
+
     /**
      * Requests audio recording permission if it hasn't been granted. If granted, runs the provided callback.
      *
@@ -339,16 +336,7 @@ public class SensorSettingFragment extends Fragment {
         }
     });
 
-    /**
-     * Disables EmojiCompat for the given TextView by directly setting a CharSequence
-     * without emoji handling.
-     *
-     * @param textView The TextView to disable EmojiCompat on.
-     */
-    private void disableEmojiCompat(TextView textView) {
-        SpannableStringBuilder plainText = new SpannableStringBuilder(textView.getText());
-        textView.setText(plainText, TextView.BufferType.SPANNABLE);
-    }
+
 
 
 }
