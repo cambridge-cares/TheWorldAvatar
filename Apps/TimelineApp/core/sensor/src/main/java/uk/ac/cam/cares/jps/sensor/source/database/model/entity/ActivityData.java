@@ -8,9 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @Entity(tableName = "activity_data")
-public class ActivityData extends SensorData{
-    @PrimaryKey
-    public long time;
+public class ActivityData extends SensorData {
+
     public String activityType;
     @NonNull
     public int confidence;

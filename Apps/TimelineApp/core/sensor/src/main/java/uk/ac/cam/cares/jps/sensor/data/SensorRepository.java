@@ -43,7 +43,7 @@ public class SensorRepository {
      */
     public void startRecording(List<SensorType> selectedSensorTypes, RepositoryCallback<Boolean> callback) {
         LOGGER.info("start recording with selected sensors");
-        sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<>() {
+        sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 serviceIntent.putExtra("deviceId", result);
