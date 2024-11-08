@@ -56,7 +56,7 @@ public class VisBackendAgent {
     if (block != null && street == null) {
       String errorMsg = "Invalid geocoding parameters! Detected a block number but no street is provided!";
       LOGGER.error(errorMsg);
-      return new ResponseEntity<>(errorMsg, HttpStatus.OK);
+      return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
     return this.geocodingService.getCoordinates(block, street, city, country, postal_code);
