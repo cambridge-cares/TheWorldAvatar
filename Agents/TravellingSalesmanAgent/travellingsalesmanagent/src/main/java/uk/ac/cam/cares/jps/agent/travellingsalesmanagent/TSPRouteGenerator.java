@@ -83,10 +83,7 @@ public class TSPRouteGenerator {
                 "$$SELECT * FROM pgr_dijkstraCostMatrix('" + costTable + "',\n" +
                 "(SELECT ARRAY_APPEND(array_agg(id), (%target%))\n" +
                 "FROM " + routeTablePrefix + "ways_vertices_pgr WHERE id IN (\n" +
-                "SELECT DISTINCT nearest_node FROM " + poiTableName + ", " + floodTableName +
-                " WHERE ST_DISTANCE (" + poiTableName + ".geom::geography, " + floodTableName + ".geom::geography) <= "
-                +
-                Double.toString(floodCutOff) + ")\n" +
+                "SELECT DISTINCT nearest_node FROM " + poiTableName + " WHERE is_flooded = 'TRUE')\n" +
                 "), false )$$, (%target%), (%target%) ) ),\n";
     }
 
@@ -107,10 +104,7 @@ public class TSPRouteGenerator {
 
         String tspLayer = generateTSPCTE(costTable) +
                 "tsp_seq AS (    SELECT nearest_node as id, " + poiTableName + ".geom\n" +
-                "    FROM " + poiTableName + ", " + floodTableName + "\n" +
-                "                WHERE ST_DISTANCE(" + poiTableName
-                + ".geom::geography, " + floodTableName + ".geom::geography) <= " + Double.toString(floodCutOff) + ")\n"
-                +
+                "    FROM " + poiTableName + " WHERE is_flooded = 'TRUE')\n" +
                 "SELECT DISTINCT tsp.seq -1 as seq, tsp.node, tsp.cost, tsp.agg_cost, tsp_seq.geom FROM tsp\n" +
                 "FULL JOIN tsp_seq ON tsp.node = tsp_seq.id ORDER BY seq ASC";
 
