@@ -37,7 +37,7 @@ public class IsochroneGenerator {
 
         List<String> poiTypes;
         try {
-            // Initilize poiTypes and get distinct poiType;
+            // Initialize poiTypes and get distinct poiType;
             poiTypes = getPoiTypes(remoteRDBStoreClient);
 
             // Outer loop: Run createIsochrone method for each poiType
@@ -59,7 +59,7 @@ public class IsochroneGenerator {
                                 roadCondition, edgeTable, poiType);
 
                     } else {
-                        System.out.println("The input string is not in the right format.");
+                        System.out.println("The input string must be in the form [TransportMode]_[RoadCondition].");
                     }
                 }
 
@@ -121,16 +121,13 @@ public class IsochroneGenerator {
                 "DROP TABLE IF EXISTS eventspace_isochrones;\n" +
                 "DROP TABLE IF EXISTS isochrone_individual; \n" +
                 "CREATE TABLE eventspace_etas (\n" +
-                "id bigint, agg_cost double precision, the_geom geometry(PointZ, 4326)\n" +
-                ");\n" +
+                "id bigint, agg_cost double precision, the_geom geometry(PointZ, 4326));\n" +
                 "CREATE TABLE eventspace_isochrones (\n" +
                 "id bigint, geom geometry, transportmode VARCHAR, transportmode_iri VARCHAR,\n" +
-                "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, minute integer\n" +
-                ");\n" +
+                "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, minute integer);\n" +
                 "CREATE TABLE isochrone_individual (\n" +
                 "id bigint, minute integer, transportmode VARCHAR, transportmode_iri VARCHAR,\n" +
-                "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, geom geometry\n" +
-                ");\n" +
+                "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, geom geometry\n);\n" +
                 "FOR node IN (SELECT DISTINCT nearest_node FROM " + poiTableName + " WHERE poi_type = '" + poiType
                 + "') LOOP\n" +
                 "TRUNCATE TABLE  eventspace_etas;\n" +
@@ -139,19 +136,17 @@ public class IsochroneGenerator {
                 "SELECT id, dd.agg_cost,\n" +
                 "ST_SetSRID(ST_MakePoint(ST_X(v.the_geom), ST_Y(v.the_geom), dd.agg_cost), 4326) AS the_geom\n" +
                 "FROM pgr_drivingDistance(\n" +
-                "'" + edgeTable + "', node, 10000, false) AS dd\n" +
+                "'" + edgeTable + "', node, 10000, false) AS dd\n" + // 10000 is an arbitrary large number to ensure all
+                                                                     // nodes are extracted
                 "JOIN routing_ways_segment_vertices_pgr AS v ON dd.node = v.id;\n" +
                 "UPDATE eventspace_etas SET the_geom = ST_SetSRID(ST_MakePoint(ST_X(the_geom), ST_Y(the_geom), agg_cost), 4326);\n"
-                +
-                "drop table if exists eventspace_delaunay;\n" +
+                + "drop table if exists eventspace_delaunay;\n" +
                 "create table eventspace_delaunay\n" +
                 "as (select (ST_Dump(ST_DelaunayTriangles(ST_Collect(the_geom)))).geom from eventspace_etas);\n" +
                 "INSERT INTO eventspace_isochrones (geom, minute)\n" +
-                "SELECT\n" +
-                "ST_Union(ST_ConvexHull(ST_LocateBetweenElevations(ST_Boundary(geom), 0, minute * 60))) geom,\n" +
-                "minute FROM eventspace_delaunay, generate_series(0, " + upperTimeLimit + ", " + timeInterval
-                + " ) AS minute\n" +
-                "GROUP BY minute;\n" +
+                "SELECT ST_Union(ST_ConvexHull(ST_LocateBetweenElevations(ST_Boundary(geom), 0, minute * 60))) geom,\n"
+                + "minute FROM eventspace_delaunay, generate_series(0, " + upperTimeLimit + ", " + timeInterval
+                + " ) AS minute GROUP BY minute;\n" +
                 "UPDATE eventspace_isochrones\n" +
                 "SET transportmode = '" + transportMode + "', roadcondition = '" + roadCondition + "', poi_type = '"
                 + poiType + "';\n" +
@@ -247,7 +242,7 @@ public class IsochroneGenerator {
      */
     private void smoothIsochrone(RemoteRDBStoreClient remoteRDBStoreClient) {
 
-        String smoothIsochrone_sql = "update isochrone_aggregated  set geom = ST_CollectionExtract(geom, 3);\n" +
+        String smoothIsochrone_sql = "update isochrone_aggregated set geom = ST_CollectionExtract(geom, 3);\n" +
                 "update isochrone_aggregated set geom = ST_ChaikinSmoothing(geom, 3, false);";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
@@ -268,8 +263,7 @@ public class IsochroneGenerator {
      */
     public void createIsochroneBuilding(RemoteRDBStoreClient remoteRDBStoreClient) {
 
-        String createIsochroneBuildingTable_sqlString = "-- Drop the table if it exists\n" +
-                "DROP TABLE IF EXISTS isochrone_building_ref;\n" +
+        String createIsochroneBuildingTable_sqlString = "DROP TABLE IF EXISTS isochrone_building_ref;\n" +
                 "CREATE TABLE isochrone_building_ref AS\n" +
                 "SELECT DISTINCT ia.iri, pno.poi_iri, pno.poi_type\n" +
                 "FROM isochrone_aggregated AS ia\n" +

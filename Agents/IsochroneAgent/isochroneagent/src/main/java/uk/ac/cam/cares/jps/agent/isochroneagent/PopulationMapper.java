@@ -32,7 +32,6 @@ public class PopulationMapper {
                                                 "WHERE subquery.geom = isochrone_aggregated.geom;";
                         executeSql(connection, mapPopulation_sql);
                         System.out.println(populationTable+ "'s population sum successfully mapped with isochrone.");
-                    
                 } catch (Exception e) {
                     System.out.println(populationTable+ " unable to be mapped.");
                 }
