@@ -2,9 +2,9 @@
 @prefix owm: <https://www.theworldavatar.com/kg/ontowastemanagement/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix cmns-dsg:   <https://www.omg.org/spec/Commons/Designators/>
-@prefix cmns-qtu:   <https://www.omg.org/spec/Commons/QuantitiesAndUnits/>
-@prefix cmns-txt:   <https://www.omg.org/spec/Commons/TextDatatype/>
+@prefix cmns-dsg:   <https://www.omg.org/spec/Commons/Designators/> .
+@prefix cmns-qtu:   <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
+@prefix cmns-txt:   <https://www.omg.org/spec/Commons/TextDatatype/> .
 
 cmns-qtu:MeasurementUnit  owl:oneOf (
     owm:tonne
