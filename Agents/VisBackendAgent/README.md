@@ -234,7 +234,7 @@ If successful, the response will return an array of objects in the following for
   "type": {
     "type": "uri",
     "value": "instance IRI",
-    "dataType": "http://www.w3.org/2001/XMLSchema#string",
+    "dataType": "",
     "lang": ""
   },
   "label": {
@@ -252,7 +252,7 @@ If successful, the response will return an array of objects in the following for
   "parent": {
     "type": "uri",
     "value": "parent class IRI",
-    "dataType": "http://www.w3.org/2001/XMLSchema#string",
+    "dataType": "",
     "lang": ""
   }
 }

@@ -6,10 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.json.JSONObject;
 
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,36 +38,14 @@ public class SparqlBinding {
     while (iterator.hasNext()) {
       Map.Entry<String, JsonNode> sparqlCol = iterator.next();
       JsonNode sparqlField = sparqlCol.getValue();
+      String type = StringResource.getNodeString(sparqlField, "type");
+      // Defaults to null if it is a URI, else it should be string
+      String dataTypeDefaultOption = type.equals("uri") ? null : "http://www.w3.org/2001/XMLSchema#string";
       this.bindings.put(sparqlCol.getKey(), new SparqlResponseField(
-          StringResource.getNodeString(sparqlField, "type"),
+          type,
           StringResource.getNodeString(sparqlField, "value"),
-          StringResource.optNodeString(sparqlField, "datatype", "http://www.w3.org/2001/XMLSchema#string"),
+          StringResource.optNodeString(sparqlField, "datatype", dataTypeDefaultOption),
           StringResource.optNodeString(sparqlField, "xml:lang", null)));
-    }
-  }
-
-  /**
-   * Constructs a new model.
-   */
-  public SparqlBinding(JSONObject response) {
-    this.bindings = new HashMap<>();
-    this.sequence = new ArrayList<>();
-    for (String variable : response.keySet()) {
-      String value = response.get(variable).toString();
-      String type = "literal";
-      String dataType = "http://www.w3.org/2001/XMLSchema#string";
-      if (StringResource.isValidIRI(value)) {
-        type = "uri";
-      } else {
-        Pattern pattern = Pattern
-            .compile("^\\\"(.+)\\\"\\^\\^\\u003C(http://www.w3.org/2001/XMLSchema#[a-z]+)\\u003E$");
-        Matcher matcher = pattern.matcher(value);
-        if (matcher.find()) {
-          value = matcher.group(1);
-          dataType = matcher.group(2);
-        }
-      }
-      this.bindings.put(variable, new SparqlResponseField(type, value, dataType, null));
     }
   }
 
