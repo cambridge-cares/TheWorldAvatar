@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -182,7 +181,7 @@ public class IsochroneAgent extends JPSAgent {
 
             // Isochrone generator SQL will take 4 inputs (remoteRDBStoreClient,
             // timeThreshold, timeInterval, EdgesTableSQLMap)
-            IsochroneGenerator isochroneGenerator = new IsochroneGenerator(poiTableName);
+            IsochroneGenerator isochroneGenerator = new IsochroneGenerator(poiTableName, routeTableName);
             isochroneGenerator.generateIsochrone(remoteRDBStoreClient, timeThreshold, timeInterval, EdgesTableSQLMap);
             isochroneGenerator.createIsochroneBuilding(remoteRDBStoreClient);
 

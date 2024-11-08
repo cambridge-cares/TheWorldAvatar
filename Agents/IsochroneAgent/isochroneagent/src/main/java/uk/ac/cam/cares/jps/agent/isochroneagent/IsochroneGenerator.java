@@ -13,9 +13,11 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 public class IsochroneGenerator {
 
     String poiTableName; // default value
+    String routeTableName;
 
-    public IsochroneGenerator(String poiTableName) {
+    public IsochroneGenerator(String poiTableName, String routeTableName) {
         this.poiTableName = poiTableName;
+        this.routeTableName = routeTableName;
     }
 
     /**
@@ -55,6 +57,11 @@ public class IsochroneGenerator {
                         String edgeTable = entry.getValue();
 
                         // Process each entry (key and value) as needed
+                        System.out.println("Creating isochrones for the following scenario:");
+                        System.out.println(
+                                "Transport mode = " + transportMode + ", Road condition = " + roadCondition
+                                        + ", Time limit (min) = " + upperTimeLimit +
+                                        ", Time interval (min) = " + timeInterval);
                         createIsochrone(remoteRDBStoreClient, upperTimeLimit, timeInterval, transportMode,
                                 roadCondition, edgeTable, poiType);
 
@@ -130,15 +137,15 @@ public class IsochroneGenerator {
                 "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, geom geometry\n);\n" +
                 "FOR node IN (SELECT DISTINCT nearest_node FROM " + poiTableName + " WHERE poi_type = '" + poiType
                 + "') LOOP\n" +
-                "TRUNCATE TABLE  eventspace_etas;\n" +
-                "TRUNCATE TABLE  eventspace_isochrones;\n" +
+                "TRUNCATE TABLE eventspace_etas;\n" +
+                "TRUNCATE TABLE eventspace_isochrones;\n" +
                 "INSERT INTO eventspace_etas (id, agg_cost, the_geom)\n" +
                 "SELECT id, dd.agg_cost,\n" +
                 "ST_SetSRID(ST_MakePoint(ST_X(v.the_geom), ST_Y(v.the_geom), dd.agg_cost), 4326) AS the_geom\n" +
                 "FROM pgr_drivingDistance(\n" +
                 "'" + edgeTable + "', node, 10000, false) AS dd\n" + // 10000 is an arbitrary large number to ensure all
                                                                      // nodes are extracted
-                "JOIN routing_ways_segment_vertices_pgr AS v ON dd.node = v.id;\n" +
+                "JOIN "+routeTableName+"_segment_vertices_pgr AS v ON dd.node = v.id;\n" +
                 "UPDATE eventspace_etas SET the_geom = ST_SetSRID(ST_MakePoint(ST_X(the_geom), ST_Y(the_geom), agg_cost), 4326);\n"
                 + "drop table if exists eventspace_delaunay;\n" +
                 "create table eventspace_delaunay\n" +
@@ -185,6 +192,8 @@ public class IsochroneGenerator {
                 "DROP TABLE eventspace_isochrones;\n" +
                 "DROP TABLE isochrone_individual;\n" +
                 "END $$;";
+        
+                System.out.println(isochroneFunction);
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, isochroneFunction);

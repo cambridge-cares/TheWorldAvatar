@@ -149,7 +149,7 @@ public class IsochroneAgentTest {
         verify(geoserverClientMock.constructed().get(0), times(1)).createWorkspace(anyString());
         verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISDataStore(anyString(), anyString(), anyString(), anyString());
         verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISLayer(anyString(), anyString(), anyString(), anyString(), any(GeoServerVectorSettings.class));
-        verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));  
+        verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));
     }
 
 }
