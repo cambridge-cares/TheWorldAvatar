@@ -26,7 +26,7 @@ services:
         description: "TWA Visualisation Platform image."
     volumes:
       - ../twa-vis-platform/code/public:/twa/public/
-      - ../twa-vis-platform/code/keycloak.json:/twa/keycloak.json
+      - ./keycloak.json:/twa/keycloak.json
     ports:
       - "3000:3000"
 
