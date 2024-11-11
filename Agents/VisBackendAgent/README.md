@@ -20,6 +20,8 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.5.2 Delete route](#252-delete-route)
       - [2.5.3 Update route](#253-update-route)
       - [2.5.4 Get route](#254-get-route)
+    - [2.6 Service Lifecycle Route](#26-service-lifecycle-route)
+      - [2.6.1 Draft route](#261-draft-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -369,6 +371,30 @@ where `{type}`is the requested identifier that must correspond to a target class
   "parameter-two": "criteria-two"
 }
 ```
+
+### 2.6 Service Lifecycle Route
+
+This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to manage the lifecycle of contracts and their associated services.
+
+#### 2.6.1 Draft route
+
+The endpoint serves to instantiate a new contract lifecycle for the specified contract. Users can send a `POST` request with the following `JSON` request parameters to:
+
+```
+<baseURL>/vis-backend-agent/contracts/draft
+```
+
+```json
+{
+  /* parameters */
+  "id": "An identifier for the lifecycle",
+  "contract": "The target contract IRI",
+  "start date": "Date when the first service is to be delivered in the YYYY-MM-DD format",
+  "end date": "Date of the final service in the YYYY-MM-DD format"
+}
+```
+
+A successful request will return `Contract has been successfully drafted`.
 
 ## 3. SHACL Restrictions
 

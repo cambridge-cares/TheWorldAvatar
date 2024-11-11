@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -64,16 +65,23 @@ public class AddService {
    */
   public ResponseEntity<String> instantiate(String resourceID, String targetId, Map<String, Object> param) {
     LOGGER.info("Instantiating an instance of {} ...", resourceID);
-    ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
-    // Return the BAD REQUEST response directly if the file is invalid
-    if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-      return fileNameResponse;
+    String filePath;
+    // Lifecycle resource requires the following file path
+    if (resourceID.equals(LifecycleResource.LIFECYCLE_RESOURCE)) {
+      filePath = FileService.LIFECYCLE_JSON_LD_RESOURCE;
+    } else {
+      // Else default to the file name in application-service
+      ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
+      // Return the BAD REQUEST response directly if the file is invalid
+      if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+        return fileNameResponse;
+      }
+      filePath = FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld";
     }
     // Update ID value to target ID
     param.put("id", targetId);
     // Retrieve the instantiation JSON schema
-    JsonNode addJsonSchema = this.fileService.getJsonContents(
-        FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld");
+    JsonNode addJsonSchema = this.fileService.getJsonContents(filePath);
     // Attempt to replace all placeholders in the JSON schema
     if (addJsonSchema.isObject()) {
       this.recursiveReplacePlaceholders((ObjectNode) addJsonSchema, null, null, param);
