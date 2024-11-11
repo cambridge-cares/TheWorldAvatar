@@ -121,78 +121,85 @@ public class IsochroneGenerator {
     private void createIsochrone(RemoteRDBStoreClient remoteRDBStoreClient, int upperTimeLimit, int timeInterval,
             String transportMode, String roadCondition, String edgeTable, String poiType) {
 
-        String isochroneFunction = "DO $$ \n" +
-                "DECLARE node bigint;\n" +
-                "BEGIN\n" +
-                "DROP TABLE IF EXISTS eventspace_etas;\n" +
-                "DROP TABLE IF EXISTS eventspace_isochrones;\n" +
-                "DROP TABLE IF EXISTS isochrone_individual; \n" +
-                "CREATE TABLE eventspace_etas (\n" +
-                "id bigint, agg_cost double precision, the_geom geometry(PointZ, 4326));\n" +
-                "CREATE TABLE eventspace_isochrones (\n" +
-                "id bigint, geom geometry, transportmode VARCHAR, transportmode_iri VARCHAR,\n" +
-                "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, minute integer);\n" +
-                "CREATE TABLE isochrone_individual (\n" +
-                "id bigint, minute integer, transportmode VARCHAR, transportmode_iri VARCHAR,\n" +
-                "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, geom geometry\n);\n" +
-                "FOR node IN (SELECT DISTINCT nearest_node FROM " + poiTableName + " WHERE poi_type = '" + poiType
-                + "') LOOP\n" +
-                "TRUNCATE TABLE eventspace_etas;\n" +
-                "TRUNCATE TABLE eventspace_isochrones;\n" +
-                "INSERT INTO eventspace_etas (id, agg_cost, the_geom)\n" +
-                "SELECT id, dd.agg_cost,\n" +
-                "ST_SetSRID(ST_MakePoint(ST_X(v.the_geom), ST_Y(v.the_geom), dd.agg_cost), 4326) AS the_geom\n" +
-                "FROM pgr_drivingDistance(\n" +
-                "'" + edgeTable + "', node, 10000, false) AS dd\n" + // 10000 is an arbitrary large number to ensure all
-                                                                     // nodes are extracted
-                "JOIN " + routeTableName + "_segment_vertices_pgr AS v ON dd.node = v.id;\n" +
-                "UPDATE eventspace_etas SET the_geom = ST_SetSRID(ST_MakePoint(ST_X(the_geom), ST_Y(the_geom), agg_cost), 4326);\n"
-                + "drop table if exists eventspace_delaunay;\n" +
-                "create table eventspace_delaunay\n" +
-                "as (select (ST_Dump(ST_DelaunayTriangles(ST_Collect(the_geom)))).geom from eventspace_etas);\n" +
-                "INSERT INTO eventspace_isochrones (geom, minute)\n" +
-                "SELECT ST_Union(ST_ConvexHull(ST_LocateBetweenElevations(ST_Boundary(geom), 0, minute * 60))) geom,\n"
+        // Define isochrone function
+        String isochroneFunction = "DO $$ \nDECLARE node bigint;\nBEGIN\n";
+        // Remove temporary tables
+        isochroneFunction = isochroneFunction + "DROP TABLE IF EXISTS eventspace_etas;\n"
+                + "DROP TABLE IF EXISTS eventspace_isochrones;\n" + "DROP TABLE IF EXISTS isochrone_individual; \n";
+        // Initialise temporary tables
+        isochroneFunction = isochroneFunction + "CREATE TABLE eventspace_etas (\n"
+                + "id bigint, agg_cost double precision, the_geom geometry(PointZ, 4326));\n"
+                + "CREATE TABLE eventspace_isochrones (\n"
+                + "id bigint, geom geometry, transportmode VARCHAR, transportmode_iri VARCHAR,\n"
+                + "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, minute integer);\n"
+                + "CREATE TABLE isochrone_individual (\n"
+                + "id bigint, minute integer, transportmode VARCHAR, transportmode_iri VARCHAR,\n"
+                + "roadcondition VARCHAR, roadcondition_iri VARCHAR, poi_type VARCHAR, geom geometry\n);\n";
+        // Loop for each POI of the same POI type
+        isochroneFunction = isochroneFunction + "FOR node IN (SELECT DISTINCT nearest_node FROM " + poiTableName
+                + " WHERE poi_type = '" + poiType + "') LOOP\nTRUNCATE TABLE eventspace_etas;\n"
+                + "TRUNCATE TABLE eventspace_isochrones;\n";
+        // Calculate driving distance from a POI
+        // 10000 is an arbitrary large number to ensure all nodes are extracted
+        isochroneFunction = isochroneFunction + "INSERT INTO eventspace_etas (id, agg_cost, the_geom)\n"
+                + "SELECT id, dd.agg_cost,\n"
+                + "ST_SetSRID(ST_MakePoint(ST_X(v.the_geom), ST_Y(v.the_geom), dd.agg_cost), 4326) AS the_geom\n"
+                + "FROM pgr_drivingDistance(\n" + "'" + edgeTable + "', node, 10000, false) AS dd\n" + "JOIN "
+                + routeTableName + "_segment_vertices_pgr AS v ON dd.node = v.id;\n";
+        // Update geometry in eta (appears to be redundant?)
+        isochroneFunction = isochroneFunction
+                + "UPDATE eventspace_etas SET the_geom = ST_SetSRID(ST_MakePoint(ST_X(the_geom), ST_Y(the_geom), agg_cost), 4326);\n";
+        // Recreate delaunay triangles
+        isochroneFunction = isochroneFunction + "drop table if exists eventspace_delaunay;\n"
+                + "create table eventspace_delaunay\n"
+                + "as (select (ST_Dump(ST_DelaunayTriangles(ST_Collect(the_geom)))).geom from eventspace_etas);\n";
+        // Isochrones are convex hull of delaunay triangles, filtered by elevation which is traveling cost
+        isochroneFunction = isochroneFunction +
+                "INSERT INTO eventspace_isochrones (geom, minute)\n"
+                + "SELECT ST_Union(ST_ConvexHull(ST_LocateBetweenElevations(ST_Boundary(geom), 0, minute * 60))) geom,\n"
                 + "minute FROM eventspace_delaunay, generate_series(0, " + upperTimeLimit + ", " + timeInterval
-                + " ) AS minute GROUP BY minute;\n" +
-                "UPDATE eventspace_isochrones\n" +
-                "SET transportmode = '" + transportMode + "', roadcondition = '" + roadCondition + "', poi_type = '"
-                + poiType + "';\n" +
-                "INSERT INTO isochrone_individual (minute, transportmode, roadcondition, poi_type, geom)\n" +
-                "SELECT minute,transportmode, roadcondition, poi_type, ST_Union(geom) AS geom\n" +
-                "FROM eventspace_isochrones GROUP BY minute,transportmode, roadcondition, poi_type;\n" +
-                "END LOOP;\n" +
-                "INSERT INTO isochrone_aggregated (minute, transportmode, roadcondition, poi_type, geom)\n" +
-                "SELECT minute,transportmode, roadcondition, poi_type, ST_UNION(geom) AS geom\n" +
-                "FROM isochrone_individual WHERE minute !=0 GROUP BY\n" +
-                "minute,transportmode, roadcondition, poi_type;\n" +
-                "WITH unique_values AS ( SELECT poi_type, minute, transportmode, roadcondition,\n" +
-                "uuid_generate_v4()::text AS iri, uuid_generate_v4()::text AS geometry_iri\n" +
-                "FROM isochrone_aggregated WHERE iri IS NULL\n" +
-                "GROUP BY minute, poi_type, transportmode, roadcondition)\n" +
-                "UPDATE isochrone_aggregated AS ia\n" +
-                "SET iri = uv.iri, geometry_iri = uv.geometry_iri,\n" +
-                "transportmode_iri =  '" + transportMode + "_' || uuid_generate_v4()::text,\n" +
-                "roadcondition_iri =  '" + roadCondition + "_' || uuid_generate_v4()::text\n" +
-                "FROM unique_values uv WHERE ia.iri IS NULL\n" +
-                "AND ia.poi_type = uv.poi_type\n" +
-                "AND ia.transportmode = uv.transportmode\n" +
-                "AND ia.minute = uv.minute;" +
-                "UPDATE isochrone_aggregated AS t1\n" +
-                "SET roadcondition_iri = t2.min_iri\n" +
-                "FROM (SELECT roadcondition, MIN(roadcondition_iri) AS min_iri\n" +
-                "FROM isochrone_aggregated GROUP BY roadcondition) AS t2\n" +
-                "WHERE t1.roadcondition = t2.roadcondition;\n" +
-                "UPDATE isochrone_aggregated AS t1\n" +
-                "SET transportmode_iri = t2.min_iri\n" +
-                "FROM ( SELECT transportmode, MIN(transportmode_iri) AS min_iri\n" +
-                "FROM isochrone_aggregated GROUP BY transportmode) AS t2\n" +
-                "WHERE t1.transportmode = t2.transportmode;\n" +
-                "DROP TABLE eventspace_etas;\n" +
-                "DROP TABLE eventspace_delaunay;\n" +
-                "DROP TABLE eventspace_isochrones;\n" +
-                "DROP TABLE isochrone_individual;\n" +
-                "END $$;";
-
+                + " ) AS minute GROUP BY minute;\n";
+        // Add metadata to isochrones
+        isochroneFunction = isochroneFunction + "UPDATE eventspace_isochrones\n" + "SET transportmode = '"
+                + transportMode + "', roadcondition = '" + roadCondition + "', poi_type = '" + poiType + "';\n";
+        // Add isochrones to isochrone_individual
+        isochroneFunction = isochroneFunction
+                + "INSERT INTO isochrone_individual (minute, transportmode, roadcondition, poi_type, geom)\n"
+                + "SELECT minute,transportmode, roadcondition, poi_type, ST_Union(geom) AS geom\n"
+                + "FROM eventspace_isochrones GROUP BY minute,transportmode, roadcondition, poi_type;\n"
+                + "END LOOP;\n";
+        // Aggregate isochrones of each POI
+        isochroneFunction = isochroneFunction
+                + "INSERT INTO isochrone_aggregated (minute, transportmode, roadcondition, poi_type, geom)\n"
+                + "SELECT minute,transportmode, roadcondition, poi_type, ST_UNION(geom) AS geom\n"
+                + "FROM isochrone_individual WHERE minute !=0 GROUP BY\n"
+                + "minute,transportmode, roadcondition, poi_type;\n";
+        // Generate IRI for aggregated isochrones
+        isochroneFunction = isochroneFunction
+                + "WITH unique_values AS ( SELECT poi_type, minute, transportmode, roadcondition,\n"
+                + "uuid_generate_v4()::text AS iri, uuid_generate_v4()::text AS geometry_iri\n"
+                + "FROM isochrone_aggregated WHERE iri IS NULL\n"
+                + "GROUP BY minute, poi_type, transportmode, roadcondition)\n" + "UPDATE isochrone_aggregated AS ia\n"
+                + "SET iri = uv.iri, geometry_iri = uv.geometry_iri,\n" + "transportmode_iri =  '" + transportMode
+                + "_' || uuid_generate_v4()::text,\n" + "roadcondition_iri =  '" + roadCondition
+                + "_' || uuid_generate_v4()::text\n" + "FROM unique_values uv WHERE ia.iri IS NULL\n"
+                + "AND ia.poi_type = uv.poi_type\n" + "AND ia.transportmode = uv.transportmode\n"
+                + "AND ia.minute = uv.minute;";
+        // Set road condition IRI to the minimum of existing road condition IRIs
+        isochroneFunction = isochroneFunction + "UPDATE isochrone_aggregated AS t1\n"
+                + "SET roadcondition_iri = t2.min_iri\n"
+                + "FROM (SELECT roadcondition, MIN(roadcondition_iri) AS min_iri\n"
+                + "FROM isochrone_aggregated GROUP BY roadcondition) AS t2\n"
+                + "WHERE t1.roadcondition = t2.roadcondition;\n";
+        // Set transport mode IRI to the minimum of existing transport mode IRIs
+        isochroneFunction = isochroneFunction + "UPDATE isochrone_aggregated AS t1\n"
+                + "SET transportmode_iri = t2.min_iri\n"
+                + "FROM ( SELECT transportmode, MIN(transportmode_iri) AS min_iri\n"
+                + "FROM isochrone_aggregated GROUP BY transportmode) AS t2\n"
+                + "WHERE t1.transportmode = t2.transportmode;\n";
+        // Remove temporary tables
+        isochroneFunction = isochroneFunction + "DROP TABLE eventspace_etas;\n" + "DROP TABLE eventspace_delaunay;\n"
+                + "DROP TABLE eventspace_isochrones;\n" + "DROP TABLE isochrone_individual;\n" + "END $$;";
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             executeSql(connection, isochroneFunction);
         } catch (Exception e) {
@@ -212,7 +219,8 @@ public class IsochroneGenerator {
     public List<String> getPoiTypes(RemoteRDBStoreClient remoteRDBStoreClient, Boolean oncePerPOI) throws SQLException {
         String getPoiSQL = "SELECT DISTINCT pnn.poi_type FROM " + poiTableName + " AS pnn";
         if (oncePerPOI) {
-            getPoiSQL = getPoiSQL + " LEFT JOIN isochrone_aggregated AS ia ON pnn.poi_type = ia.poi_type WHERE ia.poi_type IS NULL";
+            getPoiSQL = getPoiSQL
+                    + " LEFT JOIN isochrone_aggregated AS ia ON pnn.poi_type = ia.poi_type WHERE ia.poi_type IS NULL";
         }
         List<String> poiTypes = new ArrayList<>();
         try (Connection connection = remoteRDBStoreClient.getConnection();
