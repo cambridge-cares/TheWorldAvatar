@@ -117,7 +117,13 @@ public class AddService {
               .put(ShaclResource.TYPE_KEY, currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
           parentNode.set(parentField, literalNode);
         } else {
-          parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
+          if (parentField.equals(ShaclResource.ID_KEY)){
+            parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
+          } else {
+            ObjectNode newIriNode = this.objectMapper.createObjectNode();
+            newIriNode.put(ShaclResource.ID_KEY, this.getReplacementValue(currentNode, replacements));
+            parentNode.set(parentField, newIriNode);
+          }
         }
       } else {
         LOGGER.error("Invalid parent node for replacement!");
