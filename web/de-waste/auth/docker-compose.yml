@@ -10,7 +10,10 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       ###################################################
-      KC_LOG_LEVEL: info
+      KC_LOG: console,file  
+      KC_LOG_CONSOLE_LEVEL: info
+      KC_LOG_CONSOLE_COLOR: true
+      KC_LOG_FILE_LEVEL: trace
       ###################################################
       KC_HOSTNAME: https://bnl.theworldavatar.io/authorisation
       KC_HOSTNAME_ADMIN: https://admin.bnl.theworldavatar.io
@@ -22,7 +25,7 @@ services:
       KC_DB: postgres
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_DB_POOL_MAX_SIZE: 50
-
+      ###################################################
       KC_HEALTH_ENABLED: true
       KC_HTTP_ENABLED: true ## this replaces the prox  y mode (whether to forward in SSL or not), works if we assume this is edge server
       KC_PROXY_HEADERS: xforwarded ## this replaces the proxy mode (whether to forward in SSL or not)
@@ -75,25 +78,25 @@ services:
   #   ports:
   #     - "5432:5432"
   #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
+  #     - bnl-postgres-data:/var/lib/postgresql/data
   #   networks:
   #     - auth-network
 
-  # pgadmin:
-  #   restart: always
-  #   container_name: "pgadmin"
-  #   image: dpage/pgadmin4:latest
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_LOGIN_EMAIL:-user@example.com}
-  #     PGADMIN_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
-  #     HOSTNAME: postgres
-  #     DATABASE: keycloak
-  #   ports:
-  #     - "5050:80"
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - auth-network
+  pgadmin:
+    restart: always
+    container_name: "pgadmin"
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_LOGIN_EMAIL:-user@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
+      HOSTNAME: postgres
+      DATABASE: keycloak
+    ports:
+      - "5050:80"
+    # depends_on:
+    #   - postgres
+    networks:
+      - auth-network
 
 networks:
   auth-network:
@@ -105,4 +108,4 @@ secrets:
 
 volumes:
   dragonflydata:
-  postgresdata:
+  bnl-postgres-data:
