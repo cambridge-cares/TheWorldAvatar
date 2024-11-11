@@ -150,7 +150,8 @@ public class IsochroneGenerator {
         isochroneFunction = isochroneFunction + "drop table if exists eventspace_delaunay;\n"
                 + "create table eventspace_delaunay\n"
                 + "as (select (ST_Dump(ST_DelaunayTriangles(ST_Collect(the_geom)))).geom from eventspace_etas);\n";
-        // Isochrones are convex hull of delaunay triangles, filtered by elevation which is traveling cost
+        // Isochrones are convex hull of delaunay triangles, filtered by elevation which
+        // is traveling cost
         isochroneFunction = isochroneFunction +
                 "INSERT INTO eventspace_isochrones (geom, minute)\n"
                 + "SELECT ST_Union(ST_ConvexHull(ST_LocateBetweenElevations(ST_Boundary(geom), 0, minute * 60))) geom,\n"
@@ -177,23 +178,23 @@ public class IsochroneGenerator {
                 + "uuid_generate_v4()::text AS iri, uuid_generate_v4()::text AS geometry_iri\n"
                 + "FROM isochrone_aggregated WHERE iri IS NULL\n"
                 + "GROUP BY minute, poi_type, transportmode, roadcondition)\n" + "UPDATE isochrone_aggregated AS ia\n"
-                + "SET iri = uv.iri, geometry_iri = uv.geometry_iri,\n" + "transportmode_iri =  '" + transportMode
-                + "_' || uuid_generate_v4()::text,\n" + "roadcondition_iri =  '" + roadCondition
-                + "_' || uuid_generate_v4()::text\n" + "FROM unique_values uv WHERE ia.iri IS NULL\n"
+                + "SET iri = uv.iri, geometry_iri = uv.geometry_iri\n" + "FROM unique_values uv WHERE ia.iri IS NULL\n"
                 + "AND ia.poi_type = uv.poi_type\n" + "AND ia.transportmode = uv.transportmode\n"
                 + "AND ia.minute = uv.minute;";
-        // Set road condition IRI to the minimum of existing road condition IRIs
-        isochroneFunction = isochroneFunction + "UPDATE isochrone_aggregated AS t1\n"
-                + "SET roadcondition_iri = t2.min_iri\n"
-                + "FROM (SELECT roadcondition, MIN(roadcondition_iri) AS min_iri\n"
-                + "FROM isochrone_aggregated GROUP BY roadcondition) AS t2\n"
-                + "WHERE t1.roadcondition = t2.roadcondition;\n";
+        // Set road condition IRI, use existing value or generate new IRI
+        isochroneFunction = isochroneFunction + "WITH distinct_roadcondition_iri AS (SELECT roadcondition, CASE\n"
+                + "WHEN COUNT(DISTINCT roadcondition_iri) = 1 THEN MIN(roadcondition_iri)\n"
+                + "WHEN COUNT(DISTINCT roadcondition_iri) = 0 THEN roadcondition || '_' || uuid_generate_v4()::text\n"
+                + "ELSE NULL END AS roadcondition_iri FROM isochrone_aggregated GROUP BY roadcondition)\n"
+                + "UPDATE isochrone_aggregated AS ia\n" + "SET roadcondition_iri = dri.roadcondition_iri\n"
+                + "FROM distinct_roadcondition_iri AS dri\n" + "WHERE ia.roadcondition = dri.roadcondition;\n";
         // Set transport mode IRI to the minimum of existing transport mode IRIs
-        isochroneFunction = isochroneFunction + "UPDATE isochrone_aggregated AS t1\n"
-                + "SET transportmode_iri = t2.min_iri\n"
-                + "FROM ( SELECT transportmode, MIN(transportmode_iri) AS min_iri\n"
-                + "FROM isochrone_aggregated GROUP BY transportmode) AS t2\n"
-                + "WHERE t1.transportmode = t2.transportmode;\n";
+        isochroneFunction = isochroneFunction + "WITH distinct_transportmode_iri AS (SELECT transportmode, CASE\n"
+                + "WHEN COUNT(DISTINCT transportmode_iri) = 1 THEN MIN(transportmode_iri)\n"
+                + "WHEN COUNT(DISTINCT transportmode_iri) = 0 THEN transportmode || '_' || uuid_generate_v4()::text\n"
+                + "ELSE NULL END AS transportmode_iri FROM isochrone_aggregated GROUP BY transportmode)\n"
+                + "UPDATE isochrone_aggregated AS ia\n" + "SET transportmode_iri = dti.transportmode_iri\n"
+                + "FROM distinct_transportmode_iri AS dti\n" + "WHERE ia.transportmode = dti.transportmode;\n";
         // Remove temporary tables
         isochroneFunction = isochroneFunction + "DROP TABLE eventspace_etas;\n" + "DROP TABLE eventspace_delaunay;\n"
                 + "DROP TABLE eventspace_isochrones;\n" + "DROP TABLE isochrone_individual;\n" + "END $$;";
