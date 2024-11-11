@@ -20,6 +20,6 @@ hasName,Data Property,,,Greenspace,String,,The name of a greenspace,https://www.
 hasFirstAlternativeName,Data Property,,,Greenspace,String,,The first alternative name for a greespace,https://www.theworldavatar.com/kg/ontogreenspace,has First Alternative Name
 hasSecondAlternativeName,Data Property,,,Greenspace,String,,The second alternative name for a greespace,https://www.theworldavatar.com/kg/ontogreenspace,has Second Alternative Name
 hasThirdAlternativeName,Data Property,,,Greenspace,String,,The third alternative name for a greespace,https://www.theworldavatar.com/kg/ontogreenspace,has Third Alternative Name
-hasGeometry,Data Property,,,Greenspace,String,,"The spatial geometry of a greenspace, detailing its shape and boundaries",https://www.theworldavatar.com/kg/ontogreenspace,has Geometry
+http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,Greenspace UNION AccessPoint,http://www.opengis.net/ont/geosparql#wktLiteral,,"The spatial geometry of a greenspace, represented in Well-Known Text (WKT) format, detailing its shape and boundaries",http://www.opengis.net/ont/geosparql,as WKT
 hasAccessType,Data Property,,,AccessPoint,String,,"The type or level of access allowed at an access point, such as pedestrian, and motor vehicle and pedestrian",https://www.theworldavatar.com/kg/ontogreenspace,has Access Type
 hasReferenceToGreenspaceSite,Object Property,,,AccessPoint,Greenspace,,The relationship linking the access point to its associated greenspace site,https://www.theworldavatar.com/kg/ontogreenspace,has Reference To Greenspace Site
