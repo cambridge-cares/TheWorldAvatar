@@ -96,12 +96,14 @@ app.prepare().then(() => {
       res.json({ userName, firstName, lastName, fullName, roles, clientRoles });
     });
 
-    server.get('/logout', (req, res) => {
-      req.logout(); // Keycloak adapter logout
-      req.session.destroy(() => { // This destroys the session
-        res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
-      });
-    });
+    // server.get('/logout', (req, res) => {
+    //   console.log('Gremlin!')
+    //   req.logout(); // Keycloak adapter logout
+    //   req.session.destroy(() => { // This destroys the session
+    //     res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
+    //     console.log('Gremlinagain!')
+    //   });
+    // });
 
     const protectedPages = process.env.PROTECTED_PAGES.split(',');
     protectedPages.forEach(page => {
