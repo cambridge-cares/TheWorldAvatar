@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontopoi="https://www.theworldavatar.com/kg/ontopoi/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontopoi/">
-        <dc:date>25 October 2024</dc:date>
+        <dc:date>11 November 2024</dc:date>
         <rdfs:comment>OntoPOI is an ontology developed for representing points of interest.</rdfs:comment>
         <owl:versionInfo>1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -309,6 +309,7 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.opengis.net/ont/geosparql#wktLiteral"/>
+        <rdfs:comment>The spatial geometry of a Point of Interest (POI), represented in Well-Known Text (WKT) format, detailing its shape and boundaries</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="http://www.opengis.net/ont/geosparql"/>
         <rdfs:label>as WKT</rdfs:label>
     </owl:DatatypeProperty>
