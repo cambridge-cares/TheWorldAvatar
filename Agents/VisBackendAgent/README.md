@@ -378,11 +378,13 @@ This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to man
 
 #### 2.6.1 Draft route
 
-The endpoint serves to instantiate a new contract lifecycle for the specified contract. Users can send a `POST` request with the following `JSON` request parameters to:
+This endpoint serves to draft a contract lifecycle for the specified contract. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following.
 
 ```
 <baseURL>/vis-backend-agent/contracts/draft
 ```
+
+Note that this route does require the following `JSON` request parameters:
 
 ```json
 {
@@ -394,7 +396,7 @@ The endpoint serves to instantiate a new contract lifecycle for the specified co
 }
 ```
 
-A successful request will return `Contract has been successfully drafted`.
+A successful request will return `Contract has been successfully drafted/updated!`.
 
 ## 3. SHACL Restrictions
 

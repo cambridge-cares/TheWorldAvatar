@@ -8,19 +8,24 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmclinnovations.agent.service.AddService;
+import com.cmclinnovations.agent.service.DeleteService;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 
 @RestController
 public class LifecycleController {
   private final AddService addService;
+  private final DeleteService deleteService;
+
   private static final Logger LOGGER = LogManager.getLogger(LifecycleController.class);
 
-  public LifecycleController(AddService addService) {
+  public LifecycleController(AddService addService, DeleteService deleteService) {
     this.addService = addService;
+    this.deleteService = deleteService;
   }
 
   /**
@@ -45,6 +50,30 @@ public class LifecycleController {
       String errorMsg = "Invalid request parameters! Contract IRI must be passed.";
       LOGGER.error(errorMsg);
       return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * Update the draft contract's lifecycle details in the knowledge graph.
+   */
+  @PutMapping("/contracts/draft")
+  public ResponseEntity<String> updateDraftContract(@RequestBody Map<String, Object> params) {
+    LOGGER.info("Received request to update draft contract...");
+    String targetId = params.get("id").toString();
+    ResponseEntity<String> deleteResponse = this.deleteService.delete(LifecycleResource.LIFECYCLE_RESOURCE, targetId);
+    if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
+      // Add current date into parameters
+      params.put(LifecycleResource.CURRENT_DATE_KEY, LifecycleResource.getCurrentDate());
+      ResponseEntity<String> addResponse = this.addService.instantiate(LifecycleResource.LIFECYCLE_RESOURCE, targetId,
+          params);
+      if (addResponse.getStatusCode() == HttpStatus.OK) {
+        LOGGER.info("Draft contract has been successfully updated!");
+        return new ResponseEntity<>("Draft contract has been successfully updated!", HttpStatus.CREATED);
+      } else {
+        return addResponse;
+      }
+    } else {
+      return deleteResponse;
     }
   }
 }
