@@ -146,9 +146,6 @@ public class IsochroneGenerator {
                 + "ST_SetSRID(ST_MakePoint(ST_X(v.the_geom), ST_Y(v.the_geom), dd.agg_cost), 4326) AS the_geom\n"
                 + "FROM pgr_drivingDistance(\n" + "'" + edgeTable + "', node, 10000, false) AS dd\n" + "JOIN "
                 + routeTableName + "_segment_vertices_pgr AS v ON dd.node = v.id;\n";
-        // Update geometry in eta (appears to be redundant?)
-        isochroneFunction = isochroneFunction
-                + "UPDATE eventspace_etas SET the_geom = ST_SetSRID(ST_MakePoint(ST_X(the_geom), ST_Y(the_geom), agg_cost), 4326);\n";
         // Recreate delaunay triangles
         isochroneFunction = isochroneFunction + "drop table if exists eventspace_delaunay;\n"
                 + "create table eventspace_delaunay\n"
