@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -92,12 +93,20 @@ public class IsochroneGenerator {
                 "    poi_type VARCHAR, roadcondition VARCHAR, roadcondition_iri VARCHAR,\n" +
                 "    iri VARCHAR, geometry_iri VARCHAR,  geom geometry);";
 
-        String add_uuid_ossp_Extension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
+        String addExtension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
+
+        String tableConstraint = "DO $$ DECLARE constraint_count INTEGER; BEGIN\n"
+                + "SELECT COUNT(*) INTO constraint_count FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE "
+                + "TABLE_NAME = 'isochrone_aggregated' AND CONSTRAINT_NAME = 'unique_minute_transportmode_roadcondition_poi_type';\n"
+                + "IF constraint_count = 0 THEN ALTER TABLE isochrone_aggregated "
+                + "ADD CONSTRAINT unique_minute_transportmode_roadcondition_poi_type "
+                + "UNIQUE (minute, transportmode, roadcondition, poi_type); END IF; END $$;";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
-            executeSql(connection, add_uuid_ossp_Extension);
+            executeSql(connection, addExtension);
             executeSql(connection, tableGeneration);
-            System.out.println("Isochrone_aggregated table created. Calculating isochrones based on POI now.");
+            executeSql(connection, tableConstraint);
+            System.out.println("isochrone_aggregated table created. Calculating isochrones based on POI now.");
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
@@ -170,8 +179,10 @@ public class IsochroneGenerator {
         isochroneFunction = isochroneFunction
                 + "INSERT INTO isochrone_aggregated (minute, transportmode, roadcondition, poi_type, geom)\n"
                 + "SELECT minute,transportmode, roadcondition, poi_type, ST_UNION(geom) AS geom\n"
-                + "FROM isochrone_individual WHERE minute !=0 GROUP BY\n"
-                + "minute,transportmode, roadcondition, poi_type;\n";
+                + "FROM isochrone_individual AS ii WHERE ii.minute !=0 GROUP BY\n"
+                + "ii.minute, ii.transportmode, ii.roadcondition, ii.poi_type\n"
+                + "ON CONFLICT (minute, transportmode, roadcondition, poi_type)\n"
+                + "DO UPDATE SET geom = EXCLUDED.geom;";
         // Generate IRI for aggregated isochrones
         isochroneFunction = isochroneFunction
                 + "WITH unique_values AS ( SELECT poi_type, minute, transportmode, roadcondition,\n"
