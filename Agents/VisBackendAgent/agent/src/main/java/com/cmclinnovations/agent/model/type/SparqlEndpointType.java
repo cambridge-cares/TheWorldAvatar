@@ -1,4 +1,4 @@
-package com.cmclinnovations.agent.model;
+package com.cmclinnovations.agent.model.type;
 
 public enum SparqlEndpointType {
   MIXED,

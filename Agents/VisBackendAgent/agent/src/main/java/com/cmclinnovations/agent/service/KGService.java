@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
-import com.cmclinnovations.agent.model.SparqlEndpointType;
 import com.cmclinnovations.agent.model.SparqlVariableOrder;
+import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
