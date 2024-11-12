@@ -43,7 +43,7 @@ services:
       ###################################################
       KC_HOSTNAME: ## set hostname as configured in reverse proxy here
       KC_HOSTNAME_ADMIN: ## optionally set hostname as configured in reverse proxy here
-      # KC_HOSTNAME_DEBUG: true # if necessary
+      # KC_HOSTNAME_DEBUG: true # if necessary to debug client connections
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: false # not needed to allow other containers to commumicate with keycloak server-side
       ###################################################
       KC_DB_URL_HOST: postgres
@@ -53,9 +53,8 @@ services:
       KC_DB_POOL_MAX_SIZE: 50
       ###################################################
       KC_HEALTH_ENABLED: true
-      KC_HTTP_ENABLED: true ## this replaces the prox  y mode (whether to forward in SSL or not), works if we assume this is edge server
-      KC_PROXY_HEADERS: xforwarded ## this replaces the proxy mode (whether to forward in SSL or not)
-      # KC_TLS_HOSTNAME_VERIFIER: ANY
+      KC_HTTP_ENABLED: true ## (whether to forward in SSL or not), works if we assume this is edge server. Otherwise configure https between auth server and viz
+      KC_PROXY_HEADERS: xforwarded ## (whether to trust proxy headers from reverse proxy or not)
     command: start --import-realm #--optimized
     volumes:
       - ./realm:/opt/keycloak/data/import:ro # the realm to import
