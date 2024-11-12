@@ -23,6 +23,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [2.6 Service Lifecycle Route](#26-service-lifecycle-route)
       - [2.6.1 Draft route](#261-draft-route)
       - [2.6.2 Schedule route](#262-schedule-route)
+      - [2.6.3 Service commencement route](#263-service-commencement-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -438,6 +439,26 @@ Note that this route does require the following `JSON` request parameters:
 ```
 
 A successful request will return `Schedule has been successfully drafted for the contract!` _OR_ `Draft schedule has been successfully updated!`.
+
+#### 2.6.3 Service commencement route
+
+The endpoint serves to commence the delivery of services by approving the specified contract. Users must send a `POST` request to approve the contract at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/service/commence
+```
+
+Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Remarks for the approval"
+}
+```
+
+A successful request will return `Contract has been approved for service execution!`.
 
 ## 3. SHACL Restrictions
 

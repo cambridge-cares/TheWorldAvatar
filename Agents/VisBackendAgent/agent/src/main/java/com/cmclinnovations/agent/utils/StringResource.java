@@ -117,4 +117,17 @@ public class StringResource {
       return false;
     }
   }
+
+  /**
+   * Retrieve the prefix of the input IRI.
+   * 
+   * @param iri Input.
+   */
+  public static String getPrefix(String iri) {
+    if (isValidIRI(iri)) {
+      int lastSlashIndex = iri.lastIndexOf("/");
+      return iri.substring(0, lastSlashIndex);
+    }
+    throw new IllegalArgumentException("Invalid IRI! Does not conform to RFC2396 specifications.");
+  }
 }

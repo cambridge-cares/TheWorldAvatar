@@ -82,6 +82,26 @@ public class LifecycleController {
   }
 
   /**
+   * Signal the commencement of the services for the specified contract.
+   */
+  @PostMapping("/contracts/service/commence")
+  public ResponseEntity<?> commenceContract(@RequestBody Map<String, Object> params) {
+    if (this.isInvalidParams(params)) {
+      return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
+    }
+    LOGGER.info("Received request to commence the services for a contract...");
+    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.APPROVED);
+    ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
+        params);
+    if (response.getStatusCode() == HttpStatus.OK) {
+      LOGGER.info("Contract has been approved for service execution!");
+      return new ResponseEntity<>("Contract has been approved for service execution!", HttpStatus.OK);
+    } else {
+      return response;
+    }
+  }
+
+  /**
    * Update the draft contract's lifecycle details in the knowledge graph.
    */
   @PutMapping("/contracts/draft")

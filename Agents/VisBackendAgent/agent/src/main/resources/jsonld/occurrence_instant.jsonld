@@ -1,0 +1,27 @@
+{
+  "@context": {
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@id": {
+    "@replace": "id",
+    "@type": "iri"
+  },
+  "@type": "https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServicesContractLifecycleEventOccurrence",
+  "http://www.w3.org/2000/01/rdf-schema#comment": {
+    "@replace": "remarks",
+    "@type": "literal"
+  },
+  "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/hasEventDate": {
+    "@replace": "current date",
+    "@type": "literal",
+    "datatype": "http://www.w3.org/2001/XMLSchema#date"
+  },
+  "@reverse": {
+    "https://www.omg.org/spec/Commons/Classifiers/classifies": {
+      "@id": {
+        "@replace": "event",
+        "@type": "iri"
+      }
+    }
+  }
+}

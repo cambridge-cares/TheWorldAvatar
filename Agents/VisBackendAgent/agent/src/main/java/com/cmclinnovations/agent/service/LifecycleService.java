@@ -2,6 +2,7 @@ package com.cmclinnovations.agent.service;
 
 import java.util.Map;
 import java.util.Queue;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,7 @@ import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.utils.LifecycleResource;
+import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
 public class LifecycleService {
@@ -37,6 +39,20 @@ public class LifecycleService {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     String event = this.getEventInstance(contractId, eventType);
     params.put(LifecycleResource.EVENT_KEY, event);
+  }
+
+  /**
+   * Populate the remaining occurrence parameters into the request parameters.
+   * 
+   * @param params    The target parameters to update.
+   * @param eventType The target event type to retrieve.
+   */
+  public void addOccurrenceParams(Map<String, Object> params, LifecycleEventType eventType) {
+    String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
+    String event = this.getEventInstance(contractId, eventType);
+    params.put("id", StringResource.getPrefix(event) + "/occurrence/" + UUID.randomUUID());
+    params.put(LifecycleResource.EVENT_KEY, event);
+    params.put(LifecycleResource.CURRENT_DATE_KEY, LifecycleResource.getCurrentDate());
   }
 
   /**

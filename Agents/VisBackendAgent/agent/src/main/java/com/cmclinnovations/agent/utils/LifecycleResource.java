@@ -9,6 +9,7 @@ import com.cmclinnovations.agent.service.FileService;
 public class LifecycleResource {
   public static final String LIFECYCLE_RESOURCE = "lifecycle";
   public static final String SCHEDULE_RESOURCE = "schedule";
+  public static final String OCCURRENCE_INSTANT_RESOURCE = "occurrence instant";
 
   public static final String CONTRACT_KEY = "contract";
   public static final String CURRENT_DATE_KEY = "current date";
@@ -35,6 +36,8 @@ public class LifecycleResource {
    */
   public static String getEventClass(LifecycleEventType eventType) {
     switch (eventType) {
+      case LifecycleEventType.APPROVED:
+        return "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
       case LifecycleEventType.SERVICE_EXECUTION:
         return "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
       default:
@@ -51,6 +54,8 @@ public class LifecycleResource {
     switch (resourceID) {
       case LifecycleResource.LIFECYCLE_RESOURCE:
         return FileService.LIFECYCLE_JSON_LD_RESOURCE;
+      case LifecycleResource.OCCURRENCE_INSTANT_RESOURCE:
+        return FileService.OCCURRENCE_INSTANT_JSON_LD_RESOURCE;
       case LifecycleResource.SCHEDULE_RESOURCE:
         return FileService.SCHEDULE_JSON_LD_RESOURCE;
       default:
