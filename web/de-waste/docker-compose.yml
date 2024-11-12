@@ -5,15 +5,15 @@ services:
   # Empty visualisation image for deployment.
   base:
     image: ghcr.io/cambridge-cares/twa-vf:5.9.2
-    container_name: "twa-vf"
+    container_name: "de-waste-app"
     restart: "no"
     environment:
-      KEYCLOAK: false ## whether or not to use kc authentication on the server
-      PROTECTED_PAGES: /page,/otherpage ## pages that a user must be logged in to see
-      ROLE_PROTECTED_PAGES: /protected/page/ ## pages that require a user to have a given REALM or CLIENT role
-      ROLE: twa-test:protected ## the role required for the above list
+      KEYCLOAK: true ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: /* ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /add/agreement ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: protected ## the role required for the above list
 
-      REDIS_HOST: host.docker.internal
+      REDIS_HOST: 192.168.1.159
     secrets:
       - mapbox_username
       - mapbox_api_key
@@ -25,7 +25,8 @@ services:
         authors: "support@cmcl.io"
         description: "TWA Visualisation Platform image."
     volumes:
-      - ./code/public:/twa/public/
+      - ../twa-vis-platform/code/public:/twa/public/
+      - ./keycloak.json:/twa/keycloak.json
     ports:
       - "3000:3000"
 
