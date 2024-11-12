@@ -186,7 +186,7 @@ Figure 3: TBox representation of waste services
 
     "ontowm:WasteDisposalService" ||--o{ "fibo-fnd-plc-fac:Capability" : "fibo-fnd-rel-rel:provides"
     "fibo-fnd-plc-fac:Capability" ||--o{ "ontowm:Waste" : "fibo-fnd-rel-rel:involves"
-    "ontowm:Waste" { 
+    "ontowm:Waste" {
         ontowm_isRecyclable boolean
     }
 
@@ -232,7 +232,7 @@ Figure 4: TBox representation for the service agreement's overall lifecycle
     }
 ```
 
-When the service agreement is initially drafted, upcoming scheduled service events are represented within a regular schedule. For more information on regular schedules, please refer to [the corresponding section in the OntoService](https://www.theworldavatar.com/kg/ontoservice#regular-schedule) ontology. For each successful delivery occurrence of the requested service, a `ContractLifecycleEventOccurrence` instance is linked to both the schedule and `ServiceDeliveryEvent` instances. This occurrence usually represents the collection and/or exchange of bins from the service site that occurs within a time period. This event occurrence will also contain information about the transport(s) and bin(s) involved. Note that the `hasAssignedBin` relationship  is intended to designate a bin that is used throughout the entire occurrence. However, if the occurrence involves multiple bins at different stages, the `hasReplacementBin` relationship can be used to represent the initial empty bin that is transported to the site to replace the existing bin, which will then be taken away for disposal.
+When the service agreement is initially drafted, upcoming scheduled service events are represented within a regular schedule. For more information on regular schedules, please refer to [the corresponding section in the OntoService](../ontoservice/README.md#regular-schedule) ontology. For each successful delivery occurrence of the requested service, a `ContractLifecycleEventOccurrence` instance is linked to both the schedule and `ServiceDeliveryEvent` instances. This occurrence usually represents the collection and/or exchange of bins from the service site that occurs within a time period. This event occurrence will also contain information about the transport(s) and bin(s) involved. Note that the `hasAssignedBin` relationship is intended to designate a bin that is used throughout the entire occurrence. However, if the occurrence involves multiple bins at different stages, the `hasReplacementBin` relationship can be used to represent the initial empty bin that is transported to the site to replace the existing bin, which will then be taken away for disposal.
 
 Figure 5: TBox representation of a service delivery event occurrence for waste services
 
