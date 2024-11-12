@@ -6,22 +6,26 @@ import './mapbox.css';
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useEffect, useRef } from 'react';
 
-import MapEventManager from 'map/map-event-manager';
-import { MapSettings } from 'types/settings';
-import { getCurrentImageryOption, getDefaultCameraPosition } from 'map/map-helper';
+import { Apis } from 'io/config/routes';
+import { CameraPosition, ImageryOption } from 'types/settings';
 
 // Type definition of incoming properties
 interface MapProperties {
-  settings: MapSettings;
   currentMap: Map;
+  styles: string;
   setMap: React.Dispatch<React.SetStateAction<Map>>;
-  setMapEventManager: React.Dispatch<React.SetStateAction<MapEventManager>>;
+  defaultPosition: CameraPosition;
+  imageryOption?: ImageryOption;
 }
 
 /**
  * Renders a mapbox map instance. 
  *
- * @param params incoming route parameters.
+ * @param {Map} map The reference to the current map (if any).
+ * @param {string} styles The css styles for the mapbox container.
+ * @param setMap Sets the reference for the created map.
+ * @param {CameraPosition} defaultPosition The default camera position for the map.
+ * @param {ImageryOption} imageryOption An optional imagery option for the default map setup.
  *
  * @returns React component for display.
  */
@@ -44,7 +48,13 @@ export default function MapboxMapComponent(props: MapProperties) {
   const initialiseMap = async () => {
     props.currentMap?.remove();
 
-    const response = await fetch(("./api/map/settings"), {
+    const defaultImagery: ImageryOption = props.imageryOption ?? {
+      "name": "Standard (Night)",
+      "url": "mapbox://styles/mapbox/standard",
+      "time": "dusk"
+    };
+
+    const response = await fetch((Apis.MAP_SETTINGS), {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -52,17 +62,13 @@ export default function MapboxMapComponent(props: MapProperties) {
     // Set credentials
     mapboxgl.accessToken = respJson.token;
 
-    // Get default camera position
-    const defaultPosition = getDefaultCameraPosition(props.settings.camera);
-    let styleObject = getCurrentImageryOption(props.settings.imagery);
-
     const map: Map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: styleObject.url,
-      center: defaultPosition["center"],
-      zoom: defaultPosition["zoom"],
-      bearing: defaultPosition["bearing"],
-      pitch: defaultPosition["pitch"],
+      style: defaultImagery.url,
+      center: props.defaultPosition.center,
+      zoom: props.defaultPosition.zoom,
+      bearing: props.defaultPosition.bearing,
+      pitch: props.defaultPosition.pitch,
     });
 
     map.addControl(new mapboxgl.ScaleControl() as mapboxgl.IControl, "bottom-right");
@@ -72,23 +78,21 @@ export default function MapboxMapComponent(props: MapProperties) {
 
     map.on("style.load", function () {
       // Update time if using new v3 standard style
-      styleObject = getCurrentImageryOption(props.settings.imagery);
-      if (styleObject.time != null) {
+      if (defaultImagery.time != null) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (map as any).setConfigProperty(
           "basemap",
           "lightPreset",
-          styleObject.time
+          defaultImagery.time
         );
       }
       // Map is only settable after the styles have loaded
       props.setMap(map);
-      props.setMapEventManager(new MapEventManager(map));
     });
   };
 
   return (
-    <div id="mapContainer" ref={mapContainer} className="mapContainer">
+    <div id="mapContainer" ref={mapContainer} className={props.styles}>
       {/* Map will be generated here. */}
     </div>
   );
