@@ -22,6 +22,7 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.5.4 Get route](#254-get-route)
     - [2.6 Service Lifecycle Route](#26-service-lifecycle-route)
       - [2.6.1 Draft route](#261-draft-route)
+      - [2.6.2 Schedule route](#262-schedule-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -378,7 +379,7 @@ This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to man
 
 #### 2.6.1 Draft route
 
-This endpoint serves to draft a contract lifecycle for the specified contract. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following.
+This endpoint serves to draft a contract lifecycle for the specified contract. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
 
 ```
 <baseURL>/vis-backend-agent/contracts/draft
@@ -397,6 +398,36 @@ Note that this route does require the following `JSON` request parameters:
 ```
 
 A successful request will return `Contract has been successfully drafted/updated!`.
+
+#### 2.6.2 Schedule route
+
+The endpoint serves to assign the upcoming schedule for the services for the specified contract. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/contracts/schedule
+```
+
+Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "id": "An identifier for the scheduler",
+  "contract": "The target contract IRI",
+  "time slot start": "Beginning of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "time slot end": "End of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "recurrence": "Service interval in the ISO 8601 format eg P1D P7D P2D",
+  "monday": "A boolean indicating if the service should occur on a monday",
+  "tuesday": "A boolean indicating if the service should occur on a tuesday",
+  "wednesday": "A boolean indicating if the service should occur on a wednesday",
+  "thursday": "A boolean indicating if the service should occur on a thursday",
+  "friday": "A boolean indicating if the service should occur on a friday",
+  "saturday": "A boolean indicating if the service should occur on a saturday",
+  "sunday": "A boolean indicating if the service should occur on a sunday"
+}
+```
+
+A successful request will return `Schedule has been successfully drafted for the contract!` _OR_ `Draft schedule has been successfully updated!`.
 
 ## 3. SHACL Restrictions
 

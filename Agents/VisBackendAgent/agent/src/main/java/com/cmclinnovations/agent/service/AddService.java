@@ -69,6 +69,8 @@ public class AddService {
     // Lifecycle resource requires the following file path
     if (resourceID.equals(LifecycleResource.LIFECYCLE_RESOURCE)) {
       filePath = FileService.LIFECYCLE_JSON_LD_RESOURCE;
+    } else if (resourceID.equals(LifecycleResource.SCHEDULE_RESOURCE)) {
+      filePath = FileService.SCHEDULE_JSON_LD_RESOURCE;
     } else {
       // Else default to the file name in application-service
       ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);

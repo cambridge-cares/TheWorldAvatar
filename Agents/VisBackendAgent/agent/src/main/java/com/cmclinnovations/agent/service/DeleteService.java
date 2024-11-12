@@ -40,6 +40,8 @@ public class DeleteService {
     // Lifecycle resource requires the following file path
     if (resourceID.equals(LifecycleResource.LIFECYCLE_RESOURCE)) {
       filePath = FileService.LIFECYCLE_JSON_LD_RESOURCE;
+    } else if (resourceID.equals(LifecycleResource.SCHEDULE_RESOURCE)) {
+      filePath = FileService.SCHEDULE_JSON_LD_RESOURCE;
     } else {
       ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
       // Return the BAD REQUEST response directly if the file is invalid
