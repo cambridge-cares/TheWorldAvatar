@@ -124,14 +124,15 @@ public class AddService {
               .put(ShaclResource.VAL_KEY, this.getReplacementValue(currentNode, replacements))
               .put(ShaclResource.TYPE_KEY, currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
           parentNode.set(parentField, literalNode);
+          // Parse IRIs that are not assigned to @id, within a nested @id object
+        } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
+            && !parentField.equals(ShaclResource.ID_KEY)) {
+          ObjectNode newIriNode = this.objectMapper.createObjectNode();
+          newIriNode.put(ShaclResource.ID_KEY, this.getReplacementValue(currentNode, replacements));
+          parentNode.set(parentField, newIriNode);
         } else {
-          if (parentField.equals(ShaclResource.ID_KEY)){
-            parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
-          } else {
-            ObjectNode newIriNode = this.objectMapper.createObjectNode();
-            newIriNode.put(ShaclResource.ID_KEY, this.getReplacementValue(currentNode, replacements));
-            parentNode.set(parentField, newIriNode);
-          }
+          // For IRIs and literal with no other pattern, simply replace the value
+          parentNode.put(parentField, this.getReplacementValue(currentNode, replacements));
         }
       } else {
         LOGGER.error("Invalid parent node for replacement!");
