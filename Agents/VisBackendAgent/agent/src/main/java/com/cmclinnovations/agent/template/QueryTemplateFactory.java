@@ -1,5 +1,6 @@
 package com.cmclinnovations.agent.template;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -7,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +29,8 @@ public class QueryTemplateFactory {
   private Map<String, String> queryLines;
   private List<SparqlVariableOrder> varSequence;
   private final ObjectMapper objectMapper;
+  private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
+  private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
   private static final String ORDER_VAR = "order";
@@ -61,9 +66,10 @@ public class QueryTemplateFactory {
    *                  be in the template.
    * @param filterId  An optional field to target the query at a specific
    *                  instance.
-   * @param hasParent Indicates if the query needs to filter out parent entities.
+   * @param hasParent Indicates if the query needs to filter out parent
+   *                  entities.
    */
-  public String genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent) {
+  public Queue<String> genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent) {
     // Validate inputs
     if (hasParent && filterId == null) {
       LOGGER.error("Detected a parent without a valid filter ID!");
@@ -75,31 +81,28 @@ public class QueryTemplateFactory {
     this.varSequence = new ArrayList<>();
     // Code starts after reset and validation
     LOGGER.info("Generating a query template for getting data...");
-    StringBuilder query = new StringBuilder();
+    StringBuilder selectVariableBuilder = new StringBuilder();
+    StringBuilder whereBuilder = new StringBuilder();
     // Extract the first binding class but it should not be removed from the queue
-    String iriClassLine = genIriClassLine(bindings.peek().peek());
+    String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
     this.sortBindings(bindings, hasParent);
 
-    query.append("SELECT ");
     // Retrieve all variables if no sequence of variable is present
     if (this.varSequence.isEmpty()) {
-      query.append("*");
+      selectVariableBuilder.append("*");
     } else {
       // Else sort the variable and add them to the query
       // Sort by order first, but if the order are equal, sort by subOrder
       this.varSequence.sort(Comparator.comparing(SparqlVariableOrder::order)
           .thenComparing(SparqlVariableOrder::subOrder));
       // Append a ? before the property
-      this.varSequence.forEach(variable -> query.append(ShaclResource.VARIABLE_MARK)
-          .append(variable.property())
-          .append(" "));
+      this.varSequence.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
+          .append(variable.property().replaceAll("\\s+", "_"))
+          .append(ShaclResource.WHITE_SPACE));
     }
-    query.append(" WHERE {")
-        .append(iriClassLine);
-    this.queryLines.values().forEach(query::append);
-    this.appendOptionalIdFilters(query, filterId, hasParent);
-    // Close the query
-    return query.append("}").toString();
+    this.queryLines.values().forEach(whereBuilder::append);
+    this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
+    return this.genFederatedQuery(selectVariableBuilder.toString(), whereBuilder.toString(), targetClass);
   }
 
   /**
@@ -118,7 +121,7 @@ public class QueryTemplateFactory {
    *                  be in the template.
    * @param criterias All the required search criteria.
    */
-  public String genSearchTemplate(Queue<Queue<SparqlBinding>> bindings, Map<String, String> criterias) {
+  public Queue<String> genSearchTemplate(Queue<Queue<SparqlBinding>> bindings, Map<String, String> criterias) {
     // Reset from previous iterations
     this.parentField = "";
     this.queryLines = new HashMap<>();
@@ -126,26 +129,29 @@ public class QueryTemplateFactory {
 
     // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
-    StringBuilder query = new StringBuilder();
+    StringBuilder whereBuilder = new StringBuilder();
     StringBuilder filters = new StringBuilder();
-    query.append("SELECT ?iri WHERE {")
-        // Extract the first binding class but it should not be removed from the queue
-        .append(genIriClassLine(bindings.peek().peek()));
+    // Extract the first binding class but it should not be removed from the queue
+    String targetClass = bindings.peek().peek().getFieldValue(CLAZZ_VAR);
     this.sortBindings(bindings, false);
 
     this.queryLines.entrySet().forEach(currentLine -> {
       String variable = currentLine.getKey();
       // Do not generate or act on any id query lines
       if (!variable.equals("id")) {
-        // note that if no criteria is passed in the API, the filter will not be added
-        if (criterias.containsKey(variable)) {
-          filters.append(genSearchCriteria(variable, criterias));
+        // note that if no criteria or empty string is passed in the API, the filter
+        // will not be added
+        if (criterias.containsKey(variable) && !criterias.get(variable).isEmpty()) {
+          // If there is no search filters to be added, this variable should not be added
+          String searchFilters = genSearchCriteria(variable, criterias);
+          if (!searchFilters.isEmpty()) {
+            whereBuilder.append(currentLine.getValue());
+            filters.append(searchFilters);
+          }
         }
-        query.append(currentLine.getValue());
       }
     });
-    // Close the query
-    return query.append(filters).append("}").toString();
+    return this.genFederatedQuery("?iri", whereBuilder.append(filters).toString(), targetClass);
   }
 
   /**
@@ -169,16 +175,22 @@ public class QueryTemplateFactory {
   }
 
   /**
-   * Generates the class restriction line of a query ie:
-   * ?iri a <clazz_iri>.
+   * Generates two federated queries with a replaceable endpoint [endpoint]. The
+   * first query is for mixed endpoints; the second query is for non-ontop
+   * endpoints.
    * 
-   * @param binding The SPARQL response queried from SHACL restrictions containing
-   *                the class.
+   * @param selectVariables The variables to be selected in a SPARQL SELECT query.
+   * @param whereClause     The contents for the SPARQL query's WHERE clause.
+   * @param targetClass     Target class to reach.
    */
-  private String genIriClassLine(SparqlBinding binding) {
-    // Retrieve the target class from the first binding
-    String targetClass = binding.getFieldValue(CLAZZ_VAR);
-    return "?iri a " + StringResource.parseIriForQuery(targetClass) + ShaclResource.FULL_STOP;
+  private Queue<String> genFederatedQuery(String selectVariables, String whereClause, String targetClass) {
+    Queue<String> results = new ArrayDeque<>();
+    String iriClass = StringResource.parseIriForQuery(targetClass);
+    results.offer(
+        "SELECT " + selectVariables + " WHERE {?iri a " + iriClass + ShaclResource.FULL_STOP + whereClause + "}");
+    results.offer("SELECT " + selectVariables + " WHERE {?iri a/rdfs:subClassOf+ " + iriClass + ShaclResource.FULL_STOP
+        + whereClause + "}");
+    return results;
   }
 
   /**
@@ -260,7 +272,7 @@ public class QueryTemplateFactory {
   private void genQueryLine(SparqlBinding binding, String multiPartPredicate,
       String multiPartSubPredicate, String multiPartLabelPredicate, boolean hasParent,
       Map<String, SparqlQueryLine> queryLineMappings) {
-    String propertyName = binding.getFieldValue(NAME_VAR).replaceAll("\\s+", "_");
+    String propertyName = binding.getFieldValue(NAME_VAR);
     // For existing mappings,
     if (queryLineMappings.containsKey(propertyName)) {
       SparqlQueryLine currentQueryLine = queryLineMappings.get(propertyName);
@@ -286,7 +298,7 @@ public class QueryTemplateFactory {
       // If the field is a parent field, and the template requires a parent, store the
       // parent field
       if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
-        this.parentField = propertyName;
+        this.parentField = propertyName.replaceAll("\\s+", "_");
       }
       queryLineMappings.put(propertyName,
           new SparqlQueryLine(propertyName, multiPartPredicate, multiPartSubPredicate, multiPartLabelPredicate,
@@ -323,9 +335,15 @@ public class QueryTemplateFactory {
       StringBuilder currentLine = new StringBuilder();
       String jointPredicate = parsePredicate(queryLine.predicate(), queryLine.subPredicate());
       jointPredicate = parsePredicate(jointPredicate, queryLine.labelPredicate());
-      StringResource.appendTriple(currentLine, "?iri", jointPredicate,
-          ShaclResource.VARIABLE_MARK + queryLine.property());
-
+      // If query line is id with a roundabout loop to target itself
+      if (queryLine.property().equals("id") && this.verifySelfTargetIdField(jointPredicate)) {
+        // Simply bind the iri as the id
+        currentLine.append("BIND(?iri AS ?id)");
+      } else {
+        StringResource.appendTriple(currentLine, "?iri", jointPredicate,
+            // Note to add a _ to the property
+            ShaclResource.VARIABLE_MARK + queryLine.property().replaceAll("\\s+", "_"));
+      }
       // Optional lines should be parsed differently
       if (queryLine.isOptional()) {
         // If the value must conform to a specific subject variable,
@@ -342,6 +360,24 @@ public class QueryTemplateFactory {
         this.queryLines.put(queryLine.property(), currentLine.toString());
       }
     });
+  }
+
+  /**
+   * Verifies if the ID field is targeting the IRI.
+   * 
+   * @param predicate The predicate string of the ID field.
+   */
+  private boolean verifySelfTargetIdField(String predicate) {
+    // Compile the potential patterns to match
+    Pattern pattern1 = Pattern.compile(ID_PATTERN_1);
+    Pattern pattern2 = Pattern.compile(ID_PATTERN_2);
+
+    // Create matchers for both patterns
+    Matcher matcher1 = pattern1.matcher(predicate);
+    Matcher matcher2 = pattern2.matcher(predicate);
+
+    // Return true if input matches either pattern 1 or pattern 2
+    return matcher1.matches() || matcher2.matches();
   }
 
   /**
