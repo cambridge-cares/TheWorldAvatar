@@ -32,7 +32,7 @@ const KeycloakSession = () => {
             <div id="keycloakSession" className={styles.keycloakSession}>
                 <span id="userName" className={styles.dropbtn}>{displayName}</span>
                 <div className={styles.dropdownContent}>
-                    <Link href="/logout">Log Out</Link>
+                    <Link prefetch={false} href="/logout">Log Out</Link>
                 </div>
             </div>)
     );

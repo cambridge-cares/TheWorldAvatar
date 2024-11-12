@@ -16,6 +16,16 @@
 * Fix bad state calls in map container
 * Fix some of the errors logged in the console
 
+## 5.9.2
+
+### Improvements
+
+* Updated Keycloak connector to latest version v26
+
+### Bug Fixes
+
+* Resolved bug causing unexpectesd logouts from Keycloak due to next prefetching. 
+
 ## 5.9.1
 
 ### Features
