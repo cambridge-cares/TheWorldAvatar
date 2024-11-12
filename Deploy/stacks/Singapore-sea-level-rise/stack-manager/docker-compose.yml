@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   stack-manager:
     image: ghcr.io/cambridge-cares/stack-manager${IMAGE_SUFFIX}:1.27.1

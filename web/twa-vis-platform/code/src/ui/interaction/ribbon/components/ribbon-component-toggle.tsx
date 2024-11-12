@@ -15,7 +15,7 @@ interface RibbonComponentToggleProps {
     tooltip: string,
     initialState: boolean,
     children?: React.ReactNode,
-    action: (state: boolean) => void
+    action: (_state: boolean) => void
 }
 
 export default function RibbonComponentToggle(props: Readonly<RibbonComponentToggleProps>) {

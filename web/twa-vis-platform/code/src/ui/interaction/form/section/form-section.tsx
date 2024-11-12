@@ -31,6 +31,10 @@ export default function FormSection(props: Readonly<FormSectionProps>) {
       <legend className={styles["form-fieldset-label"]}>{parseWordsForLabels(props.group.label[VALUE_KEY])}</legend>
       <div className={styles["form-fieldset-contents"]}>
         {props.group.property.map((field, index) => {
+          // If this is a hidden field, hide the field
+          if (field.maxCount && parseInt(field.maxCount[VALUE_KEY]) === 0) {
+            return <></>;
+          }
           return <FormFieldComponent
             key={field.name[VALUE_KEY] + index}
             entityType={props.entityType}

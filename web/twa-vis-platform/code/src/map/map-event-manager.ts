@@ -21,7 +21,7 @@ interface TWAFeature {
  */
 export default class MapEventManager {
   private map: mapboxgl.Map = null;
-  private listeners: Array<{ event: MapEvent; listener: (e: MapMouseEvent) => void; layerID?: string }> = [];
+  private listeners: Array<{ event: MapEvent; listener: (_e: MapMouseEvent) => void; layerID?: string }> = [];
 
   // Constructs an instance of this event manager
   public constructor(map: mapboxgl.Map) {
@@ -158,7 +158,7 @@ export default class MapEventManager {
    * @param {(e: MapMouseEvent) => void} listener - Event listener to be added.
    * @param {string} layerID - Optional parameter for the specified layer id if available.
    */
-  private addEventListener(event: MapEvent, listener: (e: MapEvent) => void, layerID?: string): void {
+  private addEventListener(event: MapEvent, listener: (_e: MapEvent) => void, layerID?: string): void {
     if (layerID) {
       // Assuming `this.map.on` expects a listener of a specific type, ensure `listener` matches.
       // This might require wrapping `listener` to match the expected signature.
@@ -174,7 +174,7 @@ export default class MapEventManager {
    */
   private removeAllEventListeners(): void {
     this.listeners.forEach(({ event, layerID, listener }) => {
-      const l = listener as (e: MapEvent) => void
+      const l = listener as (_e: MapEvent) => void
       if (layerID) {
         this.map.off(event.type, layerID, l);
       } else {
