@@ -209,17 +209,16 @@ public class IsochroneAgent extends JPSAgent {
                     "isochrone_aggregated");
 
             if (isochroneFunction.equals("UR")) {
-                String unreachableSQL = "WITH tmp AS (SELECT af.minute, "
+                String unreachableSQL = "WITH cf AS (SELECT af.minute, "
                         + "ST_Difference(ST_ConcaveHull(ST_Points(fp30.geom),0.2, false), af.geom) AS geom "
-                        + "FROM (SELECT minute, ST_Union(geom) AS geom, SUM(population) AS population "
-                        + "FROM isochrone_aggregated WHERE roadcondition = 'Flooded' GROUP BY minute) AS af "
-                        + "CROSS JOIN flood_polygon_single_30cm AS fp30)\n"
-                        + "SELECT minute, SUM((ST_SummaryStats(ST_Clip(population.rast, tmp.geom, TRUE))).sum) AS population, "
-                        + "tmp.geom AS geom FROM tmp, population GROUP BY tmp.minute, tmp.geom";
+                        + "FROM flood_polygon_single_30cm AS fp30, (SELECT minute, geom AS geom FROM isochrone_aggregated "
+                        + "WHERE roadcondition = 'Flooded') AS af) SELECT 'Unreachable Area' AS name, cf.minute, "
+                        + "CAST(subquery.sum AS INT) AS population, cf.geom AS geom FROM cf, "
+                        + "(SELECT cf.geom, SUM((ST_SummaryStats(ST_Clip(population.rast, cf.geom, TRUE))).sum) "
+                        + "FROM population, cf GROUP BY cf.geom) AS subquery WHERE subquery.geom = cf.geom";
                 createGeoserverLayer(geoServerClient, unreachableSQL, "unreachable", "unreachable");
-                String affectedSQL = "SELECT 'Unreachable Area' as name, af.minute, "
-                        + "ABS(an.population - af.population) AS population, "
-                        + "ST_Difference(an.geom, af.geom) AS geom "
+                String affectedSQL = "SELECT 'Affected Area' as name, af.minute, "
+                        + "an.population - af.population AS population, ST_Difference(an.geom, af.geom) AS geom "
                         + "FROM (SELECT minute, ST_Union(geom) AS geom, SUM(population) AS population "
                         + "FROM isochrone_aggregated WHERE roadcondition = 'Flooded' GROUP BY minute) AS af "
                         + "JOIN (SELECT minute, ST_Union(geom) AS geom, SUM(population) AS population "
