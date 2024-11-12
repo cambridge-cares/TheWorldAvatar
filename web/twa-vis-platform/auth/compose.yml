@@ -2,7 +2,7 @@ services:
   keycloak-dev:
     restart: always
     container_name: "keycloak-dev-server"
-    image: keycloak/keycloak:latest
+    image: keycloak/keycloak:26.0
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -43,13 +43,14 @@ services:
   postgres:
     restart: always
     container_name: "postgres"
-    image: postgres:latest
+    image: postgres:17
     environment:
       POSTGRES_USER: postgres # default user for the container os
       PGUSER: postgres # default user for psql
       POSTGRES_DB: keycloak
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
       # POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+      GID: 1001
     secrets:
       - postgres-password
     healthcheck:
@@ -60,7 +61,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     networks:
       - auth-network
 
