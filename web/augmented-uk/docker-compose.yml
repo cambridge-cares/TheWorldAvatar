@@ -18,7 +18,7 @@ services:
     volumes:
       - ./public:/twa/public/
     ports:
-      - "38384:3000" 
+      - "38384:3000"
 
 secrets:
     mapbox_username:

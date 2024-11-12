@@ -23,7 +23,6 @@ interface GlobalContainerProps {
 export default function GlobalContainer(
   props: Readonly<GlobalContainerProps>
 ) {
-  const { modules, branding } = props.settings;
   const [popup, setPopup] = useState<boolean>(false);
   const [contextMenuVisible, setContextMenuVisible] = useState<boolean>(false);
   const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -62,13 +61,7 @@ export default function GlobalContainer(
         )}
 
         <Navbar
-          showLanding={modules.landing}
-          showMap={modules.map}
-          showDash={modules.dashboard}
-          showHelp={modules.help}
-          showRegistry={modules.registry}
-          showScheduler={modules.scheduler}
-          logos={branding.navbar}
+          settings={props.settings}
         />
 
         <div id="contentContainer">{props.children}</div>

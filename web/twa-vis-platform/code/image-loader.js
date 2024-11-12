@@ -1,6 +1,6 @@
 'use client'
 
-export default function ({ src, height, width, quality }) {
+export default function imageLoader({ src, height, width, quality }) {
     return `${process.env.ASSET_PREFIX}${src}?w=${width || 25}&h=${height|| 25}&q=${quality || 75}`
 }
 

@@ -7,9 +7,12 @@ services:
       - "8080:8080"
       - "8443:8443"
     environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}    
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-theworldavatar}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:-admin}    
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:-theworldavatar}
+      KC_LOG: console,file
       KC_LOG_LEVEL: info
+      KC_LOG_CONSOLE_COLOR: true
+      KC_LOG_FILE_DIR: /log/keycloak.log
       KC_DB: postgres
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
@@ -23,15 +26,50 @@ services:
     networks:
       - auth-network
 
-  redis:
+  keycloak-server:
+    container_name: "keycloak-server"
+    image: keycloak/keycloak:26.0
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Europe/London
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      ###################################################
+      KC_LOG: console,file
+      KC_LOG_CONSOLE_LEVEL: info
+      KC_LOG_CONSOLE_COLOR: true
+      KC_LOG_FILE_LEVEL: trace
+      ###################################################
+      KC_HOSTNAME: ## set hostname as configured in reverse proxy here
+      KC_HOSTNAME_ADMIN: ## optionally set hostname as configured in reverse proxy here
+      # KC_HOSTNAME_DEBUG: true # if necessary
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: false # not needed to allow other containers to commumicate with keycloak server-side
+      ###################################################
+      KC_DB_URL_HOST: postgres
+      KC_DB_USERNAME: postgres
+      KC_DB: postgres
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_DB_POOL_MAX_SIZE: 50
+      ###################################################
+      KC_HEALTH_ENABLED: true
+      KC_HTTP_ENABLED: true ## this replaces the prox  y mode (whether to forward in SSL or not), works if we assume this is edge server
+      KC_PROXY_HEADERS: xforwarded ## this replaces the proxy mode (whether to forward in SSL or not)
+      # KC_TLS_HOSTNAME_VERIFIER: ANY
+    command: start --import-realm #--optimized
+    volumes:
+      - ./realm:/opt/keycloak/data/import:ro # the realm to import
+    networks:
+      - auth-network
+
+  dragonfly:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    container_name: "session-store"
     restart: always
-    container_name: "bnl-redis"
-    image: redis:latest
+    ulimits:
+      memlock: -1
     ports:
       - "6379:6379"
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       - auth-network
     healthcheck:
@@ -39,6 +77,8 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+    volumes:
+      - dragonfly-data:/data
 
   postgres:
     restart: always
@@ -54,14 +94,14 @@ services:
     secrets:
       - postgres-password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d keycloak -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -d keycloak -U postgres" ]
       interval: 1s
       timeout: 5s
       retries: 10
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - auth-network
 
@@ -88,3 +128,7 @@ networks:
 secrets:
   postgres-password:
     file: ./postgres-password
+
+volumes:
+  dragonfly-data:
+  postgres-data:
