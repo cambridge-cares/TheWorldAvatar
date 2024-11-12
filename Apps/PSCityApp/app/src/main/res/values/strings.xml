@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">CityApp</string>
+    <string name="amenity_title">Amenities in Pirmasens</string>
+    <string name="amenity_text">Amenities</string>
+    <string name="attraction_text">Attractions</string>
+    <string name="contact_text">Contacts</string>
+    <string name="entertainment_text">Leisure &amp; Entertainment</string>
+    <string name="event_text">Activities &amp; Events</string>
+    <string name="news_text">News</string>
+    <string name="parking_text">Public Parking Spots: 32</string>
+    <string name="profile_text">Profile</string>
+    <string name="recycling_text">Glass Recycling Points</string>
+    <string name="report_text">Damage Report</string>
+    <string name="supermarket_text">Local Shopping</string>
+    <string name="toilet_text">Public Toilets</string>
+    <string name="water_text">Drinking Water</string>
+</resources>

@@ -1,0 +1,45 @@
+{
+  "type": "visualisation",
+  "ServiceSpec": {
+      "Name": "visualisation",
+      "TaskTemplate": {
+          "ContainerSpec": {
+              "Image": "ghcr.io/cambridge-cares/twa-vf:latest",
+              "Mounts": [
+                  {
+                      "Type": "volume",
+                      "Source": "vis-files",
+                      "Target": "/twa/public"
+                  }
+              ],
+              "Env": [
+                  "KEYCLOAK=false",
+                  "PROTECTED_PAGES=/page,/otherpage",
+                  "ROLE_PROTECTED_PAGES=/role,/protected,/pages",
+                  "ROLE=viz:protected",
+                  "ASSET_PREFIX=/visualisation"
+                ],
+              "Secrets": [
+                  {
+                      "SecretName": "mapbox_username",
+                      "File": {
+                          "Name": "/run/secrets/mapbox_username"
+                      }
+                  },
+                  {
+                      "SecretName": "mapbox_api_key",
+                      "File": {
+                          "Name": "/run/secrets/mapbox_api_key"
+                      }
+                  }
+              ]
+          }
+      }
+  },
+  "endpoints": {
+      "ui": {
+          "url": "http://localhost:3000",
+          "externalPath": "/visualisation"
+      }
+  }
+}

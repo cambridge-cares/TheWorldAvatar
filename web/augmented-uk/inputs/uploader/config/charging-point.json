@@ -1,0 +1,40 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "charging_point",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "subdirectory": "charging",
+            "table": "charging_point_kl_table",
+            "name": "charging_point_kl_layer",
+            "sql": "@/inputs/config/sql/charging-point-kings-lynn.sql",
+            "ogr2ogrOptions": {
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "longitude",
+                    "Y_POSSIBLE_NAMES": "latitude"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "charging_point_kl_virtual_table",
+                    "sql": "@/inputs/config/sql/virtualTables/charging-point-kings-lynn-virtual.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry_charging_point_kl",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "point"
+            }
+        }
+    ],
+    "mappings": [
+        "charging-point.obda"
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
+}

@@ -128,6 +128,7 @@ DERIV_BELONGS_TO = DERIV + 'belongsTo'
 DERIV_DERIVED_FROM = DERIV + 'isDerivedFrom'
 DERIV_DERIVED_USING = DERIV + 'isDerivedUsing' 
 DERIV_HAS_STATUS = DERIV + 'hasStatus' 
+DERIV_RETRIEVED_INPUTS_AT = DERIV + 'retrievedInputsAt'
 
 # Time ontology
 TIME_HAS_BEGINNING = TIME + 'hasBeginning'

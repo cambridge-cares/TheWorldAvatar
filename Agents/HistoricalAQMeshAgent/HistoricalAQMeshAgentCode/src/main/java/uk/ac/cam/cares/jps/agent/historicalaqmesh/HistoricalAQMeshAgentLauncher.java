@@ -84,10 +84,10 @@ public class HistoricalAQMeshAgentLauncher extends JPSAgent {
       else {
  		 validate = requestParams.has(KEY_AGENTPROPERTIES);
  		 if (validate == true) {
- 		 validate = requestParams.has(KEY_CLIENTPROPERTIES);
+ 		    validate = requestParams.has(KEY_CLIENTPROPERTIES);
  		 }
  		 if (validate == true) {
- 		 validate = requestParams.has(KEY_XLSXCONNECTORPROPERTIES);
+ 		    validate = requestParams.has(KEY_XLSXCONNECTORPROPERTIES);
  		 }
  		 if (validate == true) {
  		 agentProperties = (requestParams.getString(KEY_AGENTPROPERTIES));

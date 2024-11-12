@@ -1,0 +1,2 @@
+class TriplestoreNotFound(Exception):
+    pass

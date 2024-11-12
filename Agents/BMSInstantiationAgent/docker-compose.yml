@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  bms-instantiation-agent:
+    container_name: bms-instantiation-agent
+    image: bms-instantiation-agent:1.0.0
+    build:
+      context: .
+      target: agent
+    volumes:
+      - ./config:/usr/local/tomcat/config
+    ports:
+      - "1027:8080"

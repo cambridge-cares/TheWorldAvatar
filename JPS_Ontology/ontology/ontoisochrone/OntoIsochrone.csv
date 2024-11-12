@@ -1,0 +1,25 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoIsochrone,TBox,https://www.theworldavatar.com/kg/ontoisochrone/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoIsochrone,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoIsochrone,TBox,OntoIsochrone is an ontology for describing isochrones.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoIsochrone,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Isochrone,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,Polygon describing the area reachable within a stipulated time threshold. ,https://www.theworldavatar.com/kg/ontoisochrone/,Isochrone
+originatesFrom,Object Property,,,Isochrone,http://www.opengis.net/ont/geosparql#Feature,,A relationship between an isochrone and the entities where it originates from.,https://www.theworldavatar.com/kg/ontoisochrone/,originates from
+TransportMode,Class,,,,,,Transport mode refers to the way people are transported.,https://www.theworldavatar.com/kg/ontoisochrone/,Transport Mode
+Drive,Class,TransportMode,IS-A,,,,Drive describes the act of travelling via a motorized vehicle.,https://www.theworldavatar.com/kg/ontoisochrone/,Drive
+Cycle,Class,TransportMode,IS-A,,,,Cycle describes the act of travelling via a bicycle.,https://www.theworldavatar.com/kg/ontoisochrone/,Cycle
+Walk,Class,TransportMode,IS-A,,,,Walk describes the act of travelling on foot. ,https://www.theworldavatar.com/kg/ontoisochrone/,Walk
+RoadCondition,Class,,,,,,Road condition describes the condition of the road. ,https://www.theworldavatar.com/kg/ontoisochrone/,Road Condition
+Flooded,Class,RoadCondition,IS-A,,,,Road condition under flooded circumstances.,https://www.theworldavatar.com/kg/ontoisochrone/,Flooded
+Normal,Class,RoadCondition,IS-A,,,,Road condition under normal circumstances.,https://www.theworldavatar.com/kg/ontoisochrone/,Normal
+hasTimeThreshold,Data Property,,,Isochrone,https://www.w3.org/2006/time#minute,,A relationship between an isochrone and its time threshold.,https://www.theworldavatar.com/kg/ontoisochrone/,has time threshold
+hasRoadCondition,Object Property,,,Isochrone,RoadCondition,,A relationship that describes the road condition of an isochrone.,https://www.theworldavatar.com/kg/ontoisochrone/,has road condition
+hasTotalPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered total population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has total population
+hasMenPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered men population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has men population
+hasWomenPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered women population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has women population
+hasWomenofReproductiveAge,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered women of reproductive age (age 15 - 49) population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has women of reproductive age population
+hasChildrenPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered children (age under 5) population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has children population
+hasYouthPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered youth (age 15 - 24) population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has youth population
+hasElderlyPopulation,Data Property,,,Isochrone,integer,,A relationship between an isochrone and its covered elderly (age above 60) population number.,https://www.theworldavatar.com/kg/ontoisochrone/,has elderly population
+assumesTransportMode,Object Property,,,Isochrone,TransportMode,,A relationship between an isochrone and the transport mode that is used for the isochrone calculations.,https://www.theworldavatar.com/kg/ontoisochrone/,assumes transport mode
+hasFloodDepth,Object Property,,,Flooded,https://www.theworldavatar.com/kg/ontoflood/FloodDepth,,A relationship between flooded road condition and its flood depth,https://www.theworldavatar.com/kg/ontoisochrone/,has flood depth

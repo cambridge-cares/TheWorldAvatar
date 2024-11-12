@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  filter-agent:
+    image: ghcr.io/cambridge-cares/filter-agent:${MAJOR}.${MINOR}.${PATCH}${EXTRA}
+    environment:
+      DEFAULT_NAMESPACE: kb
+      DEFAULT_QUERY: query
+    ports:
+      - "8080:8080"

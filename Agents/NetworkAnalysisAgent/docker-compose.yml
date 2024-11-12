@@ -1,0 +1,9 @@
+services:
+  networkanalysisagent:
+    image: ghcr.io/cambridge-cares/networkanalysisagent:1.2.0
+    build: .
+    ports:
+      - "10107:8080"
+    volumes:
+      - ./inputs:/inputs
+

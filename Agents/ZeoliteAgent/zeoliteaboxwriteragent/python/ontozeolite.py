@@ -1,0 +1,1820 @@
+"""
+    Part of ontozeolite package.
+    Author: Rutkevych Pavlo, rutkevych.cares@gmail.com
+    Date: 2024/04/01
+"""
+
+"""
+Python program to prepare .csv file for OntoZeolite ontology abox.
+
+There is a single .csv file with data for all zeolitic materials.
+So this class loads all of them and on demand can generate any zeolite.
+
+Main functions:
+load_zeolites() - loads the entire database
+getCsvArr() - generates abox rows. ???? TODO
+"""
+
+import os
+import json
+
+import logging
+
+import bib2csv
+
+import tools
+# from ontocrystal_datatypes import *
+import ontocrystal_datatypes as ocdt
+
+import genform
+# import csv_maker
+
+# logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
+
+zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
+
+ontoSpeciesPrefix = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+
+
+def load_recipes(dir_list):
+    """ Function to load known recipes.
+    Currently function supports only the format used in IZA web-site.
+
+    """
+    output = []
+
+    if isinstance(dir_list, list):
+        for path in dir_list:
+            output += load_recipes(path)
+
+    elif isinstance(dir_list, str):
+        if os.path.isfile(dir_list):
+            # Error! Encoding is not UTF!
+            # with open(dir_list, encoding="utf-8") as f:
+            with open(dir_list) as f:
+                lines = f.readlines()
+                for line in lines:
+                    if len(line.strip()) == 3 or \
+                      (len(line.strip()) == 4 and line.strip()[0] == "-"):
+                        output.append((line.strip(), dir_list))
+                        break
+        elif os.path.isdir(dir_list):
+            paths = os.listdir(dir_list)
+            for path in paths:
+                output += load_recipes(os.path.join(dir_list, path))
+    else:
+        logging.error("Invalid input type in load_recipes(): %s",
+                      str(dir_list))
+
+    return output
+
+RECIPES = load_recipes("recipes")
+# print("Number of recipes is", len(RECIPES))
+# print(RECIPES)
+
+
+class OntoZeolite:
+    """"
+    Database for all known zeolitic materials.
+    As such, it does not have an itemName and className.
+    itemName and className are required for the getCsvArrXXX() functions.
+    Are they? FIXME
+    """
+
+    # __slots__ = ["iza_file_path", "iza_data_base",
+    #             "abox_prefix", "tbox_prefix",
+    #             "", "", "", "", "", "", "", "",]
+
+    def __init__(self, uuidDB=None,  # className, itemName,
+                 tPrefix=None, aPrefix=None):  # , unit = None):
+
+        """
+        if "" == itemName:
+            logging.error(" In OntoZeolite not specified itemName. ")
+            self.itemName = ""
+            return
+        else:
+            self.itemName = itemName
+
+        if "" == className:
+            logging.error(" In OntoZeolite r44444444444")
+            self.className = "Zeolite"
+        else:
+            self.className = className
+        """
+
+        if isinstance(uuidDB, tools.UuidDB):
+            self.uuidDB = uuidDB
+        else:
+            self.uuidDB = tools.UuidDB(uuidDB)
+            logging.warning(" Creating a new uuidDB database in file '%s'.",
+                            self.uuidDB.dbFilename)
+
+        if tPrefix is None:
+            self.tbox_prefix = ""
+        else:
+            self.tbox_prefix = tPrefix
+
+        if aPrefix is None:
+            self.abox_prefix = ""
+        else:
+            self.abox_prefix = aPrefix
+
+        self.zeoOntoPrefix = "http://www.theworldavatar.com/kg/ontozeolite/"
+
+        # self.iza_file_path = os.path.join("iza-data.json")
+        self.iza_file_path = os.path.join("ontozeolite", "izadata", "iza-data.json")
+        self.iza_data_base = {}
+        with open(self.iza_file_path, encoding="utf-8") as f:
+            self.iza_data_base = json.load(f)
+
+        self.data_cif = None
+        self.data_mat = None
+
+        self._chemical_small = None
+        self._chemical_data = None
+        # === end of OntoZeolite.__init__()
+
+    def getIzaByCode(self, code):
+        output = {}
+        for idata, data in enumerate(self.iza_data_base):
+            if "Framework" not in data:
+                logging.error(" Broken IZA json: no 'Framework' key," +
+                              " number %s.", idata)
+                continue
+            if data["Framework"].lower() == code.lower():
+                # print("Found a framework", code)
+                output = data
+                break
+
+        return output
+        # === end of OntoZeolite.getIzaByCode()
+
+    # def load_zeolites(self, filename):
+    def load_zeolites(self):
+        """
+        if not os.path.isfile(filename):
+            logging.error(" Missing file for load_zeolites().")
+            return
+        self.data_cif = tools.readCsv(filename)
+        """
+        # logging.warning(" In OntoZeolites.load_zeolites redundant argument")
+
+        # These two files are generated by iza.py script:
+        file_cif = "cifs.csv"
+        file_mat = "izamat.csv"
+
+        if not os.path.isfile(file_cif):
+            logging.error(" Missing file '%s' for load_zeolites().", file_cif)
+            return
+        self.data_cif = tools.readCsv(file_cif)
+
+        if not os.path.isfile(file_mat):
+            logging.error(" Missing file '%s' for load_zeolites().", file_mat)
+            return
+        self.data_mat = tools.readCsv(file_mat)
+
+        # Removing the header lines:
+        self.data_cif = self.data_cif[1:]
+        self.data_mat = self.data_mat[1:]
+
+        self.check_loaded()
+
+        # === end of OntoZeolite.load_zeolites()
+
+    def check_loaded(self):
+        err_count = 0
+
+        if self.data_mat is None:
+            logging.error(" Missing data from izamat.csv")
+            err_count += 1
+
+        if self.data_cif is None:
+            logging.error(" Missing data from cifs.csv")
+            err_count += 1
+
+        if len(self.data_cif) != len(self.data_mat):
+            logging.error(" Different sizes of data_cif and data_mat: %d vs %d.",
+                          len(self.data_cif), len(self.data_mat))
+            err_count += 1
+
+        # for i in range(len(self.data_cif)):
+        for i in range(min(len(self.data_cif), len(self.data_mat))):
+            line_cif = self.data_cif[i]
+            line_mat = self.data_mat[i]
+            if line_cif[0] != line_mat[0]:
+                logging.error(" Different zeolite ID in column 0 '%s'",
+                              " vs '%s'.", line_cif[0], line_mat[0],
+                              " in ontozeolite")
+                err_count += 1
+
+        return err_count
+        # === end of OntoZeolite.check_loaded()
+
+    def getMaterialIDs(self, frameworkCode):
+        """
+
+        """
+        if "-" == frameworkCode[0] or "_" == frameworkCode[0]:
+            frameworkCode = frameworkCode[1:]
+
+        logging.info(" Starting OntoZeolite.getMaterialIDs()")
+
+        # here data_cif was loaded from file "cifs.csv"
+        #      data_mat was loaded from file "izamat.csv",
+        output = []
+
+        for il, line in enumerate(self.data_cif):
+            if line[1] == frameworkCode or line[1] == "_" + frameworkCode:
+                name = self.data_mat[il][0]
+                if line[0] != name:
+                    logging.error(" Mismatch zeolite ID in column 0 '%s'",
+                                  " vs '%s'.", line[0], name)
+                output.append((line, self.data_mat[il]))
+
+        if len(output) == 0:
+            logging.error(" No zeolites for framework '%s'.", frameworkCode)
+
+        return output
+        # OntoZeolite.getMaterialIDs()
+
+    def getCsvArrFramework(self, frameworkCode, subject, predicate):
+        logging.error(" Not implemented OntoZeolite.getCsvArrFramework()")
+
+        output = []
+
+        uuid_zeoframe, _ = self.uuidDB.addUUID(self.zeoOntoPrefix + "ZeoliteFramework",
+                                               self.zeoOntoPrefix + "ZeoFramework_" + frameworkCode)
+
+        output.append([uuid_zeoframe, "Instance", self.zeoOntoPrefix + "ZeoliteFramework",
+                       "", "", ""])
+
+        output.append([self.zeoOntoPrefix + "hasFrameworkCode",
+                       "Data Property", uuid_zeoframe, "",
+                       frameworkCode.strip(' "'), "string"])
+
+        lines = self.getMaterialIDs(frameworkCode)
+        # print(">>> lines = '", lines, "'.", sep="")
+        if len(lines) > 0:
+            if "_" == lines[0][1][0]:
+                value = True
+            else:
+                value = False
+
+            output.append([self.zeoOntoPrefix + "isInterrupted", "Data Property",
+                           uuid_zeoframe, "", value, "boolean"])
+
+            output.append([self.zeoOntoPrefix + "isIntergrowth", "Data Property",
+                           uuid_zeoframe, "", False, "boolean"])
+
+        return output
+        # === end of OntoZeolite.getCsvArrFramework()
+
+    def get_framework_UUID(self, frameworkCode):
+
+        # logging.error(" Not implemented OntoZeolite.getFrameworkUUID()")
+        # uuid_zeoframe = self.uuidDB.getUUID("ZeoliteFramework",
+        #                                     "Zeolite_" + frameworkCode)
+        uuid_zeoframe, _ = self.uuidDB.addUUID(self.zeoOntoPrefix + "ZeoliteFramework",
+                                               self.zeoOntoPrefix + "ZeoFramework_" + frameworkCode)
+
+        return uuid_zeoframe
+        # === end of OntoZeolite.get_framework_UUID()
+
+    def get_material_UUID(self, cif_line, mat_line):
+        # logging.error(" Not implemented OntoZeolite.getMaterialUUID()")
+        # uuid_zeo = self.uuidDB.getUUID("ZeoliticMaterial",
+        #                               "Zeolite_" + cif_line[0])
+        #uuid_zeo, _ = self.uuidDB.addUUID("ZeoliticMaterial",
+        #                                  "Zeolite_" + cif_line[0])
+        uuid_zeo, _ = self.uuidDB.addUUID(self.zeoOntoPrefix + "ZeoliticMaterial",
+                                          self.zeoOntoPrefix + "Zeolite_" + mat_line[17])
+
+        return uuid_zeo
+        # === end of OntoZeolite.get_material_UUID()
+
+    def get_cif_file(self, cif_line):
+        if cif_line[5] != "":
+            return cif_line[5]
+        elif cif_line[6] != "":
+            return cif_line[6]
+        elif cif_line[7] != "":
+            return cif_line[7]
+        elif cif_line[8] != "" and cif_line[8] != "?" and cif_line[8] != "None":
+            return os.path.join("cifdir", cif_line[8])
+        return ""
+        # === end of OntoZeolite.get_cif_file()
+
+    def _get_csv_arr_refmat(self, cifLine, uuid_zeo):
+        """
+        Storage of additional information usually available only for
+        the reference materials.
+        """
+        output = []
+        file_path = os.path.join("ontozeolite", "izadata", "iza-data.json")
+
+        if not os.path.isfile(file_path):
+            logging.error(" Missing input data file '%s'.", file_path)
+            return output
+
+        with open(file_path, encoding="utf-8") as fp:
+            data = json.load(fp)
+
+        for mat in data:
+            framework = cifLine[1]
+            if mat["Framework"].replace("-", "_") == framework.replace("-", "_"):
+                if "ReferenceMaterial" not in mat:
+                    logging.error(" Missing reference material for '%s'", framework)
+                    return output
+
+                refmat = mat["ReferenceMaterial"]
+                break
+
+        #print("processing framework refmat:", framework)
+        if "Channels" in refmat:
+            for ich, channel in enumerate(refmat["Channels"]):
+                uuid_chan, _ = self.uuidDB.addUUID("Channel",
+                               "Channel_" + framework + "_" + str(ich))
+
+                output.append([uuid_chan, "Instance", "Channel",
+                               "", "", ""])
+
+                output.append([uuid_zeo, "Instance", uuid_chan,
+                               self.zeoOntoPrefix + "hasChannel", "", ""])
+
+                output.append([self.zeoOntoPrefix + "hasDirection",
+                               "Data Property", uuid_chan, "",
+                               channel["dir"].strip(), "string"])
+
+                output.append([self.zeoOntoPrefix + "hasDirection",
+                               "Data Property", uuid_chan, "",
+                               channel["dir"].strip(), "string"])
+
+                output.append([self.zeoOntoPrefix + "hasSizeMin",
+                               "Data Property", uuid_chan, "",
+                               channel["sizeMin"], "decimal"])
+
+                output.append([self.zeoOntoPrefix + "hasSizeMax",
+                               "Data Property", uuid_chan, "",
+                               channel["sizeMax"], "decimal"])
+
+                output.append([self.zeoOntoPrefix + "hasTAtomsInRing",
+                               "Data Property", uuid_chan, "",
+                               channel["tring"], "integer"])
+
+
+        if "FrameworkDensity" in refmat:
+            density = refmat["FrameworkDensity"]
+            if isinstance(density, dict) and len(density) == 2:
+                if "value" in density and "unit" in density:
+                    fr_dens = ocdt.OntoMeasureWithUncertainty(
+                                             class_name="FrameworkDensity",
+                                             item_name="zeo_frame_dens_" + framework,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+                    if "T/1000A^3" == density["unit"]:
+                        unit = "om:reciprocalCubicNanometre"
+                    else:
+                        unit = density["unit"]
+                        logging.warning(" Unknown unit for refmat" +
+                                        " FrameworkDensity %s", framework)
+
+                    fr_dens.setValue(value=density["value"], unit=unit)
+                    output += fr_dens.get_csv_arr(uuid_zeo,
+                              self.zeoOntoPrefix + "hasFrameworkDensity")
+                else:
+                    logging.error(" missing value or unit in FW density" +
+                                  " in ontozeolite.py %s", framework)
+
+        if "Refs" in refmat:
+            if "doi" in refmat["Refs"]:
+                output.append([self.zeoOntoPrefix + "hasDoi",
+                               "Data Property", uuid_zeo, "",
+                               refmat["Refs"]["doi"], "string"])
+            else:
+                logging.warning(" Missing doi in ref material %s", framework)
+        else:
+            logging.warning(" Missing Refs in ref material %s", framework)
+
+
+        """
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="AccessibleVolumePerCell",
+                                             item_name="acc_volume_cell_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+                               """
+
+
+
+        return output
+        # === end of 
+
+    def _get_compound_iri(self, mat_line):
+        """ Based on the Compounds_Laura.csv get the iri.
+        """
+        #print(" Compound iri for", mat_line)
+        output = {}
+
+        if self._chemical_small == None:
+            self._chemical_small = tools.readCsv("Compounds_Laura.csv")
+
+        for chem in reversed(self._chemical_small):
+            short = mat_line[4].strip().strip("|").strip()
+            if chem[0] == short:
+                output["name_uuid"] = chem[7].replace("<", "").replace(">", "").strip()
+
+                tmp = chem[1].strip()
+                if tmp != "":
+                    output["name"] = tmp
+
+                tmp = chem[3].strip()
+                if tmp != "":
+                    output["formula"] = tmp
+
+                tmp = chem[5].strip()
+                if tmp != "":
+                    output["smiles"] = tmp
+
+                tmp = chem[6].strip()
+                if tmp != "":
+                    output["inchi"] = tmp
+
+                return output
+
+        logging.error(" Not found guest in 'compounds_laura.csv' '%s'", mat_line[4])
+ 
+        if self._chemical_data == None:
+            self._chemical_data = tools.readCsv("chemical_data.csv")
+
+        for chem in self._chemical_data:
+            short = mat_line[4].strip().strip("|").strip()
+            #if self.chem[0] == short:
+            if short.find(self.chem[0]) >= 0:
+                output["name_uuid"] = chem[4].replace("<", "").replace(">", "").strip()
+
+                tmp = chem[0].strip()
+                if tmp != "" and tmp != "None":
+                    output["name"] = tmp
+
+                tmp = chem[1].strip()
+                if tmp != "":
+                    output["formula"] = tmp
+
+                tmp = chem[2].strip()
+                if tmp != "":
+                    output["smiles"] = tmp
+
+                tmp = chem[3].strip()
+                if tmp != "":
+                    output["inchi"] = tmp
+
+
+                #output["formula"] = chem[2].strip()
+                #output["name"] = chem[2].strip()
+                #output["smiles"] = chem[2].strip()
+                #output["inchi"] = chem[2].strip()
+                return output
+
+        return None
+        # === end of _get_compound_iri()
+
+    def _get_elements_iri(self, mat_line):
+        #form = genform.GenFormula(mat_line[2])
+        form = genform.GenFormula() #mat_line[2])
+        form.fullFormula = mat_line[2]
+        form.getFormula()
+        form.updateStatus()
+        #print("formula =", form.formula)
+        #print("a")
+
+        form.getElements()
+        #form.getCoeff()
+        #form.verify()
+        elements = form.get_elements()
+
+        # Convert to the iri:
+        self._Mendeleev_table = None
+        if self._Mendeleev_table == None:
+            # Remember to skip the top line (the header):
+            self._Mendeleev_table = tools.readCsv("elements.csv")[1:]  
+        output = []
+        for el in elements:
+            #print(f"Looking for '{el}'")
+            for i in self._Mendeleev_table:
+                #print(f"    In '{i[0]}'")
+                if el == i[0]:
+                    iri = i[1].replace("<", "").replace(">", "")
+                    output.append((el, iri))
+                    break
+        return output 
+        #return elements 
+        # === end of _get_elements_iri()
+
+    def get_csv_arr_material(self, cifLine, matLine, subject, predicate):
+        """
+        Here 'subject' is the parent Framework of this material.
+        'predicate' is not used?
+        cifLine - a single line from the csv file "cifs.csv".
+        matLine -  a sngle line from the csv file "izamat.csv".
+        """
+        # logging.error(" Not implemented OntoZeolite.get_csv_arr_material():" +
+        #              " '%s', framework: '%s'.", cifLine[0], cifLine[1])
+        output = []
+
+        uuid_zeo, _ = self.uuidDB.addUUID(self.zeoOntoPrefix + "ZeoliticMaterial",
+                                          #"Zeolite_" + cifLine[0])
+                                          self.zeoOntoPrefix + "Zeolite_" + matLine[17])
+
+        output.append([uuid_zeo, "Instance", self.zeoOntoPrefix + "ZeoliticMaterial", "", "", ""])
+        output.append([subject, "Instance", uuid_zeo, predicate, "", ""])
+                       #"hasZeoliticMaterial", "", ""])
+
+        output.append([ontoSpeciesPrefix + "name",
+                        #self.zeoOntoPrefix + "hasFrameworkCode",
+                        "Data Property", uuid_zeo, "",
+                        matLine[1], "string"])
+
+        output.append([self.zeoOntoPrefix + "isHypothetic",
+                       "Data Property", uuid_zeo, "", False, "boolean"])
+
+        if matLine[6] != "":
+                output.append([zeoOntoPrefix + "hasChemicalFormula",
+                           "Data Property", uuid_zeo, "",
+                           matLine[6], "string"])
+
+        # Implementation of output.append([hasGuestMol]):
+        guest = self._get_compound_iri(matLine)
+        if guest:
+            output.append([guest["name_uuid"], "Instance",
+                           ontoSpeciesPrefix + "CompoundIRI", "", "", ""]) # This is external..
+            output.append([uuid_zeo, "Instance", guest["name_uuid"],
+                           self.zeoOntoPrefix + "hasGuestCompound", "", ""])
+
+            if "name" in guest:
+                output.append([ontoSpeciesPrefix + "name",
+                           "Data Property", guest["name_uuid"], "",
+                           guest["name"], "string"])
+
+            if "formula" in guest:
+                output.append([ontoSpeciesPrefix + "formula",
+                           "Data Property", guest["name_uuid"], "",
+                           guest["formula"], "string"])
+
+        elements = self._get_elements_iri(matLine)
+
+        for el, el_iri in elements:
+            #print(el_iri)
+            #output.append([el_iri, "Instance", "http:", "", "", ""])
+            """ Moved to ontocrystal_ontospecies:
+            output.append([el_iri, "Instance",
+                           #ontoSpeciesPrefix + "Element",
+                           "http://www.daml.org/2003/01/periodictable/PeriodicTable#Element",
+                           "", "", ""])  # FIXME This is external. Not strictly necessary.
+
+            symbol_iri = el_iri.replace("Element_", "ElementSymbol_")
+            output.append([symbol_iri, "Instance",
+                           ontoSpeciesPrefix + "ElementSymbol",
+                           #"http://www.daml.org/2003/01/periodictable/PeriodicTable#Element",
+                           "", "", ""])  # FIXME This is external. Not strictly necessary.
+
+            output.append([el_iri, "Instance",
+                           symbol_iri,
+                           ontoSpeciesPrefix + "hasElementSymbol"
+                           #"http://www.daml.org/2003/01/periodictable/PeriodicTable#Element",
+                           "", "", ""])  # FIXME This is external. Not strictly necessary.
+
+            output.append([ontoSpeciesPrefix + "value",
+                           "Data Property", symbol_iri, "",
+                           el, "string"])
+            """
+
+            uuid_atom, _ = self.uuidDB.addUUID("osElement",
+                                               "osElement_" + el)
+
+            output.append([uuid_atom, "Instance", 
+                           self.zeoOntoPrefix + "ChemicalComponent", "", "", ""])
+
+            output.append([uuid_atom, "Instance", el_iri,
+                           ontoSpeciesPrefix + "isInstanceOf", "", ""])
+
+            output.append([uuid_zeo, "Instance", uuid_atom,
+                           self.zeoOntoPrefix + "hasChemicalComponent", "", ""])
+
+
+        # Implementation of output.append([hasFormula])
+
+        # Implementation of output.append([hasElements])
+        # Implementation of output.append([hasBibRef])
+
+        if cifLine[3].upper() == "TRUE":
+            value = True
+        else:
+            value = False
+        output.append([self.zeoOntoPrefix + "isReferenceZeolite",
+                       "Data Property", uuid_zeo, "", value, "boolean"])
+
+        if value:
+            output += self._get_csv_arr_refmat(cifLine, uuid_zeo)
+        
+        #output.append(
+        """
+        output.append([self.zeoOntoPrefix + "isMineral",
+                       "Data Property",
+                       uuid_zeo, "", False, "boolean"])
+
+        output.append([self.zeoOntoPrefix + "isSynthetic",
+                       "Data Property",
+                       uuid_zeo, "", False, "boolean"])
+        """
+
+        return output
+        # === end of OntoZeolite.get_csv_arr_material()
+
+    def _get_recipe_by_name(self, recipes, zeoCode):
+        output = []
+        for recp in recipes:
+            if recp[0] == zeoCode:
+                output.append(recp[1])
+        return output
+        # === end of OntoZeolite._get_recipe_by_name()
+
+    def get_csv_arr_recipe(self, cifLine, subject, predicate):
+        """
+        Here 'subject' is the zeolite material (with uuid).
+             'predicate' is not used.
+             'cifLine' is a line from csv file with info for one zeolite
+        """
+        # logging.error(" Not implemented OntoZeolite.get_csv_arr_recipe()")
+        # print(">>> cifLine =", cifLine)
+        output = []
+
+        # filePath = os.path.join("recipes", "p401.txt")
+        filePaths = self._get_recipe_by_name(RECIPES, cifLine[1])
+        if len(filePaths) > 1:
+            logging.warning(" Detected %d recipes for code %s: %s" +
+                            " using only first of them",
+                            len(filePaths), cifLine[1], filePaths)
+        elif len(filePaths) == 0:
+            return output
+
+        filePath = filePaths[0]
+        print(" Loading recipe from file", filePath)
+        if not os.path.isfile(filePath):
+            logging.error(" Recipe file '%s' does not exist" +
+                          " in OntoZeolite.get_csv_arr_recipe().", filePath)
+            return output
+
+        uuid_recipe, _ = self.uuidDB.addUUID("Recipe", "Recipe_" + cifLine[0])
+
+        output.append([uuid_recipe, "Instance", "Recipe", "", "", ""])
+        output.append([subject, "Instance", uuid_recipe, "hasRecipe", "", ""])
+
+        # got_batch_comp = False
+        # key_batch_comp = "Batch Composition"
+        # got_source_mat = False
+        # key_source_mat = "Source Materials"
+
+        self.section_names = ["Batch Composition", "Source Material",
+                              "Batch Preparation", "Crystallization",
+                              "Product Recovery", "Reference", "Note",
+                              "Product Characterization"]
+
+        # with open(filePath, encoding="utf-8") as fp:
+        with open(filePath) as fp:
+            lines = fp.readlines()
+
+        sections = self._recipeToSections(lines)
+        self._checkSections(filePath, sections)
+
+        if False:
+            for key in sections.keys():
+                print(">>> key =", key)
+                for line in sections[key]["value"]:
+                    print("   ", line.strip())
+
+        # for key in sections.keys():
+        for key in sections:
+            if "Batch Preparation" == key:
+                output += self._get_csv_arr_batch_prep(sections[key],
+                                                       uuid_recipe)
+            elif "Product Recovery" == key:
+                output += self._get_csv_arr_prod_recov(sections[key],
+                                                       uuid_recipe)
+            elif "Source Material" == key:
+                output += self._get_csv_arr_source_mat(sections[key],
+                                                       uuid_recipe)
+            elif "Batch Composition" == key:
+                output += self._get_csv_arr_batch_comp(sections[key],
+                                                       uuid_recipe)
+            elif "Crystallization" == key:
+                output += self._get_csv_arr_crystally(sections[key],
+                                                      uuid_recipe)
+            elif "Product Characterization" == key:
+                output += self._get_csv_arr_prod_char(sections[key],
+                                                      uuid_recipe)
+
+            elif "Reference" == key:
+                output += self._get_csv_arr_refs(sections[key],
+                                                 uuid_recipe, filePath)
+            elif "Note" == key:
+                print(">>>>>>>>>>>>>>>>>>>>>>>", key, cifLine)
+                output += self._get_csv_arr_note(sections[key], uuid_recipe)
+
+            else:
+                print("    not processed recipe '" + key + "'.")
+
+        """
+        for il in range(len(lines)):
+            line = lines[il]
+            #print(line.strip())
+            short = line.strip().lower()
+
+            if short.startswith(keyBatchComp.lower()):
+                #print("Batch comp: '" + line.strip() + "'.")
+                gotBatchComp = True
+                if lines[il+1].strip() != "":
+                    logging.error(" In recipe file '" + filePath + "'" + \
+                                   " need empty line after batch comp." + \
+                                   " But got '" + lines[il+1] + "'.")
+                txtBatchComp = line[len(keyBatchComp) :].strip()
+
+                output.append([self.zeoOntoPrefix + "hasBatchComposition", \
+                                 "Data Property", uuid_recipe, "", \
+                                 txtBatchComp, "string"])
+
+
+            if short.startswith(keySourceMat.lower()):
+                gotSourceMat = True
+                dline, sourceMat = self._getSourceMat(lines, il)
+                il += dline
+                for mat in sourceMat:
+                    output.append([self.zeoOntoPrefix + "hasSourceMaterial", \
+                                 "Data Property", uuid_recipe, "", \
+                                 mat, "string"])
+
+
+                pass
+            pass # for line
+        """
+
+        return output
+        # === end of OntoZeolite.get_csv_arr_recipe()
+
+    def _isSectionStart(self, line):
+        for key in self.section_names:
+            # print(line.strip(), " vs ", key)
+            if line.strip().lower().startswith(key.lower()):
+                # print("matched key ")
+                return True, key
+        return False, ""
+        # === end of OntoZeolite._isSectionStart()
+
+    def _recipeToSections(self, lines):
+        sections = {}
+        for key in self.section_names:
+            sections[key] = {}
+            sections[key]["gotit"] = False
+            sections[key]["value"] = []
+            sections[key]["kword"] = None
+
+        lastKey = None
+        secLines = []
+
+        for il, line in enumerate(lines):
+            if line.strip() != "":
+                flag, key = self._isSectionStart(line)
+                if flag:
+                    if lastKey:
+                        sections[lastKey]["kword"] = line.strip()
+                        sections[lastKey]["gotit"] = True
+                        sections[lastKey]["value"] = list(secLines)
+
+                    lastKey = key
+                    secLines = []
+                elif len(lines)-1 == il:
+                    if lastKey:
+                        secLines.append(line.strip())
+
+                        sections[lastKey]["kword"] = line.strip()
+                        sections[lastKey]["gotit"] = True
+                        sections[lastKey]["value"] = list(secLines)
+
+                secLines.append(line.strip())
+
+        #print("recipeToSections =", sections)
+        return sections
+        # === end of OntoZeolite._recipeToSections()
+
+    def _checkSections(self, filename, sections):
+        err_count = 0
+        for key in sections.keys():
+            if sections[key]["gotit"] is False:
+                logging.warning(" Missing '%s' section in file '%s'.",
+                                key, filename)
+                print(" Missing recipe entry '" + str(key) +
+                      "' in file", filename)
+                err_count += 1
+
+        if err_count > 0:
+            print("Finished check sections. error count =", err_count)
+
+        return err_count
+        # === end of OntoZeolite._checkSections()
+
+    def _get_csv_arr_batch_prep(self, section, subject):
+        output = []
+        # print(section["value"])
+        if section["value"][0] != "Batch Preparation":
+            logging.warning(" Expected a batch preparation, but got '%s'.",
+                            section["value"][0])
+
+        value = "\n".join(section["value"][1:])
+        output.append([self.zeoOntoPrefix + "hasBatchPreparation",
+                       "Data Property", subject, "", value, "string"])
+
+        return output
+        # === end of OntoZeolite._getCsvArrBatchPrep()
+
+    def _get_csv_arr_prod_recov(self, section, subject):
+        output = []
+        # print(section["value"])
+        if section["value"][0] != "Product Recovery":
+            logging.warning(" Expected a product recovery, but got '%s'.",
+                            section["value"][0])
+
+        value = "\n".join(section["value"][1:])
+        output.append([self.zeoOntoPrefix + "hasProductRecovery",
+                       "Data Property", subject,
+                       "", value, "string"])
+
+        return output
+        # === end of OntoZeolite._getCsvArrProdRecov()
+
+    def _get_csv_arr_source_mat(self, section, subject):
+        output = []
+        # print(section["value"])
+        if section["value"][0] != "Source Materials":
+            logging.warning(" Expected a source material, but got '%s'.",
+                            section["value"][0])
+
+        for mat in section["value"][1:]:
+            # value = "\n".join(section["value"][1:])
+            output.append([self.zeoOntoPrefix + "hasSourceMaterial",
+                           "Data Property", subject, "", mat, "string"])
+
+        return output
+        # === end of OntoZeolite._getCsvArrSourceMat()
+
+    def _get_csv_arr_batch_comp(self, section, subject):
+        output = []
+        # print("batch comp = ", section["value"])
+        if len(section["value"]) == 1:
+
+            if section["value"][0].strip().startswith("Batch Composition"):
+                # value = "\n".join(section["value"][1:])
+                pos = section["value"][0].find(":")
+                value = section["value"][0][pos+1:].strip()
+                output.append([self.zeoOntoPrefix + "hasBatchComposition",
+                              "Data Property", subject, "", value, "string"])
+        else:
+            logging.warning(" Expected a batch composition, but got '%s'.",
+                            section["value"])
+
+        return output
+        # === end of OntoZeolite._getCsvArrBatchComp()
+
+    def _get_csv_arr_crystally(self, section, subject):
+        output = []
+        # print(section["value"])
+        if section["value"][0] != "Crystallization":
+            logging.warning(" Expected a crystallization, but got '%s'.",
+                            section["value"][0])
+
+        value = "\n".join(section["value"][1:])
+        output.append([self.crystOntoPrefix + "hasCrystallization",
+                       "Data Property", subject, "", value, "string"])
+
+        return output
+        # === end of OntoZeolite._getCsvArrCrystally()
+
+    def _get_csv_arr_prod_char(self, section, subject):
+        output = []
+        # print(section["value"])
+        if section["value"][0] != "Product Characterization":
+            logging.warning(" Expected a product recovery, but got '%s'.",
+                            section["value"][0])
+
+        value = "\n".join(section["value"][1:])
+        output.append([self.zeoOntoPrefix + "hasCharacterization",
+                      "Data Property", subject, "", value, "string"])
+
+        return output
+        # === end of OntoZeolite._getCsvArrProdChar()
+
+    def _get_csv_arr_refs(self, section, subject, filePath):
+        """
+        The input recipes files should be modified to contain the bib file:
+        the Reference section should have even number of lines:
+            where each odd number is the original citation,
+            and the even line is the bib file name.
+        """
+        output = []
+        # print(section["value"])
+        if section["value"][0].startswith("Reference"):
+            if len(section["value"][1:]) % 2 != 0:
+                logging.error(" In file '%s' expect even number of lines," +
+                              " but got %d.", filePath, len(section["value"][1:]))
+
+            for line in section["value"][1:]:
+                logging.error(" Not implemented references aaaaaa")
+                # ontobibo.
+                # output.append([self.zeoOntoPrefix + "hasCharacterization", \
+                #               "Data Property", subject, "", value, "string"])
+
+        else:
+            logging.warning(" Expected a reference, but got '%s'.",
+                            section["value"][0])
+
+        return output
+        # === end of OntoZeolite._getCsvArrRefs()
+
+    def _get_csv_arr_note(self, section, subject):
+        print("_arr_note: section =", section)
+        output = []
+        # print(section["value"])
+        if len(section["value"]) > 1:
+            if section["value"][0].startswith("Note"):
+
+                value = "\n".join(section["value"][1:])
+                # print("value =", value)
+                output.append([self.zeoOntoPrefix + "hasNotes",
+                               "Data Property", subject, "", value, "string"])
+            else:
+                logging.warning(" Expected a note, but got '%s'.",
+                                section["value"][0])
+
+        return output
+        # === end of OntoZeolite._getCsvArrNote()
+
+    def getCsvArrConstituent(self, subject, predicate, other):
+        logging.error(" Not implemented OntoZeolite.getCsvArrConstituent()")
+        output = []
+
+        return output
+        # === end of OntoZeolite.getCsvArrConstituent()
+
+    def get_csv_arr_topology(self, subject, predicate, code):
+        """ Returns a list of entries for .csv file containing the topology.
+        Requires loading of input data in advance.
+        """
+        # logging.error(" Not implemented OntoZeolite.getCsvArrTopology()")
+        output = []
+
+        topo_data = self.getIzaByCode(code)
+        if len(topo_data) == 0:
+            return output
+
+        #print("topo_data ", topo_data["Framework"])
+
+        uuid_zeotopo, _ = self.uuidDB.addUUID("ZeoliteTopology",
+                                              "ZeoTopology_" + code)
+
+        output.append([uuid_zeotopo, "Instance", "ZeoliteTopology",
+                       "", "", ""])
+
+        output.append([subject, "Instance", uuid_zeotopo, predicate, "", ""])
+
+        if "RDLS" in topo_data["CellParameters"]:
+            # Distance Least Squares
+            dls = topo_data["CellParameters"]["RDLS"]
+            output.append([self.zeoOntoPrefix + "hasRDLS",
+                       "Data Property", uuid_zeotopo, "",
+                       float(dls), "decimal"])
+        else:
+            logging.error(" Missing RDLS in the IZA-DATA file")
+
+
+        if "TAtoms" in topo_data:
+            for ia, atom in enumerate(topo_data["TAtoms"]):
+                uuid_tatom, _ = self.uuidDB.addUUID(zeoOntoPrefix + "TAtom",
+                                self.zeoOntoPrefix + "TAtom_" + code + "_" + str(ia))
+
+                output.append([uuid_tatom, "Instance", zeoOntoPrefix + "TAtom", "", "", ""])
+                output.append([uuid_zeotopo, "Instance", uuid_tatom,
+                               self.zeoOntoPrefix + "hasTAtom", "", ""])
+
+                if "TAtomName" in atom:
+                    if "Name" in atom["TAtomName"]:
+                        output.append([self.zeoOntoPrefix + "hasTAtomName",
+                                       "Data Property", uuid_tatom, "",
+                                       atom["TAtomName"]["Name"], "string"])
+                    else:
+                        logging.error(" Broken IZA data, missing" +
+                                      " ['TAtomName']['Name'] in %s.", code)
+
+                    if "Id" in atom["TAtomName"]:
+                        output.append([self.zeoOntoPrefix + "hasTAtomIndex",
+                                       "Data Property", uuid_tatom, "",
+                                       atom["TAtomName"]["Id"], "integer"])
+                    else:
+                        logging.error(" Broken IZA data, missing" +
+                                      " ['TAtomName']['Id'] in %s.", code)
+
+                else:
+                    logging.error(" Broken IZA data, missing" +
+                                  " ['TAtomName'] in %s.", code)
+
+                if "CoordinateSequence" in atom:
+
+                    vec2 = ocdt.OntoVector(class_name="CoordinateSequence",
+                                           item_name="coord_seq_" + code + "_" + str(ia),
+                                           tbox_prefix=self.zeoOntoPrefix,
+                                           abox_prefix=self.zeoOntoPrefix,
+                                           unit="om:dimensionOne",
+                                           uuidDB=self.uuidDB)
+
+                    vec2.addComponentList(valList=atom["CoordinateSequence"])
+
+                    output += vec2.get_csv_arr(uuid_tatom,
+                                               self.zeoOntoPrefix + "hasCoordinateSequence")
+
+                else:
+                    logging.error(" Broken IZA data, missing" +
+                                  " ['CoordinateSequence'] in %s.", code)
+
+                if "VertexSymbol" in atom:
+                    for iv, vs in enumerate(atom["VertexSymbol"]):
+                        uuid_vert_symb, _ = self.uuidDB.addUUID(
+                            self.zeoOntoPrefix + "VertexSymbol",
+                            self.zeoOntoPrefix + "Vert_Symb_" + code + "_" + str(ia) + "_" + str(iv))
+
+                        output.append([uuid_vert_symb, "Instance",
+                                       zeoOntoPrefix + "VertexSymbol", "", "", ""])
+
+                        output.append([uuid_tatom, "Instance", uuid_vert_symb,
+                                       self.zeoOntoPrefix + "hasVertexSymbol",
+                                       "", ""])
+
+                        output.append([self.zeoOntoPrefix + "hasSymbolPosition",
+                                       "Data Property", uuid_vert_symb, "",
+                                       iv + 1, "integer"])
+
+                        if "ring" in vs:
+                            output.append([self.zeoOntoPrefix + "hasRingSize",
+                                           "Data Property", uuid_vert_symb, "",
+                                           vs["ring"], "integer"])
+
+                        if "count" in vs:
+                            output.append([self.zeoOntoPrefix + "hasRingCount",
+                                           "Data Property", uuid_vert_symb, "",
+                                           vs["count"], "integer"])
+
+                else:
+                    logging.error(" Broken IZA data, missing" +
+                                  " ['VertexSymbol'] in %s.", code)
+
+        if "SphereDiameter" in topo_data:
+            sphere = topo_data["SphereDiameter"]
+
+            if "A" == sphere["unit"]:
+                unit = "om:angstrom"
+            else:
+                unit = sphere["unit"]
+                logging.error(" Unknown unit '%s' in SphereDiameter for" +
+                              " zeolite '%s'", sphere["unit"], code)
+
+            sphere_uuid = ocdt.OntoVector(class_name="SphereDiameter",
+                                          item_name="sphere_diam_" + code,
+                                          tbox_prefix=self.zeoOntoPrefix,
+                                          abox_prefix=self.zeoOntoPrefix,
+                                          unit=unit,
+                                          uuidDB=self.uuidDB)
+
+            if "included" in sphere:
+                sphere_uuid.addComponent(label="included",
+                                         value=sphere["included"])  # , unit=unit)
+            else:
+                logging.error(" Missing 'included' SphereDiameter for '%s'.",
+                              code)
+            if "a" in sphere:
+                sphere_uuid.addComponent(label="a",
+                                         value=sphere["a"])
+            else:
+                logging.error(" Missing 'a' SphereDiameter for '%s'.", code)
+            if "b" in sphere:
+                sphere_uuid.addComponent(label="b",
+                                         value=sphere["b"])
+            else:
+                logging.error(" Missing 'b' SphereDiameter for '%s'.", code)
+            if "c" in sphere:
+                sphere_uuid.addComponent(label="c",
+                                         value=sphere["c"])
+            else:
+                logging.error(" Missing 'c' SphereDiameter for '%s'.", code)
+
+            output += sphere_uuid.get_csv_arr(uuid_zeotopo,
+                      self.zeoOntoPrefix + "hasSphereDiameter")
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['SphereDiameter'] in %s.", code)
+
+        # ==================================================================
+        # print( code, ">>>", json.dumps(topo_data, indent=4))
+        if "AccessibleVolume" in topo_data:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="AccessibleVolumePerCell",
+                                             item_name="acc_volume_cell_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "value" in topo_data["AccessibleVolume"]:
+                value = topo_data["AccessibleVolume"]["value"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['AccessibleVolume']['value'] in %s.", code)
+                valid_data = False
+
+            if "unit" in topo_data["AccessibleVolume"]:
+                if "A^3" == topo_data["AccessibleVolume"]["unit"]:
+                    unit = "om:cubicAngstrom"
+                else:
+                    unit = topo_data["AccessibleVolume"]["unit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['AccessibleVolume']['unit'] in %s.", code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasAccessibleVolumePerCell")
+                # logging.error(" >>>Writing data about AccessVolume %s", code)
+
+            else:
+                logging.error(" >>Invalid data for AccessibleVolume %s", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['AccessibleVolume'] in %s.", code)
+
+        if "AccessibleVolume" in topo_data and \
+                    "percent" in topo_data["AccessibleVolume"]:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="AccessibleVolume",
+                                             item_name="acc_volume_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "percent" in topo_data["AccessibleVolume"]:
+                value = topo_data["AccessibleVolume"]["percent"]
+                unit = "om:percent"
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['OccupiableVolume']['percent'] in %s.", code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasAccessibleVolume")
+                # logging.error(" >>>Writing data about AccessVolume %s", code)
+
+            else:
+                logging.error(" >>>Invalid data for AccessibleVolume %s", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['AccessibleVolume'] in %s.", code)
+
+        # ==================================================================
+        if "OccupiableVolume" in topo_data:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="OccupiableVolumePerCell",
+                                             item_name="occ_volume_cell_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "value" in topo_data["OccupiableVolume"]:
+                value = topo_data["OccupiableVolume"]["value"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['OccupiableVolume']['value'] in %s.", code)
+                valid_data = False
+
+            if "unit" in topo_data["OccupiableVolume"]:
+                if "A^3" == topo_data["OccupiableVolume"]["unit"]:
+                    unit = "om:cubicAngstrom"
+                else:
+                    unit = topo_data["OccupiableVolume"]["unit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['Occupiaolume']['unit'] in %s.", code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasOccupiableVolumePerCell")
+                # logging.error(" >>>Writing data about AccessVolume %s", code)
+
+            else:
+                logging.error(" >>Invalid data for OccupiableVolume %s", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['OccupiableVolume'] in %s.", code)
+
+        if "OccupiableVolume" in topo_data and \
+                    "percent" in topo_data["OccupiableVolume"]:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="OccupiableVolume",
+                                             item_name="occ_volume_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "percent" in topo_data["OccupiableVolume"]:
+                value = topo_data["OccupiableVolume"]["percent"]
+                unit = "om:percent"
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['OccupiableVolume']['percent'] in %s.", code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasOccupiableVolume")
+                # logging.error(" >>>Writing data about AccessVolume %s", code)
+
+            else:
+                logging.error(" >>Invalid data for OccupiableVolume %s", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['OccupiableVolume'] in %s.", code)
+
+        # ==================================================================
+        if "AccessibleArea" in topo_data:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="AccessibleAreaPerCell",
+                                             item_name="acc_area_cell_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "value" in topo_data["AccessibleArea"]:
+                value = topo_data["AccessibleArea"]["value"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['AccessibleArea']['value'] in %s.", code)
+                valid_data = False
+
+            if "unit" in topo_data["AccessibleArea"]:
+                if "A^2" == topo_data["AccessibleArea"]["unit"]:
+                    unit = "om:squareAngstrom"
+                else:
+                    unit = topo_data["AccessibleArea"]["unit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['AccessibleArea']['unit'] in %s.", code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasAccessibleAreaPerCell")
+                # logging.error(" >>Writing data about AccessVolume %s", code)
+
+            else:
+                logging.error(" >>>Invalid data for AccessibleArea %s", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['AccessibleArea'] in %s.", code)
+
+        if "AccessibleArea" in topo_data and \
+                  "pergram" in topo_data["AccessibleArea"]:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="AccessibleAreaPerGram",
+                                             item_name="acc_area_gram_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "pergram" in topo_data["AccessibleArea"]:
+                value = topo_data["AccessibleArea"]["pergram"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['AccessibleArea']['pergram'] in %s.", code)
+                valid_data = False
+
+            if "pergramunit" in topo_data["AccessibleArea"]:
+                if "m^2/g" == topo_data["AccessibleArea"]["pergramunit"]:
+                    unit = "om:squareMetrePerGram"
+                else:
+                    unit = topo_data["AccessibleArea"]["pergramunit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['AccessibleArea']['pergramunit'] in %s.",
+                              code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasAccessibleAreaPerGram")
+                # logging.error(" >>Writing data about AccessArea %s", code)
+
+            else:
+                logging.error(" >>Invalid data for AccessibleAreaPerGram %s",
+                              code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['AccessibleArea'] in %s.", code)
+
+        # ==================================================================
+        if "OccupiableArea" in topo_data:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="OccupiableAreaPerCell",
+                                             item_name="occ_area_cell_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "value" in topo_data["OccupiableArea"]:
+                value = topo_data["OccupiableArea"]["value"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['OccupiableArea']['value'] in %s.", code)
+                valid_data = False
+
+            if "unit" in topo_data["OccupiableArea"]:
+                if "A^2" == topo_data["OccupiableArea"]["unit"]:
+                    unit = "om:squareAngstrom"
+                else:
+                    unit = topo_data["OccupiableArea"]["unit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['OccupiableArea']['unit'] in %s.", code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasOccupiableAreaPerCell")
+                # logging.error(" >Writing data about AccessAreaCell %s", code)
+
+            else:
+                logging.error(" >>Invalid data for OccupiableArea %s", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['OccupiableArea'] in %s.", code)
+
+        if "OccupiableArea" in topo_data and \
+                  "pergram" in topo_data["OccupiableArea"]:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="OccupiableAreaPerGram",
+                                             item_name="occ_area_gram_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "pergram" in topo_data["OccupiableArea"]:
+                value = topo_data["OccupiableArea"]["pergram"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['OccupiableArea']['pergram'] in %s.", code)
+                valid_data = False
+
+            if "pergramunit" in topo_data["OccupiableArea"]:
+                if "m^2/g" == topo_data["OccupiableArea"]["pergramunit"]:
+                    unit = "om:squareMetrePerGram"
+                else:
+                    unit = topo_data["OccupiableArea"]["pergramunit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['OccupiableArea']['pergramunit'] in %s.", code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasOccupiableAreaPerGram")
+                # logging.error(" >>Writing data about AccessArea %s", code)
+
+            else:
+                logging.error(" >>Invalid data for OccupiableAreaPerGram %s",
+                              code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['OccupiableArea'] in %s.", code)
+
+        # ==================================================================
+        if "SpecificOccupiableArea" in topo_data:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="SpecificOccupiableArea",
+                                          item_name="occ_area_vol_" + code,
+                                          tbox_prefix=self.zeoOntoPrefix,
+                                          abox_prefix=self.zeoOntoPrefix,
+                                          uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "value" in topo_data["SpecificOccupiableArea"]:
+                value = topo_data["SpecificOccupiableArea"]["value"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['SpecificOccupiableArea']['value'] in %s.",
+                              code)
+                valid_data = False
+
+            if "unit" in topo_data["SpecificOccupiableArea"]:
+                if "m^2/cm^3" == topo_data["SpecificOccupiableArea"]["unit"]:
+                    unit = "om:squareMetrePerCubicCentimetre"
+                else:
+                    unit = topo_data["SpecificOccupiableArea"]["unit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['SpecificOccupiableArea']['unit'] in %s.",
+                              code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasSpecificOccupiableArea")
+                # logging.error(" >>>Writing about SpecifAccessArea %s", code)
+
+            else:
+                logging.error(" > Invalid data for SpecificOccupiableArea %s",
+                              code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['SpecificOccupiableArea'] in %s.", code)
+
+        # ==================================================================
+        if "SpecificAccessibleArea" in topo_data:
+            vol = ocdt.OntoMeasureWithUncertainty(class_name="SpecificAccessibleArea",
+                                             item_name="acc_area_vol_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+            valid_data = True
+            if "value" in topo_data["SpecificAccessibleArea"]:
+                value = topo_data["SpecificAccessibleArea"]["value"]
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['SpecificAccessibleArea']['value'] in %s.",
+                              code)
+                valid_data = False
+
+            if "unit" in topo_data["SpecificAccessibleArea"]:
+                if "m^2/cm^3" == topo_data["SpecificAccessibleArea"]["unit"]:
+                    unit = "om:squareMetrePerCubicCentimetre"
+                else:
+                    unit = topo_data["SpecificAccessibleArea"]["unit"]
+
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['SpecificAccessibleArea']['unit'] in %s.",
+                              code)
+                valid_data = False
+
+            if valid_data:
+                vol.setValue(value=value, unit=unit)
+                output += vol.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasSpecificAccessibleArea")
+                # logging.error(" >>Writing about SpecifAccessVol %s", code)
+
+            else:
+                logging.error(" > Invalid data for SpecificAccessibleArea %s",
+                              code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['SpecificAccessibleArea'] in %s.", code)
+
+        # ==================================================================
+        if "SpecificAccessibleArea" in topo_data and \
+                   "AccessibleArea" in topo_data and \
+                          "pergram" in topo_data["AccessibleArea"] and \
+                          topo_data["AccessibleArea"]["pergram"] != "0":
+
+            valid_data = True
+            if "value" in topo_data["SpecificAccessibleArea"]:
+                value = float(topo_data["SpecificAccessibleArea"]["value"]) / \
+                        float(topo_data["AccessibleArea"]["pergram"])
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['SpecificAccessibleArea']['value'] in %s.",
+                              code)
+                valid_data = False
+
+            dens = ocdt.OntoMeasureWithUncertainty(class_name="Density",
+                                          item_name="density_" + code,
+                                          tbox_prefix=self.zeoOntoPrefix,
+                                          abox_prefix=self.zeoOntoPrefix,
+                                          uuidDB=self.uuidDB)
+
+            if valid_data:
+                unit = "om:gramPerCubicCentimetre"
+                value = round(value,3)
+                dens.setValue(value=value, unit=unit)
+
+                # FIXME: delete from topology (this is backwards compatibility)
+                output += dens.get_csv_arr(subject,
+                          self.zeoOntoPrefix + "hasDensity")
+                #output += dens.get_csv_arr(uuid_zeotopo,
+                #          self.zeoOntoPrefix + "hasDensity")
+
+        elif "SpecificOccupiableArea" in topo_data and \
+                     "OccupiableArea" in topo_data and \
+                            "pergram" in topo_data["OccupiableArea"] and \
+                          topo_data["OccupiableArea"]["pergram"] != "0":
+
+            valid_data = True
+            if "value" in topo_data["SpecificOccupiableArea"]:
+                value = float(topo_data["SpecificOccupiableArea"]["value"]) / \
+                        float(topo_data["OccupiableArea"]["pergram"])
+            else:
+                logging.error(" Broken IZA data, missing" +
+                              " ['SpecificOccupiableArea']['value'] in %s.",
+                              code)
+                valid_data = False
+
+            dens = ocdt.OntoMeasureWithUncertainty(class_name="Density",
+                                          item_name="density_" + code,
+                                          tbox_prefix=self.zeoOntoPrefix,
+                                          abox_prefix=self.zeoOntoPrefix,
+                                          uuidDB=self.uuidDB)
+
+            if valid_data:
+                unit = "om:gramPerCubicCentimetre"
+                value = round(value,3)
+                dens.setValue(value=value, unit=unit)
+                # FIXME: delete from topology (this is backwards compatibility)
+                output += dens.get_csv_arr(subject,
+                          self.zeoOntoPrefix + "hasDensity")
+
+                output += dens.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasDensity")
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['SpecificOccupiableArea'] or" +
+                          " ['OccupiableArea']['pergram'] in and" +
+                          " ['SpecificAccessibleArea'] or" +
+                          " ['AccessibleArea']['pergram'] in %s.", code)
+
+        # ==================================================================
+        if "CompositeBU" in topo_data:
+            if isinstance(topo_data["CompositeBU"], dict):
+
+                # Create only if CompositeBU are present in IZA database:
+                nCBU = 0
+                for key in topo_data["CompositeBU"]:
+                    nCBU += len(topo_data["CompositeBU"][key])
+
+                if nCBU > 0:
+                    uuid_cbu, _ = self.uuidDB.addUUID("CompositeBU",
+                                                      "CompositeBU_" + code)
+                    output.append([uuid_cbu, "Instance", "CompositeBU",
+                                   "", "", ""])
+                    output.append([uuid_zeotopo, "Instance", uuid_cbu,
+                                   self.zeoOntoPrefix + "hasCompositeBU",
+                                   "", ""])
+
+                if "cages" in topo_data["CompositeBU"]:
+                    cages = topo_data["CompositeBU"]["cages"]
+                    #if isinstance(cages, list) and len(cages) > 0:
+                    #    uuid_cages, _ = self.uuidDB.addUUID("CompositeBU",
+                    #                      "CompositeBU_" + code)
+                    #    output.append([uuid_cages, "Instance", "CompositeBU", "", "", ""])
+                    #    output.append([uuid_cbu, "Instance", uuid_cages, "hasCages", "", ""])
+
+                    for cage in cages:
+                        output.append([self.zeoOntoPrefix + "hasCage",
+                                       "Data Property", uuid_cbu, "",
+                                       cage, "string"])
+
+                if "t-cages" in topo_data["CompositeBU"]:
+                    cages = topo_data["CompositeBU"]["t-cages"]
+
+                    for cage in cages:
+                        output.append([self.zeoOntoPrefix + "hasTCage",
+                                       "Data Property", uuid_cbu, "",
+                                       cage, "string"])
+
+                if "chain" in topo_data["CompositeBU"]:
+                    cages = topo_data["CompositeBU"]["chain"]
+
+                    for cage in cages:
+                        output.append([self.zeoOntoPrefix + "hasChain",
+                                       "Data Property", uuid_cbu, "",
+                                       cage, "string"])
+
+            else:
+                logging.error(" Broken IZA data, missing 'CompositeBU' expect" +
+                              " non-empty list, but got '%s' for code %s.",
+                              str(topo_data["CompositeBU"]), code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['CompositeBU'] in %s.", code)
+
+
+        if "SecondaryBU" in topo_data:
+            if isinstance(topo_data["SecondaryBU"], list) and \
+               len(topo_data["SecondaryBU"]) > 0:
+                #if len(topo_data["SecondaryBU"]) > 1:
+                #    logging.warning(" More than 1 SecondaryBU entry for %s.",
+                #                    code)
+
+                for sbu in topo_data["SecondaryBU"]:
+                    #print(">>>> sbu", sbu)
+
+                    output.append([self.zeoOntoPrefix + "hasSecondaryBU",
+                                   "Data Property", uuid_zeotopo, "",
+                                   sbu, "string"])
+
+            else:
+                # Some frameworks don't have SecondaryBU, so this is not an error:
+                logging.info(" Broken IZA data, missing 'SecondaryBU' expect" +
+                             " non-empty list, but got '%s' for code %s.",
+                             str(topo_data["SecondaryBU"]), code)
+
+        else:
+            # Some frameworks don't have SecondaryBU, so this is not an error:
+            logging.info(" Broken IZA data, missing" +
+                         " ['SecondaryBU'] in %s.", code)
+
+        if "ABCSequence" in topo_data:
+            if isinstance(topo_data["ABCSequence"], list) and \
+               len(topo_data["ABCSequence"]) > 0:
+                if len(topo_data["ABCSequence"]) > 1:
+                    logging.warning(" More than 1 ABCSequence entry for %s.",
+                                    code)
+
+
+                abcs = topo_data["ABCSequence"][0]
+                output.append([self.zeoOntoPrefix + "hasABCSequence",
+                               "Data Property", uuid_zeotopo, "",
+                               abcs, "string"])
+
+#                rsize = ocdt.OntoVector(class_name="RingSizes",
+#                                        item_name="ring_sizes_" + code,
+#                                        tbox_prefix=self.zeoOntoPrefix,
+#                                        abox_prefix=self.zeoOntoPrefix,
+#                                        uuidDB=self.uuidDB)
+#
+#                rsize.addComponentList(valList=topo_data["RingSizes"])
+
+#                output += rsize.get_csv_arr(uuid_zeotopo,
+#                          self.zeoOntoPrefix + "hasRingSizes")
+
+            else:
+                # Some frameworks don't have ABCSequence, so this is not an error:
+                logging.info(" Broken IZA data, missing 'ABCSequence' expect" +
+                             " non-empty list, but got '%s' for code %s.",
+                             str(topo_data["ABCSequence"]), code)
+
+        else:
+            # Some frameworks don't have ABCSequence, so this is not an error:
+            logging.info(" Broken IZA data, missing" +
+                         " ['ABCSequence'] in %s.", code)
+
+
+        if "RingSizes" in topo_data:
+            if isinstance(topo_data["RingSizes"], list) and \
+               len(topo_data["RingSizes"]) > 0:
+
+                rsize = ocdt.OntoVector(class_name="RingSizes",
+                                        item_name="ring_sizes_" + code,
+                                        tbox_prefix=self.zeoOntoPrefix,
+                                        abox_prefix=self.zeoOntoPrefix,
+                                        unit="om:dimensionOne",
+                                        uuidDB=self.uuidDB)
+
+                rsize.addComponentList(valList=topo_data["RingSizes"])
+
+                output += rsize.get_csv_arr(uuid_zeotopo,
+                          self.zeoOntoPrefix + "hasRingSizes")
+
+            else:
+                logging.error(" Broken IZA data, missing 'RingSizes' expect" +
+                              " non-empty list, but got '%s' for code %s.",
+                              str(topo_data["RingSizes"]), code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['RingSizes'] in %s.", code)
+
+        if "FrameworkDensity" in topo_data:
+            density = topo_data["FrameworkDensity"]
+            if isinstance(density, dict) and len(density) == 2:
+                if "value" in density and "unit" in density:
+                    fr_dens = ocdt.OntoMeasureWithUncertainty(
+                                             class_name="FrameworkDensity",
+                                             item_name="frame_dens_" + code,
+                                             tbox_prefix=self.zeoOntoPrefix,
+                                             abox_prefix=self.zeoOntoPrefix,
+                                             uuidDB=self.uuidDB)
+
+                    if "T/1000A^3" == density["unit"]:
+                        unit = "om:reciprocalCubicNanometre"
+                    else:
+                        unit = density["unit"]
+                        logging.warning(" Unknown unit for" +
+                                        " FrameworkDensity %s", code)
+
+                    fr_dens.setValue(value=density["value"], unit=unit)
+                    output += fr_dens.get_csv_arr(uuid_zeotopo,
+                              self.zeoOntoPrefix + "hasFrameworkDensity")
+                else:
+                    logging.error(" xxxxxxxxxxxxx ontozeolite.py %s", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['FrameworkDensity'] in %s.", code)
+
+        if "TopologicalDensity" in topo_data:
+            if isinstance(topo_data["TopologicalDensity"], dict):
+                uuid_tden, _ = self.uuidDB.addUUID(self.zeoOntoPrefix + "TopologicalDensity",
+                                                   "TopoDens_" + code)
+                output.append([uuid_tden, "Instance", self.zeoOntoPrefix + "TopologicalDensity",
+                               "", "", ""])
+                output.append([uuid_zeotopo, "Instance", uuid_tden,
+                               self.zeoOntoPrefix + "hasTopologicalDensity",
+                               "", ""])
+
+            if "valueTD" in topo_data["TopologicalDensity"]:
+                output.append([self.zeoOntoPrefix + "hasValueTD",
+                               "Data Property", uuid_tden, "",
+                               topo_data["TopologicalDensity"]["valueTD"],
+                               "decimal"])
+            else:
+                # Many frameworks don't have 'valueTD', so this is not error
+                logging.info(" Missing 'valueTD' in 'TopologicalDensity'" +
+                             " for '%s'.", code)
+
+            if "valueTD10" in topo_data["TopologicalDensity"]:
+                output.append([self.zeoOntoPrefix + "hasValueTD10",
+                               "Data Property", uuid_tden, "",
+                               topo_data["TopologicalDensity"]["valueTD10"],
+                               "decimal"])
+            else:
+                logging.error(" Missing 'valueTD10' in 'TopologicalDensity'" +
+                              " for '%s'.", code)
+
+        else:
+            logging.error(" Broken IZA data, missing" +
+                          " ['FrameworkDensity'] in '%s'.", code)
+
+        return output
+        # === end of OntoZeolite.get_csv_arr_topology()
+
+    """
+    def getCsvArr(self, subject, predicate):
+
+        logging.error(" >>>> Fix the zeolite save(). Now only 20 lines. <<<<")
+        for i in range(20):
+        #for i in range(len(self.data_cif)):
+            lineCif = self.data_cif[i]
+            lineExt = self.data_mat[i]
+            if lineCif[0] != lineExt[0]:
+                logging.error(" Different zeolite ID in column 0 '" + \
+                               lineCif[0] + "' vs '" + lineExt[0] + "'." \
+                               " Skipping line.")
+                continue
+            self._get_csv_arrOne(i)
+
+
+        pass # OntoZeolite.getCsvArr()
+
+    def _get_csv_arr_one(self, lineID):
+
+        logging.warning(" _get_csv_arr_one() ")
+
+        pass # OntoZeolite._get_csv_arr_one()
+    """
+
+    # === end of class OntoZeolite

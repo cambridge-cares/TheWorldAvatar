@@ -1,0 +1,3 @@
+services:
+  sensorloggermobileappagent:
+    image: ghcr.io/cambridge-cares/sensorloggermobileappagent:3.0.0

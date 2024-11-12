@@ -1,0 +1,12 @@
+heat_generation_GasTurbine	<https://www.theworldavatar.com/kg/pms_dh/Forecast_7405dd30-995d-4bf8-9ae9-e5d12ff1b3c7>
+heat_generation_HeatBoiler4	<https://www.theworldavatar.com/kg/pms_dh/Forecast_23c1e8e6-8a10-41ef-bacf-8dbb5ab024c5>
+heat_generation_HeatBoiler5	<https://www.theworldavatar.com/kg/pms_dh/Forecast_d7e10834-318f-40cb-bc88-7a7fae06f000>
+heat_generation_HeatBoiler6	<https://www.theworldavatar.com/kg/pms_dh/Forecast_0856069f-b2d5-4d20-980a-5c947dd8cf7c>
+demand_fc	<https://www.theworldavatar.com/kg/forecasting/Forecast_b8b2d0e7-eec7-490e-9928-21bcd257f409>
+heat_sourcing	<https://www.theworldavatar.com/kg/pms_dh/Forecast_9966adbe-c139-4cac-ac15-3c93cc8e1eec>
+elec_cogen	<https://www.theworldavatar.com/kg/pms_dh/Forecast_aeb792f2-b5cc-4459-9126-57361af8df4b>
+demand_hist	<https://www.theworldavatar.com/kg/pms_dh/Measure_594625fe-801a-4eac-b0a5-b30905152397>
+gas_consumption_GasTurbine	<https://www.theworldavatar.com/kg/pms_dh/Forecast_67e2a906-3003-4444-92fe-aca7857749b7>
+gas_consumption_HeatBoiler4	<https://www.theworldavatar.com/kg/pms_dh/Forecast_d54e3a35-f476-455c-95ce-02152581a67e>
+gas_consumption_HeatBoiler5	<https://www.theworldavatar.com/kg/pms_dh/Forecast_906dc1ce-1585-4b00-b4db-f00a9269fe09>
+gas_consumption_HeatBoiler6	<https://www.theworldavatar.com/kg/pms_dh/Forecast_502eb837-4a21-4f18-83f2-ed7517902b2c>

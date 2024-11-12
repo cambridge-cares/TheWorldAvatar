@@ -229,7 +229,7 @@ Jiaru Bai (jb2197@cam.ac.uk), December 2022
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [Docker environment]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment
 [CMCL Docker image registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations
 [example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-mapbox-vis
 [wait-for-it]: https://github.com/vishnubob/wait-for-it
 

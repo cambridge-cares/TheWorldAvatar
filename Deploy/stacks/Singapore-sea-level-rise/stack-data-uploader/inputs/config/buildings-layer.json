@@ -1,0 +1,31 @@
+{
+    "name": "buildings-layer",
+    "database": "postgres",
+    "datasetDirectory": "buildings",
+    "workspace": "twa",
+    "externalDatasets": [
+        "gfa-floors",
+        "osm"
+    ],
+    "dataSubsets": [
+        {
+            "name": "building_usage",
+            "type": "vector",
+            "subdirectory": "consolidated_layer",
+            "sql": "@/inputs/data/buildings/consolidated_layer/geoserver_layer.sql",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "building_usage",
+                    "sql": "select * from buildings_layer",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Polygon",
+                        "srid": 24500
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        }
+    ]
+}

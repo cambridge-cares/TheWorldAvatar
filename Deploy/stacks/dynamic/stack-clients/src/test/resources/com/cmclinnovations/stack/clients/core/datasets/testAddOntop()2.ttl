@@ -1,0 +1,48 @@
+@prefix bd:     <http://www.bigdata.com/rdf#> .
+@prefix bds:    <http://www.bigdata.com/rdf/search#> .
+@prefix dc:     <http://purl.org/dc/elements/1.1/> .
+@prefix fn:     <http://www.w3.org/2005/xpath-functions#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix hint:   <http://www.bigdata.com/queryHints#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sesame: <http://www.openrdf.org/schema/sesame#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+<https://theworldavatar.io/kg/c96f5363-0933-4b4d-80a7-0dafb1e9599e>
+        rdf:type  <http://www.w3.org/ns/dcat#Catalog>;
+        <http://purl.org/dc/terms/description>
+                "Dataset for testing2";
+        <http://purl.org/dc/terms/issued>
+                "2024-08-09T09:36:58.066Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/modified>
+                "2024-08-09T09:36:58.321Z"^^xsd:dateTime , "2024-08-09T09:36:58.066Z"^^xsd:dateTime;
+        <http://purl.org/dc/terms/title>
+                "testDataset";
+        <http://www.w3.org/ns/dcat#service>
+                <https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d> , <https://theworldavatar.io/kg/1c1c3934-cd98-4048-bfc8-b6e8e9a2d881> .
+
+<https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d>
+        rdf:type  <https://theworldavatar.io/kg/service#PostGIS>;
+        <http://purl.org/dc/terms/identifier>
+                "https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d";
+        <http://purl.org/dc/terms/title>
+                "testDataset";
+        <http://www.w3.org/ns/dcat#endpointURL>
+                <jdbc:postgresql://test-postgis:1234/testDataset>;
+        <http://www.w3.org/ns/dcat#servesDataset>
+                <https://theworldavatar.io/kg/c96f5363-0933-4b4d-80a7-0dafb1e9599e> .
+
+<https://theworldavatar.io/kg/1c1c3934-cd98-4048-bfc8-b6e8e9a2d881>
+        rdf:type  <https://theworldavatar.io/kg/service#Ontop>;
+        <http://purl.org/dc/terms/identifier>
+                "https://theworldavatar.io/kg/1c1c3934-cd98-4048-bfc8-b6e8e9a2d881";
+        <http://purl.org/dc/terms/requires>
+                <https://theworldavatar.io/kg/7dc9e69c-cc10-4305-b57a-5ba44023781d>;
+        <http://purl.org/dc/terms/title>
+                "Test-Stack_ontop-testDataset";
+        <http://www.w3.org/ns/dcat#endpointURL>
+                <http://Test-Stack-ontop-testDataset:5678/sparql>;
+        <http://www.w3.org/ns/dcat#servesDataset>
+                <https://theworldavatar.io/kg/c96f5363-0933-4b4d-80a7-0dafb1e9599e> .

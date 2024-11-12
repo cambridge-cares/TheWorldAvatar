@@ -1,0 +1,9 @@
+{
+    "queries": [
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoisochrone/Isochrone",
+            "metaFile": "isochrone.sparql",
+            "timeFile": ""
+        }
+    ]
+}

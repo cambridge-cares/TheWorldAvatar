@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -15,6 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
+import com.cmclinnovations.stack.services.DockerService;
 import com.cmclinnovations.stack.services.ServiceManager;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,36 +27,36 @@ public class Stack {
 
     private static final String DEFAULT_SERVICES_FILE = "defaults.txt";
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = JsonHelper.getMapper();
 
     private static final String VOLUME_POPULATOR_SERVICE_NAME = "volume-populator";
 
-    public static Stack create(String stackName, URL hostURL, ServiceManager manager, Path stackConfigDir) {
+    public static Stack create(String stackName, ServiceManager manager, Path stackConfigDir) {
         try (Stream<Path> stackConfigs = Files.find(stackConfigDir, 1,
                 (path, basicFileAttributes) -> basicFileAttributes.isRegularFile())) {
             Optional<Path> stackSpecificConfig = stackConfigs
                     .filter(path -> path.getFileName().toString().matches("^" + stackName + ".json$"))
                     .findAny();
             if (stackSpecificConfig.isPresent()) {
-                return createFromConfig(stackName, hostURL, manager, stackSpecificConfig.get());
+                return createFromConfig(stackName, manager, stackSpecificConfig.get());
             } else {
-                return createDefault(stackName, hostURL, manager);
+                return createDefault(stackName, manager);
             }
         } catch (IOException ex) {
             throw new RuntimeException("Error occurred whilst looking for stack config files.", ex);
         }
     }
 
-    private static Stack createDefault(String stackName, URL hostURL, ServiceManager manager) {
-        return new Stack(stackName, hostURL, manager);
+    private static Stack createDefault(String stackName, ServiceManager manager) {
+        return new Stack(stackName, manager);
     }
 
-    private static Stack createFromConfig(String stackName, URL hostURL, ServiceManager manager,
+    private static Stack createFromConfig(String stackName, ServiceManager manager,
             Path stackSpecificConfig) {
         try {
             StackConfig stackConfig = objectMapper.readValue(stackSpecificConfig.toFile(),
                     StackConfig.class);
-            return new Stack(stackName, hostURL, manager, stackConfig);
+            return new Stack(stackName, manager, stackConfig);
         } catch (IOException ex) {
             throw new RuntimeException(
                     "Error occurred whilst reading stack config file'" + stackSpecificConfig + "'.", ex);
@@ -64,27 +65,30 @@ public class Stack {
 
     private final String name;
 
-    private final URL hostURL;
-
     private final ServiceManager manager;
 
     private final StackConfig config;
 
-    private Stack(String name, URL hostURL, ServiceManager manager) {
-        this(name, hostURL, manager, null);
+    private Stack(String name, ServiceManager manager) {
+        this(name, manager, null);
     }
 
-    private Stack(String name, URL hostURL, ServiceManager manager, StackConfig config) {
+    private Stack(String name, ServiceManager manager, StackConfig config) {
         this.name = name;
-        this.hostURL = hostURL;
 
         this.manager = manager;
 
         this.config = config;
+
+        if (null != config) {
+            StackClient.setHostPath(config.getHostPath());
+        }
     }
 
     public void initialiseServices() {
         List<String> defaultServices = getDefaultServicesNames();
+
+        manager.<DockerService>initialiseService(name, StackClient.getContainerEngineName()).initialise();
 
         // Check to see if services have been specified through a config file
         if (null == config) {

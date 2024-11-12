@@ -1,0 +1,39 @@
+PREFIX geo:   <http://www.opengis.net/ont/geosparql#>
+PREFIX pow:		<http://theworldavatar.com/ontology/ontopower/OntoPower.owl#>
+PREFIX geof:  <http://www.opengis.net/def/function/geosparql/>
+
+SELECT ?Property ?Value ?Unit { 
+  {
+    SERVICE [ONTOP] {
+      [IRI] ?p ?Value .
+    }
+    {
+      VALUES(?Property ?p ?Unit)
+      {
+        ("Area" geo:hasMetricArea "m^2")
+      }
+    }
+  }
+  UNION
+  {
+    SERVICE [ONTOP] {
+        [IRI] a ?type .
+      }
+      ?type rdfs:label ?Value .
+      BIND("Type" AS ?Property)
+  }
+  UNION
+  {
+    SERVICE [ONTOP] {
+      SELECT ("Intersects Power Line" AS ?Property) (COUNT(?line)!=0 AS ?Value) ("" AS ?Unit) WHERE {
+        SELECT ?line WHERE {
+          [IRI] geo:hasDefaultGeometry [ geo:asWKT ?wkt1 ] .
+        ?line a pow:Line ;
+            geo:hasDefaultGeometry [ geo:asWKT ?wkt2 ] .
+          FILTER(geof:distance(?wkt1, ?wkt2,<http://www.opengis.net/def/uom/OGC/1.0/metre>)=0)
+        }
+        LIMIT 1
+      }
+    }
+  }
+}

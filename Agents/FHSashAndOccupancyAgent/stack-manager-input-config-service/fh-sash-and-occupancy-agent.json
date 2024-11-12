@@ -3,7 +3,7 @@
     "Name": "fh-sash-and-occupancy-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "docker.io/library/fh-sash-and-occupancy-agent:1.1.0",
+        "Image": "docker.io/library/fh-sash-and-occupancy-agent:1.2.0",
         "Mounts": [
           {
             "Type": "bind",

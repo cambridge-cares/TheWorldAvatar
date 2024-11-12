@@ -1,0 +1,30 @@
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent",
+            "filter-agent",
+            "sealevelimpactagent",
+            "buildingidentificationagent",
+            "emissions-agent",
+            "file-server",
+            "weather-agent",
+            "dispersion-interactor",
+            "aermod-agent",
+            "python-service",
+            "virtual-sensor-agent",
+            "ship-input-agent",
+            "ship-data-agent",
+            "carpark-agent",
+            "cares-weather-station-agent",
+            "nginx-2",
+            "trafficincidentagent"
+        ],
+        "excludes": []
+    },
+    "volumes": {
+        "vis-files": "webspace",
+        "fia-queries": "fia",
+        "filter-queries": "filters"
+    }
+}

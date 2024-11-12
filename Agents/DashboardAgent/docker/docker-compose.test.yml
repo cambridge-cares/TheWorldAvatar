@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  dashboard:
+    container_name: dashboard-agent
+    image: dashboard-agent:test
+    build:
+      context: ..
+      target: test
+    depends_on:
+      - grafana_test
+    ports:
+      - "3067:8080"
+    networks:
+      - test-network
+  blazegraph_test:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: blazegraph_test
+    restart: unless-stopped
+    ports:
+      - "9998:8080"
+    networks:
+      - test-network
+  grafana_test:
+    image: grafana/grafana-oss:10.0.3
+    container_name: grafana_test
+    ports:
+      - "3068:3000"
+    networks:
+      - test-network
+  postgis_test:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: postgis_test
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pg123
+    ports:
+      - "5431:5432"
+    networks:
+      - test-network
+networks:
+  test-network:

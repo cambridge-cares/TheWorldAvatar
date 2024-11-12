@@ -22,4 +22,9 @@
     <style name="Theme.BMSQueryApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.BMSQueryApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="LoginTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/banner_color</item>
+        <item name="android:statusBarColor">@color/white</item>
+    </style>
 </resources>

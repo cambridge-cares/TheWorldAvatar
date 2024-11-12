@@ -1,0 +1,79 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoFHRS,TBox,http://www.theworldavatar.com/ontology/OntoFHRS/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoFHRS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoFHRS,TBox,OntoFHRS is an ontology developed for representing food hygiene ratings of business establishments.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoFHRS,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Business Establishment,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment
+Restaurant,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Restaurant
+Cafe,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Cafe
+Canteen,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Canteen
+Pub,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Pub
+Bar,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Bar
+Supermarket,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Supermarket
+Hypermarket,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hypermarket
+Farmer Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Farmer Food Facility
+Grower Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Grower Food Facility
+Mobile Caterer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Mobile Caterer
+School Canteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,School Canteen
+College Canteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,College Canteen
+University Canteen,Class,Canteen,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,University Canteen
+Hospital Premise Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hospital Premise Food Facility
+Childcare Premise Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Childcare Premise Food Facility
+Caring Premise Food Facility,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Caring Premise Food Facility
+Night Club,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Night Club
+Food Manufacturer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Manufacturer
+Food Packer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Packer
+Food Retailer,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Retailer
+Food Distributor,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Distributor
+Food Transporter,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Food Transporter
+Hotel,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hotel
+Bed and Breakfast,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Bed and Breakfast
+Guest House,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Guest House
+Takeaway,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Takeaway
+Sandwich Shop,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Sandwich Shop
+Catering Premise,Class,Business Establishment,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Catering Premise
+Address,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Address
+Rating,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating
+Local Authority,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Local Authority
+Score,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Score
+Hygiene Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Hygiene Score
+Structural Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Structural Score
+Confidence Management Score,Class,Score,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Confidence Management Score
+City,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,City
+Region,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Region
+Country,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Country
+Rating Scheme,Class,,,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Scheme
+http://ies.data.gov.uk/ontology/ies4#BoundingState,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Bounding State
+BusinessEstablishmentStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment Start
+BusinessEstablishmentEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Business Establishment End
+http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Particular Period
+RatingStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Start
+RatingEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating End
+has Address,Object Property,,,Business Establishment,Address,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has address
+has Rating,Object Property,,,Business Establishment,Rating,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has rating
+has Local Authority,Object Property,,,Business Establishment,Local Authority,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority
+has Hygiene Score,Object Property,,,Business Establishment,Hygiene Score,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has hygiene score
+has Structural Score,Object Property,,,Business Establishment,Structural Score,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has structural score
+has Confidence Management Score,Object Property,,,Business Establishment,Confidence Management Score,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has confidence management score
+has City,Object Property,,,Address,City,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has city
+has Region,Object Property,,,Address,Region,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has region
+has Country,Object Property,,,Address,Country,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has country
+has Rating Scheme,Object Property,,,Rating,Rating Scheme,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has rating scheme
+http://ies.data.gov.uk/ontology/ies4#isStartOf,Object Property,,,BusinessEstablishmentStart,Business Establishment,,,http://ies.data.gov.uk/ontology/ies4,is start of
+http://ies.data.gov.uk/ontology/ies4#isEndOf,Object Property,,,BusinessEstablishmentEnd,Business Establishment,,,http://ies.data.gov.uk/ontology/ies4,is end of
+http://ies.data.gov.uk/ontology/ies4#inPeriod,Object Property,,,BusinessEstablishmentStart UNION BusinessEstablishmentEnd UNION RatingStart UNION RatingEnd,http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,,,http://ies.data.gov.uk/ontology/ies4,in period
+has Local Authority Business ID,Data Property,,,Business Establishment,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority business id
+has FHRS ID,Data Property,,,Business Establishment,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has fhrs id
+has Name,Data Property,,,Business Establishment UNION Local Authority,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has name
+http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,Business Establishment,http://www.opengis.net/ont/geosparql#wktLiteral,,,http://www.opengis.net/ont/geosparql,as WKT
+has Street Number,Data Property,,,Address,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has street number
+has Street,Data Property,,,Address,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has street
+has Postcode,Data Property,,,Address,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has postcode
+has Value,Data Property,,,Rating UNION Score,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has value
+has Key,Data Property,,,Rating,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has key
+indicates Quality,Data Property,,,Rating,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,indicates quality
+is New Rating Pending,Data Property,,,Business Establishment,boolean,,,http://www.theworldavatar.com/ontology/OntoFHRS/,is new rating pending
+has Local Authority Code,Data Property,,,Local Authority,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority code
+has Website,Data Property,,,Local Authority,any uri,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has website
+has Email Address,Data Property,,,Local Authority,string,,,http://www.theworldavatar.com/ontology/OntoFHRS/,has email address
+http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation,Data Property,,,http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,any uri,,,http://ies.data.gov.uk/ontology/ies4,iso 8601 period representation

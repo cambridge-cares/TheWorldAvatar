@@ -1,0 +1,32 @@
+{
+  "ServiceSpec": {
+    "Name": "pvlib-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "pv_lib_agent:1.1.0",
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "ontop"
+          },
+          {
+            "ConfigName": "postgis"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:5000/",
+      "externalPath": "/pvlib-agent/"
+    }
+  }
+}

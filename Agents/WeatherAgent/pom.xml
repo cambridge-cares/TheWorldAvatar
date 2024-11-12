@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>WeatherAgent</artifactId>
-    <version>1.1.1-hotfix-aermod-agent-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>war</packaging>
     
     <!-- Project properties -->
@@ -16,14 +16,14 @@
         <maven.compiler.target>11</maven.compiler.target>
         
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.28.0</jps.base.version>
+        <jps.base.version>1.44.1</jps.base.version>
     </properties>
     
     <!-- Parent POM -->
     <parent>
         <groupId>uk.ac.cam.cares.jps</groupId>
         <artifactId>jps-parent-pom</artifactId>
-        <version>2.1.0-281-SNAPSHOT</version>
+        <version>2.3.0</version>
     </parent>
     
     <!-- Profiles are used to switch between building for development and production 
@@ -120,9 +120,9 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20180813</version>
-            <type>jar</type>
+            <version>20240303</version>
         </dependency>
+
         
         <!-- Logging, versions pulled from parent -->
         <dependency>
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.0</version>
+            <version>1.27.2</version>
         </dependency>
 
        <!-- testcontainers for junit tests -->

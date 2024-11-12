@@ -28,3 +28,6 @@ hasCovariate,Object Property,,,ForecastingModel,http://www.w3.org/2002/07/owl#Th
 hasTrainingTimeSeries,Object Property,,,ForecastingModel,TimeSeries,,A relationship between a forecasting model for a particular quantity and the time series used in deriving/training this model,https://www.theworldavatar.com/kg/ontotimeseries/,has training time series
 Frequency,Class,http://www.w3.org/2006/time#Duration,IS-A,,,,(Target) frequency of forecast time series,https://www.theworldavatar.com/kg/ontotimeseries/,Frequency
 resampleData,Data Property,,,Frequency,boolean,,"Boolean flag whether resampling of the original timeseries is required to derive forecasting frequency (e.g., for irregularly spaced time series)",https://www.theworldavatar.com/kg/ontotimeseries/,resample data
+hasSchema,Data Property,,,TimeSeries,string,,Name of schema in database,,
+hasTimeClass,Data Property,,,TimeSeries,string,,Name of Java class used for time values,,
+hasRDBClientClass,Data Property,,,TimeSeries,string,,Name of Java RDB client class,,

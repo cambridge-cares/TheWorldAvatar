@@ -1,0 +1,55 @@
+{
+    "ServiceSpec": {
+        "Name": "buildingidentificationagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/buildingidentificationagent:2.0.0",
+                "Env": [
+                    "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/BuildingIdentificationAgent/BuildingIdentificationAgent/src/main/resources",
+                        "Target": "/resources"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "5005",
+                    "PublishedPort": "5005"
+                }
+            ]
+        }
+    },
+    "endpoints": {
+        "building_identification_agent": {
+            "url": "http://localhost:8080/buildingidentificationagent/",
+            "externalPath": "/buildingidentificationagent/"
+        }
+    }
+}

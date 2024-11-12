@@ -1,0 +1,13 @@
+[PrefixDeclaration]
+geo:		http://www.opengis.net/ont/geosparql#
+xsd:		http://www.w3.org/2001/XMLSchema#
+purl:       http://www.purl.org/oema/infrastructure/
+seg:        http://www.theworldavatar.com/ontology/OntoSemanticSegment.owl#
+
+[MappingDeclaration] @collection [[
+mappingId   segmentation
+target      <{Segmentation}> a seg:Segmentation; seg:segementationModelUsed {SegmentationModel}^^xsd:string; seg:hasGeoFeature {Feature}^^seg:Feature; seg:representsRealWorldObject {representsRealWorldObject}^^xsd:string.
+            <{Feature}> a seg:Feature; seg:hasGeometry {Polygon}^^geo:Polygon.
+            <{Polygon}> a geo:Polygon; seg:clusterIndex {cluster_index}^^xsd:Integer;  seg:meanOfCluster {meanOfCluster}^^xsd:double; geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral; seg:area {area}^^xsd:double; seg:perimeter {perimeter}^^xsd:double; seg:centroid {centroid}^^xsd:double.
+source      SELECT ST_AsEWKT(wkb_geometry) as wkt, ST_Area(wkb_geometry) AS area, ST_Perimeter(wkb_geometry) as perimeter, ST_Centroid(wkb_geometry) as centroid, "Polygon", "cluster_index", "meanOfCluster", "Feature", "Segmentation", "SegmentationModel", "representsRealWorldObject" FROM (SELECT * FROM "landcover_Singapore" UNION ALL SELECT * FROM "landforms_Singapore" UNION ALL SELECT * FROM "elevation_Singapore") AS combined_segmentation
+]]
