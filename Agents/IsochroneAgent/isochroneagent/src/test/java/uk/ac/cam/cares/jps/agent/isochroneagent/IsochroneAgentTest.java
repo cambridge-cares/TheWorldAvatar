@@ -109,7 +109,7 @@ public class IsochroneAgentTest {
                 });
 
         agent = new IsochroneAgent();
-        String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women";
+        String content = "db.name=test\nsegmentization_length=0.0002 \nkgEndpoint=\npopulationTables=population, population_test, population_women\nupdateOntop=true";
 
         //Create Mockclasses
         InputStream mockInputStream = new ByteArrayInputStream(content.getBytes());

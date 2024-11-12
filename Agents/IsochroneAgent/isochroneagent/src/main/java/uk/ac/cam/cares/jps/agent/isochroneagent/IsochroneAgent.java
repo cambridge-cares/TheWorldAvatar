@@ -56,6 +56,7 @@ public class IsochroneAgent extends JPSAgent {
     private String workspaceName = "twa";
     private String schema = "public";
     private Boolean oncePerPOI = true;
+    private Boolean updateOntop = false;
 
     /**
      * Initialise agent
@@ -110,6 +111,9 @@ public class IsochroneAgent extends JPSAgent {
             }
             if (prop.getProperty("oncePerPOI") != null) {
                 this.oncePerPOI = Boolean.parseBoolean(prop.getProperty("oncePerPOI"));
+            }
+            if (prop.getProperty("updateOntop") != null) {
+                this.updateOntop = Boolean.parseBoolean(prop.getProperty("updateOntop"));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -228,11 +232,14 @@ public class IsochroneAgent extends JPSAgent {
             }
 
             // Upload Isochrone Ontop mapping
-            try {
-                OntopClient ontopClient = OntopClient.getInstance();
-                ontopClient.updateOBDA(obdaFile);
-            } catch (Exception e) {
-                System.out.println("Could not retrieve isochrone .obda file.");
+            OntopClient ontopClient = OntopClient.getInstance();
+            if (updateOntop) {
+                try {
+                    ontopClient.updateOBDA(obdaFile);
+                    System.out.println("Ontop mapping updated.");
+                } catch (Exception e) {
+                    System.out.println("Could not retrieve isochrone .obda file.");
+                }
             }
 
         } catch (Exception e) {
