@@ -55,16 +55,15 @@ public class TripCentralityCalculator {
      */
     private void generateTripCentralityTable(Connection connection, int node, String tableName, String costTable) throws SQLException {
 
-        String tripCentrality_sql = "CREATE TABLE tc_"+tableName+" AS (\n" +
+        String tripCentrality_sql = "CREATE TABLE IF NOT EXISTS tc_"+tableName+" AS (\n" +
                 "    SELECT\n" +
                 "        b.gid,\n" +
                 "        b.the_geom AS geom,\n" +
-                "        COUNT(b.the_geom) AS count\n" +
+                "        COUNT(b.gid) AS count\n" +
                 "    FROM\n" +
-                "        routing_ways AS t,\n" +
                 "        pgr_dijkstra(\n" +
                 "            '"+costTable+"', \n" +
-                "             "+node+", t.target,\n" +
+                "             "+node+", (SELECT ARRAY_AGG(id) FROM routing_ways_vertices_pgr),\n" +
                 "             directed := FALSE\n" +
                 "        ) AS j\n" +
                 "    JOIN routing_ways AS b ON j.edge = b.gid \n" +
