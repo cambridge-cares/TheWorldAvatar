@@ -629,8 +629,8 @@ base:ServiceLocationShape
     sh:description "Identifier for the location." ;
     sh:order 1 ;
     sh:path (
-      geo:asWKT
-      [sh:inversePath geo:asWKT]
+      geo:hasGeometry
+      [sh:inversePath geo:hasGeometry]
     ) ;
     sh:datatype xsd:string ;
     sh:minCount 1 ;
@@ -641,6 +641,7 @@ base:ServiceLocationShape
     sh:description "The WKT serialization of the location." ;
     sh:order 2 ;
     sh:path (
+      geo:hasGeometry
       geo:asWKT
     ) ;
     sh:datatype geo:wktLiteral ;
