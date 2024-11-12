@@ -7,7 +7,7 @@ services:
       - "8080:8080"
       - "8443:8443"
     environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}    
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-theworldavatar}
       KC_LOG: console,file
       KC_LOG_LEVEL: info
@@ -26,15 +26,14 @@ services:
     networks:
       - auth-network
 
-  redis:
+  dragonfly:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    container_name: "session-store"
     restart: always
-    container_name: "bnl-redis"
-    image: redis:latest
+    ulimits:
+      memlock: -1
     ports:
       - "6379:6379"
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       - auth-network
     healthcheck:
@@ -42,6 +41,8 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+    volumes:
+      - dragonfly-data:/data
 
   postgres:
     restart: always
@@ -56,14 +57,14 @@ services:
     secrets:
       - postgres-password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d keycloak -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -d keycloak -U postgres" ]
       interval: 1s
       timeout: 5s
       retries: 10
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - auth-network
 
@@ -89,4 +90,8 @@ networks:
 
 secrets:
   postgres-password:
-    file: ./postgres-password
+    file: ./postgres-password##
+
+volumes:
+  dragonfly-data:
+  postgres-data:
