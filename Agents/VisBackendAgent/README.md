@@ -24,6 +24,8 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.6.1 Draft route](#261-draft-route)
       - [2.6.2 Schedule route](#262-schedule-route)
       - [2.6.3 Service commencement route](#263-service-commencement-route)
+      - [2.6.4 Unfulfilled service report route](#264-unfulfilled-service-report-route)
+      - [2.6.5 Cancel service route](#265-cancel-service-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -459,6 +461,48 @@ Note that this route does require the following `JSON` request parameters:
 ```
 
 A successful request will return `Contract has been approved for service execution!`.
+
+#### 2.6.4 Unfulfilled service report route
+
+The endpoint serves to report an unfulfilled service of a specified contract. Users must send a `POST` request to lodge a report at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/service/report
+```
+
+Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Remarks for the report",
+  "date": "Date of the unfulfilled service in the YYYY-MM-DD format; Date must be in the past or today"
+}
+```
+
+A successful request will return `Report for an unfulfilled service has been successfully lodged!`.
+
+#### 2.6.5 Cancel service route
+
+The endpoint serves to cancel an upcoming service of a specified contract. Users must send a `POST` request to lodge a report at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/service/cancel
+```
+
+Note that this route does require the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Remarks for the cancellation",
+  "date": "Upcoming service date to be cancelled in the YYYY-MM-DD format; Date must be today or in future"
+}
+```
+
+A successful request will return `Service has been successfully cancelled!`.
 
 ## 3. SHACL Restrictions
 

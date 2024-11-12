@@ -158,7 +158,7 @@
           "@id": {
             "@replace": "id",
             "@type": "iri",
-            "prefix": "https://www.theworldavatar.io/kg/lifecycle/service/unfulfilled/"
+            "prefix": "https://www.theworldavatar.io/kg/lifecycle/service/report/"
           },
           "@type": "https://www.theworldavatar.com/kg/ontoservice/MissedServiceEvent"
         },

@@ -12,7 +12,7 @@
     "@type": "literal"
   },
   "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/hasEventDate": {
-    "@replace": "current date",
+    "@replace": "date",
     "@type": "literal",
     "datatype": "http://www.w3.org/2001/XMLSchema#date"
   },

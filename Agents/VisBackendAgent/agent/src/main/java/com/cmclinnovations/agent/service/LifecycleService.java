@@ -52,7 +52,8 @@ public class LifecycleService {
     String event = this.getEventInstance(contractId, eventType);
     params.put("id", StringResource.getPrefix(event) + "/occurrence/" + UUID.randomUUID());
     params.put(LifecycleResource.EVENT_KEY, event);
-    params.put(LifecycleResource.CURRENT_DATE_KEY, LifecycleResource.getCurrentDate());
+    // Only retrieve the current date if no date input is given
+    params.putIfAbsent(LifecycleResource.DATE_KEY, LifecycleResource.getCurrentDate());
   }
 
   /**

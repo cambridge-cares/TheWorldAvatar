@@ -13,6 +13,7 @@ public class LifecycleResource {
 
   public static final String CONTRACT_KEY = "contract";
   public static final String CURRENT_DATE_KEY = "current date";
+  public static final String DATE_KEY = "date";
   public static final String EVENT_KEY = "event";
 
   // Private constructor to prevent instantiation
@@ -30,6 +31,26 @@ public class LifecycleResource {
   }
 
   /**
+   * Check if the date input is either before and after the current date.
+   * 
+   * @param dateParam   The date parameter for checking.
+   * @param checkBefore Indicator if the method should check if the date is before
+   *                    the current date. Use false to check if date is after the
+   *                    current date.
+   */
+  public static boolean checkDate(String dateParam, boolean checkBefore) {
+    // Parse input date
+    LocalDate inputDate = LocalDate.parse(dateParam);
+    LocalDate currentDate = LocalDate.now();
+
+    if (checkBefore) {
+      return inputDate.isBefore(currentDate); // Check if the date is before today
+    } else {
+      return inputDate.isAfter(currentDate); // Check if the date is after today
+    }
+  }
+
+  /**
    * Retrieve the event class associated with the event type.
    * 
    * @param eventType The target event type.
@@ -40,6 +61,10 @@ public class LifecycleResource {
         return "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
       case LifecycleEventType.SERVICE_EXECUTION:
         return "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
+      case LifecycleEventType.SERVICE_CANCELLATION:
+        return "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
+      case LifecycleEventType.SERVICE_MISS_REPORT:
+        return "https://www.theworldavatar.com/kg/ontoservice/MissedServiceEvent";
       default:
         throw new IllegalArgumentException("Invalid event type!");
     }
