@@ -94,6 +94,7 @@ RETURNS TABLE (
     "speed" double precision, 
     "altitude" double precision, 
     "bearing" double precision,
+    "session_id" character varying,
     "device_id" TEXT,
     "user_id" TEXT
 ) AS $$
@@ -106,11 +107,12 @@ BEGIN
         END IF;
 
         query := query || format(
-            'SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri=%L',
+            'SELECT time, %I AS geom, %I AS speed, %I AS altitude, %I AS bearing, %I AS session_id, %L AS device_id, %L AS user_id FROM %I WHERE time_series_iri=%L',
             get_column_name(get_point_iri(device_id_array[i])),
             get_column_name(get_speed_iri(device_id_array[i])),
             get_column_name(get_altitude_iri(device_id_array[i])),
             get_column_name(get_bearing_iri(device_id_array[i])),
+            get_column_name(get_session_iri(device_id_array[i])),
             device_id_array[i],
             get_user_id(device_id_array[i]),
             get_table_name(get_point_iri(device_id_array[i])),
