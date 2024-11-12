@@ -9,16 +9,16 @@ The purpose of this compose project is to take care of most of this, however you
 Refer to the [keycloak guides](https://www.keycloak.org/guides) for detailed guidance on server administration and securing apps.
 
 - Use the compose file to spin up this auth stack.
-  - Create a .env file in this directory and specify the admin usernames and passwords in the compose file. These are
+- Create a .env file in this directory and specify the admin usernames and passwords in the compose file. These are:
     - `KEYCLOAK_BOOTSTRAP_ADMIN` default is set to `admin`
     - `KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD`, default is `theworldavatar`
+
 > [!NOTE]  
-> Since Keycloak 26.0 these have changed, and will be prompted to change in the UI after spinning up.
+> Since Keycloak 26.0 these have changed, and will be prompted to change in the UI after spinning up. 
 > This dispenses with the need to have sensitive admin login stored as an environment variable.
 
-
-    - `POSTGRES_PASSWORD`, default `theworldavatar`
-    - `PGADMIN_LOGIN_EMAIL` default: `user@example.com`
+- `POSTGRES_PASSWORD`, default `theworldavatar`
+- `PGADMIN_LOGIN_EMAIL` default: `user@example.com`
   - **N.B** you can also create a `postgres-password` file in this directory, uncomment the POSTGRES_PASSWORD_FILE line in the `compose` file and set the postgres password via a docker secret, but this is probably pointless since Keycloak does not support docker secrets so must be passed in as an environment variable anyway. This will be updated if keycloak adds secret support.
   - Run `docker compose up` in this directory.
 
