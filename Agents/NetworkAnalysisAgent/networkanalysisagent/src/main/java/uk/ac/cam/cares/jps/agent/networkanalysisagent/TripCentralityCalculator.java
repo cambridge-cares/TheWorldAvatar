@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.networkanalysisagent;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.postgis.PGgeometry;
@@ -90,36 +91,12 @@ public class TripCentralityCalculator {
     public void generateTCLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName,
             String layerName, String normalTableName, String floodTableName) {
 
-        String tcLayer = "WITH maxcount AS (\n" +
-                "    SELECT MAX(ABS(COALESCE(f.count, 0) - n.count)) AS max\n" +
-                "    FROM tc_" + normalTableName + " n\n" +
-                "    LEFT JOIN tc_" + floodTableName + " f ON n.gid = f.gid AND n.geom = f.geom\n" +
-                ")\n" +
-                "\n" +
-                "SELECT\n" +
-                "    n.gid,\n" +
-                "    r.name,\n" +
-                "    r.length_m,\n" +
-                "    r.oneway,\n" +
-                "    n.geom,\n" +
-                "    n.count AS normal_count,\n" +
-                "    COALESCE(f.count, 0) AS flooded_count,\n" +
-                "    COALESCE(f.count, 0) - n.count AS count_difference,\n" +
-                "    (COALESCE(f.count, 0) - n.count)::decimal / maxcount.max AS count_difference_percentage,\n" +
-                "maxcount.max as max_countdifference\n" +
-                "FROM\n" +
-                "    tc_" + normalTableName + " n\n" +
-                "LEFT JOIN\n" +
-                "    tc_" + floodTableName + " f ON n.gid = f.gid AND n.geom = f.geom\n" +
-                "JOIN\n" +
-                "    " + routeTablePrefix + "ways r ON n.gid = r.gid\n" +
-                "CROSS JOIN\n" +
-                "    maxcount -- Include the CTE in the FROM clause\n" +
-                "ORDER BY \n" +
-                "    count_difference_percentage DESC";
-
+        String tcLayer = "SELECT a.gid, a.bci AS normal_bci, COALESCE(b.bci, 0.0) AS flooded_bci, "
+                + "COALESCE(b.bci, 0.0) - a.bci AS absolute_change, "
+                + "(COALESCE(b.bci, 0.0) / a.bci - 1.0) AS percentage_change, "
+                + "a.geom, r.name, r.length_m, r.oneway FROM tc_"+normalTableName+" a "
+                + "LEFT JOIN tc_"+floodTableName+" b on a.gid = b.gid JOIN "+routeTablePrefix+"ways r ON a.gid = r.gid";
         createGeoserverLayer(geoServerClient, tcLayer, layerName, workspaceName, dbName, schema);
-
     }
 
     /**
