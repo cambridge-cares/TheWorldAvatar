@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ public class IsochroneAgent extends JPSAgent {
     public double segmentization_length;
     public ArrayList<String> populationTableList;
     private List<Integer> floodDepthList = Arrays.asList(10, 30, 90);
+    private Integer floodCutoff = 30;
     private String poiTableName = "poi_nearest_node";
     private String routeTableName = "routing_ways";
     private String workspaceName = "twa";
@@ -97,6 +99,9 @@ public class IsochroneAgent extends JPSAgent {
                 this.floodDepthList = Arrays.stream(floodDepthString.split(",")).map(Integer::parseInt)
                         .collect(Collectors.toList());
             }
+            if (prop.getProperty("floodCutoff") != null) {
+                this.floodCutoff = Integer.parseInt(prop.getProperty("floodCutoff"));
+            }
             if (prop.getProperty("poiTableName") != null) {
                 this.poiTableName = prop.getProperty("poiTableName");
             }
@@ -114,6 +119,9 @@ public class IsochroneAgent extends JPSAgent {
             }
             if (prop.getProperty("updateOntop") != null) {
                 this.updateOntop = Boolean.parseBoolean(prop.getProperty("updateOntop"));
+            }
+            if (floodDepthList.stream().noneMatch(x -> Objects.equals(x, floodCutoff))) {
+                throw new JPSRuntimeException("Flood cutoff must be included in the list of flood depth.");
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -214,10 +222,10 @@ public class IsochroneAgent extends JPSAgent {
 
             if (isochroneFunction.equals("UR")) {
                 String unreachableSQL = "WITH cf AS (SELECT af.minute, "
-                        + "ST_Difference(ST_ConcaveHull(ST_Points(fp30.geom),0.2, false), af.geom) AS geom "
-                        + "FROM flood_polygon_single_30cm AS fp30, (SELECT minute, geom AS geom FROM isochrone_aggregated "
-                        + "WHERE roadcondition = 'Flooded') AS af) SELECT 'Unreachable Area' AS name, cf.minute, "
-                        + "CAST(subquery.sum AS INT) AS population, cf.geom AS geom FROM cf, "
+                        + "ST_Difference(ST_ConcaveHull(ST_Points(fp.geom),0.2, false), af.geom) AS geom "
+                        + "FROM flood_polygon_single_"+floodCutoff+"cm AS fp, (SELECT minute, geom AS geom "
+                        + "FROM isochrone_aggregated WHERE roadcondition = 'Flooded') AS af) SELECT 'Unreachable Area' AS name, "
+                        + "cf.minute, CAST(subquery.sum AS INT) AS population, cf.geom AS geom FROM cf, "
                         + "(SELECT cf.geom, SUM((ST_SummaryStats(ST_Clip(population.rast, cf.geom, TRUE))).sum) "
                         + "FROM population, cf GROUP BY cf.geom) AS subquery WHERE subquery.geom = cf.geom";
                 createGeoserverLayer(geoServerClient, unreachableSQL, "unreachable", "unreachable");
