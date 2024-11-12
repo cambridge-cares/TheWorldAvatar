@@ -95,6 +95,7 @@ public class IsochroneGenerator {
 
         String addExtension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
 
+        // Combination of minute, transport mode, road condition and POI type must be unique
         String tableConstraint = "DO $$ DECLARE constraint_count INTEGER; BEGIN\n"
                 + "SELECT COUNT(*) INTO constraint_count FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE "
                 + "TABLE_NAME = 'isochrone_aggregated' AND CONSTRAINT_NAME = 'unique_minute_transportmode_roadcondition_poi_type';\n"
