@@ -39,7 +39,7 @@ public class LifecycleController {
    * and set it in draft state ie awaiting approval.
    */
   @PostMapping("/contracts/draft")
-  public ResponseEntity<?> genContractLifecycle(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<String> genContractLifecycle(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params)) {
       return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
     }
@@ -49,8 +49,14 @@ public class LifecycleController {
     LOGGER.info("Received request to generate a new lifecycle for contract <{}>...", contractId);
     ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.LIFECYCLE_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.OK) {
-      LOGGER.info("Contract has been successfully drafted!");
-      return new ResponseEntity<>("Contract has been successfully drafted", HttpStatus.CREATED);
+      LOGGER.info("The lifecycle of the contract has been successfully drafted!");
+      // Execute request for schedule as well
+      ResponseEntity<String> scheduleResponse = this.genContractSchedule(params);
+      if (scheduleResponse.getStatusCode() == HttpStatus.OK) {
+        LOGGER.info("Contract has been successfully drafted!");
+        return new ResponseEntity<>("Contract has been successfully drafted", HttpStatus.CREATED);
+      }
+      return scheduleResponse;
     } else {
       return response;
     }
@@ -60,14 +66,14 @@ public class LifecycleController {
    * Create an upcoming schedule for the specified contract.
    */
   @PostMapping("/contracts/schedule")
-  public ResponseEntity<?> genContractSchedule(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<String> genContractSchedule(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params)) {
       return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to generate the schedule details for contract...");
     this.lifecycleService.addEventInstance(params, LifecycleEventType.SERVICE_EXECUTION);
     ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.SCHEDULE_RESOURCE, params);
-    if (response.getStatusCode() == HttpStatus.OK) {
+    if (response.getStatusCode() == HttpStatus.CREATED) {
       LOGGER.info("Schedule has been successfully drafted for contract!");
       return new ResponseEntity<>("Schedule has been successfully drafted for contract", HttpStatus.CREATED);
     } else {
@@ -89,8 +95,14 @@ public class LifecycleController {
       ResponseEntity<String> addResponse = this.addService.instantiate(LifecycleResource.LIFECYCLE_RESOURCE, targetId,
           params);
       if (addResponse.getStatusCode() == HttpStatus.OK) {
-        LOGGER.info("Draft contract has been successfully updated!");
-        return new ResponseEntity<>("Draft contract has been successfully updated!", HttpStatus.CREATED);
+        LOGGER.info("The lifecycle of the contract has been successfully updated!");
+        // Execute request for schedule as well
+        ResponseEntity<String> scheduleResponse = this.updateContractSchedule(params);
+        if (scheduleResponse.getStatusCode() == HttpStatus.OK) {
+          LOGGER.info("Draft contract has been successfully updated!");
+          return new ResponseEntity<>("Draft contract has been successfully updated!", HttpStatus.OK);
+        }
+        return scheduleResponse;
       } else {
         return addResponse;
       }
@@ -113,7 +125,7 @@ public class LifecycleController {
           params);
       if (addResponse.getStatusCode() == HttpStatus.OK) {
         LOGGER.info("Draft schedule has been successfully updated!");
-        return new ResponseEntity<>("Draft schedule has been successfully updated!", HttpStatus.CREATED);
+        return new ResponseEntity<>("Draft schedule has been successfully updated!", HttpStatus.OK);
       } else {
         return addResponse;
       }

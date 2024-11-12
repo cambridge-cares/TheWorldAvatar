@@ -379,13 +379,13 @@ This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to man
 
 #### 2.6.1 Draft route
 
-This endpoint serves to draft a contract lifecycle for the specified contract. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
+This endpoint serves to draft a new contract, inclusive of its lifecycle and the schedule. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft contract at the following endpoint:
 
 ```
 <baseURL>/vis-backend-agent/contracts/draft
 ```
 
-Note that this route does require the following `JSON` request parameters:
+Note that this route will interact with the [schedule route](#262-schedule-route) directly, and users should not sent a separate request to the schedule route unless they wish to interact with the schedule. The draft route will require the following `JSON` request parameters:
 
 ```json
 {
@@ -393,7 +393,17 @@ Note that this route does require the following `JSON` request parameters:
   "id": "An identifier for the lifecycle",
   "contract": "The target contract IRI",
   "start date": "Date when the first service is to be delivered in the YYYY-MM-DD format",
-  "end date": "Date of the final service in the YYYY-MM-DD format"
+  "end date": "Date of the final service in the YYYY-MM-DD format",
+  "time slot start": "Beginning of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "time slot end": "End of the time window during which the service is scheduled to be delivered in the HH:MM format",
+  "recurrence": "Service interval in the ISO 8601 format eg P1D P7D P2D",
+  "monday": "A boolean indicating if the service should occur on a monday",
+  "tuesday": "A boolean indicating if the service should occur on a tuesday",
+  "wednesday": "A boolean indicating if the service should occur on a wednesday",
+  "thursday": "A boolean indicating if the service should occur on a thursday",
+  "friday": "A boolean indicating if the service should occur on a friday",
+  "saturday": "A boolean indicating if the service should occur on a saturday",
+  "sunday": "A boolean indicating if the service should occur on a sunday"
 }
 ```
 
@@ -401,7 +411,7 @@ A successful request will return `Contract has been successfully drafted/updated
 
 #### 2.6.2 Schedule route
 
-The endpoint serves to assign the upcoming schedule for the services for the specified contract. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
+The endpoint serves to assign the upcoming schedule for the services for the specified contract. **WARNING**: It is not intended that this route is called directly, as the [draft route](#261-draft-route) will call this route when a request is received. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
 
 ```
 <baseURL>/vis-backend-agent/contracts/schedule
