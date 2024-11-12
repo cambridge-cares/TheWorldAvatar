@@ -90,7 +90,7 @@ networks:
 
 secrets:
   postgres-password:
-    file: ./postgres-password##
+    file: ./postgres-password
 
 volumes:
   dragonfly-data:
