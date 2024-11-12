@@ -62,11 +62,16 @@ public class TripCentralityCalculator {
     private void generateTripCentralityTable(Connection connection, int node, String tableName, String costTable)
             throws SQLException {
 
-        String tripCentralitySQL = "CREATE TABLE IF NOT EXISTS tc_" + tableName + " AS (\n" +
-                "SELECT b.gid, b.the_geom AS geom, COUNT(b.gid) AS count FROM " +
-                "pgr_dijkstra('" + costTable + "', " + node + ", (SELECT ARRAY_AGG(id) FROM " + routeTablePrefix
-                + "ways_vertices_pgr), directed := FALSE) AS j JOIN " + routeTablePrefix
-                + "ways AS b ON j.edge = b.gid GROUP BY b.gid, b.the_geom ORDER BY count DESC);";
+        String dropTableSQL = "DROP TABLE IF EXISTS tc_" + tableName;
+        executeSql(connection, dropTableSQL);
+
+        String tripCentralitySQL = "WITH tmp AS (SELECT end_vid, edge FROM pgr_dijkstra('" + costTable + "', "
+                + node + ", (SELECT ARRAY_AGG(id) FROM " + routeTablePrefix
+                + "ways_vertices_pgr), directed := FALSE))\n SELECT b.gid, b.the_geom AS geom, COUNT(b.gid) AS count, "
+                + "CAST(COUNT(b.gid) AS DECIMAL)/CAST(stat.total AS DECIMAL) AS bci INTO tc_" + tableName +
+                " FROM tmp AS j JOIN " + routeTablePrefix + "ways AS b ON j.edge = b.gid CROSS JOIN " +
+                "(SELECT COUNT (DISTINCT end_vid) AS total FROM tmp) AS stat GROUP BY b.gid, b.the_geom, stat.total";
+
         executeSql(connection, tripCentralitySQL);
     }
 
