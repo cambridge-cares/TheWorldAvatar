@@ -74,16 +74,12 @@ public class AccelerometerProcessor extends SensorDataProcessor {
 
     @Override
     public List<Class<?>> getDataClass() {
-        return Collections.nCopies(getDataIRIMap().size(), Double.class);
+        return Collections.nCopies(getDataIRIs().size(), Double.class);
     }
 
     @Override
-    public Map<String, String> getDataIRIMap() {
-        Map<String, String> iriHashMap = new HashMap<>();
-        iriHashMap.put("accel_x", xIri);
-        iriHashMap.put("accel_y", yIri);
-        iriHashMap.put("accel_z", zIri);
-        return iriHashMap;
+    public List<String> getDataIRIs() {
+        return List.of(xIri, yIri, zIri);
     }
 
     @Override

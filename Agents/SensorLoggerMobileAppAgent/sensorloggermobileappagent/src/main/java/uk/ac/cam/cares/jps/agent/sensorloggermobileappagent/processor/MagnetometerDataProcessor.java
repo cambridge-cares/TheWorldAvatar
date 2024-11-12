@@ -73,16 +73,12 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
 
     @Override
     public List<Class<?>> getDataClass() {
-        return Collections.nCopies(getDataIRIMap().size(), Double.class);
+        return Collections.nCopies(getDataIRIs().size(), Double.class);
     }
 
     @Override
-    public Map<String, String> getDataIRIMap() {
-        Map<String, String> iriHashMap = new HashMap<>();
-        iriHashMap.put("magnetometer_x", xIri);
-        iriHashMap.put("magnetometer_y", yIri);
-        iriHashMap.put("magnetometer_z", zIri);
-        return iriHashMap;
+    public List<String> getDataIRIs() {
+        return List.of(xIri, yIri, zIri);
     }
 
     @Override
