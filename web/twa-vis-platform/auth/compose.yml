@@ -2,7 +2,7 @@ services:
   keycloak-dev:
     restart: always
     container_name: "keycloak-dev-server"
-    image: keycloak/keycloak:latest
+    image: keycloak/keycloak:26.0
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -62,15 +62,14 @@ services:
     networks:
       - auth-network
 
-  redis:
+  dragonfly:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    container_name: "session-store"
     restart: always
-    container_name: "bnl-redis"
-    image: redis:latest
+    ulimits:
+      memlock: -1
     ports:
       - "6379:6379"
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       - auth-network
     healthcheck:
@@ -78,28 +77,31 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+    volumes:
+      - dragonfly-data:/data
 
   postgres:
     restart: always
     container_name: "postgres"
-    image: postgres:latest
+    image: postgres:17
     environment:
       POSTGRES_USER: postgres # default user for the container os
       PGUSER: postgres # default user for psql
       POSTGRES_DB: keycloak
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
       # POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+      GID: 1001
     secrets:
       - postgres-password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d keycloak -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -d keycloak -U postgres" ]
       interval: 1s
       timeout: 5s
       retries: 10
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - auth-network
 
@@ -128,5 +130,5 @@ secrets:
     file: ./postgres-password
 
 volumes:
-  dragonflydata:
+  dragonfly-data:
   postgres-data:
