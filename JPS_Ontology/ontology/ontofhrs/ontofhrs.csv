@@ -50,7 +50,7 @@ BusinessEstablishmentEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingStat
 http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Particular Period
 RatingStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,The initial date when a rating became effective for a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating Start
 RatingEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,The date on which a rating of a business establishment expired.,http://www.theworldavatar.com/ontology/OntoFHRS/,Rating End
-has Address,Object Property,,,Business Establishment,Address,,An object property referring to the address of a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,has address
+has Address,Object Property,,,Business Establishment,http://ies.data.gov.uk/ontology/ies4#Address,,An object property referring to the address of a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,has address
 has Rating,Object Property,,,Business Establishment,Rating,,An object property referring to the rating of a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,has rating
 has Local Authority,Object Property,,,Business Establishment,Local Authority,,An object property referring to the local authority of a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,has local authority
 has Hygiene Score,Object Property,,,Business Establishment,Hygiene Score,,An object property referring to the hygiene score of a business establishment.,http://www.theworldavatar.com/ontology/OntoFHRS/,has hygiene score
