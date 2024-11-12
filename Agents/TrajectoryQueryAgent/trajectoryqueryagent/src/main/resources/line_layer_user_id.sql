@@ -22,8 +22,8 @@ timeseries AS (
 line AS (
     SELECT 
         ts.time as time,
-        LAG(ts.geom) OVER (ORDER BY ts.time) AS prev_geom,
-        ST_MakeLine(LAG(ts.geom) OVER (ORDER BY ts.time), ts.geom) AS geom,
+        LAG(ts.geom) OVER (PARTITION BY user_id ORDER BY ts.time) AS prev_geom,
+        ST_MakeLine(LAG(ts.geom) OVER (PARTITION BY user_id ORDER BY ts.time), ts.geom) AS geom,
         ts.speed AS speed,
         ts.altitude AS altitude,
         ts.bearing AS bearing,
