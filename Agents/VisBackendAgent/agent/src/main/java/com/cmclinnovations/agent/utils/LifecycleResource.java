@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
+import com.cmclinnovations.agent.service.FileService;
 
 public class LifecycleResource {
   public static final String LIFECYCLE_RESOURCE = "lifecycle";
@@ -29,6 +30,8 @@ public class LifecycleResource {
 
   /**
    * Retrieve the event class associated with the event type.
+   * 
+   * @param eventType The target event type.
    */
   public static String getEventClass(LifecycleEventType eventType) {
     switch (eventType) {
@@ -36,6 +39,22 @@ public class LifecycleResource {
         return "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
       default:
         throw new IllegalArgumentException("Invalid event type!");
+    }
+  }
+
+  /**
+   * Retrieve the lifecycle resource file path associated with the resource ID.
+   * 
+   * @param resourceID The identifier for the resource.
+   */
+  public static String getLifecycleResourceFilePath(String resourceID) {
+    switch (resourceID) {
+      case LifecycleResource.LIFECYCLE_RESOURCE:
+        return FileService.LIFECYCLE_JSON_LD_RESOURCE;
+      case LifecycleResource.SCHEDULE_RESOURCE:
+        return FileService.SCHEDULE_JSON_LD_RESOURCE;
+      default:
+        return null;
     }
   }
 }

@@ -65,14 +65,9 @@ public class AddService {
    */
   public ResponseEntity<String> instantiate(String resourceID, String targetId, Map<String, Object> param) {
     LOGGER.info("Instantiating an instance of {} ...", resourceID);
-    String filePath;
-    // Lifecycle resource requires the following file path
-    if (resourceID.equals(LifecycleResource.LIFECYCLE_RESOURCE)) {
-      filePath = FileService.LIFECYCLE_JSON_LD_RESOURCE;
-    } else if (resourceID.equals(LifecycleResource.SCHEDULE_RESOURCE)) {
-      filePath = FileService.SCHEDULE_JSON_LD_RESOURCE;
-    } else {
-      // Else default to the file name in application-service
+    String filePath = LifecycleResource.getLifecycleResourceFilePath(resourceID);
+    // Default to the file name in application-service if it not a lifecycle route
+    if (filePath == null) {
       ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
       // Return the BAD REQUEST response directly if the file is invalid
       if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
