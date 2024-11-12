@@ -118,15 +118,8 @@ public class TripCentralityCalculator {
                 "ORDER BY \n" +
                 "    count_difference_percentage DESC";
 
-        UpdatedGSVirtualTableEncoder virtualTableTC = new UpdatedGSVirtualTableEncoder();
-        GeoServerVectorSettings geoServerVectorSettingsTC = new GeoServerVectorSettings();
-        virtualTableTC.setSql(tcLayer);
-        virtualTableTC.setEscapeSql(true);
-        virtualTableTC.setName(layerName);
-        virtualTableTC.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
-        geoServerVectorSettingsTC.setVirtualTable(virtualTableTC);
-        geoServerClient.createPostGISDataStore(workspaceName, layerName, dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName, schema, layerName, geoServerVectorSettingsTC);
+        createGeoserverLayer(geoServerClient, tcLayer, layerName, workspaceName, dbName, schema);
+
     }
 
     /**
@@ -170,5 +163,18 @@ public class TripCentralityCalculator {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }
+    }
+
+    private void createGeoserverLayer(GeoServerClient geoServerClient, String sql, String layerName,
+            String workspaceName, String dbName, String schema) {
+        UpdatedGSVirtualTableEncoder virtualTableTC = new UpdatedGSVirtualTableEncoder();
+        GeoServerVectorSettings geoServerVectorSettingsTC = new GeoServerVectorSettings();
+        virtualTableTC.setSql(sql);
+        virtualTableTC.setEscapeSql(true);
+        virtualTableTC.setName(layerName);
+        virtualTableTC.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
+        geoServerVectorSettingsTC.setVirtualTable(virtualTableTC);
+        geoServerClient.createPostGISDataStore(workspaceName, layerName, dbName, schema);
+        geoServerClient.createPostGISLayer(workspaceName, dbName, schema, layerName, geoServerVectorSettingsTC);
     }
 }
