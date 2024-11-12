@@ -4,7 +4,7 @@
 services:
   # Empty visualisation image for deployment.
   base:
-    image: ghcr.io/cambridge-cares/twa-vf:5.9.2-update-kc-connect-SNAPSHOT
+    image: ghcr.io/cambridge-cares/twa-vf:5.9.2
     container_name: "de-waste-app"
     restart: "no"
     environment:
@@ -26,7 +26,7 @@ services:
         description: "TWA Visualisation Platform image."
     volumes:
       - ../twa-vis-platform/code/public:/twa/public/
-      - ../twa-vis-platform/code/keycloak.json:/twa/keycloak.json
+      - ./keycloak.json:/twa/keycloak.json
     ports:
       - "3000:3000"
 

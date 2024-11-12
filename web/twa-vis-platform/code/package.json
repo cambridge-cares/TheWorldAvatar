@@ -1,6 +1,6 @@
 {
   "name": "twa-visualisation-platform",
-  "version": "0.1.0",
+  "version": "5.9.2",
   "private": true,
   "type": "module",
   "eslintConfig": {
