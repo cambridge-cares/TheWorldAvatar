@@ -9,6 +9,7 @@
 
 * Added customisable search capabilities for the map visualisation, inclusive of metadata and time series
 * Improve the search form design and user interaction
+* Added geocoding capabilities
 * Added documentation of these functions
 
 ### Bug Fixes
