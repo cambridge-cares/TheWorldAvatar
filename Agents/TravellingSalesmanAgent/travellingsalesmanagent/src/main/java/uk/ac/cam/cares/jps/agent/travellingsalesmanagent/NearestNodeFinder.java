@@ -37,20 +37,22 @@ public class NearestNodeFinder {
                     + "poi_tsp_type VARCHAR, "
                     + "nearest_node BIGINT, "
                     + "geom geometry, "
-                    + "is_flooded BOOLEAN"
+                    + "is_flooded BOOLEAN, "
+                    + "name VARCHAR"
                     + ")";
 
             executeSql(connection, initialiseTable);
             System.out.println("Initialized " + tableName + " table.");
 
             String sql = "INSERT INTO " + tableName
-                    + " (poi_tsp_iri, poi_tsp_type, nearest_node, geom, is_flooded) VALUES (?, ?, ?, ?, ?)";
+                    + " (poi_tsp_iri, poi_tsp_type, nearest_node, geom, is_flooded, name) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject poiTSP = jsonArray.getJSONObject(i);
                 String poiTSPIri = poiTSP.getString("poi_iri");
                 String poiTSPType = poiTSP.getString("poi_type");
+                String poiName = poiTSP.getString("name");
                 // Remove the prefix from poiTSPIri, poiTSPType
                 poiTSPIri = poiTSPIri.replace("https://www.theworldavatar.com/kg/", "");
                 poiTSPType = poiTSPType.replace("https://www.theworldavatar.com/kg/", "");
@@ -66,6 +68,7 @@ public class NearestNodeFinder {
                 preparedStatement.setInt(3, Integer.parseInt(nearestNode));
                 preparedStatement.setObject(4, pgGeometry);
                 preparedStatement.setBoolean(5, false);
+                preparedStatement.setString(6, poiName);
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();

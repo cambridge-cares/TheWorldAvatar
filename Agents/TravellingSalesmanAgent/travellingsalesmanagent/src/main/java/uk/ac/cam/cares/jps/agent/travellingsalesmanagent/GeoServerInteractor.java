@@ -18,7 +18,7 @@ public class GeoServerInteractor {
 
     public static void addPOIGeoserverLayer(GeoServerClient geoServerClient, String workspaceName, String schema,
             String dbName, String poiTableName, String poiLayerName) {
-        String sql = "SELECT CONCAT('https://www.theworldavatar.com/kg/',poi_tsp_iri) as iri, poi_tsp_type, nearest_node, geom, is_flooded FROM "
+        String sql = "SELECT name, CONCAT('https://www.theworldavatar.com/kg/',poi_tsp_iri) as iri, poi_tsp_type, nearest_node, geom, is_flooded FROM "
                         + poiTableName;
         addGeoserverLayer(geoServerClient, workspaceName, schema, dbName, poiLayerName, sql, null);
 
