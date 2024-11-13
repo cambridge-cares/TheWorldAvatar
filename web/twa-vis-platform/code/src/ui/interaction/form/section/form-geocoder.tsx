@@ -165,6 +165,7 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
         setHasGeolocation(true);
         props.form.setValue(FORM_STATES.LATITUDE, coordinates[1].toString())
         props.form.setValue(FORM_STATES.LONGITUDE, coordinates[0].toString())
+        props.form.setValue(props.field.fieldId, `POINT(${coordinates[0]}, ${coordinates[1]})`)
         break; // Stop function if found
       };
     }
@@ -263,6 +264,7 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
         {hasGeolocation && <div className={styles["form-fieldset-contents"]}>
           <GeocodeMapContainer
             form={props.form}
+            fieldId={props.field.fieldId}
           />
           <FormFieldComponent
             entityType={props.field.name[VALUE_KEY]}
