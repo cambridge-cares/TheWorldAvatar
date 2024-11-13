@@ -1,4 +1,6 @@
-PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX sh:             <http://www.w3.org/ns/shacl#>
+PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>
+
 
 SELECT DISTINCT ?clazz ?name ?order ?suborder ?subject ?isparent ?isoptional 
  ?multipath ?multipath_proppath ?multisubpath ?multisubpath_proppath ?name_multipath ?name_multipath_proppath
@@ -118,6 +120,10 @@ WHERE {
   # Verify if the data type is a number (integer/decimal), and subpath should take precedence
   BIND (IF(BOUND(?subdatatype), ?subdatatype = xsd:integer || ?subdatatype = xsd:decimal , 
          BOUND(?datatype) && (?datatype = xsd:integer || ?datatype =xsd:decimal)) AS ?isnumber)
+
+  # Retrieve results for non-regular schedules
+  OPTIONAL { ?property sh:class ?class }
+  FILTER (!BOUND(?class) || ?class != fibo-fnd-dt-fd:RegularSchedule)
 
   # Only retrieve results if there is either a multipath, multisubpath, or name_multipath
   FILTER(BOUND(?multipath) || BOUND(?multisubpath) || BOUND(?name_multipath))
