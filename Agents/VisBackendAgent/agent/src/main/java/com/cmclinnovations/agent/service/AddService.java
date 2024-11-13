@@ -121,9 +121,9 @@ public class AddService {
               .put(ShaclResource.VAL_KEY, this.getReplacementValue(currentNode, replacements))
               .put(ShaclResource.TYPE_KEY, currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
           parentNode.set(parentField, literalNode);
-          // Parse IRIs that are not assigned to @id, within a nested @id object
+          // IRIs that are not assigned to @id or @type should belong within a nested @id object
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
-            && !parentField.equals(ShaclResource.ID_KEY)) {
+            && !(parentField.equals(ShaclResource.ID_KEY) || parentField.equals(ShaclResource.TYPE_KEY))) {
           ObjectNode newIriNode = this.objectMapper.createObjectNode();
           newIriNode.put(ShaclResource.ID_KEY, this.getReplacementValue(currentNode, replacements));
           parentNode.set(parentField, newIriNode);
