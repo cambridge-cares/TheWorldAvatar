@@ -1,7 +1,7 @@
 import styles from '../form.module.css';
 import fieldStyles from '../field/field.module.css';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import Select from 'react-select';
 
@@ -42,6 +42,17 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
       props.form.getValues(FORM_STATES.RECURRENCE) == -1 ? alternateService : regularService
   );
 
+  // Updates the service description whenever the service option changes
+  const serviceDescription = useMemo(():string => {
+    if (selectedServiceOption === singleService) {
+      return "A one-off service that will occur once on the specified date.";
+    } else if (selectedServiceOption === alternateService) {
+      return "A service that will occur on every alternate day within the specified period.";
+    } else {
+      return "A service that will occur regularly based on the schedule within the specified period.";
+    }
+  }, [selectedServiceOption]);
+
   // Handle change event for the select input
   const handleServiceChange = (value: string) => {
     if (value === singleService) {
@@ -61,7 +72,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
       </legend>
       <div className={styles["form-fieldset-contents"]}>
         <div className={styles["schedule-occurrence-container"]}>
-          <label className={fieldStyles["field-text"]} htmlFor="select-input">Service type: </label>
+          <label className={fieldStyles["field-text"]} htmlFor="select-input">Service type:</label>
           <Select
             styles={selectorStyles}
             unstyled
@@ -72,6 +83,10 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             isMulti={false}
             isSearchable={true}
           />
+          <p className={fieldStyles["info-text"]}>
+            <b className={fieldStyles["field-text"]}>Description: </b>
+            {serviceDescription}
+          </p>
         </div>
         <FormFieldComponent
           entityType={scheduleType}
