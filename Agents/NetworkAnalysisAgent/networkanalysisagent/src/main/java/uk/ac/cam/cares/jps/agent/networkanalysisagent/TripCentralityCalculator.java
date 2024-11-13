@@ -89,14 +89,14 @@ public class TripCentralityCalculator {
      * @param floodTableName  Second trip centrality table to be compared
      */
     public void generateTCLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName,
-            String layerName, String normalTableName, String floodTableName) {
+            String layerName, String normalTableName, String floodTableName, String floodCostTableName) {
 
         String tcLayer = "SELECT a.gid, a.bci AS normal_betweeness_centrality_index, "
                 + "COALESCE(b.bci, 0.0) AS flooded_betweeness_centrality_index, "
                 + "COALESCE(b.bci, 0.0) - a.bci AS absolute_change_betweeness_centrality_index, "
-                + "CONCAT(ROUND((COALESCE(b.bci, 0.0) / a.bci - 1.0) * 100, 2), '%') "
-                + "AS percentage_change_betweeness_centrality_index, "
-                + "a.geom, r.name, r.length_m, r.oneway FROM tc_" + normalTableName + " a "
+                + "a.geom, r.name, r.length_m, r.oneway, " + "CASE WHEN EXISTS (SELECT 1 FROM " + floodCostTableName
+                + " fc WHERE a.gid = fc.id AND fc.cost_s <0) THEN TRUE ELSE FALSE END AS is_flooded "
+                + "FROM tc_" + normalTableName + " a "
                 + "LEFT JOIN tc_" + floodTableName + " b on a.gid = b.gid JOIN " + routeTablePrefix
                 + "ways r ON a.gid = r.gid";
         createGeoserverLayer(geoServerClient, tcLayer, layerName, workspaceName, dbName, schema);

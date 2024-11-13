@@ -38,6 +38,7 @@ public class NetworkAnalysisAgent extends JPSAgent {
     private String routeTablePrefix = "routing_";
     private String workspaceName = "twa";
     private String schema = "public";
+    private String floodCostTableName = "flood_cost_30cm";
 
     /**
      * Initialise agent
@@ -76,6 +77,9 @@ public class NetworkAnalysisAgent extends JPSAgent {
             }
             if (prop.getProperty("schema") != null) {
                 this.schema = prop.getProperty("schema");
+            }
+            if (prop.getProperty("floodCostTableName") != null) {
+                this.floodCostTableName = prop.getProperty("floodCostTableName");
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -143,7 +147,8 @@ public class NetworkAnalysisAgent extends JPSAgent {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
                 geoServerClient.createWorkspace(workspaceName);
                 tripCentralityCalculator.generateTCLayer(geoServerClient, workspaceName, schema, dbName,
-                        "tripcentrality_" + tcTableNameList.get(1), tcTableNameList.get(0), tcTableNameList.get(1));
+                        "tripcentrality_" + tcTableNameList.get(1), tcTableNameList.get(0), tcTableNameList.get(1),
+                        floodCostTableName);
             }
         } catch (Exception e) {
             e.printStackTrace();
