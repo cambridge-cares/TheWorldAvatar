@@ -78,12 +78,43 @@
 
 .form-dependent-fieldset {
   border-width: 0 0;
-  margin: 1rem 0;
+  margin: 1rem 0 0.5rem;
 }
 
 .form-dependent-button-layout {
   display: flex;
   flex-direction: row;
+  margin-bottom: 0.5rem;
+}
+
+.form-menu {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem 0;
+  width: fit-content;
+
+}
+
+.form-menu-item {
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  text-align: center;
+  margin: 0 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border: none;
+  border-bottom: 1px solid var(--border-primary);
+  font-size: var(--font-size-tertiary-text);
+  background-color: var(--background-primary);
+  color: var(--text-color-primary);
+}
+
+.form-menu-item:last-child {
+  border: none;
+}
+
+.form-menu-item:hover {
+  color: var(--text-color-links-hover);
 }
 
 .schedule-occurrence-container {
@@ -132,7 +163,6 @@
 .button:hover {
   background-color: var(--background-tertiary);
 }
-
 
 .button-text {
   font-size: var(--font-size-tertiary-text);

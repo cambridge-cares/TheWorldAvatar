@@ -96,13 +96,6 @@ app.prepare().then(() => {
       res.json({ userName, firstName, lastName, fullName, roles, clientRoles });
     });
 
-    server.get('/logout', (req, res) => {
-      req.logout(); // Keycloak adapter logout
-      req.session.destroy(() => { // This destroys the session
-        res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
-      });
-    });
-
     const protectedPages = process.env.PROTECTED_PAGES.split(',');
     protectedPages.forEach(page => {
       server.get(page, keycloak.protect());
