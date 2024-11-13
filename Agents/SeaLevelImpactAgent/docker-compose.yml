@@ -1,0 +1,9 @@
+services:
+  sealevelimpactagent:
+    image: ghcr.io/cambridge-cares/sealevelimpactagent:1.2.0
+    build: .
+    ports:
+      - "10110:8080"
+    volumes:
+      - ./inputs:/inputs
+

@@ -1,0 +1,15 @@
+{
+    "branding": {
+        "navbar": ["/images/defaults/navbar-logo.svg"],
+        "landing": ["/images/defaults/icons/twa.svg"],
+        "landingDark": ["/images/defaults/icons/twa.svg"]
+    },
+    "modules": {
+        "landing": true,
+        "help": true,
+        "map": true,
+        "dashboard": false,
+        "registry": false,
+        "scheduler": false
+    }
+}

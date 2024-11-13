@@ -4,7 +4,7 @@
     "Name": "grafana",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "grafana/grafana-oss:10.0.3",
+        "Image": "docker.io/grafana/grafana-oss:11.2.0",
         "Secrets": [
           {
             "SecretName": "grafana_password"

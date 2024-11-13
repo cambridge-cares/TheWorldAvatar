@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_error">Not able to get the asset information, please check your network connection and try again.</string>
+    <string name="asset_info">Asset Information</string>
+    <string name="view_status_graph">View Status Graph</string>
+    <string name="yes">Yes\n</string>
+    <string name="no">No</string>
+    <string name="view_status_in_bms_app">Do you want to open BMSQueryApp to view live status?</string>
+    <string name="unable_to_open_bms_app">Unable to open BMSQueryApp</string>
+    <string name="check_bms_installation">Please check whether you have the latest BMSQueryApp installed.</string>
+    <string name="ok">OK</string>
+    <string name="add_asset">Add Asset</string>
+    <string name="edit">Edit</string>
+    <string name="edit_asset">Edit Asset</string>
+    <string name="delete">Delete</string>
+    <string name="invalid_qr_code">The QR code scanned is invalid.</string>
+    <string name="add_maintenance">Add Maintenance</string>
+</resources>

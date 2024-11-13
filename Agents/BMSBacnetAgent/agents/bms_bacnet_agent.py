@@ -28,7 +28,6 @@ class bmsBacnetAgent():
         initialize(bms_IRIs)
 
     def updateKB(self):
-        #TODO: connection error handling
         #read data from BACNET
         bms_IRIS, data = self.readDataBacnet()
         timeValues = [(dt.datetime.now() - dt.timedelta(hours=2*i)) for i in range(len(bms_IRIS))]
@@ -47,7 +46,7 @@ class bmsBacnetAgent():
         #read the list of property to read for each device
         bms_prop_dict = bmsPropMap().build() #
         print('return:'+str(bms_prop_dict))
-        bms_IRIs = list(bms_prop_dict.keys())
+        bms_IRIs = list(bms_prop_dict.values())
         print(bms_IRIs)
         #format the request dictionary to query bacnet
         bacnet_device_list, request_dicts = getRequestDict(bms_bacnet_dict, bms_prop_dict)
@@ -55,9 +54,8 @@ class bmsBacnetAgent():
         c = Connection()
         print(Connection)
         print(c)
-        c.connect(config.BACNET_IP)#TODO: MOCK
+        c.connect(config.BACNET_IP)
         data = []
         for idx in range(len(bacnet_device_list)):
-            #TODO: connection error handling
             data.append(c.readMultiple(bacnet_device_list[idx], request_dicts[idx]))
         return bms_IRIs, data

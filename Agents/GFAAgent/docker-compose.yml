@@ -1,0 +1,6 @@
+version: "3.8"
+
+services:
+  gfaagent:
+    image: ghcr.io/cambridge-cares/gfaagent:2.0.1
+    build: .

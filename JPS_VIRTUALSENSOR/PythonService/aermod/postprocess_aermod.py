@@ -93,7 +93,7 @@ def get_aermod_geojson(aermod_output, srid):
 
     files = {'colorbar': open('colorbar.png', 'rb')}
 
-    response = requests.post(os.environ['FILE_SERVER'] + 'colorbar/colorbar.png',
+    response = requests.post(os.environ['FILE_SERVER'].replace('${STACK_NAME}', os.environ['STACK_NAME']) + 'colorbar/colorbar.png',
                              files=files, auth=requests.auth.HTTPBasicAuth('fs_user', 'fs_pass'))
 
     url = response.headers.get('colorbar')
@@ -107,5 +107,7 @@ def get_aermod_geojson(aermod_output, srid):
 
     response = {'contourgeojson': json.loads(
         geojsonstring), 'colourbar': url, 'contourgeojson_elev': json.loads(geojsonstring_elev)}
+
+    plt.close()
 
     return jsonify(response), 200

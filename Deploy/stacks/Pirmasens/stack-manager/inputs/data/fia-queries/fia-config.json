@@ -48,6 +48,10 @@
 			"meta": {
 				"queryFile": "dispersion_polygon.sparql"
 			}
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoplot/Plot",
+            "metaFile": "plot_query.sparql"
         }
     ]
 }

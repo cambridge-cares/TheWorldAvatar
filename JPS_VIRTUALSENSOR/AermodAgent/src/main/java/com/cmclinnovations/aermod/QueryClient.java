@@ -10,6 +10,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
@@ -20,7 +21,6 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -32,10 +32,6 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.aermod.sparqlbuilder.ServiceEndpoint;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,6 +53,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
@@ -85,8 +82,8 @@ public class QueryClient {
 
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient rdbStoreClient;
-    private TimeSeriesClient<Long> tsClientLong;
     private TimeSeriesClient<Instant> tsClientInstant;
+    private TimeSeriesClient<Long> tsClientLong;
     private String citiesNamespace;
     private String namespaceCRS;
     private ServiceEndpoint ontopService;
@@ -116,7 +113,6 @@ public class QueryClient {
     public static final String NY = PREFIX_DISP + "ny";
     public static final String Z = PREFIX_DISP + "z";
     public static final String SCOPE = PREFIX_DISP + "Scope";
-    public static final String CITIES_NAMESPACE = PREFIX_DISP + "OntoCityGMLNamespace";
     public static final String SIMULATION_TIME = PREFIX_DISP + "SimulationTime";
     public static final String NO_X = PREFIX_DISP + "NOx";
     public static final String UHC = PREFIX_DISP + "uHC";
@@ -178,6 +174,7 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
+    private static final Iri HAS_SRID = P_DISP.iri("hasSRID");
     private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
     private static final Iri LOD0_FOOTPRINT = P_BLDG.iri("lod0FootPrint");
     private static final Iri MEASURED_HEIGHT = P_BLDG.iri("measuredHeight");
@@ -195,8 +192,9 @@ public class QueryClient {
 
     public QueryClient(RemoteStoreClient storeClient, String ontopEndpoint, RemoteRDBStoreClient rdbStoreClient) {
         this.storeClient = storeClient;
-        this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
-        this.tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
+        this.tsClientInstant = new TimeSeriesClient<>(storeClient,
+                new TimeSeriesRDBClientWithReducedTables<>(Instant.class));
+        this.tsClientLong = new TimeSeriesClient<>(storeClient, new TimeSeriesRDBClientWithReducedTables<>(Long.class));
         this.rdbStoreClient = rdbStoreClient;
         ontopService = new ServiceEndpoint(ontopEndpoint);
     }
@@ -440,8 +438,8 @@ public class QueryClient {
     }
 
     List<Ship> getShipsWithinTimeAndScopeViaTsClient(long simulationTime, Geometry scope, long timeBuffer) {
-        long simTimeUpperBound = simulationTime + timeBuffer; // +30 minutes
-        long simTimeLowerBound = simulationTime - timeBuffer; // -30 minutes
+        Instant simTimeUpperBound = Instant.ofEpochSecond(simulationTime + timeBuffer);
+        Instant simTimeLowerBound = Instant.ofEpochSecond(simulationTime - timeBuffer);
 
         Map<String, String> measureToShipMap = getMeasureToShipMap();
         List<String> measures = new ArrayList<>(measureToShipMap.keySet());
@@ -449,19 +447,33 @@ public class QueryClient {
         List<Ship> ships = new ArrayList<>();
         try (Connection conn = rdbStoreClient.getConnection()) {
             measures.stream().forEach(measure -> {
-                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
-                        simTimeUpperBound, conn);
-                if (ts.getValuesAsPoint(measure).size() > 1) {
-                    LOGGER.warn("More than 1 point within this time inverval");
-                } else if (ts.getValuesAsPoint(measure).isEmpty()) {
+                TimeSeries<Instant> ts;
+                try {
+                    ts = tsClientInstant.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
+                            simTimeUpperBound, conn);
+                    if (ts.getValuesAsPoint(measure).isEmpty()) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    LOGGER.warn("Error in obtaining location time series of a ship");
+                    LOGGER.warn("Measure IRI: <{}>", measure);
+                    LOGGER.warn(e.getMessage());
                     return;
                 }
 
-                try {
-                    // this is to convert from org.postgis.Point to the Geometry class
-                    org.postgis.Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
-                    String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
+                // this is to convert from org.postgis.Point to the Geometry class
+                org.postgis.Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
+                if (ts.getValuesAsPoint(measure).size() > 1) {
+                    int i = 0;
+                    while (i < ts.getTimes().size()
+                            && ts.getTimes().get(i).isBefore(Instant.ofEpochSecond(simulationTime))) {
+                        postgisPoint = ts.getValuesAsPoint(measure).get(i);
+                        i++;
+                    }
+                }
 
+                String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
+                try {
                     Point point = (Point) new org.locationtech.jts.io.WKTReader().read(wktLiteral);
                     point.setSRID(4326);
 
@@ -532,7 +544,8 @@ public class QueryClient {
         return locationMeasureToShipMap;
     }
 
-    void setEmissions(List<PointSource> allSources) {
+    /** removes sources without emissions */
+    List<PointSource> setEmissions(List<PointSource> allSources) {
         // create a look up map to get point source object based on IRI
         Map<String, PointSource> iriToSourceMap = new HashMap<>();
         allSources.stream().forEach(s -> iriToSourceMap.put(s.getIri(), s));
@@ -578,6 +591,15 @@ public class QueryClient {
 
         String[] gasPhaseEmissions = { CO2, NO_X, SO2, CO, UHC };
 
+        List<PointSource> sourcesWithEmissions = new ArrayList<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            String psIRI = queryResult.getJSONObject(i).getString(ps.getQueryString().substring(1));
+
+            if (!sourcesWithEmissions.contains(iriToSourceMap.get(psIRI))) {
+                sourcesWithEmissions.add(iriToSourceMap.get(psIRI));
+            }
+        }
+
         for (int i = 0; i < queryResult.length(); i++) {
             String psIRI = queryResult.getJSONObject(i).getString(ps.getQueryString().substring(1));
             String pollutantID = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
@@ -613,6 +635,8 @@ public class QueryClient {
                 pointSource.setFlowrateInKgPerS(Pollutant.getPollutantType(pollutantID), emission);
             }
         }
+
+        return sourcesWithEmissions;
     }
 
     private boolean checkUnits(String temperatureUnitString, String densityUnitString, String massFlow) {
@@ -1010,126 +1034,19 @@ public class QueryClient {
             List<Polygon> footprintPolygons = entrySet.getValue();
             double height = buildingToHeightMap.get(buildingIri);
 
-            Building building = new Building(footprintPolygons, height);
-            building.setIri(buildingIri);
-            building.getFootprint().setSRID(4326);
-            building.getLocation().setSRID(4326);
+            try {
+                Building building = new Building(footprintPolygons, height);
+                building.setIri(buildingIri);
+                building.getLocation().setSRID(4326);
 
-            iriToBuildingMap.put(buildingIri, building);
+                iriToBuildingMap.put(buildingIri, building);
+            } catch (ClassCastException e) {
+                LOGGER.warn("Skipping <{}>, probably a building with holes in the footprint", buildingIri);
+                LOGGER.warn(e.getMessage());
+            }
         });
 
         return iriToBuildingMap;
-    }
-
-    // This method only retrieves items with an object Class ID of 26, which is the
-    // OCGML identifier for buildings.
-    // See
-    // https://3dcitydb-docs.readthedocs.io/en/latest/3dcitydb/schema/core.html
-    // for more details.
-
-    public Map<String, List<List<Polygon>>> getBuildingsNearPollutantSources(List<PointSource> allSources)
-            throws org.apache.jena.sparql.lang.sparql_11.ParseException {
-
-        List<String> cityObjectIRIList = allSources.stream().filter(i -> i.getClass() == StaticPointSource.class)
-                .map(i -> ((StaticPointSource) i).getOcgmlIri().replace("building", "cityobject")
-                        .replace("cityfurniture", "cityobject"))
-                .collect(Collectors.toList());
-
-        Polygon boundingBox = getBoundingBoxOfPointSources(allSources);
-        List<String> newBoxBounds = getCornersForCitiesQuery(boundingBox);
-
-        String lowerBounds = newBoxBounds.get(0);
-        String upperBounds = newBoxBounds.get(1);
-
-        String geoUri = "http://www.bigdata.com/rdf/geospatial#";
-        // where clause for geospatial search
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ONTO_CITYGML)
-                .addPrefix("geo", geoUri)
-                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
-                .addWhere("?cityObject", "geo:searchDatatype", "<http://localhost/blazegraph/literals/POLYGON-3-15>")
-                .addWhere("?cityObject", "geo:customFields", "X0#Y0#Z0#X1#Y1#Z1#X2#Y2#Z2#X3#Y3#Z3#X4#Y4#Z4")
-                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as
-                // doubles, not strings
-                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
-                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
-
-        // where clause to check that the city object is a building
-        WhereBuilder wb2 = new WhereBuilder()
-                .addPrefix("ocgml", ONTO_CITYGML)
-                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
-                .addWhere("?cityObject", "ocgml:EnvelopeType", "?envelope")
-                .addFilter("?id=26");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?cityObject").addVar("?envelope");
-
-        Query query = sb.build();
-        // add geospatial service
-        ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
-        body.addElement(wb2.build().getQueryPattern());
-        query.setQueryPattern(body);
-
-        String queryString = query.toString().replace("PLACEHOLDER", "");
-        JSONArray buildingIRIQueryResult = AccessAgentCaller.queryStore(citiesNamespace, queryString);
-
-        List<String> buildingOCGMLIRIList = new ArrayList<>();
-
-        Map<String, String> buildingToEnvelopeMap = new HashMap<>();
-        for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
-            String envelopeString = buildingIRIQueryResult.getJSONObject(i).getString("envelope");
-            String buildingIri = buildingIRIQueryResult.getJSONObject(i).getString("cityObject").replace("cityobject",
-                    "building");
-            buildingToEnvelopeMap.put(buildingIri, envelopeString);
-            buildingOCGMLIRIList.add(buildingIri);
-        }
-
-        if (citiesNamespace.contentEquals("singaporeEPSG24500")) {
-            // temporary hack, bad code!
-            return estimatePolygonsFromEnvelope(buildingToEnvelopeMap);
-        } else {
-            return buildingsQuery(buildingOCGMLIRIList);
-        }
-    }
-
-    /**
-     * creates a rectangle from min/max of coordinates from allSources
-     * then adds a buffer
-     */
-    private Polygon getBoundingBoxOfPointSources(List<PointSource> allSources) {
-        double buffer = 500;
-        GeometryFactory geoFactory = new GeometryFactory();
-        List<Point> convertedPoints = allSources.stream().map(s -> {
-            double[] xyOriginal = { s.getLocation().getX(), s.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform("EPSG:" + s.getLocation().getSRID(), namespaceCRS,
-                    xyOriginal);
-            return geoFactory.createPoint(new Coordinate(xyTransformed[0], xyTransformed[1]));
-        }).collect(Collectors.toList());
-
-        List<Double> xCoordinates = convertedPoints.stream().map(Point::getX).collect(Collectors.toList());
-        List<Double> yCoordinates = convertedPoints.stream().map(Point::getY).collect(Collectors.toList());
-
-        double xMin = Collections.min(xCoordinates);
-        double yMin = Collections.min(yCoordinates);
-        double xMax = Collections.max(xCoordinates);
-        double yMax = Collections.max(yCoordinates);
-
-        if (allSources.size() == 1) {
-            double expandRange = 10.0;
-            xMin -= expandRange;
-            xMax += expandRange;
-            yMin -= expandRange;
-            yMax += expandRange;
-        }
-
-        Coordinate[] coordinates = { new Coordinate(xMin, yMin), new Coordinate(xMax, yMin),
-                new Coordinate(xMax, yMax), new Coordinate(xMin, yMax), new Coordinate(xMin, yMin) };
-
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Polygon boundingBox = geometryFactory.createPolygon(coordinates);
-
-        return (Polygon) boundingBox.buffer(buffer);
     }
 
     /**
@@ -1158,37 +1075,6 @@ public class QueryClient {
         boundingBox.setSRID(4326);
 
         return (Polygon) boundingBox.buffer(buffer);
-    }
-
-    private List<String> getCornersForCitiesQuery(Polygon boundingBox) {
-        double zMax = 800.0;
-
-        List<Coordinate> coordinatesList = List.of(boundingBox.getCoordinates());
-        List<Double> xCoordinates = coordinatesList.stream().map(c -> c.getX()).collect(Collectors.toList());
-        List<Double> yCoordinates = coordinatesList.stream().map(c -> c.getY()).collect(Collectors.toList());
-        double xMin = Collections.min(xCoordinates);
-        double yMin = Collections.min(yCoordinates);
-        double xMax = Collections.max(xCoordinates);
-        double yMax = Collections.max(yCoordinates);
-
-        List<String> lowerCornerSequence = new ArrayList<>();
-        List<String> upperCornerSequence = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            lowerCornerSequence.add(String.valueOf(xMin));
-            lowerCornerSequence.add(String.valueOf(yMin));
-            lowerCornerSequence.add(String.valueOf(0));
-
-            upperCornerSequence.add(String.valueOf(xMax));
-            upperCornerSequence.add(String.valueOf(yMax));
-            upperCornerSequence.add(String.valueOf(zMax));
-        }
-
-        List<String> corners = new ArrayList<>();
-        corners.add(String.join("#", lowerCornerSequence));
-        corners.add(String.join("#", upperCornerSequence));
-
-        return corners;
     }
 
     DSLContext getContext(Connection conn) {
@@ -1290,8 +1176,35 @@ public class QueryClient {
         return hasElevationData;
     }
 
+    boolean timestepExists(long simTime, String derivation) {
+        SelectQuery query = Queries.SELECT();
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+        Variable entity = query.var();
+        Variable dispMatrix = query.var();
+
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_DISPERSION_MATRIX, dispMatrix)).prefix(P_DISP);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        // this will give a list of outputs, one for each pollutant/height combo, but
+        // they are in the same time series table
+        if (queryResult.length() > 0) {
+            String dataIri = queryResult.getJSONObject(0).getString(dispMatrix.getQueryString().substring(1));
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(dataIri), simTime, simTime, conn);
+                return !ts.getTimes().isEmpty();
+            } catch (SQLException e) {
+                LOGGER.error("Failure in timestepExists, failed at closing connection");
+                LOGGER.error(e.getMessage());
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     void updateOutputs(String derivation, Map<String, DispersionOutput> zIriToOutputMap, boolean hasShips,
-            long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation) {
+            long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation, int srid) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1309,13 +1222,14 @@ public class QueryClient {
                         .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
                         .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
                 pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
+                .select(entity, zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
         List<List<?>> tsValuesList = new ArrayList<>();
 
         for (int i = 0; i < queryResult.length(); i++) {
+            String entityIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
             String zIri = queryResult.getJSONObject(i).getString(zVar.getQueryString().substring(1));
             String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
             String dispersionMatrixIRI = queryResult.getJSONObject(i)
@@ -1338,6 +1252,11 @@ public class QueryClient {
                 tsValuesList.add(List.of(dispersionRaster));
                 tsValuesList.add(List.of(dispersionColourBar));
             }
+
+            ModifyQuery modify = Queries.MODIFY();
+            modify.prefix(P_DISP);
+            modify.insert(iri(entityIri).has(HAS_SRID, srid));
+            storeClient.executeUpdate(modify.getQueryString());
         }
 
         SelectQuery query2 = Queries.SELECT();
@@ -1389,62 +1308,6 @@ public class QueryClient {
             LOGGER.error("Failed at closing connection");
             LOGGER.error(e.getMessage());
         }
-    }
-
-    /**
-     * will be replaced by new postgis cities kg
-     */
-    void createBuildingsLayer(List<Building> buildings, String derivationIri, long time) {
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-
-        JSONArray features = new JSONArray();
-
-        buildings.stream().forEach(building -> {
-            JSONObject feature = new JSONObject();
-            feature.put("type", "Feature");
-
-            JSONObject properties = new JSONObject();
-            properties.put("color", "#666666");
-            properties.put("opacity", 0.66);
-            properties.put("base", 0);
-            properties.put("height", building.getHeight());
-            properties.put("iri", building.getIri());
-            properties.put("derivation", derivationIri);
-            properties.put("time", time);
-            feature.put("properties", properties);
-
-            JSONObject geometry = new JSONObject();
-            geometry.put("type", "Polygon");
-            JSONArray coordinates = new JSONArray();
-
-            JSONArray footprintPolygon = new JSONArray();
-            String srid = building.getSrid();
-            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
-                JSONArray point = new JSONArray();
-                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
-                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
-                point.put(xyTransformed[0]).put(xyTransformed[1]);
-                footprintPolygon.put(point);
-            }
-            coordinates.put(footprintPolygon);
-            geometry.put("coordinates", coordinates);
-
-            feature.put("geometry", geometry);
-            features.put(feature);
-        });
-
-        featureCollection.put("features", features);
-
-        GDALClient gdalClient = GDALClient.getInstance();
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.BUILDINGS_TABLE,
-                featureCollection.toString(), new Ogr2OgrOptions(), true);
-
-        GeoServerClient geoServerClient = GeoServerClient.getInstance();
-        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-
-        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.BUILDINGS_TABLE, new GeoServerVectorSettings());
     }
 
     List<List<Double>> getReceptorElevation(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -1524,7 +1387,7 @@ public class QueryClient {
         return false;
     }
 
-    void setStaticPointSourceLabel(List<StaticPointSource> staticPointSources) {
+    void setPointSourceLabel(List<PointSource> staticPointSources) {
         SelectQuery query = Queries.SELECT();
         Variable psVar = query.var();
         Variable labelVar = query.var();
@@ -1536,7 +1399,7 @@ public class QueryClient {
 
         query.where(valuesPattern, queryPattern);
 
-        Map<String, StaticPointSource> iriToSpsMap = new HashMap<>();
+        Map<String, PointSource> iriToSpsMap = new HashMap<>();
         staticPointSources.forEach(sps -> iriToSpsMap.put(sps.getIri(), sps));
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -1547,5 +1410,26 @@ public class QueryClient {
 
             iriToSpsMap.get(spsIri).setLabel(labelString);
         }
+    }
+
+    void attachSimTimeToShips(List<Ship> ships, String simulationTimeIri) {
+        ModifyQuery modify = Queries.MODIFY();
+
+        SelectQuery query = Queries.SELECT();
+
+        Variable derivation = query.var();
+        Variable pointSource = query.var();
+        Variable simTimeVar = query.var();
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        ValuesPattern<Iri> vp = new ValuesPattern<>(pointSource,
+                ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+
+        modify.where(vp, derivation.has(isDerivedFrom, pointSource),
+                GraphPatterns.and(derivation.has(isDerivedFrom, simTimeVar), simTimeVar.isA(iri(SIMULATION_TIME)))
+                        .optional())
+                .delete(derivation.has(isDerivedFrom, simTimeVar))
+                .insert(derivation.has(isDerivedFrom, iri(simulationTimeIri)));
+
+        storeClient.executeUpdate(modify.getQueryString());
     }
 }

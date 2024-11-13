@@ -66,7 +66,7 @@ public class TSPRouteGenerator {
         virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
         geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
         geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName,LayerName ,geoServerVectorSettingsTSPRoute);
+        geoServerClient.createPostGISLayer(workspaceName, dbName,"public", LayerName ,geoServerVectorSettingsTSPRoute);
     }
 
     /**
@@ -115,6 +115,6 @@ public class TSPRouteGenerator {
         virtualTableTSPRoute.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
         geoServerVectorSettingsTSPRoute.setVirtualTable(virtualTableTSPRoute);
         geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName,LayerName ,geoServerVectorSettingsTSPRoute);
+        geoServerClient.createPostGISLayer(workspaceName, dbName, "public", LayerName ,geoServerVectorSettingsTSPRoute);
     }
 }

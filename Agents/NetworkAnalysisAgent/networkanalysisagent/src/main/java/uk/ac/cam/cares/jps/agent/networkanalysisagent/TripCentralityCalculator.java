@@ -124,7 +124,7 @@ public class TripCentralityCalculator {
         virtualTableTC.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
         geoServerVectorSettingsTC.setVirtualTable(virtualTableTC);
         geoServerClient.createPostGISDataStore(workspaceName,LayerName, dbName, schema);
-        geoServerClient.createPostGISLayer(workspaceName, dbName,LayerName ,geoServerVectorSettingsTC);
+        geoServerClient.createPostGISLayer(workspaceName, dbName, "public", LayerName ,geoServerVectorSettingsTC);
     }
 
 

@@ -3,7 +3,7 @@
     "Name": "travellingsalesmanagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "travellingsalesmanagent:1.0.0",
+        "Image": "travellingsalesmanagent:1.2.0",
         "Env": [
           "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
         ],

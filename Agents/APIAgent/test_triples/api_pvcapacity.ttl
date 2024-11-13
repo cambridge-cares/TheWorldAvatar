@@ -1,0 +1,41 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix htv: <http://www.w3.org/2011/http#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix: <https://www.theworldavatar.com/kg/test/>.
+@prefix rml4ts: <https://www.theworldavatar.com/kg/rml4ts/>.
+@prefix time: <http://www.w3.org/2006/time#>.
+
+:Number_773521f9-528e-40fc-9bcb-4218e49f23ds rml4ts:has_ts_mapping :TSMap_pvcapacity.
+
+:WebAPISource_pvcapacity a td:PropertyAffordance;
+  td:hasForm [
+    hctl:hasTarget "https://www.ema.gov.sg/content/dam/corporate/resources/singapore-energy-statistics/excel/SES_Public_2023_tidy.xlsx.coredownload.xlsx";
+    hctl:forContentType "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    htv:methodName "GET";
+  ];
+.
+
+
+:TSMap_pvcapacity a rml4ts:TimeSeriesMap;
+ time:hasDuration :Duration_2;
+
+  rml:logicalSource [ a rml:LogicalSource;
+    rml:source :WebAPISource_pvcapacity;
+    rml:referenceFormulation ql:CSV;
+    rml4ts:value_iterator "T6.1/inst_cap_mwp";
+    rml4ts:time_iterator "T6.1/year";
+    rml4ts:hasMapFunction rml4ts:Sum;
+  ];
+.
+:Duration_2 rdf:type time:Duration ;
+    time:numericDuration 30.0 ;
+    time:unitType  time:unitDay .
+
+:WebAPISource_773521f9-528e-40fc-9bcb-4218e49f12eg  a td:Thing;
+  td:hasPropertyAffordance :WebAPISource_pvcapacity.

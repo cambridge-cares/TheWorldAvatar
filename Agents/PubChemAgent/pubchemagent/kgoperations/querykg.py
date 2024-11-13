@@ -1,10 +1,18 @@
 from pubchemagent.kgoperations.javagateway import jpsBaseLibGW
 from pyderivationagent.kg_operations import PySparqlClient
+from pubchemagent.utils.url_configs import SPARQL_ENDPOINTS_ONTOSPECIES
+import os
+
+BLAZEGRAPH_USER = os.getenv('BG_USER')
+BLAZEGRAPH_PASSWORD = os.getenv('BG_PASSWORD')
 
 class kg_operations():   
 
     def __init__(self, sparqlEndpint):
-        self.kg_client = PySparqlClient(sparqlEndpint,sparqlEndpint)    
+        if (not BLAZEGRAPH_USER and not BLAZEGRAPH_PASSWORD) or sparqlEndpint==SPARQL_ENDPOINTS_ONTOSPECIES:
+            self.kg_client = PySparqlClient(sparqlEndpint,sparqlEndpint)     
+        else:
+            self.kg_client = PySparqlClient(sparqlEndpint,sparqlEndpint,kg_user=BLAZEGRAPH_USER,kg_password=BLAZEGRAPH_PASSWORD) 
     
     def querykg(self, queryStr=None):
         response = self.kg_client.performQuery(queryStr)    

@@ -1,0 +1,72 @@
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ontocape: <http://www.theworldavatar.com/kg/ontocape/chemicalprocesssystem/cpsrealization/plant/>
+PREFIX ontochemplant: <http://www.theworldavatar.com/kg/ontochemplant/>
+PREFIX ontocompany: <https://www.theworldavatar.com/kg/ontocompany/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX ontobuiltenv:   <https://www.theworldavatar.com/kg/ontobuiltenv/>
+
+select ?Property ?Value ?Unit  WHERE {
+  
+{
+  
+  SERVICE [ONTOP] {
+    SELECT ?type ?Value ?Unit where {
+    [IRI] rdf:type ontocape:PlantItem.
+    [IRI] ?p ?qty.
+    ?qty rdf:type ?type.
+    ?qty om:hasValue ?measure.
+    ?measure om:hasNumericalValue ?Value;
+             om:hasUnit/skos:notation ?Unit.
+
+	}
+  }
+          ?type rdfs:label ?Property.
+          
+} UNION {
+  
+    SERVICE [ONTOP] {
+      SELECT ?Property ?Value where {
+        ?plant geo:ehContains [IRI].
+        [IRI] rdf:type ontocape:PlantItem.
+        ?company_iri ontocompany:isOwnerOf ?plant.
+        BIND("Company Name" AS ?Property).
+        ?company_iri rdfs:label ?Value.
+  
+      }
+  }
+  
+  
+  } UNION {
+
+      SERVICE [ONTOP] {
+      SELECT ?Property ?Value where {
+        ?plant geo:ehContains [IRI].
+        [IRI] rdf:type ontocape:PlantItem.
+        ?company_iri ontocompany:isOwnerOf ?plant.
+        BIND("Plant Name" AS ?Property).
+        ?plant rdfs:label ?Value.
+  
+      }
+  }
+
+  } UNION {
+     SERVICE [ONTOP] {
+      SELECT ?p ?Value where {
+        ?plant geo:ehContains [IRI].
+        [IRI] rdf:type ontocape:PlantItem.
+        ?company_iri ontocompany:isOwnerOf ?plant.
+        ?company_iri ?p ?Value.
+  
+      }
+  } 
+        ?p rdfs:subPropertyOf ontocompany:hasCompanyProperty.
+        ?p rdfs:label ?Property.
+  	
+ }
+  
+  }
+
+

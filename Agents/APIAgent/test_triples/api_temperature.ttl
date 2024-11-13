@@ -1,0 +1,48 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix htv: <http://www.w3.org/2011/http#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix: <https://www.theworldavatar.com/kg/test/>.
+@prefix rml4ts: <https://www.theworldavatar.com/kg/rml4ts/>.
+@prefix time: <http://www.w3.org/2006/time#>.
+
+:Number_773521f9-528e-40fc-9bcb-4218e49f12eg rml4ts:has_ts_mapping :TSMap_temperature.
+
+:TSMap_temperature a rml4ts:TimeSeriesMap;
+ time:hasDuration :Duration_3;
+  rml:logicalSource [ a rml:LogicalSource;
+    rml:source :WebAPISource_temperature;
+    rml:referenceFormulation ql:CSV;
+    rml4ts:value_iterator "mean_temp";
+    rml4ts:time_iterator "month";
+  ];
+.
+
+:Duration_3 rdf:type time:Duration ;
+    time:numericDuration 30.0 ;
+    time:unitType  time:unitDay .
+
+:WebAPISource_temperature  a td:PropertyAffordance;
+                      td:hasForm [
+                      rml4ts:hasDynamicTarget :WebAPISource_temperature_dynamic_url;
+                        hctl:forContentType  "text/csv";
+                        htv:methodName "GET";
+                            ];
+.
+
+:WebAPISource_temperature_dynamic_url  a td:PropertyAffordance;
+                                 td:hasForm [
+                                    hctl:hasTarget "https://api-production.data.gov.sg/v2/internal/api/datasets/d_755290a24afe70c8f9e8bcbf9f251573/initiate-download";
+                                    hctl:forContentType "application/json";
+                                    htv:methodName "POST";
+                        ];
+.
+
+:WebAPISource_773521f9-528e-40fc-9bcb-4218e49f12eg  a td:Thing;
+  td:hasPropertyAffordance :WebAPISource_temperature;
+  td:hasPropertyAffordance :WebAPISource_temperature_dynamic_url.

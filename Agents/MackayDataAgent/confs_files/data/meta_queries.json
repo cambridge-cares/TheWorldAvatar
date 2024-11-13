@@ -1,0 +1,18 @@
+{
+    "queries" : [
+        {
+          "variable_name":"hhv",   
+          "url": "https://theworldavatar.io/chemistry/blazegraph-dev/ui/namespace/ontospecies/sparql",
+          "user": "",
+          "pwd": "",
+          "query_string":"PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?value \nWHERE \n{\n    ?speciesIRI rdf:type os:Species ;\n                os:hasInChI ?Inchi .\n    ?Inchi os:value ?Inchistr .\n    FILTER (str(?Inchistr) = \"InChI=1S/H2/h1H\") \n    ?speciesIRI  os:hasHigherHeatingValue ?property .\n    ?property rdf:type ?type ;\n              os:value ?value .\n}"
+        },
+        {
+            "variable_name":"lhv",   
+            "url": "https://theworldavatar.io/chemistry/blazegraph-dev/ui/namespace/ontospecies/sparql",
+            "user": "",
+            "pwd": "",
+            "query_string":"PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\nPREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?value \nWHERE \n{\n    ?speciesIRI rdf:type os:Species ;\n                os:hasInChI ?Inchi .\n    ?Inchi os:value ?Inchistr .\n    FILTER (str(?Inchistr) = \"InChI=1S/H2/h1H\") \n    ?speciesIRI os:hasLowerHeatingValue* ?property2 .\n    ?property2 rdf:type ?type2 ;\n              os:value ?value .\n}"
+        }
+      ]
+}

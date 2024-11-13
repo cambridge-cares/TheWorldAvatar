@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="host"></string>
+
+    <string name="test_host"></string>
+
+    <string name="retrieve_asset">asset-manager-agent/retrieve</string>
+    <string name="add_asset">asset-manager-agent/instantiate</string>
+    <string name="add_manual">asset-manager-agent/addmanual</string>
+    <string name="add_maintenance">asset-manager-agent/addmaintenance</string>
+    <string name="get_buildings">bms-query-agent/retrieve/zones</string>
+    <string name="get_ui_data_for_add_asset">asset-manager-agent/getuidata</string>
+    <string name="print_qr_code">asset-manager-agent/printbulk</string>
+</resources>
