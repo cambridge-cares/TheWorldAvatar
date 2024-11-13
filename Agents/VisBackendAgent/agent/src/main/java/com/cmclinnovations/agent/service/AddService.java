@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
@@ -50,7 +51,7 @@ public class AddService {
    * @param resourceID The target resource identifier for the instance.
    * @param param      Request parameters.
    */
-  public ResponseEntity<String> instantiate(String resourceID, Map<String, Object> param) {
+  public ResponseEntity<ApiResponse> instantiate(String resourceID, Map<String, Object> param) {
     String id = param.getOrDefault("id", UUID.randomUUID()).toString();
     return instantiate(resourceID, id, param);
   }
@@ -63,7 +64,8 @@ public class AddService {
    * @param targetId   The target instance IRI.
    * @param param      Request parameters.
    */
-  public ResponseEntity<String> instantiate(String resourceID, String targetId, Map<String, Object> param) {
+  public ResponseEntity<ApiResponse> instantiate(String resourceID, String targetId,
+      Map<String, Object> param) {
     LOGGER.info("Instantiating an instance of {} ...", resourceID);
     String filePath = LifecycleResource.getLifecycleResourceFilePath(resourceID);
     // Default to the file name in application-service if it not a lifecycle route
@@ -71,7 +73,9 @@ public class AddService {
       ResponseEntity<String> fileNameResponse = this.fileService.getTargetFileName(resourceID);
       // Return the BAD REQUEST response directly if the file is invalid
       if (fileNameResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
-        return fileNameResponse;
+        return new ResponseEntity<>(
+            new ApiResponse(fileNameResponse),
+            fileNameResponse.getStatusCode());
       }
       filePath = FileService.SPRING_FILE_PATH_PREFIX + FileService.JSON_LD_DIR + fileNameResponse.getBody() + ".jsonld";
     }
@@ -85,12 +89,23 @@ public class AddService {
     } else {
       LOGGER.info("Invalid JSON-LD format for replacement!");
       return new ResponseEntity<>(
-          "Invalid JSON-LD format for replacement! Please contact your technical team for assistance.",
+          new ApiResponse("Invalid JSON-LD format for replacement! Please contact your technical team for assistance."),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
     LOGGER.debug("Adding instance to endpoint...");
+    String instanceIri = addJsonSchema.path(ShaclResource.ID_KEY).asText();
     String jsonString = addJsonSchema.toString();
-    return this.kgService.add(jsonString);
+    ResponseEntity<String> response = this.kgService.add(jsonString);
+    if (response.getStatusCode() == HttpStatus.OK) {
+      LOGGER.info("{} has been successfully instantiated!", resourceID);
+      return new ResponseEntity<>(
+          new ApiResponse(resourceID + " has been successfully instantiated!", instanceIri),
+          HttpStatus.CREATED);
+    } else {
+      return new ResponseEntity<>(
+          new ApiResponse(response),
+          response.getStatusCode());
+    }
   }
 
   /**
@@ -121,7 +136,8 @@ public class AddService {
               .put(ShaclResource.VAL_KEY, this.getReplacementValue(currentNode, replacements))
               .put(ShaclResource.TYPE_KEY, currentNode.path(ShaclResource.DATA_TYPE_PROPERTY).asText());
           parentNode.set(parentField, literalNode);
-          // IRIs that are not assigned to @id or @type should belong within a nested @id object
+          // IRIs that are not assigned to @id or @type should belong within a nested @id
+          // object
         } else if (currentNode.path(ShaclResource.TYPE_KEY).asText().equals("iri")
             && !(parentField.equals(ShaclResource.ID_KEY) || parentField.equals(ShaclResource.TYPE_KEY))) {
           ObjectNode newIriNode = this.objectMapper.createObjectNode();

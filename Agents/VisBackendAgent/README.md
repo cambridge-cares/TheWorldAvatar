@@ -278,6 +278,8 @@ To add a new instance, users must send a POST request with their corresponding p
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`. The request parameters will depend on the `JSON-LD` file defined. More information on the required schema can be found in [this section](#41-instantiation).
 
+A successful request will return `{"message": "type has been successfully instantiated!", "iri" : "root iri that is instantiated"}`.
+
 #### 2.5.2 Delete route
 
 To delete an instance, users must send a DELETE request to
@@ -288,6 +290,8 @@ To delete an instance, users must send a DELETE request to
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The instance representation will be deleted according to the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
 
+A successful request will return `{"message": "Instance has been successfully deleted!", "iri" : "root iri that is instantiated"}`.
+
 #### 2.5.3 Update route
 
 To update an instance, users must send a PUT request with their corresponding parameters to
@@ -297,6 +301,8 @@ To update an instance, users must send a PUT request with their corresponding pa
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The request parameters will depend on the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
+
+A successful request will return `{"message": "type  has been successfully updated for id!", "iri" : "root iri that is instantiated"}`.
 
 #### 2.5.4 Get route
 
@@ -410,7 +416,7 @@ Note that this route will interact with the [schedule route](#262-schedule-route
 }
 ```
 
-A successful request will return `Contract has been successfully drafted/updated!`.
+A successful request will return `{"message": "Contract has been successfully drafted/updated!", "iri" : "root iri that is instantiated"}`.
 
 #### 2.6.2 Schedule route
 
@@ -440,7 +446,7 @@ Note that this route does require the following `JSON` request parameters:
 }
 ```
 
-A successful request will return `Schedule has been successfully drafted for the contract!` _OR_ `Draft schedule has been successfully updated!`.
+A successful request will return `{"message": "Schedule has been successfully drafted for the contract! _OR_ Draft schedule has been successfully updated!", "iri" : "root iri that is instantiated"}`.
 
 #### 2.6.3 Service commencement route
 
@@ -460,7 +466,7 @@ Note that this route does require the following `JSON` request parameters:
 }
 ```
 
-A successful request will return `Contract has been approved for service execution!`.
+A successful request will return `{"message": "Contract has been approved for service execution!", "iri" : "root iri that is instantiated"}`.
 
 #### 2.6.4 Unfulfilled service report route
 
@@ -481,7 +487,7 @@ Note that this route does require the following `JSON` request parameters:
 }
 ```
 
-A successful request will return `Report for an unfulfilled service has been successfully lodged!`.
+A successful request will return `{"message": "Report for an unfulfilled service has been successfully lodged!", "iri" : "root iri that is instantiated"}`.
 
 #### 2.6.5 Cancel service route
 
@@ -502,7 +508,7 @@ Note that this route does require the following `JSON` request parameters:
 }
 ```
 
-A successful request will return `Service has been successfully cancelled!`.
+A successful request will return `{"message": "Service has been successfully cancelled!", "iri" : "root iri that is instantiated"}`.
 
 ## 3. SHACL Restrictions
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.AddService;
 import com.cmclinnovations.agent.service.DeleteService;
@@ -40,22 +41,25 @@ public class LifecycleController {
    * and set it in draft state ie awaiting approval.
    */
   @PostMapping("/contracts/draft")
-  public ResponseEntity<String> genContractLifecycle(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<ApiResponse> genContractLifecycle(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params)) {
-      return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
     }
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     // Add current date into parameters
     params.put(LifecycleResource.CURRENT_DATE_KEY, LifecycleResource.getCurrentDate());
     LOGGER.info("Received request to generate a new lifecycle for contract <{}>...", contractId);
-    ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.LIFECYCLE_RESOURCE, params);
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(LifecycleResource.LIFECYCLE_RESOURCE,
+        params);
     if (response.getStatusCode() == HttpStatus.OK) {
       LOGGER.info("The lifecycle of the contract has been successfully drafted!");
       // Execute request for schedule as well
-      ResponseEntity<String> scheduleResponse = this.genContractSchedule(params);
+      ResponseEntity<ApiResponse> scheduleResponse = this.genContractSchedule(params);
       if (scheduleResponse.getStatusCode() == HttpStatus.OK) {
         LOGGER.info("Contract has been successfully drafted!");
-        return new ResponseEntity<>("Contract has been successfully drafted", HttpStatus.CREATED);
+        return new ResponseEntity<>(
+            new ApiResponse("Contract has been successfully drafted", scheduleResponse.getBody().getIri().toString()),
+            HttpStatus.CREATED);
       }
       return scheduleResponse;
     } else {
@@ -67,16 +71,20 @@ public class LifecycleController {
    * Create an upcoming schedule for the specified contract.
    */
   @PostMapping("/contracts/schedule")
-  public ResponseEntity<String> genContractSchedule(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<ApiResponse> genContractSchedule(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params)) {
-      return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to generate the schedule details for contract...");
     this.lifecycleService.addEventInstance(params, LifecycleEventType.SERVICE_EXECUTION);
-    ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.SCHEDULE_RESOURCE, params);
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(LifecycleResource.SCHEDULE_RESOURCE,
+        params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
       LOGGER.info("Schedule has been successfully drafted for contract!");
-      return new ResponseEntity<>("Schedule has been successfully drafted for contract", HttpStatus.CREATED);
+      return new ResponseEntity<>(
+          new ApiResponse("Schedule has been successfully drafted for contract", response.getBody().getIri()),
+          HttpStatus.CREATED);
     } else {
       return response;
     }
@@ -88,11 +96,13 @@ public class LifecycleController {
   @PostMapping("/contracts/service/commence")
   public ResponseEntity<?> commenceContract(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params)) {
-      return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to commence the services for a contract...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.APPROVED);
-    ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
         params);
     if (response.getStatusCode() == HttpStatus.OK) {
       LOGGER.info("Contract has been approved for service execution!");
@@ -106,27 +116,30 @@ public class LifecycleController {
    * Reports any unfulfilled service delivery.
    */
   @PostMapping("/contracts/service/report")
-  public ResponseEntity<?> reportService(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<ApiResponse> reportService(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params)) {
-      return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
     }
     if (!params.containsKey(LifecycleResource.DATE_KEY)) {
       LOGGER.error(MISSING_DATE_MSG);
-      return new ResponseEntity<>(MISSING_DATE_MSG, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new ApiResponse(MISSING_DATE_MSG), HttpStatus.BAD_REQUEST);
     }
     // Invalidate request if the report is being lodged for future dates
     if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), false)) {
       String errorMsg = "Invalid Date: Reports cannot be lodged for future dates. Please select today's date or any date in the past.";
       LOGGER.error(errorMsg);
-      return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to report an unfulfilled service...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_MISS_REPORT);
-    ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
         params);
     if (response.getStatusCode() == HttpStatus.OK) {
       LOGGER.info("Report for an unfulfilled service has been successfully lodged!");
-      return new ResponseEntity<>("Report for an unfulfilled service has been successfully lodged!", HttpStatus.OK);
+      return new ResponseEntity<>(new ApiResponse("Report for an unfulfilled service has been successfully lodged!"),
+          HttpStatus.OK);
     } else {
       return response;
     }
@@ -136,27 +149,29 @@ public class LifecycleController {
    * Cancel any upcoming service.
    */
   @PostMapping("/contracts/service/cancel")
-  public ResponseEntity<?> cancelService(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<ApiResponse> cancelService(@RequestBody Map<String, Object> params) {
     if (this.isInvalidParams(params)) {
-      return new ResponseEntity<>(INVALID_CONTRACT_PARAMS_MSG, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
     }
     if (!params.containsKey(LifecycleResource.DATE_KEY)) {
       LOGGER.error(MISSING_DATE_MSG);
-      return new ResponseEntity<>(MISSING_DATE_MSG, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new ApiResponse(MISSING_DATE_MSG), HttpStatus.BAD_REQUEST);
     }
     // Invalidate request if the cancellation is targeted at past services
     if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), true)) {
       String errorMsg = "Invalid Date: Services can only be cancelled for today or future dates. Cancellation of past services is not allowed.";
       LOGGER.error(errorMsg);
-      return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to cancel the upcoming service...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_CANCELLATION);
-    ResponseEntity<String> response = this.addService.instantiate(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
         params);
     if (response.getStatusCode() == HttpStatus.OK) {
       LOGGER.info("Service has been successfully cancelled!");
-      return new ResponseEntity<>("Service has been successfully cancelled!", HttpStatus.OK);
+      return new ResponseEntity<>(new ApiResponse("Service has been successfully cancelled!"), HttpStatus.OK);
     } else {
       return response;
     }
@@ -166,22 +181,26 @@ public class LifecycleController {
    * Update the draft contract's lifecycle details in the knowledge graph.
    */
   @PutMapping("/contracts/draft")
-  public ResponseEntity<String> updateDraftContract(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<ApiResponse> updateDraftContract(@RequestBody Map<String, Object> params) {
     LOGGER.info("Received request to update draft contract...");
     String targetId = params.get("id").toString();
-    ResponseEntity<String> deleteResponse = this.deleteService.delete(LifecycleResource.LIFECYCLE_RESOURCE, targetId);
+    ResponseEntity<ApiResponse> deleteResponse = this.deleteService.delete(LifecycleResource.LIFECYCLE_RESOURCE,
+        targetId);
     if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
       // Add current date into parameters
       params.put(LifecycleResource.CURRENT_DATE_KEY, LifecycleResource.getCurrentDate());
-      ResponseEntity<String> addResponse = this.addService.instantiate(LifecycleResource.LIFECYCLE_RESOURCE, targetId,
+      ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(
+          LifecycleResource.LIFECYCLE_RESOURCE, targetId,
           params);
       if (addResponse.getStatusCode() == HttpStatus.OK) {
         LOGGER.info("The lifecycle of the contract has been successfully updated!");
         // Execute request for schedule as well
-        ResponseEntity<String> scheduleResponse = this.updateContractSchedule(params);
+        ResponseEntity<ApiResponse> scheduleResponse = this.updateContractSchedule(params);
         if (scheduleResponse.getStatusCode() == HttpStatus.OK) {
           LOGGER.info("Draft contract has been successfully updated!");
-          return new ResponseEntity<>("Draft contract has been successfully updated!", HttpStatus.OK);
+          return new ResponseEntity<>(
+              new ApiResponse("Draft contract has been successfully updated!", scheduleResponse.getBody().getIri()),
+              HttpStatus.OK);
         }
         return scheduleResponse;
       } else {
@@ -196,17 +215,21 @@ public class LifecycleController {
    * Update the draft schedule details in the knowledge graph.
    */
   @PutMapping("/contracts/schedule")
-  public ResponseEntity<String> updateContractSchedule(@RequestBody Map<String, Object> params) {
+  public ResponseEntity<ApiResponse> updateContractSchedule(@RequestBody Map<String, Object> params) {
     LOGGER.info("Received request to update a draft schedule...");
     this.lifecycleService.addEventInstance(params, LifecycleEventType.SERVICE_EXECUTION);
     String targetId = params.get("id").toString();
-    ResponseEntity<String> deleteResponse = this.deleteService.delete(LifecycleResource.SCHEDULE_RESOURCE, targetId);
+    ResponseEntity<ApiResponse> deleteResponse = this.deleteService.delete(LifecycleResource.SCHEDULE_RESOURCE,
+        targetId);
     if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
-      ResponseEntity<String> addResponse = this.addService.instantiate(LifecycleResource.SCHEDULE_RESOURCE, targetId,
+      ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(LifecycleResource.SCHEDULE_RESOURCE,
+          targetId,
           params);
       if (addResponse.getStatusCode() == HttpStatus.OK) {
         LOGGER.info("Draft schedule has been successfully updated!");
-        return new ResponseEntity<>("Draft schedule has been successfully updated!", HttpStatus.OK);
+        return new ResponseEntity<>(
+            new ApiResponse("Draft schedule has been successfully updated!", addResponse.getBody().getIri()),
+            HttpStatus.OK);
       } else {
         return addResponse;
       }
