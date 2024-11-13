@@ -225,7 +225,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             }
             const disableId: boolean = props.formType === Paths.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
             if (fieldProp.class) {
-              if (fieldProp.class[ID_KEY] === "https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location") {
+              if (fieldProp.class[ID_KEY] === "https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/PhysicalLocation") {
                 return <FormGeocoder
                   key={fieldProp.name[VALUE_KEY] + index}
                   agentApi={props.agentApi}
