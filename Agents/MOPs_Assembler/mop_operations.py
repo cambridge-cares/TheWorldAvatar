@@ -18,7 +18,7 @@ class AssemblerWorkflow:
         self.cbus_dir = cbus_dir
         self.output_dir = output_dir
 
-    def read_csv(self, file_path):
+    def run_workflow(self, file_path):
         matched_files = []
 
         if not os.path.exists(file_path):

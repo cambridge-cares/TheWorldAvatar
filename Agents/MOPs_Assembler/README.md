@@ -12,46 +12,140 @@
  - mop_jsons2xyz.py: Converts JSON files into XYZ format for further processing.
  - mop_operations.py: Handles various operations related to the manipulation and adjustment of molecular models.
 
-## Input:
+## Data Folder and Input Paths:
+- **Assembly Models Directory**: `Data/Assembly_Models` – Directory containing assembly model JSON files.
+- **CBUs Directory**: `Data/CBUs` – Directory containing CBU JSON files.
+- **Workflow Data File**: `Data/input.csv` – CSV file containing data required for the workflow.
+
+### Input CSV (Info describing the MOP Target):
+
+The workflow requires an input CSV file named `input.csv`, located in the `Data` directory. The path to this file can be configured in the `main.py` script by updating the `workflow_data_file` variable.
+
   CSV File:
     The input CSV file should be formatted as follows:
     Assembly Model,CBU 1,GBU 1,CBU 2,GBU 2
     AM_M6L12,CBU1,4-planar,CBU2,2-bent
 
-## Data/CBUs Folder:
+### Input CBU JSON (Info describing the CBU input):
     The CBUs folder contains JSON files with detailed information on each chemical building unit.
 
-## CBU JSON Structure:
     Each JSON file in the CBUs folder describes individual atoms, their coordinates in 3D space, and the bonds between them. Atoms with bending or non-planar structures, or those with long substituent groups, include an additional "center" position, which is used in the alignment workflow by the MOP Assembler.
     
-      atom_id:
-        atom: "Element"
-        coordinate_x: X.XX
-        coordinate_y: Y.YY
-        coordinate_z: Z.ZZ
-        bond:
-          - to_atom: "bonded_atom_id"
-            bond_order: N.N
-        mmtype: "Metal_Type"
-        qmmm: "QM/MM label"
+   {
+      "99a00b53-c5a2-4fb0-9d4c-60f9eba4b284": {
+         "atom": "Cr",
+         "coordinate_x": 0.0,
+         "coordinate_y": 0.0,
+         "coordinate_z": 0.0,
+         "bond": [
+               {
+                  "to_atom": "6572a6ad-021a-4b0c-971e-8f441d890a94",
+                  "bond_order": 1.0
+               },
+               {
+                  "to_atom": "1b7cc2e8-78c4-443b-bb0e-5fca2fff1f55",
+                  "bond_order": 1.0
+               },
+               ...
+         ],
+         "mmtype": "Cr4+2",
+         "qmmm": "MM"
+      },
+      "14db1344-f3a8-4646-8733-915000558618": {
+         "atom": "Cr",
+         "coordinate_x": 0.0,
+         "coordinate_y": 0.0,
+         "coordinate_z": -2.141683,
+         "bond": [
+               {
+                  "to_atom": "6572a6ad-021a-4b0c-971e-8f441d890a94",
+                  "bond_order": 1.0
+               },
+               {
+                  "to_atom": "1b7cc2e8-78c4-443b-bb0e-5fca2fff1f55",
+                  "bond_order": 1.0
+               },
+               ...
+         ],
+         "mmtype": "Cr4+2",
+         "qmmm": "MM"
+      },
+      ...
+      "c94c5281-faec-43e3-9898-7122555da0d6": {
+         "atom": "X",
+         "coordinate_x": -0.169096,
+         "coordinate_y": 2.13638,
+         "coordinate_z": 5.30183,
+         "bond": [
+               {
+                  "to_atom": "eabc6e1e-83d0-46e7-b806-cd9f3b37155e",
+                  "bond_order": 1.0
+               },
+               {
+                  "to_atom": "0246dbbc-510f-472f-b4b4-e1443a538ad9",
+                  "bond_order": 1.0
+               }
+         ],
+         "mmtype": "O_HH",
+         "qmmm": "MM"
+      },
+      "CENTER": {
+         "atom": "CENTER",
+         "coordinate_x": -0.16909599999999997,
+         "coordinate_y": -1.22602075,
+         "coordinate_z": 3.7247382499999997,
+         "bond": [],
+         "mmtype": "C_R",
+         "qmmm": "MM"
+      }
+   }
 
-## Assembly Models:
+### Input Assembly Models JSON:
     The file assembly_models.json contains descriptions of how various CBUs are assembled into larger structures. Each entry describes the positions of building units, their connectivity, and the positions of "dummy" atoms, which mark connectivity between generic building units. These dummy atoms assist in the alignment and scaling of complex geometries during the MOP Assembler workflow.
 
-    Example model:
-      "(3-pyramidal)x2(2-bent)x3_D3h":
-        - Key: "Position_1"
-          Label: "3-pyramidal"
-          X: X.XX
-          Y: Y.YY
-          Z: Z.ZZ
-          Neighbors:
-            - Key: "Position_3"
-              Label: "2-bent"
-              Distance: D.DD
-          ClosestDummies:
-            - "Dummy_1"
-            - "Dummy_2"
+   {
+      "(5-pyramidal)x12(2-linear)x30_Ih": [
+         {
+               "Key": "Position_1",
+               "Label": "5-pyramidal",
+               "X": 2.6368,
+               "Y": 2.7551,
+               "Z": 1.2068,
+               "Neighbors": [
+                  {
+                     "Key": "Position_13",
+                     "Label": "2-linear",
+                     "Distance": 2.1029
+                  },
+                  {
+                     "Key": "Position_15",
+                     "Label": "2-linear",
+                     "Distance": 2.1029
+                  },
+                  ...
+               ],
+               "ClosestDummies": ["Dummy_1", "Dummy_2", "Dummy_3", ...]
+         },
+         ...
+      ],
+      {
+         "Key": "Dummy_1",
+         "Label": "Dummy",
+         "X": 2.8490,
+         "Y": 1.7266,
+         "Z": 1.2590,
+         "Positions": ["Position_13", "Position_1"]
+      },
+      ...
+      {
+         "Key": "Center",
+         "Label": "Center",
+         "X": 0.0,
+         "Y": 0.0,
+         "Z": 0.0
+      }
+      ...
+   }
 
 ## Center Positions:
     Some structures with non-planar units or complex geometries contain additional "center" atoms or positions, which help in the alignment process. These center positions are crucial for ensuring that the MOP Assembler tool correctly positions and scales the CBUs during model assembly.
@@ -74,6 +168,3 @@
   - Python 3.x
   - NumPy
   - SciPy
-
-## License:
-  This project is licensed under the MIT License.
