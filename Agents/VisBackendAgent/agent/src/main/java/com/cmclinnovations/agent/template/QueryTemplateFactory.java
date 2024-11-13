@@ -37,6 +37,7 @@ public class QueryTemplateFactory {
   private static final String SUBORDER_VAR = "suborder";
   private static final String IS_OPTIONAL_VAR = "isoptional";
   private static final String IS_PARENT_VAR = "isparent";
+  private static final String IS_CLASS_VAR = "isclass";
   private static final String SUBJECT_VAR = "subject";
   private static final String PATH_PREFIX = "_proppath";
   private static final String MULTIPATH_VAR = "multipath";
@@ -187,9 +188,11 @@ public class QueryTemplateFactory {
     Queue<String> results = new ArrayDeque<>();
     String iriClass = StringResource.parseIriForQuery(targetClass);
     results.offer(
-        "SELECT " + selectVariables + " WHERE {?iri a " + iriClass + ShaclResource.FULL_STOP + whereClause + "}");
-    results.offer("SELECT " + selectVariables + " WHERE {?iri a/rdfs:subClassOf+ " + iriClass + ShaclResource.FULL_STOP
-        + whereClause + "}");
+        "SELECT DISTINCT " + selectVariables + " WHERE {?iri a " + iriClass + ShaclResource.FULL_STOP + whereClause
+            + "}");
+    results.offer(
+        "SELECT DISTINCT " + selectVariables + " WHERE {?iri a/rdfs:subClassOf+ " + iriClass + ShaclResource.FULL_STOP
+            + whereClause + "}");
     return results;
   }
 
@@ -273,6 +276,10 @@ public class QueryTemplateFactory {
       String multiPartSubPredicate, String multiPartLabelPredicate, boolean hasParent,
       Map<String, SparqlQueryLine> queryLineMappings) {
     String propertyName = binding.getFieldValue(NAME_VAR);
+    // Parse the isclass variable if it exists, or else defaults to false
+    String isClassVal = binding.getFieldValue(IS_CLASS_VAR);
+    boolean isClassVar = isClassVal != null ? Boolean.parseBoolean(isClassVal) : false;
+
     // For existing mappings,
     if (queryLineMappings.containsKey(propertyName)) {
       SparqlQueryLine currentQueryLine = queryLineMappings.get(propertyName);
@@ -282,7 +289,7 @@ public class QueryTemplateFactory {
               parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
               parsePredicate(currentQueryLine.subPredicate(), multiPartSubPredicate),
               parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
-              currentQueryLine.subjectFilter(), currentQueryLine.isOptional()));
+              currentQueryLine.subjectFilter(), currentQueryLine.isOptional(), isClassVar));
     } else {
       // When initialising a new query line
       String subjectVar = binding.containsField(SUBJECT_VAR) ? binding.getFieldValue(SUBJECT_VAR) : "";
@@ -302,7 +309,7 @@ public class QueryTemplateFactory {
       }
       queryLineMappings.put(propertyName,
           new SparqlQueryLine(propertyName, multiPartPredicate, multiPartSubPredicate, multiPartLabelPredicate,
-              subjectVar, isOptional));
+              subjectVar, isOptional, isClassVar));
     }
   }
 
@@ -335,6 +342,10 @@ public class QueryTemplateFactory {
       StringBuilder currentLine = new StringBuilder();
       String jointPredicate = parsePredicate(queryLine.predicate(), queryLine.subPredicate());
       jointPredicate = parsePredicate(jointPredicate, queryLine.labelPredicate());
+      // Add a final rdfs:label if it is a class to retrieve the label
+      if (queryLine.isClazz()) {
+        jointPredicate = parsePredicate(jointPredicate, ShaclResource.RDFS_LABEL_PREDICATE);
+      }
       // If query line is id with a roundabout loop to target itself
       if (queryLine.property().equals("id") && this.verifySelfTargetIdField(jointPredicate)) {
         // Simply bind the iri as the id

@@ -2,7 +2,7 @@ PREFIX sh:             <http://www.w3.org/ns/shacl#>
 PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>
 
 
-SELECT DISTINCT ?clazz ?name ?order ?suborder ?subject ?isparent ?isoptional 
+SELECT DISTINCT ?clazz ?name ?order ?suborder ?subject ?isparent ?isoptional ?isclass
  ?multipath ?multipath_proppath ?multisubpath ?multisubpath_proppath ?name_multipath ?name_multipath_proppath
 WHERE {
   BIND([target] as ?clazz)
@@ -63,7 +63,9 @@ WHERE {
                  sh:path ?subpath ;
                  sh:order ?suborder .
     # Extract class if available
-    OPTIONAL {?subproperty sh:class ?class }
+    OPTIONAL {?subproperty sh:class ?class}
+    # Check if this is a TBox class concept that requires human readable labels
+    OPTIONAL {?subproperty sh:in ?classconcept}
     OPTIONAL {
       ?subproperty sh:hasValue ?subSubjectValue .
     }
@@ -126,6 +128,10 @@ WHERE {
   # Retrieve results for non-regular schedules
   OPTIONAL { ?property sh:class ?class }
   FILTER (!BOUND(?class) || ?class != fibo-fnd-dt-fd:RegularSchedule)
+
+  # Check if this is a TBox class concept that requires human readable labels
+  OPTIONAL { ?property sh:in ?classconcept}
+  BIND(BOUND(?classconcept) AS ?isclass)
 
   # Only retrieve results if there is either a multipath, multisubpath, or name_multipath
   FILTER(BOUND(?multipath) || BOUND(?multisubpath) || BOUND(?name_multipath))

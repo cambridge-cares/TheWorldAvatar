@@ -618,7 +618,7 @@ base:ConceptShape
 3. `sh:minCount`: Optional parameter to indicate that the variable is required in the template if set above one.
 4. `sh:qualifiedValueShape`: Optional parameter to indicate that the variable is a parent variable that the instance is dependent on.
 5. `sh:datatype`: Required parameter to generate min-max search criteria based on integer or decimal settings
-6. `sh:property/sh:name "name"`: Optional `SHACL` property that provides property path(s) to the human-readable label of the field. This is required for any IRIs returned by any property if human-readable labels are necessary. This must be found in a property shape with `sh:targetClass` to function.
+6. `sh:property/sh:name "name"`: Optional `SHACL` property that provides property path(s) to the human-readable label of the field. This is required for any IRIs returned by any property if human-readable labels are necessary. This must be found in a property shape with `sh:targetClass` to function. Note that if your property is `sh:in` a (sub)class, the agent will automatically retrieve the `rdfs:label` of the associated class concept.
 
 ## 4. Schemas
 

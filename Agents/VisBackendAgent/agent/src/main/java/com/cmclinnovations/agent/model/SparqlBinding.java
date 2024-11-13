@@ -58,7 +58,7 @@ public class SparqlBinding {
       Map<String, SparqlResponseField> sortedBindings = new LinkedHashMap<>();
       this.sequence
           .forEach(variable -> {
-            String field = variable.property();
+            String field = variable.property().replaceAll("\\s+", "_");
             if (this.bindings.get(field) != null) {
               sortedBindings.put(field, this.bindings.get(field));
             }

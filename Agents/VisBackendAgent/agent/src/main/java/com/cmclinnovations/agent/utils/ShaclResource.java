@@ -30,6 +30,7 @@ public class ShaclResource {
   public static final String IN_PROPERTY = "in";
   public static final String QUALIFIED_VAL_SHAPE_PROPERTY = "qualifiedValueShape";
   // Query string elements
+  public static final String RDFS_LABEL_PREDICATE = "rdfs:label";
   public static final String FULL_STOP = ".";
   public static final String VARIABLE_MARK = "?";
   public static final String REPLACEMENT_ENDPOINT = "[endpoint]";

@@ -11,7 +11,8 @@ package com.cmclinnovations.agent.model;
  * @param subjectFilter  For the restricted possible value of a subject, if
  *                       available; Else, default to an empty string
  * @param isOptional     Indicates if this query line is optional
+ * @param isClazz        Indicates if this query line requires a rdfs:label predicate
  */
 public record SparqlQueryLine(String property, String predicate, String subPredicate, String labelPredicate,
-        String subjectFilter, boolean isOptional) {
+        String subjectFilter, boolean isOptional, boolean isClazz) {
 }
