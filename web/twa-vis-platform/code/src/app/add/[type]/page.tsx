@@ -30,12 +30,14 @@ export async function generateMetadata(): Promise<Metadata> {
  * Displays the form page for adding an entity.
  */
 export default function AddFormPage(props: Readonly<AddFormPageProps>) {
+  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
   return (
     <div className="formContainer">
       <FormContainerComponent
         entityType={props.params?.type}
         formType={Paths.REGISTRY_ADD}
-        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
+        agentApi={uiSettings.resources?.registry?.url}
+        isPrimaryEntity = {uiSettings.resources?.registry?.data === props.params?.type}
       />
     </div>
   );

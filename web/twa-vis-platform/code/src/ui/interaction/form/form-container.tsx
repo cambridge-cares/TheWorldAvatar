@@ -21,6 +21,7 @@ interface FormContainerComponentProps {
   entityType: string;
   formType: string;
   agentApi: string;
+  isPrimaryEntity?: boolean;
 }
 
 /**
@@ -29,6 +30,7 @@ interface FormContainerComponentProps {
  * @param {string} entityType The type of entity.
  * @param {string} formType The type of form such as add, update, delete, and view.
  * @param {string} agentApi The target agent endpoint for any registry related functionalities.
+ * @param {boolean} isPrimaryEntity An optional indicator if the form is targeting a primary entity.
  */
 export default function FormContainerComponent(props: Readonly<FormContainerComponentProps>) {
   const router = useRouter();
@@ -90,6 +92,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             agentApi={props.agentApi}
             setResponse={setResponse}
             onSubmittingChange={handleFormSubmittingChange}
+            isPrimaryEntity={props.isPrimaryEntity}
           />
         }
       </div>

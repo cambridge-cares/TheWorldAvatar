@@ -24,6 +24,7 @@ interface FormComponentProps {
   agentApi: string;
   setResponse: React.Dispatch<React.SetStateAction<HttpResponse>>;
   onSubmittingChange: (_isSubmitting: boolean) => void;
+  isPrimaryEntity?: boolean;
 }
 
 /**
@@ -35,6 +36,7 @@ interface FormComponentProps {
  * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {React.Dispatch<React.SetStateAction<HttpResponse>>} setResponse A dispatch function for setting the response after submission.
  * @param onSubmittingChange A function to handle the changes needed when submission should occur.
+ * @param {boolean} isPrimaryEntity An optional indicator if the form is targeting a primary entity.
  */
 export function FormComponent(props: Readonly<FormComponentProps>) {
   const id: string = getAfterDelimiter(usePathname(), "/");
@@ -140,6 +142,13 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
     switch (props.formType.toLowerCase()) {
       case Paths.REGISTRY_ADD: {
         pendingResponse = await addEntity(props.agentApi, formData, props.entityType);
+        // For registry's primary entity, a draft lifecycle must also be generated
+        if (props.isPrimaryEntity && pendingResponse.success) {
+          pendingResponse = await addEntity(props.agentApi, {
+            contract: pendingResponse.iri,
+            ...formData
+          }, "contracts/draft");
+        }
         break;
       }
       case Paths.REGISTRY_DELETE: {
