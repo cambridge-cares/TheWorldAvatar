@@ -91,11 +91,14 @@ public class TripCentralityCalculator {
     public void generateTCLayer(GeoServerClient geoServerClient, String workspaceName, String schema, String dbName,
             String layerName, String normalTableName, String floodTableName) {
 
-        String tcLayer = "SELECT a.gid, a.bci AS normal_bci, COALESCE(b.bci, 0.0) AS flooded_bci, "
-                + "COALESCE(b.bci, 0.0) - a.bci AS absolute_change, "
-                + "(COALESCE(b.bci, 0.0) / a.bci - 1.0) AS percentage_change, "
-                + "a.geom, r.name, r.length_m, r.oneway FROM tc_"+normalTableName+" a "
-                + "LEFT JOIN tc_"+floodTableName+" b on a.gid = b.gid JOIN "+routeTablePrefix+"ways r ON a.gid = r.gid";
+        String tcLayer = "SELECT a.gid, a.bci AS normal_betweeness_centrality_index, "
+                + "COALESCE(b.bci, 0.0) AS flooded_betweeness_centrality_index, "
+                + "COALESCE(b.bci, 0.0) - a.bci AS absolute_change_betweeness_centrality_index, "
+                + "CONCAT(ROUND((COALESCE(b.bci, 0.0) / a.bci - 1.0) * 100, 2), '%') "
+                + "AS percentage_change_betweeness_centrality_index, "
+                + "a.geom, r.name, r.length_m, r.oneway FROM tc_" + normalTableName + " a "
+                + "LEFT JOIN tc_" + floodTableName + " b on a.gid = b.gid JOIN " + routeTablePrefix
+                + "ways r ON a.gid = r.gid";
         createGeoserverLayer(geoServerClient, tcLayer, layerName, workspaceName, dbName, schema);
     }
 
