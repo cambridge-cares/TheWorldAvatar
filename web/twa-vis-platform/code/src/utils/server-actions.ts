@@ -8,8 +8,9 @@ import { FieldValues } from 'react-hook-form';
 import { RegistryFieldValues, FormTemplate, OntologyConcept } from 'types/form';
 
 export interface HttpResponse {
-  success: boolean;
   message: string;
+  success?: boolean;
+  iri?: string;
 }
 
 /**
@@ -150,8 +151,8 @@ export async function addEntity(agentApi: string, form: FieldValues, entityType:
     entity: entityType,
   });
   const response = await sendRequest(`${agentApi}/${entityType}`, "POST", "application/json", reqBody);
-  const responseBody: string = await response.text();
-  return { success: response.ok, message: responseBody };
+  const responseBody: HttpResponse = await response.json();
+  return { success: response.ok, ...responseBody };
 }
 
 /**
@@ -167,8 +168,8 @@ export async function updateEntity(agentApi: string, form: FieldValues, entityTy
     entity: entityType,
   });
   const response = await sendRequest(`${agentApi}/${entityType}/${form.id}`, "PUT", "application/json", reqBody);
-  const responseBody: string = await response.text();
-  return { success: response.ok, message: responseBody };
+  const responseBody: HttpResponse = await response.json();
+  return { success: response.ok, ...responseBody };
 }
 
 /**
@@ -180,8 +181,8 @@ export async function updateEntity(agentApi: string, form: FieldValues, entityTy
  */
 export async function deleteEntity(agentApi: string, id: string, entityType: string): Promise<HttpResponse> {
   const response = await sendRequest(`${agentApi}/${entityType}/${id}`, "DELETE", "application/json");
-  const responseBody: string = await response.text();
-  return { success: response.ok, message: responseBody };
+  const responseBody: HttpResponse = await response.json();
+  return { success: response.ok, ...responseBody };
 }
 
 /**
