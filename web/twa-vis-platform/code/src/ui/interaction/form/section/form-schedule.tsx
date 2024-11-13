@@ -33,17 +33,21 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
   const daysOfWeekLabel: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const singleService: string = "Single Service";
   const regularService: string = "Regular Service";
+  const alternateService: string = "Alternate Day Service";
   const scheduleType: string = "schedule";
 
   // Define the state to store the selected value
   const [selectedServiceOption, setSelectedServiceOption] = useState<string>(
-    props.form.getValues(FORM_STATES.RECURRENCE) == 0 ? singleService : regularService
+    props.form.getValues(FORM_STATES.RECURRENCE) == 0 ? singleService :
+      props.form.getValues(FORM_STATES.RECURRENCE) == -1 ? alternateService : regularService
   );
 
   // Handle change event for the select input
   const handleServiceChange = (value: string) => {
     if (value === singleService) {
       props.form.setValue(FORM_STATES.RECURRENCE, 0);
+    } else if (value === alternateService) {
+      props.form.setValue(FORM_STATES.RECURRENCE, -1);
     } else {
       props.form.setValue(FORM_STATES.RECURRENCE, 1);
     }
@@ -61,7 +65,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
           <Select
             styles={selectorStyles}
             unstyled
-            options={[{ label: singleService, value: singleService }, { label: regularService, value: regularService }]}
+            options={[{ label: singleService, value: singleService }, { label: regularService, value: regularService }, { label: alternateService, value: alternateService }]}
             value={{ label: selectedServiceOption, value: selectedServiceOption }}
             onChange={(selectedOption) => handleServiceChange((selectedOption as FormOptionType).value)}
             isLoading={false}
@@ -83,7 +87,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
           form={props.form}
           options={props.options}
         />
-        {selectedServiceOption === regularService && <FormFieldComponent
+        {selectedServiceOption != singleService && <FormFieldComponent
           entityType={scheduleType}
           field={{
             "@id": "string",

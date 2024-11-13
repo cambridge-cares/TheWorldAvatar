@@ -123,6 +123,12 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         "end date": startDate, // End date must correspond to start date
         [dayOfWeek]: true, // Ensure the corresponding day of week is true
       }
+      // For alternate day service
+    } else if (formData[FORM_STATES.RECURRENCE] == -1) {
+      formData = {
+        ...formData,
+        recurrence: "P2D",
+      }
       // For regular service
     } else if (formData[FORM_STATES.RECURRENCE]) {
       formData = {

@@ -68,6 +68,9 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
     if (defaultValue === "P1D") {
       return 0;
     }
+    if (defaultValue === "P2D") {
+      return -1;
+    }
     // Retrieve and parse the recurrent digit based on default value
     const match: RegExpMatchArray = /P(\d+)D/.exec(defaultValue);
     if (match) {
