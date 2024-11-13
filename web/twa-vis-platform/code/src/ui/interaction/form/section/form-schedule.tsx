@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import Select from 'react-select';
 
-import { FormOptionType, PropertyGroup, VALUE_KEY } from 'types/form';
+import { FormOptionType } from 'types/form';
 import { selectorStyles } from 'ui/css/selector-style';
 import { parseWordsForLabels } from 'utils/client-utils';
 import FormCheckboxField from '../field/form-checkbox-field';
@@ -13,7 +13,7 @@ import { FORM_STATES } from '../form-utils';
 import FormFieldComponent from '../field/form-field';
 
 interface FormScheduleProps {
-  group: PropertyGroup;
+  fieldId: string;
   form: UseFormReturn;
   options?: {
     disabled?: boolean;
@@ -25,7 +25,7 @@ export const daysOfWeek: string[] = [FORM_STATES.SUN, FORM_STATES.MON, FORM_STAT
 /**
  * This component renders a form schedule as a form section.
  * 
- * @param {PropertyGroup} group Fieldset group model.
+ * @param {string} fieldId Field name.
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
  * @param {boolean} options.disabled Optional indicator if the fields should be disabled. Defaults to false.
  */
@@ -53,7 +53,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
   return (
     <fieldset className={styles["form-fieldset"]} style={{ marginBottom: "1rem" }}>
       <legend className={styles["form-fieldset-label"]}>
-        {parseWordsForLabels(props.group.label[VALUE_KEY])}
+        {parseWordsForLabels(props.fieldId)}
       </legend>
       <div className={styles["form-fieldset-contents"]}>
         <div className={styles["schedule-occurrence-container"]}>

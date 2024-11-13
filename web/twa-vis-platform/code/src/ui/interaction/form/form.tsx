@@ -197,16 +197,6 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         formTemplate.property.map((field, index) => {
           if (field[TYPE_KEY].includes(PROPERTY_GROUP_TYPE)) {
             const fieldset: PropertyGroup = field as PropertyGroup;
-            if (fieldset.label[VALUE_KEY].includes("schedule")) {
-              return <FormSchedule
-                key={fieldset[ID_KEY] + index}
-                group={fieldset}
-                form={form}
-                options={{
-                  disabled: disableAllInputs,
-                }}
-              />
-            }
             return <FormSection
               key={fieldset[ID_KEY] + index}
               entityType={props.entityType}
@@ -225,6 +215,16 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             }
             const disableId: boolean = props.formType === Paths.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
             if (fieldProp.class) {
+              if (fieldProp.class[ID_KEY] === "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule") {
+                return <FormSchedule
+                  key={fieldProp.name[VALUE_KEY] + index}
+                  fieldId={fieldProp.name[VALUE_KEY]}
+                  form={form}
+                  options={{
+                    disabled: disableAllInputs,
+                  }}
+                />
+              }
               if (fieldProp.class[ID_KEY] === "https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/PhysicalLocation") {
                 return <FormGeocoder
                   key={fieldProp.name[VALUE_KEY] + index}
