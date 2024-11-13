@@ -246,9 +246,9 @@ function sortChildrenConcepts(mappings: OntologyConceptMappings, priority: Ontol
     // Ensure that this is not the root
     if (parentKey != ONTOLOGY_CONCEPT_ROOT) {
       // Attempt to find the match concept
-      const matchedConcept: OntologyConcept = mappings[parentKey].find(concept => concept.type?.value == priority?.label?.value);
+      const matchedConcept: OntologyConcept = mappings[parentKey].find(concept => concept.type?.value == priority?.type?.value);
       // Filter out the matching concept if it is present, and sort the children out
-      const sortedChildren: OntologyConcept[] = mappings[parentKey].filter(concept => concept.type?.value != priority?.label?.value)
+      const sortedChildren: OntologyConcept[] = mappings[parentKey].filter(concept => concept.type?.value != priority?.type?.value)
         .sort((a, b) => a.label.value.localeCompare(b.label.value));
       // Append the matching concept to the start if it is present
       if (matchedConcept) { sortedChildren.unshift(matchedConcept); }
