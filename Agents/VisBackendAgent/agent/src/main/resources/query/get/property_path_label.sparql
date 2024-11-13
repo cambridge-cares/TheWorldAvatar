@@ -62,6 +62,8 @@ WHERE {
     ?subproperty sh:name ?subname ;
                  sh:path ?subpath ;
                  sh:order ?suborder .
+    # Extract class if available
+    OPTIONAL {?subproperty sh:class ?class }
     OPTIONAL {
       ?subproperty sh:hasValue ?subSubjectValue .
     }
