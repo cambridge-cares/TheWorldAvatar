@@ -9,7 +9,7 @@ if __name__ == "__main__":
     assembly_model_file = 'Data/Assembly_Models/assembly_models.json'
     output_dir = 'Data/Outputs'
     cbus_dir = 'Data/CBUs'
-    workflow_data_file = 'Data/input.csv'  # Renamed from csv_file_path
+    workflow_data_file = 'Data/input.csv'
 
     initiation = AssemblerWorkflow(assembly_model_file, cbus_dir, output_dir)
-    initiation.run_workflow(workflow_data_file)  # Updated method name from read_csv to run_workflow
+    initiation.run_workflow(workflow_data_file)
