@@ -1,7 +1,7 @@
 __author__ = "Aleksandar Kondinski"
-__license__ = "MIT" 
-__version__ = '0.1.0' 
-__status__ = "development" 
+__license__ = "MIT"
+__version__ = '1.0.0'
+__status__ = "production"
 
 import json
 import os
@@ -72,11 +72,3 @@ class PositionExtractor:
         unique_positions = self.extract_positions(data)
         self.write_positions_to_files(unique_positions)
         print(f"Exported {len(unique_positions)} JSON files to {self.output_dir}")
-
-if __name__ == "__main__":
-    input_file = 'Data/Assembly_Models/(4-planar)x6(2-bent)x12_Oh_final_scaled.json'
-    output_dir = 'Data/Assembly_Models/Output_Atoms'
-    assembly_model_key = '(4-planar)x6(2-bent)x12_Oh'
-
-    extractor = PositionExtractor(input_file, assembly_model_key, output_dir)
-    extractor.run()

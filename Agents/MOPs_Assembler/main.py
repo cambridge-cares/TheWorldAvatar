@@ -1,7 +1,7 @@
 __author__ = "Aleksandar Kondinski"
-__license__ = "MIT" 
-__version__ = '0.1.0' 
-__status__ = "development" 
+__license__ = "MIT"
+__version__ = '1.0.0'
+__status__ = "production"
 
 from mop_operations import AssemblerWorkflow
 

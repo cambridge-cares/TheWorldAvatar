@@ -1,7 +1,7 @@
 __author__ = "Aleksandar Kondinski"
-__license__ = "MIT" 
-__version__ = '0.1.0' 
-__status__ = "development" 
+__license__ = "MIT"
+__version__ = '1.0.0'
+__status__ = "production"
 
 import csv
 import os
@@ -80,14 +80,6 @@ class AssemblerWorkflow:
         rescaled_dir = os.path.join(mop_output_dir, 'Rescaled')
         os.makedirs(rescaled_dir, exist_ok=True)
 
-        #print("ALL I NEED")
-        #print(f"  assembly_model_path: {temp_assembly_model_path}")
-        #print(f"  assembly_model_key: {assembly_model}")
-        #print(f"  cbu1_label: {cbu1_label}")
-        #print(f"  cbu2_label: {cbu2_label}")
-        #print(f"  cbu1_path: {cbu1_path}")
-        #print(f"  cbu2_path: {cbu2_path}")
-
         rescaler = AssemblyModelRescaler(temp_assembly_model_path, assembly_model, cbu1_label, cbu2_label, cbu1_path, cbu2_path)
         rescaler.workflow_operations(rescaled_dir)
 
@@ -120,13 +112,3 @@ class AssemblerWorkflow:
 
         converter = JSONToXYZConverter(translated_cbu_dir, os.path.join(mop_output_dir, 'output_structure.xyz'))
         converter.convert()
-
-
-if __name__ == "__main__":
-    assembly_model_file = 'Data/Assembly_Models/assembly_models.json'
-    output_dir = 'Data/Outputs'
-    cbus_dir = 'Data/CBUs'
-    csv_file_path = 'Data/input.csv'
-
-    initiation = AssemblerWorkflow(assembly_model_file, cbus_dir, output_dir)
-    initiation.read_csv(csv_file_path)

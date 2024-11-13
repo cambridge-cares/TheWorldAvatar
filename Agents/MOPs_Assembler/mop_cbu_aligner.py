@@ -1,7 +1,7 @@
 __author__ = "Aleksandar Kondinski"
-__license__ = "MIT" 
-__version__ = '0.1.0' 
-__status__ = "development" 
+__license__ = "MIT"
+__version__ = '1.0.0'
+__status__ = "production"
 
 import os
 import json
@@ -103,7 +103,6 @@ class GenericCBUProcessor:
         center_atom = next((atom_data for atom_data in self.cbu_data.values() if atom_data['atom'] == 'CENTER'), None)
         if center_atom is None:
             cbu_center = np.mean(X_coords_x_atoms, axis=0)
-            #print("No 'CENTER' atom found in CBU data. Calculated centroid as 'CENTER'.")
             center_atom = {
                 'atom': 'CENTER',
                 'coordinate_x': cbu_center[0],
@@ -122,14 +121,8 @@ class GenericCBUProcessor:
 
         for position_file in self.position_files:
             position_data = read_json_data(position_file)
-            #print(f"\nLoaded position data from {position_file}")
-
             position_center = np.array([position_data['X'], position_data['Y'], position_data['Z']])
-            #print(f"Position center coordinates: {position_center}")
-
             translation_vector = position_center - cbu_center
-            #print(f"Calculated translation vector: {translation_vector}")
-
             translated_cbu_data = {}
             for atom_id, atom_data in self.cbu_data.items():
                 original_coords = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
@@ -160,7 +153,6 @@ class GenericCBUProcessor:
 
             # Compute optimal rotation
             optimal_rotation_matrix = find_optimal_rotation_weighted(X_coords, Y_coords, weights)
-            #print(f"Calculated optimal rotation matrix:\n{optimal_rotation_matrix}")
 
             for atom_id, atom_data in translated_cbu_data.items():
                 original_coords = np.array([atom_data['coordinate_x'], atom_data['coordinate_y'], atom_data['coordinate_z']])
@@ -189,7 +181,6 @@ class GenericCBUProcessor:
                 print(f"Translated and rotated CBU saved to {output_file_path}")
 
     def additional_alignment_2_linear(self, translated_cbu_data, x_atoms):
-        # Existing code for 2-linear CBUs
         x1_id, x1_data = x_atoms[0]
         x2_id, x2_data = x_atoms[1]
 

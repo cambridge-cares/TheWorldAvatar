@@ -1,7 +1,7 @@
 __author__ = "Aleksandar Kondinski"
-__license__ = "MIT" 
-__version__ = '0.1.0' 
-__status__ = "development" 
+__license__ = "MIT"
+__version__ = '1.0.0'
+__status__ = "production"
 
 import json
 import os
@@ -32,14 +32,5 @@ class JSONToXYZConverter:
                 file.write(f"{atom['atom']} {atom['coordinate_x']} {atom['coordinate_y']} {atom['coordinate_z']}\n")
 
     def convert(self):
-        #print(f"Starting conversion from JSON to XYZ in directory: {self.input_directory}")  # Debugging statement
         atoms = self.collect_atoms()
         self.write_xyz(atoms)
-        #print(f"XYZ file has been written to {self.output_file}")
-
-if __name__ == "__main__":
-    input_directory = 'Data/Assembly_Models/Translated_CBUs/'  # Directory containing the JSON files
-    output_file = 'output_structure.xyz'  # Output XYZ file
-
-    converter = JSONToXYZConverter(input_directory, output_file)
-    converter.convert()
