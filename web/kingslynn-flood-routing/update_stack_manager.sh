@@ -16,28 +16,14 @@ local url="$1"
 printf '%s\n' "$url" | sed -e 's/[\/&]/\\&/g'
 }
 
-print_help() {
-echo "This script replaces the public URL for visualisation and automatically update the stack manager config files."
-echo "Usage: $0 [option]"
-echo "Options:"
-echo "  -h    Display this help message."
-echo "  <public_url> The public URL of this stack. Do not include / at the end."
-}
+## Load variables from .env file
 
-## handle commandline input
-
-if [ "$1" == "-h" ] || [ -z "$1" ]; then
-print_help
-exit 0
-fi
-
-arg="$1"
+source .env
 
 ## replace URL for visualisation
 
 dir_webspace="./stack-manager-inputs/data/webspace"
 URL_PLACEHOLDER="<PUBLIC_URL>"
-PUBLIC_URL=$(escape_url "$arg")
 
 replace_string "$dir_webspace" "$URL_PLACEHOLDER" "$PUBLIC_URL"
 
@@ -50,12 +36,31 @@ TWA_DIR=$(dirname "$(dirname "$(pwd)")")
 
 replace_string "$dir_config" "$DIR_PLACEHOLDER" "$TWA_DIR"
 
-## rename stack config file
+## rename stack config file name
 
-STACK_NAME="routing"
 mv "./stack-manager-inputs/config/routing.json" "./stack-manager-inputs/config/$STACK_NAME.json"
+mv "./stack-data-uploader-inputs/config/routing.json" "./stack-data-uploader-inputs/config/$STACK_NAME.json"
 
 ## send files to deployment
 
 DEPLOY_DIR="$TWA_DIR/Deploy/stacks/dynamic"
 rsync -av "./stack-manager-inputs/" "$DEPLOY_DIR/stack-manager/inputs/"
+rsync -av "./stack-data-uploader-inputs/" "$DEPLOY_DIR/stack-data-uploader/inputs/"
+
+## replace stack name in POI query of TravellingSalesmanAgent
+
+dir_TSA_POI="./TravellingSalesmanAgent/inputs/UR/POIqueries/grid_primary_site.sparql"
+STACK_PLACEHOLDER="<STACK_NAME>"
+sed -i "s#$STACK_PLACEHOLDER#$STACK_NAME#g" "$dir_TSA_POI"
+
+## overwrite input files of agents
+
+agent_list=("TravellingSalesmanAgent" "IsochroneAgent" "NetworkAnalysisAgent")
+
+# Loop through each string in the list
+for str in "${agent_list[@]}"; do
+# Print the current string
+echo "Agent: $str"
+echo "$TWA_DIR/Agent/$str"
+rsync -av "$str/" "$TWA_DIR/Agents/$str/"
+done
