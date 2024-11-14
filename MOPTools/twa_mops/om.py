@@ -20,6 +20,15 @@ HasNumericalValue = DatatypeProperty.create_from_base('HasNumericalValue', OM)
 class Unit(BaseClass):
     rdfs_isDefinedBy = OM
 
+class SingularUnit(Unit):
+    rdfs_isDefinedBy = OM
+
+class CompoundUnit(Unit):
+    rdfs_isDefinedBy = OM
+
+class UnitDivision(CompoundUnit):
+    rdfs_isDefinedBy = OM
+
 class Measure(BaseClass):
     rdfs_isDefinedBy = OM
     hasUnit: HasUnit[Unit]
