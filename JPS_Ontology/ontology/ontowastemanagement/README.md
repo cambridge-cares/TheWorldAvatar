@@ -444,12 +444,14 @@ Bin statuses are also represented as enums in the corresponding ABox. The availa
 
 This section focuses on reporting matters such as billing, specifically as an the extension of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology to the waste operation industry. The derived information framework is used in representing how the total price of a waste collection service is calculated and represented in the knowledge graph. The computation of the total price is as follows:
 
-```math
-Total Price = Gross Price + Tax \\
-Gross Price = Base Charge + Variable Charge + Excess Variable Charge \\
-Excess Variable Charge = (Net Waste Weight - Service Tonnage Cap) \\
-Net Waste Weight = Gross Truck Weight - Unladen Truck Weight
-```
+$$
+  \begin{align*}
+    Total Price & = Gross Price + Tax \\
+    Gross Price & = Base Charge + Variable Charge + Excess Variable Charge \\
+    Excess Variable Charge & = (Net Waste Weight - Service Tonnage Cap) \\
+    Net Waste Weight & = Gross Truck Weight - Unladen Truck Weight
+  \end{align*}
+$$
 
 Figure 11: ABox representation of the computation of the total price charged for each occurrence of a waste service
 

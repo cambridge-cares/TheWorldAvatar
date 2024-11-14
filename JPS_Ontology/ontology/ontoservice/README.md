@@ -345,11 +345,13 @@ Figure 8: TBox representation of a regular schedule
 
 This section focuses on reporting matters such as billing. The derived information framework is used in representing how the total price of a service is calculated and represented in the knowledge graph. The computation of the total price is as follows:
 
-```math
-Total Price = Gross Price + Tax \\
-Gross Price = Base Charge + Variable Charge + Excess Variable Charge \\
-Variable Charge = (Service Metric - Service Metric Cap) \\
-```
+$$
+  \begin{align*}
+    Total Price = Gross Price + Tax \\
+    Gross Price = Base Charge + Variable Charge + Excess Variable Charge \\
+    Variable Charge = (Service Metric - Service Metric Cap) \\
+  \end{align*}
+$$
 
 Figure 9: ABox representation of the provenance structure for the total service charge
 
