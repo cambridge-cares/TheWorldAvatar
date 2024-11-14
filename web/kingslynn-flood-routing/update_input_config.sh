@@ -44,8 +44,8 @@ mv "./stack-data-uploader-inputs/config/routing.json" "./stack-data-uploader-inp
 ## send files to deployment
 
 DEPLOY_DIR="$TWA_DIR/Deploy/stacks/dynamic"
-rsync -av "./stack-manager-inputs/" "$DEPLOY_DIR/stack-manager/inputs/"
-rsync -av "./stack-data-uploader-inputs/" "$DEPLOY_DIR/stack-data-uploader/inputs/"
+cp -rf ./stack-manager-inputs/* "$DEPLOY_DIR/stack-manager/inputs/"
+cp -rf ./stack-data-uploader-inputs/* "$DEPLOY_DIR/stack-data-uploader/inputs/"
 
 ## replace stack name in POI query of TravellingSalesmanAgent
 
@@ -59,7 +59,7 @@ agent_list=("TravellingSalesmanAgent" "IsochroneAgent" "NetworkAnalysisAgent")
 
 # Loop through each string in the list
 for str in "${agent_list[@]}"; do
-echo "$str/"
+echo "$str/" 
 echo "$TWA_DIR/Agents/$str/"
-rsync -av "$str/" "$TWA_DIR/Agents/$str/"
+cp -rf "$str/" "$TWA_DIR/Agents/$str/"
 done
