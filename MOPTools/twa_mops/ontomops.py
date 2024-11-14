@@ -112,9 +112,123 @@ class AssemblyModel(BaseClass):
     hasGenericBuildingUnitNumber: HasGenericBuildingUnitNumber[GenericBuildingUnitNumber]
     hasPolyhedralShape: HasPolyhedralShape[PolyhedralShape]
     hasSymmetryPointGroup: HasSymmetryPointGroup[str]
-    # below are additions for assembler
     hasGBUCoordinateCenter: HasGBUCoordinateCenter[GBUCoordinateCenter]
     hasGBUConnectingPoint: HasGBUConnectingPoint[GBUConnectingPoint]
+
+    @staticmethod
+    def process_geometry_json(am_json, gbu_type_1_label, gbu_type_2_label):
+        """
+        Example JSON for AM (the `am_json` will be the list of dictionaries within the key of the AM label in the JSON file):
+        {
+            "(5-pyramidal)x12(2-linear)x30_Ih": [
+                {
+                    "Key": "Position_1",
+                    "Label": "5-pyramidal",
+                    "X": 2.6368,
+                    "Y": 2.7551,
+                    "Z": 1.2068,
+                    "Neighbors": [
+                        {
+                            "Key": "Position_13",
+                            "Label": "2-linear",
+                            "Distance": 2.1029
+                        },
+                        {
+                            "Key": "Position_15",
+                            "Label": "2-linear",
+                            "Distance": 2.1029
+                        },
+                        ...
+                    ],
+                    "ClosestDummies": ["Dummy_1", "Dummy_2", "Dummy_3", ...]
+                },
+                ...
+                {
+                    "Key": "Dummy_1",
+                    "Label": "Dummy",
+                    "X": 2.8490,
+                    "Y": 1.7266,
+                    "Z": 1.2590,
+                    "Positions": ["Position_13", "Position_1"]
+                },
+                ...
+                {
+                    "Key": "Center",
+                    "Label": "Center",
+                    "X": 0.0,
+                    "Y": 0.0,
+                    "Z": 0.0
+                }
+            ]
+        }
+        """
+        coordinate_point_dict = {}
+        connecting_point_dict = {}
+        # handle dummy blocks `{"Label": "Dummy", ...}`
+        for i in range(len(am_json)):
+            if am_json[i]['Label'] == 'Dummy':
+                dummy = GBUConnectingPoint(hasX=am_json[i]['X'], hasY=am_json[i]['Y'], hasZ=am_json[i]['Z'])
+                connecting_point_dict[am_json[i]['Key']] = dummy
+
+        # handle position blocks `{"Label": "5-pyramidal", ...}`
+        # TODO the part that getting the gbu_type_1 and gbu_type_2 can be optimised
+        for i in range(len(am_json)):
+            if am_json[i]['Label'] in [gbu_type_1_label, gbu_type_2_label]:
+                coord = GBUCoordinateCenter(
+                    hasX=am_json[i]['X'],
+                    hasY=am_json[i]['Y'],
+                    hasZ=am_json[i]['Z'],
+                    hasGBUConnectingPoint=[connecting_point_dict[d] for d in am_json[i]['ClosestDummies']]
+                )
+                if am_json[i]['Label'] in coordinate_point_dict:
+                    coordinate_point_dict[am_json[i]['Label']].append(coord)
+                else:
+                    coordinate_point_dict[am_json[i]['Label']] = [coord]
+
+        return coordinate_point_dict, connecting_point_dict
+
+    def add_coordinates_from_json(self, am_json):
+        gbus = list(self.hasGenericBuildingUnit)
+        gbu1 = gbus[0]
+        gbu2 = gbus[1]
+        coordinate_point_dict, connecting_point_dict = self.__class__.process_geometry_json(am_json, gbu1.gbu_type, gbu2.gbu_type)
+        gbu1.hasGBUCoordinateCenter = coordinate_point_dict[gbu1.gbu_type]
+        gbu2.hasGBUCoordinateCenter = coordinate_point_dict[gbu2.gbu_type]
+        self.hasGBUCoordinateCenter = [c for g in list(coordinate_point_dict.values()) for c in g]
+        self.hasGBUConnectingPoint = list(connecting_point_dict.values())
+
+    @classmethod
+    def from_geometry_json(
+        cls,
+        am_json,
+        gbu_type_1: GenericBuildingUnitType,
+        gbu_type_2: GenericBuildingUnitType,
+        gbu_number_1: int,
+        gbu_number_2: int,
+        am_symmetry: str,
+        polyhedral_shape: str = None,
+    ):
+
+        # process the AM geometry JSON
+        coordinate_point_dict, connecting_point_dict = cls.process_geometry_json(am_json, gbu_type_1.label, gbu_type_2.label)
+
+        # instantiate the GBUs
+        gbu1 = GenericBuildingUnit(hasGBUType=gbu_type_1, hasGBUCoordinateCenter=coordinate_point_dict[gbu_type_1.label])
+        gbu2 = GenericBuildingUnit(hasGBUType=gbu_type_2, hasGBUCoordinateCenter=coordinate_point_dict[gbu_type_2.label])
+
+        return cls(
+            hasGenericBuildingUnit=[gbu1, gbu2],
+            hasGenericBuildingUnitNumber=[
+                GenericBuildingUnitNumber(isNumberOf=gbu1, hasUnitNumberValue=gbu_number_1),
+                GenericBuildingUnitNumber(isNumberOf=gbu2, hasUnitNumberValue=gbu_number_2)],
+            hasPolyhedralShape=polyhedral_shape if polyhedral_shape is not None else set(),
+            hasSymmetryPointGroup=am_symmetry,
+            hasGBUCoordinateCenter=[c for g in list(coordinate_point_dict.values()) for c in g],
+            hasGBUConnectingPoint=list(connecting_point_dict.values())
+        )
+
+    def gbu_of_type(self, gbu_type):
+        return [gbu for gbu in self.hasGenericBuildingUnit if gbu_type == gbu.gbu_type]
 
     @property
     def pairs_of_connected_gbus(self) -> Dict:
