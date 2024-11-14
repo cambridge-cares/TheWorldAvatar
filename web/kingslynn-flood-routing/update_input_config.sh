@@ -59,8 +59,7 @@ agent_list=("TravellingSalesmanAgent" "IsochroneAgent" "NetworkAnalysisAgent")
 
 # Loop through each string in the list
 for str in "${agent_list[@]}"; do
-# Print the current string
-echo "Agent: $str"
-echo "$TWA_DIR/Agent/$str"
+echo "$str/"
+echo "$TWA_DIR/Agents/$str/"
 rsync -av "$str/" "$TWA_DIR/Agents/$str/"
 done
