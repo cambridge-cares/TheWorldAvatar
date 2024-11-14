@@ -59,6 +59,10 @@ class Point(BaseModel):
         return max_point
 
     @classmethod
+    def mid_point(cls, pt1: 'Point', pt2: 'Point'):
+        return cls(x=(pt1.x + pt2.x) / 2, y=(pt1.y + pt2.y) / 2, z=(pt1.z + pt2.z) / 2)
+
+    @classmethod
     def from_array(cls, arr, label=None):
         return cls(x=arr[0], y=arr[1], z=arr[2], label=label)
 
@@ -90,6 +94,49 @@ class Point(BaseModel):
                 max_points = (pt1, pt2)
         return max_points
 
+    @classmethod
+    def closest_pair(cls, points: List['Point']):
+        min_dist = np.inf
+        min_points = (None, None)
+        for pt1, pt2 in combinations(points, 2):
+            dist = pt1.get_distance_to(pt2)
+            if dist < min_dist:
+                min_dist = dist
+                min_points = (pt1, pt2)
+        return min_points
+
+    @classmethod
+    def fit_circle_2d(cls, points: List['Point']):
+        if len(points) < 3:
+            raise ValueError(f'At least 3 points are required to fit circumcenter. Provided points: {points}')
+        elif len(points) > 5:
+            raise NotImplementedError('Fitting circumcenter for more than 5 points is not implemented yet')
+        else:
+            # least squares solution to find the circumcenter
+            # first fit a plane
+            plane = Plane.fit_from_points(points)
+            # project the points to the plane
+            projected_points = [plane.project_point(pt) for pt in points]
+            # find a local 2-D coordinate system using the first two points
+            origin = projected_points[0]
+            u = Vector.from_two_points(start=origin, end=projected_points[1])
+            u = u.get_unit_vector()
+            norm = plane.normal.get_unit_vector()
+            v = norm.get_cross_product(u)
+            v /= np.linalg.norm(v)
+            # project the points to the local 2-D coordinate system
+            local_points = [Point(x=np.dot(pt.as_array - origin.as_array, u.as_array), y=np.dot(pt.as_array - origin.as_array, v), z=0) for pt in projected_points]
+            local_np_arrs = np.array([pt.as_array for pt in local_points])
+            local_x = local_np_arrs[:, 0]
+            local_y = local_np_arrs[:, 1]
+            a = np.column_stack((local_x, local_y, np.ones(len(local_x))))
+            b = local_x**2 + local_y**2
+            a_coef, b_coef, c_coef = np.linalg.lstsq(a, b, rcond=None)[0]
+            x_center = a_coef / 2
+            y_center = b_coef / 2
+            c = origin.as_array + x_center * u.as_array + y_center * v
+            r = np.sqrt(x_center**2 + y_center**2 + c_coef)
+            return cls.from_array(c), r
 
 class Vector(BaseModel):
     x: float
@@ -179,6 +226,13 @@ class Line(BaseModel):
     def from_two_points(cls, start: Point, end: Point):
         return cls(point=start, direction=Vector.from_two_points(start, end))
 
+    def project_point(self, other_point: Point):
+        if self.is_point_on_line(other_point):
+            return Point(x=other_point.x, y=other_point.y, z=other_point.z)
+        v = Vector.from_two_points(self.point, other_point)
+        v_proj = (np.dot(v.as_array, self.direction.as_array) / np.dot(self.direction.as_array, self.direction.as_array)) * self.direction.as_array
+        return Point(x=self.point.x + v_proj[0], y=self.point.y + v_proj[1], z=self.point.z + v_proj[2])
+
     def is_point_on_line(self, other: Point, threshold: float = 1e-6):
         cross_product = self.direction.get_cross_product(Vector.from_two_points(self.point, other))
         return np.allclose(cross_product, [0, 0, 0])
@@ -224,8 +278,8 @@ class Plane(BaseModel):
 
     @classmethod
     def from_three_points(cls, pt1: Point, pt2: Point, pt3: Point):
-        v1 = Vector(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z)
-        v2 = Vector(pt3.x - pt1.x, pt3.y - pt1.y, pt3.z - pt1.z)
+        v1 = Vector(x = pt2.x - pt1.x, y = pt2.y - pt1.y, z = pt2.z - pt1.z)
+        v2 = Vector(x = pt3.x - pt1.x, y = pt3.y - pt1.y, z = pt3.z - pt1.z)
         return cls.from_two_vectors(v1, v2, pt1)
 
     @classmethod
@@ -233,12 +287,15 @@ class Plane(BaseModel):
         n = len(points)
         if n < 3:
             raise ValueError(f'At least 3 points are required to fit a plane. Provided points: {points}')
-        A = np.array([[pt.x, pt.y, pt.z] for pt in points])
-        centroid = np.mean(A, axis=0)
-        A -= centroid
-        _, _, V = np.linalg.svd(A)
-        normal = V[-1]
-        return cls(point=Point.from_array(centroid), normal=Vector.from_array(normal))
+        elif n == 3:
+            return cls.from_three_points(pt1=points[0], pt2=points[1], pt3=points[2])
+        else:
+            A = np.array([[pt.x, pt.y, pt.z] for pt in points])
+            centroid = np.mean(A, axis=0)
+            A -= centroid
+            _, _, V = np.linalg.svd(A)
+            normal = V[-1]
+            return cls(point=Point.from_array(centroid), normal=Vector.from_array(normal))
 
     def normal_vector_from_point_to_plane(self, other: Point):
         w = Vector.from_two_points(start=other, end=self.point)
@@ -265,3 +322,15 @@ class Plane(BaseModel):
     def get_projected_vector(self, vector: Vector):
         unit_normal = self.normal.get_unit_vector()
         return Vector.from_array(vector.as_array - vector.get_dot_product(unit_normal) * unit_normal.as_array)
+
+    def find_perpendicular_bisector_on_plane(self, point1: Point, point2: Point):
+        projected_point_1 = self.project_point(point1)
+        projected_point_2 = self.project_point(point2)
+        mid_point = Point.mid_point(projected_point_1, projected_point_2)
+        proj_line = Line.from_two_points(projected_point_1, projected_point_2)
+        v = self.normal.get_cross_product(proj_line.direction)
+        if np.linalg.norm(v) == 0:
+            raise ValueError(f'The two points {point1} and {point2} define a line that is perpendicular to the plane {self}. No unique perpendicular bisector exists on the plane.')
+        else:
+            v = v / np.linalg.norm(v)
+        return Line(point=mid_point, direction=Vector.from_array(v))
