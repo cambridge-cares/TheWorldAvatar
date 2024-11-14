@@ -378,6 +378,10 @@ class ChemicalBuildingUnit(BaseClass):
         return f"[{list(self.hasCBUFormula)[0].rstrip(']').lstrip('[')}]"
 
     @property
+    def assembly_center(self):
+        return list(self.hasCBUAssemblyCenter)[0].coordinates
+
+    @property
     def active_binding_sites(self):
         return [bs for bs in list(self.hasBindingSite) if not bs.temporarily_blocked]
 
@@ -571,6 +575,28 @@ class ChemicalBuildingUnit(BaseClass):
                 most_possible_binding_site_angle = angle
                 length_center_to_binding_site = center.get_distance_to(bs.binding_coordinates)
         return rotated_binding_vector, most_possible_binding_site_angle, length_center_to_binding_site
+
+    def visualise(self, sparql_client = None):
+        rows = []
+        if list(self.hasGeometry)[0].hasPoints is None:
+            if sparql_client is None:
+                raise ValueError('SPARQL client is required to visualise/load the geometry')
+            self.load_geometry_from_fileserver(sparql_client)
+        # atoms
+        for pt in list(self.hasGeometry)[0].hasPoints:
+            rows.append([pt.label, pt.x, pt.y, pt.z])
+        # binding sites
+        for pt in list(self.hasBindingSite):
+            rows.append(['BindingSite', pt.binding_coordinates.x, pt.binding_coordinates.y, pt.binding_coordinates.z])
+        # assembly center
+        rows.append(['AssemblyCenter', self.assembly_center.x, self.assembly_center.y, self.assembly_center.z])
+        df = pd.DataFrame(rows, columns=['Atom', 'X', 'Y', 'Z',])
+        fig = px.scatter_3d(df, x='X', y='Y', z='Z', color='Atom', title=f'CBU: {list(self.hasCBUFormula)[0]}')
+        fig.update_traces(marker=dict(size=2))
+        fig.update_layout(autosize=False, width=1200, height=400)
+        fig.show()
+        return fig
+
 
 class MetalOrganicPolyhedron(CoordinationCage):
     hasAssemblyModel: HasAssemblyModel[AssemblyModel]
@@ -767,3 +793,18 @@ class MetalOrganicPolyhedron(CoordinationCage):
             hasCCDCNumber=ccdc,
             hasGeometry=mop_geo,
         )
+
+    def visualise(self, sparql_client = None):
+        rows = []
+        if list(self.hasGeometry)[0].hasPoints is None:
+            if sparql_client is None:
+                raise ValueError('SPARQL client is required to visualise/load the geometry')
+            list(self.hasGeometry)[0].load_xyz_from_geometry_file(sparql_client)
+        for pt in list(self.hasGeometry)[0].hasPoints:
+            rows.append([pt.label, pt.x, pt.y, pt.z])
+        df = pd.DataFrame(rows, columns=['Atom', 'X', 'Y', 'Z',])
+        fig = px.scatter_3d(df, x='X', y='Y', z='Z', color='Atom', title=f'MOP: {list(self.hasMOPFormula)[0]}\n AM: {list(self.hasAssemblyModel)[0].instance_iri}')
+        fig.update_traces(marker=dict(size=2))
+        fig.update_layout(autosize=False, width=1200, height=400)
+        fig.show()
+        return fig
