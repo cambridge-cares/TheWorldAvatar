@@ -49,3 +49,13 @@ DIR_PLACEHOLDER="<REPLACE_WITH_YOUR_DIRECTORY>"
 TWA_DIR=$(dirname "$(dirname "$(pwd)")")
 
 replace_string "$dir_config" "$DIR_PLACEHOLDER" "$TWA_DIR"
+
+## rename stack config file
+
+STACK_NAME="routing"
+mv "./stack-manager-inputs/config/routing.json" "./stack-manager-inputs/config/$STACK_NAME.json"
+
+## send files to deployment
+
+DEPLOY_DIR="$TWA_DIR/Deploy/stacks/dynamic"
+rsync -av "./stack-manager-inputs/" "$DEPLOY_DIR/stack-manager/inputs/"
