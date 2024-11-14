@@ -361,6 +361,120 @@ class ChemicalBuildingUnit(BaseClass):
     def cbu_formula(self):
         return f"[{list(self.hasCBUFormula)[0].rstrip(']').lstrip('[')}]"
 
+    def load_geometry_from_fileserver(self, sparql_client):
+        return list(self.hasGeometry)[0].load_xyz_from_geometry_file(sparql_client)
+
+    def add_binding_site_and_assembly_center_from_json(self, cbu_json_fpath, ocn, metal_site: bool = False):
+        with open(cbu_json_fpath, "r") as file:
+            cbu_json = json.load(file)
+        binding_sides, assemb_center, atom_points = self.__class__.process_geometry_json(cbu_json, ocn, metal_site)
+        self.hasBindingSite = binding_sides
+        self.hasCBUAssemblyCenter = assemb_center
+
+    @staticmethod
+    def process_geometry_json(cbu_json, ocn: int, metal_site: bool = False):
+        """
+        Example of CBU json consisting of real atoms, dummy atoms as binding sites, and an optional "CENTER" point.
+        Note that below coordinates are just for demonstration purpose, they do not represent any actual molecules.
+        {
+            "atom_uuid": {"atom": "C", "coordinate_x": 0.0, "coordinate_y": 0.0, "coordinate_z": 0.0},
+            ...
+            "dummy_uuid": {"atom": "X", "coordinate_x": -0.1, "coordinate_y": 2.1, "coordinate_z": 5.3},
+            "CENTER": {"atom": "CENTER", "coordinate_x": 0.0, "coordinate_y": 0.0, "coordinate_z": 0.0}
+        }
+        """
+        cbu_binding_points = {}
+        lst_binding_sits = []
+        cbu_atoms = {}
+        atom_points = []
+        cbu_atoms_acc_x = 0.0
+        cbu_atoms_acc_y = 0.0
+        cbu_atoms_acc_z = 0.0
+        cbu_assemb_center = None
+
+        # iterate through the json file and process the coordinates
+        _bs_clz = MetalSite if metal_site else OrganicSite
+        for k, v in cbu_json.items():
+            if v['atom'] == 'X':
+                pt = _bs_clz(
+                    hasOuterCoordinationNumber=ocn,
+                    hasBindingPoint=BindingPoint(hasX=v['coordinate_x'], hasY=v['coordinate_y'], hasZ=v['coordinate_z'])
+                )
+                cbu_binding_points[k] = pt
+                lst_binding_sits.append(pt)
+            elif str(v['atom']).lower() == 'center':
+                cbu_assemb_center = Point(x=v['coordinate_x'], y=v['coordinate_y'], z=v['coordinate_z'])
+            else:
+                pt = Point(x=v['coordinate_x'], y=v['coordinate_y'], z=v['coordinate_z'], label=v['atom'])
+                cbu_atoms_acc_x += v['coordinate_x']
+                cbu_atoms_acc_y += v['coordinate_y']
+                cbu_atoms_acc_z += v['coordinate_z']
+                cbu_atoms[k] = pt
+                atom_points.append(pt)
+
+        # compute the CBU assembly center, which is the geometry (coordinates) center point of the CBU structure (average of all atoms)
+        # projected on the normal vector of the plane formed by the binding sites (dummy atoms) that pass through the circumcenter point of all binding sites
+        if cbu_assemb_center is None:
+            cbu_geo_center = Point(
+                x=cbu_atoms_acc_x / len(cbu_atoms),
+                y=cbu_atoms_acc_y / len(cbu_atoms),
+                z=cbu_atoms_acc_z / len(cbu_atoms)
+            )
+            lst_binding_points = [cbu_binding_points[k].binding_coordinates for k in cbu_binding_points]
+            if len(lst_binding_points) > 2:
+                cbu_binding_sites_plane = Plane.fit_from_points(lst_binding_points)
+                cbu_binding_sites_circumcenter = Point.fit_circle_2d(lst_binding_points)[0]
+                line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
+                cbu_assemb_center = line.project_point(cbu_geo_center)
+            else:
+                bindingsite_line = Line.from_two_points(*lst_binding_points)
+                bindingsite_mid_point = Point.mid_point(*lst_binding_points)
+                if bindingsite_line.is_point_on_line(cbu_geo_center):
+                    cbu_assemb_center = bindingsite_mid_point
+                else:
+                    plane = Plane.from_three_points(lst_binding_points[0], lst_binding_points[1], cbu_geo_center)
+                    perpendicular_bisector = plane.find_perpendicular_bisector_on_plane(*lst_binding_points)
+                    cbu_assemb_center = perpendicular_bisector.project_point(cbu_geo_center)
+        assemb_center = CBUAssemblyCenter(hasX=cbu_assemb_center.x, hasY=cbu_assemb_center.y, hasZ=cbu_assemb_center.z)
+
+        return lst_binding_sits, assemb_center, atom_points
+
+    @classmethod
+    def from_geometry_json(cls, cbu_formula, cbu_json, charge, ocn, gbu: str = None, direct_binding: bool = True, metal_site: bool = False):
+        """
+        Example of CBU json consisting of real atoms, dummy atoms as binding sites, and an optional "CENTER" point.
+        Note that below coordinates are just for demonstration purpose, they do not represent any actual molecules.
+        {
+            "atom_uuid": {"atom": "C", "coordinate_x": 0.0, "coordinate_y": 0.0, "coordinate_z": 0.0},
+            ...
+            "dummy_uuid": {"atom": "X", "coordinate_x": -0.1, "coordinate_y": 2.1, "coordinate_z": 5.3},
+            "CENTER": {"atom": "CENTER", "coordinate_x": 0.0, "coordinate_y": 0.0, "coordinate_z": 0.0}
+        }
+        """
+
+        if not direct_binding:
+            raise NotImplementedError("Non-direct binding, e.g. side binding, is not yet supported.")
+
+        binding_sides, assemb_center, atom_points = cls.process_geometry_json(cbu_json, ocn, metal_site)
+        # prepare the geometry of the CBU
+        cbu_iri = cls.init_instance_iri()
+        cbu_xyz_file = f"{cbu_iri.split('/')[-1]}.xyz"
+        cbu_geo = ontospecies.Geometry.from_points(atom_points, cbu_xyz_file)
+
+        # instantiate actual CBU
+        return cls(
+            instance_iri=cbu_iri,
+            # TODO hasBindingDirection should be modified once side-binding is implemented
+            hasBindingDirection='https://www.theworldavatar.com/kg/ontomops/DirectBinding_f3716525-0a8d-430f-ae24-0a043ec0c93a',
+            hasBindingSite=binding_sides,
+            isFunctioningAs=gbu if gbu is not None else set(),
+            hasCharge=ontospecies.Charge(hasValue=om.Measure(hasNumericalValue=charge, hasUnit=om.elementaryCharge)),
+            hasMolecularWeight=ontospecies.MolecularWeight.from_xyz_file(cbu_xyz_file),
+            hasGeometry=cbu_geo,
+            hasCBUFormula=cbu_formula,
+            hasCBUAssemblyCenter=assemb_center
+        )
+
     @property
     def vector_to_binding_site_plane(self):
         # get the center of the CBU
