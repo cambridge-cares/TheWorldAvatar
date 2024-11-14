@@ -61,5 +61,5 @@ agent_list=("TravellingSalesmanAgent" "IsochroneAgent" "NetworkAnalysisAgent")
 for str in "${agent_list[@]}"; do
 echo "$str/" 
 echo "$TWA_DIR/Agents/$str/"
-cp -rf "$str/" "$TWA_DIR/Agents/$str/"
+rsync -av "$str/" "$TWA_DIR/Agents/$str/"
 done
