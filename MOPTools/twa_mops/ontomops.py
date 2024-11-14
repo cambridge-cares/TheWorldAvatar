@@ -541,14 +541,26 @@ class MetalOrganicPolyhedron(CoordinationCage):
     hasCCDCNumber: Optional[HasCCDCNumber[str]] = None
     hasMOPFormula: HasMOPFormula[str]
 
-    def assemble(self, half_bond_length):
-        # get the assembly model
-        am: AssemblyModel = list(self.hasAssemblyModel)[0]
+    @classmethod
+    def from_assemble(
+        cls,
+        am: AssemblyModel,
+        lst_cbu: List[ChemicalBuildingUnit],
+        prov: Provenance = set(),
+        ccdc: str = set(),
+        sparql_client = None,
+        upload_geometry: bool = False,
+    ):
+        # prepare the variables
+        mop_charge = 0
+        mop_mw = 0
+        mop_formula = ''
+
         # locate the GBUs to build the AM
         gbus = list(am.hasGenericBuildingUnit)
         # place the CBUs according to the GBUs
         cbu_rotation_matrix = {}
-        for cbu in self.hasChemicalBuildingUnit:
+        for cbu in lst_cbu:
             cbu: ChemicalBuildingUnit
             gbu = cbu.isFunctioningAs.intersection(gbus)
             if len(gbu) == 0:
@@ -579,6 +591,12 @@ class MetalOrganicPolyhedron(CoordinationCage):
                     rotation_matrix_1[gbu_center.instance_iri], rotation_matrix_2[gbu_center.instance_iri]
                 ] for gbu_center in gbu.hasGBUCoordinateCenter
             }
+            # calculate the charge and molecular weight of the MOP
+            mop_charge += cbu.charge * len(gbu.hasGBUCoordinateCenter)
+            mop_mw += cbu.molecular_weight * len(gbu.hasGBUCoordinateCenter)
+            # prepare the mop_formula
+            mop_formula += f'{cbu.cbu_formula}{len(gbu.hasGBUCoordinateCenter)}'
+
         # find any connecting point and its two ends of GBUs
         pair_gbu_center = list(am.pairs_of_connected_gbus.values())[0]
         gc1: GBUCoordinateCenter = pair_gbu_center[0]
@@ -597,9 +615,11 @@ class MetalOrganicPolyhedron(CoordinationCage):
                 rm = rm_to_gbu[gc1.instance_iri]
                 rotated_binding_vector_cbu1, vector_plane_angle_cbu1, side_length_cbu1 = cbu.vector_of_most_possible_binding_site(plane, rm)
                 # NOTE here we are adjusting the side length to account for the half bond length
-                # but we only add half of the half bond length because the binding site in the initial data already has additional length
-                # i.e. it's a dummy atom already away from the actually binding atoms
-                adjusted_side_length_cbu1 = side_length_cbu1 + half_bond_length / 2
+                # although some of the binding site in the initial data already has additional length
+                # i.e. the dummy atom already away from the actually binding atoms
+                # we still use the half bond length to adjust the side length
+                # as it's generally easier to optimise the geometry if the molecules are too far compared to overlapping (see SI of 10.1021/jp507643v)
+                adjusted_side_length_cbu1 = side_length_cbu1 + HALF_BOND_LENGTH
                 projected_adjusted_side_length_cbu1 = adjusted_side_length_cbu1 * np.cos(np.deg2rad(vector_plane_angle_cbu1))
                 projected_binding_vector_cbu1 = plane.get_projected_vector(rotated_binding_vector_cbu1)
                 _gbu_projected_cbu_angle_cbu1 = projected_binding_vector_cbu1.get_rad_angle_to(v_gbu1)
@@ -612,9 +632,11 @@ class MetalOrganicPolyhedron(CoordinationCage):
                 rm = rm_to_gbu[gc2.instance_iri]
                 rotated_binding_vector_cbu2, vector_plane_angle_cbu2, side_length_cbu2 = cbu.vector_of_most_possible_binding_site(plane, rm)
                 # NOTE here we are adjusting the side length to account for the half bond length
-                # but we only add half of the half bond length because the binding site in the initial data already has additional length
-                # i.e. it's a dummy atom already away from the actually binding atoms
-                adjusted_side_length_cbu2 = side_length_cbu2 + half_bond_length / 2
+                # although some of the binding site in the initial data already has additional length
+                # i.e. the dummy atom already away from the actually binding atoms
+                # we still use the half bond length to adjust the side length
+                # as it's generally easier to optimise the geometry if the molecules are too far compared to overlapping (see SI of 10.1021/jp507643v)
+                adjusted_side_length_cbu2 = side_length_cbu2 + HALF_BOND_LENGTH
                 projected_adjusted_side_length_cbu2 = adjusted_side_length_cbu2 * np.cos(np.deg2rad(vector_plane_angle_cbu2))
                 projected_binding_vector_cbu2 = plane.get_projected_vector(rotated_binding_vector_cbu2)
                 _gbu_projected_cbu_angle_cbu2 = projected_binding_vector_cbu2.get_rad_angle_to(v_gbu2)
@@ -657,4 +679,31 @@ class MetalOrganicPolyhedron(CoordinationCage):
             }
             cbu_translated[cbu_iri] = dct_translated
             cbu_translation_vector[cbu_iri] = dct_translation_vector
-        return cbu_translated
+
+        lst_points = []
+        for cbu, gcc_pts in cbu_translated.items():
+            for gcc, pts in gcc_pts.items():
+                lst_points.extend(pts)
+        # prepare the geometry file and upload
+        mop_iri = cls.init_instance_iri()
+        local_file_path = f"./data/xyz_mops_new/{am.rdfs_label}_{list(am.hasSymmetryPointGroup)[0]}___{mop_formula}___{mop_iri.split('/')[-1] if not bool(ccdc) else ccdc}.xyz"
+        mop_geo = ontospecies.Geometry.from_points(lst_points, local_file_path)
+        if upload_geometry:
+            # upload the geometry to the KG
+            if sparql_client is None:
+                raise ValueError('SPARQL client is required to upload the geometry')
+            else:
+                remote_file_path, timestamp_upload = sparql_client.upload_file(local_file_path)
+                mop_geo.hasGeometryFile = {remote_file_path}
+
+        return cls(
+            instance_iri=mop_iri,
+            hasAssemblyModel=am,
+            hasChemicalBuildingUnit=lst_cbu,
+            hasProvenance=prov,
+            hasCharge=ontospecies.Charge(hasValue=om.Measure(hasNumericalValue=mop_charge, hasUnit=om.elementaryCharge)),
+            hasMolecularWeight=ontospecies.MolecularWeight(hasValue=om.Measure(hasNumericalValue=mop_mw, hasUnit=om.gramPerMole)),
+            hasMOPFormula=mop_formula,
+            hasCCDCNumber=ccdc,
+            hasGeometry=mop_geo,
+        )
