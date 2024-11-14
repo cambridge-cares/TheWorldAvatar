@@ -34,7 +34,7 @@ IsNumberOf = ObjectProperty.create_from_base('IsNumberOf', OntoMOPs)
 # additions for assembler
 HasGBUConnectingPoint = ObjectProperty.create_from_base('HasGBUConnectingPoint', OntoMOPs)
 HasGBUCoordinateCenter = ObjectProperty.create_from_base('HasGBUCoordinateCenter', OntoMOPs)
-HasCBUCoordinateCenter = ObjectProperty.create_from_base('HasCBUCoordinateCenter', OntoMOPs)
+HasCBUAssemblyCenter = ObjectProperty.create_from_base('HasCBUCoordinateCenter', OntoMOPs)
 HasBindingPoint = ObjectProperty.create_from_base('HasBindingPoint', OntoMOPs)
 HasGBUType = ObjectProperty.create_from_base('HasGBUType', OntoMOPs)
 
@@ -209,7 +209,7 @@ class GBUCoordinateCenter(CoordinatePoint):
         vector = Vector.from_two_points(start=self.coordinates, end=farthest_projected_point)
         return vector
 
-class CBUCoordinateCenter(CoordinatePoint):
+class CBUAssemblyCenter(CoordinatePoint):
     pass
 
 class ChemicalBuildingUnit(BaseClass):
@@ -221,12 +221,12 @@ class ChemicalBuildingUnit(BaseClass):
     hasMolecularWeight: ontospecies.HasMolecularWeight[ontospecies.MolecularWeight]
     hasGeometry: ontospecies.HasGeometry[ontospecies.Geometry]
     hasCBUFormula: HasCBUFormula[str]
-    hasCBUCoordinateCenter: HasCBUCoordinateCenter[CBUCoordinateCenter]
+    hasCBUAssemblyCenter: HasCBUAssemblyCenter[CBUAssemblyCenter]
 
     @property
     def vector_to_binding_site_plane(self):
         # get the center of the CBU
-        center = list(self.hasCBUCoordinateCenter)[0].coordinates
+        center = list(self.hasCBUAssemblyCenter)[0].coordinates
         # get the line or plane of the binding sites
         binding_sites = list(self.hasBindingSite)
         if len(binding_sites) < 3:
@@ -248,7 +248,7 @@ class ChemicalBuildingUnit(BaseClass):
     def vector_to_farthest_binding_site(self):
         # NOTE this needs to be after the rotation
         # find the plane perpendicular to the vector to the average connecting point
-        center = list(self.hasCBUCoordinateCenter)[0].coordinates
+        center = list(self.hasCBUAssemblyCenter)[0].coordinates
         plane = Plane.from_point_and_normal(center, self.vector_to_binding_site_plane)
         # project all connecting points onto the plane
         projected_points = [plane.project_point(bs.binding_coordinates) for bs in self.hasBindingSite]
@@ -260,7 +260,7 @@ class ChemicalBuildingUnit(BaseClass):
     def vector_of_most_possible_binding_site(self, gbu_plane: Plane, rotation_matrices: List[RotationMatrix] = [RotationMatrix.identity()]):
         # find the binding site that is most likely to bind with the other GBU
         # this is the one that has the smallest angle to the plane of the two GBU coordinate centers
-        center: Point = list(self.hasCBUCoordinateCenter)[0].coordinates
+        center: Point = list(self.hasCBUAssemblyCenter)[0].coordinates
         # rotate the binding sites with the rotation matrix
         most_possible_binding_site_angle = 90 # in degrees
         rotated_binding_vector = None
@@ -396,7 +396,7 @@ class MetalOrganicPolyhedron(CoordinationCage):
             # note that the gbu center need to be the scaled version of the gbu center
             dct_translation_vector = {
                 gc: Point.get_translation_vector_to(
-                    Point.from_array(rm_to_gbu[gc][1].apply(rm_to_gbu[gc][0].apply(list(cbu.hasCBUCoordinateCenter)[0].coordinates.as_array))),
+                    Point.from_array(rm_to_gbu[gc][1].apply(rm_to_gbu[gc][0].apply(list(cbu.hasCBUAssemblyCenter)[0].coordinates.as_array))),
                     Point.scale(KnowledgeGraph.get_object_from_lookup(gc).coordinates, scaling_factor_cbu1 if gc1.instance_iri in rm_to_gbu else scaling_factor_cbu2)) for gc in rm_to_gbu
             }
             # translate the cbu to the gbu
