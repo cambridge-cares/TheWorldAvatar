@@ -6,10 +6,6 @@
 @prefix cmns-qtu:   <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
 @prefix cmns-txt:   <https://www.omg.org/spec/Commons/TextDatatype/> .
 
-cmns-qtu:MeasurementUnit  owl:oneOf (
-    owm:tonne
-) .
-
 owm:tonne a cmns-qtu:MeasurementUnit ;
   cmns-dsg:hasName owm:tonneName;
   rdfs:comment "The tonne is a unit of mass defined as 1000 kilogram.".
