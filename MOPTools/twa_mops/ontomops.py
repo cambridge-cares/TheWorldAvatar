@@ -1,8 +1,11 @@
 from __future__ import annotations
 from typing import Optional, Dict, List
 from scipy.optimize import fsolve
+import plotly.express as px
+import pandas as pd
 import numpy as np
 import math
+import json
 
 from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty, KnowledgeGraph
 import ontospecies
@@ -10,6 +13,7 @@ import om
 
 from geo import Point, Vector, Line, Plane, RotationMatrix
 
+HALF_BOND_LENGTH = 1.4 / 2
 
 class OntoMOPs(BaseOntology):
     base_url = 'https://www.theworldavatar.com/kg'
@@ -323,7 +327,6 @@ class GBUCoordinateCenter(CoordinatePoint):
             v = plane.normal_vector_from_point_to_plane(self.coordinates)
         return v
 
-
     @property
     def vector_to_farthest_connecting_point(self):
         # find the plane perpendicular to the vector to the average connecting point
@@ -334,6 +337,18 @@ class GBUCoordinateCenter(CoordinatePoint):
         farthest_projected_point = self.coordinates.farthest_point(projected_points)
         vector = Vector.from_two_points(start=self.coordinates, end=farthest_projected_point)
         return vector
+
+    @property
+    def vector_to_shortest_side(self):
+        # find the plane perpendicular to the vector to the average connecting point
+        plane = Plane.from_point_and_normal(self.coordinates, self.vector_to_connecting_point_plane)
+        # project all connecting points onto the plane
+        projected_points = [plane.project_point(p.coordinates) for p in self.hasGBUConnectingPoint]
+        # find the closest pair of connecting points and construct a vector connecting the center to the line connecting them
+        closest_pair = Point.closest_pair(projected_points)
+        line = Line.from_two_points(start=closest_pair[0], end=closest_pair[1])
+        v = line.normal_vector_from_point_to_line(self.coordinates)
+        return v
 
 class CBUAssemblyCenter(CoordinatePoint):
     pass
@@ -509,6 +524,20 @@ class ChemicalBuildingUnit(BaseClass):
         vector = Vector.from_two_points(start=center, end=farthest_projected_point)
         return vector
 
+    @property
+    def vector_to_shortest_side(self):
+        # NOTE this needs to be after the rotation
+        # find the plane perpendicular to the vector to the average connecting point
+        center = list(self.hasCBUAssemblyCenter)[0].coordinates
+        plane = Plane.from_point_and_normal(center, self.vector_to_binding_site_plane)
+        # project all connecting points onto the plane
+        projected_points = [plane.project_point(bs.binding_coordinates) for bs in self.active_binding_sites]
+        # find the closest pair of binding sites and construct a vector connecting the center to the line connecting them
+        closest_pair = Point.closest_pair(projected_points)
+        line = Line.from_two_points(start=closest_pair[0], end=closest_pair[1])
+        v = line.normal_vector_from_point_to_line(center)
+        return v
+
     def vector_of_most_possible_binding_site(self, gbu_plane: Plane, rotation_matrices: List[RotationMatrix] = [RotationMatrix.identity()]):
         # find the binding site that is most likely to bind with the other GBU
         # this is the one that has the smallest angle to the plane of the two GBU coordinate centers
@@ -581,10 +610,16 @@ class MetalOrganicPolyhedron(CoordinationCage):
             rotation_matrix_2 = {}
             for gbu_center in gbu.hasGBUCoordinateCenter:
                 gbu_center: GBUCoordinateCenter
-                rotated = rotation_matrix_1[gbu_center.instance_iri].apply(cbu.vector_to_farthest_binding_site.as_array)
+                if gbu.is_4_planar:
+                    second_vector_for_alignment_cbu = cbu.vector_to_shortest_side
+                    second_vector_for_alignment_gbu = gbu_center.vector_to_shortest_side
+                else:
+                    second_vector_for_alignment_cbu = cbu.vector_to_farthest_binding_site
+                    second_vector_for_alignment_gbu = gbu_center.vector_to_farthest_connecting_point
+                rotated = rotation_matrix_1[gbu_center.instance_iri].apply(second_vector_for_alignment_cbu.as_array)
                 rotated_cbu_center_to_binding_site_plane = Vector.from_array(rotation_matrix_1[gbu_center.instance_iri].apply(cbu.vector_to_binding_site_plane.as_array))
                 rotation_matrix_2[gbu_center.instance_iri] = Vector.from_array(rotated).get_rotation_matrix_to_parallel(
-                    gbu_center.vector_to_farthest_connecting_point, flip_if_180=True, base_axis_if_180=rotated_cbu_center_to_binding_site_plane)
+                    second_vector_for_alignment_gbu, flip_if_180=True, base_axis_if_180=rotated_cbu_center_to_binding_site_plane)
             # put the two rotation matrix together
             cbu_rotation_matrix[cbu.instance_iri] = {
                 gbu_center.instance_iri: [
