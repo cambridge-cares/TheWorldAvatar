@@ -1,8 +1,8 @@
 {
     "start": {
         "center": [0.445911, 52.757068],
-        "zoom": 12,
-        "bearing": 340,
+        "zoom": 11.5,
+        "bearing": 0,
         "pitch": 0
     },
     "search": {
