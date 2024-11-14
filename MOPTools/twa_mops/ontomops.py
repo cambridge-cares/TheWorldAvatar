@@ -715,6 +715,10 @@ class MetalOrganicPolyhedron(CoordinationCage):
         for cbu_iri, rm_to_gbu in cbu_rotation_matrix.items():
             # TODO optimise the below
             cbu = KnowledgeGraph.get_object_from_lookup(cbu_iri)
+            if list(cbu.hasGeometry)[0].hasPoints is None:
+                if sparql_client is None:
+                    raise ValueError('SPARQL client is required to load the geometry')
+                cbu.load_geometry_from_fileserver(sparql_client)
             dct_rotated = {
                 gc: [Point.from_array(rm_to_gbu[gc][1].apply(rm_to_gbu[gc][0].apply(pt.as_array)), label=pt.label) for pt in list(cbu.hasGeometry)[0].hasPoints] for gc in rm_to_gbu
             }
