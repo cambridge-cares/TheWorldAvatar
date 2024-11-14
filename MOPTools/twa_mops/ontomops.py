@@ -270,6 +270,7 @@ class BindingSite(BaseClass):
     rdfs_isDefinedBy = OntoMOPs
     hasOuterCoordinationNumber: HasOuterCoordinationNumber[int]
     hasBindingPoint: HasBindingPoint[BindingPoint]
+    temporarily_blocked: Optional[bool] = False
 
     @property
     def binding_coordinates(self):
@@ -375,6 +376,18 @@ class ChemicalBuildingUnit(BaseClass):
     @property
     def cbu_formula(self):
         return f"[{list(self.hasCBUFormula)[0].rstrip(']').lstrip('[')}]"
+
+    @property
+    def active_binding_sites(self):
+        return [bs for bs in list(self.hasBindingSite) if not bs.temporarily_blocked]
+
+    def allocate_active_binding_sites(self, num: int):
+        for bs in list(self.hasBindingSite)[num:]:
+            bs.temporarily_blocked = True
+
+    def release_blocked_binding_sites(self):
+        for bs in self.hasBindingSite:
+            bs.temporarily_blocked = False
 
     def load_geometry_from_fileserver(self, sparql_client):
         return list(self.hasGeometry)[0].load_xyz_from_geometry_file(sparql_client)
@@ -495,7 +508,7 @@ class ChemicalBuildingUnit(BaseClass):
         # get the center of the CBU
         center = list(self.hasCBUAssemblyCenter)[0].coordinates
         # get the line or plane of the binding sites
-        binding_sites = list(self.hasBindingSite)
+        binding_sites = self.active_binding_sites
         if len(binding_sites) < 3:
             line = Line.from_two_points(start=binding_sites[0].binding_coordinates, end=binding_sites[1].binding_coordinates)
             if line.is_point_on_line(center):
@@ -518,7 +531,7 @@ class ChemicalBuildingUnit(BaseClass):
         center = list(self.hasCBUAssemblyCenter)[0].coordinates
         plane = Plane.from_point_and_normal(center, self.vector_to_binding_site_plane)
         # project all connecting points onto the plane
-        projected_points = [plane.project_point(bs.binding_coordinates) for bs in self.hasBindingSite]
+        projected_points = [plane.project_point(bs.binding_coordinates) for bs in self.active_binding_sites]
         # find the farthest binding site and construct a vector connecting the center to it
         farthest_projected_point = center.farthest_point(projected_points)
         vector = Vector.from_two_points(start=center, end=farthest_projected_point)
@@ -546,7 +559,7 @@ class ChemicalBuildingUnit(BaseClass):
         most_possible_binding_site_angle = 90 # in degrees
         rotated_binding_vector = None
         length_center_to_binding_site = None
-        for bs in self.hasBindingSite:
+        for bs in self.active_binding_sites:
             bs: BindingSite
             v = Vector.from_two_points(start=center, end=bs.binding_coordinates)
             # rotate the vector to align with the GBU coordinate center
@@ -597,7 +610,11 @@ class MetalOrganicPolyhedron(CoordinationCage):
             elif len(gbu) > 1:
                 raise ValueError(f'Multiple GBUs found for CBU {cbu.instance_iri} in AM {am.instance_iri}: {gbu}')
             else:
-                gbu: GenericBuildingUnit = gbu.pop()
+                gbu = gbu.pop()
+            if type(gbu) is not GenericBuildingUnit:
+                gbu: GenericBuildingUnit = KnowledgeGraph.get_object_from_lookup(gbu)
+            # NOTE here we need to block the binding sites based on the GBU
+            cbu.allocate_active_binding_sites(gbu.modularity)
             # TODO optimise below
             # rotate the CBU to match the GBU
             # rotate the vector from center to binding site plane of CBU to the vector from center to connecting point plane of GBU
@@ -730,6 +747,10 @@ class MetalOrganicPolyhedron(CoordinationCage):
             else:
                 remote_file_path, timestamp_upload = sparql_client.upload_file(local_file_path)
                 mop_geo.hasGeometryFile = {remote_file_path}
+
+        # release the blocked binding sites
+        for cbu in lst_cbu:
+            cbu.release_blocked_binding_sites()
 
         return cls(
             instance_iri=mop_iri,
