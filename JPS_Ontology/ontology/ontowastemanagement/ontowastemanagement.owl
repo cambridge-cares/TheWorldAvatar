@@ -72,14 +72,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinDeliveryService"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
         <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
         <rdfs:comment>A relationship describing the bin type for a series of waste services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
@@ -286,14 +279,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/BinDeliveryService">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
         <rdfs:comment>A service that delivers an empty bin to the specified site.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Bin delivery service</rdfs:label>
@@ -831,14 +817,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteCollectionService">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasWasteType"/>
@@ -873,6 +852,25 @@
         <rdfs:comment>A service for the management, treatment, and disposal of waste that adheres to environmental regulations and promoting sustainability.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>Waste disposal service</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/WasteService -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/WasteService">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials and equipment from residential, commercial, or industrial sources.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
+        <rdfs:label>Waste service</rdfs:label>
     </owl:Class>
     
 

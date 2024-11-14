@@ -76,13 +76,13 @@ Figure 1: TBox representation for a Service Agreement in the waste management se
     "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:ServiceProvider" : "fibo-fnd-agr-ctr:hasContractParty"
 
     "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontowm:WasteCollectionService"  : "fibo-fnd-rel-rel:provides"
+    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontowm:WasteService"  : "fibo-fnd-rel-rel:provides"
 
     "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
 
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteCollectionService" : "fibo-fnd-rel-rel:governs"
-    "ontowm:WasteCollectionService" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
-    "ontowm:WasteCollectionService" {
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteService" : "fibo-fnd-rel-rel:governs"
+    "ontowm:WasteService" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
+    "ontowm:WasteService" {
         rdfs-label label_string
         rdfs-comments remarks_string
     }
@@ -160,15 +160,11 @@ Figure 3: TBox representation of waste services
 
 ```mermaid
     erDiagram
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:BinDeliveryService" : "fibo-fnd-rel-rel:governs"
-    "ontowm:BinDeliveryService" ||--|| "owl:Class (Bin)" : "ontowm:hasBinType"
-    "ontowm:BinDeliveryService" {
-        rdfs-label label_string
-        rdfs-comments remarks_string
-    }
+    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteService" : "fibo-fnd-rel-rel:governs"
+    "ontowm:WasteService" ||--|| "owl:Class (Bin)" : "ontowm:hasBinType"
 
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "ontowm:WasteCollectionService" : "fibo-fnd-rel-rel:governs"
-    "ontowm:WasteCollectionService" ||--|| "owl:Class (Bin)" : "ontowm:hasBinType"
+    "ontowm:BinDeliveryService" ||--|{ "ontowm:WasteService" : "rdfs:subClassOf"
+    "ontowm:WasteCollectionService" ||--|{ "ontowm:WasteService" : "rdfs:subClassOf"
     "ontowm:WasteCollectionService" ||--|| "owl:Class (Waste)" : "ontowm:hasWasteType"
     "ontowm:WasteCollectionService" {
         rdfs-label label_string
