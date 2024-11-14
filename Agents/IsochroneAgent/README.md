@@ -2,16 +2,16 @@
 ## 1. Description
 The IsochroneAgent is an agent that
 1) Retrieves Points of Interest (POI) locations from the knowledge graph.
-2) Generates isochrones from the locations with different mode of transport and or road conditions as according to OntoIsochrone. 
+2) Generates isochrones from the locations with different mode of transport and/or road conditions as according to OntoIsochrone. 
 3) Performs 15 Minute Smart City (15MSC), Urban Resillience (UR) planning and/or any additional use cases. 
-4) Instantiates the isochrones via OBDA mapping. 
+4) Instantiates the isochrones via OBDA mapping depending on configuration.
 
 ## 2. Prerequisites
 ### 2.1. Stack Set Up
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack. Several pre-configured examples for the different use cases for King's Lynn and Pirmasens can be found in [stack-data-uploader-inputs](stack-data-uploader-inputs/).
  
 ### 2.2. Uploading OSM Data via stack-data-uploader
-1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) (check junk email) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
+1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
 2) `.pbf` uploaded via [stack-data-uploader] in [osm2pgrouting](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader#osm-data) data type.
 
 ### 2.3. Uploading population data via stack-data-uploader
@@ -23,6 +23,8 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 Items to configure in [config.properties](inputs/config.properties): 
 1) `populationTables` - The exact table names of the population tables should follow the names of population table as per [uploaded via stack-data-uploader](#23-uploading-population-data-via-stack-data-uploader). 
 2) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. Blazegraph endpoint can be on the same stack or different stack.
+
+Other optional inputs are described by comments in [config.properties](inputs/config.properties).
 
 ### 3.2 SPARQL Queries
 SPARQL queries are used to retrieve the locations of POI. 
@@ -63,7 +65,7 @@ You will need to provide your credentials (GitHub username/personal access token
 The IsochroneAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/isochroneagent) using `docker pull ghcr.io/cambridge-cares/isochroneagent:<LATEST-VERSION>`
 
 ### 5.2 Starting with the stack-manager
-The agent has been implemented to work in the stack, which requires the IsochroneAgent Docker container to be deployed in the stack. To do so, place [isochroneagent.json](stack-manager-config/inputs/config/services/isochroneagent.json) in the [stack-manager config directory]. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount with absolute path to the isochroneagent's inputs directory.   
+The agent has been implemented to work in the stack, which requires the IsochroneAgent Docker container to be deployed in the stack. To do so, place [isochroneagent.json](stack-manager-config/inputs/config/services/isochroneagent.json) in the [stack-manager config directory].
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
@@ -71,8 +73,8 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. Th
 The agent is reachable at the `/update` endpoint.
 #### Input specification
 1) `function` - The use case scenario to run the isochrones. 
-1) `timeThreshold` - The time cutoff of an isochrone in minutes. Default value is set at 15 minutes. 
-2) `timeInterval` - The time increment value of each isochrone in minutes. Default value is set at 5 mintues time interval. 
+1) `timeThreshold` - The time cutoff of an isochrone in minutes.
+2) `timeInterval` - The time increment value of each isochrone in minutes.
 
 To run the agent, simply run the following cURL command:
 

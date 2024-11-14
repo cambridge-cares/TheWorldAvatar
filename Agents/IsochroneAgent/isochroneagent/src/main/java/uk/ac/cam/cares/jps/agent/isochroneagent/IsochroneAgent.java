@@ -164,8 +164,8 @@ public class IsochroneAgent extends JPSAgent {
         LOGGER.info("Successfully set isochroneFunction to " + isochroneFunction);
 
         JSONObject response = new JSONObject();
-        response.put("message", "Successfully set isochroneFunction to " + isochroneFunction + ", timeInterval"
-                + timeInterval + ", timeThreshold" + timeThreshold);
+        response.put("message", "Successfully set isochroneFunction to " + isochroneFunction + ", timeInterval = "
+                + timeInterval + " minutes, timeThreshold = " + timeThreshold + " minutes");
 
         Path POI_PATH = FUNCTION_PATH.resolve("POIqueries");
         Path EDGESTABLESQL_PATH = FUNCTION_PATH.resolve("edgesSQLTable");
