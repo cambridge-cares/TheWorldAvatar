@@ -79,3 +79,5 @@ type FillLegend = {
   type: "fill";
   fill: string;
 }
+
+export type MapboxCredentials = { username: string, token: string }
