@@ -201,14 +201,14 @@ Figure 3: TBox representation of waste services
 
 ### 2.2.1 Service Lifecycle
 
-In monitoring the services rendered during the lifecycle of a service agreement, the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology can describe, represent, and generate the occurences of the lifecycle, stages, and events according to the real-time occurrences of the service delivered. A comprehensive description of the lifecycle representation is available at [section 2.2 of OntoService](../ontoservice#22-service-agreement-lifecycle). Briefly, each stage will comprise of several events `ContractLifecycleEvent` which occurs multiple times, each represented by an `ContractLifecycleEventOccurrence` instance. These instances serves as a record to be analysed for quality, efficiency, and compliance with service agreements. Each occurrence can either holds during a date period or occur at an instantaneous time. During the service execution stage, there may be missed or terminated service events, that can be represented with the corresponding occurrence and descriptions/comments if they were to occur.
+In monitoring the services rendered during the lifecycle of a service agreement, the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology can describe, represent, and generate the occurences of the lifecycle, stages, and events according to the real-time occurrences of the service delivered. A comprehensive description of the lifecycle representation is available at [section 2.2 of OntoService](../ontoservice#22-service-agreement-lifecycle). Briefly, each service agreement's lifecycle should be recorded with their own set of occurrence instances. These instances serves as a record to be analysed for quality, efficiency, and compliance with service agreements. Each occurrence can either holds during a date period or occur at an instantaneous time. During the service execution stage, there may be missed or terminated service events, that can be represented with the corresponding occurrence and descriptions/comments if they were to occur.
 
 Figure 4: TBox representation for the service agreement's overall lifecycle
 
 ```mermaid
     erDiagram
-    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fnd-pas-pas:ServiceAgreement" : "fibo-fnd-arr-lif:isLifecycleOf"
-    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-arr-lif:hasStage"
+    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" }|--|| "fibo-fnd-pas-pas:ServiceAgreement" : "fibo-fnd-arr-lif:hasLifecycle"
+    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycle" : "fibo-fnd-rel-rel:exemplifies"    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-arr-lif:hasStage"
     "ontoservice:CreationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
     "ontoservice:ServiceExecutionStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
     "ontoservice:ExpirationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
@@ -237,7 +237,9 @@ Figure 5: TBox representation of a service delivery event occurrence for waste s
 ```mermaid
     erDiagram
     "ontoservice:ServiceExecutionStage" ||--o{ "fibo-fnd-dt-oc:CalculationEvent" : "cmns-col:comprises"
+    "fibo-fnd-dt-oc:CalculationEvent" ||--|{ "fibo-fnd-dt-oc:Calculation" : "cmns-cls:classifies"
     "fibo-fnd-dt-oc:CalculationEvent" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-dt:succeeds"
+    "fibo-fnd-dt-oc:Calculation" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-dt:succeeds"
     "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-col:comprises"
     "ontoservice:ServiceDeliveryEvent" {
         rdfs-label name-string
@@ -259,8 +261,10 @@ Figure 5: TBox representation of a service delivery event occurrence for waste s
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:RearEndLoaderTruck/HookliftTruck" : "ontoservice:hasAssignedTransport"
     "ontowm:RearEndLoaderTruck/HookliftTruck" ||--|| "ontoprofile:Driver" : "ontoservice:hasAssignedDriver"
 
-    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
-     "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-col:comprises"
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "ontoservice:ServiceExecutionStage" : "fibo-fnd-rel-rel:exemplifies"
+    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
+    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
     "fibo-fnd-dt-fd:RegularSchedule" {
         fibo-fnd-dt-fd-hasCount integer
     }
@@ -286,7 +290,10 @@ Figure 6: TBox representation of an occurrence of the calculation of the amount 
     erDiagram
     "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-col:comprises"
     "ontoservice:ServiceExecutionStage" ||--o{ "fibo-fnd-dt-oc:CalculationEvent" : "cmns-col:comprises"
+    "ontoservice:ServiceDeliveryEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    "fibo-fnd-dt-oc:CalculationEvent" ||--|{ "fibo-fnd-dt-oc:Calculation" : "cmns-cls:classifies"
     "fibo-fnd-dt-oc:CalculationEvent" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-dt:succeeds"
+    "fibo-fnd-dt-oc:Calculation" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-dt:succeeds"
     "fibo-fnd-dt-oc:CalculationEvent" {
         rdfs-label name-string
         rdfs-comment description-string

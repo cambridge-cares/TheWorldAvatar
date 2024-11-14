@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>31 October 2024</dc:date>
+        <dc:date>14 November 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -283,13 +283,6 @@
     
 
 
-    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage -->
-
-
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-    
-
-
     <!-- https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/PaymentObligation -->
 
 
@@ -349,18 +342,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/CreationStage -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/CreationStage">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-        <rdfs:comment>The phase in the lifecycle of a contract to create a new contract.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Creation stage</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoservice/ExcessVariableRate -->
 
 
@@ -379,18 +360,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ExpirationStage -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ExpirationStage">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-        <rdfs:comment>The phase in the lifecycle of a contract where the contract has ended.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Expiration stage</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoservice/GrossPrice -->
 
 
@@ -399,18 +368,6 @@
         <rdfs:comment>Gross service price for all service charges, excluding taxes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Gross price</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage">
-        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
-        <rdfs:comment>The phase in the lifecycle of a contract where the services agreed should be executed.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>Service execution stage</rdfs:label>
     </owl:Class>
     
 
