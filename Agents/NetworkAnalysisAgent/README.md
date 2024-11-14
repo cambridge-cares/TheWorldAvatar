@@ -13,6 +13,8 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 ### 3.1 Config Properties
 1) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. Blazegraph endpoint can be on the same stack or different stack. When left blank, it is assumed to be on the same stack.
 
+Other optional inputs are described by comments in [config.properties](inputs/config.properties).
+
 ### 3.2 SPARQL Queries
 SPARQL queries are used to retrieve the locations of POI. 
 
@@ -41,7 +43,7 @@ You will need to provide your credentials (GitHub username/personal access token
 The NetworkAnalysisAgent should be pulled automatically with the stack-manager, if not you can pull the latest version from [cambridge_cares package](https://github.com/orgs/cambridge-cares/packages/container/package/networkanalysisagent) using `docker pull ghcr.io/cambridge-cares/networkanalysisagent:<LATEST-VERSION>`
 
 ### 5.2 Starting with the stack-manager
-The agent has been implemented to work in the stack, which requires the NetworkAnalysisAgent Docker container to be deployed in the stack. To do so, place [networkanalysisagent.json](stack-manager-config/inputs/config/services/networkanalysisagent.json) in the [stack-manager config directory]. Replace `<REPLACE_WITH_YOUR_DIRECTORY>` of the bind mount with absolute path to the networkanalysisagent's inputs directory.   
+The agent has been implemented to work in the stack, which requires the NetworkAnalysisAgent Docker container to be deployed in the stack. To do so, place [networkanalysisagent.json](stack-manager-config/inputs/config/services/networkanalysisagent.json) in the [stack-manager config directory].
 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager] main folder. This will spin up the agent in the stack.
 
