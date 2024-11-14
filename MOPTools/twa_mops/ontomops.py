@@ -89,6 +89,18 @@ class GenericBuildingUnit(BaseClass):
     hasGBUType: HasGBUType[GenericBuildingUnitType]
     hasGBUCoordinateCenter: HasGBUCoordinateCenter[GBUCoordinateCenter]
 
+    @property
+    def gbu_type(self):
+        return list(self.hasGBUType)[0].label
+
+    @property
+    def is_4_planar(self):
+        return list(self.hasGBUType)[0].label == '4-planar'
+
+    @property
+    def modularity(self):
+        return list(list(self.hasGBUType)[0].hasModularity)[0]
+
 class GenericBuildingUnitNumber(BaseClass):
     rdfs_isDefinedBy = OntoMOPs
     isNumberOf: IsNumberOf[GenericBuildingUnit]
@@ -222,6 +234,18 @@ class ChemicalBuildingUnit(BaseClass):
     hasGeometry: ontospecies.HasGeometry[ontospecies.Geometry]
     hasCBUFormula: HasCBUFormula[str]
     hasCBUAssemblyCenter: HasCBUAssemblyCenter[CBUAssemblyCenter]
+
+    @property
+    def charge(self):
+        return list(list(list(self.hasCharge)[0].hasValue)[0].hasNumericalValue)[0]
+
+    @property
+    def molecular_weight(self):
+        return list(list(list(self.hasMolecularWeight)[0].hasValue)[0].hasNumericalValue)[0]
+
+    @property
+    def cbu_formula(self):
+        return f"[{list(self.hasCBUFormula)[0].rstrip(']').lstrip('[')}]"
 
     @property
     def vector_to_binding_site_plane(self):
