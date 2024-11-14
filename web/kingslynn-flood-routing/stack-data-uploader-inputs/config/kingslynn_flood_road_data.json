@@ -3,6 +3,7 @@
     "database": "postgres",
     "workspace": "kingslynn",
     "datasetDirectory": "kingslynn",
+    "skip": false,
     "styles": [
         {
             "name": "flood-style",
@@ -55,25 +56,13 @@
             "poiGeoServerSettings": {
                 "virtualTable": {
                     "name": "routing",
-                    "sql": "@/inputs/data/kingslynn/sql/shortest_paths.sql",
+                    "sql": "@/inputs/data/kingslynn/sql/poi.sql",
                     "escapeSql": false,
                     "geometry": {
                         "name": "the_geom",
-                        "type": "MultiLineString",
+                        "type": "Point",
                         "srid": 4326
-                    },
-                    "parameters": [
-                        {
-                            "name": "source",
-                            "defaultValue": "1",
-                            "regexpValidator": "^[\\d]+$"
-                        },
-                        {
-                            "name": "target",
-                            "defaultValue": "10",
-                            "regexpValidator": "^[\\d]+$"
-                        }
-                    ]
+                    }
                 }
             }
         },
@@ -97,11 +86,10 @@
             "sql": "@/inputs/data/kingslynn/sql/static/elevation.sql",
             "geoServerSettings": {
                 "layerSettings": {
-                    "defaultStyle": "elevation"
+                    "defaultStyle": "raster"
                 }
             }
-        }
-        ,
+        },
         {
             "type": "raster",
             "name": "population",
@@ -109,7 +97,7 @@
             "subdirectory": "population",
             "geoServerSettings": {
                 "layerSettings": {
-                    "defaultStyle": "elevation"
+                    "defaultStyle": "raster"
                 }
             }
         },
