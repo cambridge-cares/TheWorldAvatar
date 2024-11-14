@@ -1,0 +1,15 @@
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo:       <http://www.opengis.net/ont/geosparql#>
+PREFIX geof:      <http://www.opengis.net/def/function/geosparql/>
+PREFIX uom:       <http://www.opengis.net/def/uom/OGC/1.0/>
+
+SELECT DISTINCT ?poi_iri ?poi_type ?geometry
+WHERE {
+  
+VALUES (?poi_iri ?poi_type ?geometry) {
+(<http://example.com/hospital001> obe:Hospital "POINT(0.4449964774757034 52.756232805460925)")
+}
+
+}
+LIMIT 1
