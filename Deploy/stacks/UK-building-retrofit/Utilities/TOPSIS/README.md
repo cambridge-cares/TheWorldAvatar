@@ -27,7 +27,7 @@ The analysis relies on two configuration files:
    - Example:
      ```json
      {
-       "weighting_method": "equal_weight"  // Options: "equal_weight", "entropy_weight_method"
+       "weighting_method": "equal_weight" 
      }
      ```
 
