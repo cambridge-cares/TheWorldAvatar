@@ -57,7 +57,7 @@ export default function MapboxMapComponent(props: MapProperties) {
     mapboxgl.accessToken = process.env.MAPBOX_API_KEY;
 
     const map: Map = new mapboxgl.Map({
-      container: mapContainer.current,
+      container: mapContainerRef.current,
       style: defaultImagery.url,
       center: props.defaultPosition.center,
       zoom: props.defaultPosition.zoom,
