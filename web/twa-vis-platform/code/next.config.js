@@ -15,10 +15,11 @@ const nextConfig = {
 		loader: 'custom',
 		loaderFile: './image-loader.js',
 	},
-
 	env: {
 		KEYCLOAK: process.env.KEYCLOAK ?? "false",
-		ASSET_PREFIX: process.env.ASSET_PREFIX ?? ""
+		ASSET_PREFIX: process.env.ASSET_PREFIX ?? "",
+		MAPBOX_USER: process.env.MAPBOX_USER,
+		MAPBOX_API_KEY: process.env.MAPBOX_API_KEY,
 	}
 };
 
