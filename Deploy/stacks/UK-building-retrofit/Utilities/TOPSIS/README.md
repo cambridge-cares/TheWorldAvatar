@@ -30,6 +30,7 @@ The analysis relies on two configuration files:
        "weighting_method": "equal_weight" 
      }
      ```
+ This file acts as the model selection JSON, with the default setting using "equal_weight" for evenly distributed weights. If you prefer an [entropy-based approach], simply replace "equal_weight" with "entropy_weight_method" to apply the entropy weighting method. 
 
 2. **SPARQL Endpoint Configuration** (`stack_topsis.json`):
    - Specifies the URL of the SPARQL endpoint and the query file.
@@ -67,3 +68,6 @@ result/TOPSIS_result.csv
 
 - Ensure the SPARQL endpoint and query file are correctly defined in `stack_topsis.json`.
 - The default weighting method is `"equal_weight"`, but it can be changed to `"entropy_weight_method"` in `criteria_weight.json`.
+
+<!-- Links -->
+[entropy-based approach]: https://www.sciencedirect.com/topics/engineering/entropy-method#:~:text=The%20entropy%20method%20is%20an,indicators%20through%20the%20information%20entropy.
