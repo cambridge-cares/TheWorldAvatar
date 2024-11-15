@@ -17,6 +17,6 @@ The [Utilities] repository contains geospatial analysis models to identify energ
 [Utilities]: Utilities
 [TOPSIS]: https://en.wikipedia.org/wiki/TOPSIS
 [SPARQL]: https://en.wikipedia.org/wiki/SPARQL
-[hotspots]: https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-statistics/hot-spot-analysis.html
+[hotspots]: https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-statistics/hot-spot-analysis.htm
 [decision_tree_model]: https://xgboost.readthedocs.io/en/latest/index.html
 [Docker]: https://www.docker.com/
