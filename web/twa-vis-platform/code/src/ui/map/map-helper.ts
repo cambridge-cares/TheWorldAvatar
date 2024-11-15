@@ -152,12 +152,12 @@ export function getDefaultImageryOption(imagerySettings: ImagerySettings): Image
     imagerySettings = DEFAULT_IMAGERY_OPTIONS;
   }
 
-  if (typeof window !== "undefined" && imagerySettings.default.toLowerCase() == "auto") {
+  if (imagerySettings.default.toLowerCase() == "auto") {
     // Auto detect browser theme
     if (window?.matchMedia && window?.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return getImageryOption("3D (Night)", imagerySettings);
+      return getImageryOption("Dark", imagerySettings);
     } else {
-      return getImageryOption("3D (Day)", imagerySettings);
+      return getImageryOption("Light", imagerySettings);
     }
   } else {
     return getImageryOption(imagerySettings.default, imagerySettings);
@@ -220,6 +220,8 @@ export function setImagery(imagerySettings: ImagerySettings, map: Map): void {
   const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
   // Update map
+  console.log("gremlin")
+  console.log(imageryOption)
   map.setStyle(imageryOption.url);
   map.setProjection({
     name: 'mercator'
@@ -227,10 +229,8 @@ export function setImagery(imagerySettings: ImagerySettings, map: Map): void {
 
   map.on('style.load', () => {
     if (imageryOption.time != null) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (map as any).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
+      (map as Map).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
     }
-
     // Ensure placenames match previous state
     togglePlacenames(imagerySettings, map);
   });
