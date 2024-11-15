@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { JsonObject } from 'types/json';
-import { DefaultSettings } from 'types/settings';
+import { DefaultSettings, MapboxCredentials } from 'types/settings';
 
 /**
  * Handles the retrieval and storage of settings from the user provided configuration files.
@@ -118,19 +118,6 @@ export default class SettingsStore {
    * 
    * @returns Mapbox credentials.
    */
-  public static getCredentials(): { username: string, key: string } {
-    try {
-      // Assuming these files exist in your Docker environment
-      const username = this.readFile("/run/secrets/mapbox_username").trim();
-      const key = this.readFile("/run/secrets/mapbox_api_key").trim();
-      return { username, key };
-    } catch (_error) {
-      // Fallback to environment variables
-      const username = process.env.MAPBOX_USER;
-      const key = process.env.MAPBOX_API_KEY;
-      return { username: username || "unknown", key: key || "unknown" };
-    }
-  }
 
   /**
    * Read the input file
