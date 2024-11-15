@@ -1,6 +1,6 @@
 # UK Building Retrofit
 
-This stack provides an interoperable environment for integrating UK-wide data on building energy performance, energy consumption, fuel poverty, and public health.The use case is to quantify of retrofit urgency and identify optimal retrofit pathways across multiple geographic scales. The stack includes a 3D visualization of buildings in Cambridge, Ely, and Wisbech, with nationwide data analysis supported via an Ontop SPARQL endpoint.
+This stack provides an interoperable environment for integrating comprehensive UK-wide data on building energy performance, energy consumption, fuel poverty, and public health records. The primary use case is to quantify retrofit urgency and identify optimal retrofit pathways across diverse geographic scales. The stack includes an Ontop SPARQL endpoint for nationwide data analysis, along with a demonstration of 3D visualisation capabilities for selected areas (Cambridge, Ely, and Wisbech), highlighting the potential for localised insights.
 
 Key sections:
 - [1. Prerequisites](#1-prerequisites)

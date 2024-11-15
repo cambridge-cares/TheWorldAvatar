@@ -4,14 +4,19 @@ This repository provides a set of instructions for creating an interoperable env
 
 ## Stack Deployment
 
-The [StackDeployment] repository offers a detailed guide for deploying the complete Docker Stack tailored for the UK building retrofit use case. It provides an SPARQL endpoint for semantic representation and information extraction.
+The [StackDeployment] repository offers a detailed guide for deploying a [Docker] Stack tailored for the UK building retrofit use case. It provides an [SPARQL] endpoint for semantic representation and information extraction.
 
 
 ## Utilities
 
-The [Utilities] repository features geospatial analysis models to identify energy consumption hotspots, an approach to assess retrofit urgency considering energy, socioeconomic, and health factors based on The Technique for Order of Preference by Similarity to Ideal Solution (TOPSIS), and a decision tree model for what-if analysis of fabric-first versus system-led retrofit improvements.
+The [Utilities] repository contains geospatial analysis models to identify energy consumption [hotspots], an approach to assess retrofit urgency considering energy, socioeconomic, and health factors based on The Technique for Order of Preference by Similarity to Ideal Solution ([TOPSIS]), and a [decision_tree_model] for what-if analysis of fabric-first versus system-led retrofit improvements.
 
 
 <!-- Links -->
 [StackDeployment]: StackDeployment
 [Utilities]: Utilities
+[TOPSIS]: https://en.wikipedia.org/wiki/TOPSIS
+[SPARQL]: https://en.wikipedia.org/wiki/SPARQL
+[hotspots]: https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-statistics/hot-spot-analysis.html
+[decision_tree_model]: https://xgboost.readthedocs.io/en/latest/index.html
+[Docker]: https://www.docker.com/
