@@ -6,7 +6,6 @@ import './mapbox.css';
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useEffect, useRef } from 'react';
 
-import { Apis } from 'io/config/routes';
 import { CameraPosition, ImageryOption } from 'types/settings';
 
 // Type definition of incoming properties
@@ -54,13 +53,7 @@ export default function MapboxMapComponent(props: MapProperties) {
       "time": "dusk"
     };
 
-    const response = await fetch((Apis.MAP_SETTINGS), {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const respJson = await response.json();
-    // Set credentials
-    mapboxgl.accessToken = respJson.token;
+    mapboxgl.accessToken = process.env.MAPBOX_API_KEY;
 
     const map: Map = new mapboxgl.Map({
       container: mapContainer.current,
