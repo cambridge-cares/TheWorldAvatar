@@ -21,6 +21,7 @@
     ],
     "rules": {
         "no-unused-vars": "off",
+        "no-extra-semi": "warn",
         "@typescript-eslint/no-unused-vars": [
             "warn",
             {
