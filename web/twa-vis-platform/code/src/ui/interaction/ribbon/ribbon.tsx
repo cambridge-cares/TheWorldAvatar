@@ -83,7 +83,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
         <RibbonComponentOptions
           key="map-style" id="map-style"
           icon="palette"
-          tooltip="Change map imagery"
+          tooltip="Change base map style"
           options={imageryNames}
           initialOption={currentImagery?.name}
           iconClickable={false}
