@@ -29,7 +29,8 @@ interface MapProperties {
  * @returns React component for display.
  */
 export default function MapboxMapComponent(props: MapProperties) {
-  const mapContainer = useRef(null);
+  const mapRef = useRef();
+  const mapContainerRef = useRef();
 
   // Run when component loaded
   useEffect(() => {
@@ -85,9 +86,9 @@ export default function MapboxMapComponent(props: MapProperties) {
   };
 
   return (
-    <div id="mapContainer" ref={mapContainer} className={props.styles}>
-      {/* Map will be generated here. */}
-    </div>
+    <>
+      <div id="mapContainer" ref={mapContainerRef} className={props.styles} />
+    </>
   );
 }
 
