@@ -429,17 +429,23 @@ public class QueryTemplateFactory {
    * Appends optional lifecycle filter if required based on the specified event.
    * 
    * @param query          Builder for the query template.
-   * 
    * @param lifecycleEvent Target event for filter.
    */
   private void appendOptionalLifecycleFilters(StringBuilder query, LifecycleEventType lifecycleEvent) {
-    if (lifecycleEvent != null) {
-      query.append("FILTER NOT EXISTS{");
-      if (lifecycleEvent.equals(LifecycleEventType.APPROVED)) {
-        StringResource.appendTriple(query, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
-            StringResource.parseIriForQuery(LifecycleResource.EVENT_APPROVAL));
-      }
-      query.append("}");
+    switch (lifecycleEvent) {
+      case LifecycleEventType.APPROVED:
+        LifecycleResource.appendFilterExists(query, false, LifecycleResource.EVENT_APPROVAL);
+        break;
+      case LifecycleEventType.SERVICE_EXECUTION:
+        LifecycleResource.appendFilterExists(query, true, LifecycleResource.EVENT_APPROVAL);
+        LifecycleResource.appendArchivedFilterExists(query, false);
+        break;
+      case LifecycleEventType.ARCHIVE_COMPLETION:
+        LifecycleResource.appendArchivedFilterExists(query, true);
+        break;
+      default:
+        // Do nothing if it doesnt meet the above events
+        break;
     }
   }
 

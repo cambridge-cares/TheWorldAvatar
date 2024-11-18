@@ -23,9 +23,9 @@ public class LifecycleResource {
   public static final String EVENT_DELIVERY = "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
   public static final String EVENT_CANCELLATION = "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
   public static final String EVENT_MIS_REPORT = "https://www.theworldavatar.com/kg/ontoservice/MissedServiceEvent";
-  public static final String EVENT_CONTRACT_COMPLETION = "https://www.theworldavatar.com/kg/ontoservice/ContractDischarge ";
-  public static final String EVENT_CONTRACT_RESCISSION = "https://www.theworldavatar.com/kg/ontoservice/ContractRescission ";
-  public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination ";
+  public static final String EVENT_CONTRACT_COMPLETION = "https://www.theworldavatar.com/kg/ontoservice/ContractDischarge";
+  public static final String EVENT_CONTRACT_RESCISSION = "https://www.theworldavatar.com/kg/ontoservice/ContractRescission";
+  public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination";
 
   // Private constructor to prevent instantiation
   private LifecycleResource() {
@@ -135,5 +135,57 @@ public class LifecycleResource {
       default:
         return null;
     }
+  }
+
+  /**
+   * Appends FILTER EXISTS or NOT EXISTS statements for an archived contract.
+   * 
+   * @param query  Builder for the query template.
+   * @param exists Indicate if using FILTER EXISTS or FILTER NOT EXISTS.
+   */
+  public static void appendArchivedFilterExists(StringBuilder query, boolean exists) {
+    StringBuilder tempBuilder = new StringBuilder();
+    tempBuilder.append("{");
+    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_COMPLETION));
+    tempBuilder.append(ShaclResource.UNION_OPERATOR);
+    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_RESCISSION));
+    tempBuilder.append(ShaclResource.UNION_OPERATOR);
+    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_TERMINATION));
+    tempBuilder.append("}");
+    LifecycleResource.appendFilterExists(query, tempBuilder.toString(), exists);
+  }
+
+  /**
+   * Appends FILTER EXISTS or NOT EXISTS statements for the specified object
+   * instance.
+   * 
+   * @param query    Builder for the query template.
+   * @param exists   Indicate if using FILTER EXISTS or FILTER NOT EXISTS.
+   * @param instance Target IRI instance. Typically the object in a triple.
+   */
+  public static void appendFilterExists(StringBuilder query, boolean exists, String instance) {
+    StringBuilder tempBuilder = new StringBuilder();
+    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(instance));
+    LifecycleResource.appendFilterExists(query, tempBuilder.toString(), exists);
+  }
+
+  /**
+   * Appends FILTER EXISTS or NOT EXISTS statements for lifecycles.
+   * 
+   * @param query    Builder for the query template.
+   * @param contents Contents for the clause.
+   * @param exists   Indicate if using FILTER EXISTS or FILTER NOT EXISTS.
+   */
+  private static void appendFilterExists(StringBuilder query, String contents, boolean exists) {
+    query.append("FILTER").append(ShaclResource.WHITE_SPACE);
+    // Add NOT parameter if this filter should not exist
+    if (!exists) {
+      query.append("NOT").append(ShaclResource.WHITE_SPACE);
+    }
+    query.append("EXISTS{").append(contents).append("}");
   }
 }

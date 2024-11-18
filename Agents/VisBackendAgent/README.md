@@ -26,6 +26,8 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.6.3 Service commencement route](#263-service-commencement-route)
       - [2.6.4 Unfulfilled service report route](#264-unfulfilled-service-report-route)
       - [2.6.5 Cancel service route](#265-cancel-service-route)
+      - [2.6.6 Service order route](#266-service-order-route)
+      - [2.6.7 Archive contract route](#267-archive-contract-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -519,6 +521,18 @@ Note that this route does require the following `JSON` request parameters:
 ```
 
 A successful request will return `{"message": "Service has been successfully cancelled!", "iri" : "root iri that is instantiated"}`.
+
+#### 2.6.6 Service order route
+
+The endpoint serves to retrieve all contracts that are currently in progress. Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service?type={type}` endpoint to retrieve all in progress contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+
+There is also an additional optional parameter `label` to retrieve in progress contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
+
+#### 2.6.7 Archive contract route
+
+The endpoint serves to retrieve all contracts that have expired and are in archive. Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive?type={type}` endpoint to retrieve all archived contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+
+There is also an additional optional parameter `label` to retrieve archived contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
 
 ## 3. SHACL Restrictions
 

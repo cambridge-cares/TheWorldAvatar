@@ -35,6 +35,7 @@ public class ShaclResource {
   public static final String VARIABLE_MARK = "?";
   public static final String REPLACEMENT_ENDPOINT = "[endpoint]";
   public static final String WHITE_SPACE = " ";
+  public static final String UNION_OPERATOR = "} UNION {";
 
   private ShaclResource(){
   }

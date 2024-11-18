@@ -252,6 +252,28 @@ public class LifecycleController {
   }
 
   /**
+   * Retrieve all contracts that are currently in progress.
+   */
+  @GetMapping("/contracts/service")
+  public ResponseEntity<?> getInProgressContracts(
+      @RequestParam(required = true) String type,
+      @RequestParam(defaultValue = "false") boolean label) {
+    LOGGER.info("Received request to retrieve contracts in progress...");
+    return this.lifecycleService.getContracts(type, label, LifecycleEventType.SERVICE_EXECUTION);
+  }
+
+  /**
+   * Retrieve all archived contracts.
+   */
+  @GetMapping("/contracts/archive")
+  public ResponseEntity<?> getArchivedContracts(
+      @RequestParam(required = true) String type,
+      @RequestParam(defaultValue = "false") boolean label) {
+    LOGGER.info("Received request to retrieve archived contracts...");
+    return this.lifecycleService.getContracts(type, label, LifecycleEventType.ARCHIVE_COMPLETION);
+  }
+
+  /**
    * Validate if the request parameters are invalid or not. Returns true if
    * invalid.
    */
