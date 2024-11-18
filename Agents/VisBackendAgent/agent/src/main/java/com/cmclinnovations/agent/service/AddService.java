@@ -251,7 +251,7 @@ public class AddService {
     while (!daysOfWeek.isEmpty()) {
       String currentDay = daysOfWeek.poll();
       // Parameter name is in lowercase based on the frontend
-      if ((boolean) replacements.get(currentDay.toLowerCase())) {
+      if (replacements.containsKey(currentDay.toLowerCase()) && (boolean) replacements.get(currentDay.toLowerCase())) {
         // Only include the selected day if it has been selected on the frontend
         ObjectNode currentDayNode = this.objectMapper.createObjectNode();
         currentDayNode.put(ShaclResource.ID_KEY,
