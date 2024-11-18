@@ -14,6 +14,18 @@ import om
 from geo import Point, Vector, Line, Plane, RotationMatrix
 
 HALF_BOND_LENGTH = 1.4 / 2
+BINDING_FRAGMENT_METAL = 'Metal'
+BINDING_FRAGMENT_CO2 = 'CO2'
+BINDING_FRAGMENT_O = 'O'
+BINDING_FRAGMENT_N2 = 'N2'
+GBU_TYPE_2_BENT = '2-bent'
+GBU_TYPE_2_LINEAR = '2-linear'
+GBU_TYPE_3_PLANAR = '3-planar'
+GBU_TYPE_3_PYRAMIDAL = '3-pyramidal'
+GBU_TYPE_4_PLANAR = '4-planar'
+GBU_TYPE_4_PYRAMIDAL = '4-pyramidal'
+GBU_TYPE_5_PYRAMIDAL = '5-pyramidal'
+
 
 class OntoMOPs(BaseOntology):
     base_url = 'https://www.theworldavatar.com/kg'
@@ -55,6 +67,7 @@ HasSymbol = DatatypeProperty.create_from_base('HasSymbol', OntoMOPs)
 HasSymmetryPointGroup = DatatypeProperty.create_from_base('HasSymmetryPointGroup', OntoMOPs)
 HasUnitNumberValue = DatatypeProperty.create_from_base('HasUnitNumberValue', OntoMOPs)
 # additions for assembler
+HasBindingFragment = DatatypeProperty.create_from_base('HasBindingFragment', OntoMOPs)
 HasX = DatatypeProperty.create_from_base('HasX', OntoMOPs)
 HasY = DatatypeProperty.create_from_base('HasY', OntoMOPs)
 HasZ = DatatypeProperty.create_from_base('HasZ', OntoMOPs)
@@ -270,10 +283,11 @@ class BindingSite(BaseClass):
     rdfs_isDefinedBy = OntoMOPs
     hasOuterCoordinationNumber: HasOuterCoordinationNumber[int]
     hasBindingPoint: HasBindingPoint[BindingPoint]
+    hasBindingFragment: HasBindingFragment[str]
     temporarily_blocked: Optional[bool] = False
 
     @property
-    def binding_coordinates(self):
+    def binding_coordinates(self) -> Point:
         return list(self.hasBindingPoint)[0].coordinates
 
 class MetalSite(BindingSite):
@@ -309,7 +323,6 @@ class GBUCoordinateCenter(CoordinatePoint):
     @property
     def vector_to_connecting_point_plane(self):
         # TODO add safeguards for str IRIs
-        # NOTE TODO not sure if this will work for AMs that are not Oh symmetry
         connecting_points = [p.coordinates for p in self.hasGBUConnectingPoint]
         if len(connecting_points) < 3:
             line = Line.from_two_points(start=connecting_points[0], end=connecting_points[1])
@@ -396,15 +409,18 @@ class ChemicalBuildingUnit(BaseClass):
     def load_geometry_from_fileserver(self, sparql_client):
         return list(self.hasGeometry)[0].load_xyz_from_geometry_file(sparql_client)
 
-    def add_binding_site_and_assembly_center_from_json(self, cbu_json_fpath, ocn, metal_site: bool = False):
+    def add_binding_site_and_assembly_center_from_json(
+        self, cbu_json_fpath, ocn, binding_fragment: str, gbu_type: str, metal_site: bool = False
+    ):
         with open(cbu_json_fpath, "r") as file:
             cbu_json = json.load(file)
-        binding_sides, assemb_center, atom_points = self.__class__.process_geometry_json(cbu_json, ocn, metal_site)
+        binding_sides, assemb_center, atom_points = self.__class__.process_geometry_json(
+            cbu_json, ocn, binding_fragment, gbu_type, metal_site)
         self.hasBindingSite = binding_sides
         self.hasCBUAssemblyCenter = assemb_center
 
     @staticmethod
-    def process_geometry_json(cbu_json, ocn: int, metal_site: bool = False):
+    def process_geometry_json(cbu_json, ocn: int, binding_fragment: str, gbu_type: str, metal_site: bool = False):
         """
         Example of CBU json consisting of real atoms, dummy atoms as binding sites, and an optional "CENTER" point.
         Note that below coordinates are just for demonstration purpose, they do not represent any actual molecules.
@@ -430,7 +446,8 @@ class ChemicalBuildingUnit(BaseClass):
             if v['atom'] == 'X':
                 pt = _bs_clz(
                     hasOuterCoordinationNumber=ocn,
-                    hasBindingPoint=BindingPoint(hasX=v['coordinate_x'], hasY=v['coordinate_y'], hasZ=v['coordinate_z'])
+                    hasBindingPoint=BindingPoint(hasX=v['coordinate_x'], hasY=v['coordinate_y'], hasZ=v['coordinate_z']),
+                    hasBindingFragment=binding_fragment,
                 )
                 cbu_binding_points[k] = pt
                 lst_binding_sits.append(pt)
@@ -459,20 +476,47 @@ class ChemicalBuildingUnit(BaseClass):
                 line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
                 cbu_assemb_center = line.project_point(cbu_geo_center)
             else:
-                bindingsite_line = Line.from_two_points(*lst_binding_points)
                 bindingsite_mid_point = Point.mid_point(*lst_binding_points)
-                if bindingsite_line.is_point_on_line(cbu_geo_center):
+                if 'linear' in gbu_type.lower():
+                    # if the CBU is expected to function as 2-linear, take the average of the two binding sites
                     cbu_assemb_center = bindingsite_mid_point
                 else:
-                    plane = Plane.from_three_points(lst_binding_points[0], lst_binding_points[1], cbu_geo_center)
-                    perpendicular_bisector = plane.find_perpendicular_bisector_on_plane(*lst_binding_points)
-                    cbu_assemb_center = perpendicular_bisector.project_point(cbu_geo_center)
+                    # if the CBU is expected to function as 2-bent, then compute the intersection of the two vectors
+                    # to be used as the third point to fit a plane with the two binding sites
+                    if binding_fragment == 'CO2':
+                        # first find the closest two O atoms and the C atoms for each binding sites
+                        v_dct = {}
+                        lst_pts_for_plane = []
+                        for k in cbu_binding_points:
+                            bp: Point = cbu_binding_points[k].binding_coordinates
+                            ranked_atoms = bp.rank_distanct_to_points(atom_points)
+                            closest_two_O = [a for a in ranked_atoms if a.label == 'O'][:2]
+                            closest_C = [a for a in ranked_atoms if a.label == 'C'][0]
+                            # find the average of the O atoms and use it to form line with the closest C atom
+                            avg_O = Point.mid_point(*closest_two_O)
+                            v_dct[k] = {'avg_O': avg_O, 'closest_C': closest_C, 'line': Line.from_two_points(start=avg_O, end=closest_C)}
+                            lst_pts_for_plane.extends([closest_C, avg_O])
+                        # find the plane from these points
+                        plane = Plane.fit_from_points(lst_pts_for_plane)
+                        # find the intersection of these lines when they are projected on the plane
+                        proj_lines = [v['line'] for v in v_dct.values()]
+                        intersection = plane.find_intersection_of_lines_projected(*proj_lines)
+                        # use the intersection and two binding site to form the plane
+                        plane_of_bs = Plane.from_three_points(pt1=intersection, pt2=lst_binding_points[0], pt3=lst_binding_points[1])
+                        perpendicular_bisector = plane_of_bs.find_perpendicular_bisector_on_plane(*lst_binding_points)
+                        cbu_assemb_center = perpendicular_bisector.project_point(intersection)
+                    else:
+                        raise NotImplementedError(f'CBUs functioning as a {gbu_type} with binding fragment {binding_fragment} is not yet supported.')
+                # bindingsite_line = Line.from_two_points(*lst_binding_points)
+                # plane = Plane.from_three_points(lst_binding_points[0], lst_binding_points[1], cbu_geo_center)
+                # perpendicular_bisector = plane.find_perpendicular_bisector_on_plane(*lst_binding_points)
+                # cbu_assemb_center = perpendicular_bisector.project_point(cbu_geo_center)
         assemb_center = CBUAssemblyCenter(hasX=cbu_assemb_center.x, hasY=cbu_assemb_center.y, hasZ=cbu_assemb_center.z)
 
         return lst_binding_sits, assemb_center, atom_points
 
     @classmethod
-    def from_geometry_json(cls, cbu_formula, cbu_json, charge, ocn, gbu: str = None, direct_binding: bool = True, metal_site: bool = False):
+    def from_geometry_json(cls, cbu_formula, cbu_json, charge, ocn, binding_fragment, gbu_type, gbu: str = None, direct_binding: bool = True, metal_site: bool = False):
         """
         Example of CBU json consisting of real atoms, dummy atoms as binding sites, and an optional "CENTER" point.
         Note that below coordinates are just for demonstration purpose, they do not represent any actual molecules.
@@ -487,7 +531,7 @@ class ChemicalBuildingUnit(BaseClass):
         if not direct_binding:
             raise NotImplementedError("Non-direct binding, e.g. side binding, is not yet supported.")
 
-        binding_sides, assemb_center, atom_points = cls.process_geometry_json(cbu_json, ocn, metal_site)
+        binding_sides, assemb_center, atom_points = cls.process_geometry_json(cbu_json, ocn, binding_fragment, gbu_type, metal_site)
         # prepare the geometry of the CBU
         cbu_iri = cls.init_instance_iri()
         cbu_xyz_file = f"{cbu_iri.split('/')[-1]}.xyz"
@@ -512,14 +556,16 @@ class ChemicalBuildingUnit(BaseClass):
         # get the center of the CBU
         center = list(self.hasCBUAssemblyCenter)[0].coordinates
         # get the line or plane of the binding sites
-        binding_sites = self.active_binding_sites
+        binding_sites: List[BindingSite] = self.active_binding_sites
         if len(binding_sites) < 3:
             line = Line.from_two_points(start=binding_sites[0].binding_coordinates, end=binding_sites[1].binding_coordinates)
             if line.is_point_on_line(center):
-                # if the center point is on the line then we approximate the plane fitted by the atoms of CBU
-                # and we take the normal vector of the plane
-                # TODO check if it is safe to make this assumption for all CBUs
-                plane = Plane.fit_from_points([pt for pt in list(self.hasGeometry)[0].hasPoints])
+                # if the center point is on the line then we approximate the plane fitted by the closest 2 atoms of CBU
+                # to each binding site and we take the normal vector of the plane
+                lst_atoms = []
+                for bs in binding_sites:
+                    lst_atoms.extend(bs.binding_coordinates.rank_distanct_to_points(list(self.hasGeometry)[0].hasPoints)[:2])
+                plane = Plane.fit_from_points(lst_atoms)
                 v = plane.normal_vector_from_point_to_plane(center)
             else:
                 v = line.normal_vector_from_point_to_line(center)
@@ -630,6 +676,10 @@ class MetalOrganicPolyhedron(CoordinationCage):
         cbu_rotation_matrix = {}
         for cbu in lst_cbu:
             cbu: ChemicalBuildingUnit
+            if list(cbu.hasGeometry)[0].hasPoints is None:
+                if sparql_client is None:
+                    raise ValueError('SPARQL client is required to visualise/load the geometry')
+                list(cbu.hasGeometry)[0].load_xyz_from_geometry_file(sparql_client)
             gbu = cbu.isFunctioningAs.intersection(gbus)
             if len(gbu) == 0:
                 raise ValueError(f'No GBU found for CBU {cbu.instance_iri} in AM {am.instance_iri}')
