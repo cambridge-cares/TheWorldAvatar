@@ -11,10 +11,12 @@ public class LifecycleResource {
   public static final String SCHEDULE_RESOURCE = "schedule";
   public static final String OCCURRENCE_INSTANT_RESOURCE = "occurrence instant";
 
+  public static final String IRI_KEY = "iri";
   public static final String CONTRACT_KEY = "contract";
   public static final String CURRENT_DATE_KEY = "current date";
   public static final String DATE_KEY = "date";
   public static final String EVENT_KEY = "event";
+  public static final String STAGE_KEY = "stage";
 
   // Private constructor to prevent instantiation
   private LifecycleResource() {
@@ -51,6 +53,24 @@ public class LifecycleResource {
   }
 
   /**
+   * Retrieve the stage class associated with the event type.
+   * 
+   * @param eventType The target event type.
+   */
+  public static String getStageClass(LifecycleEventType eventType) {
+    switch (eventType) {
+      case LifecycleEventType.APPROVED:
+        return "https://www.theworldavatar.com/kg/ontoservice/CreationStage";
+      case LifecycleEventType.SERVICE_EXECUTION:
+      case LifecycleEventType.SERVICE_CANCELLATION:
+      case LifecycleEventType.SERVICE_MISS_REPORT:
+        return "https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage";
+      default:
+        throw new IllegalArgumentException("Invalid event type!");
+    }
+  }
+
+  /**
    * Retrieve the event class associated with the event type.
    * 
    * @param eventType The target event type.
@@ -65,6 +85,26 @@ public class LifecycleResource {
         return "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
       case LifecycleEventType.SERVICE_MISS_REPORT:
         return "https://www.theworldavatar.com/kg/ontoservice/MissedServiceEvent";
+      default:
+        throw new IllegalArgumentException("Invalid event type!");
+    }
+  }
+
+  /**
+   * Retrieve the event identifier associated with the event type.
+   * 
+   * @param eventType The target event type.
+   */
+  public static String getEventIdentifier(LifecycleEventType eventType) {
+    switch (eventType) {
+      case LifecycleEventType.APPROVED:
+        return "approve";
+      case LifecycleEventType.SERVICE_EXECUTION:
+        return "complete";
+      case LifecycleEventType.SERVICE_CANCELLATION:
+        return "cancel";
+      case LifecycleEventType.SERVICE_MISS_REPORT:
+        return "report";
       default:
         throw new IllegalArgumentException("Invalid event type!");
     }

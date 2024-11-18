@@ -8,10 +8,10 @@
     "prefix": "https://www.theworldavatar.io/kg/agreement/schedule/"
   },
   "@type": "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule",
-  "@reverse":{
+  "@reverse": {
     "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasSchedule": {
-      "@id" : {
-        "@replace": "event",
+      "@id": {
+        "@replace": "stage",
         "@type": "iri"
       }
     }

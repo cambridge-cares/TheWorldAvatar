@@ -22,6 +22,12 @@
         "@replace": "event",
         "@type": "iri"
       }
+    },
+    "https://www.omg.org/spec/Commons/Collections/comprises": {
+      "@id": {
+        "@replace": "stage",
+        "@type": "iri"
+      }
     }
   }
 }

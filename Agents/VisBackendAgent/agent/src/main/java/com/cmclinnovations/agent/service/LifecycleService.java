@@ -30,15 +30,16 @@ public class LifecycleService {
   }
 
   /**
-   * Add the required event instance into the parameters.
+   * Add the required stage instance into the request parameters.
    * 
    * @param params    The target parameters to update.
    * @param eventType The target event type to retrieve.
    */
-  public void addEventInstance(Map<String, Object> params, LifecycleEventType eventType) {
+  public void addStageInstanceToParams(Map<String, Object> params, LifecycleEventType eventType) {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
-    String event = this.getEventInstance(contractId, eventType);
-    params.put(LifecycleResource.EVENT_KEY, event);
+    LOGGER.debug("Adding stage parameters for {}...", contractId);
+    String stage = this.getStageInstance(contractId, eventType);
+    params.put(LifecycleResource.STAGE_KEY, stage);
   }
 
   /**
@@ -49,31 +50,34 @@ public class LifecycleService {
    */
   public void addOccurrenceParams(Map<String, Object> params, LifecycleEventType eventType) {
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
-    String event = this.getEventInstance(contractId, eventType);
-    params.put("id", StringResource.getPrefix(event) + "/occurrence/" + UUID.randomUUID());
-    params.put(LifecycleResource.EVENT_KEY, event);
+    LOGGER.debug("Adding occurrence parameters for {}...", contractId);
+    String stage = this.getStageInstance(contractId, eventType);
+    params.put("id", StringResource.getPrefix(stage) + "/" + LifecycleResource.getEventIdentifier(eventType) + "/"
+        + UUID.randomUUID());
+    params.put(LifecycleResource.STAGE_KEY, stage);
+    params.put(LifecycleResource.EVENT_KEY, LifecycleResource.getEventClass(eventType));
     // Only retrieve the current date if no date input is given
     params.putIfAbsent(LifecycleResource.DATE_KEY, LifecycleResource.getCurrentDate());
   }
 
   /**
-   * Retrieve the event instance associated with the target contract.
+   * Retrieve the stage occurrence instance associated with the target contract.
    * 
-   * @param contractId The identifier for the target contract.
-   * @param eventType  The target event type to retrieve.
+   * @param query     The query to execute.
+   * @param eventType The target event type to retrieve.
    */
-  public String getEventInstance(String contractId, LifecycleEventType eventType) {
-    LOGGER.debug("Retrieving event instance for {}...", contractId);
+  public String getStageInstance(String contractId, LifecycleEventType eventType) {
+    LOGGER.debug("Retrieving stage instance for {}...", contractId);
     String query = "PREFIX fibo-fnd-arr-lif: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/>" +
-        "PREFIX cmns-col: <https://www.omg.org/spec/Commons/Collections/>" +
-        "SELECT DISTINCT ?event WHERE {" +
-        "?lifecycle fibo-fnd-arr-lif:isLifecycleOf <" + contractId + ">;" +
-        "fibo-fnd-arr-lif:hasStage/cmns-col:comprises ?event." +
-        "?event rdf:type <" + LifecycleResource.getEventClass(eventType) + ">" +
+        "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>" +
+        "SELECT DISTINCT ?iri WHERE {" +
+        "<" + contractId + "> fibo-fnd-arr-lif:hasLifecycle ?lifecycle ." +
+        "?lifecycle fibo-fnd-arr-lif:hasStage ?iri ." +
+        "?iri fibo-fnd-rel-rel:exemplifies <" + LifecycleResource.getStageClass(eventType) + "> ." +
         "}";
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
     if (results.size() == 1) {
-      return results.poll().getFieldValue("event");
+      return results.poll().getFieldValue(LifecycleResource.IRI_KEY);
     } else if (results.isEmpty()) {
       LOGGER.error("No valid event instance found!");
       throw new NullPointerException("No valid event instance found!");
