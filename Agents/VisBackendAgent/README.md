@@ -463,7 +463,7 @@ A successful request will return `{"message": "Schedule has been successfully dr
 The endpoint serves to commence the delivery of services by approving the specified contract. Users must send a `POST` request to approve the contract at the following endpoint:
 
 ```
-<baseURL>/vis-backend-agent/service/commence
+<baseURL>/vis-backend-agent/contracts/service/commence
 ```
 
 Note that this route does require the following `JSON` request parameters:
@@ -483,7 +483,7 @@ A successful request will return `{"message": "Contract has been approved for se
 The endpoint serves to report an unfulfilled service of a specified contract. Users must send a `POST` request to lodge a report at the following endpoint:
 
 ```
-<baseURL>/vis-backend-agent/service/report
+<baseURL>/vis-backend-agent/contracts/service/report
 ```
 
 Note that this route does require the following `JSON` request parameters:
@@ -504,7 +504,7 @@ A successful request will return `{"message": "Report for an unfulfilled service
 The endpoint serves to cancel an upcoming service of a specified contract. Users must send a `POST` request to lodge a report at the following endpoint:
 
 ```
-<baseURL>/vis-backend-agent/service/cancel
+<baseURL>/vis-backend-agent/contracts/service/cancel
 ```
 
 Note that this route does require the following `JSON` request parameters:
