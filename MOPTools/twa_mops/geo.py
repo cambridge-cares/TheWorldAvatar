@@ -58,6 +58,9 @@ class Point(BaseModel):
                 max_point = pt
         return max_point
 
+    def rank_distanct_to_points(self, points: List['Point']):
+        return sorted(points, key=lambda x: self.get_distance_to(x))
+
     @classmethod
     def mid_point(cls, pt1: 'Point', pt2: 'Point'):
         return cls(x=(pt1.x + pt2.x) / 2, y=(pt1.y + pt2.y) / 2, z=(pt1.z + pt2.z) / 2)
@@ -297,7 +300,7 @@ class Plane(BaseModel):
             normal = V[-1]
             return cls(point=Point.from_array(centroid), normal=Vector.from_array(normal))
 
-    def normal_vector_from_point_to_plane(self, other: Point):
+    def normal_vector_from_point_to_plane(self, other: Point) -> Vector:
         w = Vector.from_two_points(start=other, end=self.point)
         proj = w.get_dot_product(self.normal) / self.normal.magnitude
         if proj == 0:
@@ -306,7 +309,7 @@ class Plane(BaseModel):
             return Vector.from_array(self.normal.as_array)
         return Vector(x=proj * self.normal.x, y=proj * self.normal.y, z=proj * self.normal.z)
 
-    def project_point(self, other_point: Point):
+    def project_point(self, other_point: Point) -> Point:
         pt = other_point.as_array
         plane_normal = self.normal.get_unit_vector().as_array
         point_to_plane = pt - self.point.as_array
@@ -314,16 +317,16 @@ class Plane(BaseModel):
         projected_point = pt - distance_to_plane * plane_normal
         return Point(x=projected_point[0], y=projected_point[1], z=projected_point[2])
 
-    def project_line(self, line: Line):
+    def project_line(self, line: Line) -> Line:
         projected_start_point = self.project_point(line.point)
         projected_end_along_direction = self.project_point(Point(x=line.point.x + line.direction.x, y=line.point.y + line.direction.y, z=line.point.z + line.direction.z))
         return Line.from_two_points(projected_start_point, projected_end_along_direction)
 
-    def get_projected_vector(self, vector: Vector):
+    def get_projected_vector(self, vector: Vector) -> Vector:
         unit_normal = self.normal.get_unit_vector()
         return Vector.from_array(vector.as_array - vector.get_dot_product(unit_normal) * unit_normal.as_array)
 
-    def find_perpendicular_bisector_on_plane(self, point1: Point, point2: Point):
+    def find_perpendicular_bisector_on_plane(self, point1: Point, point2: Point) -> Line:
         projected_point_1 = self.project_point(point1)
         projected_point_2 = self.project_point(point2)
         mid_point = Point.mid_point(projected_point_1, projected_point_2)
@@ -334,3 +337,15 @@ class Plane(BaseModel):
         else:
             v = v / np.linalg.norm(v)
         return Line(point=mid_point, direction=Vector.from_array(v))
+
+    def find_intersection_of_lines_projected(self, line1: Line, line2: Line) -> Point:
+        proj_l1 = self.project_line(line1)
+        proj_l2 = self.project_line(line2)
+        a = np.array([proj_l1.direction.as_array, -proj_l2.direction.as_array]).T
+        b = proj_l2.point.as_array - proj_l1.point.as_array
+        if np.linalg.matrix_rank(a) < 2:
+            # the two lines are parallel
+            return None
+        t = np.linalg.lstsq(a, b, rcond=None)[0][0]
+        intersection = proj_l1.point.as_array + t * proj_l1.direction.as_array
+        return Point.from_array(intersection)
