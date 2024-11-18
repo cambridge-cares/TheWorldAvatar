@@ -18,6 +18,15 @@ public class LifecycleResource {
   public static final String EVENT_KEY = "event";
   public static final String STAGE_KEY = "stage";
 
+  public static final String LIFECYCLE_EVENT_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>/<https://www.omg.org/spec/Commons/Collections/comprises>/^<https://www.omg.org/spec/Commons/Classifiers/classifies>";
+  public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
+  public static final String EVENT_DELIVERY = "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
+  public static final String EVENT_CANCELLATION = "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
+  public static final String EVENT_MIS_REPORT = "https://www.theworldavatar.com/kg/ontoservice/MissedServiceEvent";
+  public static final String EVENT_CONTRACT_COMPLETION = "https://www.theworldavatar.com/kg/ontoservice/ContractDischarge ";
+  public static final String EVENT_CONTRACT_RESCISSION = "https://www.theworldavatar.com/kg/ontoservice/ContractRescission ";
+  public static final String EVENT_CONTRACT_TERMINATION = "https://www.theworldavatar.com/kg/ontoservice/ContractTermination ";
+
   // Private constructor to prevent instantiation
   private LifecycleResource() {
     throw new UnsupportedOperationException("This class cannot be instantiated!");
@@ -78,13 +87,13 @@ public class LifecycleResource {
   public static String getEventClass(LifecycleEventType eventType) {
     switch (eventType) {
       case LifecycleEventType.APPROVED:
-        return "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
+        return EVENT_APPROVAL;
       case LifecycleEventType.SERVICE_EXECUTION:
-        return "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
+        return EVENT_DELIVERY;
       case LifecycleEventType.SERVICE_CANCELLATION:
-        return "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
+        return EVENT_CANCELLATION;
       case LifecycleEventType.SERVICE_MISS_REPORT:
-        return "https://www.theworldavatar.com/kg/ontoservice/MissedServiceEvent";
+        return EVENT_MIS_REPORT;
       default:
         throw new IllegalArgumentException("Invalid event type!");
     }

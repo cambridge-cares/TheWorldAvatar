@@ -29,6 +29,7 @@ import org.springframework.web.client.RestClient;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlVariableOrder;
+import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
@@ -304,13 +305,29 @@ public class KGService {
    *                       entities.
    */
   public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent) {
+    return this.queryInstances(shaclPathQuery, targetId, hasParent, null);
+  }
+
+  /**
+   * Queries for either all instances or a specific instance based on the id.
+   * 
+   * @param shaclPathQuery The query to retrieve the required predicate paths in
+   *                       the SHACL restrictions.
+   * @param targetId       An optional field to target the query at a specific
+   *                       instance.
+   * @param hasParent      Indicates if the query needs to filter out parent
+   *                       entities.
+   * @param lifecycleEvent Optional parameter to dictate the filter for a relevant
+   *                       lifecycle event.
+   */
+  public Queue<SparqlBinding> queryInstances(String shaclPathQuery, String targetId, boolean hasParent,
+      LifecycleEventType lifecycleEvent) {
     // Initialise a new queue to store all variables
     // And add the first level right away
     Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = this.queryNestedPredicates(shaclPathQuery);
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-
     Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, targetId,
-        hasParent);
+        hasParent, lifecycleEvent);
     LOGGER.debug("Querying the knowledge graph for the instances...");
     List<SparqlVariableOrder> varSequence = this.queryTemplateFactory.getSequence();
     // Query for direct instances
@@ -339,7 +356,8 @@ public class KGService {
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);
     }
     LOGGER.debug("Generating the query template from the predicate paths and variables queried...");
-    Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, false);
+    Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, null, false,
+        null);
     LOGGER.debug("Querying the knowledge graph for the instances in csv format...");
     // Query for direct instances
     String[] resultRows = this.queryCSV(queries.poll(), SparqlEndpointType.MIXED);

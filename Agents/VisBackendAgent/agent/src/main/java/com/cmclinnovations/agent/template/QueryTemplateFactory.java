@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlQueryLine;
 import com.cmclinnovations.agent.model.SparqlVariableOrder;
+import com.cmclinnovations.agent.model.type.LifecycleEventType;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -64,14 +66,17 @@ public class QueryTemplateFactory {
    * ?iri <prop_path>/<prop_path2> ?property2.
    * }
    * 
-   * @param bindings  The bindings queried from SHACL restrictions that should
-   *                  be in the template.
-   * @param filterId  An optional field to target the query at a specific
-   *                  instance.
-   * @param hasParent Indicates if the query needs to filter out parent
-   *                  entities.
+   * @param bindings       The bindings queried from SHACL restrictions that
+   *                       should be in the template.
+   * @param filterId       An optional field to target the query at a specific
+   *                       instance.
+   * @param hasParent      Indicates if the query needs to filter out parent
+   *                       entities.
+   * @param lifecycleEvent Optional parameter to dictate the filter for a relevant
+   *                       lifecycle event.
    */
-  public Queue<String> genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent) {
+  public Queue<String> genGetTemplate(Queue<Queue<SparqlBinding>> bindings, String filterId, boolean hasParent,
+      LifecycleEventType lifecycleEvent) {
     // Validate inputs
     if (hasParent && filterId == null) {
       LOGGER.error("Detected a parent without a valid filter ID!");
@@ -104,6 +109,7 @@ public class QueryTemplateFactory {
     }
     this.queryLines.values().forEach(whereBuilder::append);
     this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
+    this.appendOptionalLifecycleFilters(whereBuilder, lifecycleEvent);
     return this.genFederatedQuery(selectVariableBuilder.toString(), whereBuilder.toString(), targetClass);
   }
 
@@ -416,6 +422,24 @@ public class QueryTemplateFactory {
       query.append("FILTER STRENDS(STR(?id), \"")
           .append(filterId)
           .append("\")");
+    }
+  }
+
+  /**
+   * Appends optional lifecycle filter if required based on the specified event.
+   * 
+   * @param query          Builder for the query template.
+   * 
+   * @param lifecycleEvent Target event for filter.
+   */
+  private void appendOptionalLifecycleFilters(StringBuilder query, LifecycleEventType lifecycleEvent) {
+    if (lifecycleEvent != null) {
+      query.append("FILTER NOT EXISTS{");
+      if (lifecycleEvent.equals(LifecycleEventType.APPROVED)) {
+        StringResource.appendTriple(query, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
+            StringResource.parseIriForQuery(LifecycleResource.EVENT_APPROVAL));
+      }
+      query.append("}");
     }
   }
 

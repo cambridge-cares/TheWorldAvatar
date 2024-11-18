@@ -7,9 +7,11 @@ import org.apache.logging.log4j.Logger;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cmclinnovations.agent.model.response.ApiResponse;
@@ -236,6 +238,17 @@ public class LifecycleController {
     } else {
       return deleteResponse;
     }
+  }
+
+  /**
+   * Retrieve all draft contracts ie awaiting approval.
+   */
+  @GetMapping("/contracts/draft")
+  public ResponseEntity<?> getDraftContracts(
+      @RequestParam(required = true) String type,
+      @RequestParam(defaultValue = "false") boolean label) {
+    LOGGER.info("Received request to retrieve draft contracts...");
+    return this.lifecycleService.getContracts(type, label, LifecycleEventType.APPROVED);
   }
 
   /**

@@ -388,7 +388,11 @@ This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to man
 
 #### 2.6.1 Draft route
 
-This endpoint serves to draft a new contract, inclusive of its lifecycle and the schedule. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft contract at the following endpoint:
+This endpoint serves to draft a new contract, inclusive of its lifecycle and the schedule, or retrieve all draft contracts that are awaiting approval. 
+
+> New/Edit draft contract
+
+Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft contract at the following endpoint:
 
 ```
 <baseURL>/vis-backend-agent/contracts/draft
@@ -417,6 +421,12 @@ Note that this route will interact with the [schedule route](#262-schedule-route
 ```
 
 A successful request will return `{"message": "Contract has been successfully drafted/updated!", "iri" : "root iri that is instantiated"}`.
+
+> Get all draft contracts
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/draft?type={type}` endpoint to retrieve all draft contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+
+There is also an additional optional parameter `label` to retrieve draft contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
 
 #### 2.6.2 Schedule route
 

@@ -3,9 +3,12 @@ package com.cmclinnovations.agent.service;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
@@ -17,6 +20,7 @@ import com.cmclinnovations.agent.utils.StringResource;
 @Service
 public class LifecycleService {
   private final KGService kgService;
+  private final FileService fileService;
 
   private static final Logger LOGGER = LogManager.getLogger(LifecycleService.class);
 
@@ -25,8 +29,9 @@ public class LifecycleService {
    * 
    * @param kgService KG service for performing the query.
    */
-  public LifecycleService(KGService kgService) {
+  public LifecycleService(KGService kgService, FileService fileService) {
     this.kgService = kgService;
+    this.fileService = fileService;
   }
 
   /**
@@ -61,12 +66,35 @@ public class LifecycleService {
   }
 
   /**
+   * Retrieve all the contract instances and their information based on the
+   * resource ID.
+   * 
+   * @param resourceID The target resource identifier for the instance class.
+   * @param eventType  The target event type to retrieve.
+   */
+  public ResponseEntity<?> getContracts(String resourceID, boolean requireLabel, LifecycleEventType eventType) {
+    LOGGER.debug("Retrieving all contracts...");
+    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
+    // Return the BAD REQUEST response directly if IRI is invalid
+    if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return iriResponse;
+    }
+    // Only use the label query if required due to the slower query performance
+    String queryPath = requireLabel ? FileService.SHACL_PATH_LABEL_QUERY_RESOURCE
+        : FileService.SHACL_PATH_QUERY_RESOURCE;
+
+    String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
+    Queue<SparqlBinding> results = this.kgService.queryInstances(query, null, false, eventType);
+    return new ResponseEntity<>(results.stream().map(SparqlBinding::get).collect(Collectors.toList()), HttpStatus.OK);
+  }
+
+  /**
    * Retrieve the stage occurrence instance associated with the target contract.
    * 
    * @param query     The query to execute.
    * @param eventType The target event type to retrieve.
    */
-  public String getStageInstance(String contractId, LifecycleEventType eventType) {
+  private String getStageInstance(String contractId, LifecycleEventType eventType) {
     LOGGER.debug("Retrieving stage instance for {}...", contractId);
     String query = "PREFIX fibo-fnd-arr-lif: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/>" +
         "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>" +
