@@ -608,6 +608,113 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "Buildings",
+            "stack": "<PUBLIC_URL>",
+            "sources": [
+                {
+                    "id": "mapbox-streets",
+                    "type": "vector",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "url": "mapbox://mapbox.mapbox-streets-v8"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "buildings",
+                    "source": "mapbox-streets",
+                    "order": 0,
+                    "name": "Buildings",
+                    "treeable": false,
+                    "source-layer": "building",
+                    "filter": [
+                        "==",
+                        [
+                            "get",
+                            "extrude"
+                        ],
+                        "true"
+                    ],
+                    "type": "fill-extrusion",
+                    "minzoom": 0,
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "match",
+                            [
+                                "get",
+                                "type"
+                            ],
+                            "apartments",
+                            "#DAB1DA",
+                            "house",
+                            "#DAB1DA",
+                            "detached",
+                            "#DAB1DA",
+                            "residental",
+                            "#DAB1DA",
+                            "dormitory",
+                            "#DAB1DA",
+                            "terrace",
+                            "#DAB1DA",
+                            "houseboat",
+                            "#DAB1DA",
+                            "bungalow",
+                            "#DAB1DA",
+                            "fire_station",
+                            "#D62728",
+                            "government",
+                            "#D62728",
+                            "public",
+                            "#D62728",
+                            "hospital",
+                            "#FF7F0E",
+                            "university",
+                            "#2CA02C",
+                            "kindergarten",
+                            "#2CA02C",
+                            "college",
+                            "#2CA02C",
+                            "school",
+                            "#2CA02C",
+                            "commercial",
+                            "#1F77B4",
+                            "office",
+                            "#1F77B4",
+                            "industrial",
+                            "#1F77B4",
+                            "retail",
+                            "#1F77B4",
+                            "supermarket",
+                            "#1F77B4",
+                            "warehouse",
+                            "#1F77B4",
+                            "kiosk",
+                            "#1F77B4",
+                            "carport",
+                            "#1F77B4",
+                            "garage",
+                            "#1F77B4",
+                            "parking",
+                            "#1F77B4",
+                            "service",
+                            "#1F77B4",
+                            "#808080"
+                        ],
+                        "fill-extrusion-height": [
+                            "get",
+                            "height"
+                        ],
+                        "fill-extrusion-base": [
+                            "get",
+                            "min_height"
+                        ],
+                        "fill-extrusion-opacity": 0.8
+                    }
+                }
+            ]
         }
     ]
 }
