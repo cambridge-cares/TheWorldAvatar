@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 public class QueryTemplateFactory {
   private String parentField;
@@ -468,7 +469,7 @@ public class QueryTemplateFactory {
   private void recursiveParseNode(StringBuilder deleteBuilder, StringBuilder whereBuilder, ObjectNode currentNode,
       String targetId) {
     // First retrieve the ID value as a subject of the triple
-    String idTripleSubject = this.getFormattedQueryVariable((ObjectNode) currentNode.path(ShaclResource.ID_KEY),
+    String idTripleSubject = this.getFormattedQueryVariable(currentNode.path(ShaclResource.ID_KEY),
         targetId);
     Iterator<Map.Entry<String, JsonNode>> iterator = currentNode.fields();
     while (iterator.hasNext()) {
@@ -476,11 +477,7 @@ public class QueryTemplateFactory {
       JsonNode fieldNode = field.getValue();
       // Create the following query line for all @type fields
       if (field.getKey().equals(ShaclResource.TYPE_KEY)) {
-        // If it is an object, it is definitely a replacement object, and retriving the
-        // @replace key is sufficient; Otherwise, default to text
-        String typeTripleObject = fieldNode.isObject()
-            ? this.getFormattedQueryVariable((ObjectNode) fieldNode, targetId)
-            : StringResource.parseIriForQuery(fieldNode.asText());
+        String typeTripleObject = this.getFormattedQueryVariable(fieldNode, targetId);
         StringResource.appendTriple(deleteBuilder, idTripleSubject, "rdf:type", typeTripleObject);
         StringResource.appendTriple(whereBuilder, idTripleSubject, "rdf:type", typeTripleObject);
         // For all @reverse fields
@@ -510,17 +507,25 @@ public class QueryTemplateFactory {
    * Retrieves the query variable from the replacement node as either an IRI or
    * query variable.
    * 
-   * @param replacementNode Target for retrieval.
+   * @param replacementNode Target for retrieval. Node must be an Object or Text
+   *                        Node.
    * @param targetId        The target instance IRI.
    */
-  private String getFormattedQueryVariable(ObjectNode replacementNode, String targetId) {
-    String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
-    String replacementType = replacementNode.path(ShaclResource.TYPE_KEY).asText();
-    // Only the id replacement field with prefixes will be returned as an IRI
-    if (replacementType.equals("iri") && replacementId.equals("id")) {
-      return StringResource.parseIriForQuery(replacementNode.path("prefix").asText() + targetId);
+  private String getFormattedQueryVariable(JsonNode replacementNode, String targetId) {
+    // If it is an object, it is definitely a replacement object, and retriving the
+    // @replace key is sufficient;
+    if (replacementNode.isObject()) {
+      String replacementId = replacementNode.path(ShaclResource.REPLACE_KEY).asText();
+      String replacementType = replacementNode.path(ShaclResource.TYPE_KEY).asText();
+      // Only the id replacement field with prefixes will be returned as an IRI
+      if (replacementType.equals("iri") && replacementId.equals("id")) {
+        return StringResource.parseIriForQuery(replacementNode.path("prefix").asText() + targetId);
+      }
+      return ShaclResource.VARIABLE_MARK + replacementId.replaceAll("\\s+", "_");
+    } else {
+      // Otherwise, default to text
+      return StringResource.parseIriForQuery(((TextNode) replacementNode).textValue());
     }
-    return ShaclResource.VARIABLE_MARK + replacementId.replaceAll("\\s+", "_");
   }
 
   /**
@@ -542,10 +547,14 @@ public class QueryTemplateFactory {
           ? fieldNode
           : fieldNode.path(ShaclResource.ID_KEY);
       String formattedPredicate = StringResource.parseIriForQuery(predicate);
-      String formattedObjVar = this.getFormattedQueryVariable((ObjectNode) targetTripleObjectNode, targetId);
+      String formattedObjVar = this.getFormattedQueryVariable(targetTripleObjectNode, targetId);
       StringResource.appendTriple(deleteBuilder, subject, formattedPredicate, formattedObjVar);
       StringResource.appendTriple(whereBuilder, subject, formattedPredicate, formattedObjVar);
-      if (!fieldNode.has(ShaclResource.REPLACE_KEY) && !fieldNode.has(ShaclResource.VAL_KEY)) {
+      // No further processing required for objects intended for replacement, @value,
+      if (!fieldNode.has(ShaclResource.REPLACE_KEY) && !fieldNode.has(ShaclResource.VAL_KEY) &&
+      // or a one line instance link to a TextNode eg: "@id" : "instanceIri"
+          !(fieldNode.has(ShaclResource.ID_KEY) && fieldNode.size() == 1
+              && fieldNode.path(ShaclResource.ID_KEY).isTextual())) {
         this.recursiveParseNode(deleteBuilder, whereBuilder, (ObjectNode) fieldNode, targetId);
       }
       // For arrays,iterate through each object and parse the nested node
