@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
-import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
 public class GetService {
@@ -47,7 +46,7 @@ public class GetService {
    */
   public ResponseEntity<?> getAllInstances(String resourceID, String parentInstanceId, boolean requireLabel) {
     LOGGER.debug("Retrieving all instances of {} ...", resourceID);
-    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -81,7 +80,7 @@ public class GetService {
    */
   public ResponseEntity<String> getAllInstancesInCSV(String resourceID) {
     LOGGER.info("Retrieving all instances of {} in csv...", resourceID);
-    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -101,7 +100,7 @@ public class GetService {
    */
   public ResponseEntity<?> getInstance(String resourceID, String targetId) {
     LOGGER.debug("Retrieving an instance of {} ...", resourceID);
-    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -132,7 +131,7 @@ public class GetService {
    */
   public ResponseEntity<?> getForm(String resourceID, String targetId) {
     LOGGER.debug("Retrieving the form template for {} ...", resourceID);
-    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -166,7 +165,7 @@ public class GetService {
    */
   public ResponseEntity<?> getConceptMetadata(String resourceID) {
     LOGGER.debug("Retrieving the instances for {} ...", resourceID);
-    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -197,7 +196,7 @@ public class GetService {
    */
   public ResponseEntity<?> getMatchingInstances(String resourceID, Map<String, String> criterias) {
     LOGGER.debug("Retrieving the form template for {} ...", resourceID);
-    ResponseEntity<String> iriResponse = this.getTargetIri(resourceID);
+    ResponseEntity<String> iriResponse = this.fileService.getTargetIri(resourceID);
     // Return the BAD REQUEST response directly if IRI is invalid
     if (iriResponse.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
       return iriResponse;
@@ -211,27 +210,5 @@ public class GetService {
             .map(binding -> binding.getFieldValue("iri"))
             .collect(Collectors.toList()),
         HttpStatus.OK);
-  }
-
-  /**
-   * Gets the target IRI as a response entity if there is an associated identifier
-   * in the file resource. This function also validates if the route is enabled
-   * depending on if the user has set an identifier.
-   * 
-   * @param resourceID The target resource identifier for the instance class.
-   */
-  private ResponseEntity<String> getTargetIri(String resourceID) {
-    LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", resourceID);
-    String targetClass = this.fileService.getResourceTarget(resourceID,
-        FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE);
-    // Handle invalid target type
-    if (targetClass.isEmpty()) {
-      return new ResponseEntity<>(MessageFormat.format(
-          "Route is invalid at /{0}! If this route is intended to be enabled, please contact your technical team for assistance.",
-          resourceID),
-          HttpStatus.BAD_REQUEST);
-    }
-    // For valid target type, return the associated target class
-    return new ResponseEntity<>(StringResource.parseIriForQuery(targetClass), HttpStatus.OK);
   }
 }

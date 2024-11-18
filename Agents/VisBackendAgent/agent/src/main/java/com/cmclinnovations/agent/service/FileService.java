@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cmclinnovations.agent.utils.StringResource;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -125,6 +126,28 @@ public class FileService {
           HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(targetFileName, HttpStatus.OK);
+  }
+
+  /**
+   * Gets the target IRI as a response entity if there is an associated identifier
+   * in the file resource. This function also validates if the route is enabled
+   * depending on if the user has set an identifier.
+   * 
+   * @param resourceID The target resource identifier for the instance class.
+   */
+  public ResponseEntity<String> getTargetIri(String resourceID) {
+    LOGGER.debug("Retrieving the target class associated with the resource identifier: {} ...", resourceID);
+    String targetClass = this.getResourceTarget(resourceID,
+        FileService.SPRING_FILE_PATH_PREFIX + FileService.APPLICATION_FORM_RESOURCE);
+    // Handle invalid target type
+    if (targetClass.isEmpty()) {
+      return new ResponseEntity<>(MessageFormat.format(
+          "Route is invalid at /{0}! If this route is intended to be enabled, please contact your technical team for assistance.",
+          resourceID),
+          HttpStatus.BAD_REQUEST);
+    }
+    // For valid target type, return the associated target class
+    return new ResponseEntity<>(StringResource.parseIriForQuery(targetClass), HttpStatus.OK);
   }
 
   /**
