@@ -74,6 +74,10 @@ public class LifecycleResource {
       case LifecycleEventType.SERVICE_CANCELLATION:
       case LifecycleEventType.SERVICE_MISS_REPORT:
         return "https://www.theworldavatar.com/kg/ontoservice/ServiceExecutionStage";
+      case LifecycleEventType.ARCHIVE_COMPLETION:
+      case LifecycleEventType.ARCHIVE_RESCINDMENT:
+      case LifecycleEventType.ARCHIVE_TERMINATION:
+        return "https://www.theworldavatar.com/kg/ontoservice/ExpirationStage";
       default:
         throw new IllegalArgumentException("Invalid event type!");
     }
@@ -94,6 +98,12 @@ public class LifecycleResource {
         return EVENT_CANCELLATION;
       case LifecycleEventType.SERVICE_MISS_REPORT:
         return EVENT_MIS_REPORT;
+      case LifecycleEventType.ARCHIVE_COMPLETION:
+        return EVENT_CONTRACT_COMPLETION;
+      case LifecycleEventType.ARCHIVE_RESCINDMENT:
+        return EVENT_CONTRACT_RESCISSION;
+      case LifecycleEventType.ARCHIVE_TERMINATION:
+        return EVENT_CONTRACT_TERMINATION;
       default:
         throw new IllegalArgumentException("Invalid event type!");
     }
@@ -114,6 +124,12 @@ public class LifecycleResource {
         return "cancel";
       case LifecycleEventType.SERVICE_MISS_REPORT:
         return "report";
+      case LifecycleEventType.ARCHIVE_COMPLETION:
+        return "completed";
+      case LifecycleEventType.ARCHIVE_RESCINDMENT:
+        return "rescinded";
+      case LifecycleEventType.ARCHIVE_TERMINATION:
+        return "terminated";
       default:
         throw new IllegalArgumentException("Invalid event type!");
     }

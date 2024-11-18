@@ -180,6 +180,50 @@ public class LifecycleController {
   }
 
   /**
+   * Rescind the ongoing contract specified.
+   */
+  @PostMapping("/contracts/archive/rescind")
+  public ResponseEntity<ApiResponse> rescindContract(@RequestBody Map<String, Object> params) {
+    if (this.isInvalidParams(params)) {
+      return new ResponseEntity<>(
+          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+    }
+    LOGGER.info("Received request to rescind the contract...");
+    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.ARCHIVE_RESCINDMENT);
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
+        params);
+    if (response.getStatusCode() == HttpStatus.CREATED) {
+      LOGGER.info("Contract has been successfully rescinded!");
+      return new ResponseEntity<>(new ApiResponse("Contract has been successfully rescinded!"), HttpStatus.OK);
+    } else {
+      return response;
+    }
+  }
+
+  /**
+   * Terminate the ongoing contract specified.
+   */
+  @PostMapping("/contracts/archive/terminate")
+  public ResponseEntity<ApiResponse> terminateContract(@RequestBody Map<String, Object> params) {
+    if (this.isInvalidParams(params)) {
+      return new ResponseEntity<>(
+          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+    }
+    LOGGER.info("Received request to terminate the contract...");
+    this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.ARCHIVE_TERMINATION);
+    ResponseEntity<ApiResponse> response = this.addService.instantiate(
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
+        params);
+    if (response.getStatusCode() == HttpStatus.CREATED) {
+      LOGGER.info("Contract has been successfully terminated!");
+      return new ResponseEntity<>(new ApiResponse("Contract has been successfully terminated!"), HttpStatus.OK);
+    } else {
+      return response;
+    }
+  }
+
+  /**
    * Update the draft contract's lifecycle details in the knowledge graph.
    */
   @PutMapping("/contracts/draft")

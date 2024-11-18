@@ -390,7 +390,7 @@ This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to man
 
 #### 2.6.1 Draft route
 
-This endpoint serves to draft a new contract, inclusive of its lifecycle and the schedule, or retrieve all draft contracts that are awaiting approval. 
+This endpoint serves to draft a new contract, inclusive of its lifecycle and the schedule, or retrieve all draft contracts that are awaiting approval.
 
 > New/Edit draft contract
 
@@ -530,9 +530,41 @@ There is also an additional optional parameter `label` to retrieve in progress c
 
 #### 2.6.7 Archive contract route
 
-The endpoint serves to retrieve all contracts that have expired and are in archive. Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive?type={type}` endpoint to retrieve all archived contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+The endpoint serves to archive in progress contracts as well as retrieve all contracts that have expired and are in archive.
+
+> Get all archived contracts
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/archive?type={type}` endpoint to retrieve all archived contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
 
 There is also an additional optional parameter `label` to retrieve archived contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
+
+> Rescind an ongoing contract
+
+Users must send a `POST` request to rescind an ongoing contract at the `<baseURL>/vis-backend-agent/contracts/archive/rescind` endpoint, with the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Reasons for the rescindment"
+}
+```
+
+A successful request will return `{"message": "Contract has been successfully rescinded!", "iri" : "root iri that is instantiated"}`.
+
+> Terminate an ongoing contract
+
+Users must send a `POST` request to terminate an ongoing contract at the `<baseURL>/vis-backend-agent/contracts/archive/terminate` endpoint, with the following `JSON` request parameters:
+
+```json
+{
+  /* parameters */
+  "contract": "The target contract IRI",
+  "remarks": "Reasons for the early termination"
+}
+```
+
+A successful request will return `{"message": "Contract has been successfully terminated!", "iri" : "root iri that is instantiated"}`.
 
 ## 3. SHACL Restrictions
 
