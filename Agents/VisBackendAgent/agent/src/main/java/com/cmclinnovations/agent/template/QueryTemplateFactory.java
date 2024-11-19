@@ -106,6 +106,13 @@ public class QueryTemplateFactory {
       this.varSequence.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
           .append(variable.property().replaceAll("\\s+", "_"))
           .append(ShaclResource.WHITE_SPACE));
+      // Add a status variable for lifecycle if available
+      if (lifecycleEvent != null) {
+        this.varSequence.add(new SparqlVariableOrder(LifecycleResource.ARCHIVE_STATUS_KEY, 1, 0));
+        selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
+            .append(LifecycleResource.ARCHIVE_STATUS_KEY)
+            .append(ShaclResource.WHITE_SPACE);
+      }
     }
     this.queryLines.values().forEach(whereBuilder::append);
     this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
@@ -441,7 +448,7 @@ public class QueryTemplateFactory {
         LifecycleResource.appendArchivedFilterExists(query, false);
         break;
       case LifecycleEventType.ARCHIVE_COMPLETION:
-        LifecycleResource.appendArchivedFilterExists(query, true);
+        LifecycleResource.appendArchivedStateQuery(query);
         break;
       default:
         // Do nothing if it doesnt meet the above events

@@ -17,6 +17,7 @@ public class LifecycleResource {
   public static final String DATE_KEY = "date";
   public static final String EVENT_KEY = "event";
   public static final String STAGE_KEY = "stage";
+  public static final String ARCHIVE_STATUS_KEY = "status";
 
   public static final String LIFECYCLE_EVENT_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>/<https://www.omg.org/spec/Commons/Collections/comprises>/^<https://www.omg.org/spec/Commons/Classifiers/classifies>";
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
@@ -151,6 +152,30 @@ public class LifecycleResource {
       default:
         return null;
     }
+  }
+
+  /**
+   * Appends a query statement to retrieve the status of an archived contract.
+   * 
+   * @param query Builder for the query template.
+   */
+  public static void appendArchivedStateQuery(StringBuilder query) {
+    String eventVar = ShaclResource.VARIABLE_MARK + EVENT_KEY;
+    StringResource.appendTriple(query, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH, eventVar);
+    String statement = "FILTER(" + eventVar + " IN ("
+        + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_COMPLETION)
+        + "," + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_RESCISSION) + ","
+        + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_TERMINATION) + "))"
+        + "BIND("
+        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_COMPLETION)
+        + ",\"Completed\","
+        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_RESCISSION)
+        + ",\"Rescinded\","
+        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_TERMINATION)
+        + ",\"Terminated\""
+        + ",\"Unknown\"))) AS ?" + LifecycleResource.ARCHIVE_STATUS_KEY
+        + ")";
+    query.append(statement);
   }
 
   /**
