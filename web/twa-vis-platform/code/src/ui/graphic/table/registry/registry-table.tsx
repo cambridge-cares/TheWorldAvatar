@@ -14,6 +14,7 @@ import { RegistryTableTheme } from './registry-table-theme';
 
 interface RegistryTableProps {
   recordType: string;
+  lifecycleStage: string;
   instances: RegistryFieldValues[];
   limit?: number;
 }
@@ -22,6 +23,7 @@ interface RegistryTableProps {
  * This component renders a registry of table based on the inputs.
  * 
  * @param {string} recordType The type of the record.
+ * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
  * @param {RegistryFieldValues[]} instances The instance values for the table.
  * @param {number} limit Optional limit to the number of columns shown.
  */
@@ -42,6 +44,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
           return (<RegistryRowActions
             recordId={recordId}
             recordType={props.recordType}
+            lifecycleStage={props.lifecycleStage}
           />);
         }
       },
@@ -97,6 +100,6 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
           autosizeOnMount={true}
         />
       </Box>
-    </RegistryTableTheme> 
+    </RegistryTableTheme>
   )
 }

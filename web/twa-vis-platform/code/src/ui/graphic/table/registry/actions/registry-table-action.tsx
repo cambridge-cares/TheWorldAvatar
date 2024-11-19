@@ -10,6 +10,7 @@ import { Routes } from 'io/config/routes';
 interface RegistryRowActionsProps {
   recordId: string;
   recordType: string;
+  lifecycleStage: string;
 }
 
 /**
@@ -17,6 +18,7 @@ interface RegistryRowActionsProps {
  * 
  * @param {string} recordId The identifier of the record.
  * @param {string} recordType The type of the record.
+ * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
  */
 export default function RegistryRowActions(props: Readonly<RegistryRowActionsProps>) {
   const router = useRouter();
@@ -38,21 +40,21 @@ export default function RegistryRowActions(props: Readonly<RegistryRowActionsPro
   return (
     <div className={styles["table-icon-cell"]}>
       {/* Action buttons or icons */}
-      <MaterialIconButton
+      {props.lifecycleStage == Routes.REGISTRY_PENDING && <MaterialIconButton
         iconName="edit"
         iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
         onClick={handleClickEdit}
-      />
+      />}
       <MaterialIconButton
         iconName="expand_circle_right"
         iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
         onClick={handleClickView}
       />
-      <MaterialIconButton
+      {props.lifecycleStage == Routes.REGISTRY_PENDING && <MaterialIconButton
         iconName="delete"
         iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
         onClick={handleClickDelete}
-      />
+      />}
     </div>
   );
 }
