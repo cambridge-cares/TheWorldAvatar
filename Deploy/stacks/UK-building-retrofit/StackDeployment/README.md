@@ -62,14 +62,15 @@ bash ./stack.sh remove Cam-Ely-Wis-DT -v
 # Remove individual service
 bash ./stack.sh remove Cam-Ely-Wis-DT <service name>
 ```
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](Deploy/stacks/dynamic/stack-manager/README.md).
 
 ### Spinning Up the Stack Remotely via SSH
 
-For remote deployment, navigate to the `Settings of remote Linux server/README.md` and follow the instructions provided for SSH setup.
+To deploy the stack remotely via SSH, use VSCode's built-in SSH support. Follow the steps in [VSCode via SSH] to connect to a remote machine (e.g., a virtual machine on Digital Ocean) and start deployment. Regular log in relies on username and password, You can also consider generating an [SSH key] and uploading it via [Upload SSH key] to enable automatic authentication and eliminate repeated credential prompts. After logging in, [git clone] a remote copy of [The World Avatar] repository and follow the provided instructions to deploy the stack.
 
-&nbsp;
+To access deployed containers through exposed endpoints (e.g., `http://<host IP>:3840/ontop/ui`), ensure the necessary ports are open on the remote machine. Please request port changes through your server administrator—avoid directly modifying firewall rules on individual droplets using tools like `ufw` or `iptables`.
 
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](Deploy/stacks/dynamic/stack-manager/README.md).
+When interacting with the GeoServer GUI remotely, some issues may arise (e.g., inability to remove layers or edit CRS information). To address this, consider [forwarding the port] used by the stack to your local machine after establishing an [SSH tunnel]. This will make GeoServer accessible at `http://localhost:{port}/geoserver/` instead of a remote address like `http://<host IP>:{port}/geoserver/`. 
 
 ## 3. Uploading Initial Data Using Stack-Data-Uploader
 
@@ -120,14 +121,16 @@ Further query templates can be found in the Deploy/stacks/UK-building-retrofit/S
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
-[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
-[Environment Agency]: https://environment.data.gov.uk/flood-monitoring/doc/reference
+[SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [forwarding the port]: https://code.visualstudio.com/docs/remote/ssh#_forwarding-a-port-creating-ssh-tunnel
 [OS Features API]: https://api.os.uk/features/
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [MetOffice My Account]: https://register.metoffice.gov.uk/MyAccountClient/account/view
+[The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar.git
+[git clone]: https://git-scm.com/docs/git-clone
+[SSH tunnel]: https://code.visualstudio.com/docs/remote/tunnels
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
