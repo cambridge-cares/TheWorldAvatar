@@ -152,7 +152,7 @@ export function getDefaultImageryOption(imagerySettings: ImagerySettings): Image
     imagerySettings = DEFAULT_IMAGERY_OPTIONS;
   }
 
-  if (imagerySettings.default.toLowerCase() == "auto") {
+  if (typeof window !== "undefined" && imagerySettings.default.toLowerCase() == "auto") {
     // Auto detect browser theme
     if (window?.matchMedia && window?.matchMedia('(prefers-color-scheme: dark)').matches) {
       return getImageryOption("Dark", imagerySettings);
