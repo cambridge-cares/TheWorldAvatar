@@ -5,6 +5,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
+import { Routes } from 'io/config/routes';
 
 interface RegistryRowActionsProps {
   recordId: string;
@@ -21,17 +22,17 @@ export default function RegistryRowActions(props: Readonly<RegistryRowActionsPro
   const router = useRouter();
   const handleClickEdit = (): void => {
     // Move to the edit modal page for the specific record
-    router.push(`../edit/${props.recordType}/${props.recordId}`);
+    router.push(`${Routes.REGISTRY_EDIT}/${props.recordType}/${props.recordId}`);
   };
 
   const handleClickView = (): void => {
     // Move to the view modal page for the specific record
-    router.push(`./${props.recordType}/${props.recordId}`);
+    router.push(`${Routes.REGISTRY}/${props.recordType}/${props.recordId}`);
   };
 
   const handleClickDelete = (): void => {
     // Move to the delete modal page for the specific record
-    router.push(`../delete/${props.recordType}/${props.recordId}`);
+    router.push(`${Routes.REGISTRY_DELETE}/${props.recordType}/${props.recordId}`);
   };
 
   return (
