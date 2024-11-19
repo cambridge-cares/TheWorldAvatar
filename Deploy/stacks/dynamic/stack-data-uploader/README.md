@@ -289,12 +289,10 @@ Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader 
 The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)) shows the Ontop OBDA format.
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
-### `"ontopSettings"`
-
-A node to specify Ontop-specific settings.
-
-#### `"rules"`
-Specify list of Ontop `.toml` files provided as paths relative to the [`"datasetDirectory"`](#datasetdirectory).
+### `"rules"`
+Specify list of `.toml` files provided as paths relative to the [`"datasetDirectory"`](#datasetdirectory).
+These `.toml` files specify a list of sparql insert queries.
+For Blazegraph these will run
 An example of such a file can be found (here)[https://github.com/ontop/ontop/blob/f46dabab12aa1e0f0ab9a2b78b16393bee49b9c5/binding/rdf4j/src/test/resources/employee/employee-rules.toml].
 
 ### `"staticGeoServerData"`

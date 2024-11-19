@@ -1,4 +1,4 @@
-package com.cmclinnovations.stack.clients.ontop;
+package com.cmclinnovations.stack.clients.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
