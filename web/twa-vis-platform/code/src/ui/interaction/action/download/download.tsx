@@ -1,6 +1,6 @@
 "use client";
 
-import styles from './download.module.css';
+import styles from '../action.module.css';
 
 import React from 'react';
 
