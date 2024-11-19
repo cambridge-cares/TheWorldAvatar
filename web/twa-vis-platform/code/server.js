@@ -28,11 +28,13 @@ const colourYellow = "\x1b[33m";
 
 
 // Configure the server port; default to 3000 if not specified in environment variables
-if (process.env.PORT) { console.log('port specified in .env file: ', colourGreen, process.env.PORT, colourReset); }
+if (process.env.PORT) { console.log('port specified in environment variable: ', colourGreen, process.env.PORT, colourReset); }
 const port = process.env.PORT || 3000;
 const keycloakEnabled = process.env.KEYCLOAK === 'true';
 const redisHost = process.env.REDIS_HOST || 'localhost';
 const redisPort = process.env.REDIS_PORT || 6379;
+
+if (process.env.ASSET_PREFIX) { console.log('Resource and Asset Prefix: ', colourGreen, process.env.ASSET_PREFIX, colourReset); }
 
 console.log('keycloak authorisation required: ', keycloakEnabled ? colourYellow : colourGreen, process.env.KEYCLOAK, colourReset)
 
@@ -115,6 +117,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log('Running at', colourGreen, `http://localhost:${port}`, colourReset, `development mode is:`, dev ? colourYellow : colourGreen, dev, colourReset);
+    console.log('Running at', colourGreen, `http://localhost:${port}${colourReset}`,`(on host / inside container). Development mode :${dev ? colourYellow : colourGreen}`, dev, colourReset);
   });
 });
