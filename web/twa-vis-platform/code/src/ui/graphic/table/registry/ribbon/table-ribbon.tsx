@@ -43,7 +43,7 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   };
 
   const openAddModal: React.MouseEventHandler<HTMLButtonElement> = () => {
-    router.push(`../add/${props.entityType}`);
+    router.push(`${Routes.REGISTRY_ADD}/${props.entityType}`);
   };
 
   return (
