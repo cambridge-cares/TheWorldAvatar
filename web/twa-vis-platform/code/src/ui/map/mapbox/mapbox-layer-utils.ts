@@ -1,8 +1,8 @@
-import { AnyLayer, BackgroundLayer, CircleLayer, FillExtrusionLayer, FillLayer, HeatmapLayer, LineLayer, Map, RasterLayer, SymbolLayer } from 'mapbox-gl';
+import { BackgroundLayerSpecification, CircleLayerSpecification, FillExtrusionLayerSpecification, FillLayerSpecification, HeatmapLayerSpecification, LayerSpecification, LineLayerSpecification, Map, RasterLayerSpecification, SymbolLayerSpecification } from 'mapbox-gl';
 
+import { Interactions } from 'io/config/interactions';
 import { DataLayer } from 'io/data/data-layer';
 import { DataStore } from 'io/data/data-store';
-import { Interactions } from 'io/config/interactions';
 import { JsonObject } from 'types/json';
 import { ImageryOption, ImagerySettings } from 'types/settings';
 import { getCurrentImageryOption } from 'ui/map/map-helper';
@@ -78,7 +78,7 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
         options["slot"] = "top";
     }
     // Have to cast to type specific object to meet Mapbox's API
-    let mapboxObj: AnyLayer;
+    let mapboxObj: LayerSpecification;
     const layerType = layer.definition["type"];
 
     let paintObj = options["paint"] as JsonObject;
@@ -90,33 +90,33 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
     switch (layerType as string) {
         case "background":
             if (isStandard) paintObj["background-emissive-strength"] = 1.0;
-            mapboxObj = ((options as unknown) as BackgroundLayer);
+            mapboxObj = ((options as unknown) as BackgroundLayerSpecification);
             break;
         case "circle":
             if (isStandard) paintObj["circle-emissive-strength"] = 1.0;
-            mapboxObj = ((options as unknown) as CircleLayer);
+            mapboxObj = ((options as unknown) as CircleLayerSpecification);
             break;
         case "fill-extrusion":
             if (isStandard) paintObj["fill-emissive-strength"] = 1.0;
-            mapboxObj = ((options as unknown) as FillExtrusionLayer);
+            mapboxObj = ((options as unknown) as FillExtrusionLayerSpecification);
             break;
         case "fill":
             if (isStandard) paintObj["fill-emissive-strength"] = 1.0;
-            mapboxObj = ((options as unknown) as FillLayer);
+            mapboxObj = ((options as unknown) as FillLayerSpecification);
             break;
         case "heatmap":
-            mapboxObj = ((options as unknown) as HeatmapLayer);
+            mapboxObj = ((options as unknown) as HeatmapLayerSpecification);
             break;
         case "line":
             if (isStandard) paintObj["line-emissive-strength"] = 1.0;
-            mapboxObj = ((options as unknown) as LineLayer);
+            mapboxObj = ((options as unknown) as LineLayerSpecification);
             break;
         case "raster":
-            mapboxObj = ((options as unknown) as RasterLayer);
+            mapboxObj = ((options as unknown) as RasterLayerSpecification);
             break;
         case "symbol":
             if (isStandard) paintObj["icon-emissive-strength"] = 1.0;
-            mapboxObj = ((options as unknown) as SymbolLayer);
+            mapboxObj = ((options as unknown) as SymbolLayerSpecification);
             break;
     }
 
