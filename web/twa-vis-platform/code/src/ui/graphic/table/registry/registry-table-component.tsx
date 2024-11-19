@@ -8,36 +8,35 @@ import { useSelector } from 'react-redux';
 import { getIsOpenState } from 'state/modal-slice';
 import { RegistryFieldValues } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
-import { getLabelledData } from 'utils/server-actions';
+import { getLifecycleData } from 'utils/server-actions';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import RegistryTable from './registry-table';
 import TableRibbon from './ribbon/table-ribbon';
 
 interface RegistryTableComponentProps {
   entityType: string;
+  lifecycleStage: string;
   registryAgentApi: string;
-  schedulerAgentApi: string;
 }
 
 /**
  * This component renders a registry table for the specified entity.
  * 
  * @param {string} entityType Type of entity for rendering.
+ * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
  * @param {string} registryAgentApi The target endpoint for default registry agents.
- * @param {string} schedulerAgentApi The target endpoint for scheduler specific functionality.
  */
 export default function RegistryTableComponent(props: Readonly<RegistryTableComponentProps>) {
   const isModalOpen: boolean = useSelector(getIsOpenState);
   const [currentInstances, setCurrentInstances] = useState<RegistryFieldValues[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [submitScheduling, setSubmitScheduling] = useState<boolean>(false);
 
   // A hook that refetches all data when the dialogs are closed
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       setIsLoading(true);
       try {
-        const instances: RegistryFieldValues[] = await getLabelledData(props.registryAgentApi, props.entityType);
+        const instances: RegistryFieldValues[] = await getLifecycleData(props.registryAgentApi, props.lifecycleStage, props.entityType);
         setCurrentInstances(instances);
         setIsLoading(false);
       } catch (error) {
@@ -45,11 +44,10 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
       }
     };
 
-    if (!isModalOpen || submitScheduling) {
+    if (!isModalOpen) {
       fetchData();
-      setSubmitScheduling(false);
     }
-  }, [isModalOpen, submitScheduling]);
+  }, [isModalOpen]);
 
   return (
     <div className={styles["container"]}>
@@ -58,8 +56,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
         <TableRibbon
           entityType={props.entityType}
           registryAgentApi={props.registryAgentApi}
-          schedulerAgentApi={props.schedulerAgentApi}
-          setSubmitScheduling = {setSubmitScheduling}
+          lifecycleStage={props.lifecycleStage}
         />
         <div className={styles["table-contents"]}>
           {isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable

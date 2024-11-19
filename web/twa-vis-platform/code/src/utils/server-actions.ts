@@ -3,6 +3,7 @@
  */
 'use server';
 
+import { Paths } from 'io/config/routes';
 import { FieldValues } from 'react-hook-form';
 
 import { RegistryFieldValues, FormTemplate, OntologyConcept } from 'types/form';
@@ -63,13 +64,22 @@ export async function getGeolocation(agentApi: string, params: Record<string, st
 }
 
 /**
- * Retrieves all data of the specified type with human-readable labels for the fields.
+ * Retrieves all data of the specified type associated with a lifecycle. Fields are returned with human-readable labels.
  * 
  * @param {string} agentApi API endpoint.
+ * @param {string} currentStage Current stage of the lifecycle.
  * @param {string} entityType Type of entity to retrieve.
  */
-export async function getLabelledData(agentApi: string, entityType: string): Promise<RegistryFieldValues[]> {
-  const res = await sendRequest(`${agentApi}/${entityType}/label`, "GET");
+export async function getLifecycleData(agentApi: string, currentStage: string, entityType: string): Promise<RegistryFieldValues[]> {
+  let stagePath: string;
+  if (currentStage == Paths.REGISTRY_PENDING) {
+    stagePath = "draft";
+  } else if (currentStage == Paths.REGISTRY_ACTIVE) {
+    stagePath = "service";
+  } else if (currentStage == Paths.REGISTRY_ARCHIVE) {
+    stagePath = "archive";
+  }
+  const res = await sendRequest(`${agentApi}/contracts/${stagePath}?type=${entityType}&label=yes`, "GET");
   const responseData = await res.json();
   return responseData;
 }

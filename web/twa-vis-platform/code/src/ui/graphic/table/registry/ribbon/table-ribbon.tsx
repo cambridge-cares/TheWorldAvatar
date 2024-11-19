@@ -7,15 +7,15 @@ import React, { useState } from 'react';
 import { useProtectedRole } from 'hooks/useProtectedRole';
 import { useRouter } from 'next/navigation';
 
-import MaterialIconButton from 'ui/graphic/icon/icon-button';
-import { sendPostRequest } from 'utils/server-actions';
+import { Routes } from 'io/config/routes';
 import { DownloadButton } from 'ui/interaction/action/download/download';
+import RedirectButton from 'ui/interaction/action/redirect/redirect-button';
+import ActionButton from 'ui/interaction/action/action';
 
 interface TableRibbonProps {
   entityType: string;
   registryAgentApi: string;
-  schedulerAgentApi: string;
-  setSubmitScheduling: React.Dispatch<React.SetStateAction<boolean>>;
+  lifecycleStage: string;
 }
 
 /**
@@ -23,20 +23,16 @@ interface TableRibbonProps {
  * 
  * @param {string} entityType The type of entity.
  * @param {string} registryAgentApi The target endpoint for default registry agents.
- * @param {string} schedulerAgentApi The target endpoint for scheduler specific functionality.
- * @param setSubmitScheduling Set the submit scheduling state for submitting the scheduler.
+ * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
 
   const isKeycloakEnabled = process.env.KEYCLOAK === 'true';
-  
+
   const authorised = useProtectedRole().authorised;
 
   const scheduleId: string = "schedule date";
-  // Users can only either add or schedule at one time; schedule is expected to add new instances but with restrictions
-  const buttonIcon: string = props.schedulerAgentApi ? "schedule_send" : "add";
-  const buttonText: string = props.schedulerAgentApi ? "schedule" : "add " + props.entityType;
 
   // Start off with today's date
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
@@ -46,23 +42,44 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
     setSelectedDate(event.target.value);
   };
 
-  const openAddModal: React.MouseEventHandler<HTMLDivElement> = () => {
+  const openAddModal: React.MouseEventHandler<HTMLButtonElement> = () => {
     router.push(`../add/${props.entityType}`);
   };
-
-  const sendScheduleRequest: React.MouseEventHandler<HTMLDivElement> = () => {
-    const jsonBody: string = JSON.stringify({
-      date: selectedDate,
-    });
-    sendPostRequest(`${props.schedulerAgentApi}/schedule`, jsonBody);
-    props.setSubmitScheduling(true);
-  };
-  const buttonEvent: React.MouseEventHandler<HTMLDivElement> = props.schedulerAgentApi ? sendScheduleRequest : openAddModal;
 
   return (
     <div className={styles.menu}>
       <div className={styles["ribbon-button-container"]}>
-        {(authorised || !isKeycloakEnabled) && props.schedulerAgentApi && <div>
+        <RedirectButton
+          icon="pending"
+          url={`${Routes.REGISTRY_PENDING}/${props.entityType}`}
+          isActive={props.lifecycleStage == Routes.REGISTRY_PENDING}
+          title="Pending"
+        />
+        <RedirectButton
+          icon="schedule"
+          url={`${Routes.REGISTRY_ACTIVE}/${props.entityType}`}
+          isActive={props.lifecycleStage == Routes.REGISTRY_ACTIVE}
+          title="Active"
+        />
+        <RedirectButton
+          icon="archive"
+          url={`${Routes.REGISTRY_ARCHIVE}/${props.entityType}`}
+          isActive={props.lifecycleStage == Routes.REGISTRY_ARCHIVE}
+          title="Archive"
+        />
+      </div>
+      <div className={styles["ribbon-button-container"]}>
+        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_PENDING &&
+          <ActionButton
+            icon={"add"}
+            title={"add " + props.entityType}
+            onClick={openAddModal}
+          />
+        }
+        <DownloadButton
+          agentApi={`${props.registryAgentApi}/csv/${props.entityType}`}
+        />
+        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_ACTIVE && <div>
           <label className={fieldStyles["form-input-label"]} htmlFor={scheduleId}>
             Date:
           </label>
@@ -77,21 +94,6 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
           />
         </div>
         }
-        {(authorised || !isKeycloakEnabled) &&
-          <MaterialIconButton
-            iconName={buttonIcon}
-            className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
-            text={{
-              styles: [styles["button-text"]],
-              content: buttonText
-            }}
-            onClick={buttonEvent}
-          />
-        }
-        <DownloadButton
-          agentApi={`${props.registryAgentApi}/csv/${props.entityType}`}
-          className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
-        />
       </div>
     </div>
   );
