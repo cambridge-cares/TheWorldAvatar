@@ -900,7 +900,10 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         for iri, props in node_dct.items():
             # TODO optimise the time complexity of the following code when the number of instances is large
             # check if the rdf:type of the instance matches the calling class or any of its subclasses
-            target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
+            try:
+                target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
+            except Exception as e:
+                raise ValueError(f"The instance {iri} has no rdf:type, retrieved outgoing links and attributes: {props}.")
             if target_clz_rdf_type != cls.rdf_type and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
                 # if there's any error, remove the iri from the loading status
                 # otherwise it will block any further pulling of the same object
