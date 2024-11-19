@@ -11,7 +11,7 @@ import { Dosis } from 'next/font/google';
 import StartupLogging from 'io/startup-logging';
 import OptionalPages from 'io/config/optional-pages';
 import SettingsStore from 'io/config/settings';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import GlobalContainer from 'ui/global-container';
 import BackgroundImage from 'ui/graphic/image/background';
 
@@ -42,7 +42,7 @@ export default function RootLayout({ children, modal }: { children: React.ReactN
     initialise();
 
     // Get settings to pass to Toolbar
-    const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+    const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
 
     // Root element containing all children.
     return (

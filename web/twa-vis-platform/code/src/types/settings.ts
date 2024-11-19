@@ -3,7 +3,7 @@ import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
 /**
  * Interface of default settings for landing page.
  */
-export type DefaultSettings = {
+export type UISettings = {
   branding: {
     [key: string]: string[];
   },

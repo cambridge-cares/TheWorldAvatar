@@ -8,13 +8,13 @@ import Trex from 'utils/trex';
 import ContextMenu from './interaction/context-menu/context-menu';
 import Navbar from './navigation/navbar/navbar';
 import { reduxStore } from 'app/store';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import Footer from './text/footer';
 
 // Incoming properties for global container
 interface GlobalContainerProps {
   children?: React.ReactNode;
-  settings: DefaultSettings;
+  settings: UISettings;
 }
 
 /**

@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { JsonObject } from 'types/json';
-import { DefaultSettings, MapboxCredentials } from 'types/settings';
+import { UISettings, MapboxCredentials } from 'types/settings';
 
 /**
  * Handles the retrieval and storage of settings from the user provided configuration files.
@@ -60,7 +60,7 @@ export default class SettingsStore {
    */
   public static readInitialisationSettings(): void {
     const settings: string = this.readFile(this.DEFAULT_SETTINGS_FILE);
-    const jsonifiedSettings: DefaultSettings = JSON.parse(settings);
+    const jsonifiedSettings: UISettings = JSON.parse(settings);
     if (jsonifiedSettings.resources?.dashboard && jsonifiedSettings.resources?.dashboard?.url.trim() !== ""){
       jsonifiedSettings.modules.dashboard = true;
     } else {

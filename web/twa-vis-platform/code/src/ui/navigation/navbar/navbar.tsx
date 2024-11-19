@@ -8,14 +8,14 @@ import KeycloakSession from 'authorisation/keycloak-session';
 
 import { Routes } from 'io/config/routes';
 import { selectItem } from 'state/context-menu-slice';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import IconComponent from 'ui/graphic/icon/icon';
 import { navbarItem } from 'ui/interaction/context-menu/context-menu';
 import NavbarComponent from './navbar-component';
 
 // Type definition for navbar properties
 interface NavbarProps {
-  settings: DefaultSettings;
+  settings: UISettings;
 }
 
 /**
