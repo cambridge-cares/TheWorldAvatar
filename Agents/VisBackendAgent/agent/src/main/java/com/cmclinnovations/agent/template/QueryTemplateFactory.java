@@ -439,6 +439,7 @@ public class QueryTemplateFactory {
    * @param lifecycleEvent Target event for filter.
    */
   private void appendOptionalLifecycleFilters(StringBuilder query, LifecycleEventType lifecycleEvent) {
+    if (lifecycleEvent!=null){
     switch (lifecycleEvent) {
       case LifecycleEventType.APPROVED:
         LifecycleResource.appendFilterExists(query, false, LifecycleResource.EVENT_APPROVAL);
@@ -453,7 +454,7 @@ public class QueryTemplateFactory {
       default:
         // Do nothing if it doesnt meet the above events
         break;
-    }
+    }}
   }
 
   /**
