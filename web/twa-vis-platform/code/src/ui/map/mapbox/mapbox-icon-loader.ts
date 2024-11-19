@@ -29,8 +29,11 @@ export async function addIcons(map: Map, iconSettings: IconSettings): Promise<vo
  * @param callback callback function
  */
 function loadIcon(map: Map, imageName: string, imageURL: string, callback: () => void) {
+  if (process.env.ASSET_PREFIX) {
+    console.log(`ASSET_PREFIX: \"${process.env.ASSET_PREFIX}\" detected. Appending to MapBox Layer icon paths`)
+  }
   map?.loadImage(
-    imageURL,
+    `${process.env.ASSET_PREFIX}${imageURL}`,
     (error, image) => {
       if (error) {
         console.log("ERROR: Could not load image at URL " + imageURL);
