@@ -748,6 +748,10 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         # register the class to the ontology
         cls.rdfs_isDefinedBy._register_class(cls)
 
+    @classmethod
+    def init_instance_iri(cls) -> str:
+        return init_instance_iri(cls.rdfs_isDefinedBy.namespace_iri, cls.__name__)
+
     def model_post_init(self, __context: Any) -> None:
         """
         The post init process of the BaseClass.
@@ -761,10 +765,7 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             None: It calls the super().model_post_init(__context) to finish the post init process
         """
         if not bool(self.instance_iri):
-            self.instance_iri = init_instance_iri(
-                self.__class__.rdfs_isDefinedBy.namespace_iri,
-                self.__class__.__name__
-            )
+            self.instance_iri = self.__class__.init_instance_iri()
         # set new instance to the global look up table, so that we can avoid creating the same instance multiple times
         self._register_object()
         return super().model_post_init(__context)
