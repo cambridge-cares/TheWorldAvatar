@@ -1,7 +1,7 @@
 {
     "queries": [
         {
-            "class": "https://www.theworldavatar.com/kg/Building",
+            "class": "https://www.theworldavatar.com/kg/ontobuiltenv/building",
             "metaFile": "EP_meta.sparql"
         },
         {

@@ -1,7 +1,6 @@
 {
-    "type": "feature-info-agent",
     "ServiceSpec": {
-        "Name": "feature-info-agent",
+        "Name": "feature-information-agent",
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/feature-info-agent:2.0.1",
