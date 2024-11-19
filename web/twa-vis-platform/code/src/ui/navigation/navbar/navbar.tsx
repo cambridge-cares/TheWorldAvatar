@@ -90,13 +90,6 @@ export default function Navbar(props: Readonly<NavbarProps>) {
             icon="contract"
             url={`${process.env.ASSET_PREFIX}/view/${props.settings?.resources?.registry?.data}`} />
         }
-        {props.settings?.modules?.scheduler &&
-          <NavbarComponent
-            name="SCHEDULER"
-            tooltip="Open scheduler"
-            icon="calendar_month"
-            url={`${process.env.ASSET_PREFIX}/view/${props.settings?.resources?.scheduler?.data}`} />
-        }
       </div>
     </div>
   );
