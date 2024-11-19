@@ -174,8 +174,8 @@ def test_basics():
     a = A(data_property_a={'a'}, rdfs_comment='my comment', rdfs_label='my label')
     assert a.data_property_a == {'a'}
     assert a.rdfs_isDefinedBy.base_url in a.instance_iri
-    assert a.rdfs_comment == 'my comment'
-    assert a.rdfs_label == 'my label'
+    assert a.rdfs_comment == {'my comment'}
+    assert a.rdfs_label == {'my label'}
     # test one can instantiate with a custom instance_iri
     my_random_iri = f'https://{str(uuid.uuid4())}'
     a_with_random_iri = A(data_property_a={'a'}, instance_iri=my_random_iri)

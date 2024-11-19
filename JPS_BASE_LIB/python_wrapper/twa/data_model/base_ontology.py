@@ -732,8 +732,8 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
     rdfs_comment_clz: ClassVar[Set[str]] = None
     rdfs_label_clz: ClassVar[Set[str]] = None
-    rdfs_comment: Optional[str] = Field(default=None)
-    rdfs_label: Optional[str] = Field(default=None)
+    rdfs_comment: Optional[Set[str]] = Field(default_factory=set)
+    rdfs_label: Optional[Set[str]] = Field(default_factory=set)
     instance_iri: str = Field(default='')
     # format of the cache for all properties: {property_name: property_object}
     _latest_cache: Dict[str, Any] = PrivateAttr(default_factory=dict)
@@ -763,6 +763,20 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
     @classmethod
     def init_instance_iri(cls) -> str:
         return init_instance_iri(cls.rdfs_isDefinedBy.namespace_iri, cls.__name__)
+
+    def __init__(self, **data):
+        # handle the case when rdfs_comment and rdfs_label are provided as a non-set value
+        if 'rdfs_comment' in data and not isinstance(data['rdfs_comment'], set):
+            if isinstance(data['rdfs_comment'], list):
+                data['rdfs_comment'] = set(data['rdfs_comment'])
+            else:
+                data['rdfs_comment'] = {data['rdfs_comment']}
+        if 'rdfs_label' in data and not isinstance(data['rdfs_label'], set):
+            if isinstance(data['rdfs_label'], list):
+                data['rdfs_label'] = set(data['rdfs_label'])
+            else:
+                data['rdfs_label'] = {data['rdfs_label']}
+        super().__init__(**data)
 
     def model_post_init(self, __context: Any) -> None:
         """
@@ -962,13 +976,9 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             # handle rdfs:label and rdfs:comment (also fetch of the remote KG)
             rdfs_properties_dict = {}
             if RDFS.label.toPython() in props:
-                if len(props[RDFS.label.toPython()]) > 1:
-                    raise ValueError(f"The instance {iri} has multiple rdfs:label {props[RDFS.label.toPython()]}.")
-                rdfs_properties_dict['rdfs_label'] = list(props[RDFS.label.toPython()])[0]
+                rdfs_properties_dict['rdfs_label'] = set(list(props[RDFS.label.toPython()]))
             if RDFS.comment.toPython() in props:
-                if len(props[RDFS.comment.toPython()]) > 1:
-                    raise ValueError(f"The instance {iri} has multiple rdfs:comment {props[RDFS.comment.toPython()]}.")
-                rdfs_properties_dict['rdfs_comment'] = list(props[RDFS.comment.toPython()])[0]
+                rdfs_properties_dict['rdfs_comment'] = set(list(props[RDFS.comment.toPython()]))
             # instantiate the object
             if inst is not None:
                 for op_iri, op_dct in ops.items():
@@ -1258,9 +1268,9 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
 
         # compare rdfs_comment and rdfs_label
         for r in ['rdfs_comment', 'rdfs_label']:
-            fetched_value = fetched.get(r, None)
-            cached_value = self._latest_cache.get(r, None)
-            local_value = getattr(self, r)
+            fetched_value = fetched.get(r, set())
+            cached_value = self._latest_cache.get(r, set())
+            local_value = getattr(self, r) if getattr(self, r) is not None else set()
             # apply the same logic as above
             if fetched_value != cached_value:
                 if local_value == cached_value:
@@ -1396,18 +1406,20 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                             g_to_remove, g_to_add = d_py._collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth, traversed_iris)
 
             elif f == 'rdfs_comment':
-                if self._latest_cache.get(f) != self.rdfs_comment:
-                    if self._latest_cache.get(f) is not None:
-                        g_to_remove.add((URIRef(self.instance_iri), RDFS.comment, Literal(self._latest_cache.get(f))))
-                    if self.rdfs_comment is not None:
-                        g_to_add.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
+                rdfs_comment_cache = self._latest_cache.get(f, set())
+                rdfs_comment_now = self.rdfs_comment if self.rdfs_comment is not None else set()
+                for comment in rdfs_comment_cache - rdfs_comment_now:
+                    g_to_remove.add((URIRef(self.instance_iri), RDFS.comment, Literal(comment)))
+                for comment in rdfs_comment_now - rdfs_comment_cache:
+                    g_to_add.add((URIRef(self.instance_iri), RDFS.comment, Literal(comment)))
 
             elif f == 'rdfs_label':
-                if self._latest_cache.get(f) != self.rdfs_label:
-                    if self._latest_cache.get(f) is not None:
-                        g_to_remove.add((URIRef(self.instance_iri), RDFS.label, Literal(self._latest_cache.get(f))))
-                    if self.rdfs_label is not None:
-                        g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
+                rdfs_label_cache = self._latest_cache.get(f, set())
+                rdfs_label_now = self.rdfs_label if self.rdfs_label is not None else set()
+                for label in rdfs_label_cache - rdfs_label_now:
+                    g_to_remove.add((URIRef(self.instance_iri), RDFS.label, Literal(label)))
+                for label in rdfs_label_now - rdfs_label_cache:
+                    g_to_add.add((URIRef(self.instance_iri), RDFS.label, Literal(label)))
 
         if not self._exist_in_kg:
             g_to_add.add((URIRef(self.instance_iri), RDF.type, URIRef(self.rdf_type)))
@@ -1442,10 +1454,12 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                 prop = getattr(self, f) if getattr(self, f) is not None else set()
                 for o in prop:
                     g.add((URIRef(self.instance_iri), URIRef(tp.predicate_iri), Literal(o)))
-            elif f == 'rdfs_comment' and self.rdfs_comment is not None:
-                    g.add((URIRef(self.instance_iri), RDFS.comment, Literal(self.rdfs_comment)))
-            elif f == 'rdfs_label' and self.rdfs_label is not None:
-                    g.add((URIRef(self.instance_iri), RDFS.label, Literal(self.rdfs_label)))
+            elif f == 'rdfs_comment' and bool(self.rdfs_comment):
+                for comment in self.rdfs_comment:
+                    g.add((URIRef(self.instance_iri), RDFS.comment, Literal(comment)))
+            elif f == 'rdfs_label' and bool(self.rdfs_label):
+                for label in self.rdfs_label:
+                    g.add((URIRef(self.instance_iri), RDFS.label, Literal(label)))
         return g
 
     def triples(self) -> str:
