@@ -5,7 +5,7 @@ Created on Dec 1, 2021
 '''
 
 import os
-base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_PATHS = {
     'r1_mops_csv': os.path.join(base, 'mops_output/r1_mops.csv'),
     'r2_mops_csv': os.path.join(base, 'mops_output/r2_mops.csv'),

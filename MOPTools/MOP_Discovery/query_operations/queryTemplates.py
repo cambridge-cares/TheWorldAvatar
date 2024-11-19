@@ -21,8 +21,9 @@ def getMOPIRIs():
         ?PolhedralShape OntoMOPs:hasSymbol ?Symbol .
         ?AssemblyModel OntoMOPs:hasGenericBuildingUnitNumber ?GBUNumber .
         ?GBUNumber OntoMOPs:isNumberOf ?GBU .
-        ?GBU OntoMOPs:hasPlanarity ?Planarity .
-        ?GBU OntoMOPs:hasModularity ?Modularity .
+        ?GBU OntoMOPs:hasGBUType ?GBUType .
+        ?GBUType OntoMOPs:hasPlanarity ?Planarity .
+        ?GBUType OntoMOPs:hasModularity ?Modularity .
         ?GBUNumber OntoMOPs:hasUnitNumberValue ?NumberValue .
         ?mopIRI OntoMOPs:hasChemicalBuildingUnit ?cbuIRI .
         ?cbuIRI OntoMOPs:isFunctioningAs ?GBU .
@@ -48,8 +49,9 @@ def mop_GBUs(mopIRI):
         ?AssemblyModel OntoMOPs:hasSymmetryPointGroup ?Symmetry .
         ?AssemblyModel OntoMOPs:hasGenericBuildingUnitNumber ?GBUNumber .
         ?GBUNumber OntoMOPs:isNumberOf ?GBU .
-        ?GBU OntoMOPs:hasPlanarity ?Planarity .
-        ?GBU OntoMOPs:hasModularity ?Modularity .
+        ?GBU OntoMOPs:hasGBUType ?GBUType .
+        ?GBUType OntoMOPs:hasPlanarity ?Planarity .
+        ?GBUType OntoMOPs:hasModularity ?Modularity .
         ?GBUNumber OntoMOPs:hasUnitNumberValue ?NumberValue .
         ?mopIRI OntoMOPs:hasChemicalBuildingUnit ?cbuIRI .
         ?cbuIRI OntoMOPs:isFunctioningAs ?GBU .
