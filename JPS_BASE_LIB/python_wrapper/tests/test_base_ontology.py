@@ -104,6 +104,29 @@ def init():
     return a1, a2, a3, b, c, d
 
 
+def test_dev_mode():
+    assert not ExampleOntology._dev_mode
+    assert not ExampleOntology.is_dev_mode()
+    ExampleOntology.set_dev_mode()
+    assert ExampleOntology._dev_mode
+    assert ExampleOntology.is_dev_mode()
+    ExampleOntology.set_prod_mode()
+    assert not ExampleOntology._dev_mode
+    assert not ExampleOntology.is_dev_mode()
+    with pytest.raises(ValueError) as e_info:
+        class E(D):
+            pass
+    assert e_info.match('https://example.org/example/E')
+    assert e_info.match('already exists in')
+    """
+    E           ValueError: Class with rdf_type https://example.org/example/E already exists in
+            <class 'tests.test_base_ontology.ExampleOntology'>: <class 'tests.test_base_ontology.E'>.
+    """
+    ExampleOntology.set_dev_mode()
+    class E(D):
+        pass
+
+
 def test_retrieve_cardinality():
     assert DataProperty_A.retrieve_cardinality() == (0, 1)
     assert DataProperty_B.retrieve_cardinality() == (1, 1)

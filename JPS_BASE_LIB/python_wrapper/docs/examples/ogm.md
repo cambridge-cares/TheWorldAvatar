@@ -51,6 +51,9 @@ For simplicity, `<https://www.theworldavatar.com/kg/yourontology/>` (**Note the 
 @prefix yo: <https://www.theworldavatar.com/kg/yourontology/> .
 ```
 
+> NOTE: if you wish to develop this in a Jupyter notebook, you might find it helpful to set the ontology to development mode using `YourOntology.set_dev_mode()`, which will allow you re-run the cell once you made changes to your classes/properties without throwing an "class already registered" error. Once you are happy with your ontology and wish to switch back to production mode, you may do this via `YourOntology.set_prod_mode()`.
+
+
 ### Define a property (relationship)
 
 To define custom object and data properties, the two base classes `ObjectProperty` and `DatatypeProperty` should be used respectively. It should be noted that the user is only required to specify the cardinality of these properties at the class defination, as their `rdfs:domain` and `rdfs:range` will be automatically handled by the class that utilises the defined properties.

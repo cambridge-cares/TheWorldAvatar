@@ -170,7 +170,7 @@ class KnowledgeGraph(BaseModel):
         cls.ontology_lookup[ontology.namespace_iri] = ontology
 
     @classmethod
-    def _register_class(cls, ontology_class: BaseClass):
+    def _register_class(cls, ontology_class: BaseClass, dev_mode: bool = False):
         """
         This method registers a BaseClass (the Pydantic class itself) to the knowledge graph in Python memory.
 
@@ -180,12 +180,12 @@ class KnowledgeGraph(BaseModel):
         if cls.class_lookup is None:
             cls.class_lookup = {}
 
-        if ontology_class.rdf_type in cls.class_lookup:
+        if ontology_class.rdf_type in cls.class_lookup and not dev_mode:
             raise ValueError(f'Class with rdf_type {ontology_class.rdf_type} already exists in the knowledge graph: {cls.class_lookup[ontology_class.rdf_type]}.')
         cls.class_lookup[ontology_class.rdf_type] = ontology_class
 
     @classmethod
-    def _register_property(cls, prop: BaseProperty):
+    def _register_property(cls, prop: BaseProperty, dev_mode: bool = False):
         """
         This method registers a BaseProperty (the Pydantic class itself) to the knowledge graph in Python memory.
 
@@ -195,7 +195,7 @@ class KnowledgeGraph(BaseModel):
         if cls.property_lookup is None:
             cls.property_lookup = {}
 
-        if prop.predicate_iri in cls.property_lookup:
+        if prop.predicate_iri in cls.property_lookup and not dev_mode:
             raise ValueError(f'Property with predicate IRI {prop.predicate_iri} already exists in the knowledge graph: {cls.property_lookup[prop.predicate_iri]}.')
         cls.property_lookup[prop.predicate_iri] = prop
 
@@ -262,6 +262,7 @@ class BaseOntology(BaseModel):
     data_property_lookup: ClassVar[Dict[str, DatatypeProperty]] = None
     rdfs_comment: ClassVar[str] = None
     owl_versionInfo: ClassVar[str] = None
+    _dev_mode: ClassVar[bool] = False
 
     @classmethod
     def __pydantic_init_subclass__(cls, **kwargs):
@@ -277,6 +278,21 @@ class BaseOntology(BaseModel):
         KnowledgeGraph._register_ontology(cls)
 
     @classmethod
+    def is_dev_mode(cls):
+        """This method returns whether the KnowledgeGraph is in development mode."""
+        return cls._dev_mode
+
+    @classmethod
+    def set_dev_mode(cls):
+        """This method sets the KnowledgeGraph to development mode, where duplicate class or property registration will be allowed that the existing ones will be overwritten."""
+        cls._dev_mode = True
+
+    @classmethod
+    def set_prod_mode(cls):
+        """This method sets the KnowledgeGraph to production mode, where duplicate class or property registration will raise an error."""
+        cls._dev_mode = False
+
+    @classmethod
     def _register_class(cls, ontolgy_class: BaseClass):
         """
         This method registers a BaseClass (the Pydantic class itself) to the BaseOntology class.
@@ -289,12 +305,12 @@ class BaseOntology(BaseModel):
         if cls.class_lookup is None:
             cls.class_lookup = {}
 
-        if ontolgy_class.rdf_type in cls.class_lookup:
+        if ontolgy_class.rdf_type in cls.class_lookup and not cls.is_dev_mode():
             raise ValueError(f'Class with rdf_type {ontolgy_class.rdf_type} already exists in {cls}: {cls.class_lookup[ontolgy_class.rdf_type]}.')
         cls.class_lookup[ontolgy_class.rdf_type] = ontolgy_class
 
         # also register with knowledge graph
-        KnowledgeGraph._register_class(ontolgy_class)
+        KnowledgeGraph._register_class(ontolgy_class, cls.is_dev_mode())
 
     @classmethod
     def _register_object_property(cls, prop: ObjectProperty):
@@ -309,12 +325,12 @@ class BaseOntology(BaseModel):
         if cls.object_property_lookup is None:
             cls.object_property_lookup = {}
 
-        if prop.predicate_iri in cls.object_property_lookup:
+        if prop.predicate_iri in cls.object_property_lookup and not cls.is_dev_mode():
             raise ValueError(f'Object property with predicate IRI {prop.predicate_iri} already exists in {cls}: {cls.object_property_lookup[prop.predicate_iri]}.')
         cls.object_property_lookup[prop.predicate_iri] = prop
 
         # also register with knowledge graph
-        KnowledgeGraph._register_property(prop)
+        KnowledgeGraph._register_property(prop, cls.is_dev_mode())
 
     @classmethod
     def _register_data_property(cls, prop: DatatypeProperty):
@@ -329,12 +345,12 @@ class BaseOntology(BaseModel):
         if cls.data_property_lookup is None:
             cls.data_property_lookup = {}
 
-        if prop.predicate_iri in cls.data_property_lookup:
+        if prop.predicate_iri in cls.data_property_lookup and not cls.is_dev_mode():
             raise ValueError(f'Data property with predicate IRI {prop.predicate_iri} already exists in {cls}: {cls.data_property_lookup[prop.predicate_iri]}.')
         cls.data_property_lookup[prop.predicate_iri] = prop
 
         # also register with knowledge graph
-        KnowledgeGraph._register_property(prop)
+        KnowledgeGraph._register_property(prop, cls.is_dev_mode())
 
     @classmethod
     def export_to_graph(cls, g: Graph = None) -> Graph:
