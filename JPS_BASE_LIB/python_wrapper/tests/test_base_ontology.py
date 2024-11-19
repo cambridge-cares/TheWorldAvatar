@@ -938,3 +938,37 @@ def test_all_triples_of_nodes():
     assert (URIRef(d.instance_iri), URIRef(ObjectProperty_D_A.predicate_iri), URIRef(a1.instance_iri)) in g
     # in total 6 triples
     assert sum(1 for _ in g.triples((None, None, None))) == 6
+
+
+def test_cls_rdfs_comment_label():
+    comments = ['comment1', 'comment2', 'comment3']
+    labels = ['label1', 'label2']
+
+    class TestRdfsCommentLabel(E):
+        rdfs_comment_clz = comments
+        rdfs_label_clz = labels
+
+    class TestRdfsCommentLabelDataProperty(DatatypeProperty):
+        rdfs_isDefinedBy = ExampleOntology
+        rdfs_comment_clz = comments
+        rdfs_label_clz = labels
+
+    class TestRdfsCommentLabelObjectProperty(ObjectProperty):
+        rdfs_isDefinedBy = ExampleOntology
+        rdfs_comment_clz = comments
+        rdfs_label_clz = labels
+
+    g = Graph()
+    g = TestRdfsCommentLabel._export_to_owl(g)
+    g = TestRdfsCommentLabelDataProperty._export_to_owl(g, set(), set())
+    g = TestRdfsCommentLabelObjectProperty._export_to_owl(g, set(), set())
+    # rdfs:comment triple
+    for comment in comments:
+        assert (URIRef(TestRdfsCommentLabel.rdf_type), URIRef(RDFS.comment), Literal(comment)) in g
+        assert (URIRef(TestRdfsCommentLabelDataProperty.predicate_iri), URIRef(RDFS.comment), Literal(comment)) in g
+        assert (URIRef(TestRdfsCommentLabelObjectProperty.predicate_iri), URIRef(RDFS.comment), Literal(comment)) in g
+    # rdfs:label triple
+    for label in labels:
+        assert (URIRef(TestRdfsCommentLabel.rdf_type), URIRef(RDFS.label), Literal(label)) in g
+        assert (URIRef(TestRdfsCommentLabelDataProperty.predicate_iri), URIRef(RDFS.label), Literal(label)) in g
+        assert (URIRef(TestRdfsCommentLabelObjectProperty.predicate_iri), URIRef(RDFS.label), Literal(label)) in g

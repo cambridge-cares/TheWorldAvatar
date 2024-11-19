@@ -260,7 +260,7 @@ class BaseOntology(BaseModel):
     class_lookup: ClassVar[Dict[str, BaseClass]] = None
     object_property_lookup: ClassVar[Dict[str, ObjectProperty]] = None
     data_property_lookup: ClassVar[Dict[str, DatatypeProperty]] = None
-    rdfs_comment: ClassVar[str] = None
+    rdfs_comment: ClassVar[Set[str]] = None
     owl_versionInfo: ClassVar[str] = None
     _dev_mode: ClassVar[bool] = False
 
@@ -367,7 +367,8 @@ class BaseOntology(BaseModel):
         g.add((URIRef(cls.namespace_iri), RDF.type, OWL.Ontology))
         g.add((URIRef(cls.namespace_iri), DC.date, Literal(datetime.now().isoformat())))
         if bool(cls.rdfs_comment):
-            g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(cls.rdfs_comment)))
+            for comment in cls.rdfs_comment:
+                g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(comment)))
         if bool(cls.owl_versionInfo):
             g.add((URIRef(cls.namespace_iri), OWL.versionInfo, Literal(cls.owl_versionInfo)))
         # handle all classes
@@ -442,6 +443,8 @@ class BaseProperty(set, Generic[T]):
     """
     rdfs_isDefinedBy: ClassVar[Type[BaseOntology]] = None
     predicate_iri: ClassVar[str] = None
+    rdfs_comment_clz: ClassVar[Set[str]] = None
+    rdfs_label_clz: ClassVar[Set[str]] = None
     owl_minQualifiedCardinality: ClassVar[int] = 0
     owl_maxQualifiedCardinality: ClassVar[int] = None
 
@@ -529,6 +532,13 @@ class BaseProperty(set, Generic[T]):
             idx = cls.__mro__.index(DatatypeProperty)
         for i in range(1, idx):
             g.add((URIRef(property_iri), RDFS.subPropertyOf, URIRef(cls.__mro__[i].predicate_iri)))
+        # add rdfs_comment_clz and rdfs_label_clz for class
+        if bool(cls.rdfs_comment_clz):
+            for comment in cls.rdfs_comment_clz:
+                g.add((URIRef(property_iri), RDFS.comment, Literal(comment)))
+        if bool(cls.rdfs_label_clz):
+            for label in cls.rdfs_label_clz:
+                g.add((URIRef(property_iri), RDFS.label, Literal(label)))
         # add domain
         if len(rdfs_domain) == 0:
             # it is possible that a property is defined without specifying its domain, so we only print a warning
@@ -720,6 +730,8 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
     rdf_type: ClassVar[str] = OWL_BASE_URL + 'Class'
     """ > NOTE rdf_type is the automatically generated IRI of the class which can also be accessed at the instance level. """
     object_lookup: ClassVar[Dict[str, BaseClass]] = None
+    rdfs_comment_clz: ClassVar[Set[str]] = None
+    rdfs_label_clz: ClassVar[Set[str]] = None
     rdfs_comment: Optional[str] = Field(default=None)
     rdfs_label: Optional[str] = Field(default=None)
     instance_iri: str = Field(default='')
@@ -1093,6 +1105,13 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         cls_iri = cls.rdf_type
         g.add((URIRef(cls_iri), RDF.type, OWL.Class))
         g.add((URIRef(cls_iri), RDFS.isDefinedBy, URIRef(cls.rdfs_isDefinedBy.namespace_iri)))
+        # add rdfs_comment_clz and rdfs_label_clz for class
+        if bool(cls.rdfs_comment_clz):
+            for comment in cls.rdfs_comment_clz:
+                g.add((URIRef(cls_iri), RDFS.comment, Literal(comment)))
+        if bool(cls.rdfs_label_clz):
+            for label in cls.rdfs_label_clz:
+                g.add((URIRef(cls_iri), RDFS.label, Literal(label)))
         # add super classes
         idx = cls.__mro__.index(BaseClass)
         for i in range(1, idx):
