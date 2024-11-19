@@ -17,6 +17,6 @@ export function GET() {
     return NextResponse.json({ token: credentials.key });
   } catch (error) {
     // Handle possible errors, such as file not found or JSON parse errors
-    return NextResponse.json({ error: "Failed to retrieve credentials." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to retrieve credentials." + error }, { status: 500 });
   }
 }

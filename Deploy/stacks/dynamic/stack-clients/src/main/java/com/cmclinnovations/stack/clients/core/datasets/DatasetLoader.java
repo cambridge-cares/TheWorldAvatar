@@ -4,6 +4,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
@@ -39,7 +40,6 @@ public class DatasetLoader {
         Stream<Dataset> selectedDatasets = DatasetReader.getStackSpecificDatasets(allDatasets, selectedDatasetName);
 
         loadDatasets(selectedDatasets);
-
     }
 
     public void loadDatasets(Collection<Dataset> selectedDatasets) {
@@ -56,65 +56,18 @@ public class DatasetLoader {
         if (!dataset.isSkip()) {
             List<DataSubset> dataSubsets = dataset.getDataSubsets();
             // Ensure PostGIS database exists, if specified
-            if (dataset.usesPostGIS()) {
-                PostGISClient postGISClient = PostGISClient.getInstance();
-                postGISClient.createDatabase(dataset.getDatabase());
-                dataSubsets.stream().filter(DataSubset::usesPostGIS)
-                        .filter(subset -> subset instanceof PostgresDataSubset)
-                        .forEach(subset -> postGISClient.createSchema(dataset.getDatabase(),
-                                ((PostgresDataSubset) subset).getSchema()));
-            }
+            configurePostgres(dataset, dataSubsets);
+
+            List<String> ontologyDatasetNames = dataset.getOntologyDatasetNames();
 
             // Ensure Blazegraph namespace exists, if specified
-            if (dataset.usesBlazegraph()) {
-                BlazegraphClient.getInstance().createNamespace(dataset.getNamespace(),
-                        dataset.getNamespaceProperties());
-            }
+            configureBlazegraph(dataset, ontologyDatasetNames);
 
-            if (dataset.usesGeoServer()) {
-                GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                String workspaceName = dataset.getWorkspaceName();
-                // Ensure GeoServer workspace exists
-                geoServerClient.createWorkspace(workspaceName);
-                // Upload styles to GeoServer
-                dataset.getGeoserverStyles().forEach(style -> geoServerClient.loadStyle(style, workspaceName));
-            }
-
-            if (dataset.hasStaticGeoServerData()) {
-                GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                StaticGeoServerData staticGeoServerData = dataset.getStaticGeoServerData();
-                geoServerClient.loadIcons(directory, staticGeoServerData.getIconsDir());
-                geoServerClient.loadOtherFiles(directory, staticGeoServerData.getOtherFiles());
-            }
+            configureGeoServer(dataset, directory);
 
             dataSubsets.forEach(subset -> subset.load(dataset));
 
-            if (dataset.usesOntop()) {
-                String newOntopServiceName = dataset.getOntopName();
-
-                ServiceConfig newOntopServiceConfig = serviceManager.duplicateServiceConfig(EndpointNames.ONTOP,
-                        newOntopServiceName);
-
-                newOntopServiceConfig.setEnvironmentVariable(OntopService.ONTOP_DB_NAME, dataset.getDatabase());
-                newOntopServiceConfig.getEndpoints()
-                        .replaceAll((endpointName, connection) -> new Connection(
-                                connection.getUrl(),
-                                connection.getUri(),
-                                URI.create(connection.getExternalPath().toString()
-                                        .replace(EndpointNames.ONTOP, newOntopServiceName))));
-
-                serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
-
-                List<String> ontopMappings = dataset.getOntopMappings();
-
-                OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
-                ontopMappings.forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
-
-                if (PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())) {
-                    OntopClient defaultOntopClient = OntopClient.getInstance();
-                    ontopMappings.forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
-                }
-            }
+            configureOntop(dataset, directory, ontologyDatasetNames);
 
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient(catalogNamespace)
@@ -122,4 +75,78 @@ public class DatasetLoader {
         }
     }
 
+    private void configurePostgres(Dataset dataset, List<DataSubset> dataSubsets) {
+        if (dataset.usesPostGIS()) {
+            PostGISClient postGISClient = PostGISClient.getInstance();
+            postGISClient.createDatabase(dataset.getDatabase());
+            dataSubsets.stream().filter(DataSubset::usesPostGIS)
+                    .filter(PostgresDataSubset.class::isInstance)
+                    .forEach(subset -> postGISClient.createSchema(dataset.getDatabase(),
+                            ((PostgresDataSubset) subset).getSchema()));
+        }
+    }
+
+    private void configureBlazegraph(Dataset dataset, List<String> ontologyDatasetNames) {
+        if (dataset.usesBlazegraph()) {
+            BlazegraphClient blazegraphClient = BlazegraphClient.getInstance();
+            blazegraphClient.createNamespace(dataset.getNamespace(),
+                    dataset.getNamespaceProperties());
+
+            if (!ontologyDatasetNames.isEmpty()) {
+                blazegraphClient.cloneDatasets(dataset.getNamespace(), ontologyDatasetNames, catalogNamespace);
+            }
+        }
+    }
+
+    private void configureGeoServer(Dataset dataset, Path directory) {
+        if (dataset.usesGeoServer()) {
+            GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            String workspaceName = dataset.getWorkspaceName();
+            // Ensure GeoServer workspace exists
+            geoServerClient.createWorkspace(workspaceName);
+            // Upload styles to GeoServer
+            dataset.getGeoserverStyles().forEach(style -> geoServerClient.loadStyle(style, workspaceName));
+        }
+
+        if (dataset.hasStaticGeoServerData()) {
+            GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            StaticGeoServerData staticGeoServerData = dataset.getStaticGeoServerData();
+            geoServerClient.loadIcons(directory, staticGeoServerData.getIconsDir());
+            geoServerClient.loadOtherFiles(directory, staticGeoServerData.getOtherFiles());
+        }
+    }
+
+    private void configureOntop(Dataset dataset, Path directory, List<String> ontologyDatasetNames) {
+        if (dataset.usesOntop()) {
+            String newOntopServiceName = dataset.getOntopName();
+
+            ServiceConfig newOntopServiceConfig = serviceManager.duplicateServiceConfig(EndpointNames.ONTOP,
+                    newOntopServiceName);
+
+            newOntopServiceConfig.setEnvironmentVariable(OntopService.ONTOP_DB_NAME, dataset.getDatabase());
+            newOntopServiceConfig.getEndpoints()
+                    .replaceAll((endpointName, connection) -> new Connection(
+                            connection.getUrl(),
+                            connection.getUri(),
+                            URI.create(connection.getExternalPath().toString()
+                                    .replace(EndpointNames.ONTOP, newOntopServiceName))));
+
+            serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
+
+            List<String> ontopMappings = dataset.getOntopMappings();
+
+            OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
+            ontopMappings.forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
+
+            if (PostGISClient.DEFAULT_DATABASE_NAME.equals(dataset.getDatabase())) {
+                OntopClient defaultOntopClient = OntopClient.getInstance();
+                ontopMappings.forEach(mapping -> defaultOntopClient.updateOBDA(directory.resolve(mapping)));
+            }
+
+            ontopClient.uploadOntology(catalogNamespace, ontologyDatasetNames);
+
+            ontopClient.uploadRules(dataset.getOntopSettings().getRules().stream().map(directory::resolve)
+                    .collect(Collectors.toList()));
+        }
+    }
 }

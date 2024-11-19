@@ -1,0 +1,39 @@
+{
+  "type": "grafana",
+  "ServiceSpec": {
+    "Name": "grafana",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Env" : [
+          "GF_SECURITY_ADMIN_USER=admin",
+          "GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_password",
+          "GF_SERVER_DOMAIN=careslab.theworldavtar.io",
+          "GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/analytics/",
+          "GF_SERVER_SERVE_FROM_SUB_PATH=false",
+          "GF_AUTH_ANONYMOUS_ENABLED=true",
+          "GF_SECURITY_ALLOW_EMBEDDING=true"
+        ],
+        "Image": "grafana/grafana-oss:10.0.3",
+        "Secrets": [
+          {
+            "SecretName": "grafana_password"
+          }
+        ],
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "grafana",
+            "Target": "/var/lib/grafana",
+            "ReadOnly": false
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:3000/",
+      "externalPath": "/analytics"
+    }
+  }
+}

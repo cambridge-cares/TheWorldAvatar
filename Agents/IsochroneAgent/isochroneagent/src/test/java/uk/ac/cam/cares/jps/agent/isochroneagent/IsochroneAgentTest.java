@@ -148,7 +148,7 @@ public class IsochroneAgentTest {
         verify(populationMapperMock.constructed().get(0), times(1)).mapPopulation(any(RemoteRDBStoreClient.class), any(ArrayList.class));
         verify(geoserverClientMock.constructed().get(0), times(1)).createWorkspace(anyString());
         verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISDataStore(anyString(), anyString(), anyString(), anyString());
-        verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISLayer(anyString(), anyString(), anyString(), any(GeoServerVectorSettings.class));
+        verify(geoserverClientMock.constructed().get(0), times(1)).createPostGISLayer(anyString(), anyString(), anyString(), anyString(), any(GeoServerVectorSettings.class));
         verify(ontopClientMock.constructed().get(0), times(1)).updateOBDA(any(Path.class));  
     }
 

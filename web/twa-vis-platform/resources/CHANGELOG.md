@@ -3,6 +3,95 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.10.0
+
+### Features
+
+* Added customisable search capabilities for the map visualisation, inclusive of metadata and time series
+* Improve the search form design and user interaction
+* Added geocoding capabilities
+* Added documentation of these functions
+
+### Bug Fixes
+
+* Fix bad state calls in map container
+* Fix some of the errors logged in the console
+
+## 5.9.2
+
+### Improvements
+
+* Updated Keycloak connector to latest version v26
+
+### Bug Fixes
+
+* Resolved bug causing unexpectesd logouts from Keycloak due to next prefetching. 
+
+## 5.9.1
+
+### Features
+
+* Added CMCL logo to default icons library
+
+## 5.9.0
+
+### Bug Fixes
+
+* Read in `ASSET_PREFIX` environment variable and write it to next.js asset prefix and basepath to fix static resources behind double nginx
+
+## 5.8.1
+
+### Bug Fixes
+
+* Fix production build issues
+
+## 5.8.0
+
+### Features
+
+* Added sorting, filters and other functions to the registry table
+* Improve user interactions and experience in the registry table
+* Improve user interactions with the schedule form sections and the form in general
+
+## 5.7.0
+
+### Bug Fixes
+
+* Random logouts when keycloak authentication is enabled
+* Role based authorisation was broken behind docker
+
+### Changes
+
+* Updated various package dependencies to latest versions
+
+## 5.6.0
+
+### Features
+
+* Extension of the form UI for search capabilities
+* Addition of initial search capabilities for the map visualisation* Addition of time slots for the form schedule section
+* Modify the registry to work with the new vis backend agent
+* Consolidation of the urls of assets as constants in one file
+
+### Bug Fixes
+
+* Fix the form's css
+
+## 5.5.0
+
+### Features
+
+* Addition of the registry pages, enabling users to view, create, edit, and remove records from the knowledge graph
+* Addition of scheduling capabilities for the specific registry pages
+* Users can deploy multiple navbar logos
+* Improvements to the handling and structure of configuration settings and pages
+* Improvements to the documentation and tutorial
+
+### Bug Fixes
+
+* Fix the development mode in a Docker container
+* Improve user experience if modules are disabled by redirecting back to homepage
+
 ## 5.4.0
 
 ### Features

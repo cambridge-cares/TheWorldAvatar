@@ -1,0 +1,86 @@
+@prefix owl:                <http://www.w3.org/2002/07/owl#> .
+@prefix os:                 <https://www.theworldavatar.com/kg/ontoservice/> .
+@prefix rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cmns-col:           <https://www.omg.org/spec/Commons/Collections/> .
+@prefix cmns-dt:            <https://www.omg.org/spec/Commons/DatesAndTimes/> .
+@prefix fibo-fnd-arr-lif:   <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/> .
+@prefix fibo-fbc-pas-fpas:  <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/> .
+
+fibo-fbc-pas-fpas:ContractLifecycle fibo-fnd-arr-lif:hasStage os:CreationStage ;
+  fibo-fnd-arr-lif:hasStage os:ServiceExecutionStage ;
+  fibo-fnd-arr-lif:hasStage os:ExpirationStage .
+
+os:CreationStage cmns-col:comprises os:ContractCreation ;
+  cmns-col:comprises os:ContractApproval .
+
+os:ServiceExecutionStage cmns-dt:succeeds os:CreationStage ;
+  cmns-col:comprises os:ServiceDeliveryEvent ;
+  cmns-col:comprises os:MissedServiceEvent ;
+  cmns-col:comprises os:TerminatedServiceEvent .
+
+os:ExpirationStage cmns-dt:succeeds os:ServiceExecutionStage ;
+  cmns-col:comprises os:ContractDischarge ;
+  cmns-col:comprises os:ContractRescission ;
+  cmns-col:comprises os:ContractTermination .
+
+fibo-fbc-pas-fpas:ContractLifecycleStage owl:oneOf (
+  os:CreationStage
+  os:ServiceExecutionStage
+  os:ExpirationStage
+) .
+
+os:CreationStage a fibo-fbc-pas-fpas:ContractLifecycleStage ;
+  rdfs:label "Creation Stage";
+  rdfs:comment "The phase in the lifecycle of a contract to create a new contract.".
+
+os:ServiceExecutionStage a fibo-fbc-pas-fpas:ContractLifecycleStage ;
+  rdfs:label "Service Execution Stage";
+  rdfs:comment "The phase in the lifecycle of a contract where the services agreed should be executed.".
+
+os:ExpirationStage a fibo-fbc-pas-fpas:ContractLifecycleStage ;
+  rdfs:label "Expiration Stage";
+  rdfs:comment "The phase in the lifecycle of a contract where the contract has ended.".
+
+fibo-fbc-pas-fpas:ContractLifecycleEvent owl:oneOf (
+  os:ServiceDeliveryEvent
+  os:TerminatedServiceEvent
+  os:MissedServiceEvent
+  os:ContractCreation
+  os:ContractApproval
+  os:ContractDischarge
+  os:ContractRescission
+  os:ContractTermination
+) .
+
+os:ServiceDeliveryEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Service Delivery Event";
+  rdfs:comment "This event represents a delivery for the requested service.".
+
+os:TerminatedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Terminated Service Event";
+  rdfs:comment "This event represents a requested service that has been terminated either by the service provider or the client.".
+
+os:MissedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Missed Service Event";
+  rdfs:comment "This event represents a requested service that fails to be delivered to the client".
+
+os:ContractCreation a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Creation";
+  rdfs:comment "An event to draft and create a new contract during the creation lifecycle stage of a contract.".
+
+os:ContractApproval a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Approval";
+  rdfs:comment "An event to approve the contract during the creation lifecycle stage of a contract.".
+
+os:ContractDischarge a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Discharge";
+  rdfs:comment "An event ending the contract as all contractual obligations have been performed.".
+
+os:ContractRescission a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Rescission";
+  rdfs:comment "An event rendering the contract null, void, and no longer legally binding as one contractual party is a victim of a vitiating factor during the expiration lifecycle stage of a contract.".
+
+os:ContractTermination a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Contract Termination";
+  rdfs:comment "An event ending the contract before all contractual obligations have been performed. Typically the contract may have been concluded earlier with the agreement of all parties involved.".

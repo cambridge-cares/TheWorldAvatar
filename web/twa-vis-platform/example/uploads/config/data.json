@@ -1,10 +1,10 @@
 {
   "name": "Cambridge",
-  "tree-icon": "./images/duck.svg",
+  "tree-icon": "/images/duck.svg",
   "groups": [
     {
       "name": "Colleges",
-      "tree-icon": "./images/tub.svg",
+      "tree-icon": "/images/tub.svg",
       "expanded": false,
       "sources": [
         {

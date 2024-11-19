@@ -1,0 +1,19 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+}
+
+.circle {
+  height: 0.4rem;
+  width: 0.4rem;
+  margin: 0 0.25rem;
+
+  border-radius: 50%;
+  background-color: var(--background-primary);
+  border-width: 0.1rem;
+  border-style: solid;
+}
+
+.text {
+  font-size: 12;
+}

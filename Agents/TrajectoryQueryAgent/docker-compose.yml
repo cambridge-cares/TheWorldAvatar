@@ -1,10 +1,3 @@
-version: "3.8"
-
 services:
   trajectoryqueryagent:
-    image: ghcr.io/cambridge-cares/trajectoryqueryagent:1.0.2
-    build: .
-    ports:
-      - "10108:8080"
-    volumes:
-      - ./trajectoryqueryagent/src/main/resources:/resources
+    image: ghcr.io/cambridge-cares/trajectoryqueryagent:3.0.0
