@@ -1,13 +1,13 @@
+import { Path } from "typescript";
 import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
 
 type BrandingKeys = 'navbarLogo' | 'landing' | 'landingDark';
-
 /**
  * Interface of default settings for landing page.
  */
 export type UISettings = {
   branding: {
-    [key in BrandingKeys]: string;
+    [key in BrandingKeys]: string | string[];
   },
   modules: {
     [key: string]: boolean;

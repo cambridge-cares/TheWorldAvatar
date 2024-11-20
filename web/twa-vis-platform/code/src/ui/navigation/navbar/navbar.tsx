@@ -36,19 +36,28 @@ export default function Navbar(props: Readonly<NavbarProps>) {
   return (
     <div id="navbar" className={styles.navbar}>
       {/* Render navbar logo if set */}
-      {props.settings?.branding?.navbar?.length > 0 &&
+      {props.settings?.branding?.navbarLogo?.length > 0 &&
+          // Handle the case where navbarLogo is a list
         <div className={styles["logo-ribbon"]}>
           {
-            props.settings?.branding?.navbar?.map(logo => {
-              return (
+            Array.isArray(props.settings?.branding?.navbarLogo) ? (
+              props.settings?.branding?.navbarLogo.map(logo => (
                 <Link key={logo} href={Routes.HOME}>
                   <IconComponent
                     icon={logo}
                     classes={styles["logo"]}
                   />
                 </Link>
-              )
-            })
+              ))
+            ) : (
+              // Handle the case where navbarLogo is a string
+              <Link href={Routes.HOME}>
+                <IconComponent
+                  icon={props.settings?.branding?.navbarLogo}
+                  classes={styles["logo"]}
+                />
+              </Link>
+            )
           }
         </div>
       }
