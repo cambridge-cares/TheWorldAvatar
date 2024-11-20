@@ -19,7 +19,7 @@ export async function addAllLayers(map: Map, dataStore: DataStore, imagerySettin
 
     const layerArray: DataLayer[] = dataStore?.getLayerList();
     layerArray?.forEach((layer) => addLayer(map, layer, currentStyle));
-    console.log(`Added ${layerArray?.length} layers to the map object.`);
+    console.info(`Added ${layerArray?.length} layers to the map object.`);
 }
 
 /**
