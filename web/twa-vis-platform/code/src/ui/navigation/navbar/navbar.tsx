@@ -23,6 +23,7 @@ interface NavbarProps {
  * custom navbar components.
  */
 export default function Navbar(props: Readonly<NavbarProps>) {
+  const keycloakEnabled = process.env.KEYCLOAK === 'true';
 
   // Visibility state of navigation bar
   const navbarState = useSelector(selectItem(navbarItem.name));
@@ -54,7 +55,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
 
       {/* Render each component as required */}
       <div className="navbarElements">
-        <KeycloakSession />
+        {keycloakEnabled && <KeycloakSession />}
         {props.settings?.modules?.landing &&
           <NavbarComponent
             name="LANDING"

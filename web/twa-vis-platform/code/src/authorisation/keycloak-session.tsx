@@ -10,17 +10,13 @@ const KeycloakSession = () => {
     useEffect(() => {
         const fetchUsername = async () => {
             try {
-                const response = await fetch('/api/userinfo');
+                const response: Response = await fetch('/api/userinfo');
                 if (response.ok) {
                     const userInfo = await response.json();
                     setDisplayName(userInfo.fullName);
-                } else if (response.status != 404) {
-                    // Log all other connection errors, but 404 should be ignored
-                    // 404 will likely occur only when keycloak is not configured and does not exist
-                    console.error("Failed to complete request: ", response);
                 }
             } catch (error) {
-                console.error('Error fetching user Info', error);
+                console.warn('Error fetching user info:', error);
             }
         };
 
