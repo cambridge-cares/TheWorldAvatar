@@ -290,10 +290,12 @@ The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/da
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
 ### `"rules"`
+
 Specify list of `.toml` files provided as paths relative to the [`"datasetDirectory"`](#datasetdirectory).
-These `.toml` files specify a list of sparql insert queries.
-For Blazegraph these will run
-An example of such a file can be found (here)[https://github.com/ontop/ontop/blob/f46dabab12aa1e0f0ab9a2b78b16393bee49b9c5/binding/rdf4j/src/test/resources/employee/employee-rules.toml].
+These `.toml` files specify a list of sparql insert queries in the Ontop rules format.
+An example of such a file can be found [here](https://github.com/ontop/ontop/blob/f46dabab12aa1e0f0ab9a2b78b16393bee49b9c5/binding/rdf4j/src/test/resources/employee/employee-rules.toml).
+For Blazegraph these insert queries are run once after data is uploaded.
+For Ontop they are be assigned as Ontop rules.
 
 ### `"staticGeoServerData"`
 
