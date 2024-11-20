@@ -21,7 +21,6 @@ Ensure the following software is installed:
 
 - [Git](https://git-scm.com/downloads)
 - [Docker Desktop](https://docs.docker.com/get-docker/) or Docker Engine and Docker Compose Plugin
-  - On Linux systems, [Podman](https://podman.io/) can be used as an alternative.
 
 ### Access to Docker Registries
 
