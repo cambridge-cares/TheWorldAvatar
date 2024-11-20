@@ -28,8 +28,6 @@ import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Table;
-import org.jooq.UpdateSetFirstStep;
-import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
@@ -63,6 +61,10 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     private final Field<T> timeColumn;
 
     // Central database table
+
+    private static final String INFO_SCHEMA = "information_schema";
+    private static final String PREFIX_COLUMN = "column";
+
     private static final String DB_TABLE_NAME = "time_series_quantities";
 
     private static final String TS_IRI_COLUMN_STRING = "time_series_iri";
@@ -72,6 +74,9 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     private static final Field<String> TS_IRI_COLUMN = DSL.field(DSL.name(TS_IRI_COLUMN_STRING), String.class);
     private static final Field<String> COLUMNNAME_COLUMN = DSL.field(DSL.name("column_name"), String.class);
     private static final Field<String> TABLENAME_COLUMN = DSL.field(DSL.name("table_name"), String.class);
+    private static final Field<String> TABLE_SCHEMA_COLUMN = DSL.field(DSL.name("table_schema"), String.class);
+    private static final Table<Record> COLUMNS_TABLE = DSL.table(DSL.name(INFO_SCHEMA, "columns"));
+
     // Exception prefix
     private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
     // Error message
@@ -196,7 +201,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                     } else {
                         // add new columns
                         int columnIndex = getNumberOfDataColumns(tsTableName, conn) + 1;
-                        String columnName = "column" + columnIndex;
+                        String columnName = PREFIX_COLUMN + columnIndex;
                         addColumn(tsTableName, dataClass.get(i), columnName, srid, conn);
                         dataColumnNames.put(dataIRIList.get(i), columnName);
                     }
@@ -205,7 +210,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 tsTableName = "timeseries_" + UUID.randomUUID().toString().replace("-", "_");
                 int i = 1;
                 for (String dataIri : dataIRIList) {
-                    dataColumnNames.put(dataIri, "column" + i);
+                    dataColumnNames.put(dataIri, PREFIX_COLUMN + i);
                     i += 1;
                 }
                 createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRIList, dataClass, srid, conn);
@@ -298,7 +303,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                         } else {
                             // add new columns
                             int columnIndex = getNumberOfDataColumns(tsTableName, conn) + 1;
-                            String columnName = "column" + columnIndex;
+                            String columnName = PREFIX_COLUMN + columnIndex;
                             addColumn(tsTableName, dataClass.get(j), columnName, srid, conn);
                             dataColumnNames.put(dataIRIList.get(j), columnName);
                         }
@@ -313,7 +318,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 } else {
                     int j = 1;
                     for (String dataIri : dataIRIList) {
-                        dataColumnNames.put(dataIri, "column" + j);
+                        dataColumnNames.put(dataIri, PREFIX_COLUMN + j);
                         j += 1;
                     }
                     createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRIList, dataClass, srid, conn);
@@ -861,13 +866,11 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
     private boolean checkCentralTableExists(Connection conn) {
         DSLContext context = DSL.using(conn, DIALECT);
-        Table<Record> tables = DSL.table(DSL.name("information_schema", "tables"));
-        Field<String> tableNameColumn = DSL.field("table_name", String.class);
+        Table<Record> tables = DSL.table(DSL.name(INFO_SCHEMA, "tables"));
 
-        Condition condition = tableNameColumn.eq(DB_TABLE_NAME);
+        Condition condition = TABLENAME_COLUMN.eq(DB_TABLE_NAME);
         if (schema != null) {
-            Field<String> schemaColumn = DSL.field("table_schema", String.class);
-            condition = condition.and(schemaColumn.eq(schema));
+            condition = condition.and(TABLE_SCHEMA_COLUMN.eq(schema));
         }
         return context.select(count()).from(tables).where(condition).fetchOne(0, int.class) == 1;
     }
@@ -1733,7 +1736,6 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     private void addDataTypes(Connection conn, TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata,
             String tableName) {
         DSLContext context = DSL.using(conn, DIALECT);
-        Table<Record> columnsTable = DSL.table(DSL.name("information_schema", "columns"));
         Field<String> dataTypeColumn = DSL.field("data_type", String.class);
         Field<String> udtNameColumn = DSL.field("udt_name", String.class);
 
@@ -1741,12 +1743,11 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 .and(COLUMNNAME_COLUMN.notIn(TIME_COLUMN, TS_IRI_COLUMN_STRING));
 
         if (schema != null) {
-            Field<String> schemaColumn = DSL.field("table_schema", String.class);
-            condition.and(schemaColumn.eq(schema));
+            condition.and(TABLE_SCHEMA_COLUMN.eq(schema));
         }
 
         Result<? extends Record> queryResult = context
-                .select(dataTypeColumn, udtNameColumn, COLUMNNAME_COLUMN).from(columnsTable)
+                .select(dataTypeColumn, udtNameColumn, COLUMNNAME_COLUMN).from(COLUMNS_TABLE)
                 .where(condition).fetch();
 
         queryResult.forEach(rec -> {
@@ -1800,7 +1801,6 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      */
     private String getTableWithMatchingTimeColumn(Connection conn) {
         DSLContext context = DSL.using(conn, DIALECT);
-        Table<Record> columns = DSL.table(DSL.name("information_schema", "columns"));
         Field<String> dataTypeColumn = DSL.field(DSL.name("data_type"), String.class);
         Field<String> udtNameColumn = DSL.field(DSL.name("udt_name"), String.class);
 
@@ -1816,11 +1816,10 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                         .or(udtNameColumn.eq(choice1).or(udtNameColumn.eq(choice2))));
 
         if (schema != null) {
-            Field<String> schemaColumn = DSL.field("table_schema", String.class);
-            condition = condition.and(schemaColumn.eq(schema));
+            condition = condition.and(TABLE_SCHEMA_COLUMN.eq(schema));
         }
 
-        List<String> queryResult = context.select(TABLENAME_COLUMN).from(columns).where(condition)
+        List<String> queryResult = context.select(TABLENAME_COLUMN).from(COLUMNS_TABLE).where(condition)
                 .fetch(TABLENAME_COLUMN);
 
         if (queryResult.isEmpty()) {
@@ -1856,18 +1855,14 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
      */
     private int getNumberOfDataColumns(String tsTableName, Connection conn) {
         DSLContext context = DSL.using(conn, DIALECT);
-        Table<Record> columnsTable = DSL.table(DSL.name("information_schema", "columns"));
-        Field<String> tableNameColumn = DSL.field("table_name", String.class);
-        Field<String> columnNameColumn = DSL.field("column_name", String.class);
 
-        Condition condition = tableNameColumn.eq(tsTableName)
-                .and(columnNameColumn.notIn(TIME_COLUMN, TS_IRI_COLUMN_STRING));
+        Condition condition = TABLENAME_COLUMN.eq(tsTableName)
+                .and(COLUMNNAME_COLUMN.notIn(TIME_COLUMN, TS_IRI_COLUMN_STRING));
 
         if (schema != null) {
-            Field<String> schemaColumn = DSL.field("table_schema", String.class);
-            condition.and(schemaColumn.eq(schema));
+            condition.and(TABLE_SCHEMA_COLUMN.eq(schema));
         }
 
-        return context.select(count()).from(columnsTable).where(condition).fetchOne(0, int.class);
+        return context.select(count()).from(COLUMNS_TABLE).where(condition).fetchOne(0, int.class);
     }
 }

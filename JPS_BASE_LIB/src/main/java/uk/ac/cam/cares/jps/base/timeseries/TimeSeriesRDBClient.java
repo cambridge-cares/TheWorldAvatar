@@ -28,7 +28,6 @@ import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.Table;
-import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
@@ -1355,23 +1354,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
         String tableName = getTimeseriesTableName(dataIRI, context);
 
         return getDSLTable(tableName);
-    }
-
-    /**
-     * check if a row exists to prevent duplicate rows with the same time value
-     * 
-     * @param tsTableName
-     * @param time
-     * @param context
-     * @return
-     */
-    private boolean checkTimeRowExists(String tsTableName, T time, DSLContext context) {
-        try {
-            return context.fetchExists(selectFrom(getDSLTable(tsTableName)).where(timeColumn.eq(time)));
-        } catch (DataAccessException e) {
-            LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(exceptionPrefix + "Error in checking if a row exists for a given time value");
-        }
     }
 
     /**
