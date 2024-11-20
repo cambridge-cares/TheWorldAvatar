@@ -9,9 +9,9 @@ import FormContainerComponent from 'ui/interaction/form/form-container';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 
 interface InterceptAddFormPageProps {
-  params: {
+  params: Promise<{
     type: string
-  }
+  }>
 }
 
 /**
@@ -24,17 +24,19 @@ export async function generateMetadata(): Promise<Metadata> {
   const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === Modules.REGISTRY);
   return {
     title: metadata?.title ?? PageTitles.REGISTRY,
-  }
+  };
 }
 
 /**
  * Displays the intercepted route for adding an entity through a modal.
  */
-export default function InterceptAddFormPage(props: Readonly<InterceptAddFormPageProps>) {
+export default async function InterceptAddFormPage(props: Readonly<InterceptAddFormPageProps>) {
+  const { params } = props;
+  const resolvedParams = await params;
   return (
     <FormModal>
       <FormContainerComponent
-        entityType={props.params?.type}
+        entityType={resolvedParams.type}
         formType={Paths.REGISTRY_ADD}
         agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
       />
