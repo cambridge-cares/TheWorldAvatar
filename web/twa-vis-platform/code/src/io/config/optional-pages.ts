@@ -70,8 +70,6 @@ export default class OptionalPages {
 
             // Sort pages by filename
             OptionalPages.LOADED_PAGES.sort(OptionalPages.compare);
-            
-            console.info("Loaded optional pages content.");
         } catch(error) {
             console.error("Could not read any optional pages!", error);
         }

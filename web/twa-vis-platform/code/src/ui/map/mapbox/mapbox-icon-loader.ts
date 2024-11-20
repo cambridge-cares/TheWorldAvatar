@@ -17,7 +17,6 @@ export async function addIcons(map: Map, iconSettings: IconSettings): Promise<vo
   });
 
   await Promise.all(promises);
-  console.info("All custom image icons have been loaded and registered.");
 }
 
 /**
@@ -30,13 +29,13 @@ export async function addIcons(map: Map, iconSettings: IconSettings): Promise<vo
  */
 function loadIcon(map: Map, imageName: string, imageURL: string, callback: () => void) {
   if (process.env.ASSET_PREFIX) {
-    console.log(`ASSET_PREFIX: \"${process.env.ASSET_PREFIX}\" detected. Appending to MapBox Layer icon paths`)
+    console.info(`ASSET_PREFIX: "${process.env.ASSET_PREFIX}" detected. Appending to MapBox Layer icon paths`)
   }
   map?.loadImage(
     `${process.env.ASSET_PREFIX}${imageURL}`,
     (error, image) => {
       if (error) {
-        console.log("ERROR: Could not load image at URL " + imageURL);
+        console.error("ERROR: Could not load image at URL " + imageURL);
       } else {
         if (!map?.hasImage(imageName)) {
           // If the imageURL contains ("-sdf"), load as an SDF image

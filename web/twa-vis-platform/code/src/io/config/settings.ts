@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { JsonObject } from 'types/json';
-import { UISettings, MapboxCredentials } from 'types/settings';
+import { UISettings } from 'types/settings';
 
 /**
  * Handles the retrieval and storage of settings from the user provided configuration files.
@@ -67,7 +67,6 @@ export default class SettingsStore {
       jsonifiedSettings.modules.dashboard = false;
     }
     this.DEFAULT_SETTINGS = JSON.stringify(jsonifiedSettings);
-    console.info("Default settings have been read and cached.");
   }
 
   /**
@@ -76,7 +75,6 @@ export default class SettingsStore {
   public static readMapSettings(): void {
     const settings: string = this.readFile(this.MAP_SETTINGS_FILE);
     this.MAP_SETTINGS = settings;
-    console.info("Map settings have been read and cached.");
   }
 
   /**
@@ -107,17 +105,10 @@ export default class SettingsStore {
       // Wait for all promises to resolve, filter out null values, and stringify the resulting array
       const data: JsonObject[] = (await Promise.all(dataPromises)).filter(Boolean);
       this.MAP_DATA_SETTINGS = JSON.stringify(data);
-      console.info("Map data settings have been read and cached.");
     } catch (_error) {
       console.error("No local data files detected...");
     }
   }
-
-  /**
-   * Reads the Mapbox credentials from Docker secrets.
-   * 
-   * @returns Mapbox credentials.
-   */
 
   /**
    * Read the input file
