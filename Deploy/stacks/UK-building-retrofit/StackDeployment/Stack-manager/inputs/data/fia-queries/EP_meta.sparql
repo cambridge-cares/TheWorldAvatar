@@ -3,7 +3,7 @@ PREFIX building: <https://www.theworldavatar.com/kg/ontobuiltenv/building>
 PREFIX os: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/>
 
 SELECT ?Property (GROUP_CONCAT(?tmp; separator=", ") AS ?Value) WHERE {
-    SERVICE <http://174.138.27.240:3838/ontop/sparql> {
+    SERVICE [<http://174.138.27.240:3838/ontop/sparql>] {
         {
             BIND("Building Instance" AS ?Property)
             BIND([IRI] AS ?tmp)

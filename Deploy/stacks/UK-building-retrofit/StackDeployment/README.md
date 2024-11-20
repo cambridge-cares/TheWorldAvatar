@@ -52,13 +52,13 @@ Then navigate to `Deploy/stacks/dynamic/stack-manager` and run the following com
 
 ```bash
 # Start the stack (please note that this might take some time)
-bash ./stack.sh start Cam-Ely-Wis-DT
+bash ./stack.sh start CamElyWis-DT
 # Stop the stack
-bash ./stack.sh stop Cam-Ely-Wis-DT
+bash ./stack.sh stop CamElyWis-DT
 # Remove the stack (incl. volumes)
-bash ./stack.sh remove Cam-Ely-Wis-DT -v
+bash ./stack.sh remove CamElyWis-DT -v
 # Remove individual service
-bash ./stack.sh remove Cam-Ely-Wis-DT <service name>
+bash ./stack.sh remove CamElyWis-DT <service name>
 ```
 After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](Deploy/stacks/dynamic/stack-manager/README.md).
 
@@ -83,7 +83,7 @@ The following steps explain how to upload the data to the stack using the [Stack
 
 2) Navigate to `Deploy/stacks/dynamic/stack-data-uploader`, and run the following command there from a *bash* terminal and wait until container has stopped again (i.e. the upload has finished). Specified Blazegraph/Geoserver/... namespaces will be created automatically by the uploader if not already exist.
     ```bash
-    bash ./stack.sh start Cam-Ely-Wis-DT
+    bash ./stack.sh start CamElyWis-DT
     ```
 &nbsp;
 
