@@ -1,5 +1,18 @@
 # Starting the stack
 
+Prepare these secret files in [](./stack-manager/test/inputs/secrets)
+
+- geoserver_password
+- postgis_password
+- keycloak_admin_password_test
+- keycloak_admin_username_test
+
+Majority of KeyCloak settings are set using environment variables in [keycloak.json].
+
+Set value of KC_DB_PASSWORD to match value in postgis_password.
+
+Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depending on where it is deployed, e.g. `http://localhost:58085/keycloak`
+
 Use port 58085 for test stack when deploying the test stack
 
 ```bash
@@ -40,3 +53,5 @@ IMPORT FOREIGN SCHEMA public
     FROM SERVER foreign_server
     INTO public;
 ```
+
+[keycloak.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json

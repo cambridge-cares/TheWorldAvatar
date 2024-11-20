@@ -9,19 +9,23 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
     - [1.1 Preparation](#11-preparation)
     - [1.2 Docker Deployment](#12-docker-deployment)
   - [2. Agent Route](#2-agent-route)
-    - [2.1 Status ROUTE](#21-status-route-urlvis-backend-agentstatus)
-    - [2.2 Form ROUTE](#22-form-route-urlvis-backend-agentformtype)
-    - [2.3 Concept Metadata ROUTE](#23-concept-metadata-route-urlvis-backend-agenttypetype)
-    - [2.4 Instance ROUTE](#24-instance-route)
-      - [2.4.1 Add route](#241-add-route)
-      - [2.4.2 Delete route](#242-delete-route)
-      - [2.4.3 Update route](#243-update-route)
-      - [2.4.4 Get route](#244-get-route)
+    - [2.1 Status Route](#21-status-route-baseurlvis-backend-agentstatus)
+    - [2.2 Geocoding Route](#22-geocoding-route-baseurlvis-backend-agentlocation)
+      - [2.2.1 Geocoding route](#221-geocoding-route)
+      - [2.2.2 Address search route](#222-address-search-route)
+    - [2.3 Form Route](#23-form-route-baseurlvis-backend-agentformtype)
+    - [2.4 Concept Metadata Route](#24-concept-metadata-route-baseurlvis-backend-agenttypetype)
+    - [2.5 Instance Route](#25-instance-route)
+      - [2.5.1 Add route](#251-add-route)
+      - [2.5.2 Delete route](#252-delete-route)
+      - [2.5.3 Update route](#253-update-route)
+      - [2.5.4 Get route](#254-get-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
   - [4. Schemas](#4-schemas)
     - [4.1 Instantiation](#41-instantiation)
+    - [4.2 Geocoding](#42-geocoding)
 
 ## 1. Agent Deployment
 
@@ -63,6 +67,10 @@ The agent will require at least two files in order to function as a `REST` endpo
 
 1. `./resources/application-service.json`: A file mapping the resource identifier to the target file name in (2)
 2. At least one `JSON-LD` file at `./resources/jsonld/example.jsonld`: This file provides a structure for the instance that must be instantiated and will follow the schemas defined in [this section](#41-instantiation). Each file should correspond to one type of instance, and the resource ID defined in (1) must correspond to the respective file in order to function.
+
+**GEOCODING ENDPOINT**
+
+Users must add a geocoding endpoint to the `geocode` resource identifier at `./resources/application-service.json`. This geocoding endpoint is expected to be a `SPARQL` compliant endpoint with geocoding data instantiated. For more details about the ontologies and restrictions involved, please read [section 4.2](#42-geocoding).
 
 ### 1.2 Docker Deployment
 
@@ -111,7 +119,7 @@ If you are developing in VSCode, please add the following `launch.json` to the `
 
 The agent currently offers the following API route(s):
 
-### 2.1 Status ROUTE: `<url>/vis-backend-agent/status`
+### 2.1 Status Route: `<baseURL>/vis-backend-agent/status`
 
 This route serves as a health check to confirm that the agent has been successfully initiated and is operating as anticipated. It can be called through a `GET` request with no parameters, as follows:
 
@@ -121,11 +129,51 @@ curl localhost:3838/vis-backend-agent/status
 
 If successful, the response will return `Agent is ready to receive requests.`.
 
-### 2.2 Form ROUTE: `<url>/vis-backend-agent/form/{type}`
+### 2.2 Geocoding Route: `<baseURL>/vis-backend-agent/location`
 
-This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a `GET` request to `<url>/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as a geocoding endpoint to interface with addresses and coordinates.
 
-Users can also retrieve a form template for a specific instance by appending the associated `id` at the end eg `<url>/vis-backend-agent/form/{type}/{id}`.
+#### 2.2.1 Geocoding route
+
+To retrieve the geographic coordinates, users can send a `GET` request to `<baseURL>/vis-backend-agent/location/geocode` with at least one of the following parameters:
+
+1. `postal_code`: Postal code of the address
+2. `block`: The street block of the address; Must be sent along with the street name
+3. `street`: The street name of the address
+4. `city`: The city name of the address
+5. `country`: The country IRI of the address following [this ontology](https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes)
+
+If successful, the response will return the coordinates in the `[longitude, latitude]` format that is compliant with `JSON`.
+
+#### 2.2.2 Address search route
+
+To search for the address based on postal code, users can send a `GET` request to `<baseURL>/vis-backend-agent/location/addresses` with the following parameter:
+
+1. `postal_code`: Postal code of the address
+
+If successful, the response will return the addresses as an array in the following `JSON` format:
+
+```json
+[
+  {
+    "block": "block number",
+    "street": "street name",
+    "city": "city name",
+    "country": "country IRI"
+  },
+  {
+    "street": "street name",
+    "city": "city name",
+    "country": "country IRI"
+  }
+]
+```
+
+### 2.3 Form Route: `<baseURL>/vis-backend-agent/form/{type}`
+
+This route serves as an endpoint to retrieve the corresponding form template for the specified target class type. Users can send a `GET` request to `<baseURL>/vis-backend-agent/form/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+
+Users can also retrieve a form template for a specific instance by appending the associated `id` at the end eg `<baseURL>/vis-backend-agent/form/{type}/{id}`.
 
 If successful, the response will return a form template in the following (minimal) JSON-LD format. Please note that the template does not follow any valid ontology rules at the root level, and is merely a schema for the frontend. However, its nested values complies with `SHACL` ontological rules.
 
@@ -175,9 +223,9 @@ If successful, the response will return a form template in the following (minima
 }
 ```
 
-### 2.3 Concept Metadata ROUTE: `<url>/vis-backend-agent/type/{type}`
+### 2.4 Concept Metadata Route: `<baseURL>/vis-backend-agent/type/{type}`
 
-This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<url>/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
+This route serves as an endpoint to retrieve all available ontology classes and subclasses along with their human readable labels and descriptions associated with the type. Users can send a `GET` request to `<baseURL>/vis-backend-agent/type/{type}`, where `{type}` is the requested identifier that must correspond to a target class in `./resources/application-form.json`.
 
 If successful, the response will return an array of objects in the following format:
 
@@ -186,7 +234,7 @@ If successful, the response will return an array of objects in the following for
   "type": {
     "type": "uri",
     "value": "instance IRI",
-    "dataType": "http://www.w3.org/2001/XMLSchema#string",
+    "dataType": "",
     "lang": ""
   },
   "label": {
@@ -204,47 +252,47 @@ If successful, the response will return an array of objects in the following for
   "parent": {
     "type": "uri",
     "value": "parent class IRI",
-    "dataType": "http://www.w3.org/2001/XMLSchema#string",
+    "dataType": "",
     "lang": ""
   }
 }
 ```
 
-### 2.4 Instance ROUTE
+### 2.5 Instance Route
 
 This route serves as a `RESTful` endpoint to perform `CRUD` operations for any resources based on the `type` specified.
 
-#### 2.4.1 Add route
+#### 2.5.1 Add route
 
 To add a new instance, users must send a POST request with their corresponding parameters to
 
 ```
-<url>/vis-backend-agent/{type}
+<baseURL>/vis-backend-agent/{type}
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`. The request parameters will depend on the `JSON-LD` file defined. More information on the required schema can be found in [this section](#41-instantiation).
 
-#### 2.4.2 Delete route
+#### 2.5.2 Delete route
 
 To delete an instance, users must send a DELETE request to
 
 ```
-<url>/vis-backend-agent/{type}/{id}
+<baseURL>/vis-backend-agent/{type}/{id}
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The instance representation will be deleted according to the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
 
-#### 2.4.3 Update route
+#### 2.5.3 Update route
 
 To update an instance, users must send a PUT request with their corresponding parameters to
 
 ```
-<url>/vis-backend-agent/{type}/{id}
+<baseURL>/vis-backend-agent/{type}/{id}
 ```
 
 where `{type}` is the requested identifier that must correspond to a target file name in`./resources/application-service.json`, and `{id}` is the specific instance's identifier. The request parameters will depend on the `JSON-LD` file defined for adding a new instance. More information on the required schema can be found in [this section](#41-instantiation).
 
-#### 2.4.4 Get route
+#### 2.5.4 Get route
 
 There are several routes for retrieving instances associated with a specific `type` to populate the records in the registry. The agent will automatically generate the query and parameters based on the SHACL restrictions developed. The agent will return **EITHER** a `JSON` array containing entities as their corresponding `JSON` object **OR** one Entity `JSON` object depending on which `GET` route is executed.
 
@@ -260,7 +308,7 @@ There are several routes for retrieving instances associated with a specific `ty
 Users can send a `GET` request to
 
 ```
-<url>/vis-backend-agent/{type}
+<baseURL>/vis-backend-agent/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
@@ -270,7 +318,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 Users can send a `GET` request to
 
 ```
-<url>/vis-backend-agent/{type}/{id}
+<baseURL>/vis-backend-agent/{type}/{id}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, and `{id}` is the specific instance's identifier.
@@ -280,7 +328,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 This route retrieves all instances with human-readable fields. Users can send a `GET` request to
 
 ```
-<url>/vis-backend-agent/{type}/label
+<baseURL>/vis-backend-agent/{type}/label
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
@@ -290,7 +338,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 This route retrieves all instances in the csv format. Users can send a `GET` request to
 
 ```
-<url>/vis-backend-agent/csv/{type}
+<baseURL>/vis-backend-agent/csv/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`.
@@ -300,7 +348,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 Users can send a `GET` request to:
 
 ```
-<url>/vis-backend-agent/{parent}/{id}/{type}
+<baseURL>/vis-backend-agent/{parent}/{id}/{type}
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`, `{parent}` is the requested parent identifier that is linked to the type, and `{id}` is the specific parent instance's identifier to retrieve all instances associated with.
@@ -310,7 +358,7 @@ where `{type}`is the requested identifier that must correspond to a target class
 Users can send a `POST` request with search criterias to:
 
 ```
-<url>/vis-backend-agent/{type}/search
+<baseURL>/vis-backend-agent/{type}/search
 ```
 
 where `{type}`is the requested identifier that must correspond to a target class in`./resources/application-form.json`. The search criterias should be sent as a `JSON` request body:
@@ -440,7 +488,7 @@ base:ConceptShape
 
 ## 4. Schemas
 
-## 4.1 Instantiation
+### 4.1 Instantiation
 
 The instantiation mechanism of this agent involves the employment of [`JSON-LD`](https://json-ld.org/) alongside the programmatic replacement of certain objects based on the request parameters to instantiate a new instance. Generally, the schema will follow the [`JSON-LD` specifications](https://www.w3.org/TR/json-ld/), except for values that should be dynamically replaced based on request parameters. For instance, the ontological representation of a person may be as follows.
 
@@ -464,3 +512,165 @@ It is expected that we should create a new ID and name for the person instance. 
 ```
 
 A sample file can be found at `./resources/example.jsonld`. It is recommended for users to first generate a valid schema using the [`JSON-LD` Playground](https://json-ld.org/playground/), and then replace the target literal or IRIs with the replacement object specified above. This validates the `JSON-LD` schema and ensure a consistent schema is adopted. **WARNING:** Please do not use short prefixes and include the full IRI throughout the schema in order for the agent to function as expected. This can be ensured by removing the "@context" field, which defines these prefixes.
+
+### 4.2 Geocoding
+
+The agent requires certain ontologies and `SHACL` restrictions in order to enable geocoding services for the frontend. The data instantiated in the knowledge graph must follow the following ontology. However, there are optional concepts such as the `PrimaryAddressNumber` for `block_number` that can be excluded.
+
+```
+:                   https://www.theworldavatar.com/kg/
+fibo-fnd-arr-id:    https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/
+fibo-fnd-plc-adr:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/
+fibo-fnd-plc-loc:   https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/
+fibo-fnd-rel-rel:   https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/
+geo:                http://www.opengis.net/ont/geosparql#
+rdfs:	              http://www.w3.org/2000/01/rdf-schema#
+xsd:                http://www.w3.org/2001/XMLSchema#
+
+AddressInstance a fibo-fnd-plc-adr:ConventionalStreetAddress ;
+  fibo-fnd-plc-adr:hasStreetAddress StreetAddressInstance  ;
+  fibo-fnd-plc-adr:hasPostalCode {postal_code} ;
+  fibo-fnd-plc-loc:hasCityName {city} ;
+  fibo-fnd-plc-loc:hasCountry {<https://www.omg.org/spec/LCC/Countries/ISO3166-1-CountryCodes/Country>}
+  fibo-fnd-arr-id:isIndexTo LocationInstance .
+StreetAddressInstance a fibo-fnd-plc-adr:StreetAddress ;
+    fibo-fnd-plc-adr:hasPrimaryAddressNumber StreetBlockInstance ;
+    fibo-fnd-plc-adr:hasStreetName StreetNameInstance .
+StreetBlockInstance a fibo-fnd-plc-adr:PrimaryAddressNumber ;
+    fibo-fnd-rel-rel:hasTag {block_number} .
+StreetNameInstance a fibo-fnd-plc-adr:StreetName ;
+    fibo-fnd-rel-rel:hasTag {road_name} .
+LocationInstance a fibo-fnd-plc-loc:PhysicalLocation ;
+    geo:hasGeometry [
+      a geo:Point;
+      geo:asWKT "{geom}"^^geo:wktLiteral .
+    ]
+```
+
+The `SHACL` property shape for location must target the `https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location` concept, and include a `PropertyShape` of the geopoint as well as the address. Note that the address may take any shape, but it is recommended to follow the following definitions in `TTL` format:
+
+```
+@prefix base:             <https://www.theworldavatar.io/kg/location/> .
+@prefix address:          <https://www.theworldavatar.io/kg/address/> .
+@prefix sh:               <http://www.w3.org/ns/shacl#> .
+@prefix xsd:              <http://www.w3.org/2001/XMLSchema#> .
+@prefix ontobim:          <https://www.theworldavatar.com/kg/ontobim/> .
+@prefix ontoservice:      <https://www.theworldavatar.com/kg/ontoservice/> .
+@prefix fibo-fnd-plc-adr: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/> .
+@prefix fibo-fnd-plc-loc: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/> .
+@prefix fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> .
+@prefix lcc-cr:           <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/> .
+@prefix geo:              <http://opengis.net/ont/geosparql#> .
+
+base:ServiceLocationShape
+  a sh:NodeShape ;
+  sh:targetClass lcc-cr:Location ;
+  sh:property [
+    sh:name "id" ;
+    sh:description "Identifier for the location." ;
+    sh:order 1 ;
+    sh:path (
+      geo:hasGeometry
+      [sh:inversePath geo:hasGeometry]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "geopoint" ;
+    sh:description "The WKT serialization of the location." ;
+    sh:order 2 ;
+    sh:path (
+      geo:hasGeometry
+      geo:asWKT
+    ) ;
+    sh:datatype geo:wktLiteral ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "address" ;
+    sh:description "Address of the service site." ;
+    sh:order 3 ;
+    sh:path (
+      [sh:inversePath ontoservice:hasServiceLocation]
+      fibo-fnd-plc-adr:hasAddress
+    ) ;
+    sh:node address:ConventionalStreetAddressShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+
+  address:ConventionalStreetAddressShape
+  a sh:NodeShape ;
+  sh:targetClass fibo-fnd-plc-adr:ConventionalStreetAddress ;
+  sh:property [
+    sh:name "id";
+    sh:description "Identifier for the address.";
+    sh:order 1;
+    sh:path (
+      fibo-fnd-plc-adr:hasPostalCode
+      [sh:inversePath fibo-fnd-plc-adr:hasPostalCode]
+    ) ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "postal code";
+    sh:description "Postal code";
+    sh:order 2;
+    sh:path fibo-fnd-plc-adr:hasPostalCode ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:minLength 6 ;
+    sh:maxLength 6 ;
+    sh:pattern "^\d+$" ;
+  ] ;
+  sh:property [
+    sh:name "block";
+    sh:description "The block number on the street if any";
+    sh:order 3;
+    sh:path (
+        fibo-fnd-plc-adr:hasStreetAddress
+        fibo-fnd-plc-adr:hasPrimaryAddressNumber
+        fibo-fnd-rel-rel:hasTag
+      );
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "street";
+    sh:description "The name of the street for the address";
+    sh:order 4;
+    sh:path (
+        fibo-fnd-plc-adr:hasStreetAddress
+        fibo-fnd-plc-adr:hasStreetName
+        fibo-fnd-rel-rel:hasTag
+      );
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "city";
+    sh:description "City";
+    sh:order 5;
+    sh:path fibo-fnd-plc-loc:hasCityName ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] ;
+  sh:property [
+    sh:name "country";
+    sh:description "Country";
+    sh:order 6;
+    sh:path (fibo-fnd-plc-loc:hasCountry <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/hasEnglishShortName>);
+    sh:in lcc-cr:Country ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+```

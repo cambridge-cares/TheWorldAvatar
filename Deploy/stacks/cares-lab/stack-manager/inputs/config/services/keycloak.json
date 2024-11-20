@@ -1,0 +1,55 @@
+{
+  "ServiceSpec": {
+    "Name": "keycloak",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "quay.io/keycloak/keycloak:22.0.3",
+        "Env": [
+          "KEYCLOAK_ADMIN=admin",
+          "KEYCLOAK_ADMIN_PASSWORD=admin",
+          "JAVA_OPTS_APPEND=-Djavax.net.ssl.trustStore=/opt/keycloak/conf/truststores/truststore.jks -Djavax.net.ssl.trustStorePassword=ea8c8846f45d"
+        ],
+        "Command": [
+          "/opt/keycloak/bin/kc.sh",
+          "start"
+        ],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "themes",
+            "Target": "/opt/keycloak/themes"
+          },
+          {
+            "Type": "bind",
+            "Source": "server.keystore",
+            "Target": "/opt/keycloak/conf/server.keystore"
+          },
+          {
+            "Type": "bind",
+            "Source": "database",
+            "Target": "/opt/keycloak/data"
+          },
+          {
+            "Type": "bind",
+            "Source": "/<placeholder>/truststore.jks",
+            "Target": "/opt/keycloak/conf/truststores/truststore.jks"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "keycloak.conf",
+            "File": {
+              "Name":"/opt/keycloak/conf/keycloak.conf"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/keycloak/",
+      "externalPath": "/keycloak/"
+    }
+  }
+}

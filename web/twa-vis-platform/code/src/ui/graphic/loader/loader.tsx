@@ -1,12 +1,11 @@
-import React from 'react';
 
-import styles from './loader.module.css';
 import { Assets } from 'io/config/assets';
-import AppImage from 'ui/graphic/image/image';
+import Image from 'next/image';
+import styles from './loader.module.css';
 
 export default function Loader() {
   return <div className={styles.loadingContainer}>
-    <AppImage url= {Assets.LOADING}
+    <Image src= {Assets.LOADING}
       width={500}
       height={500} 
       alt ="Loading animation"/>
