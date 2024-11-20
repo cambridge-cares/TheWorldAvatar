@@ -12,7 +12,6 @@ Key sections:
 - [4. Ontop SPARQL Endpoint](#4-ontop-sparql-endpoint)
   - [Example Query: Average EPC Ratings by LSOA](#example-query-average-epc-ratings-by-lsoa)
 - [5. Troubleshooting](#5-troubleshooting)
-- [6. Additional Resources](#6-additional-resources)
 
 &nbsp;
 
@@ -118,6 +117,11 @@ This query retrieves the average energy efficiency ratings for all buildings in 
 
 Further query templates can be found in the Deploy/stacks/UK-building-retrofit/StackDeployment/SPARQL queries directory, covering a range of metrics such as energy consumption, fuel poverty rates, and public health data.
 
+## 5. Feature Info Agent
+The [Feature Info Agent] serves as an access point for the visualisation, enabling queries about data for individual features (e.g., specific geographical locations). In this case, the Feature Info Agent retrieves energy performance and structural descriptions for buildings by querying the Ontop endpoint using the building's IRI.  
+
+The queries and config files can be found in [fia_quires]. Navigate to [services], open [feature-info-agent.json] and under the `Mounts` section, modify `Source` based on where the queries and config files are located at. 
+
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
@@ -131,10 +135,14 @@ Further query templates can be found in the Deploy/stacks/UK-building-retrofit/S
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar.git
 [git clone]: https://git-scm.com/docs/git-clone
 [SSH tunnel]: https://code.visualstudio.com/docs/remote/tunnels
+[Feature Info Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[fia_quires]: ./Stack-manager/inputs/data/fia-queries
+[services]: ./Stack-manager/inputs/config/services
+[feature-info-agent.json]: ./Stack-manager/inputs/config/services/feature-info-agent.json
 
 
