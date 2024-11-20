@@ -33,6 +33,7 @@ import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
 import com.cmclinnovations.agent.template.QueryTemplateFactory;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -403,13 +404,32 @@ public class KGService {
   }
 
   /**
+   * A method to retrieve the value of the iri variable. Note that this method is
+   * only application for one result sparql binding and will return an error
+   * otherwise.
+   * 
+   * @param results Results to parse.
+   */
+  public String getSingleInstance(Queue<SparqlBinding> results) {
+    if (results.size() == 1) {
+      return results.poll().getFieldValue(LifecycleResource.IRI_KEY);
+    } else if (results.isEmpty()) {
+      LOGGER.error("No valid instance found!");
+      throw new NullPointerException("No valid instance found!");
+    } else {
+      LOGGER.error("Detected multiple instances: Data model is invalid!");
+      throw new IllegalStateException("Detected multiple instances: Data model is invalid!");
+    }
+  }
+
+  /**
    * Gets all available internal SPARQL endpoints within the stack of the
    * specified type.
    * 
    * @param endpointType The required endpoint type. Can be either mixed,
    *                     blazegraph, or ontop.
    */
-  private List<String> getEndpoints(SparqlEndpointType endpointType) {
+  public List<String> getEndpoints(SparqlEndpointType endpointType) {
     LOGGER.debug("Retrieving available endpoints...");
     String serviceClass = "";
     if (endpointType.equals(SparqlEndpointType.BLAZEGRAPH)) {

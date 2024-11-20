@@ -115,6 +115,15 @@ public class LifecycleController {
   }
 
   /**
+   * Schedules today's tasks.
+   */
+  @PostMapping("/contracts/service/schedule")
+  public ResponseEntity<ApiResponse> scheduleTodayTasks() {
+    LOGGER.info("Received request to schedule tasks for today...");
+    return this.lifecycleService.genActiveServiceOccurrences();
+  }
+
+  /**
    * Reports any unfulfilled service delivery.
    */
   @PostMapping("/contracts/service/report")

@@ -18,6 +18,7 @@ public class LifecycleResource {
   public static final String EVENT_KEY = "event";
   public static final String STAGE_KEY = "stage";
   public static final String ARCHIVE_STATUS_KEY = "status";
+  public static final String REMARKS_KEY = "remarks";
 
   public static final String LIFECYCLE_EVENT_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>/<https://www.omg.org/spec/Commons/Collections/comprises>/^<https://www.omg.org/spec/Commons/Classifiers/classifies>";
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
@@ -152,6 +153,69 @@ public class LifecycleResource {
       default:
         return null;
     }
+  }
+
+  /**
+   * Generates a SPARQL query to get today's day of week IRI from the cmns-dt
+   * ontology.
+   */
+  public static String genTodayDayOfWeekQuery() {
+    return "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
+        + "SELECT DISTINCT ?iri WHERE{"
+        // Day of week individuals
+        + "?iri a cmns-dt:TimeInterval;"
+        + "a owl:NamedIndividual;"
+        + "rdfs:label ?day_of_week."
+        // Calculate the days passed since 2000-01-01, which was Saturday
+        + "BIND(NOW()-\"2000-01-01\"^^xsd:date AS ?days_diff)"
+        // Map the day of week to their modulus based on 2000-01-01, where 0 represents
+        // Saturday and 6 represents Friday
+        + "VALUES(?day ?day_of_week){(0 \"Saturday\")(1 \"Sunday\")(2 \"Monday\")(3 \"Tuesday\")(4 \"Wednesday\")(5 \"Thursday\")(6 \"Friday\")}"
+        // Match the day of week to the computed modulus of the days passed since
+        // 2000-01-01
+        + "FILTER(?day=xsd:integer(floor(?days_diff-(7*floor(?days_diff/7)))))"
+        + "}";
+  }
+
+  /**
+   * Generates a SPARQL query for retrieving active services that are scheduled
+   * for today.
+   * 
+   * @param dayOfWeekInstance the day of week instance to target.
+   */
+  public static String genActiveServiceQuery(String dayOfWeekInstance) {
+    StringBuilder stageFilters = new StringBuilder();
+    LifecycleResource.appendFilterExists(stageFilters, true, LifecycleResource.EVENT_APPROVAL);
+    LifecycleResource.appendArchivedFilterExists(stageFilters, false);
+    return "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
+        + "PREFIX fibo-fnd-arr-lif: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/>"
+        + "PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>"
+        + "PREFIX fibo-fnd-dt-oc: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/>"
+        + "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>"
+        + "PREFIX fibo-fnd-pas-pas: <https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/>"
+        + "SELECT DISTINCT ?iri WHERE{"
+        + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
+        + "?stage fibo-fnd-rel-rel:exemplifies <"
+        + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
+        + "fibo-fnd-dt-fd:hasSchedule/cmns-dt:hasStartDate/cmns-dt:hasDateValue ?start_date;"
+        + "fibo-fnd-dt-fd:hasSchedule/fibo-fnd-dt-fd:hasRecurrenceInterval/cmns-dt:hasDurationValue ?duration."
+        + "OPTIONAL{?stage fibo-fnd-dt-fd:hasSchedule/fibo-fnd-dt-fd:hasRecurrenceInterval ?schedule_day.}"
+        // Optional to check if there is any service delivery occurrence that has
+        // already occurred today
+        + "OPTIONAL{?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?event_date.}"
+        + "BIND(NOW() AS ?today)"
+        // Calculate the days passed since start date
+        + "BIND(xsd:integer(xsd:date(?today)-?start_date) AS ?days_from_start)"
+        // Filters for services that have commenced
+        + "FILTER(xsd:date(?today)>=?start_date)"
+        // Filter to ensure there is no existing occurrence for today
+        + "FILTER(!BOUND(?event_date) || xsd:date(?today)!=?event_date)"
+        // Filters to match today with the scheduled requirements
+        // day of week must match for weekly schedules
+        + "FILTER((?schedule_day=" + StringResource.parseIriForQuery(dayOfWeekInstance) + "&& ?duration=\"P7D\")"
+        + "||((?days_from_start-2)*FLOOR(?days_from_start/2)=0 && ?duration=\"P2D\"))" // for alternate day schedules
+        + "}";
   }
 
   /**

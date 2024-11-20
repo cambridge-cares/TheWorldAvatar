@@ -1,5 +1,7 @@
 package com.cmclinnovations.agent.service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
@@ -8,10 +10,12 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.utils.LifecycleResource;
@@ -19,6 +23,7 @@ import com.cmclinnovations.agent.utils.StringResource;
 
 @Service
 public class LifecycleService {
+  private final AddService addService;
   private final KGService kgService;
   private final FileService fileService;
 
@@ -29,7 +34,8 @@ public class LifecycleService {
    * 
    * @param kgService KG service for performing the query.
    */
-  public LifecycleService(KGService kgService, FileService fileService) {
+  public LifecycleService(AddService addService, KGService kgService, FileService fileService) {
+    this.addService = addService;
     this.kgService = kgService;
     this.fileService = fileService;
   }
@@ -89,6 +95,67 @@ public class LifecycleService {
   }
 
   /**
+   * Generate occurrences for all active services that should be scheduled for
+   * today.
+   */
+  public ResponseEntity<ApiResponse> genActiveServiceOccurrences() {
+    LOGGER.info("Generating today's tasks for active services...");
+    boolean hasError = false;
+    // Iterate through all possible endpoints to find the current day of week
+    List<String> endpoints = this.kgService.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
+    int index = 0;
+    String dayOfWeekInstance = "";
+    // Iterate through loop until day of week is found
+    LOGGER.info("Querying for a matching day of week for today...");
+    while (index < endpoints.size() && dayOfWeekInstance.isEmpty()) {
+      Queue<SparqlBinding> results = this.kgService.query(LifecycleResource.genTodayDayOfWeekQuery(),
+          endpoints.get(index));
+      try {
+        dayOfWeekInstance = this.kgService.getSingleInstance(results);
+      } catch (Exception e) {
+        // It is possible that there is no day of week instance at some endpoints and
+        // this should be ignored
+      } finally {
+        index++;
+      }
+    }
+    if (dayOfWeekInstance.isEmpty()) {
+      LOGGER.error("Invalid data: Unable to find a valid day of week instance!");
+      return new ResponseEntity<>(new ApiResponse("Invalid data: Unable to find a valid day of week instance!"),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    } else {
+      LOGGER.info("Detected a matching day of week! Continue execution...");
+      String activeServiceQuery = LifecycleResource.genActiveServiceQuery(dayOfWeekInstance);
+      Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
+      Map<String, Object> params = new HashMap<>();
+      // While there are active services to be instantiated
+      while (!results.isEmpty()) {
+        params.clear();
+        // retrieve the contract IRI to instantiate a new occurrence
+        String contract = results.poll().getFieldValue(LifecycleResource.IRI_KEY);
+        params.put(LifecycleResource.CONTRACT_KEY, contract);
+        params.put(LifecycleResource.REMARKS_KEY, ""); // Empty remarks
+        this.addOccurrenceParams(params, LifecycleEventType.SERVICE_EXECUTION);
+        ResponseEntity<ApiResponse> response = this.addService.instantiate(
+            LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
+        // Logs to provide details on the generation status of each task
+        if (response.getStatusCode() == HttpStatus.CREATED) {
+          LOGGER.info("Task for {} has been created!", contract);
+        } else {
+          LOGGER.error("Error encountered while creating task for {}! Read error message for more details: {}",
+              contract, response.getBody().getMessage());
+          hasError = true;
+        }
+      }
+      String responseMessage = hasError
+          ? "Some tasks have failed to be generated. Please read logs for more information."
+          : "All tasks has been successfully generated!";
+      HttpStatusCode status = hasError ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.OK;
+      return new ResponseEntity<>(new ApiResponse(responseMessage), status);
+    }
+  }
+
+  /**
    * Retrieve the stage occurrence instance associated with the target contract.
    * 
    * @param query     The query to execute.
@@ -104,14 +171,6 @@ public class LifecycleService {
         "?iri fibo-fnd-rel-rel:exemplifies <" + LifecycleResource.getStageClass(eventType) + "> ." +
         "}";
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-    if (results.size() == 1) {
-      return results.poll().getFieldValue(LifecycleResource.IRI_KEY);
-    } else if (results.isEmpty()) {
-      LOGGER.error("No valid event instance found!");
-      throw new NullPointerException("No valid event instance found!");
-    } else {
-      LOGGER.error("Detected multiple instances: Data model is invalid!");
-      throw new IllegalStateException("Detected multiple instances: Data model is invalid!");
-    }
+    return this.kgService.getSingleInstance(results);
   }
 }

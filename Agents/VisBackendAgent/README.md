@@ -524,9 +524,17 @@ A successful request will return `{"message": "Service has been successfully can
 
 #### 2.6.6 Service order route
 
-The endpoint serves to retrieve all contracts that are currently in progress. Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service?type={type}` endpoint to retrieve all in progress contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
+This endpoint serves to interact with all active contracts and tasks.
+
+> Active contracts
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service?type={type}` endpoint to retrieve all active contracts, where `{type}`is the requested identifier that must correspond to the target contract class in`./resources/application-form.json`.
 
 There is also an additional optional parameter `label` to retrieve in progress contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
+
+> Schedule tasks
+
+Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/schedule` endpoint to schedule tasks for today.
 
 #### 2.6.7 Archive contract route
 
