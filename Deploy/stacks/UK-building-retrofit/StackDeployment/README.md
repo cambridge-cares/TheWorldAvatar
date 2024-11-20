@@ -11,7 +11,7 @@ Key sections:
 - [3. Uploading Initial Data Using Stack-Data-Uploader](#3-uploading-initial-data-using-stack-data-uploader)
 - [4. Ontop SPARQL Endpoint](#4-ontop-sparql-endpoint)
   - [Example Query: Average EPC Ratings by LSOA](#example-query-average-epc-ratings-by-lsoa)
-- [5. Troubleshooting](#5-troubleshooting)
+- [5. Feature Info Agent](#5-feature-info-agent)
 
 &nbsp;
 
