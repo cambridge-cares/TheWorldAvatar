@@ -81,6 +81,8 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
     private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
     // Error message
     private static final String CONNECTION_ERROR = "Failed to connect to database";
+    private static final String SQL_ERROR = "Error while executing SQL command";
+    private static final String NO_TS_INST_ERROR = "%s<%s> does not have an assigned time series instance";
 
     private Class<T> timeClass;
 
@@ -224,7 +226,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
             LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -335,7 +337,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
                 // database) as JPSRuntimeException with respective message
                 LOGGER.error(e.getMessage());
-                throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+                throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
             }
         }
 
@@ -406,7 +408,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -499,7 +501,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -542,7 +544,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             return new TimeSeries<>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
     }
 
@@ -573,7 +575,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             return new TimeSeries<>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
     }
 
@@ -644,7 +646,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -680,7 +682,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -719,7 +721,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -761,7 +763,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -808,7 +810,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
@@ -840,7 +842,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException("Error while executing SQL command", e);
+            throw new JPSRuntimeException(SQL_ERROR, e);
         }
 
     }
@@ -1239,8 +1241,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             return queryResult.get(0);
         } catch (IndexOutOfBoundsException e) {
             LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(
-                    exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+            throw new JPSRuntimeException(String.format(NO_TS_INST_ERROR, exceptionPrefix, dataIRI));
         }
     }
 
@@ -1265,8 +1266,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             return queryResult.get(0);
         } catch (IndexOutOfBoundsException e) {
             LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(
-                    exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+            throw new JPSRuntimeException(String.format(NO_TS_INST_ERROR, exceptionPrefix, dataIRI));
         }
     }
 
@@ -1319,8 +1319,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             return queryResult.get(0);
         } catch (IndexOutOfBoundsException e) {
             LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(
-                    exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+            throw new JPSRuntimeException(String.format(NO_TS_INST_ERROR, exceptionPrefix, dataIRI));
         }
     }
 
@@ -1371,7 +1370,7 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
             LOGGER.error(e.getMessage());
             // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
             // database) as JPSRuntimeException with respective message
-            throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+            throw new JPSRuntimeException(exceptionPrefix + SQL_ERROR, e);
         }
 
     }
