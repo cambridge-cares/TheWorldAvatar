@@ -62,6 +62,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 The agent requires the following environment variables. These variables must be set in their respective docker configuration files for the agent to function as intended.
 
 - `NAMESPACE`: Specifies the SPARQL namespace identifier containing the corresponding instances (default: kb)
+- `TASKS_ENABLED`: Specifies if scheduled tasks must be executed. This is tentatively required only for lifecycle related tasks (default: false)
 
 ##### Files
 
@@ -534,7 +535,7 @@ There is also an additional optional parameter `label` to retrieve in progress c
 
 > Schedule tasks
 
-Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/schedule` endpoint to schedule tasks for today.
+Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/schedule` endpoint to schedule tasks for today. Note that this action task can also be scheduled and executed at 6am daily, by setting `TASKS_ENABLED=true`.
 
 #### 2.6.7 Archive contract route
 

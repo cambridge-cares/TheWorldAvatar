@@ -5,7 +5,8 @@
       "ContainerSpec": {
         "Image": "ghcr.io/cmcl-io/vis-backend-agent:1.2.0-SNAPSHOT",
         "Env": [
-          "NAMESPACE=kb"
+          "NAMESPACE=kb",
+          "TASKS_ENABLED=false"
         ],
         "Mounts": [
           {
