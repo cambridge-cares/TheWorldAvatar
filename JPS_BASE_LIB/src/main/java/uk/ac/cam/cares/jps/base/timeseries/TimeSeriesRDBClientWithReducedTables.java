@@ -267,10 +267,8 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
         }
 
         String tsTableName = getTableWithMatchingTimeColumn(conn);
-        Boolean tsTableInitialised = false;
-        if (tsTableName != null) {
-            tsTableInitialised = true;
-        } else {
+        Boolean tsTableInitialised = (tsTableName != null);
+        if (Boolean.FALSE.equals(tsTableInitialised)) {
             tsTableName = "timeseries_" + UUID.randomUUID().toString().replace("-", "_");
         }
         List<String> tsTableNames = Collections.nCopies(dataIRIs.size(), tsTableName);
@@ -287,60 +285,52 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
                 // Assign column name for each dataIRI; name for time column is fixed
                 Map<String, String> dataColumnNames = new HashMap<>();
 
-                // All database interactions in try-block to ensure closure of connection
-                try {
+                if (Boolean.TRUE.equals(tsTableInitialised)) {
 
-                    if (Boolean.TRUE.equals(tsTableInitialised)) {
+                    List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClass, srid);
 
-                        List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClass, srid);
-
-                        for (int j = 0; j < hasMatchingColumn.size(); j++) {
-                            if (Boolean.TRUE.equals(hasMatchingColumn.get(j))) {
-                                // use existing column
-                                String existingSuitableColumn = timeSeriesDatabaseMetadata
-                                        .getExistingSuitableColumn(dataClass.get(j), srid);
-                                dataColumnNames.put(dataIRIList.get(j), existingSuitableColumn);
-                            } else {
-                                // add new columns
-                                int columnIndex = getNumberOfDataColumns(tsTableName, conn) + 1;
-                                String columnName = "column" + columnIndex;
-                                addColumn(tsTableName, dataClass.get(j), columnName, srid, conn);
-                                dataColumnNames.put(dataIRIList.get(j), columnName);
-                            }
+                    for (int j = 0; j < hasMatchingColumn.size(); j++) {
+                        if (Boolean.TRUE.equals(hasMatchingColumn.get(j))) {
+                            // use existing column
+                            String existingSuitableColumn = timeSeriesDatabaseMetadata
+                                    .getExistingSuitableColumn(dataClass.get(j), srid);
+                            dataColumnNames.put(dataIRIList.get(j), existingSuitableColumn);
+                        } else {
+                            // add new columns
+                            int columnIndex = getNumberOfDataColumns(tsTableName, conn) + 1;
+                            String columnName = "column" + columnIndex;
+                            addColumn(tsTableName, dataClass.get(j), columnName, srid, conn);
+                            dataColumnNames.put(dataIRIList.get(j), columnName);
                         }
+                    }
 
-                        // if not all dataClass has a matching column, a new column is added. metadata
-                        // will need to be updated
-                        if (!hasMatchingColumn.stream().allMatch(Boolean::booleanValue)) {
-                            timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn, tsTableName);
-                        }
-
-                    } else {
-                        int j = 1;
-                        for (String dataIri : dataIRIList) {
-                            dataColumnNames.put(dataIri, "column" + j);
-                            j += 1;
-                        }
-                        createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRIList, dataClass, srid, conn);
-                        tsTableInitialised = true;
-                        // get metadata for the first time
+                    // if not all dataClass has a matching column, a new column is added. metadata
+                    // will need to be updated
+                    if (!hasMatchingColumn.stream().allMatch(Boolean::booleanValue)) {
                         timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn, tsTableName);
                     }
-                    dataColumnNamesMaps.add(dataColumnNames);
 
-                } catch (JPSRuntimeException e) {
-                    // Re-throw JPSRuntimeExceptions
-                    throw e;
-                } catch (Exception e) {
-                    // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
-                    // database) as JPSRuntimeException with respective message
-                    LOGGER.error(e.getMessage());
-                    throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+                } else {
+                    int j = 1;
+                    for (String dataIri : dataIRIList) {
+                        dataColumnNames.put(dataIri, "column" + j);
+                        j += 1;
+                    }
+                    createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRIList, dataClass, srid, conn);
+                    tsTableInitialised = true;
+                    // get metadata for the first time
+                    timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn, tsTableName);
                 }
+                dataColumnNamesMaps.add(dataColumnNames);
 
             } catch (JPSRuntimeException eRdbCreate) {
                 LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
                 failedIndex.add(i);
+            } catch (Exception e) {
+                // Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+                // database) as JPSRuntimeException with respective message
+                LOGGER.error(e.getMessage());
+                throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
             }
         }
 
@@ -1132,26 +1122,6 @@ public class TimeSeriesRDBClientWithReducedTables<T> implements TimeSeriesRDBCli
 
         return insertStatement.toString();
 
-    }
-
-    /**
-     * check if a row exists to prevent duplicate rows with the same time value and
-     * time series IRI
-     * 
-     * @param tsTableName
-     * @param tsIri
-     * @param time
-     * @param context
-     * @return
-     */
-    private boolean checkTimeRowExists(String tsTableName, String tsIri, T time, DSLContext context) {
-        try {
-            return context.fetchExists(
-                    selectFrom(getDSLTable(tsTableName)).where(timeColumn.eq(time)).and(TS_IRI_COLUMN.eq(tsIri)));
-        } catch (DataAccessException e) {
-            LOGGER.error(e.getMessage());
-            throw new JPSRuntimeException(exceptionPrefix + "Error in checking if a row exists for a given time value");
-        }
     }
 
     /**

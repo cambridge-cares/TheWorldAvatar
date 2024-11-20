@@ -1045,8 +1045,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesRDBClientInterface<T> {
             try {
                 addGeometryColumns(tsTable, additionalGeomColumns, classForAdditionalGeomColumns, srid, conn);
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
+                // Assume all data IRIs have failed at the moment
+                return IntStream.range(0, dataIRIs.size()).boxed().collect(Collectors.toList());
             }
         }
 
