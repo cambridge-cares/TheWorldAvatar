@@ -253,13 +253,13 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): vo
 
   if (imageryOption.time != null) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
   } else {
     // The above only works when using the "Standard" style from Mapbox v3, if using any
     // other style (such as "Light", or "Dark"), then it will fail. In which case we do it

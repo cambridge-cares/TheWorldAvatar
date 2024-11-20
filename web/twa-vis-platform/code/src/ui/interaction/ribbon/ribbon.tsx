@@ -104,7 +104,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
         <RibbonComponentToggle
           key="placenames" id="placenames"
           icon="glyphs"
-          tooltip="Toggle display of place names."
+          tooltip="Show / hide of place names."
           initialState={false}
           action={() => {
             togglePlacenames(props.mapSettings.imagery, props.map);

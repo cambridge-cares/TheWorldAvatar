@@ -9,24 +9,27 @@
   "jest": {
     "verbose": true
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "NODE_ENV=development node --env-file='.env.local' server.js",
     "dev-docker": "NODE_ENV=development node server.js",
-    "build": "next build",
+    "build": "NODE_OPTIONS='--trace-warnings --trace-deprecation' next build",
     "start": "NODE_ENV=production node --env-file='.env.local' server.js",
     "start-docker": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "test": "jest"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^6.1.7",
-    "@mui/material": "^6.1.7",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/icons-material": "^6.1.8",
+    "@mui/material": "^6.1.8",
     "@mui/x-data-grid": "^7.22.2",
     "@reduxjs/toolkit": "^2.3.0",
     "@types/markdown-it": "^14.1.2",
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.9.1",
     "@types/react": "^18.3.12",
     "@types/react-modal": "^3.16.3",
     "@typescript-eslint/eslint-plugin": "^8.14.0",
@@ -37,12 +40,12 @@
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "framer-motion": "^11.11.17",
-    "github-markdown-css": "^5.7.0",
+    "github-markdown-css": "^5.8.0",
     "gray-matter": "^4.0.3",
     "keycloak-connect": "^26.0.5",
     "mapbox-gl": "3.8.0",
     "markdown-it": "^14.1.0",
-    "material-symbols": "^0.26.0",
+    "material-symbols": "^0.27.0",
     "moment": "^2.30.1",
     "next": "^14.2.18",
     "react": "^18.3.1",
