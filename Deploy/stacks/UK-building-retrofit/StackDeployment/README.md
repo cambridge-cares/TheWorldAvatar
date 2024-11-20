@@ -24,7 +24,7 @@ Ensure the following software is installed:
 
 ### Access to Docker Registries
 
-You will need access to the Github CARES Docker registry to pull certain images with your github account and personal access token. Please ensure your personal access token has read:packages scope.
+You will need to access the Github CARES Docker registry to pull images with your github account and personal access token. Please ensure your personal access token has read:packages scope.
 
 1. Test your access to the registry:
     ```bash
@@ -38,7 +38,7 @@ You will need access to the Github CARES Docker registry to pull certain images 
 
 ### Spinning Up the Stack
 
-Before spinning up the stack using the [Stack manager], please provide the following files to the specified repositories:
+Before spinning up the stack using the [Stack manager], please provide the following files to the specified folder:
 
 -  Four secret files in `./inputs/stack-manager/inputs/secrets`:
     - `postgis_password`
