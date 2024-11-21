@@ -10,7 +10,7 @@ export interface ContextItemDefinition {
     name: string,
     description?: string,
     toggled?: boolean,
-    callback?: (name: string) => void
+    callback?: (_name: string) => void
 }
 
 /**

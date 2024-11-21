@@ -55,7 +55,7 @@ CSS colors, font and icon sizes are standardised and available as variables in `
 
 ### 1.1 Routing
 
-Following Next.js' current routing system (known as the `AppRouter`), rather that the older `PagesRouter`, the [app/page.tsx](./src/app/page.tsx) file acts as the entry point to the application when accessed by the user via a web browser. This reads the UI settings file on the server and then proceeds to load the Landing Page or, if disabled, the Map container.
+Following Next.js' current routing system (known as the `AppRouter`), rather than the older `PagesRouter`, the [app/page.tsx](./src/app/page.tsx) file acts as the entry point to the application when accessed by the user via a web browser. This reads the UI settings file on the server and then proceeds to load the Landing Page or, if disabled, the Map container.
 
 The current design of the application presents a number of different pages, each with their own URL route. This includes pages such as the landing page, the visualisation page, and a number of optional additional pages (generated from user-provided Markdown files). It's worth noting, however, that this could also be accomplished by presenting the application as a single page, with these components swapping in and out. Whilst this would remove the ability to bookmark/provide a link for a particular page, it may be more efficient and should be investigated.
 
@@ -91,17 +91,15 @@ Next.js uses the `public` directory by default to house resources such as images
 
 ### 1.6 Reverse Proxy urls
 
-The default Next.js configuration is designed to function seamlessly when the base URL starts directly from the domain with no page paths. However, in cases where page paths are utilised (e.g., `http://www.example.org/page/`), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. This includes specifying the `assetPrefix` option in the `next.config.js` file.
+Next.js assumes by default that the app will be deployed at a top level domain or subdomain.
+However, in cases where page paths are utilised (e.g., `https://www.example.org/page/`), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. 
+This includes specifying the `assetPrefix` option in the `next.config.js` file, or rather by specifying `ASSET_PREFIX` as an environment variable. 
 
-To accommodate developers deploying applications to various subdomains and environments, developers of the visualisation platform should always utilise relative paths such as `./` for any routes or images within your Next.js application. For any subpath present in the deployed url, update your nginx configuration with the following lines field:
+without proper handling, deploying at a subpath will break static CDN like imports (css and js chunks), media resources (images and other contents of the public folder), and page routing.
+These should all be handled correctly if `ASSET_PREFIX` is set - it will append to all image URLs, page routes, and serve static chunks at that path.
 
-```
-location ~* ^/redirect/path/.*/(_next|images)(/.*)?$ {
-    return 301 /redirect/path/$1$2;
-}
-```
-
-For developers developing the platform, please remove the `.` in the `assetPrefix` field in the `next.config.js` file so that any nested paths will work during development.
+> [!IMPORTANT]  
+> Always use next/Image i.e. `<Image>` and not `<img>` so that the URLs can be properly sanitised.
 
 ### 1.7 Dependent services
 

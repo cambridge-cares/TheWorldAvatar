@@ -50,7 +50,7 @@ public class StringResource {
    */
   public static void appendTriple(StringBuilder queryBuilder, String subject, String predicate, String object) {
     queryBuilder.append(subject)
-        .append(" ").append(predicate).append(" ")
+        .append(ShaclResource.WHITE_SPACE).append(predicate).append(ShaclResource.WHITE_SPACE)
         .append(object)
         .append(ShaclResource.FULL_STOP);
   }
@@ -82,6 +82,15 @@ public class StringResource {
   }
 
   /**
+   * Parses the string literal for SPARQL queries ie enclosing it with "".
+   * 
+   * @param literal Target literal input.
+   */
+  public static String parseLiteral(String literal) {
+    return "\"" + literal + "\"";
+  }
+
+  /**
    * Parses the IRI for SPARQL queries ie enclosing it with <>.
    * 
    * @param iri Target iri input.
@@ -98,7 +107,7 @@ public class StringResource {
    * 
    * @param iri Input.
    */
-  private static boolean isValidIRI(String iri) {
+  public static boolean isValidIRI(String iri) {
     try {
       URI uri = new URI(iri);
       // Check if the URI has valid scheme, path, etc

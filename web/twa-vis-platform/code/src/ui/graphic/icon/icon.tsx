@@ -1,7 +1,6 @@
 import { Icon } from '@mui/material';
+import Image from 'next/image';
 import SVG from 'react-inlinesvg';
-
-import AppImage from 'ui/graphic/image/image';
 
 interface IconComponentProps {
   readonly icon: string;
@@ -21,14 +20,19 @@ interface IconComponentProps {
 export default function IconComponent(props: IconComponentProps) {
   if (props.icon.endsWith(".png") || props.icon.endsWith(".jpg")) {
     return (
-      <AppImage
-        url={props.icon}
-        classes={props.classes}
-        alt="Icon" />
+      <div className={props.classes}>
+        <Image
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: '100%', height: 'auto' }} // optional
+          src={props.icon}
+          alt="Icon" />
+      </div>
     );
   } else if (props.icon.endsWith(".svg")) {
     return (
-      <SVG className={props.classes} src={props.icon} />
+      <SVG className={props.classes} src={process.env.ASSET_PREFIX + props.icon} />
     );
   } else {
     const iconClassNames = ["material-symbols-outlined"].concat(props.classes).join(" ");

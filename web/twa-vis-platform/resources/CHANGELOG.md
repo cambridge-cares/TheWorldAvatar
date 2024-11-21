@@ -3,11 +3,55 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.10.0
+
+### Features
+
+* Added customisable search capabilities for the map visualisation, inclusive of metadata and time series
+* Improve the search form design and user interaction
+* Added geocoding capabilities
+* Added documentation of these functions
+
+### Bug Fixes
+
+* Fix bad state calls in map container
+* Fix some of the errors logged in the console
+
+## 5.9.2
+
+### Improvements
+
+* Updated Keycloak connector to latest version v26
+
+### Bug Fixes
+
+* Resolved bug causing unexpectesd logouts from Keycloak due to next prefetching. 
+
+## 5.9.1
+
+### Features
+
+* Added CMCL logo to default icons library
+
+## 5.9.0
+
+### Bug Fixes
+
+* Read in `ASSET_PREFIX` environment variable and write it to next.js asset prefix and basepath to fix static resources behind double nginx
+
+## 5.8.1
+
+### Bug Fixes
+
+* Fix production build issues
+
 ## 5.8.0
 
-### Feature
+### Features
 
-* Added ability to add the 'Authorization' header to GetMap requests
+* Added sorting, filters and other functions to the registry table
+* Improve user interactions and experience in the registry table
+* Improve user interactions with the schedule form sections and the form in general
 
 ## 5.7.0
 
@@ -25,8 +69,7 @@
 ### Features
 
 * Extension of the form UI for search capabilities
-* Addition of initial search capabilities for the map visualisation
-* Addition of time slots for the form schedule section
+* Addition of initial search capabilities for the map visualisation* Addition of time slots for the form schedule section
 * Modify the registry to work with the new vis backend agent
 * Consolidation of the urls of assets as constants in one file
 

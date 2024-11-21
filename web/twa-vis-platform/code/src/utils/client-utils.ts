@@ -49,7 +49,7 @@ export function setSelectedFeature(selectedFeature: MapFeaturePayload, dispatch:
     if (selectedFeature) {
         // Disable linting as we wish to remove layer but do not require it in this function
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { layer, stack, iri, ...selectedProperties } = selectedFeature;
+        const { _layer, stack, iri, ...selectedProperties } = selectedFeature;
         if (!iri) {
             console.warn("IRI is missing. Data fetching will be skipped.");
         } else if (!stack) {
@@ -71,7 +71,8 @@ export function parseWordsForLabels(str: string): string {
     if (isValidIRI(str)) {
         return getAfterDelimiter(str, "/");
     }
-    return str.replace("_", " ")
+    return str.toLowerCase()
+        .replaceAll("_", " ")
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .split(" ")
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
