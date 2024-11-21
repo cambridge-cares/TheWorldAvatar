@@ -19,6 +19,8 @@ import com.cmclinnovations.stack.services.ServiceManager;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 public class DatasetLoader {
 
     private static final ServiceManager serviceManager = new ServiceManager(false);
@@ -72,6 +74,8 @@ public class DatasetLoader {
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient(catalogNamespace)
                     .executeUpdate(new DCATUpdateQuery().getUpdateQuery(dataset));
+
+            runRules(dataset, directory);
         }
     }
 
@@ -95,6 +99,16 @@ public class DatasetLoader {
             if (!ontologyDatasetNames.isEmpty()) {
                 blazegraphClient.cloneDatasets(dataset.getNamespace(), ontologyDatasetNames, catalogNamespace);
             }
+        }
+    }
+
+    private void runRules(Dataset dataset, Path directory) {
+        if (dataset.usesBlazegraph()) {
+            BlazegraphClient blazegraphClient = BlazegraphClient.getInstance();
+            RemoteStoreClient remoteStoreClient = blazegraphClient.getRemoteStoreClient(dataset.getNamespace());
+
+            blazegraphClient.runRules(remoteStoreClient,
+                    dataset.getRules().stream().map(directory::resolve).collect(Collectors.toList()));
         }
     }
 
@@ -145,8 +159,7 @@ public class DatasetLoader {
 
             ontopClient.uploadOntology(catalogNamespace, ontologyDatasetNames);
 
-            ontopClient.uploadRules(dataset.getOntopSettings().getRules().stream().map(directory::resolve)
-                    .collect(Collectors.toList()));
+            ontopClient.uploadRules(dataset.getRules().stream().map(directory::resolve).collect(Collectors.toList()));
         }
     }
 }
