@@ -145,6 +145,11 @@ function collectIDs(layers: DataLayer[]): string {
  * @returns {string} the icon name
  */
 function getIcon(layers: DataLayer[], icons: IconSettings): string {
+  const overridelayer: DataLayer = layers.find(layer => layer.definition?.layerTreeIconOverride);
+  if (overridelayer) {
+    const iconOverride: string = overridelayer.definition.layerTreeIconOverride as string
+    return icons[iconOverride];
+  }
   // Retrieve the line and return its color if available
   const lineLayer: DataLayer = layers.find(layer => layer.definition?.type === 'line');
   if (lineLayer) {
