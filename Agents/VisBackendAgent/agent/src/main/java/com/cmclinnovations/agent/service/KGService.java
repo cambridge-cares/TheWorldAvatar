@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
-import com.cmclinnovations.agent.model.SparqlVariableOrder;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.template.FormTemplateFactory;
@@ -62,6 +61,7 @@ public class KGService {
   public static final String INVALID_SHACL_ERROR_MSG = "Invalid knowledge model! SHACL restrictions have not been defined/instantiated in the knowledge graph.";
 
   private static final String RDF_LIST_PATH_PREFIX = "/rdf:rest";
+  private static final String SUB_SHAPE_PATH = "/sh:node/sh:property";
 
   private static final Logger LOGGER = LogManager.getLogger(KGService.class);
 
@@ -330,7 +330,7 @@ public class KGService {
     Queue<String> queries = this.queryTemplateFactory.genGetTemplate(nestedVariablesAndPropertyPaths, targetId,
         hasParent, lifecycleEvent);
     LOGGER.debug("Querying the knowledge graph for the instances...");
-    List<SparqlVariableOrder> varSequence = this.queryTemplateFactory.getSequence();
+    List<String> varSequence = this.queryTemplateFactory.getSequence();
     // Query for direct instances
     Queue<SparqlBinding> instances = this.query(queries.poll(), SparqlEndpointType.MIXED);
     // Query for secondary instances ie instances that are subclasses of parent
@@ -483,46 +483,59 @@ public class KGService {
    *                       the SHACL restrictions.
    */
   private Queue<Queue<SparqlBinding>> queryNestedPredicates(String shaclPathQuery) {
-    List<String> endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
     LOGGER.debug("Querying the knowledge graph for predicate paths and variables...");
-    String firstExecutableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, "");
-    // SHACL restrictions are only found within one endpoint, and can be queried
-    // without using FedX
+    // Retrieve all endpoints once
+    List<String> endpoints = this.getEndpoints(SparqlEndpointType.BLAZEGRAPH);
+    // Initialise a queue to store all values
     Queue<Queue<SparqlBinding>> results = new ArrayDeque<>();
-    endpoints.forEach(endpoint -> {
-      // Stop all iteration once there are already results
-      if (!results.isEmpty()) {
-        return;
+    String replacementShapePath = ""; // Initial replacement string
+    boolean continueLoop = true; // Initialise a continue indicator
+    // Iterate to get predicates at the hierarchy of shapes enforced via sh:node
+    while (continueLoop) {
+      boolean isFirstIteration = true;
+      boolean hasResults = false;
+      String replacementPath = "";
+      Queue<SparqlBinding> variablesAndPropertyPaths = new ArrayDeque<>();
+      // Iterate through the depth to retrieve all associated predicate paths for this
+      // property in this shape
+      while (isFirstIteration || hasResults) {
+        hasResults = false; // Reset and verify if there are results for this iteration
+        // Replace the [subproperty] and [path] with the respective values
+        String executableQuery = shaclPathQuery
+            .replace(FileService.REPLACEMENT_SHAPE, replacementShapePath)
+            .replace(FileService.REPLACEMENT_PATH, replacementPath);
+        // SHACL restrictions are only found within one Blazegraph endpoint, and can be
+        // queried without using FedX
+        for (String endpoint : endpoints) {
+          LOGGER.debug("Querying at the endpoint {}...", endpoint);
+          Queue<SparqlBinding> queryResults = this.query(executableQuery, endpoint);
+          if (!queryResults.isEmpty()) {
+            LOGGER.debug("Found data at the endpoint {}...", endpoint);
+            variablesAndPropertyPaths.addAll(queryResults);
+            // Indicator should be marked if results are found
+            hasResults = true;
+          }
+        }
+        if (hasResults) {
+          // Extend replacement path based on the current level
+          replacementPath = replacementPath.isEmpty() ? RDF_LIST_PATH_PREFIX + "/rdf:first" // first level
+              : RDF_LIST_PATH_PREFIX + replacementPath; // for the second level onwards
+        }
+        if (isFirstIteration) {
+          // If there are results in the first iteration of the retrieval for this shape,
+          // iterate to check if there are any nested shapes with predicates
+          continueLoop = hasResults;
+          isFirstIteration = false;
+        }
       }
-      LOGGER.debug("Querying at the endpoint {}...", endpoint);
-      LOGGER.debug("Executing for the first level of predicate paths and variables...");
-      Queue<SparqlBinding> variablesAndPropertyPaths = this.query(firstExecutableQuery, endpoint);
-      // Break this iteration if no restrictions are found
-      if (variablesAndPropertyPaths.isEmpty()) {
-        LOGGER.debug("No relevant SHACL restrictions found...");
-        return;
+      if (!variablesAndPropertyPaths.isEmpty()) {
+        results.offer(variablesAndPropertyPaths);
       }
-      // Initialise a new queue to store all variables and add the first level right
-      // away
-      Queue<Queue<SparqlBinding>> nestedVariablesAndPropertyPaths = new ArrayDeque<>();
-      nestedVariablesAndPropertyPaths.offer(variablesAndPropertyPaths);
-      LOGGER.debug("Executing for level {} of predicate paths and variables...",
-          nestedVariablesAndPropertyPaths.size() + 1);
-      String replacementPath = RDF_LIST_PATH_PREFIX + "/rdf:first";
-      // Iterating for the next level of predicates if current level exists
-      while (!variablesAndPropertyPaths.isEmpty()) {
-        // First replace the [path] in the original query with the current replacement
-        // path
-        String executableQuery = shaclPathQuery.replace(FileService.REPLACEMENT_PATH, replacementPath);
-        // Execute and store the current level of predicate paths and variables
-        variablesAndPropertyPaths = this.query(executableQuery, endpoint);
-        nestedVariablesAndPropertyPaths.offer(variablesAndPropertyPaths);
-        // Extend the replacement path with an /rdf:rest prefix for the next level
-        replacementPath = RDF_LIST_PATH_PREFIX + replacementPath;
-      }
-      results.addAll(nestedVariablesAndPropertyPaths);
-      return;
-    });
+      // Extend to get the next level of shape if any
+      replacementShapePath = replacementShapePath.isEmpty() ? " ?nestedshape." +
+          "?nestedshape sh:name ?nodename;sh:node/sh:property"
+          : SUB_SHAPE_PATH + replacementShapePath;
+    }
     if (results.isEmpty()) {
       LOGGER.error(INVALID_SHACL_ERROR_MSG);
       throw new IllegalStateException(INVALID_SHACL_ERROR_MSG);

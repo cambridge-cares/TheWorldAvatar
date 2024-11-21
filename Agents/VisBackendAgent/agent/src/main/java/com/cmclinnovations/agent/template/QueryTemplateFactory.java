@@ -10,13 +10,13 @@ import java.util.Queue;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.SparqlQueryLine;
-import com.cmclinnovations.agent.model.SparqlVariableOrder;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
@@ -29,22 +29,22 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 public class QueryTemplateFactory {
   private String parentField;
+  private List<String> sortedVars;
   private Map<String, String> queryLines;
-  private List<SparqlVariableOrder> varSequence;
+  private Map<String, List<Integer>> varSequence;
   private final ObjectMapper objectMapper;
   private static final String ID_PATTERN_1 = "<([^>]+)>/\\^<\\1>";
   private static final String ID_PATTERN_2 = "\\^<([^>]+)>/<\\1>";
   private static final String CLAZZ_VAR = "clazz";
   private static final String NAME_VAR = "name";
   private static final String ORDER_VAR = "order";
-  private static final String SUBORDER_VAR = "suborder";
   private static final String IS_OPTIONAL_VAR = "isoptional";
   private static final String IS_PARENT_VAR = "isparent";
   private static final String IS_CLASS_VAR = "isclass";
   private static final String SUBJECT_VAR = "subject";
   private static final String PATH_PREFIX = "_proppath";
   private static final String MULTIPATH_VAR = "multipath";
-  private static final String MULTISUBPATH_VAR = "multisubpath";
+  private static final String NODE_NAME_VAR = "nodename";
   private static final String MULTI_NAME_PATH_VAR = "name_multipath";
   private static final Logger LOGGER = LogManager.getLogger(QueryTemplateFactory.class);
 
@@ -85,7 +85,7 @@ public class QueryTemplateFactory {
     // Reset from previous iterations
     this.parentField = "";
     this.queryLines = new HashMap<>();
-    this.varSequence = new ArrayList<>();
+    this.varSequence = new HashMap<>();
     // Code starts after reset and validation
     LOGGER.info("Generating a query template for getting data...");
     StringBuilder selectVariableBuilder = new StringBuilder();
@@ -99,20 +99,18 @@ public class QueryTemplateFactory {
       selectVariableBuilder.append("*");
     } else {
       // Else sort the variable and add them to the query
-      // Sort by order first, but if the order are equal, sort by subOrder
-      this.varSequence.sort(Comparator.comparing(SparqlVariableOrder::order)
-          .thenComparing(SparqlVariableOrder::subOrder));
-      // Append a ? before the property
-      this.varSequence.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
-          .append(variable.property().replaceAll("\\s+", "_"))
-          .append(ShaclResource.WHITE_SPACE));
       // Add a status variable for lifecycle if available
       if (lifecycleEvent != null) {
-        this.varSequence.add(new SparqlVariableOrder(LifecycleResource.ARCHIVE_STATUS_KEY, 1, 0));
-        selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
-            .append(LifecycleResource.ARCHIVE_STATUS_KEY)
-            .append(ShaclResource.WHITE_SPACE);
+        this.varSequence.put(LifecycleResource.ARCHIVE_STATUS_KEY, Stream.of(1, 0).toList());
       }
+      this.sortedVars = new ArrayList<>(this.varSequence.keySet());
+      this.sortedVars
+          .sort((key1, key2) -> ShaclResource.compareLists(this.varSequence.get(key1), this.varSequence.get(key2)));
+      // Append a ? before the property
+      this.sortedVars.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
+          .append(variable.replaceAll("\\s+", "_"))
+          .append(ShaclResource.WHITE_SPACE));
+
     }
     this.queryLines.values().forEach(whereBuilder::append);
     this.appendOptionalIdFilters(whereBuilder, filterId, hasParent);
@@ -140,7 +138,7 @@ public class QueryTemplateFactory {
     // Reset from previous iterations
     this.parentField = "";
     this.queryLines = new HashMap<>();
-    this.varSequence = new ArrayList<>();
+    this.varSequence = new HashMap<>();
 
     // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
@@ -185,8 +183,8 @@ public class QueryTemplateFactory {
   /**
    * Retrieve the sequence of the variables.
    */
-  public List<SparqlVariableOrder> getSequence() {
-    return this.varSequence;
+  public List<String> getSequence() {
+    return this.sortedVars;
   }
 
   /**
@@ -224,13 +222,21 @@ public class QueryTemplateFactory {
     Map<String, SparqlQueryLine> queryLineMappings = new HashMap<>();
     while (!nestedBindings.isEmpty()) {
       Queue<SparqlBinding> bindings = nestedBindings.poll();
+      Queue<String> parents = new ArrayDeque<>();
       while (!bindings.isEmpty()) {
         SparqlBinding binding = bindings.poll();
         String multiPartPredicate = this.getPredicate(binding, MULTIPATH_VAR);
-        String multiPartSubPredicate = this.getPredicate(binding, MULTISUBPATH_VAR);
         String multiPartLabelPredicate = this.getPredicate(binding, MULTI_NAME_PATH_VAR);
-        this.genQueryLine(binding, multiPartPredicate, multiPartSubPredicate, multiPartLabelPredicate, hasParent,
+        String parent = this.genQueryLine(binding, multiPartPredicate, multiPartLabelPredicate, hasParent,
             queryLineMappings);
+        if (parent != null) {
+          parents.offer(parent);
+        }
+      }
+      while (!parents.isEmpty()) {
+        String parentField = parents.poll();
+        queryLineMappings.remove(parentField);
+        this.varSequence.remove(parentField);
       }
     }
     this.parseQueryLines(queryLineMappings);
@@ -276,8 +282,6 @@ public class QueryTemplateFactory {
    *                                template.
    * @param multiPartPredicate      The current predicate part value for the main
    *                                property.
-   * @param multiPartSubPredicate   The current predicate part value for the sub
-   *                                property.
    * @param multiPartLabelPredicate The current predicate part value to reach the
    *                                label of the property.
    * @param hasParent               Indicates if there is supposed to be a parent
@@ -286,10 +290,14 @@ public class QueryTemplateFactory {
    *                                query
    *                                lines.
    */
-  private void genQueryLine(SparqlBinding binding, String multiPartPredicate,
-      String multiPartSubPredicate, String multiPartLabelPredicate, boolean hasParent,
-      Map<String, SparqlQueryLine> queryLineMappings) {
+  private String genQueryLine(SparqlBinding binding, String multiPartPredicate, String multiPartLabelPredicate,
+      boolean hasParent, Map<String, SparqlQueryLine> queryLineMappings) {
+    String parentNode = binding.getFieldValue(NODE_NAME_VAR);
     String propertyName = binding.getFieldValue(NAME_VAR);
+    // Filter out any nested id properties
+    if (parentNode != null && propertyName.equals("id")) {
+      return null;
+    }
     // Parse the isclass variable if it exists, or else defaults to false
     String isClassVal = binding.getFieldValue(IS_CLASS_VAR);
     boolean isClassVar = isClassVal != null ? Boolean.parseBoolean(isClassVal) : false;
@@ -301,7 +309,6 @@ public class QueryTemplateFactory {
       queryLineMappings.put(propertyName,
           new SparqlQueryLine(propertyName,
               parsePredicate(currentQueryLine.predicate(), multiPartPredicate),
-              parsePredicate(currentQueryLine.subPredicate(), multiPartSubPredicate),
               parsePredicate(currentQueryLine.labelPredicate(), multiPartLabelPredicate),
               currentQueryLine.subjectFilter(), currentQueryLine.isOptional(), isClassVar));
     } else {
@@ -312,19 +319,28 @@ public class QueryTemplateFactory {
       // Order field will not exist for non-label query
       if (binding.containsField(ORDER_VAR)) {
         int order = Integer.parseInt(binding.getFieldValue(ORDER_VAR));
-        // suborder may not be available and should default to 0
-        int subOrder = binding.containsField(SUBORDER_VAR) ? Integer.parseInt(binding.getFieldValue(SUBORDER_VAR)) : 0;
-        this.varSequence.add(new SparqlVariableOrder(propertyName, order, subOrder));
+        List<Integer> orders = new ArrayList<>();
+        // If there is an existing parent node, append the order in front
+        if (parentNode != null && this.varSequence.containsKey(parentNode)) {
+          orders.addAll(this.varSequence.get(parentNode));
+        }
+        orders.add(order);
+        this.varSequence.put(propertyName, orders);
       }
       // If the field is a parent field, and the template requires a parent, store the
       // parent field
       if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
         this.parentField = propertyName.replaceAll("\\s+", "_");
       }
+      if (parentNode != null) {
+        SparqlQueryLine parentLine = queryLineMappings.get(parentNode);
+        multiPartPredicate = parsePredicate(parentLine.predicate(), multiPartPredicate);
+      }
       queryLineMappings.put(propertyName,
-          new SparqlQueryLine(propertyName, multiPartPredicate, multiPartSubPredicate, multiPartLabelPredicate,
-              subjectVar, isOptional, isClassVar));
+          new SparqlQueryLine(propertyName, multiPartPredicate, multiPartLabelPredicate, subjectVar, isOptional,
+              isClassVar));
     }
+    return parentNode;
   }
 
   /**
@@ -354,8 +370,7 @@ public class QueryTemplateFactory {
     queryLineMappings.values().forEach(queryLine -> {
       // Parse and generate a query line for the current line
       StringBuilder currentLine = new StringBuilder();
-      String jointPredicate = parsePredicate(queryLine.predicate(), queryLine.subPredicate());
-      jointPredicate = parsePredicate(jointPredicate, queryLine.labelPredicate());
+      String jointPredicate = parsePredicate(queryLine.predicate(), queryLine.labelPredicate());
       // Add a final rdfs:label if it is a class to retrieve the label
       if (queryLine.isClazz()) {
         jointPredicate = parsePredicate(jointPredicate, ShaclResource.RDFS_LABEL_PREDICATE);
@@ -439,22 +454,23 @@ public class QueryTemplateFactory {
    * @param lifecycleEvent Target event for filter.
    */
   private void appendOptionalLifecycleFilters(StringBuilder query, LifecycleEventType lifecycleEvent) {
-    if (lifecycleEvent!=null){
-    switch (lifecycleEvent) {
-      case LifecycleEventType.APPROVED:
-        LifecycleResource.appendFilterExists(query, false, LifecycleResource.EVENT_APPROVAL);
-        break;
-      case LifecycleEventType.SERVICE_EXECUTION:
-        LifecycleResource.appendFilterExists(query, true, LifecycleResource.EVENT_APPROVAL);
-        LifecycleResource.appendArchivedFilterExists(query, false);
-        break;
-      case LifecycleEventType.ARCHIVE_COMPLETION:
-        LifecycleResource.appendArchivedStateQuery(query);
-        break;
-      default:
-        // Do nothing if it doesnt meet the above events
-        break;
-    }}
+    if (lifecycleEvent != null) {
+      switch (lifecycleEvent) {
+        case LifecycleEventType.APPROVED:
+          LifecycleResource.appendFilterExists(query, false, LifecycleResource.EVENT_APPROVAL);
+          break;
+        case LifecycleEventType.SERVICE_EXECUTION:
+          LifecycleResource.appendFilterExists(query, true, LifecycleResource.EVENT_APPROVAL);
+          LifecycleResource.appendArchivedFilterExists(query, false);
+          break;
+        case LifecycleEventType.ARCHIVE_COMPLETION:
+          LifecycleResource.appendArchivedStateQuery(query);
+          break;
+        default:
+          // Do nothing if it doesnt meet the above events
+          break;
+      }
+    }
   }
 
   /**

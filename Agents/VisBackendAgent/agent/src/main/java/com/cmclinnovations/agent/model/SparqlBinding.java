@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class SparqlBinding {
   private Map<String, SparqlResponseField> bindings;
-  private List<SparqlVariableOrder> sequence;
+  private List<String> sequence;
 
   /**
    * Constructs a new model.
@@ -56,13 +56,12 @@ public class SparqlBinding {
     if (!this.sequence.isEmpty()) {
       // Sort the map if there is a sequence
       Map<String, SparqlResponseField> sortedBindings = new LinkedHashMap<>();
-      this.sequence
-          .forEach(variable -> {
-            String field = variable.property().replaceAll("\\s+", "_");
-            if (this.bindings.get(field) != null) {
-              sortedBindings.put(field, this.bindings.get(field));
-            }
-          });
+      this.sequence.forEach(variable -> {
+        String field = variable.replaceAll("\\s+", "_");
+        if (this.bindings.get(field) != null) {
+          sortedBindings.put(field, this.bindings.get(field));
+        }
+      });
       return sortedBindings;
     }
     return this.bindings;
@@ -71,7 +70,7 @@ public class SparqlBinding {
   /**
    * Retrieve the Bindings as a map object.
    */
-  public void addSequence(List<SparqlVariableOrder> sequence) {
+  public void addSequence(List<String> sequence) {
     this.sequence = sequence;
   }
 

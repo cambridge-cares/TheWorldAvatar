@@ -49,6 +49,7 @@ public class FileService {
   public static final String SCHEDULE_JSON_LD_RESOURCE = CLASS_PATH_DIR + "jsonld/schedule.jsonld";
 
   public static final String REPLACEMENT_TARGET = "[target]";
+  public static final String REPLACEMENT_SHAPE = "[shape]";
   public static final String REPLACEMENT_PATH = "[path]";
 
   /**
