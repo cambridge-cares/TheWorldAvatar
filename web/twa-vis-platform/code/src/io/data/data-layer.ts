@@ -51,7 +51,9 @@ export abstract class DataLayer {
      */
     public cachedVisibility: boolean = true;
 
-    // Indicates if the parent is visible
+    /*
+    * Indicates if the parent is visible
+    */
     public isGroupExpanded: boolean;
 
     /**
