@@ -10,7 +10,7 @@
 
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.45.0-time-series-bulk-SNAPSHOT</version>
+    <version>1.45.0</version>
 
     <!-- Project Properties -->
     <properties>
