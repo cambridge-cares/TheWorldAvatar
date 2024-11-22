@@ -806,9 +806,14 @@ class MetalOrganicPolyhedron(CoordinationCage):
             # find the translation vector of the cbu center to the gbu center
             # note that the gbu center need to be the scaled version of the gbu center
             dct_translation_vector = {
-                gc: Point.get_translation_vector_to(
-                    Point.from_array(rm_to_gbu[gc][1].apply(rm_to_gbu[gc][0].apply(list(cbu.hasCBUAssemblyCenter)[0].coordinates.as_array))),
-                    Point.scale(KnowledgeGraph.get_object_from_lookup(gc).coordinates, scaling_factor_cbu1 if gc1.instance_iri in rm_to_gbu else scaling_factor_cbu2)) for gc in rm_to_gbu
+                gc: Point.from_array(
+                        rm_to_gbu[gc][1].apply(rm_to_gbu[gc][0].apply(list(cbu.hasCBUAssemblyCenter)[0].coordinates.as_array))
+                    ).get_translation_vector_to(
+                        Point.scale(
+                            KnowledgeGraph.get_object_from_lookup(gc).coordinates,
+                            scaling_factor_cbu1 if gc1.instance_iri in rm_to_gbu else scaling_factor_cbu2
+                        )
+                    ) for gc in rm_to_gbu
             }
             # translate the cbu to the gbu
             dct_translated = {
