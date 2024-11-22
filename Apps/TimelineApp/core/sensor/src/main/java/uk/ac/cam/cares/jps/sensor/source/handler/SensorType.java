@@ -72,4 +72,20 @@ public enum SensorType implements Parcelable {
         }
     };
 
+    public final String getSensorName() {
+        return switch (this) {
+            case LOCATION -> "location";
+            case ACCELEROMETER -> "accelerometer";
+            case SOUND -> "microphone";
+            case GRAVITY -> "gravity";
+            case GYROSCOPE -> "gyroscope";
+            case LIGHT -> "light";
+            case MAGNETOMETER -> "magnetometer";
+            case PRESSURE -> "pressure";
+            case HUMIDITY -> "humidity";
+            case ACTIVITY -> "activity";
+            default -> this.toString().toLowerCase();
+        };
+    }
+
 }

@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.user.viewmodel;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,10 +12,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -45,7 +43,6 @@ public class SensorViewModel extends ViewModel {
     public final LiveData<Boolean> isRecording = _isRecording;
     private final MutableLiveData<Boolean> _hasAccountError = new MutableLiveData<>();
     private final LiveData<Boolean> hasAccountError = _hasAccountError;
-    private final SharedPreferences sharedPreferences;
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
@@ -57,8 +54,7 @@ public class SensorViewModel extends ViewModel {
     SensorViewModel(
             SensorRepository repository,
             SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository,
-            UserPhoneRepository userPhoneRepository,
-            SharedPreferences sharedPreferences
+            UserPhoneRepository userPhoneRepository
 
     ) {
         BasicConfigurator.configure();
@@ -67,7 +63,6 @@ public class SensorViewModel extends ViewModel {
         this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
         this.userPhoneRepository = userPhoneRepository;
         this.sensorItems = new ArrayList<>();
-        this.sharedPreferences = sharedPreferences;
 
         sensorCollectionStateManagerRepository.getRecordingStatus(new RepositoryCallback<>() {
             @Override
@@ -96,9 +91,12 @@ public class SensorViewModel extends ViewModel {
         items.add(new SensorItem("Gravity", "Detects gravity vector.", SensorType.GRAVITY));
         items.add(new SensorItem("Location", "Tracks GPS position.", SensorType.LOCATION));
         items.add(new SensorItem("Microphone", "Captures sound levels.", SensorType.SOUND));
+        items.add(new SensorItem("Activity", "Detects user activity.", SensorType.ACTIVITY));
+
 
         sensorItems.addAll(items);
     }
+
 
 
     /**
@@ -116,15 +114,21 @@ public class SensorViewModel extends ViewModel {
         saveSelectedSensors(currentSelectedSensors);
     }
 
+    // Updated method to use sensorCollectionStateManagerRepository
     private void saveSelectedSensors(List<SensorType> sensors) {
-        Set<String> sensorNames = new HashSet<>();
-        for (SensorType sensor : sensors) {
-            sensorNames.add(sensor.name());
-        }
-        sharedPreferences.edit()
-                .putStringSet("selected_sensors", sensorNames)
-                .apply();
+        sensorCollectionStateManagerRepository.setSelectedSensors(sensors, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                // Do nothing
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                LOGGER.error("Failed to save selected sensors: " + error.getMessage());
+            }
+        });
     }
+
 
 
     public LiveData<List<SensorType>> getSelectedSensors() {
@@ -138,7 +142,8 @@ public class SensorViewModel extends ViewModel {
     public void startRecording() {
         List<SensorType> sensorsToRecord = selectedSensors.getValue();
         LOGGER.info("Sensors to record: " + sensorsToRecord);
-        if (sensorsToRecord != null && !sensorsToRecord.isEmpty()) {
+
+            if (sensorsToRecord != null && !sensorsToRecord.isEmpty()) {
         sensorRepository.startRecording(sensorsToRecord, new RepositoryCallback<>() {
             @Override
             public void onSuccess(Boolean result) {
@@ -259,25 +264,30 @@ public class SensorViewModel extends ViewModel {
     }
 
     private void loadSelectedSensors() {
-        Set<String> selectedSensorNames = sharedPreferences.getStringSet("selected_sensors", new HashSet<>());
-        List<SensorType> loadedSelectedSensors = new ArrayList<>();
+        sensorCollectionStateManagerRepository.getSelectedSensors(new RepositoryCallback<List<SensorType>>() {
+            @Override
+            public void onSuccess(List<SensorType> loadedSelectedSensors) {
+                selectedSensors.setValue(loadedSelectedSensors);
 
-        for (String sensorName : selectedSensorNames) {
-            try {
-                SensorType sensorType = SensorType.valueOf(sensorName);
-                loadedSelectedSensors.add(sensorType);
-
-                for (SensorItem item : sensorItems) {
-                    if (item.getSensorType() == sensorType) {
-                        item.setToggled(true);
-                        break;
+                for (SensorType sensorType : loadedSelectedSensors) {
+                    for (SensorItem item : sensorItems) {
+                        if (item.getSensorType() == sensorType) {
+                            item.setToggled(true);
+                            break;
+                        }
                     }
                 }
-            } catch (IllegalArgumentException e) {
+
+                allToggledOn.setValue(loadedSelectedSensors.size() == sensorItems.size());
             }
-        }
-        selectedSensors.setValue(loadedSelectedSensors);
-        allToggledOn.setValue(loadedSelectedSensors.size() == sensorItems.size());
+
+            @Override
+            public void onFailure(Throwable error) {
+                selectedSensors.setValue(new ArrayList<>());
+                allToggledOn.setValue(false);
+                LOGGER.error("Failed to load selected sensors: " + error.getMessage());
+            }
+        });
     }
 
 

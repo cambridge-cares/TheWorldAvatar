@@ -25,6 +25,8 @@ import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
 import static uk.ac.cam.cares.jps.utils.di.UtilsModule.computeHash;
 
+import javax.inject.Inject;
+
 /**
  * A class that commits data to the network database.
  */
@@ -32,15 +34,16 @@ public class SensorNetworkSource {
     Context context;
     RequestQueue requestQueue;
     Logger LOGGER = Logger.getLogger(SensorNetworkSource.class);
+    @Inject
     SensorLocalSource sensorLocalSource;
-    private Set<Long> locationTimestamps = ConcurrentHashMap.newKeySet();
 
     public SensorNetworkSource(Context applicationContext,
                                RequestQueue requestQueue) {
         context = applicationContext;
         this.requestQueue = requestQueue;
-        this.sensorLocalSource = new SensorLocalSource(context);
     }
+
+
 
     /**
      * Sends a POST request to upload compressed sensor data to the server.
