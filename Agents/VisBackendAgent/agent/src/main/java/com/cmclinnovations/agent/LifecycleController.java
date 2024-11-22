@@ -1,5 +1,6 @@
 package com.cmclinnovations.agent;
 
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -32,8 +33,7 @@ public class LifecycleController {
   private final DeleteService deleteService;
   private final LifecycleService lifecycleService;
 
-  private static final String INVALID_CONTRACT_PARAMS_MSG = "Invalid request parameters! Contract IRI must be passed.";
-  private static final String MISSING_DATE_MSG = "Missing `date` request parameters!";
+  private static final String MISSING_FIELD_MSG_TEMPLATE = "Missing `{0}` field in request parameters!";
 
   private static final Logger LOGGER = LogManager.getLogger(LifecycleController.class);
 
@@ -49,8 +49,10 @@ public class LifecycleController {
    */
   @PostMapping("/contracts/draft")
   public ResponseEntity<ApiResponse> genContractLifecycle(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params)) {
-      return new ResponseEntity<>(new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
+      return new ResponseEntity<>(
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
     String contractId = params.get(LifecycleResource.CONTRACT_KEY).toString();
     // Add current date into parameters
@@ -79,9 +81,10 @@ public class LifecycleController {
    */
   @PostMapping("/contracts/schedule")
   public ResponseEntity<ApiResponse> genContractSchedule(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params)) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
-          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to generate the schedule details for contract...");
     this.lifecycleService.addStageInstanceToParams(params, LifecycleEventType.SERVICE_EXECUTION);
@@ -102,9 +105,10 @@ public class LifecycleController {
    */
   @PostMapping("/contracts/service/commence")
   public ResponseEntity<?> commenceContract(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params)) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
-          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to commence the services for a contract...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.APPROVED);
@@ -133,13 +137,15 @@ public class LifecycleController {
    */
   @PostMapping("/contracts/service/report")
   public ResponseEntity<ApiResponse> reportService(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params)) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
-          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
-    if (!params.containsKey(LifecycleResource.DATE_KEY)) {
-      LOGGER.error(MISSING_DATE_MSG);
-      return new ResponseEntity<>(new ApiResponse(MISSING_DATE_MSG), HttpStatus.BAD_REQUEST);
+    if (this.isInvalidParams(params, LifecycleResource.DATE_KEY)) {
+      return new ResponseEntity<>(
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.DATE_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
     // Invalidate request if the report is being lodged for future dates
     if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), false)) {
@@ -166,13 +172,15 @@ public class LifecycleController {
    */
   @PostMapping("/contracts/service/cancel")
   public ResponseEntity<ApiResponse> cancelService(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params)) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
-          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
-    if (!params.containsKey(LifecycleResource.DATE_KEY)) {
-      LOGGER.error(MISSING_DATE_MSG);
-      return new ResponseEntity<>(new ApiResponse(MISSING_DATE_MSG), HttpStatus.BAD_REQUEST);
+    if (this.isInvalidParams(params, LifecycleResource.DATE_KEY)) {
+      return new ResponseEntity<>(
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.DATE_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
     // Invalidate request if the cancellation is targeted at past services
     if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), true)) {
@@ -198,9 +206,10 @@ public class LifecycleController {
    */
   @PostMapping("/contracts/archive/rescind")
   public ResponseEntity<ApiResponse> rescindContract(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params)) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
-          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to rescind the contract...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.ARCHIVE_RESCINDMENT);
@@ -220,9 +229,10 @@ public class LifecycleController {
    */
   @PostMapping("/contracts/archive/terminate")
   public ResponseEntity<ApiResponse> terminateContract(@RequestBody Map<String, Object> params) {
-    if (this.isInvalidParams(params)) {
+    if (this.isInvalidParams(params, LifecycleResource.CONTRACT_KEY)) {
       return new ResponseEntity<>(
-          new ApiResponse(INVALID_CONTRACT_PARAMS_MSG), HttpStatus.BAD_REQUEST);
+          new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.CONTRACT_KEY)),
+          HttpStatus.BAD_REQUEST);
     }
     LOGGER.info("Received request to terminate the contract...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.ARCHIVE_TERMINATION);
@@ -352,10 +362,10 @@ public class LifecycleController {
    * Validate if the request parameters are invalid or not. Returns true if
    * invalid.
    */
-  private boolean isInvalidParams(Map<String, Object> params) {
+  private boolean isInvalidParams(Map<String, Object> params, String field) {
     // Checks for contract
-    if (!params.containsKey(LifecycleResource.CONTRACT_KEY)) {
-      LOGGER.error(INVALID_CONTRACT_PARAMS_MSG);
+    if (!params.containsKey(field)) {
+      LOGGER.error("Missing `{}` field in request parameters!", field);
       return true;
     }
     return false;
