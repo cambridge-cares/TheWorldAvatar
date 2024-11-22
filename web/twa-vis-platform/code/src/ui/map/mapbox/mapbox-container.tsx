@@ -13,10 +13,10 @@ import { useGeoServerProxy } from 'hooks/useGeoServerProxy';
 // Type definition of incoming properties
 interface MapProperties {
     currentMap: Map;
-  styles: string;
+    styles: string;
     setMap: React.Dispatch<React.SetStateAction<Map>>;
-  defaultPosition: CameraPosition;
-  imageryOption?: ImageryOption;
+    defaultPosition: CameraPosition;
+    imageryOption?: ImageryOption;
 }
 
 /**
@@ -50,13 +50,13 @@ export default function MapboxMapComponent(props: MapProperties) {
     const initialiseMap = async () => {
         props.currentMap?.remove();
 
-    const defaultImagery: ImageryOption = props.imageryOption ?? {
-      "name": "Standard (Night)",
-      "url": "mapbox://styles/mapbox/standard",
-      "time": "dusk"
-    };
+        const defaultImagery: ImageryOption = props.imageryOption ?? {
+            "name": "Standard (Night)",
+            "url": "mapbox://styles/mapbox/standard",
+            "time": "dusk"
+        };
 
-    const response = await fetch((Apis.MAP_SETTINGS), {
+        const response = await fetch((Apis.MAP_SETTINGS), {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         });
@@ -66,11 +66,11 @@ export default function MapboxMapComponent(props: MapProperties) {
 
         const map: Map = new mapboxgl.Map({
             container: mapContainer.current,
-      style: defaultImagery.url,
-      center: props.defaultPosition.center,
-      zoom: props.defaultPosition.zoom,
-      bearing: props.defaultPosition.bearing,
-      pitch: props.defaultPosition.pitch,
+            style: defaultImagery.url,
+            center: props.defaultPosition.center,
+            zoom: props.defaultPosition.zoom,
+            bearing: props.defaultPosition.bearing,
+            pitch: props.defaultPosition.pitch,
             transformRequest: (url) => {
                 if (useProxy) {
                     try {
@@ -98,12 +98,12 @@ export default function MapboxMapComponent(props: MapProperties) {
 
         map.on("style.load", function () {
             // Update time if using new v3 standard style
-      if (defaultImagery.time != null) {
+            if (defaultImagery.time != null) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (map as any).setConfigProperty(
                     "basemap",
                     "lightPreset",
-          defaultImagery.time
+                    defaultImagery.time
                 );
             }
             // Map is only settable after the styles have loaded
@@ -112,7 +112,7 @@ export default function MapboxMapComponent(props: MapProperties) {
     };
 
     return (
-    <div id="mapContainer" ref={mapContainer} className={props.styles}>
+        <div id="mapContainer" ref={mapContainer} className={props.styles}>
             {/* Map will be generated here. */}
         </div>
     );
