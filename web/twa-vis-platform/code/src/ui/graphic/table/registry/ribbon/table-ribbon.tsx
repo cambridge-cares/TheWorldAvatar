@@ -2,8 +2,9 @@
 
 import styles from './table.ribbon.module.css';
 import fieldStyles from 'ui/interaction/form/field/field.module.css';
+import actionStyles from 'ui/interaction/action/action.module.css';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useProtectedRole } from 'hooks/useProtectedRole';
 import { useRouter } from 'next/navigation';
 
@@ -16,6 +17,10 @@ interface TableRibbonProps {
   entityType: string;
   registryAgentApi: string;
   lifecycleStage: string;
+  selectedDate: string;
+  isTaskPage: boolean;
+  setSelectedDate: React.Dispatch<React.SetStateAction<string>>;
+  setIsTaskPage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -32,18 +37,19 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
 
   const authorised = useProtectedRole().authorised;
 
-  const scheduleId: string = "schedule date";
-
-  // Start off with today's date
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const taskId: string = "task date";
 
   // Handle change event for the date input
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
+    props.setSelectedDate(event.target.value);
   };
 
   const openAddModal: React.MouseEventHandler<HTMLButtonElement> = () => {
     router.push(`${Routes.REGISTRY_ADD}/${props.entityType}`);
+  };
+
+  const switchTaskPage: React.MouseEventHandler<HTMLButtonElement> = () => {
+    props.setIsTaskPage(!props.isTaskPage);
   };
 
   return (
@@ -76,20 +82,26 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
             onClick={openAddModal}
           />
         }
+        {props.lifecycleStage == Routes.REGISTRY_ACTIVE && <ActionButton
+          icon={"task"}
+          title={"view tasks"}
+          onClick={switchTaskPage}
+          className={props.isTaskPage ? actionStyles["active"] : ""}
+        />}
         <DownloadButton
           agentApi={`${props.registryAgentApi}/csv/${props.entityType}`}
         />
-        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_ACTIVE && <div>
-          <label className={fieldStyles["form-input-label"]} htmlFor={scheduleId}>
+        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_ACTIVE && props.isTaskPage && <div>
+          <label className={fieldStyles["form-input-label"]} htmlFor={taskId}>
             Date:
           </label>
           <input
-            id={scheduleId}
+            id={taskId}
             className={fieldStyles["dtpicker"]}
             style={{ width: "5.5rem" }}
             type={"date"}
-            defaultValue={selectedDate}
-            aria-label={scheduleId}
+            defaultValue={props.selectedDate}
+            aria-label={taskId}
             onChange={handleDateChange}
           />
         </div>

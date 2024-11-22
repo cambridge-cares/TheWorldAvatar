@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { getIsOpenState } from 'state/modal-slice';
 import { RegistryFieldValues } from 'types/form';
 import { parseWordsForLabels } from 'utils/client-utils';
-import { getLifecycleData } from 'utils/server-actions';
+import { getLifecycleData, getServiceTasks } from 'utils/server-actions';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import RegistryTable from './registry-table';
 import TableRibbon from './ribbon/table-ribbon';
@@ -29,14 +29,25 @@ interface RegistryTableComponentProps {
 export default function RegistryTableComponent(props: Readonly<RegistryTableComponentProps>) {
   const isModalOpen: boolean = useSelector(getIsOpenState);
   const [currentInstances, setCurrentInstances] = useState<RegistryFieldValues[]>([]);
+  const [isTaskPage, setIsTaskPage] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
 
   // A hook that refetches all data when the dialogs are closed
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       setIsLoading(true);
       try {
-        const instances: RegistryFieldValues[] = await getLifecycleData(props.registryAgentApi, props.lifecycleStage, props.entityType);
+        let instances: RegistryFieldValues[] = [];
+        if (isTaskPage) {
+          // Create a Date object from the YYYY-MM-DD string
+          const date = new Date(selectedDate);
+          // Convert to Unix timestamp in seconds (divide milliseconds by 1000)
+          const unixTimestamp: number = Math.floor(date.getTime() / 1000);
+          instances = await getServiceTasks(props.registryAgentApi, unixTimestamp);
+        } else {
+          instances = await getLifecycleData(props.registryAgentApi, props.lifecycleStage, props.entityType);
+        }
         setCurrentInstances(instances);
         setIsLoading(false);
       } catch (error) {
@@ -47,7 +58,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
     if (!isModalOpen) {
       fetchData();
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, isTaskPage]);
 
   return (
     <div className={styles["container"]}>
@@ -57,6 +68,10 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
           entityType={props.entityType}
           registryAgentApi={props.registryAgentApi}
           lifecycleStage={props.lifecycleStage}
+          selectedDate={selectedDate}
+          isTaskPage={isTaskPage}
+          setSelectedDate={setSelectedDate}
+          setIsTaskPage={setIsTaskPage}
         />
         <div className={styles["table-contents"]}>
           {isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable

@@ -3,7 +3,7 @@
  */
 'use server';
 
-import { Paths } from 'io/config/routes';
+import { Apis, Paths } from 'io/config/routes';
 import { FieldValues } from 'react-hook-form';
 
 import { RegistryFieldValues, FormTemplate, OntologyConcept } from 'types/form';
@@ -80,6 +80,19 @@ export async function getLifecycleData(agentApi: string, currentStage: string, e
     stagePath = "archive";
   }
   const res = await sendRequest(`${agentApi}/contracts/${stagePath}?type=${entityType}&label=yes`, "GET");
+  const responseData = await res.json();
+  return responseData;
+}
+
+
+/**
+ * Retrieves all service tasks in a lifecycle on the specified day. Fields are returned with human-readable labels.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {number} time Target day in UNIX timestamp format.
+ */
+export async function getServiceTasks(agentApi: string, time: number): Promise<RegistryFieldValues[]> {
+  const res = await sendRequest(`${agentApi}/contracts/service/${time}`, "GET");
   const responseData = await res.json();
   return responseData;
 }
