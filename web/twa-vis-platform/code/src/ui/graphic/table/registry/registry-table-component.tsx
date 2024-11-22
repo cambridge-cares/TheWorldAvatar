@@ -12,6 +12,7 @@ import { getLifecycleData, getServiceTasks } from 'utils/server-actions';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import RegistryTable from './registry-table';
 import TableRibbon from './ribbon/table-ribbon';
+import useRefresh from 'hooks/useRefresh';
 
 interface RegistryTableComponentProps {
   entityType: string;
@@ -27,6 +28,7 @@ interface RegistryTableComponentProps {
  * @param {string} registryAgentApi The target endpoint for default registry agents.
  */
 export default function RegistryTableComponent(props: Readonly<RegistryTableComponentProps>) {
+  const [refreshFlag, triggerRefresh] = useRefresh();
   const isModalOpen: boolean = useSelector(getIsOpenState);
   const [currentInstances, setCurrentInstances] = useState<RegistryFieldValues[]>([]);
   const [isTaskPage, setIsTaskPage] = useState<boolean>(false);
@@ -58,7 +60,7 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
     if (!isModalOpen) {
       fetchData();
     }
-  }, [isModalOpen, isTaskPage]);
+  }, [isModalOpen, isTaskPage, selectedDate, refreshFlag]);
 
   return (
     <div className={styles["container"]}>
@@ -72,9 +74,10 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
           isTaskPage={isTaskPage}
           setSelectedDate={setSelectedDate}
           setIsTaskPage={setIsTaskPage}
+          triggerRefresh={triggerRefresh}
         />
         <div className={styles["table-contents"]}>
-          {isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable
+          {refreshFlag || isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable
             recordType={props.entityType}
             lifecycleStage={props.lifecycleStage}
             instances={currentInstances}

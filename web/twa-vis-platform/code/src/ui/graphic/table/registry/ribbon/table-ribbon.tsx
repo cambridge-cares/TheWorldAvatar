@@ -12,6 +12,8 @@ import { Routes } from 'io/config/routes';
 import { DownloadButton } from 'ui/interaction/action/download/download';
 import RedirectButton from 'ui/interaction/action/redirect/redirect-button';
 import ActionButton from 'ui/interaction/action/action';
+import MaterialIconButton from 'ui/graphic/icon/icon-button';
+import { sendPostRequest } from 'utils/server-actions';
 
 interface TableRibbonProps {
   entityType: string;
@@ -21,6 +23,7 @@ interface TableRibbonProps {
   isTaskPage: boolean;
   setSelectedDate: React.Dispatch<React.SetStateAction<string>>;
   setIsTaskPage: React.Dispatch<React.SetStateAction<boolean>>;
+  triggerRefresh: () => void;
 }
 
 /**
@@ -29,6 +32,11 @@ interface TableRibbonProps {
  * @param {string} entityType The type of entity.
  * @param {string} registryAgentApi The target endpoint for default registry agents.
  * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
+ * @param {string} selectedDate The selected date in the date field input.
+ * @param {boolean} isTaskPage Indicator if the table is currently on the task view.
+ * @param setSelectedDate Method to update selected date.
+ * @param setIsTaskPage Method to update task page indicator.
+ * @param triggerRefresh Method to trigger refresh.
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
@@ -50,6 +58,11 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
 
   const switchTaskPage: React.MouseEventHandler<HTMLButtonElement> = () => {
     props.setIsTaskPage(!props.isTaskPage);
+  };
+
+  const triggerRefresh: React.MouseEventHandler<HTMLDivElement> = () => {
+    sendPostRequest(`${props.registryAgentApi}/contracts/service/schedule`, "{}");
+    props.triggerRefresh();
   };
 
   return (
@@ -91,20 +104,27 @@ export default function TableRibbon(props: Readonly<TableRibbonProps>) {
         <DownloadButton
           agentApi={`${props.registryAgentApi}/csv/${props.entityType}`}
         />
-        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_ACTIVE && props.isTaskPage && <div>
-          <label className={fieldStyles["form-input-label"]} htmlFor={taskId}>
-            Date:
-          </label>
-          <input
-            id={taskId}
-            className={fieldStyles["dtpicker"]}
-            style={{ width: "5.5rem" }}
-            type={"date"}
-            defaultValue={props.selectedDate}
-            aria-label={taskId}
-            onChange={handleDateChange}
+        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_ACTIVE && props.isTaskPage && <>
+          <div style={{ margin: "auto 0" }}>
+            <label className={fieldStyles["form-input-label"]} htmlFor={taskId}>
+              Date:
+            </label>
+            <input
+              id={taskId}
+              className={fieldStyles["dtpicker"]}
+              style={{ width: "5.5rem" }}
+              type={"date"}
+              defaultValue={props.selectedDate}
+              aria-label={taskId}
+              onChange={handleDateChange}
+            />
+          </div>
+          <MaterialIconButton
+            iconName={"cached"}
+            iconStyles={[styles["icon"]]}
+            onClick={triggerRefresh}
           />
-        </div>
+        </>
         }
       </div>
     </div>
