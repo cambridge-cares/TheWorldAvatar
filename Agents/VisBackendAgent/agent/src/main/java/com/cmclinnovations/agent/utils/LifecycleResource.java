@@ -17,7 +17,7 @@ public class LifecycleResource {
   public static final String DATE_KEY = "date";
   public static final String EVENT_KEY = "event";
   public static final String STAGE_KEY = "stage";
-  public static final String ARCHIVE_STATUS_KEY = "status";
+  public static final String STATUS_KEY = "status";
   public static final String REMARKS_KEY = "remarks";
 
   public static final String LIFECYCLE_EVENT_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>/<https://www.omg.org/spec/Commons/Collections/comprises>/^<https://www.omg.org/spec/Commons/Classifiers/classifies>";
@@ -39,8 +39,7 @@ public class LifecycleResource {
    */
   public static String getCurrentDate() {
     // Define the date format
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    return LocalDate.now().format(formatter);
+    return LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
   }
 
   /**
@@ -187,12 +186,7 @@ public class LifecycleResource {
     StringBuilder stageFilters = new StringBuilder();
     LifecycleResource.appendFilterExists(stageFilters, true, LifecycleResource.EVENT_APPROVAL);
     LifecycleResource.appendArchivedFilterExists(stageFilters, false);
-    return "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
-        + "PREFIX fibo-fnd-arr-lif: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/>"
-        + "PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>"
-        + "PREFIX fibo-fnd-dt-oc: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/>"
-        + "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>"
-        + "PREFIX fibo-fnd-pas-pas: <https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/>"
+    return genPrefixes()
         + "SELECT DISTINCT ?iri WHERE{"
         + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
@@ -219,25 +213,74 @@ public class LifecycleResource {
   }
 
   /**
+   * Generates a SPARQL query for retrieving the service tasks for the specified
+   * date.
+   * 
+   * @param date Target date in YYYY-MM-DD format.
+   */
+  public static String genServiceTasksQuery(String date) {
+    StringBuilder stageFilters = new StringBuilder();
+    LifecycleResource.appendFilterExists(stageFilters, true, EVENT_APPROVAL);
+    LifecycleResource.appendArchivedFilterExists(stageFilters, false);
+    return genPrefixes()
+        + "SELECT DISTINCT ?iri ?client ?location ?event_date ?" + STATUS_KEY + "{"
+        + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "fibo-fnd-arr-rep:isRequestedBy/cmns-rlcmp:isPlayedBy/cmns-dsg:hasName/<https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/hasTransliteratedName> ?client;"
+        + "fibo-fnd-rel-rel:governs/fibo-fnd-rel-rel:provides/fibo-fnd-rel-rel:involves/^ontobim:hasFacility/<https://www.theworldavatar.com/kg/ontoservice/hasServiceLocation>/geo:hasGeometry/geo:asWKT ?location;"
+        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
+        + "?stage fibo-fnd-rel-rel:exemplifies <"
+        + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
+        + "<https://www.omg.org/spec/Commons/Collections/comprises> ?event."
+        + "?event fibo-fnd-dt-oc:hasEventDate ?event_date."
+        + "?eventtype <https://www.omg.org/spec/Commons/Classifiers/classifies> ?event."
+        + "BIND("
+        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_DELIVERY)
+        + ",\"In progress\","
+        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_CANCELLATION)
+        + ",\"Cancelled\","
+        + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_MIS_REPORT)
+        + ",\"Reported for Unfulfilled Service\""
+        + ",\"Unknown\"))) AS ?" + STATUS_KEY + ")"
+        + "}";
+  }
+
+  /**
+   * Generates a query template containing prefixes query.
+   */
+  public static String genPrefixes() {
+    return "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
+        + "PREFIX cmns-dsg: <https://www.omg.org/spec/Commons/Designators/>"
+        + "PREFIX cmns-rlcmp: <https://www.omg.org/spec/Commons/RolesAndCompositions/>"
+        + "PREFIX fibo-fnd-arr-lif: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/>"
+        + "PREFIX fibo-fnd-arr-rep: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/>"
+        + "PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>"
+        + "PREFIX fibo-fnd-dt-oc: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/>"
+        + "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>"
+        + "PREFIX fibo-fnd-pas-pas: <https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/>"
+        + "PREFIX geo: <http://opengis.net/ont/geosparql#>"
+        + "PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>";
+  }
+
+  /**
    * Appends a query statement to retrieve the status of an archived contract.
    * 
    * @param query Builder for the query template.
    */
   public static void appendArchivedStateQuery(StringBuilder query) {
     String eventVar = ShaclResource.VARIABLE_MARK + EVENT_KEY;
-    StringResource.appendTriple(query, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH, eventVar);
+    StringResource.appendTriple(query, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH, eventVar);
     String statement = "FILTER(" + eventVar + " IN ("
-        + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_COMPLETION)
-        + "," + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_RESCISSION) + ","
-        + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_TERMINATION) + "))"
+        + StringResource.parseIriForQuery(EVENT_CONTRACT_COMPLETION)
+        + "," + StringResource.parseIriForQuery(EVENT_CONTRACT_RESCISSION) + ","
+        + StringResource.parseIriForQuery(EVENT_CONTRACT_TERMINATION) + "))"
         + "BIND("
-        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_COMPLETION)
+        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(EVENT_CONTRACT_COMPLETION)
         + ",\"Completed\","
-        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_RESCISSION)
+        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(EVENT_CONTRACT_RESCISSION)
         + ",\"Rescinded\","
-        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_TERMINATION)
+        + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(EVENT_CONTRACT_TERMINATION)
         + ",\"Terminated\""
-        + ",\"Unknown\"))) AS ?" + LifecycleResource.ARCHIVE_STATUS_KEY
+        + ",\"Unknown\"))) AS ?" + STATUS_KEY
         + ")";
     query.append(statement);
   }
@@ -251,14 +294,14 @@ public class LifecycleResource {
   public static void appendArchivedFilterExists(StringBuilder query, boolean exists) {
     StringBuilder tempBuilder = new StringBuilder();
     tempBuilder.append("{");
-    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
-        StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_COMPLETION));
+    StringResource.appendTriple(tempBuilder, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(EVENT_CONTRACT_COMPLETION));
     tempBuilder.append(ShaclResource.UNION_OPERATOR);
-    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
-        StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_RESCISSION));
+    StringResource.appendTriple(tempBuilder, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(EVENT_CONTRACT_RESCISSION));
     tempBuilder.append(ShaclResource.UNION_OPERATOR);
-    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
-        StringResource.parseIriForQuery(LifecycleResource.EVENT_CONTRACT_TERMINATION));
+    StringResource.appendTriple(tempBuilder, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(EVENT_CONTRACT_TERMINATION));
     tempBuilder.append("}");
     LifecycleResource.appendFilterExists(query, tempBuilder.toString(), exists);
   }
@@ -273,7 +316,7 @@ public class LifecycleResource {
    */
   public static void appendFilterExists(StringBuilder query, boolean exists, String instance) {
     StringBuilder tempBuilder = new StringBuilder();
-    StringResource.appendTriple(tempBuilder, "?iri", LifecycleResource.LIFECYCLE_EVENT_PREDICATE_PATH,
+    StringResource.appendTriple(tempBuilder, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
         StringResource.parseIriForQuery(instance));
     LifecycleResource.appendFilterExists(query, tempBuilder.toString(), exists);
   }

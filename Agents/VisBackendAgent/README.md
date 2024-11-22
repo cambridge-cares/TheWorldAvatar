@@ -525,7 +525,7 @@ A successful request will return `{"message": "Service has been successfully can
 
 #### 2.6.6 Service order route
 
-This endpoint serves to interact with all active contracts and tasks.
+This `<baseURL>/vis-backend-agent/contracts/service` endpoint serves to interact with all active contracts and tasks.
 
 > Active contracts
 
@@ -536,6 +536,10 @@ There is also an additional optional parameter `label` to retrieve in progress c
 > Schedule tasks
 
 Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/service/schedule` endpoint to schedule tasks for today. Note that this action task can also be scheduled and executed at 6am daily, by setting `TASKS_ENABLED=true`.
+
+> Records of service tasks
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/service/{timestamp}` endpoint to retrieve all tasks for the target date, where `timestamp` is the UNIX timestamp.
 
 #### 2.6.7 Archive contract route
 

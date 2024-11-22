@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
+import com.cmclinnovations.agent.model.SparqlResponseField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.model.type.SparqlEndpointType;
@@ -92,6 +93,22 @@ public class LifecycleService {
     String query = this.fileService.getContentsWithReplacement(queryPath, iriResponse.getBody());
     Queue<SparqlBinding> results = this.kgService.queryInstances(query, null, false, eventType);
     return new ResponseEntity<>(results.stream().map(SparqlBinding::get).collect(Collectors.toList()), HttpStatus.OK);
+  }
+
+  /**
+   * Retrieve all service related occurrences in the lifecycle for the specified
+   * date.
+   * 
+   * @param date Target date in YYYY-MM-DD format.
+   */
+  public ResponseEntity<List<Map<String, SparqlResponseField>>> getOccurrences(String date) {
+    String activeServiceQuery = LifecycleResource.genServiceTasksQuery(date);
+    Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
+    return new ResponseEntity<>(
+        results.stream()
+            .map(SparqlBinding::get)
+            .collect(Collectors.toList()),
+        HttpStatus.OK);
   }
 
   /**

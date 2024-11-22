@@ -1,5 +1,9 @@
 package com.cmclinnovations.agent;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -8,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -324,6 +329,23 @@ public class LifecycleController {
       @RequestParam(defaultValue = "false") boolean label) {
     LOGGER.info("Received request to retrieve archived contracts...");
     return this.lifecycleService.getContracts(type, label, LifecycleEventType.ARCHIVE_COMPLETION);
+  }
+
+  /**
+   * Retrieve all tasks for the specified date in UNIX timestamp.
+   */
+  @GetMapping("/contracts/service/{timestamp}")
+  public ResponseEntity<?> getAllInstances(
+      @PathVariable(name = "timestamp") long timestamp) {
+    LOGGER.info("Received request to retrieve contracts in progress...");
+    // Convert Unix timestamp (seconds) to LocalDate
+    LocalDate date = Instant.ofEpochSecond(timestamp)
+        .atZone(ZoneId.systemDefault()) // Adjust to the system default time zone
+        .toLocalDate();
+
+    // Format LocalDate to 'YYYY-MM-DD'
+    String formattedDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    return this.lifecycleService.getOccurrences(formattedDate);
   }
 
   /**

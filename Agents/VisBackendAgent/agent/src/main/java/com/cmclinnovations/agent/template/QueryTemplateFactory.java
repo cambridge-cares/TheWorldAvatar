@@ -102,7 +102,7 @@ public class QueryTemplateFactory {
       // Else sort the variable and add them to the query
       // Add a status variable for lifecycle if available
       if (lifecycleEvent != null) {
-        this.varSequence.put(LifecycleResource.ARCHIVE_STATUS_KEY, Stream.of(1, 0).toList());
+        this.varSequence.put(LifecycleResource.STATUS_KEY, Stream.of(1, 0).toList());
       }
       this.sortedVars = new ArrayList<>(this.varSequence.keySet());
       this.sortedVars
