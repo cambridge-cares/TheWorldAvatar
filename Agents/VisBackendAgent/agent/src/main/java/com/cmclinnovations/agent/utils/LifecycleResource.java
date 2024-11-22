@@ -241,6 +241,7 @@ public class LifecycleResource {
         + "IF(?eventtype=" + StringResource.parseIriForQuery(EVENT_MIS_REPORT)
         + ",\"Reported for Unfulfilled Service\""
         + ",\"Unknown\"))) AS ?" + STATUS_KEY + ")"
+        + "FILTER(?event_date=\"" + date + "\"^^xsd:date)"
         + "}";
   }
 
