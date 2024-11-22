@@ -8,7 +8,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "../../../stack-manager/inputs/data/vis-mapbox",
+                        "Source": "../../../stack-manager/inputs/data/webspace-mapbox",
                         "Target": "/var/www/html"
                     }
                 ],

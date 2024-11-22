@@ -5,12 +5,22 @@
         "bearing": -0,
         "pitch":30
     },
-    "imagery": {
-        "Light": "mapbox://styles/mapbox/light-v10?optimize=true",
-        "Dark": "mapbox://styles/mapbox/dark-v10?optimize=true",
-        "Outdoors": "mapbox://styles/mapbox/outdoors-v11?optimize=true",
-        "Satellite (Raw)": "mapbox://styles/mapbox/satellite-v9?optimize=true",
-        "Satellite (Labelled)": "mapbox://styles/mapbox/satellite-streets-v11?optimize=true",
-        "default": "Dark"
-    }
+    "search": [
+        {
+            "description": "Name",
+            "property": "name",
+            "type": "string"
+        },
+        {
+            "description": "Year Founded",
+            "property": "founded",
+            "type": "number"
+        },
+        {
+            "description": "Undergraduates Admitted?",
+            "property": "undergraduates",
+            "type": "boolean"
+        }  
+    ],
+    "attribution": "<div style='padding: 10px; text-align: left;'>Building footprint data taken from <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> under the Open Database License.<br><br>All sample other data has been generated specifically for this visualisation.</div>"
 }
