@@ -395,6 +395,14 @@ class ChemicalBuildingUnit(BaseClass):
         return list(self.hasCBUAssemblyCenter)[0].coordinates
 
     @property
+    def highest_modularity_gbu(self):
+        return max([gbu for gbu in list(self.isFunctioningAs)], key=lambda x: x.modularity)
+
+    @property
+    def is_metal_cbu(self):
+        return all([isinstance(bs, MetalSite) for bs in list(self.hasBindingSite)])
+
+    @property
     def active_binding_sites(self):
         return [bs for bs in list(self.hasBindingSite) if not bs.temporarily_blocked]
 
@@ -464,17 +472,16 @@ class ChemicalBuildingUnit(BaseClass):
         # compute the CBU assembly center, which is the geometry (coordinates) center point of the CBU structure (average of all atoms)
         # projected on the normal vector of the plane formed by the binding sites (dummy atoms) that pass through the circumcenter point of all binding sites
         if cbu_assemb_center is None:
-            cbu_geo_center = Point(
-                x=cbu_atoms_acc_x / len(cbu_atoms),
-                y=cbu_atoms_acc_y / len(cbu_atoms),
-                z=cbu_atoms_acc_z / len(cbu_atoms)
-            )
             lst_binding_points = [cbu_binding_points[k].binding_coordinates for k in cbu_binding_points]
             if len(lst_binding_points) > 2:
                 cbu_binding_sites_plane = Plane.fit_from_points(lst_binding_points)
                 cbu_binding_sites_circumcenter = Point.fit_circle_2d(lst_binding_points)[0]
-                line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
-                cbu_assemb_center = line.project_point(cbu_geo_center)
+                if 'planar' in gbu_type.lower():
+                    cbu_assemb_center = cbu_binding_sites_circumcenter
+                else:
+                    cbu_geo_center = Point.centroid(atom_points)
+                    line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
+                    cbu_assemb_center = line.project_point(cbu_geo_center)
             else:
                 bindingsite_mid_point = Point.mid_point(*lst_binding_points)
                 if 'linear' in gbu_type.lower():
@@ -495,7 +502,7 @@ class ChemicalBuildingUnit(BaseClass):
                             # find the average of the O atoms and use it to form line with the closest C atom
                             avg_O = Point.mid_point(*closest_two_O)
                             v_dct[k] = {'avg_O': avg_O, 'closest_C': closest_C, 'line': Line.from_two_points(start=avg_O, end=closest_C)}
-                            lst_pts_for_plane.extends([closest_C, avg_O])
+                            lst_pts_for_plane.extend([closest_C, avg_O])
                         # find the plane from these points
                         plane = Plane.fit_from_points(lst_pts_for_plane)
                         # find the intersection of these lines when they are projected on the plane
@@ -507,10 +514,6 @@ class ChemicalBuildingUnit(BaseClass):
                         cbu_assemb_center = perpendicular_bisector.project_point(intersection)
                     else:
                         raise NotImplementedError(f'CBUs functioning as a {gbu_type} with binding fragment {binding_fragment} is not yet supported.')
-                # bindingsite_line = Line.from_two_points(*lst_binding_points)
-                # plane = Plane.from_three_points(lst_binding_points[0], lst_binding_points[1], cbu_geo_center)
-                # perpendicular_bisector = plane.find_perpendicular_bisector_on_plane(*lst_binding_points)
-                # cbu_assemb_center = perpendicular_bisector.project_point(cbu_geo_center)
         assemb_center = CBUAssemblyCenter(hasX=cbu_assemb_center.x, hasY=cbu_assemb_center.y, hasZ=cbu_assemb_center.z)
 
         return lst_binding_sits, assemb_center, atom_points
