@@ -50,7 +50,6 @@ import uk.ac.cam.cares.jps.sensor.source.activity.ActivityRecognitionReceiver;
 import uk.ac.cam.cares.jps.sensor.source.worker.BufferFlushWorker;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.worker.SensorUploadWorker;
-import uk.ac.cam.cares.jps.sensor.source.activity.ActivityRecognitionService;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
@@ -132,10 +131,6 @@ public class SensorService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (!checkActivityRecognitionPermission()) {
-            stopSelf();
-            return START_NOT_STICKY;
-        }
 
         if (intent == null || intent.getExtras() == null) {
             LOGGER.warn("Self stop because deviceId unknown");
@@ -179,8 +174,8 @@ public class SensorService extends Service {
 
         // Get the list of selected sensors
         List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
-        // add activity to selected sensors
-        selectedSensors.add(SensorType.ACTIVITY);
+        // Always add the activity sensor
+        assert selectedSensors != null;
 
         if (selectedSensors == null || selectedSensors.isEmpty()) {
             LOGGER.warn("No sensors selected or sensor list is empty.");
@@ -188,29 +183,35 @@ public class SensorService extends Service {
             return START_STICKY;
         }
 
+        if (selectedSensors.contains(SensorType.ACTIVITY) && !checkActivityRecognitionPermission()) {
+            LOGGER.warn("Activity Recognition permission is required but not granted.");
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
         sensorHandlerManager.startSelectedSensors(selectedSensors);
 
 
-        // registering the activity recognition client
-        Intent activityIntent = new Intent(this, ActivityRecognitionReceiver.class);
-        activityRecognitionClient = ActivityRecognition.getClient(this);
-        activityRecognitionPendingIntent = PendingIntent.getBroadcast(
-                this,
-                sensorSettingsMap.get("activity_request_code"),
-                activityIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-        );
+        if (selectedSensors.contains(SensorType.ACTIVITY)) {
+            // registering the activity recognition client
+            Intent activityIntent = new Intent(this, ActivityRecognitionReceiver.class);
+            activityRecognitionClient = ActivityRecognition.getClient(this);
+            activityRecognitionPendingIntent = PendingIntent.getBroadcast(
+                    this,
+                    sensorSettingsMap.get("activity_request_code"),
+                    activityIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+            );
 
-
-        // Request activity updates
-        activityRecognitionClient.requestActivityUpdates(
-                sensorSettingsMap.get("activity_recognition_update_interval"),
-                activityRecognitionPendingIntent
-        ).addOnSuccessListener(aVoid -> {
-            LOGGER.info("Successfully requested activity updates");
-        }).addOnFailureListener(e -> {
-            LOGGER.error("Failed to request activity updates", e);
-        });
+            // Request activity updates
+            activityRecognitionClient.requestActivityUpdates(
+                    sensorSettingsMap.get("activity_recognition_update_interval"),
+                    activityRecognitionPendingIntent
+            ).addOnSuccessListener(aVoid -> {
+                LOGGER.info("Successfully requested activity updates");
+            }).addOnFailureListener(e -> {
+                LOGGER.error("Failed to request activity updates", e);
+        }); }
 
 
         // Convert the list of sensors to a JSONArray string
@@ -391,8 +392,6 @@ public class SensorService extends Service {
             } else {
                 LOGGER.warn("SensorCollectionState is already null. No need to clear.");
             }
-
-            // sensorLocalSource.shutdownExecutor();
 
             LOGGER.info("Sensor service is stopped. Sensors stop recording.");
         } catch (NullPointerException exception) {
