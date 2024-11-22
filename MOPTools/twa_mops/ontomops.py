@@ -750,7 +750,8 @@ class MetalOrganicPolyhedron(CoordinationCage):
                 # i.e. the dummy atom already away from the actually binding atoms
                 # we still use the half bond length to adjust the side length
                 # as it's generally easier to optimise the geometry if the molecules are too far compared to overlapping (see SI of 10.1021/jp507643v)
-                adjusted_side_length_cbu1 = side_length_cbu1 + HALF_BOND_LENGTH
+                # NOTE we only add half bond length to the organic site as the metal site would be added already
+                adjusted_side_length_cbu1 = side_length_cbu1 + HALF_BOND_LENGTH if not cbu.is_metal_cbu else side_length_cbu1
                 projected_adjusted_side_length_cbu1 = adjusted_side_length_cbu1 * np.cos(np.deg2rad(vector_plane_angle_cbu1))
                 projected_binding_vector_cbu1 = plane.get_projected_vector(rotated_binding_vector_cbu1)
                 _gbu_projected_cbu_angle_cbu1 = projected_binding_vector_cbu1.get_rad_angle_to(v_gbu1)
@@ -767,7 +768,8 @@ class MetalOrganicPolyhedron(CoordinationCage):
                 # i.e. the dummy atom already away from the actually binding atoms
                 # we still use the half bond length to adjust the side length
                 # as it's generally easier to optimise the geometry if the molecules are too far compared to overlapping (see SI of 10.1021/jp507643v)
-                adjusted_side_length_cbu2 = side_length_cbu2 + HALF_BOND_LENGTH
+                # NOTE we only add half bond length to the organic site as the metal site would be added already
+                adjusted_side_length_cbu2 = side_length_cbu2 + HALF_BOND_LENGTH if not cbu.is_metal_cbu else side_length_cbu2
                 projected_adjusted_side_length_cbu2 = adjusted_side_length_cbu2 * np.cos(np.deg2rad(vector_plane_angle_cbu2))
                 projected_binding_vector_cbu2 = plane.get_projected_vector(rotated_binding_vector_cbu2)
                 _gbu_projected_cbu_angle_cbu2 = projected_binding_vector_cbu2.get_rad_angle_to(v_gbu2)
@@ -781,8 +783,8 @@ class MetalOrganicPolyhedron(CoordinationCage):
         initial_guess = theta_rad / 2
         omega = fsolve(lambda x: np.sin(x)/l_vertical_cbu1 - np.sin(theta_rad - x)/l_vertical_cbu2, initial_guess)
         shared_side = l_vertical_cbu1 / np.sin(omega)
-        scaled_cbu1 = math.sqrt(l_vertical_cbu1**2 + shared_side**2 - 2*l_vertical_cbu1*shared_side*np.cos(np.pi - gbu_projected_cbu_angle_cbu1 - omega))
-        scaled_cbu2 = math.sqrt(l_vertical_cbu2**2 + shared_side**2 - 2*l_vertical_cbu2*shared_side*np.cos(np.pi - gbu_projected_cbu_angle_cbu2 - (theta_rad - omega)))
+        scaled_cbu1 = math.sqrt(projected_adjusted_side_length_cbu1**2 + shared_side**2 - 2*projected_adjusted_side_length_cbu1*shared_side*np.cos(np.pi - gbu_projected_cbu_angle_cbu1 - omega))
+        scaled_cbu2 = math.sqrt(projected_adjusted_side_length_cbu2**2 + shared_side**2 - 2*projected_adjusted_side_length_cbu2*shared_side*np.cos(np.pi - gbu_projected_cbu_angle_cbu2 - (theta_rad - omega)))
         # calculate the scaling factor for the CBU
         scaling_factor_cbu1 = scaled_cbu1 / distance_to_am_center_gbu1
         scaling_factor_cbu2 = scaled_cbu2 / distance_to_am_center_gbu2
