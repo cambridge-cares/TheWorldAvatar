@@ -1,0 +1,48 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX GeoSparql: <http://www.opengis.net/ont/geosparql#>
+PREFIX OCHV: <http://sbmi.uth.tmc.edu/ontology/ochv/CHV_Concept/>
+PREFIX OntoONS: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+
+SELECT ?lsoa_code ?fuel_poor_percentage ?avg_energy_efficiency ?total_consumption_scaled ?coronary_heart_disease ?copd
+WHERE {
+  ?fuel_poverty a ontobuiltenv:FuelPovertyRate ;
+                OM:hasValue ?fuel_poor_percentage ;
+                ontobuiltenv:hasIdentifier ?lsoa_code .
+
+  {
+    SELECT ?lsoa_code (AVG(?energy_efficiency) AS ?avg_energy_efficiency)
+    WHERE {
+      ?building a <https://www.theworldavatar.com/kg/Building> ;
+                ontobuiltenv:hasEPCrating ?epc_rating ;
+                ontobuiltenv:hasEnergyEfficiency ?energy_efficiency ;
+                GeoSparql:sfWithin ?lsoa .
+      ?lsoa ontobuiltenv:hasIdentifier ?lsoa_code .
+    }
+    GROUP BY ?lsoa_code
+  }
+
+  OPTIONAL {
+    ?gas_consumption a ontobuiltenv:GasConsumption ;
+                     OM:hasValue ?gas_value ;
+                     ontobuiltenv:hasIdentifier ?lsoa_code .
+  }
+  OPTIONAL {
+    ?elec_consumption a ontobuiltenv:ElecConsumption ;
+                      OM:hasValue ?elec_value ;
+                      ontobuiltenv:hasIdentifier ?lsoa_code .
+  }
+
+  BIND((COALESCE(?gas_value, 0) + COALESCE(?elec_value, 0)) AS ?total_consumption_scaled)
+
+  ?cvd_case a OCHV:CVDCase ;
+            OM:hasRate ?coronary_heart_disease ;
+            ontobuiltenv:hasIdentifier ?lsoa_code .
+
+  ?copd_case a OCHV:COPDCase ;
+             OM:hasRate ?copd ;
+             ontobuiltenv:hasIdentifier ?lsoa_code .
+
+  ?lsoa a OntoONS:LSOA ;
+        ontobuiltenv:hasIdentifier ?lsoa_code .
+}

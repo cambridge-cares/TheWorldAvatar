@@ -1,0 +1,15 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX ontobuiltenergy: <https://www.theworldavatar.com/kg/ontobuiltenergy/>
+PREFIX OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?lsoaCode ?avgElectricity ?avgGas
+WHERE {
+  ?lsoaEntity ontobuiltenv:hasIdentifier ?lsoaCode .
+  ?lsoaEntity ontobuiltenergy:hasHousehold ?household .
+
+  ?household ontobuiltenergy:hasAverageElecConsumption ?elecConsumptionEntity .
+  ?elecConsumptionEntity OM:hasValue ?avgElectricity .
+
+  ?household ontobuiltenergy:hasAverageGasConsumption ?gasConsumptionEntity .
+  ?gasConsumptionEntity OM:hasValue ?avgGas .
+}
