@@ -82,7 +82,7 @@ def lib1_Creation(uniques):
 
 def query_speciesIRI(cbuiri):
     """For each CBU queries its OntoSpecies Information."""
-    result  = querykg(SPARQL_ENDPOINTS['ontospecies'], species_properties(cbuiri)) #The query gets a full list of IRIs
+    result  = querykg(SPARQL_ENDPOINTS.ontospecies, species_properties(cbuiri)) #The query gets a full list of IRIs
     cbu_properties = [] # Each IRI is saved in the list of refined IRIs
     if result:
         if 'MolecularWeightValue' in result[0].keys():

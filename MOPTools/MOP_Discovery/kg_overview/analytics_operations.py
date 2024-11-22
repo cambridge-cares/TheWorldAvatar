@@ -16,7 +16,7 @@ from kg_overview.analytics_output import preR2_json
 
 def mopsoverview():
     """Collects all MOP IRIs found in the OntoMOP KG"""
-    result  = querykg(SPARQL_ENDPOINTS['ontomops'], getMOPIRIs())
+    result  = querykg(SPARQL_ENDPOINTS.ontomops, getMOPIRIs())
     refinedlist = [] # Each IRI is saved in the list of refined IRIs
     for item in result:
         refined = item['mopIRI']
@@ -42,7 +42,7 @@ def assemblyModelGroups(listofMOPs):
     # When quering SPARQL we obtain two lines of information deriving from each GBU/CBU 
     # We do not know which CBU will be returned first, therefore this is being sorted. 
     for mopIRI in listofMOPs:
-        MOPandGBUs  = querykg(SPARQL_ENDPOINTS['ontomops'], mop_GBUs(mopIRI))
+        MOPandGBUs  = querykg(SPARQL_ENDPOINTS.ontomops, mop_GBUs(mopIRI))
         i = 0 
         assemblyModel = {} 
         for MOPandGBU in MOPandGBUs:
