@@ -98,6 +98,7 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
           checkboxSelection={false}
           disableRowSelectionOnClick={false}
           autosizeOnMount={true}
+          getRowId={(row) => row.id || row.iri}
         />
       </Box>
     </RegistryTableTheme>
