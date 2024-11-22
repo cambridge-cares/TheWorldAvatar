@@ -545,9 +545,12 @@ public class QueryTemplateFactory {
               "Invalid reverse predicate JSON-LD schema! Fields must be stored in an object!");
         } else if (fieldNode.isObject()) {
           // Reverse fields must be an object that may contain one or multiple fields
-          String reversePredicate = fieldNode.fieldNames().next();
-          this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
-              reversePredicate, deleteBuilder, whereBuilder, targetId, true);
+          Iterator<String> fieldIterator = fieldNode.fieldNames();
+          while (fieldIterator.hasNext()) {
+            String reversePredicate = fieldIterator.next();
+            this.parseNestedNode(currentNode.path(ShaclResource.ID_KEY), fieldNode.path(reversePredicate),
+                reversePredicate, deleteBuilder, whereBuilder, targetId, true);
+          }
         }
         // The @id and @context field should be ignored but continue parsing for
         // everything else
