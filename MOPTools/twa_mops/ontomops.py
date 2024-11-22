@@ -50,7 +50,7 @@ IsNumberOf = ObjectProperty.create_from_base('IsNumberOf', OntoMOPs)
 # additions for assembler
 HasGBUConnectingPoint = ObjectProperty.create_from_base('HasGBUConnectingPoint', OntoMOPs)
 HasGBUCoordinateCenter = ObjectProperty.create_from_base('HasGBUCoordinateCenter', OntoMOPs)
-HasCBUAssemblyCenter = ObjectProperty.create_from_base('HasCBUCoordinateCenter', OntoMOPs)
+HasCBUAssemblyCenter = ObjectProperty.create_from_base('HasCBUAssemblyCenter', OntoMOPs)
 HasBindingPoint = ObjectProperty.create_from_base('HasBindingPoint', OntoMOPs)
 HasGBUType = ObjectProperty.create_from_base('HasGBUType', OntoMOPs)
 
