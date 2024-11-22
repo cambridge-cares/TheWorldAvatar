@@ -213,6 +213,30 @@ public class LifecycleResource {
   }
 
   /**
+   * Generates a SPARQL query for retrieving the active service task for the
+   * specified contract and date.
+   * 
+   * @param contract Target contract iri.
+   * @param date     Target date in YYYY-MM-DD format.
+   */
+  public static String genActiveServiceTaskQuery(String contract, String date) {
+    StringBuilder stageFilters = new StringBuilder();
+    LifecycleResource.appendFilterExists(stageFilters, true, EVENT_APPROVAL);
+    LifecycleResource.appendArchivedFilterExists(stageFilters, false);
+    return genPrefixes()
+        + "SELECT DISTINCT ?iri ?" + STATUS_KEY + "{"
+        + StringResource.parseIriForQuery(contract) + " a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage ?stage."
+        + "?stage fibo-fnd-rel-rel:exemplifies <"
+        + LifecycleResource.getStageClass(LifecycleEventType.SERVICE_EXECUTION) + ">;"
+        + "<https://www.omg.org/spec/Commons/Collections/comprises> ?iri."
+        + "?iri fibo-fnd-dt-oc:hasEventDate \"" + date + "\"^^xsd:date."
+        + StringResource.parseIriForQuery(EVENT_DELIVERY)
+        + " <https://www.omg.org/spec/Commons/Classifiers/classifies> ?iri."
+        + "}";
+  }
+
+  /**
    * Generates a SPARQL query for retrieving the service tasks for the specified
    * date.
    * 

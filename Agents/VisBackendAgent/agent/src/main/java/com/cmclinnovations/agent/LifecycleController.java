@@ -147,8 +147,9 @@ public class LifecycleController {
           new ApiResponse(MessageFormat.format(MISSING_FIELD_MSG_TEMPLATE, LifecycleResource.DATE_KEY)),
           HttpStatus.BAD_REQUEST);
     }
+    String date = params.get(LifecycleResource.DATE_KEY).toString();
     // Invalidate request if the report is being lodged for future dates
-    if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), false)) {
+    if (LifecycleResource.checkDate(date, false)) {
       String errorMsg = "Invalid Date: Reports cannot be lodged for future dates. Please select today's date or any date in the past.";
       LOGGER.error(errorMsg);
       return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
@@ -156,15 +157,19 @@ public class LifecycleController {
     LOGGER.info("Received request to report an unfulfilled service...");
     this.lifecycleService.addOccurrenceParams(params, LifecycleEventType.SERVICE_MISS_REPORT);
     ResponseEntity<ApiResponse> response = this.addService.instantiate(
-        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
-        params);
+        LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
-      LOGGER.info("Report for an unfulfilled service has been successfully lodged!");
-      return new ResponseEntity<>(new ApiResponse("Report for an unfulfilled service has been successfully lodged!"),
-          HttpStatus.OK);
-    } else {
-      return response;
+      // If successfully added, remove the active service occurrence
+      String occurrenceIri = this.lifecycleService
+          .getActiveServiceOccurrence(params.get(LifecycleResource.CONTRACT_KEY).toString(), date);
+      response = this.deleteService.delete(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, occurrenceIri);
+      if (response.getStatusCode() == HttpStatus.OK) {
+        LOGGER.info("Report for an unfulfilled service has been successfully lodged!");
+        return new ResponseEntity<>(new ApiResponse("Report for an unfulfilled service has been successfully lodged!"),
+            HttpStatus.OK);
+      }
     }
+    return response;
   }
 
   /**
@@ -183,7 +188,8 @@ public class LifecycleController {
           HttpStatus.BAD_REQUEST);
     }
     // Invalidate request if the cancellation is targeted at past services
-    if (LifecycleResource.checkDate(params.get(LifecycleResource.DATE_KEY).toString(), true)) {
+    String date = params.get(LifecycleResource.DATE_KEY).toString();
+    if (LifecycleResource.checkDate(date, true)) {
       String errorMsg = "Invalid Date: Services can only be cancelled for today or future dates. Cancellation of past services is not allowed.";
       LOGGER.error(errorMsg);
       return new ResponseEntity<>(new ApiResponse(errorMsg), HttpStatus.BAD_REQUEST);
@@ -194,11 +200,16 @@ public class LifecycleController {
         LifecycleResource.OCCURRENCE_INSTANT_RESOURCE,
         params);
     if (response.getStatusCode() == HttpStatus.CREATED) {
-      LOGGER.info("Service has been successfully cancelled!");
-      return new ResponseEntity<>(new ApiResponse("Service has been successfully cancelled!"), HttpStatus.OK);
-    } else {
-      return response;
+      // If successfully added, remove the active service occurrence
+      String occurrenceIri = this.lifecycleService
+          .getActiveServiceOccurrence(params.get(LifecycleResource.CONTRACT_KEY).toString(), date);
+      response = this.deleteService.delete(LifecycleResource.OCCURRENCE_INSTANT_RESOURCE, occurrenceIri);
+      if (response.getStatusCode() == HttpStatus.OK) {
+        LOGGER.info("Service has been successfully cancelled!");
+        return new ResponseEntity<>(new ApiResponse("Service has been successfully cancelled!"), HttpStatus.OK);
+      }
     }
+    return response;
   }
 
   /**

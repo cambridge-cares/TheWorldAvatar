@@ -112,6 +112,19 @@ public class LifecycleService {
   }
 
   /**
+   * Retrieve the specific service occurence in the lifecycle for the specified
+   * contract and date.
+   * 
+   * @param contract Target contract iri.
+   * @param date     Target date in YYYY-MM-DD format.
+   */
+  public String getActiveServiceOccurrence(String contract, String date) {
+    String activeServiceQuery = LifecycleResource.genActiveServiceTaskQuery(contract, date);
+    Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
+    return this.kgService.getSingleInstance(results);
+  }
+
+  /**
    * Generate occurrences for all active services that should be scheduled for
    * today.
    */
