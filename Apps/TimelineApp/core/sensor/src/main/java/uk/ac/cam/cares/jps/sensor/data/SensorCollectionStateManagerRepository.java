@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.sensor.data;
 
+import java.util.List;
+
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.login.User;
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
@@ -120,5 +123,24 @@ public class SensorCollectionStateManagerRepository {
         checkOrInitSensorCollectionStateManagerWithLoginInfo(callback,
                 (FunctionRunWithSensorCollectionState<String>) () -> sensorCollectionStateManager.getTaskId());
     }
+
+    public void getSelectedSensors(RepositoryCallback<List<SensorType>> callback) {
+        try {
+            List<SensorType> selectedSensors = sensorCollectionStateManager.getSelectedSensors();
+            callback.onSuccess(selectedSensors);
+        } catch (SensorCollectionStateException e) {
+            callback.onFailure(e);
+        }
+    }
+
+    public void setSelectedSensors(List<SensorType> sensors, RepositoryCallback<Void> callback) {
+        try {
+            sensorCollectionStateManager.setSelectedSensors(sensors);
+            callback.onSuccess(null);
+        } catch (Exception e) {
+            callback.onFailure(e);
+        }
+    }
+
 
 }

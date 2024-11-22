@@ -14,8 +14,14 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+
+import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 
 /**
  * A class that manages the sensor collection states. It is considered as a data source level component.
@@ -34,6 +40,8 @@ public class SensorCollectionStateManager {
     private AtomicReference<SensorCollectionState> sensorCollectionState = new AtomicReference<>();
     private Context context;
     private Logger LOGGER = Logger.getLogger(SensorCollectionStateManager.class);
+    private static final String SELECTED_SENSORS_KEY = "selected_sensors";
+
 
     public SensorCollectionStateManager(Context context) {
         this.context = context;
@@ -50,29 +58,43 @@ public class SensorCollectionStateManager {
         String sharedPrefFileName = getHashedPrefsFileName(userId);
         File sharedPrefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + sharedPrefFileName + ".xml");
 
+        SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
+        String deviceId;
+        Boolean recordingState;
+        String taskId;
+
         if (sharedPrefsFile.exists()) {
-            SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
-            String deviceId = sharedPreferences.getString(DEVICE_ID_KEY, "");
-            Boolean recordingState = sharedPreferences.getBoolean(RECORDING_STATE_KEY, false);
-            String taskId = sharedPreferences.getString("task_id", UUID.randomUUID().toString());
-
-
-            sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState, taskId));
-            return;
+            deviceId = sharedPreferences.getString(DEVICE_ID_KEY, "");
+            recordingState = sharedPreferences.getBoolean(RECORDING_STATE_KEY, false);
+            taskId = sharedPreferences.getString("task_id", UUID.randomUUID().toString());
+        } else {
+            deviceId = UUID.randomUUID().toString();
+            recordingState = false;
+            taskId = UUID.randomUUID().toString();
+            sharedPreferences.edit()
+                    .putString(USER_ID_KEY, userId)
+                    .putString(DEVICE_ID_KEY, deviceId)
+                    .putBoolean(RECORDING_STATE_KEY, recordingState)
+                    .putString("task_id", taskId)
+                    .apply();
         }
 
-        String deviceId = UUID.randomUUID().toString();
-        boolean recordingState = false;
-        String taskId = UUID.randomUUID().toString();
-        // todo: check this sync block
-        sensorCollectionState.set(new SensorCollectionState(userId, deviceId, recordingState, taskId));
-        SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
-        sharedPreferences.edit()
-                .putString(USER_ID_KEY, userId)
-                .putString(DEVICE_ID_KEY, deviceId)
-                .putBoolean(RECORDING_STATE_KEY, recordingState)
-                .putString("task_id", taskId)
-                .apply();
+        // Load selectedSensors
+        Set<String> selectedSensorNames = sharedPreferences.getStringSet(SELECTED_SENSORS_KEY, new HashSet<>());
+        List<SensorType> loadedSelectedSensors = new ArrayList<>();
+        for (String sensorName : selectedSensorNames) {
+            try {
+                SensorType sensorType = SensorType.valueOf(sensorName);
+                loadedSelectedSensors.add(sensorType);
+            } catch (IllegalArgumentException e) {
+                // Handle invalid sensor name
+            }
+        }
+
+        // Initialize sensorCollectionState
+        SensorCollectionState state = new SensorCollectionState(userId, deviceId, recordingState, taskId);
+        state.setSelectedSensors(loadedSelectedSensors);
+        sensorCollectionState.set(state);
     }
 
     /**
@@ -250,6 +272,33 @@ public class SensorCollectionStateManager {
             return null;
         }
     }
+
+    public List<SensorType> getSelectedSensors() throws SensorCollectionStateException {
+        if (sensorCollectionState.get() == null) {
+            throw new SensorCollectionStateException("SensorCollectionState is null. Need to reinitialize with userId.");
+        }
+        return sensorCollectionState.get().getSelectedSensors();
+    }
+
+    public void setSelectedSensors(List<SensorType> sensors) {
+        if (sensorCollectionState.get() == null) {
+            return;
+        }
+        synchronized (sensorCollectionState.get()) {
+            sensorCollectionState.get().setSelectedSensors(sensors);
+
+            // Save to SharedPreferences
+            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(sensorCollectionState.get().getUserId()));
+            Set<String> sensorNames = new HashSet<>();
+            for (SensorType sensor : sensors) {
+                sensorNames.add(sensor.name());
+            }
+            sharedPreferences.edit()
+                    .putStringSet(SELECTED_SENSORS_KEY, sensorNames)
+                    .apply();
+        }
+    }
+
 
 
 }
