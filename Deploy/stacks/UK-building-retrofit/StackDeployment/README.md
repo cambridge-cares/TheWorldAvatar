@@ -117,7 +117,7 @@ This query retrieves the average energy efficiency ratings for all buildings in 
 Further query templates can be found in the Deploy/stacks/UK-building-retrofit/StackDeployment/SPARQL queries directory, covering a range of metrics such as energy consumption, fuel poverty rates, and public health data.
 
 ## 5. Feature Info Agent
-The [Feature Info Agent] serves as an access point for the visualisation, enabling queries about data for individual features (e.g., specific geographical locations). In this case, the Feature Info Agent retrieves energy performance and structural descriptions for buildings by querying the Ontop endpoint using the building's IRI. The queries templates is located at [fia_queries].  
+The [Feature Info Agent] serves as an access point for the visualisation, enabling queries about data for individual features (e.g., specific geographical locations). In this case, the Feature Info Agent retrieves energy performance and structural descriptions for buildings by querying the Ontop endpoint using the building's IRI. The queries templates are located in [fia_queries].  
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
