@@ -86,6 +86,7 @@ public class QueryTemplateFactory {
     this.parentField = "";
     this.queryLines = new HashMap<>();
     this.varSequence = new HashMap<>();
+    this.sortedVars = new ArrayList<>();
     // Code starts after reset and validation
     LOGGER.info("Generating a query template for getting data...");
     StringBuilder selectVariableBuilder = new StringBuilder();
@@ -139,7 +140,7 @@ public class QueryTemplateFactory {
     this.parentField = "";
     this.queryLines = new HashMap<>();
     this.varSequence = new HashMap<>();
-
+    this.sortedVars = new ArrayList<>();
     // Code starts after reset
     LOGGER.info("Generating a query template for getting the data that matches the search criteria...");
     StringBuilder whereBuilder = new StringBuilder();
