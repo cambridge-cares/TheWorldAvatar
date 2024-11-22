@@ -863,6 +863,7 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         for obj in cls.object_lookup.values():
             g_to_remove, g_to_add = obj._collect_diff_to_graph(g_to_remove, g_to_add, recursive_depth)
         sparql_client.delete_and_insert_graphs(g_to_remove, g_to_add)
+        return g_to_remove, g_to_add
 
     @classmethod
     def clear_object_lookup(cls):
