@@ -117,9 +117,7 @@ This query retrieves the average energy efficiency ratings for all buildings in 
 Further query templates can be found in the Deploy/stacks/UK-building-retrofit/StackDeployment/SPARQL queries directory, covering a range of metrics such as energy consumption, fuel poverty rates, and public health data.
 
 ## 5. Feature Info Agent
-The [Feature Info Agent] serves as an access point for the visualisation, enabling queries about data for individual features (e.g., specific geographical locations). In this case, the Feature Info Agent retrieves energy performance and structural descriptions for buildings by querying the Ontop endpoint using the building's IRI.  
-
-The queries and config files can be found in [fia_quires]. Navigate to [services], open [feature-info-agent.json] and under the `Mounts` section, modify `Source` based on where the queries and config files are located at. 
+The [Feature Info Agent] serves as an access point for the visualisation, enabling queries about data for individual features (e.g., specific geographical locations). In this case, the Feature Info Agent retrieves energy performance and structural descriptions for buildings by querying the Ontop endpoint using the building's IRI. The queries templates is located at [fia_queries].  
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
@@ -140,8 +138,6 @@ The queries and config files can be found in [fia_quires]. Navigate to [services
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
-[fia_quires]: ./Stack-manager/inputs/data/fia-queries
-[services]: ./Stack-manager/inputs/config/services
-[feature-info-agent.json]: ./Stack-manager/inputs/config/services/feature-info-agent.json
+[fia_queries]: ./Stack-manager/inputs/data/fia-queries
 
 
