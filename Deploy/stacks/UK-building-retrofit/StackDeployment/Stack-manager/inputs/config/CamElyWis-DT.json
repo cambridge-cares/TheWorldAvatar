@@ -6,7 +6,7 @@
                     ]
     },
     "volumes": {
-        "vis-files": "webspace-mapbox",
+        "vis-files": "webspace",
         "fia-queries": "fia-queries"
     }
 }
