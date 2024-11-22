@@ -66,6 +66,10 @@ class Point(BaseModel):
         return cls(x=(pt1.x + pt2.x) / 2, y=(pt1.y + pt2.y) / 2, z=(pt1.z + pt2.z) / 2)
 
     @classmethod
+    def centroid(cls, points: List['Point']):
+        return cls(x=np.mean([pt.x for pt in points]), y=np.mean([pt.y for pt in points]), z=np.mean([pt.z for pt in points]))
+
+    @classmethod
     def from_array(cls, arr, label=None):
         return cls(x=arr[0], y=arr[1], z=arr[2], label=label)
 
