@@ -381,3 +381,7 @@ one_concept.revert_local_changes()
 
 - How to generate Python script given an OWL file
 - Add support for many-to-many cardinality constraints?
+- Mermaid codes
+- Type hint for object/datatype properties
+- Allocate set or single instances when accessing object/datatype properties
+- Handle rdf:type when it's a class
