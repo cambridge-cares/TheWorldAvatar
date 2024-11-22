@@ -1,0 +1,16 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "domestic_gas",
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "tabular"
+        }
+    ],
+    "mappings": [
+        "ontop_summary.obda"
+    ]
+}
