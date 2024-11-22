@@ -37,7 +37,6 @@ public class TrajectoryNetworkSource {
     private static final Logger LOGGER = Logger.getLogger(TrajectoryNetworkSource.class);
     private final RequestQueue requestQueue;
     private final Context context;
-    private FusedLocationProviderClient fusedLocationClient;
 
 
     /**
@@ -48,7 +47,6 @@ public class TrajectoryNetworkSource {
     public TrajectoryNetworkSource(RequestQueue requestQueue, Context context) {
         this.requestQueue = requestQueue;
         this.context = context;
-        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
     /**
@@ -71,32 +69,13 @@ public class TrajectoryNetworkSource {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        fusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    // Calculate the bounding box based on the user's location
-                    double lat = location.getLatitude();
-                    double lon = location.getLongitude();
-                    double buffer = 0.01;  // 1.11 km buffer
-                    double minLat = lat - buffer;
-                    double maxLat = lat + buffer;
-                    double minLon = lon - buffer;
-                    double maxLon = lon + buffer;
 
-                    StringRequest createLayerRequest = buildCreateLayerRequest(accessToken, onSuccessUpper, onFailureUpper, createLayerUri, lowerbound, upperbound, minLat, maxLat, minLon, maxLon);
-                    requestQueue.add(createLayerRequest);
-                } else {
-                    // Handle error when location is not available
-                    LOGGER.error("Failed to get location");
-                    onFailureUpper.onErrorResponse(new VolleyError("Failed to retrieve user location"));
-                }
-            }
-        });
+        StringRequest createLayerRequest = buildCreateLayerRequest(accessToken, onSuccessUpper, onFailureUpper, createLayerUri, lowerbound, upperbound);
+        requestQueue.add(createLayerRequest);
     }
 
     @NonNull
-    private StringRequest buildCreateLayerRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, String createLayerUri, long lowerbound, long upperbound, double minLat, double maxLat, double minLon, double maxLon) {
+    private StringRequest buildCreateLayerRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, String createLayerUri, long lowerbound, long upperbound) {
         Response.Listener<String> onCreateLayerSuccess = s -> {
             try {
                 // Log the full server response
@@ -109,7 +88,7 @@ public class TrajectoryNetworkSource {
                 }
                 JSONObject rawResponse = new JSONObject(s);
 
-                StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(accessToken,onSuccessUpper, onFailureUpper, rawResponse, lowerbound, upperbound, minLat, maxLat, minLon, maxLon);
+                StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(accessToken,onSuccessUpper, onFailureUpper, rawResponse, lowerbound, upperbound);
                 if (getTrajectoryRequest != null) {
                     requestQueue.add(getTrajectoryRequest);
                 }
@@ -129,7 +108,7 @@ public class TrajectoryNetworkSource {
     }
 
 
-    private StringRequest buildGetTrajectoryRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, long lowerbound, long upperbound, double minLat, double maxLat, double minLon, double maxLon) throws JSONException {
+    private StringRequest buildGetTrajectoryRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, long lowerbound, long upperbound) throws JSONException {
         if (!rawResponse.has("message")) {
             throw new RuntimeException("Not able to handle the agent response. Please check the backend");
         }
@@ -190,7 +169,6 @@ public class TrajectoryNetworkSource {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Authorization", "Bearer " + accessToken);
-                LOGGER.info(accessToken);
                 return headers;
             }
         };

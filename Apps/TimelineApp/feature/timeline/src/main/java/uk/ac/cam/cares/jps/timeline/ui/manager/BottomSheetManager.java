@@ -89,7 +89,7 @@ public class BottomSheetManager {
         connectionViewModel.getHasConnection().observe(lifecycleOwner, hasConnection -> {
             if (hasConnection) {
                 setBottomSheet(normalBottomSheet);
-                trajectoryViewModel.getTrajectory(convertDateFormat(normalBottomSheetViewModel.selectedDate.getValue()));
+                trajectoryViewModel.getTrajectory(normalBottomSheetViewModel.selectedDate.getValue());
             } else {
                 errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.CONNECTION_ERROR);
                 setAndExtendBottomSheet(errorBottomSheet);
@@ -163,6 +163,7 @@ public class BottomSheetManager {
                 // retry register phone to user
                 errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
             } else {
+                LOGGER.error("error in trajectory retrieval: " + error.getMessage(), error);
                 errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.TRAJECTORY_ERROR);
             }
             setAndExtendBottomSheet(errorBottomSheet);
@@ -183,8 +184,4 @@ public class BottomSheetManager {
         }
     }
 
-    private String convertDateFormat(LocalDate date) {
-        ZonedDateTime convertedDateStart = date.atStartOfDay(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-        return convertedDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSx"));
-    }
 }
