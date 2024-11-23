@@ -61,6 +61,9 @@ class Point(BaseModel):
     def rank_distance_to_points(self, points: List['Point']):
         return sorted(points, key=lambda x: self.get_distance_to(x))
 
+    def get_points_within_threshold_distance(self, points: List['Point'], threshold_distance: float):
+        return [pt for pt in points if self.get_distance_to(pt) <= threshold_distance]
+
     @classmethod
     def mid_point(cls, pt1: 'Point', pt2: 'Point'):
         return cls(x=(pt1.x + pt2.x) / 2, y=(pt1.y + pt2.y) / 2, z=(pt1.z + pt2.z) / 2)

@@ -10,6 +10,7 @@ import json
 from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty, KnowledgeGraph
 import ontospecies
 import om
+from covalent_radii import diameter_of_largest_inner_sphere
 
 from geo import Point, Vector, Line, Plane, RotationMatrix
 
@@ -826,6 +827,10 @@ class MetalOrganicPolyhedron(CoordinationCage):
         for cbu, gcc_pts in cbu_translated.items():
             for gcc, pts in gcc_pts.items():
                 lst_points.extend(pts)
+        # calculate the largest inner sphere radius and volume
+        _atoms = [p for p in lst_points if p.label.lower() not in ['x', 'center']]
+        inner_radius_atom, inner_radius, inner_volume = diameter_of_largest_inner_sphere(_atoms)
+
         # prepare the geometry file and upload
         mop_iri = cls.init_instance_iri()
         local_file_path = f"./data/xyz_mops_new/{am.rdfs_label}_{list(am.hasSymmetryPointGroup)[0]}___{mop_formula}___{mop_iri.split('/')[-1] if not bool(ccdc) else ccdc}.xyz"
