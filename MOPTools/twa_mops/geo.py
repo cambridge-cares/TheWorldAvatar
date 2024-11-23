@@ -58,7 +58,7 @@ class Point(BaseModel):
                 max_point = pt
         return max_point
 
-    def rank_distanct_to_points(self, points: List['Point']):
+    def rank_distance_to_points(self, points: List['Point']):
         return sorted(points, key=lambda x: self.get_distance_to(x))
 
     @classmethod

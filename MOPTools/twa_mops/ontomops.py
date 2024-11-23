@@ -496,7 +496,7 @@ class ChemicalBuildingUnit(BaseClass):
                         lst_pts_for_plane = []
                         for k in cbu_binding_points:
                             bp: Point = cbu_binding_points[k].binding_coordinates
-                            ranked_atoms = bp.rank_distanct_to_points(atom_points)
+                            ranked_atoms = bp.rank_distance_to_points(atom_points)
                             closest_two_O = [a for a in ranked_atoms if a.label == 'O'][:2]
                             closest_C = [a for a in ranked_atoms if a.label == 'C'][0]
                             # find the average of the O atoms and use it to form line with the closest C atom
@@ -567,7 +567,7 @@ class ChemicalBuildingUnit(BaseClass):
                 # to each binding site and we take the normal vector of the plane
                 lst_atoms = []
                 for bs in binding_sites:
-                    lst_atoms.extend(bs.binding_coordinates.rank_distanct_to_points(list(self.hasGeometry)[0].hasPoints)[:2])
+                    lst_atoms.extend(bs.binding_coordinates.rank_distance_to_points(list(self.hasGeometry)[0].hasPoints)[:2])
                 plane = Plane.fit_from_points(lst_atoms)
                 v = plane.normal_vector_from_point_to_plane(center)
             else:
