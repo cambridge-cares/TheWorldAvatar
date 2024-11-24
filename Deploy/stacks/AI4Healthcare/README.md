@@ -9,14 +9,14 @@ The [Common_Script] folder offers tools for extracting and converting raw data f
 The [Stack_Deployment] folder contains a step-by-step guide on how to spin up the entire Docker Stack and instantiate all relevant data. It links to other projects and helper scripts where appropriate.
 
 ## Queries
-The [Query] folder contains SQL scripts designed to evaluate individual exposure to environmental features. These queries include methods for calculating exposure to food retailers, greenspaces, and other points of interest based on GPS trajectories, leveraging spatial analysis techniques such as buffers and proximity calculations to produce dynamic results. The SQL queries form the foundation for developing SPARQL-based calculations, which will be utilised in the interoperable platform.
+The [Queries] folder contains SQL scripts designed to evaluate individual exposure to environmental features. These queries include methods for calculating exposure to food retailers, greenspaces, and other points of interest based on GPS trajectories, leveraging spatial analysis techniques such as buffers and proximity calculations to produce dynamic results. The SQL queries form the foundation for developing SPARQL-based calculations, which will be utilised in the interoperable platform.
 
 ## Visualisation
-
+The [Visualisation] folder contains files that serve as inputs to the TWA Visualisation Framework (TWA-VF) and also specifies customisations required to drive the TWA Visualisation Platform (TWA-VP).
 
 <!-- Links -->
-[Common Script]: ./AI4Healthcare_Common-Script/
-[Stack Deployment]: ./Stack_Deployment/
+[Common_Script]: ./AI4Healthcare_Common-Script/
+[Stack_Deployment]: ./Stack_Deployment/
 [Queries]: ./Queries/
 [Visualisation]: ./TWA-VF/
 
