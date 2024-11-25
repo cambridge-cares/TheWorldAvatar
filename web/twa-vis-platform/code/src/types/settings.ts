@@ -69,16 +69,18 @@ export type LegendSettings = {
   [groupName: string]: LegendGroup;
 }
 
-export type LegendGroup = {
-  [itemName: string]: FillLegend | SymbolLegend;
-}
+export type LegendGroup =  FillLegend[] | SymbolLegend[];
 
 type SymbolLegend = {
+  heading: string;
+  content: string;
   type: "symbol";
   icon: string;
 }
 
 type FillLegend = {
+  heading: string;
+  content: string; 
   type: "fill";
   fill: string;
 }
