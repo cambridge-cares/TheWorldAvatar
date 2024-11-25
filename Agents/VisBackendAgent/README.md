@@ -759,24 +759,12 @@ The `SHACL` property shape for location must target the `https://www.omg.org/spe
 
 base:ServiceLocationShape
   a sh:NodeShape ;
-  sh:targetClass lcc-cr:Location ;
-  sh:property [
-    sh:name "id" ;
-    sh:description "Identifier for the location." ;
-    sh:order 1 ;
-    sh:path (
-      geo:hasGeometry
-      [sh:inversePath geo:hasGeometry]
-    ) ;
-    sh:datatype xsd:string ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
-  ] ;
+  sh:targetClass fibo-fnd-plc-loc:PhysicalLocation ;
   sh:property [
     sh:name "geopoint" ;
     sh:description "The WKT serialization of the location." ;
-    sh:order 2 ;
-    sh:path (
+    sh:order 1 ;
+    sh:path ( 
       geo:hasGeometry
       geo:asWKT
     ) ;
@@ -787,12 +775,12 @@ base:ServiceLocationShape
   sh:property [
     sh:name "address" ;
     sh:description "Address of the service site." ;
-    sh:order 3 ;
-    sh:path (
+    sh:order 2 ;
+    sh:path ( 
       [sh:inversePath ontoservice:hasServiceLocation]
       fibo-fnd-plc-adr:hasAddress
     ) ;
-    sh:node address:ConventionalStreetAddressShape ;
+    sh:node base:ConventionalStreetAddressShape ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
   ] .
