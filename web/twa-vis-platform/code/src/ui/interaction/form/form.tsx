@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { FieldValues, useForm, UseFormReturn } from 'react-hook-form';
 import { usePathname } from 'next/navigation';
@@ -23,7 +23,6 @@ interface FormComponentProps {
   formType: string;
   agentApi: string;
   setResponse: React.Dispatch<React.SetStateAction<HttpResponse>>;
-  onSubmittingChange: (_isSubmitting: boolean) => void;
   isPrimaryEntity?: boolean;
 }
 
@@ -35,7 +34,6 @@ interface FormComponentProps {
  * @param {string} formType The type of submission. Valid inputs include add and update.
  * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {React.Dispatch<React.SetStateAction<HttpResponse>>} setResponse A dispatch function for setting the response after submission.
- * @param onSubmittingChange A function to handle the changes needed when submission should occur.
  * @param {boolean} isPrimaryEntity An optional indicator if the form is targeting a primary entity.
  */
 export function FormComponent(props: Readonly<FormComponentProps>) {
@@ -200,10 +198,6 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
     }
     props.setResponse(pendingResponse);
   });
-
-  useEffect(() => {
-    props.onSubmittingChange(form.formState?.isSubmitting);
-  }, [form.formState?.isSubmitting]);
 
   return (
     <form ref={props.formRef} onSubmit={onSubmit}>

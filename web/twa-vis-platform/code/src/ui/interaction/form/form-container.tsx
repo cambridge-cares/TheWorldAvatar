@@ -37,13 +37,8 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
   const dispatch = useDispatch();
 
   const [refreshFlag, triggerRefresh] = useRefresh();
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
-
-  const handleFormSubmittingChange = (submitting: boolean) => {
-    setIsSubmitting(submitting);
-  };
 
   const onSubmit = () => {
     if (formRef.current) {
@@ -91,19 +86,18 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             formType={props.formType}
             agentApi={props.agentApi}
             setResponse={setResponse}
-            onSubmittingChange={handleFormSubmittingChange}
             isPrimaryEntity={props.isPrimaryEntity}
           />
         }
       </div>
       <div className={styles["form-footer"]}>
-        {!isSubmitting && !response && <MaterialIconButton
+        {!formRef.current?.formState?.isSubmitting && !response && <MaterialIconButton
           iconName={"cached"}
           iconStyles={[styles["form-button-icon"]]}
           onClick={triggerRefresh}
         />}
-        {isSubmitting && <LoadingSpinner isSmall={false} />}
-        {!isSubmitting && response && (<ResponseComponent response={response} />)}
+        {formRef.current?.formState?.isSubmitting && <LoadingSpinner isSmall={false} />}
+        {!formRef.current?.formState?.isSubmitting && response && (<ResponseComponent response={response} />)}
         <div className={styles["form-row"]}>
           {props.formType === Paths.REGISTRY && <MaterialIconButton
             iconName={"edit"}

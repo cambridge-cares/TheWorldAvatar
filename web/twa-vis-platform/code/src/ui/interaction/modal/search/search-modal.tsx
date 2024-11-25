@@ -28,13 +28,8 @@ export const SHOW_ALL_FEATURE_INDICATOR: string = "all";
 export default function SearchModal(props: Readonly<SearchModalProps>) {
   Modal.setAppElement("#globalContainer");
   const dispatch = useDispatch();
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
-
-  const handleFormSubmittingChange = (submitting: boolean) => {
-    setIsSubmitting(submitting);
-  };
 
   const onSubmit = () => {
     if (formRef.current) {
@@ -78,12 +73,11 @@ export default function SearchModal(props: Readonly<SearchModalProps>) {
             formType={SEARCH_FORM_TYPE}
             agentApi={`${props.stack}/vis-backend-agent`}
             setResponse={setResponse}
-            onSubmittingChange={handleFormSubmittingChange}
           />
         </section>
         <section className={styles["section-footer"]}>
-          {isSubmitting && <LoadingSpinner isSmall={false} />}
-          {!isSubmitting && (<ResponseComponent response={response} />)}
+          {formRef.current?.formState?.isSubmitting && <LoadingSpinner isSmall={false} />}
+          {!formRef.current?.formState?.isSubmitting && (<ResponseComponent response={response} />)}
           <div className={styles["footer-button-row"]}>
             <MaterialIconButton
               iconName={"search"}
