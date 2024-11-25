@@ -15,7 +15,7 @@ The [Queries] folder contains SQL scripts designed to evaluate individual exposu
 The [Visualisation] folder contains files that serve as inputs to the TWA Visualisation Framework (TWA-VF) and also specifies customisations required to drive the TWA Visualisation Platform (TWA-VP).
 
 <!-- Links -->
-[Common_Script]: ./AI4Healthcare_Common-Script/
+[Common_Script]: ./Common_Script/
 [Stack_Deployment]: ./Stack_Deployment/
 [Queries]: ./Queries/
 [Visualisation]: ./TWA-VF/
