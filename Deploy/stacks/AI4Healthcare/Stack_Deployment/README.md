@@ -1,34 +1,61 @@
-# AI for Public Health
+# AI for Public Health: Stack Deployment
+
+This project contains a step-by-step guide on how to spin up the Docker stack for the AI for Public Health project and instantiate all relevant data. It links to other projects and helper scripts where appropriate.
 
 Key sections:
 - [1. Prerequisites](#1-prerequisites): Preparations required before spinning up the use case stack
 - [2. Spinning up the Stack](#2-spinning-up-the-stack): How to spin up the core stack and upload initial data sets
 - [3. Data instantiation workflow](#3-data-instantiation-workflow): How to deploy all required agents (sequence, interdependencies, etc.)
-- [5. Triggering new derivation cascades](#5-triggering-new-derivation-cascades): How to manually trigger new derivation cascades (mainly for showcase purposes)
-- [6. Redeployment](#6-redeployment): How to restart stack and agents (after initial data instantiation workflow)
-- [7. Incorporate CReDo network visualisation](#7-connecting-with-credo-visualisation): How to incorporate synthetic network data from CReDo into the visualisation
+- [4. Redeployment](#6-redeployment): How to restart stack and agents (after initial data instantiation workflow)
 - [Potential refinements/next steps](#potential-refinementsnext-steps): Potential refinements for future work
-
 
 &nbsp;
 # 1. Prerequisites
+
+## Required software installation
+
+Ensure the following software is installed:
+
+- [Git](https://git-scm.com/downloads)
+- [Docker Desktop](https://docs.docker.com/get-docker/) or Docker Engine and Docker Compose Plugin
 
 ## Access to Docker registries
 
 Spinning up the Docker stack requires access to the [Container registry on Github] to pull (agent) images. Access needs to be ensured beforehand via your Github [personal access token], which must have a `scope` that [allows you to publish and install packages].
 
-To log in to the container registry, please run the following command to establish the connections and provide your access token when prompted. For more details please refer to the linked resources.
+To log in to the container registry, please run the following command to establish the connections and provide your access token when prompted. 
+
 ```bash
 # Github Container registry
 $ docker login ghcr.io -u <github_username>
 $ <github_personal_access_token>
 ```
-
 &nbsp;
 # 2. Spinning up the Stack
 
+Before spinning up the stack using the [Stack manager], please provide the following files to the specified folder:
 
+-  Four secret files in `./stack-manager/inputs/secrets`:
+    - `postgis_password`
+    - `geoserver_password`
+    - `mapbox_username`
+    - `mapbox_api_key`
 
+Subsequently, copy all files in `./Stack-manager/inputs` into their corresponding repositories of the stack-manager tool under `Deploy/stacks/dynamic/stack-manager/`.
+
+Then navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. There are several [common stack scripts] provided to manage the stack:
+
+```bash
+# Start the stack (please note that this might take some time)
+bash ./stack.sh start Healthcare
+# Stop the stack
+bash ./stack.sh stop Healthcare
+# Remove the stack (incl. volumes)
+bash ./stack.sh remove Healthcare -v
+# Remove individual service
+bash ./stack.sh remove Healthcare <service name>
+```
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](Deploy/stacks/dynamic/stack-manager/README.md).
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
