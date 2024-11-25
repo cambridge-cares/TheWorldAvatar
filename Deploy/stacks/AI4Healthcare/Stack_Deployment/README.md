@@ -21,9 +21,9 @@ Ensure the following software is installed:
 
 ## Access to Docker registries
 
-Spinning up the Docker stack requires access to the [Container registry on Github] to pull (agent) images. Access needs to be ensured beforehand via your Github [personal access token], which must have a `scope` that [allows you to publish and install packages].
+Access to the [GitHub Container Registry] is required to pull images for spinning up the Docker stack. Ensure this access is granted beforehand by configuring a GitHub [personal access token], which must have a `scope` that [allows you to publish and install packages].
 
-To log in to the container registry, please run the following command to establish the connections and provide your access token when prompted. 
+To authenticate with the container registry, execute the following command and provide your personal access token when prompted to establish the connection.
 
 ```bash
 # Github Container registry
@@ -33,7 +33,7 @@ $ <github_personal_access_token>
 &nbsp;
 # 2. Spinning up the stack
 
-This section explains how to spin up the core stack. If using VSCode, ensure that all required VSCode extensions (e.g., Remote - SSH, Docker, and REST Client) are installed to enable all convenience scripts to function correctly.
+This section explains how to spin up the core stack. If using VSCode, ensure that all required VSCode extensions (e.g., [Remote - SSH], [Docker], and [REST Client]) are installed to enable all convenience scripts to function correctly.
 
 ## Spinning up the stack locally
 Before spinning up the stack using the [Stack manager], please provide the following files to the specified folder:
@@ -85,7 +85,7 @@ When interacting with the GeoServer GUI remotely, some issues may arise (e.g., i
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
+[GitHub Container Registry]: https://github.com/orgs/cambridge-cares/packages
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Environment Agency]: https://environment.data.gov.uk/flood-monitoring/doc/reference
 [forwarding the port]: https://code.visualstudio.com/docs/remote/ssh#_forwarding-a-port-creating-ssh-tunnel
@@ -94,6 +94,9 @@ When interacting with the GeoServer GUI remotely, some issues may arise (e.g., i
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
 [MetOffice My Account]: https://register.metoffice.gov.uk/MyAccountClient/account/view
+[Remote - SSH]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh
+[Docker]: https://code.visualstudio.com/docs/containers/overview
+[REST Client]: https://marketplace.visualstudio.com/items?itemName=humao.rest-client
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
