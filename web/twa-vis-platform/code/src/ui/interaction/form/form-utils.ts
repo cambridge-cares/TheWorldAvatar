@@ -6,6 +6,8 @@ import { PropertyShape, VALUE_KEY, ONTOLOGY_CONCEPT_ROOT, OntologyConcept, Ontol
 export const FORM_STATES: Record<string, string> = {
   ID: "id",
   FORM_TYPE: "formType",
+  CONTRACT: "contract",
+  REMARKS: "remarks",
   RECURRENCE: "recurrence",
   MON: "monday",
   TUES: "tuesday",
@@ -14,6 +16,7 @@ export const FORM_STATES: Record<string, string> = {
   FRI: "friday",
   SAT: "saturday",
   SUN: "sunday",
+  DATE: "date",
   START_DATE: "start date",
   END_DATE: "end date",
   START_TIME_PERIOD: "search period from",

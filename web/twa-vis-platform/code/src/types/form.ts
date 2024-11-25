@@ -1,3 +1,5 @@
+import { FORM_STATES } from "ui/interaction/form/form-utils";
+
 export const SEARCH_FORM_TYPE = "search";
 export const CONTEXT_KEY = "@context";
 export const ID_KEY = "@id";
@@ -99,3 +101,13 @@ export const defaultSearchOption: OntologyConcept = {
     lang: "",
   }
 }
+
+export const remarksShape: PropertyShape = {
+  "@id": "string",
+  "@type": "http://www.w3.org/ns/shacl#PropertyShape",
+  name: { "@value": FORM_STATES.REMARKS },
+  fieldId: FORM_STATES.REMARKS,
+  datatype: "string",
+  description: { "@value": "Reason for this action" },
+  order: 1,
+};
