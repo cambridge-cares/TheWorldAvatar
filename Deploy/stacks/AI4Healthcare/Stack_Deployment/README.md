@@ -73,17 +73,17 @@ When interacting with the GeoServer GUI remotely, some issues may arise (e.g., i
 The following provides an overview of all steps and agents required to instantiate the environmental features and phyical activity data. 
 
 ## 3.1 Food Hygiene Ratings (.xml)
-## 1) XML converter
-## 2) Stack data uploader
-## 3) SPARQL query via virtual knowledge graph
+### 1) XML converter
+### 2) Stack data uploader
+### 3) SPARQL query via virtual knowledge graph
 
 ## 3.2) Greenspace (.shp)
-## 1) Stack data uploader
-## 2) SPARQL query via virtual knowledge graph
+### 1) Stack data uploader
+### 2) SPARQL query via virtual knowledge graph
 
 ## 3.3) Points of Interest (.csv)
-## 1) Stack data uploader
-## 2) SPARQL query via virtual knowledge graph
+### 1) Stack data uploader
+### 2) SPARQL query via virtual knowledge graph
 
 ## 3.4) GPS Trajectories (.csv)
 
