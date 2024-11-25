@@ -184,6 +184,10 @@ public class LifecycleResource {
    */
   public static String genActiveServiceQuery(String dayOfWeekInstance) {
     StringBuilder stageFilters = new StringBuilder();
+    // A query line to ensure that the agreement must be approved before any
+    // services are delivered
+    StringResource.appendTriple(stageFilters, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
+        StringResource.parseIriForQuery(EVENT_APPROVAL));
     // Generate FILTER NOT EXISTS to ensure no occurrence exist yet for today
     String occurenceFilterQuery = "?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?occurrence_date."
         + "FILTER(?occurrence_date=?today)";
