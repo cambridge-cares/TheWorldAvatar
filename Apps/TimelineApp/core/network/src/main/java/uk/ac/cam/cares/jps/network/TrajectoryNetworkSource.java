@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.network;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -24,11 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.HttpUrl;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 /**
  * Network source for constructing, sending and processing trajectory related requests to server
  */
