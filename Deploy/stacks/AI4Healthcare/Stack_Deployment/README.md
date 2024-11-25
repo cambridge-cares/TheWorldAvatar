@@ -36,7 +36,7 @@ $ <github_personal_access_token>
 This section explains how to spin up the core stack. If using VSCode, ensure that all required VSCode extensions (e.g., [Remote - SSH], [Docker], and [REST Client]) are installed to enable all convenience scripts to function correctly.
 
 ## Spinning up the stack locally
-Before spinning up the stack using the [Stack manager], please provide the following files to the specified folder:
+Before spinning up the stack using the [Stack Manager], please provide the following files to the specified folder:
 
 -  Four secret files in `./stack-manager/inputs/secrets`:
     - `postgis_password`
@@ -44,7 +44,7 @@ Before spinning up the stack using the [Stack manager], please provide the follo
     - `mapbox_username`
     - `mapbox_api_key`
 
-Subsequently, copy all files in `./Stack-manager/inputs` into their corresponding repositories of the stack-manager tool under `Deploy/stacks/dynamic/stack-manager/`.
+Subsequently, copy all files in `./stack-manager/inputs` into their corresponding repositories of the [Stack Manager] tool under `Deploy/stacks/dynamic/stack-manager/`.
 
 Then navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. There are several [common stack scripts] provided to manage the stack:
 
@@ -58,7 +58,7 @@ bash ./stack.sh remove Healthcare -v
 # Remove individual service
 bash ./stack.sh remove Healthcare <service name>
 ```
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](Deploy/stacks/dynamic/stack-manager/README.md).
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README].
 
 ## Spinning up the stack remotely via SSH
 
@@ -70,13 +70,23 @@ When interacting with the GeoServer GUI remotely, some issues may arise (e.g., i
 
 # 3. Data instantiation workflow
 
+The following provides an overview of all steps and agents required to instantiate the environmental features and phyical activity data. 
 
+## 3.1 Food Hygiene Ratings (.xml)
+## 1) XML converter
+## 2) Stack data uploader
+## 3) SPARQL query via virtual knowledge graph
 
-## 1) Food Hygiene Ratings (.xml)
+## 3.2) Greenspace (.shp)
+## 1) Stack data uploader
+## 2) SPARQL query via virtual knowledge graph
 
-## 2) Greenspace (.shp)
-## 3) Points of Interest (.csv)
-## 4) GPS Trajectories (.csv)
+## 3.3) Points of Interest (.csv)
+## 1) Stack data uploader
+## 2) SPARQL query via virtual knowledge graph
+
+## 3.4) GPS Trajectories (.csv)
+
 
 # 4. Visualisation
 
@@ -97,23 +107,20 @@ When interacting with the GeoServer GUI remotely, some issues may arise (e.g., i
 [Remote - SSH]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh
 [Docker]: https://code.visualstudio.com/docs/containers/overview
 [REST Client]: https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+[Stack Manager README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[OntoFHRS]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontofhrs
+[OntoPOI]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontopoi
+[OntoGreenspace]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontogreenspace
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 
 <!-- Agents -->
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent
-[Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent/README.md
-[Property Sales Instantiation Agent resources folder]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HMLandRegistryAgent/resources
+[Fenland Trajectory Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FenlandTrajectoryAgent
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
 [AirQuality Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AirQualityAgent
 
-<!-- Repositories -->
-[data.json]: /StackDeployment/inputs/stack-manager/inputs/data/visualisation/data.json
-[Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
-
 <!-- Files -->
-[routing.json]: /StackDeployment/inputs/access_agent/routing.json
-[CKG config.properties]: https://github.com/cambridge-cares/CitiesKG/blob/develop/agents/src/main/resources/config.properties
