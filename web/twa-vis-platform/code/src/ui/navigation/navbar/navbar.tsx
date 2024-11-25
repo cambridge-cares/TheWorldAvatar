@@ -88,7 +88,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
             name="REGISTRY"
             tooltip="Open registry."
             icon="contract"
-            url={`${process.env.ASSET_PREFIX}/view/${props.settings?.resources?.registry?.data}`} />
+            url={`${Routes.REGISTRY_PENDING}/${props.settings?.resources?.registry?.data}`} />
         }
       </div>
     </div>
