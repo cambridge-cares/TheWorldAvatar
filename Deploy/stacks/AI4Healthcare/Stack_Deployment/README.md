@@ -4,9 +4,9 @@ This project contains a step-by-step guide on how to spin up the Docker stack fo
 
 Key sections:
 - [1. Prerequisites](#1-prerequisites): Preparations required before spinning up the use case stack
-- [2. Spinning up the Stack](#2-spinning-up-the-stack): How to spin up the core stack and upload initial data sets
-- [3. Data instantiation workflow](#3-data-instantiation-workflow): How to deploy all required agents (sequence, interdependencies, etc.)
-- [4. Redeployment](#6-redeployment): How to restart stack and agents (after initial data instantiation workflow)
+- [2. Spinning up the Stack](#2-spinning-up-the-stack): How to spin up the core stack 
+- [3. Data instantiation workflow](#3-data-instantiation-workflow): How to upload initial data sets and deploy all required agents.
+- [4. Visualisation](#4-visualisation): How to visualise instantiated cross-domain data via TWA tools
 - [Potential refinements/next steps](#potential-refinementsnext-steps): Potential refinements for future work
 
 &nbsp;
@@ -56,6 +56,17 @@ bash ./stack.sh remove Healthcare -v
 bash ./stack.sh remove Healthcare <service name>
 ```
 After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README](Deploy/stacks/dynamic/stack-manager/README.md).
+
+# 3. Data instantiation workflow
+## 1) Food Hygiene Ratings (.xml)
+## 2) Greenspace (.shp)
+## 3) Points of Interest (.csv)
+## 4) GPS Trajectories (.csv)
+
+# 4. Visualisation
+
+
+# Potential refinements/next steps
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
