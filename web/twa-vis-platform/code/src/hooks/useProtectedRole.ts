@@ -13,7 +13,7 @@ export function useProtectedRole() {
           const { roles } = await (await fetch('/api/userinfo')).json() as { roles: Roles };
           setRoles(roles);
         } catch (error) {
-          console.error('Error fetching user Info', error);
+          console.warn('Error fetching user Info', error);
         }
       };
       fetchRoles();

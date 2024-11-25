@@ -220,8 +220,6 @@ export function setImagery(imagerySettings: ImagerySettings, map: Map): void {
   const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
   // Update map
-  console.log("gremlin")
-  console.log(imageryOption)
   map.setStyle(imageryOption.url);
   map.setProjection({
     name: 'mercator'
