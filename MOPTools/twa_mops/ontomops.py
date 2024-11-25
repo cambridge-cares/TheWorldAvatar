@@ -823,18 +823,21 @@ class MetalOrganicPolyhedron(CoordinationCage):
             cbu_translated[cbu_iri] = dct_translated
             cbu_translation_vector[cbu_iri] = dct_translation_vector
 
-        lst_points = []
+        # shift all atoms to have center at (0, 0, 0)
+        # this makes sure the numerical error is minimised
+        _lst_points = []
         for cbu, gcc_pts in cbu_translated.items():
             for gcc, pts in gcc_pts.items():
-                lst_points.extend(pts)
+                _lst_points.extend(pts)
+        _atoms = [p for p in _lst_points if p.label.lower() not in ['x', 'center']]
+        adjusted_atoms = Point.translate_points_to_target_centroid(_atoms, Point.from_array([0, 0, 0]))
         # calculate the largest inner sphere radius and volume
-        _atoms = [p for p in lst_points if p.label.lower() not in ['x', 'center']]
-        inner_radius_atom, inner_radius, inner_volume = diameter_of_largest_inner_sphere(_atoms)
+        inner_radius_atom, inner_radius, inner_volume = diameter_of_largest_inner_sphere(adjusted_atoms)
 
         # prepare the geometry file and upload
         mop_iri = cls.init_instance_iri()
         local_file_path = f"./data/xyz_mops_new/{am.rdfs_label}_{list(am.hasSymmetryPointGroup)[0]}___{mop_formula}___{mop_iri.split('/')[-1] if not bool(ccdc) else ccdc}.xyz"
-        mop_geo = ontospecies.Geometry.from_points(lst_points, local_file_path)
+        mop_geo = ontospecies.Geometry.from_points(adjusted_atoms, local_file_path)
         if upload_geometry:
             # upload the geometry to the KG
             if sparql_client is None:

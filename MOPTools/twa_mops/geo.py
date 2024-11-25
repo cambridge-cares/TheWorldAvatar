@@ -90,8 +90,10 @@ class Point(BaseModel):
         return cls(x=point.x + vector.x, y=point.y + vector.y, z=point.z + vector.z, label=point.label)
 
     @classmethod
-    def average(cls, points: List['Point']):
-        return cls(x=np.mean([pt.x for pt in points]), y=np.mean([pt.y for pt in points]), z=np.mean([pt.z for pt in points]))
+    def translate_points_to_target_centroid(cls, points: List['Point'], target_centroid: 'Point'):
+        current_centroid = cls.centroid(points)
+        translation = current_centroid.get_translation_vector_to(target_centroid)
+        return [cls.translate(pt, translation) for pt in points]
 
     @classmethod
     def farthest_pair(cls, points: List['Point']):
