@@ -39,7 +39,7 @@ export default function MapContainer(props: MapContainerProps) {
   const [mapEventManager, setMapEventManager] = useState<MapEventManager>(null);
   const [currentScenario, setCurrentScenario] = useState<ScenarioDefinition>(null);
   const [showDialog, setShowDialog] = useState<boolean>(!!props.scenarios);
-  const [dataStore, setMapData] = useState<DataStore>(null);
+  const [dataStore, setDataStore] = useState<DataStore>(null);
 
   const selectedScenario = useSelector(getScenarioID);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
@@ -70,7 +70,7 @@ export default function MapContainer(props: MapContainerProps) {
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
     if (!showDialog) {
-      setMapData(null); // Always reset data when traversing states
+      setDataStore(null); // Always reset data when traversing states
       let mapDataStore: DataStore;
       // If there are any scenarios, the corresponding data settings should be fetched from the server
       if (selectedScenario) {
@@ -87,12 +87,12 @@ export default function MapContainer(props: MapContainerProps) {
             }
             const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionValue);
             mapDataStore = parseMapDataSettings(JSON.parse(dataString), mapSettings?.type);
-            setMapData(mapDataStore);
+            setDataStore(mapDataStore);
           });
       } else {
         // By default, the data settings are retrieved locally
         mapDataStore = parseMapDataSettings(JSON.parse(props.data), mapSettings?.type);
-        setMapData(mapDataStore);
+        setDataStore(mapDataStore);
       }
     }
   }, [mapSettings?.type, props.data, props.scenarios, selectedScenario, showDialog, dimensionSliderValue]);
