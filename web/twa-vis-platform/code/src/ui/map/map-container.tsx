@@ -39,7 +39,7 @@ export default function MapContainer(props: MapContainerProps) {
   const [mapEventManager, setMapEventManager] = useState<MapEventManager>(null);
   const [currentScenario, setCurrentScenario] = useState<ScenarioDefinition>(null);
   const [showDialog, setShowDialog] = useState<boolean>(!!props.scenarios);
-  const [mapData, setMapData] = useState<DataStore>(null);
+  const [dataStore, setDataStore] = useState<DataStore>(null);
 
   const selectedScenario = useSelector(getScenarioID);
   const { scenarioDimensions, isDimensionsFetching } = useScenarioDimensionsService(currentScenario?.url, selectedScenario);
@@ -70,7 +70,7 @@ export default function MapContainer(props: MapContainerProps) {
   // Retrieves data settings for specified scenario from the server, else, defaults to the local file
   useEffect(() => {
     if (!showDialog) {
-      setMapData(null); // Always reset data when traversing states
+      setDataStore(null); // Always reset data when traversing states
       let mapDataStore: DataStore;
       // If there are any scenarios, the corresponding data settings should be fetched from the server
       if (selectedScenario) {
@@ -87,37 +87,37 @@ export default function MapContainer(props: MapContainerProps) {
             }
             const dataString: string = JSON.stringify(data).replace(/{dim_time_index}/g, dimensionValue);
             mapDataStore = parseMapDataSettings(JSON.parse(dataString), mapSettings?.type);
-            setMapData(mapDataStore);
+            setDataStore(mapDataStore);
           });
       } else {
         // By default, the data settings are retrieved locally
         mapDataStore = parseMapDataSettings(JSON.parse(props.data), mapSettings?.type);
-        setMapData(mapDataStore);
+        setDataStore(mapDataStore);
       }
     }
   }, [mapSettings?.type, props.data, props.scenarios, selectedScenario, showDialog, dimensionSliderValue]);
 
   // Populates the map after it has loaded and scenario selection is not required
   useEffect(() => {
-    if (map && mapData && mapEventManager) {
+    if (map && dataStore && mapEventManager) {
       if (mapSettings?.["type"] === "mapbox") {
         // All event listeners and data must be added when the map is initialised or data changes
-        addData(map, mapSettings, mapData);
-        mapEventManager.addMapboxEventListeners(dispatch, mapData);
+        addData(map, mapSettings, dataStore);
+        mapEventManager.addMapboxEventListeners(dispatch, dataStore);
 
         // When the base imagery is updated, all data layers are removed (point annotations are not removed)
         // This event listener ensures that data layers are reloaded initially and after any style changes
         // The same event listeners can be reused given the same underlying data
         map.on("style.load", function () {
-          addData(map, mapSettings, mapData);
+          addData(map, mapSettings, dataStore);
         });
       }
     }
-  }, [dispatch, map, mapData, mapEventManager, mapSettings]);
+  }, [dispatch, map, dataStore, mapEventManager, mapSettings]);
 
   // Update the filters for the specific layers if search is required
   useEffect(() => {
-    if (map && mapData && filterLayerIds?.length > 0 && (filterFeatureIris?.length > 0 || filterTimes.length > 0)) {
+    if (map && dataStore && filterLayerIds?.length > 0 && (filterFeatureIris?.length > 0 || filterTimes.length > 0)) {
       // Reset the filters first before applying new filters
       filterLayerIds.map(layerId => map.setFilter(layerId, null));
       // By default, show all feature will have reset filters
@@ -154,7 +154,7 @@ export default function MapContainer(props: MapContainerProps) {
       dispatch(setFilterLayerIds([]));
       dispatch(setFilterTimes([]));
     }
-  }, [map, mapData, filterLayerIds, filterFeatureIris, filterTimes]);
+  }, [map, dataStore, filterLayerIds, filterFeatureIris, filterTimes]);
 
   return (
     <>
@@ -195,8 +195,8 @@ export default function MapContainer(props: MapContainerProps) {
         />
 
         {/* Map information panel */}
-        {!showDialog && mapData && <div className={styles.upperContainer}>
-          <FloatingPanelContainer map={map} dataStore={mapData} icons={mapSettings.icons} legend={mapSettings.legend} scenarioDimensions={scenarioDimensions} isDimensionsFetching={isDimensionsFetching} />
+        {!showDialog && dataStore && <div className={styles.upperContainer}>
+          <FloatingPanelContainer map={map} dataStore={dataStore} icons={mapSettings.icons} legend={mapSettings.legend} scenarioDimensions={scenarioDimensions} isDimensionsFetching={isDimensionsFetching} />
         </div>
         }
         <div className={styles.lowerContainer} />
