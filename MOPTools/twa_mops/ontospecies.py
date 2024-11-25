@@ -55,7 +55,8 @@ class Geometry(BaseClass):
         with open(file_name, 'w') as f:
             f.write(f'{len(pts)}\n\n')
             for pt in pts:
-                f.write(f'{pt.label} {pt.x} {pt.y} {pt.z}\n')
+                # enforce normal decimal numbers to avoid scientific notation which breaks reading the xyz file using rdkit
+                f.write(f'{pt.label} {pt.x:.20f} {pt.y:.20f} {pt.z:.20f}\n')
         return cls(hasGeometryFile=file_name, hasPoints=points)
 
     def load_xyz_from_geometry_file(self, sparql_client):
