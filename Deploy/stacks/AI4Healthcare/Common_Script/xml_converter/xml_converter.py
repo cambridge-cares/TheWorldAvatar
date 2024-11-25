@@ -2,18 +2,18 @@ import xml.etree.ElementTree as ET
 import csv
 import requests
 import json
+from tqdm import tqdm  # Import tqdm for progress bar
 
 def fetch_xml_from_url(url):
-    """Fetch XML data from the provided URL."""
+    """Fetch XML data (in this case is food hygiene data provided by UK Food Standards Agency) from the provided URL."""
     response = requests.get(url)
     response.raise_for_status()
     return response.text
 
 def xml_to_csv(xml_data, csv_file_path):
-    """Convert XML data to CSV format and save it to the specified path."""
     root = ET.fromstring(xml_data)
 
-    # Determine the field names from the XML structure
+    # Field names from the XML structure
     fieldnames = set()
     for establishment in root.findall('.//EstablishmentDetail'):
         for child in establishment:
@@ -23,12 +23,13 @@ def xml_to_csv(xml_data, csv_file_path):
             else:
                 fieldnames.add(child.tag)
 
-    # Write CSV file
     with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
         csv_writer = csv.DictWriter(file, fieldnames=fieldnames)
         csv_writer.writeheader()
 
-        for establishment in root.findall('.//EstablishmentDetail'):
+        # Find all establishments and prepare progress bar
+        establishments = root.findall('.//EstablishmentDetail')
+        for establishment in tqdm(establishments, desc="Processing establishments", unit="record"):
             data = {field: '' for field in fieldnames}  # Initialize all fields with empty string
             for child in establishment:
                 if child.tag == 'Geocode':
@@ -48,14 +49,11 @@ def load_config(json_path):
     return config
 
 if __name__ == "__main__":
-    """
-    Main execution block for fetching XML data and converting it to CSV based on JSON configuration.
-    """
+
     # Path to the configuration file
     config_path = 'xml_to_csv.json'
 
     try:
-        # Load configuration
         config = load_config(config_path)
         xml_url = config.get("xml_url")
         csv_file_path = config.get("csv_file_path")
