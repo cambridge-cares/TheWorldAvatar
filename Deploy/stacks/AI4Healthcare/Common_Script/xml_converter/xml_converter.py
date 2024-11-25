@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import csv
 import requests
 import json
-from tqdm import tqdm  # Import tqdm for progress bar
+from tqdm import tqdm  
 
 def fetch_xml_from_url(url):
     """Fetch XML data (in this case is food hygiene data provided by UK Food Standards Agency) from the provided URL."""
