@@ -184,8 +184,10 @@ public class LifecycleResource {
    */
   public static String genActiveServiceQuery(String dayOfWeekInstance) {
     StringBuilder stageFilters = new StringBuilder();
-    LifecycleResource.appendFilterExists(stageFilters, true, LifecycleResource.EVENT_APPROVAL);
-    LifecycleResource.appendArchivedFilterExists(stageFilters, false);
+    // Generate FILTER NOT EXISTS to ensure no occurrence exist yet for today
+    String occurenceFilterQuery = "?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?occurrence_date."
+        + "FILTER(?occurrence_date=?today)";
+    LifecycleResource.appendFilterExists(stageFilters, occurenceFilterQuery, false);
     return genPrefixes()
         + "SELECT DISTINCT ?iri WHERE{"
         + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
@@ -195,20 +197,16 @@ public class LifecycleResource {
         + "fibo-fnd-dt-fd:hasSchedule/cmns-dt:hasStartDate/cmns-dt:hasDateValue ?start_date;"
         + "fibo-fnd-dt-fd:hasSchedule/fibo-fnd-dt-fd:hasRecurrenceInterval/cmns-dt:hasDurationValue ?duration."
         + "OPTIONAL{?stage fibo-fnd-dt-fd:hasSchedule/fibo-fnd-dt-fd:hasRecurrenceInterval ?schedule_day.}"
-        // Optional to check if there is any service delivery occurrence that has
-        // already occurred today
-        + "OPTIONAL{?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?event_date.}"
-        + "BIND(NOW() AS ?today)"
+        + "BIND(xsd:date(NOW()) AS ?today)"
         // Calculate the days passed since start date
-        + "BIND(xsd:integer(xsd:date(?today)-?start_date) AS ?days_from_start)"
+        + "BIND(xsd:integer(?today-?start_date) AS ?days_from_start)"
         // Filters for services that have commenced
-        + "FILTER(xsd:date(?today)>=?start_date)"
-        // Filter to ensure there is no existing occurrence for today
-        + "FILTER(!BOUND(?event_date) || xsd:date(?today)!=?event_date)"
+        + "FILTER(?today>=?start_date)"
         // Filters to match today with the scheduled requirements
         // day of week must match for weekly schedules
         + "FILTER((?schedule_day=" + StringResource.parseIriForQuery(dayOfWeekInstance) + "&& ?duration=\"P7D\")"
-        + "||((?days_from_start-2)*FLOOR(?days_from_start/2)=0 && ?duration=\"P2D\"))" // for alternate day schedules
+        + "||(?days_from_start-FLOOR(?days_from_start/2)*2=0 && ?duration=\"P2D\"))" // for alternate day schedules
+        + stageFilters.toString()
         + "}";
   }
 
