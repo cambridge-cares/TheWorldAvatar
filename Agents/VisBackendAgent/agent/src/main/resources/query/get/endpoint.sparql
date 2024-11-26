@@ -1,0 +1,8 @@
+PREFIX dcat:  <http://www.w3.org/ns/dcat#>
+PREFIX ser:   <https://theworldavatar.io/kg/service#>
+
+SELECT DISTINCT ?endpoint
+WHERE {
+  ?ontop a [target] ;
+    dcat:endpointURL ?endpoint .
+}

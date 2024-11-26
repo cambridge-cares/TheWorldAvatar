@@ -72,7 +72,7 @@ class ChemistryPreprocessor(IPreprocessor):
         ptr = self._advance_ptr_thru_space(text, ptr)
 
         while ptr < len(text):
-            while ptr < len(text) and text[ptr].isalpha():
+            while ptr < len(text) and text[ptr].isalnum():
                 ptr += 1
 
             new_ptr = self._advance_ptr_thru_space(text, ptr)
@@ -80,7 +80,7 @@ class ChemistryPreprocessor(IPreprocessor):
                 break
 
             flag = False
-            for c in ["*", "**", "/", "°"]:
+            for c in ["*", "**", "/", "°", "^"]:
                 if text.startswith(c, new_ptr):
                     flag = True
                     ptr = new_ptr + len(c)

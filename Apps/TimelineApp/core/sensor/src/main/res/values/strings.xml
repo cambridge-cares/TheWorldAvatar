@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensors_are_running_for_data_collection">Sensors are running for data collection.</string>
+</resources>

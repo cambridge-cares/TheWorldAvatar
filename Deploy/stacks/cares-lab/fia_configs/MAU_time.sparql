@@ -1,0 +1,88 @@
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+prefix ontobms: <https://www.theworldavatar.com/kg/ontobms/>
+prefix saref: <https://saref.etsi.org/core/>
+prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+prefix s4bldg: <https://saref.etsi.org/saref4bldg/>
+
+SELECT distinct ?Measurement ?Name ?Unit WHERE {
+  {
+# MAU state
+    [IRI] rdfs:label ?MAULabel.
+    [IRI] saref:hasState ?Measurement.
+    ?Measurement rdfs:label ?label.
+    BIND(CONCAT(STR(?MAULabel), " " , STR(?label)) AS ?Name).
+    BIND ("-" as ?Unit).
+} union {
+    # Fan frequencies
+    [IRI] rdfs:label ?MAULabel.
+    [IRI] saref:consistsOf / saref:consistsOf ?Sensor.
+    ?Sensor ontodevice:measures ?a.
+    ?a om:hasValue ?Measurement.
+    ?Measurement rdfs:label ?label.
+    BIND(CONCAT(STR(?MAULabel), " Fan ", STR(?label)) AS ?Name).
+    ?Measurement om:hasUnit / om:symbol ?Unit.
+  } union {
+    # Fan states
+    [IRI] rdfs:label ?MAULabel.
+    [IRI] saref:consistsOf / saref:consistsOf ?Sensor.
+    ?Sensor ontodevice:observes ?Measurement.
+    ?Measurement rdfs:label ?Label.
+    BIND (concat(STR(?MAULabel)," Fan ", str(?Label)) as ?Name).
+    BIND ("-" as ?Unit).
+  } union {
+    # Filter
+    [IRI] rdfs:label ?MAULabel.
+    [IRI] saref:consistsOf ?Filter.
+    ?Filter rdf:type s4bldg:Filter .
+    ?Sensor ontodevice:isAttachedTo ?Filter.
+    ?Sensor ontodevice:observes ?Measurement.
+    ?Measurement rdfs:label ?Label.
+    BIND (concat(STR(?MAULabel)," Filter ", str(?Label)) as ?Name).
+    BIND ("-" as ?Unit).
+  } union {
+  # Pipe, duct
+    [IRI] rdfs:label ?MAULabel .
+    [IRI] saref:consistsOf ?Device.
+    { ?Device rdf:type ontobms:Duct } union {?Device rdf:type ontobms:Pipe }
+    ?Device rdfs:label ?DuctLabel.
+    ?Sensor ontodevice:isAttachedTo ?Device.
+    ?Sensor ontodevice:measures ?a.
+    ?a om:hasValue ?Measurement.
+    ?Measurement om:hasUnit / om:symbol ?Unit.
+      ?Measurement rdfs:label ?MeasurementLabel.
+    BIND (concat(STR(?MAULabel), " ", STR(?DuctLabel) , " ", STR(?MeasurementLabel)) as ?Name).
+    }  union {
+    # Valve
+    [IRI] rdfs:label ?MAULabel.
+    [IRI] saref:consistsOf ?Device.
+    ?Device rdf:type s4bldg:Valve.
+    ?Device rdfs:label ?DeviceLabel.
+    ?Sensor ontodevice:isAttachedTo ?Device.
+    ?Sensor ontodevice:measures ?a.
+    ?a om:hasValue ?Measurement.
+    ?Measurement rdfs:label ?measurementLabel .
+    BIND (concat(STR(?MAULabel), " ", STR(?DeviceLabel), " ", STR(?measurementLabel)) AS ?Name).
+    ?Measurement om:hasUnit / om:symbol ?Unit.
+  } union {
+  # BTU kWh
+    [IRI] rdfs:label ?MAULabel .
+    ?a rdf:type <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange> .
+    ?a ontodevice:hasCumulativeEnergyConsumption ?b .
+    ?b om:hasValue ?Measurement.
+    ?Measurement om:hasUnit / om:symbol ?Unit.
+      ?Measurement rdfs:label ?MeasurementLabel.
+    BIND (concat(STR(?MAULabel), " ", STR(?MeasurementLabel)) as ?Name).
+    } union {
+  # BTU kW
+    [IRI] rdfs:label ?MAULabel .
+    ?a rdf:type <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange> .
+    ?a ontobms:hasHeatDuty ?b .
+    ?b om:hasValue ?Measurement.
+    ?Measurement om:hasUnit / om:symbol ?Unit.
+      ?Measurement rdfs:label ?MeasurementLabel.
+    BIND (concat(STR(?MAULabel), " ", STR(?MeasurementLabel)) as ?Name).
+    }
+  }

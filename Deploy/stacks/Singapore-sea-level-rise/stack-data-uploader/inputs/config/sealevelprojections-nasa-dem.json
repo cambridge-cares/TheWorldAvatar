@@ -1,0 +1,18 @@
+{
+    "name": "sealevelprojections-nasa-dem",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "sealevelprojections",
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "table": "sealevelprojections",
+            "subdirectory": "eiv-igp-model",
+            "sql": "@/inputs/data/sealevelprojections/eiv-igp-model/slrprojections.sql"
+        }
+    ],
+    "mappings": [
+        "sealevelprojections.obda"
+    ]
+}

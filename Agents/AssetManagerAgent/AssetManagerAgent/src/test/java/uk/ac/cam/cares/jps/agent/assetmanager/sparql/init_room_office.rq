@@ -1,0 +1,29 @@
+PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+PREFIX ontolab: <https://www.theworldavatar.com/kg/ontolab/>
+PREFIX ontosystem: <https://www.theworldavatar.com/kg/ontotechnicalsystem/>
+PREFIX ontoinma: <https://www.theworldavatar.com/kg/ontoinma/>
+PREFIX ontoassetmanagement: <https://www.theworldavatar.com/kg/ontoassetmanagement/>
+PREFIX ontoelecpowerequipment: <https://www.theworldavatar.com/kg/ontoelecpowerequipment/>
+PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+PREFIX saref: <https://saref.etsi.org/core/>
+PREFIX om2: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX FIBOaap: <https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/>
+PREFIX FIBOorg: <https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/>
+PREFIX bot: <https://w3id.org/bot#>
+PREFIX P2Pitem: <https://purl.org/p2p-o/item#>
+PREFIX P2Pdocline: <https://purl.org/p2p-o/documentline#>
+PREFIX P2Pinvoice: <https://purl.org/p2p-o/invoice#>
+#Inserting mandatory instances such as locations before instantiating
+
+INSERT DATA
+{ 
+    <https://www.theworldavatar.com/kg/caresOffice/IfcRoomRepresentation_R01> <http://www.w3.org/2000/01/rdf-schema#label> "R01" .
+    <https://www.theworldavatar.com/kg/caresOffice/Room_R01> ontobim:hasIfcRepresentation <https://www.theworldavatar.com/kg/caresOffice/IfcRoomRepresentation_R01> .
+    <https://www.theworldavatar.com/kg/caresOffice/Room_R01> a <https://www.theworldavatar.com/kg/ontobim/Room> .
+    <https://www.theworldavatar.com/kg/caresOffice/Office_CARESOffice>	 ontobim:hasRoom <https://www.theworldavatar.com/kg/caresOffice/Room_R01> .
+    <https://www.theworldavatar.com/kg/caresOffice/Office_CARESOffice>	 a <https://www.theworldavatar.com/kg/ontobim/Facility> .
+    <https://www.theworldavatar.com/kg/caresOffice/Office_CARESOffice>	 <http://www.w3.org/2000/01/rdf-schema#label> "CARES Office" .
+    <https://www.theworldavatar.com/kg/caresOffice/Building_CREATETower> ontobim:hasFacility <https://www.theworldavatar.com/kg/caresOffice/Office_CARESOffice>	 .
+    <https://www.theworldavatar.com/kg/caresOffice/Building_CREATETower> ontobim:hasIfcRepresentation <https://www.theworldavatar.com/kg/lab/IfcBuildingRepresentation_CREATETower> .
+    <https://www.theworldavatar.com/kg/lab/IfcBuildingRepresentation_CREATETower> <http://www.w3.org/2000/01/rdf-schema#label> "CREATE Tower" . 
+}

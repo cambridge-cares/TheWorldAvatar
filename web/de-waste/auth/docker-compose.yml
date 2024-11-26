@@ -1,0 +1,111 @@
+services:
+  
+  keycloak:
+    container_name: "keycloak-server-26"
+    image: keycloak/keycloak:26.0
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Europe/London
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      ###################################################
+      KC_LOG: console,file  
+      KC_LOG_CONSOLE_LEVEL: info
+      KC_LOG_CONSOLE_COLOR: true
+      KC_LOG_FILE_LEVEL: trace
+      ###################################################
+      KC_HOSTNAME: https://bnl.theworldavatar.io/authorisation
+      KC_HOSTNAME_ADMIN: https://admin.bnl.theworldavatar.io
+      KC_HOSTNAME_DEBUG: true
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: false # needed to allow other containers to commumicate with keycloak server-side
+      ###################################################
+      KC_DB_URL_HOST: postgres
+      KC_DB_USERNAME: postgres
+      KC_DB: postgres
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_DB_POOL_MAX_SIZE: 50
+      ###################################################
+      KC_HEALTH_ENABLED: true
+      KC_HTTP_ENABLED: true ## this replaces the prox  y mode (whether to forward in SSL or not), works if we assume this is edge server
+      KC_PROXY_HEADERS: xforwarded ## this replaces the proxy mode (whether to forward in SSL or not)
+      # KC_TLS_HOSTNAME_VERIFIER: ANY
+    command: start --import-realm #--optimized
+    volumes:
+      - ./realm:/opt/keycloak/data/import:ro # the realm to import
+    networks:
+      - auth-network
+
+  dragonfly:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    container_name: "session-store"
+    restart: always
+    ulimits:
+      memlock: -1
+    ports:
+      - "6379:6379"
+    # For better performance, consider `host` mode instead `port` to avoid docker NAT.
+    # `host` mode is NOT currently supported in Swarm Mode.
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode
+    # network_mode: "host"
+    networks:
+      - auth-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "healthcheck" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+    - dragonflydata:/data
+
+  # postgres:
+  #   restart: always
+  #   container_name: "postgres"
+  #   image: postgres:latest
+  #   environment:
+  #     POSTGRES_USER: postgres # default user for the container os
+  #     PGUSER: postgres # default user for psql
+  #     POSTGRES_DB: keycloak
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
+  #     # POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+  #   secrets:
+  #     - postgres-password
+  #   healthcheck:
+  #     test: [ "CMD-SHELL", "pg_isready -d keycloak -U postgres" ]
+  #     interval: 1s
+  #     timeout: 5s
+  #     retries: 10
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - bnl-postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - auth-network
+
+  pgadmin:
+    restart: always
+    container_name: "pgadmin"
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_LOGIN_EMAIL:-user@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD:-theworldavatar}
+      HOSTNAME: postgres
+      DATABASE: keycloak
+    ports:
+      - "5050:80"
+    # depends_on:
+    #   - postgres
+    networks:
+      - auth-network
+
+networks:
+  auth-network:
+    driver: bridge
+
+secrets:
+  postgres-password:
+    file: ./postgres-password
+
+volumes:
+  dragonflydata:
+  bnl-postgres-data:

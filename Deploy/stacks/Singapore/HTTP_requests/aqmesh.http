@@ -1,0 +1,21 @@
+### To start scheduled data retrieval
+POST http://localhost:3838/aqmesh-input-agent/retrieve
+content-type: application/json
+
+{
+    "delay": 0,
+    "interval": 1,
+    "timeunit": "hours"
+}
+
+### To instantiate geospatial data
+POST http://localhost:3838/aqmesh-input-agent/instantiateGeoLocation
+content-type: application/json
+
+{
+    "iri": "http://www.theworldavatar.com/ontology/ontoaqmesh/AQMesh.owl/AQMesh123",
+    "name": "AQMesh"
+}
+
+### To stop scheduler
+POST http://localhost:3838/aqmesh-input-agent/stopScheduler

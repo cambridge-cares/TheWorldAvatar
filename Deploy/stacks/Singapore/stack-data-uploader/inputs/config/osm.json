@@ -1,0 +1,22 @@
+{
+    "name": "osm",
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "osm",
+    "dataSubsets": [
+		  {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "polygon",
+            "table": "polygons"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "point",
+            "table": "points"
+        }
+	]
+}

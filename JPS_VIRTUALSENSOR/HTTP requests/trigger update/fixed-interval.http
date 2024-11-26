@@ -1,0 +1,13 @@
+# Runs a set of simulation starting from startTime (unix timestamp) at an interval
+# (intervalMinutes) for a number of steps (numSteps)
+POST http://localhost:4242/dispersion-interactor/RunDispersionDefinedInterval
+?ewkt=SRID=32648;POLYGON((350000 134778,377838 134778,377838 144778,350000 144778,350000 134778))
+&nx=100
+&ny=100
+&z=0
+&z=50
+&label=Singapore
+&startTime=1715753652
+&intervalMinutes=30
+&numSteps=48
+&maxTimeMinutes=20

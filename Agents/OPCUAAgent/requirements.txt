@@ -1,0 +1,5 @@
+asyncua==1.1.0
+asyncio==3.4.3
+psycopg2-binary==2.9.9
+jproperties==2.1.1
+pytest==7.2.0

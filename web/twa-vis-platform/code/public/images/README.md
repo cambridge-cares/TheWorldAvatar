@@ -1,0 +1,1 @@
+All additional images should be added to this directory. Do not remove the default images as they are required for the platform to function.

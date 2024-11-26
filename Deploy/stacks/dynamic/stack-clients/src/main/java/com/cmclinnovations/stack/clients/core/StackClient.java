@@ -19,6 +19,11 @@ public final class StackClient {
     private static final String STACK_BASE_DIR_KEY = "STACK_BASE_DIR";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
+    @Deprecated
+    /**
+     * @deprecated This should be made `private` and accessed via a static method as
+     *             that makes it easier to mock the value for testing.
+     */
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
     public static final String MULTIDIM_GEOSPATIAL_DIR = "/multidim_geospatial";
@@ -27,14 +32,17 @@ public final class StackClient {
     private static final String stackName;
 
     private static final Map<String, String> stackNameLabelMap;
-
-    private static boolean inStack = true;
+    private static String hostPath;
 
     static {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
-        stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
+        stackName = (null != envVarStackName) ? envVarStackName : "Test-Stack";
 
         stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName, PROJECT_NAME_LABEL, stackName);
+    }
+
+    public static String getScratchDir() {
+        return SCRATCH_DIR;
     }
 
     private StackClient() {
@@ -49,7 +57,11 @@ public final class StackClient {
     }
 
     public static String prependStackName(String name) {
-        return stackName + "_" + name;
+        return prependStackName(name, "_");
+    }
+
+    public static String prependStackName(String name, String separator) {
+        return stackName + separator + name;
     }
 
     public static String removeStackName(String name) {
@@ -60,12 +72,8 @@ public final class StackClient {
         return stackNameLabelMap;
     }
 
-    public static boolean isInStack() {
-        return inStack;
-    }
-
-    public static void setInStack(boolean inStack) {
-        StackClient.inStack = inStack;
+    public static boolean isInTest() {
+        return null == System.getenv(StackClient.STACK_NAME_KEY);
     }
 
     public static String getContainerEngineName() {
@@ -126,10 +134,18 @@ public final class StackClient {
 
         PostGISClient postgisClient = PostGISClient.getInstance();
         postgisClient.createDatabase(database);
-        PostGISEndpointConfig postgisConfig = postgisClient.getEndpoint();
+        PostGISEndpointConfig postgisConfig = postgisClient.readEndpointConfig();
 
         return new TimeSeriesClient<>(remoteStoreClient, timeClass,
                 postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());
+    }
+
+    public static void setHostPath(String hostPath) {
+        StackClient.hostPath = hostPath;
+    }
+
+    public static String getHostPath() {
+        return hostPath;
     }
 
 }

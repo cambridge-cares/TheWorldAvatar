@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "ES2021",
+        "lib": [
+            "ES2021",
+            "dom"
+        ],
+        "typeRoots": ["./node_modules/@types", "./src/types"],
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "outDir": "./output/ts"
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/*.spec.ts"
+    ]
+}

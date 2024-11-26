@@ -1,0 +1,5 @@
+types-regex
+types-requests
+types-PyYAML
+pandas-stubs
+types-tqdm

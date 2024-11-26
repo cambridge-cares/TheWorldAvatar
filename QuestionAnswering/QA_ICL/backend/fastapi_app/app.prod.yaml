@@ -1,0 +1,6 @@
+ga_measurement_id: 
+redis:
+  host: redis-stack
+text_embedding:
+  backend: triton
+  url: "triton:8001"

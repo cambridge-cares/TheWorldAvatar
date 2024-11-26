@@ -29,3 +29,8 @@
     overflow-y: auto;
     background-color: inherit !important;
 }
+
+/* override github-markdown css */
+.contentInner a { 
+    color: var(--text-color-links) !important;
+}

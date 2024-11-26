@@ -131,9 +131,9 @@ Examples for the structure of the mapping folder and files can be found in the `
 folder.  (see 
 also [Example readings](#example-readings)).
 
-### Building the CARESWeatherStation Agent
+### Building the CARES Weather Station Agent
 
-The CARESWeatherStation Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central). You'll need to provide your credentials in single-word text files located like this:
+The CARES Weather Station Agent is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central). You'll need to provide your credentials in single-word text files located like this:
 ```
 ./credentials/
     repo_username.txt
@@ -148,7 +148,7 @@ The agent is designed to function as part of the stack.
 
 Modify `api.properties` and `client.properties` in the `config` folder accordingly.
 
-In the `Dockerfile`, there are three variables that affects where the geolocation information will be uploaded to in postGIS and the Geoserver, modify them accordingly:
+In the `stack-manager-input-config-service/cares-weather-station-agent.json`, there are three variables that affects where the geolocation information will be uploaded to in postGIS and the Geoserver, modify them accordingly:
 - `LAYERNAME` the name of the layer in Geoserver, this will also be the name of the table in the postGIS database that will be used to store the geolocation information
 - `DATABASE` the name of the database in postGIS to store the geolocation information
 - `GEOSERVER_WORKSPACE` the name of the workspace in Geoserver to store the geolocation information
@@ -162,20 +162,36 @@ Open `stack-manager-input-config-service/cares-weather-station-agent.json` and u
 Copy `stack-manager-input-config-service/cares-weather-station-agent.json` to the services folder under your stack-manager directory (By default it should be `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`) and start up the stack.
 
 ##### Run the agent
-To run the agent, a POST request must be sent to http://localhost:3838/cares-weather-station-agent/retrieve with a correct JSON Object.
-Follow the request shown below.
+The agent has two routes, a status route and a retrieve route. A description for each route is provided below.
 
+###### Status route
+
+This request gets the status of the agent. The request has the following format:
+```
+curl -X GET http://localhost:3838/cares-weather-station-agent/status
+```
+and it should return:
+
+{"Result":"Agent is ready to receive requests."}
+
+###### Retrieve route
+This request retrieves the latest timeseries for the weather station and uploads it to the knowledge graph, checks the triple store for the weather station instances and instantiate them if it does not exist, checks postGIS and geoserver for the weather station geolocation data and instantiate them if it does not exist.
+
+The request will also initiate a scheduler to constantly run the retrieve route at a set interval. In the request, the user can set the following parameters for the scheduler:
+- `delay` the time delay before the first execution of retrieve route
+- `interval` the interval between successive executions 
+- `timeunit` the time unit of delay and interval, this is currently limited to the following options: seconds, minutes, hours 
+
+An example of the request is shown below:
 ```
 POST http://localhost:3838/cares-weather-station-agent/retrieve
 Content-Type: application/json
-{"agentProperties":"CARESWeatherStation_AGENTPROPERTIES","apiProperties":"CARESWeatherStation_APIPROPERTIES","clientProperties":"CARESWeatherStation_CLIENTPROPERTIES"}
+{"agentProperties":"CARESWeatherStation_AGENTPROPERTIES","apiProperties":"CARESWeatherStation_APIPROPERTIES","clientProperties":"CARESWeatherStation_CLIENTPROPERTIES"
+"delay":"0",
+"interval":"180",
+"timeunit":seconds"}
 ```
 In curl syntax:
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"CARESWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"CARESWeatherStation_APIPROPERTIES\",\"clientProperties\":\"CARESWeatherStation_CLIENTPROPERTIES\"}" http://localhost:3838/cares-weather-station-agent/retrieve
-```
-
-If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
-```
-{"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 10 weather station readings.","Data updated with new readings from API.","Timeseries Data has been updated."]}
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"CARESWeatherStation_AGENTPROPERTIES\",\"apiProperties\":\"CARESWeatherStation_APIPROPERTIES\",\"clientProperties\":\"CARESWeatherStation_CLIENTPROPERTIES\", \"delay\":\"0\",\"interval\":\"180\",\"timeunit\":\"seconds\"}" http://localhost:3838/cares-weather-station-agent/retrieve
 ```

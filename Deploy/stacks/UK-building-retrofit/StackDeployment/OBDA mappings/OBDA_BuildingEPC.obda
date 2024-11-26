@@ -1,0 +1,75 @@
+[PrefixDeclaration]
+twa:        https://www.theworldavatar.com/kg/
+building:   https://www.theworldavatar.com/kg/ontobuiltenv/building
+ontobuiltenergy:  https://www.theworldavatar.com/kg/ontobuiltenergy/
+ocgml:      http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#
+os:         http://data.ordnancesurvey.co.uk/ontology/spatialrelations/
+owl:        http://www.w3.org/2002/07/owl#
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:        http://www.w3.org/XML/1998/namespace
+xsd:        http://www.w3.org/2001/XMLSchema#
+obda:       https://w3id.org/obda/vocabulary#
+rdfs:       http://www.w3.org/2000/01/rdf-schema#
+GeoSparql:        http://www.opengis.net/ont/geosparql#
+ontobuiltenv:      https://www.theworldavatar.com/kg/ontobuiltenv/
+
+[MappingDeclaration] @collection [[
+mappingId       Building-Class-Declaration
+target      https://www.theworldavatar.com/kg/ontobuiltenv/building rdf:type owl:Class .
+source      SELECT 1
+
+mappingId       Asset-mapping-UUID-UPRN-via-Standard-Table
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenv:hasUPRN {uprn}^^xsd:string ; ontobuiltenv:hasTOID {os_topo_toid}^^xsd:string .
+source          SELECT ga_uuid.strval as uuid, mt."IDENTIFIER_1" as uprn, mt."IDENTIFIER_2" AS os_topo_toid
+                FROM "citydb"."cityobject_genericattrib" ga_uuid
+                JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+				JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+                WHERE ga_uuid.attrname = 'uuid'
+                AND ga_toid.attrname = 'os_topo_toid' 
+
+mappingId       Asset-mapping-UUID-Geometry
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; GeoSparql:hasGeometry "{wkt}"^^geo:wktLiteral .
+source          SELECT ga_uuid.strval as uuid, public.ST_AsText(sg.geometry) as wkt
+                FROM "citydb".cityobject_genericattrib ga_uuid
+                JOIN "citydb".surface_geometry sg ON ga_uuid.cityobject_id = sg.cityobject_id
+                WHERE ga_uuid.attrname = 'uuid'
+                AND sg.parent_id IS NOT NULL;
+
+mappingId       Asset-mapping-Building-EnergyProperty
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenergy:hasEnergyEfficiency {CURRENT_ENERGY_EFFICIENCY}^^xsd:decimal ; ontobuiltenergy:hasEPCrating {CURRENT_ENERGY_RATING}^^xsd:string .
+source          SELECT ga_uuid.strval as uuid, dep."CURRENT_ENERGY_EFFICIENCY", dep."CURRENT_ENERGY_RATING"
+                FROM "citydb"."cityobject_genericattrib" ga_uuid
+                JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+				JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+				JOIN "public"."Domestic EPC" dep ON mt."IDENTIFIER_1" = dep."UPRN"
+				WHERE ga_uuid.attrname = 'uuid'
+                AND ga_toid.attrname = 'os_topo_toid'mappingId       Asset-mapping-GenericBuildingDescription
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenv:hasPostcode {POSTCODE}^^xsd:string ; ontobuiltenv:hasAddress1 {ADDRESS1}^^xsd:string ; ontobuiltenv:hasPropertyType {PROPERTY_TYPE}^^xsd:string ; ontobuiltenv:hasBuiltForm {BUILT_FORM}^^xsd:string .
+source      SELECT ga_uuid.strval as uuid, "public"."Domestic EPC"."POSTCODE", "public"."Domestic EPC"."ADDRESS1", "public"."Domestic EPC"."PROPERTY_TYPE", "public"."Domestic EPC"."BUILT_FORM"
+            FROM "citydb"."cityobject_genericattrib" ga_uuid
+            JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+            JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+            JOIN "public"."Domestic EPC" ON mt."IDENTIFIER_1" = "public"."Domestic EPC"."UPRN"
+            WHERE ga_uuid.attrname = 'uuid'
+            AND ga_toid.attrname = 'os_topo_toid'
+
+mappingId       Asset-mapping-EnergyCost
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenergy:hasCO2EmissionsCurrent {CO2_EMISSIONS_CURRENT}^^xsd:string ; ontobuiltenergy:hasHeatingCostCurrent {HEATING_COST_CURRENT}^^xsd:string ; ontobuiltenergy:hasHotWaterCostCurrent {HOT_WATER_COST_CURRENT}^^xsd:string ; ontobuiltenergy:hasLightingCostCurrent {LIGHTING_COST_CURRENT}^^xsd:string .
+source      SELECT ga_uuid.strval as uuid, "public"."Domestic EPC"."CO2_EMISSIONS_CURRENT", "public"."Domestic EPC"."HEATING_COST_CURRENT", "public"."Domestic EPC"."HOT_WATER_COST_CURRENT", "public"."Domestic EPC"."LIGHTING_COST_CURRENT"
+            FROM "citydb"."cityobject_genericattrib" ga_uuid
+            JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+            JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+            JOIN "public"."Domestic EPC" ON mt."IDENTIFIER_1" = "public"."Domestic EPC"."UPRN"
+            WHERE ga_uuid.attrname = 'uuid'
+            AND ga_toid.attrname = 'os_topo_toid'
+
+mappingId       Asset-mapping-StructureProperty
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenergy:hasGlazedType {GLAZED_TYPE}^^xsd:string ; ontobuiltenergy:hasFloorDescription {FLOOR_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasWindowsDescription {WINDOWS_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasWallsDescription {WALLS_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasSecondHeatDescription {SECONDHEAT_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasRoofDescription {ROOF_DESCRIPTION}^^xsd:string .
+source      SELECT ga_uuid.strval as uuid, "public"."Domestic EPC"."GLAZED_TYPE", "public"."Domestic EPC"."FLOOR_DESCRIPTION", "public"."Domestic EPC"."WINDOWS_DESCRIPTION", "public"."Domestic EPC"."WALLS_DESCRIPTION", "public"."Domestic EPC"."SECONDHEAT_DESCRIPTION", "public"."Domestic EPC"."ROOF_DESCRIPTION"
+            FROM "citydb"."cityobject_genericattrib" ga_uuid
+            JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+            JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+            JOIN "public"."Domestic EPC" ON mt."IDENTIFIER_1" = "public"."Domestic EPC"."UPRN"
+            WHERE ga_uuid.attrname = 'uuid'
+            AND ga_toid.attrname = 'os_topo_toid'
+]]

@@ -1,0 +1,12 @@
+PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+
+SELECT ?Property (COUNT(?Feature) AS ?Value)
+WHERE {
+  SERVICE <http://174.138.23.221:3838/ontop/sparql/> { 
+    ?Feature ontobuiltenv:hasPropertyUsage ?usage.
+  }
+  BIND ("Number of drinking establishments" AS ?Property)
+}
+GROUP BY ?Property
+

@@ -1,0 +1,5 @@
+redis:
+  host: localhost
+text_embedding:
+  backend: triton
+  url: "localhost:8001"

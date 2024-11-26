@@ -8,8 +8,9 @@ import { Tooltip } from '@mui/material';
 import IconComponent from 'ui/graphic/icon/icon';
 
 interface RibbonComponentClickProps {
+  id: string
   icon: string,
-  text: string,
+  text?: string,
   tooltip: string,
   action: () => void
 }
@@ -22,17 +23,19 @@ export default function RibbonComponentClick(props: Readonly<RibbonComponentClic
         enterDelay={1000}
         leaveDelay={100}
         placement="bottom-start">
-        <>
+        <div>
           <div className={styles.ribbonComponentInner}>
             <div className={styles.ribbonComponentIcon}>
               <IconComponent icon={props.icon} />
             </div>
-            <div className={styles.ribbonComponentText}>
-              {props.text}
-            </div>
+            {props.text &&
+
+              <div className={styles.ribbonComponentText}>
+                {props.text}
+              </div>
+            }
           </div>
-          <div style={{ height: "10px" }} />
-        </>
+        </div>
       </Tooltip>
     </div>
   );

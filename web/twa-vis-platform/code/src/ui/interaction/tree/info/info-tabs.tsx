@@ -2,11 +2,13 @@ import styles from './info-tree.module.css';
 
 import React from 'react';
 
-import { JsonObject } from "types/json";
 import { MaterialIconButtonWithIndex } from 'ui/graphic/icon/icon-button';
 
 interface InfoTabsProps {
-  data: JsonObject;
+  tabs: {
+    hasAttributes: boolean;
+    hasTimeSeries: boolean;
+  };
   activeTab: {
     index: number;
     setActiveTab: React.Dispatch<React.SetStateAction<number>>;
@@ -25,24 +27,25 @@ interface InfoTabProps {
 /**
  * This component renders individual tabs depending on their availability.
  * 
- * @param {JsonObject} data The queried data that will be processed for display.
+ * @param {boolean} tabs.hasAttributes Indicates if the tabs should have a panel for displaying attributes.
+ * @param {boolean} tabs.hasTimeSeries Indicates if the tabs should have a panel for displaying timeseries.
  * @param {number} activeTab.index The React state storing the current active index.
  * @param {React.Dispatch<React.SetStateAction<number>>} activeTab.setActiveTab A React function to set the current active index.
  */
 export default function InfoTabs(props: Readonly<InfoTabsProps>) {
   return (
     <div className={styles["tab-container"]}>
-      {props.data?.meta && (
+      {props.tabs?.hasAttributes && (
         <InfoTab
           iconName="listAlt"
           activeTab={{
             index: 0,
             state: props.activeTab.index,
-            setActiveTab: props.activeTab.setActiveTab
+            setActiveTab: props.activeTab.setActiveTab,
           }}
         />
       )}
-      {props.data?.time && (
+      {props.tabs?.hasTimeSeries && (
         <InfoTab
           iconName="timeline"
           activeTab={{

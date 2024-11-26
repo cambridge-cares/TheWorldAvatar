@@ -1,0 +1,15 @@
+{
+    "name": "sea-level",
+    "externalDatasets": [
+        "sealevelprojections-nasa-dem",
+        "dem",
+        "buildings-layer",
+        "culture",
+        "landplot",
+        "population",
+        "routing",
+        "tbox",
+        "tree",
+        "isochrone"
+    ]
+}

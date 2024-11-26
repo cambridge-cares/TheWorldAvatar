@@ -1,0 +1,14 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+env: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+twa:    https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	cost
+target		twa:Building/{building_uuid} env:hasEstimatedConstructionCost om:Cost/{building_uuid} .
+            om:Cost/{building_uuid} om:hasValue om:Measure/{building_uuid} .
+            om:Measure/{building_uuid} om:hasNumericalValue {cost} .
+source     SELECT * FROM gfa_floors.cost
+]]

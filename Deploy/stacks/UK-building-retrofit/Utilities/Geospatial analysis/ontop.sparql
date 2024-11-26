@@ -1,0 +1,24 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX GeoSparql: <http://www.opengis.net/ont/geosparql#>
+PREFIX OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX OntoONS: <https://www.ordnancesurvey.co.uk/linked-data/ontology/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?lsoa_code ?mean_gas_consumption ?mean_elec_consumption ?centroid_x ?centroid_y
+WHERE {
+  # Retrieve LSOA-level gas consumption
+  ?gas_consumption a ontobuiltenv:GasConsumption ;
+                   OM:hasValue ?mean_gas_consumption ;
+                   ontobuiltenv:hasIdentifier ?lsoa_code .
+
+  # Retrieve LSOA-level electricity consumption
+  ?elec_consumption a ontobuiltenv:ElecConsumption ;
+                    OM:hasValue ?mean_elec_consumption ;
+                    ontobuiltenv:hasIdentifier ?lsoa_code .
+
+  # Retrieve centroid coordinates for LSOA
+  ?lsoa a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ;
+        ontobuiltenv:hasIdentifier ?lsoa_code ;
+        GeoSparql:hasCentroidX ?centroid_x ;
+        GeoSparql:hasCentroidY ?centroid_y .
+}

@@ -1,7 +1,8 @@
-from py4j.java_gateway import JavaGateway, java_import, launch_gateway ,GatewayParameters
+from py4j.java_gateway import JavaGateway, java_import, launch_gateway, GatewayParameters
 from os import path
 from twa.resRegistry.resManager import resReg
 import textwrap
+import threading
 
 def _processLGkwargs(className, **LGkwargs):
     """
@@ -123,150 +124,213 @@ def _addConJGParams(port, proc, auth_token, JGkwargs):
     JGkwargs.update({'java_process':proc, 'gateway_parameters':GatewayParameters(**gateway_parameters)})
     return JGkwargs
 
-class JPSGateway:
+
+class JPSGatewaySingletonMeta(type):
+    """
+    A Singleton metaclass that ensures only one instance of the class is created.
+    """
+    # see https://stackabuse.com/creating-a-singleton-in-python/
+    # the reason why we didn't use the simpliest way of overwriting __new__ is due to custom argument in __init__
+    # which throws exception `TypeError: object.__new__() takes exactly one argument (the type to instantiate)`
+    # see for more information:
+    # https://stackoverflow.com/questions/59217884/new-method-giving-error-object-new-takes-exactly-one-argument-the-typ
+    _instances = {}
+    _lock: threading.Lock = threading.Lock()
+
+    def __call__(cls, *args, **kwargs):
+        """
+        Control the creation of the instance. If an instance already exists, return it.
+        Otherwise, create a new instance, store it, and return it.
+        """
+        with cls._lock:
+            if cls not in cls._instances:
+                instance = super().__call__(*args, **kwargs)
+                cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class JPSGateway(metaclass=JPSGatewaySingletonMeta):
     """
     Wrapper class of the py4j JavaGateway class for managing
     Python-Java communication.
 
+    The class can be used in the following way:
+
+    ```python
+    from twa import JPSGateway
+
+    yourGateway = JPSGateway(resName=yourResName, jarPath=yourResJarPath, **JGkwargs)
+    ```
+
+    > Note that if you wish to access an already installed resource through
+    the `JPSGateway` (not recommended), then the `jarPath` argument can be omitted
+    as it can be looked up by the resource name in the resource registry. Also,
+    note that some of the `py4j.java_gateway.JavaGateway` constructor arguments
+    are not allowed or should be passed to the `py4j.java_gateway.launch_gateway`
+    method instead. If that is the case, the code will print a warning message
+    which shows how to set the desired argument correctly. Please also note that
+    according to the `py4j` documentation, the `gateway_parameters` argument to the
+    `py4j.java_gateway.JavaGateway` constructor must have the type of the
+    [py4j GatewayParameters](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.GatewayParameters)
+    object. However, to make it easy for the `twa` users, this argument can be passed
+    as a dictionary which then is automatically converted into the `py4j GatewayParameters` object.
+
     Attributes:
-    ----------
-    resName : str
-        name of the Java resource
-    jarPath : str
-        absolute path to the main jar file of the java resource
-    gateway : JavaGateway objects
-        the gateway object handling Python-Java communication
-    _isStarted : bool, private
-        flag indicating if the gateway was launched
-    _gatewayUserParams : dict, private
-        dictionary storing user provided JavaGateway parameters
-    _launchGatewayUserParams : dict, private
-        dictionary storing user provided launch_gateway parameters
+        resName (str): name of the Java resource
+        jarPath (str): absolute path to the main jar file of the java resource
+        gateway (JavaGateway): the gateway object handling Python-Java communication
+        _isStarted (bool): flag indicating if the gateway was launched
+        _gatewayUserParams (dict): dictionary storing user provided JavaGateway parameters
+        _launchGatewayUserParams (dict): dictionary storing user provided launch_gateway parameters
+        _initialised (bool): flag inticating if the instance is already initialised
     """
-    def __init__(self, resName=None, jarPath=None, **JGkwargs):
+    # Class-level lock for the launchGateway method
+    _launch_lock = threading.Lock()
+
+    def __init__(self, resName:str=None, jarPath:str=None, **JGkwargs):
         """
         JPSGateway constructor class
 
-        Arguments:
-        ----------
-        resName : str
-            name of the Java resource
-        jarPath : str
-            absolute path to the main jar file of the java resource
-        JGkwargs : dict, optional
-            dictionary storing user provided JavaGateway parameters
+        Args:
+            resName (str): name of the Java resource
+            jarPath (str): absolute path to the main jar file of the java resource
+            JGkwargs (dict): dictionary storing user provided JavaGateway parameters
+                `argument: value` pairs one wishes to pass to the
+                [py4j JavaGateway](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway) constructor
 
-            note that the JGkwargs related to the 'gateway_parameters'
-            argument should be passed as a dictionary which is then
-            automatically converted into the 'GatewayParameters' object
-            As an example, the following arguments:
+        > Note that the JGkwargs related to the 'gateway_parameters'
+        argument should be passed as a dictionary which is then
+        automatically converted into the 'GatewayParameters' object.
+        Please refer to the
+        [py4j documentation](https://www.py4j.org/py4j_java_gateway.html)
+        for the description of all the possible arguments.
 
-            JGkwargs = {'gateway_parameters':{'auto_convert':True}}
+        > As an example, the following arguments:
 
-            will be automatically converted to:
+        > ```python
+        > JGkwargs = {'gateway_parameters':{'auto_convert':True}}
+        > ```
 
-            JGkwargs = {'gateway_parameters':
-                                GatewayParameters(auto_convert=True)}}
+        > will be automatically converted to:
 
-            note that the 'java_process' and 'auth_token' arguments
-            will be skipped if present and they are automatically
-            set by the launch_gateway method
+        > ```python
+        > JGkwargs = {'gateway_parameters': GatewayParameters(auto_convert=True)}}
+        > ```
 
-            note that the 'port' argument will skipped if present
-            as it can only be passed to the launch_gateway call
+        > Note that the 'java_process' and 'auth_token' arguments
+        will be skipped if present and they are automatically
+        set by the py4j.java_gateway.launch_gateway method
 
-            note that setting the JavaGateway 'eager_load' and the
-            launch_gateway 'enable_auth' arguments to True at the
-            same time does not work. The arguments are mutually
-            exclusive
+        > Note that the 'port' argument will skipped if present
+        as it can only be passed to the py4j.java_gateway.launch_gateway call
+
+        > Note that setting the JavaGateway 'eager_load' and the
+        py4j.java_gateway.launch_gateway 'enable_auth' arguments to
+        True at the same time does NOT work. The arguments are mutually
+        exclusive
+
+        > Note that the most important and useful settings are set by default
+        in this constructor so a user hardly ever need to pass any arguments
+        in that call. If required, however, the defaults of this constructor
+        can be overwritten by simply passing their new values. Please also
+        note that this constructor only instantiates the `JPSGateway` object,
+        and it DOES NOT instantiate the `py4j.java_gateway.JavaGateway`, whose
+        instantiation only happens in the `twa.JPSGateway.launchGateway` method
+        explained in more details below.
         """
-        self.resName = resName
-        self.jarPath = jarPath
-        if self.jarPath is None:
-            self.jarPath = resReg.getResMainFilePath(resName)
+        if not hasattr(self, '_initialised'):
+            # ensures __init__ runs only once
+            self._initialised = True
+            self.resName = resName
+            self.jarPath = jarPath
+            if self.jarPath is None:
+                self.jarPath = resReg.getResMainFilePath(resName)
 
-        try:
-            if not path.isfile(self.jarPath):
+            try:
+                if not path.isfile(self.jarPath):
+                    print('Error: Resource jarpath is invalid.')
+                    raise FileNotFoundError
+            except TypeError:
                 print('Error: Resource jarpath is invalid.')
                 raise FileNotFoundError
-        except TypeError:
-            print('Error: Resource jarpath is invalid.')
-            raise FileNotFoundError
-        self.gateway = None
-        self._gatewayUserParams = _processJGkwargs(**JGkwargs)
-        self._launchGatewayUserParams = None
-        self._isStarted = False
+            self.gateway = None
+            self._gatewayUserParams = _processJGkwargs(**JGkwargs)
+            self._launchGatewayUserParams = None
+            self._isStarted = False
+            print(f'Info: Initializing JPSGateway with resName={resName}, jarPath={jarPath}')
+        else:
+            print(f'Info: Gateway already initialised. Any JavaGateway created ({self.gateway}) will be reused.')
 
     def launchGateway(self, **LGkwargs):
         """
-        Wrapper method for the py4j launch_gateway method which
-        launches the Gateway in a new Java process and creates a
-        default JavaGateway to connect to it.
+        Wrapper method for the py4j.java_gateway.launch_gateway
+        method which launches the Gateway in a new Java process
+        and creates a default JavaGateway to connect to it.
 
-        Arguments:
-        ----------
-        LGkwargs : dict, optional
-            a dictionary containing the py4j launch_gateway method
-            arguments
+        Args:
+            LGkwargs (dict): a dictionary containing the py4j.java_gateway.launch_gateway method arguments
 
-            note that the 'jarpath' and 'return_proc' arguments cannot
-            be changed and will be skipped if provided
+        > Note that the 'jarpath' and 'return_proc' arguments cannot
+        be changed and will be skipped if provided
+
+        > Note that **this calls an internal py4j.java_gateway.launch_gateway function which is
+        different from the launch_gateway function described in py4j web documentation.**
+        The py4j function described in py4j web documentation is a JavaGateway classmethod
+        which in turn calls the function below. It is a bit confusing as the two functions have
+        the same name. The difference between the two is that the launch_gateway classmethod
+        launches the java process and then creates a JavaGateway object connected to it, the
+        problem is that this function call does not accept any user JavaGateway constructor
+        arguments. The non classmethod call on the other hand only launches the java process
+        without creating the JavaGateway instance. The JavaGateway instance can be then created
+        at a later stage with user defined parameters plus the parameters returned from the
+        launch_gateway method call that connect the running java process and the JavaGateway.
+        Therefore, the non classmethod py4j.java_gateway.launch_gateway is called herein and its
+        outputs are passed to the JavaGateway constructor.
+
         """
 
-        if not self._isStarted:
-            LGkwargs = _processLGkwargs(self.__class__.__name__, **LGkwargs)
-            self._launchGatewayUserParams = LGkwargs
+        with self._launch_lock:
+            if not self._isStarted:
+                LGkwargs = _processLGkwargs(self.__class__.__name__, **LGkwargs)
+                self._launchGatewayUserParams = LGkwargs
 
-            # this launches the java process
-            # Note that this calls an internal py4j launch_gateway function which is
-            # different from the launch_gateway function described in py4j web documentation.
-            # The py4j function described in py4j web documentation is a JavaGateway classmethod
-            # which in turn calls the function below. It is a bit confusing as the two functions have
-            # the same name. The difference between the two is that the launch_gateway classmethod
-            # launches the java process and then creates a JavaGateway object connected to it, the
-            # problem is that this function call does not accept any user JavaGateway constructor
-            # arguments. The non classmethod call on the other hand only launches the java process
-            # without creating the JavaGateway instance. The JavaGateway instance can be then created
-            # at a later stage with user defined parameters plus the parameters returned from the
-            # launch_gateway method call that `connect` the running java process and the JavaGateway.
-            # You can see that below, where the non classmethod launch_gateway is called and its
-            # outputs are passed to the JavaGateway constructor.
-            try:
-                _ret = launch_gateway(jarpath=self.jarPath, **LGkwargs)
-            except TypeError as e:
-                print(textwrap.dedent("""
-                    Error: The launch_gateway method called with invalid argument(s).
-                           Please see the py4j documentation at:
-                               https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway
-                           to see the list of supported arguments."""))
-                raise e
-            except FileNotFoundError as e:
-                print(textwrap.dedent("""
-                    Error: Could not launch the resource gateway. Make sure that:
-                            1 - the resource jarPath is correct
-                            2 - java runtime environment 7+ is installed
-                            3 - java runtime environment 7+ is correctly added to the system path"""))
-                raise e
+                # this launches the java process
+                try:
+                    _ret = launch_gateway(jarpath=self.jarPath, **LGkwargs)
+                except TypeError as e:
+                    print(textwrap.dedent("""
+                        Error: The launch_gateway method called with invalid argument(s).
+                            Please see the py4j documentation at:
+                                https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway
+                            to see the list of supported arguments."""))
+                    raise e
+                except FileNotFoundError as e:
+                    print(textwrap.dedent("""
+                        Error: Could not launch the resource gateway. Make sure that:
+                                1 - the resource jarPath is correct
+                                2 - java runtime environment 7+ is installed
+                                3 - java runtime environment 7+ is correctly added to the system path"""))
+                    raise e
 
-            if LGkwargs['enable_auth']:
-                _port, _auth_token, proc = _ret
+                if LGkwargs['enable_auth']:
+                    _port, _auth_token, proc = _ret
+                else:
+                    _port, proc, _auth_token = _ret + (None, )
+
+                self._gatewayUserParams = _addConJGParams(_port, proc, _auth_token, self._gatewayUserParams)
+                # this creates the JavaGateway object connected to the launched java process above
+                try:
+                    self.gateway = JavaGateway(**self._gatewayUserParams)
+                except TypeError as e:
+                    print(textwrap.dedent("""
+                        Error: The JavaGateway constructor method called with invalid argument(s).
+                            Please see the py4j documentation at:
+                                https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway
+                            to see the list of supported arguments."""))
+
+                self._isStarted = True
             else:
-                _port, proc, _auth_token = _ret + (None, )
-
-            self._gatewayUserParams = _addConJGParams(_port, proc, _auth_token, self._gatewayUserParams)
-            # this creates the JavaGateway object connected to the launched java process above
-            try:
-                self.gateway = JavaGateway(**self._gatewayUserParams)
-            except TypeError as e:
-                print(textwrap.dedent("""
-                    Error: The JavaGateway constructor method called with invalid argument(s).
-                           Please see the py4j documentation at:
-                               https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway
-                           to see the list of supported arguments."""))
-
-            self._isStarted = True
-        else:
-            print("Info: JavaGateway already started.")
+                print("Info: JavaGateway already started.")
 
     def shutdown(self):
         """
@@ -282,28 +346,23 @@ class JPSGateway:
         Creates a new JVM view with its own imports.
 
         Returns:
-        ----------
-        new_jvm_view : JavaGateway.JVM
-            A new JVM view object
+            new_jvm_view (JavaGateway.JVM): A new JVM view object
         """
         if self._isStarted:
             return self.gateway.new_jvm_view()
         else:
             print("Error: Cannot create the module view. The JavaGateway is not started. Call the gateway start() method first.")
 
-    def importPackages(self,moduleView,importStatement):
+    def importPackages(self, moduleView, importStatement):
         """
         Wrapper method for the py4j java_import method.
         Imports a class / package into the specified JVM view
 
-        Arguments:
-        ----------
-        jvm_view : JavaGateway.JVM
-            A new JVM view object
-        importStatement : str
-            The class / package name to import
+        Args:
+            moduleView (JavaGateway.JVM): A new JVM view object
+            importStatement (str): The class / package name to import
         """
         if self._isStarted:
-            java_import(moduleView,importStatement)
+            java_import(moduleView, importStatement)
         else:
             print("Error: Cannot import packages. The JavaGateway is not started. Call the gateway start() method first.")

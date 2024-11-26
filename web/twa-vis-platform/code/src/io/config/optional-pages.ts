@@ -60,7 +60,7 @@ export default class OptionalPages {
                         title: matterResult.data.title,
                         slug: matterResult.data.slug,
                         description: matterResult.data.description,
-                        content: formatMarkdownImages(matterResult.content),
+                        content: matterResult.content.replaceAll(/(<img\s+src=")(?!https?:\/\/)(\/)?([^"]+")/g, `$1${process.env.ASSET_PREFIX}/$3`),
                         filename: fileName,
                         thumbnail: matterResult.data.thumbnail
                     };
@@ -70,8 +70,6 @@ export default class OptionalPages {
 
             // Sort pages by filename
             OptionalPages.LOADED_PAGES.sort(OptionalPages.compare);
-            
-            console.info("Loaded optional pages content.");
         } catch(error) {
             console.error("Could not read any optional pages!", error);
         }
@@ -127,10 +125,3 @@ export default class OptionalPages {
  * @param markdownContent Entire content of markdown document.
  * @returns The input content with prefix added to image urls.
  */
-function formatMarkdownImages(markdownContent: string): string {
-    const prefix: string = process.env.BASE_PATH || "/";
-    // Append base path if available
-    // Formats either <img src="/images/... or <img src="images/...
-    // Exclude any initial img elements starting with http 
-    return markdownContent.replace(/(<img\s+src=")(?!https?:\/\/)(\/)?([^"]+")/g, `$1${prefix}$3`);
-}

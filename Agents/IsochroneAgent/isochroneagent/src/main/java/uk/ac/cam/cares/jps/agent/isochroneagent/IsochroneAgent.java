@@ -179,7 +179,7 @@ public class IsochroneAgent extends JPSAgent {
             virtualTable.addVirtualTableGeometry("geometry", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName,"isochrone_aggregated" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName,"isochrone_aggregated" ,geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "public", "isochrone_aggregated" ,geoServerVectorSettings);
 
             if (isochroneFunction.equals("UR")){
             UpdatedGSVirtualTableEncoder virtualTableUnreachable = new UpdatedGSVirtualTableEncoder();
@@ -190,7 +190,7 @@ public class IsochroneAgent extends JPSAgent {
                 virtualTableUnreachable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
                 geoServerVectorSettingsUnreachable.setVirtualTable(virtualTableUnreachable);
             geoServerClient.createPostGISDataStore(workspaceName,"unreachable" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName,"unreachable" ,geoServerVectorSettingsUnreachable);
+            geoServerClient.createPostGISLayer(workspaceName, dbName, "public", "unreachable" ,geoServerVectorSettingsUnreachable);
 
 
             }

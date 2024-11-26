@@ -1,9 +1,9 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
+import uk.ac.cam.cares.jps.agent.dashboard.datamodel.Organisation;
 import uk.ac.cam.cares.jps.agent.dashboard.json.panel.PanelModel;
 import uk.ac.cam.cares.jps.agent.dashboard.json.templating.TemplatingModel;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,11 +27,11 @@ public class GrafanaModel {
      *
      * @param title                 The title of the dashboard.
      * @param databaseConnectionMap A map linking each database to its connection ID.
-     * @param timeSeries            A map of all assets and rooms mapped to their time series.
+     * @param organisation          The organisation's time series data model.
      */
-    public GrafanaModel(String title, Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
+    public GrafanaModel(String title, Map<String, String> databaseConnectionMap, Organisation organisation) {
         // Grafana has enforced a default comment for the first version, which cannot be changed
-        this(title, null, "null", "20s", "Initialised dashboard", databaseConnectionMap, timeSeries);
+        this(title, null, "null", "20s", "Initialised dashboard", databaseConnectionMap, organisation);
     }
 
     /**
@@ -43,9 +43,9 @@ public class GrafanaModel {
      * @param refreshRate           The refresh rate of the real-time dashboard. Sample values: 5s, 1m, 1h, 1d.
      * @param comment               A comment for version control purposes.
      * @param databaseConnectionMap A map linking each database to its connection ID.
-     * @param timeSeries            A map of all assets and rooms mapped to their time series.
+     * @param organisation          The organisation's time series data model.
      */
-    public GrafanaModel(String title, Integer dashboardId, String dashboardUid, String refreshRate, String comment, Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
+    public GrafanaModel(String title, Integer dashboardId, String dashboardUid, String refreshRate, String comment, Map<String, String> databaseConnectionMap, Organisation organisation) {
         this.dashboardTitle = title;
         // If setting up a new dashboard, please pass null as a parameter to generate the ID. If updating an existing dashboard, please pass the original id
         this.dashboardId = dashboardId == null ? "null" : dashboardId.toString();
@@ -55,8 +55,8 @@ public class GrafanaModel {
         this.dashboardRefreshRate = refreshRate;
         this.comment = comment;
         // Construct the templating syntax from the model
-        this.templatingSyntax = new TemplatingModel(databaseConnectionMap, timeSeries).construct();
-        this.panelSyntax = new PanelModel(databaseConnectionMap, timeSeries).construct();
+        this.templatingSyntax = new TemplatingModel(databaseConnectionMap, organisation).construct();
+        this.panelSyntax = new PanelModel(databaseConnectionMap, organisation).construct();
     }
 
     /**

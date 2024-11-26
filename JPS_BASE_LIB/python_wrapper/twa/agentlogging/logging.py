@@ -11,7 +11,21 @@ import os
 
 class StreamToLogger(TextIOBase):
     """
-        Fake file-like stream object that redirects writes to a logger instance.
+    Fake file-like stream object that redirects writes to a logger instance.
+
+    > StreamToLogger is made to extend TextIOBase to prevent error like below when running pytest with docker-compose
+    as part of dockerised test in developing pyderivationagent package:
+        AttributeError: 'StreamToLogger' object has no attribute 'isatty'
+
+    > To reproduce the error, one may checkout to
+    [this commit](https://github.com/cambridge-cares/TheWorldAvatar/tree/ab354e2a759d812c64bb5236ba37d1ba9e53e552/JPS_BASE_LIB/python_derivation_agent)
+    and run `pytest -s --docker-compose=./docker-compose.test.yml` in the folder
+
+    > This error was due to [this line](https://github.com/pytest-dev/pytest/blob/ee10ecdf7eb20033b8b46e56ae257a0344712b8a/src/_pytest/terminal.py#L332)
+    in pytest checking if `sys.stdout.isatty()` is True/False
+
+    > Another fix is to provide "def isatty(self) -> bool:"" but extending TextIOBase seems to be a "safer"/"cleaner" fix,
+    according to [this comment](https://stackoverflow.com/questions/19425736/how-to-redirect-stdout-and-stderr-to-logger-in-python#comment114971340_39215961)
     """
 
     # NOTE StreamToLogger is made to extend TextIOBase to prevent error like below when running pytest with docker-compose
@@ -43,7 +57,7 @@ class StreamToLogger(TextIOBase):
 
 def _config_logging():
     """
-        Initialise and configure loggers.
+    Initialise and configure loggers.
     """
     # Create logs directory
     log_dir = os.path.join(os.path.expanduser("~"), ".twa", "logs")
@@ -67,15 +81,15 @@ def _config_logging():
     sys.stdout = StreamToLogger(stdout_logger, logging.DEBUG)
 
 
-def get_logger(logger_name):
+def get_logger(logger_name: str):
     """
-        Get the dev or prod logger (avoids having to import 'logging' in calling code).
+    Get the dev or prod logger (avoids having to import 'logging' in calling code).
 
-        Parameters:
-            logger_name - 'dev' or 'prod'
+    Args:
+        logger_name: name of the logger to be used, available options include 'dev' and 'prod'
 
-        Returns:
-            Logger to use for logging statements.
+    Returns:
+        Logger to use for logging statements.
     """
     valid_logger_names = ['dev','prod']
 
@@ -83,15 +97,27 @@ def get_logger(logger_name):
         return logging.getLogger(logger_name)
     else:
         raise ValueError("Invalid logger name: allowed values are "+",".join(valid_logger_names))
-        return None
 
 
 def shutdown():
     """
-        Shutdown the logging system, should be called
-        before application exit after all logging calls.
+    Shutdown the logging system, should be called
+    before application exit after all logging calls.
     """
     logging.shutdown()
+
+
+def clear_loggers():
+    """
+    Remove handlers from all loggers. Method adopted from
+    [this comment](https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873).
+    """
+    import logging
+    loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
+    for logger in loggers:
+        handlers = getattr(logger, 'handlers', [])
+        for handler in handlers:
+            logger.removeHandler(handler)
 
 
 # Perform configuration on module import

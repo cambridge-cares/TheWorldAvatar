@@ -1,0 +1,79 @@
+@font-face {
+    font-family: open-sans-regular;
+    src: url('../fonts-ttf/OpenSans-Regular.ttf');
+}
+  
+  @font-face {
+    font-family: open-sans-semibold;
+    src: url('../fonts-ttf/OpenSans-SemiBold.ttf');
+  }
+  
+  @font-face {
+    font-family: open-sans-bold;
+    src: url('../fonts-ttf/OpenSans-Bold.ttf');
+  }
+  
+  @font-face {
+    font-family: fira-sans-regular;
+    src: url('../fonts-ttf/FiraSans-Regular.ttf');
+  }
+  
+  @font-face {
+    font-family: nato-sans-regular;
+    src: url('../fonts-ttf/NotoSans-Regular.ttf');
+  }
+  
+  @font-face {
+    font-family: nato-sans-bold;
+    src: url('../fonts-ttf/NotoSans-Bold.ttf');
+  }
+  
+  @font-face {
+    font-family: roboto-regular;
+    src: url('../fonts-ttf/Roboto-Regular.ttf');
+  }
+  
+  @font-face {
+    font-family: roboto-light;
+    src: url('../fonts-ttf/Roboto-Light.ttf');
+  }
+  
+  @font-face {
+    font-family: roboto-semibold;
+    src: url('../fonts-ttf/Roboto-Medium.ttf');
+  }
+  
+  @font-face {
+    font-family: roboto-bold;
+    src: url('../fonts-ttf/Roboto-Bold.ttf');
+  }
+  
+  @font-face {
+    font-family: poppins-regular;
+    src: url('../fonts-ttf/Poppins-Regular.ttf');
+  }
+  
+  @font-face {
+    font-family: poppins-bold;
+    src: url('../fonts-ttf/Poppins-Bold.ttf');
+  }
+  
+  @font-face {
+    font-family: poppins-semibold;
+    src: url('../fonts-ttf/Poppins-SemiBold.ttf');
+  }
+  
+  @font-face {
+    font-family: poppins-light;
+    src: url('../fonts-ttf/Poppins-Light.ttf');
+  }
+  
+  @font-face {
+    font-family: poppins-black;
+    src: url('../fonts-ttf/Poppins-Black.ttf');
+  }
+  
+  @font-face {
+    font-family: poppins-light-italic;
+    src: url('../fonts-ttf/Poppins-LightItalic.ttf');
+  }  

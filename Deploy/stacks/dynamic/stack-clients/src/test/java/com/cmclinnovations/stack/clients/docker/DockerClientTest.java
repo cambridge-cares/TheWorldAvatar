@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
-import com.cmclinnovations.stack.clients.core.StackClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
@@ -44,7 +43,6 @@ public class DockerClientTest {
 
     @BeforeClass
     public static void setup() {
-        StackClient.setInStack(false);
         dockerAPI = DockerClient.getInstance();
 
         String image = "busybox:latest";
@@ -74,7 +72,7 @@ public class DockerClientTest {
     }
 
     @AfterClass
-    public static void tearDown() throws InterruptedException {
+    public static void tearDown() {
         if (null != dockerAPI && null != containerId) {
             try (RemoveContainerCmd removeContainerCmd = dockerAPI.getInternalClient()
                     .removeContainerCmd(containerId)) {

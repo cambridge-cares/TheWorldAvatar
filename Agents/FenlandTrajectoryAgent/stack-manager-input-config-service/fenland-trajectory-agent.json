@@ -1,0 +1,42 @@
+{
+    "ServiceSpec": {
+        "Name": "fenland-trajectory-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/fenland-trajectory-agent:1.0.0",
+                "Env": [
+                    "NAMESPACE=gps_trajectory",
+                    "DATABASE=postgres",
+                    "LAYERNAME=gps_trajectory",
+                    "GEOSERVER_WORKSPACE=gps_trajectory",
+                    "ONTOP_FILE=/app/resources/ontop.obda"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/fenland-trajectory-agent/"
+        }
+    }
+}

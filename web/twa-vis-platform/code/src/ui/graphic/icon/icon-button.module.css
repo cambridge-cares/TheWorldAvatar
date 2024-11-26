@@ -13,7 +13,7 @@
 }
 
 .icon-button {
-    color: var(--text-color-primar);
+    color: var(--text-color-primary);
     transition: color 0.3s ease;
 }
 
@@ -49,9 +49,4 @@
     height: 0.5rem;
     width: 0.5rem;
     border-radius: 50%;
-}
-
-/** Alignments **/
-.push-right {
-    margin-left: auto;
 }

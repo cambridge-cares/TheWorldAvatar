@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -14,6 +18,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.google.common.base.Preconditions;
 
 public final class FileUtils {
 
@@ -95,17 +101,28 @@ public final class FileUtils {
         String[] urlComponents = dirURL.getPath().split("!");
         String jarPath = urlComponents[0].replaceFirst("file:", "");
         String path = urlComponents[1].replaceFirst("^/?(.*?)/?$", "$1/");
+        if (jarPath.startsWith("nested:")) {
+            Path outerJarPath = Paths.get(jarPath.substring("nested:".length()));
+            try (FileSystem fs = FileSystems.newFileSystem(outerJarPath, FileUtils.class.getClassLoader())) {
+                Path innerJarPath = fs.getPath(path.replaceFirst("^(.*?)/?$", "$1/"));
+                Path extractedJarPath = outerJarPath.resolveSibling(innerJarPath.getFileName().toString());
+
+                Files.copy(innerJarPath, extractedJarPath, StandardCopyOption.REPLACE_EXISTING);
+
+                jarPath = extractedJarPath.toString();
+                path = urlComponents[2].replaceFirst("^/?(.*?)/?$", "$1/");
+                dirURL = new URL("jar:" + extractedJarPath.toUri().toURL().toString() + "!/" + path);
+            }
+        }
+        String cleanedDirURL = dirURL.toString().replaceFirst("^(.*?)/?$", "$1/");
         try (JarFile jar = new JarFile(jarPath)) {
             Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
                 if (name.startsWith(path)) { // filter according to the path
                     String entry = name.substring(path.length());
-                    if (!entry.isEmpty()) {
-                        int checkSubdir = entry.indexOf("/");
-                        if (checkSubdir == -1) {
-                            uris.add(URI.create(dirURL.toString().replaceFirst("^(.*?)/?$", "$1/") + entry));
-                        }
+                    if (!entry.isEmpty() && !entry.contains("/")) {
+                        uris.add(URI.create(cleanedDirURL + entry));
                     }
                 }
             }
@@ -129,5 +146,12 @@ public final class FileUtils {
 
     public static boolean hasFileExtension(Path file, String extension) {
         return file.toString().endsWith("." + extension);
+    }
+
+    public static void checkPathIsRelative(String path, String fieldName) {
+        Preconditions.checkArgument(!path.startsWith("/"),
+                "The field '" + fieldName + "' must be a relative path, '%s' provided.", path);
+        Preconditions.checkArgument(!path.isBlank(),
+                "The field '" + fieldName + "' must not be blank, '%s' provided.", path);
     }
 }

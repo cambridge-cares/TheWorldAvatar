@@ -1,0 +1,11 @@
+{
+    "start": {
+        "center": [103.848062, 1.276904, 400],
+        "heading": 0,
+        "pitch": -50,
+        "roll": 0.0
+    },
+    "fields": {
+        "name": "gml:name"
+    }
+}

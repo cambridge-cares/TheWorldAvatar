@@ -1,32 +1,17 @@
 /**
  * Utilities to be run on the client.
  */
-import moment from 'moment';
 import { Dispatch } from 'redux';
 
 import { DataParser } from 'io/data/data-parser';
 import { DataStore } from 'io/data/data-store';
-import { MapFeaturePayload, clearFeatures, setIri, setProperties, setQueryTrigger, setStack } from 'state/map-feature-slice';
+import { MapFeaturePayload, clearFeatures, setIri, setProperties, setStack } from 'state/map-feature-slice';
 import { JsonObject } from "types/json";
-import { TimeSeriesGroup, TimeSeries } from 'types/timeseries';
-
-/**
- * Format any internal app url path. Append a base path prefix if set.
- */
-export function formatAppUrl(url: string): string {
-    // Only append a base path if there is a relative path
-    if (url.startsWith("/")) {
-        // Append the base path prefix if there is a base environment
-        const appUrl: string = `${process.env.BASE_PATH || "/"}${url}`;
-        // Replace any double slashes with a single slash
-        return appUrl.replace(/\/\//g, "/");
-    }
-    return url;
-}
 
 /**
  * Open full screen mode.
  */
+
 export function openFullscreen() {
     const elem = document?.documentElement;
     if (elem?.requestFullscreen) {
@@ -55,52 +40,6 @@ export function parseMapDataSettings(dataSettings: JsonObject, mapType: string):
 }
 
 /**
- * Parse the time series data returned from agents into the time series group data model.
- *
- * @param {JsonObject} data The JSON data to parse.
- * @returns {TimeSeriesGroup} The required data model.
- */
-export function parseTimeSeries(data: JsonObject): TimeSeriesGroup {
-    // Initialise new empty array to store the values
-    const timeSeries: TimeSeries[] = [];
-    const times: moment.Moment[] = [];
-
-    // Parse data response to comply with typescript
-    const timeData: JsonObject = JSON.parse(JSON.stringify(data.time))[0];
-    const tsNames: Array<string> = JSON.parse(JSON.stringify(timeData.data));
-    const tsUnits: Array<string> = JSON.parse(JSON.stringify(timeData.units));
-    const tsValues: Array<Array<number>> = JSON.parse(JSON.stringify(timeData.values));
-    const tsValueClass: Array<string> = JSON.parse(JSON.stringify(timeData.valuesClass));
-    const timeClass: string = timeData.timeClass as string;
-    const rawTimes: number[] = JSON.parse(JSON.stringify(timeData.time));
-
-    for (let t = 0; t < rawTimes.length; t++) {
-        if (timeClass === "dateTime" || timeClass === "Instant") {
-            times.push(moment(rawTimes[t], "YYYY-MM-DD HH:mm:ss"));
-        } else if (timeClass === "offsetTime") {
-            times.push(moment(rawTimes[t], "HH:mm:ss"));
-        }
-    }
-
-    // Extract the current values and unit for each time series
-    tsNames.map((name, index) => {
-        timeSeries.push({
-            name: name,
-            unit: tsUnits[index],
-            values: tsValues[index],
-            valuesClass: tsValueClass[index],
-        });
-    })
-    return {
-        id: timeData.id as number,
-        timeClass: timeData.timeClass as string,
-        momentTimes: times,
-        times: rawTimes,
-        data: timeSeries,
-    };
-}
-
-/**
  * Set the selected feature and its required properties in Redux state for global access.
  *
  * @param {MapFeaturePayload} selectedFeature The feature of interest.
@@ -110,7 +49,7 @@ export function setSelectedFeature(selectedFeature: MapFeaturePayload, dispatch:
     if (selectedFeature) {
         // Disable linting as we wish to remove layer but do not require it in this function
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { layer, stack, iri, ...selectedProperties } = selectedFeature;
+        const { _layer, stack, iri, ...selectedProperties } = selectedFeature;
         if (!iri) {
             console.warn("IRI is missing. Data fetching will be skipped.");
         } else if (!stack) {
@@ -119,7 +58,44 @@ export function setSelectedFeature(selectedFeature: MapFeaturePayload, dispatch:
         dispatch(setIri(iri));
         dispatch(setProperties(selectedProperties));
         dispatch(setStack(stack));
-        dispatch(setQueryTrigger(true));
         dispatch(clearFeatures());
     }
+}
+
+/**
+ * Capitalises the words.
+ * 
+ * @param {string} str input string.
+ */
+export function parseWordsForLabels(str: string): string {
+    if (isValidIRI(str)) {
+        return getAfterDelimiter(str, "/");
+    }
+    return str.toLowerCase()
+        .replaceAll("_", " ")
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+}
+
+/**
+ * Checks that the input iri is valid.
+ * 
+ * @param {string} iri input iri.
+ */
+export function isValidIRI(iri: string): boolean {
+    // eslint-disable-next-line
+    const iriPattern = /^(https?|ftp|mailto|file|data|irc|tel|urn|uuid|doi):((\/\/[^\/?#]*)?[^?#]*)(\?[^#]*)?(#.*)?$/i;
+    return iriPattern.test(iri);
+}
+
+/**
+ * Retrieves the string following the delimiter if it exists. Otherwise returns the string as is.
+ * 
+ * @param {string} str input string.
+ * @param {string} delimiter delimiter of interest.
+ */
+export function getAfterDelimiter(str: string, delimiter: string): string {
+    return str.includes(delimiter) ? str.split(delimiter).pop() : str;
 }

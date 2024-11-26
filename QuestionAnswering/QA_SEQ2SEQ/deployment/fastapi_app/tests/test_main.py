@@ -12,7 +12,7 @@ from openai.types.chat.chat_completion_chunk import (
 )
 import pytest
 
-from api.sparql import get_domain2endpoint, get_kg_client_factory
+from api.sparql import get_domain2kgconfig, get_kg_client_factory
 from api.translate import get_feature_extraction_client, get_seq2seq_client
 from api.chat import get_openai_client, get_openai_config, get_tokens_counter
 from services.chatbot import OpenAiConfig
@@ -80,7 +80,7 @@ def test_sparql():
     def mock_domain2endpoint():
         return {"test_domain": "test_endpoint"}
 
-    app.dependency_overrides[get_domain2endpoint] = mock_domain2endpoint
+    app.dependency_overrides[get_domain2kgconfig] = mock_domain2endpoint
 
     def mock_kg_client_factory():
         class Mock(KgClient):

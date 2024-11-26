@@ -1,0 +1,11 @@
+PREFIX ic:   <http://ontology.eil.utoronto.ca/icontact.owl#>
+PREFIX env:  <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX bldg: <http://www.opengis.net/citygml/building/2.0/>
+
+SELECT ?building ?streetName ?streetNumber
+WHERE {
+  ?building a bldg:Building;
+            env:hasAddress ?address.
+  OPTIONAL { ?address ic:hasStreet ?streetName }
+  OPTIONAL { ?address ic:hasStreetNumber ?streetNumber }
+}

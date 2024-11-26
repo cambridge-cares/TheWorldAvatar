@@ -305,8 +305,8 @@ public class GeometryMatcher {
                 String key = line[0];
                 String value = line[1];
 
-                String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) \n" +
-                        "SELECT q2.iri, \'" + ontobuilt + "\' FROM \n" +
+                String updateLandUse = "INSERT INTO " + usageTable + " (building_iri, ontobuilt, source) \n" +
+                        "SELECT q2.iri, \'" + ontobuilt + "\' , \'land_use\' FROM \n" +
                         "(SELECT q.urival AS iri, q.geometry AS geo FROM " + citydbTable + "q\n" +
                         "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
                         "WHERE u.building_iri IS NULL) AS q2 \n" +

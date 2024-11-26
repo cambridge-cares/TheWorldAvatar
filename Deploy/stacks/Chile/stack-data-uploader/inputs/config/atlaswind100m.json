@@ -1,0 +1,26 @@
+{
+    "name": "atlaswind100m",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "atlaswind100m",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "atlaswind100m",
+            "skip": false,
+            "subdirectory": "raster",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "atlaswind100m"
+                }
+            }
+            
+        }
+    ],
+    "styles": [
+        {
+            "name": "atlaswind100m",
+            "file": "atlaswind100m.sld"
+        }
+    ]
+}

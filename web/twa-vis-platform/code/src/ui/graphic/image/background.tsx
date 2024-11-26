@@ -1,14 +1,18 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
-import { formatAppUrl } from 'utils/client-utils';
+import { useEffect, useState } from 'react';
+
+import { Assets } from 'io/config/assets';
 
 /**
  * An image component that sets the background image depending on the current theme.
   */
+
+const ASSET_PREFIX = process.env.ASSET_PREFIX;
+
 export default function BackgroundImage() {
-  const lightBackgroundUrl: string = formatAppUrl("/images/defaults/background-light.svg");
-  const darkBackgroundUrl: string = formatAppUrl("/images/defaults/background-dark.svg");
+  const lightBackgroundUrl: string = ASSET_PREFIX + Assets.BACKGROUND_LIGHT;
+  const darkBackgroundUrl: string = ASSET_PREFIX + Assets.BACKGROUND_DARK;
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(lightBackgroundUrl);
 
   useEffect(() => {

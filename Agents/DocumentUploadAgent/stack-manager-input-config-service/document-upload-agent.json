@@ -1,0 +1,39 @@
+{
+  "ServiceSpec": {
+    "Name": "document-upload-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "docker.io/library/document-upload-agent:1.0.0",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/home/astoria-cares/Documents/DocumentUploadAgent/TheWorldAvatar/Agents/DocumentUploadAgent/documents",
+            "Target": "/root/documents"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+              "ConfigName": "postgis"
+          }
+      ],
+      "Secrets": [
+          {
+              "SecretName": "blazegraph_password"
+          },
+          {
+              "SecretName": "postgis_password"
+          }
+      ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/document-upload-agent/",
+      "externalPath": "/document-upload-agent/"
+    }
+  }
+}

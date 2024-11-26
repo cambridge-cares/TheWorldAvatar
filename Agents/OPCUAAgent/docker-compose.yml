@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  opcua-agent:
+    build:
+      target: production
+      dockerfile: Dockerfile
+    image: opcua-agent:1.0.0
+    volumes:
+      - <path on host>:/app/OPCUAAgent/config
+      - <path on host>:/app/OPCUAAgent/filtered_tags
+    container_name: opcua-agent

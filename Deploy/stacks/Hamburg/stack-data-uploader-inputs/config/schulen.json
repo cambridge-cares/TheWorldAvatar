@@ -1,0 +1,46 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "schulen",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "nichtstaatlicheschulen",
+            "subdirectory": "nichtstaatlicheschulen",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "EMPTY_STRING_AS_NULL": "YES"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT CONCAT('https://www.theworldavatar.com/kg/hh/schule-',\"id\") as iri, schulname as name, * FROM \"de_hh_up_nicht_staatliche_schulen_EPSG_4326\""
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "staatlicheschulen",
+            "subdirectory": "staatlicheschulen",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "EMPTY_STRING_AS_NULL": "YES"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT CONCAT('https://www.theworldavatar.com/kg/hh/schule-',\"id\") as iri, schulname as name, * FROM \"de_hh_up_staatliche_schulen_EPSG_4326\""
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -13,6 +13,11 @@
 *.hdt
 *.mod
 
+# Log files and databases are not allowed:
+*.log
+database.sqlite
+keys.json
+
 # Integrated Development Environment (IDE)-specific files/folders:
 .vscode/
 .code-workspace
@@ -107,4 +112,12 @@ JPS_VIRTUALSENSOR/ShipInputAgent/data/*.json
 *.tif
 web/twa-vis-platform/code/public/config/*
 web/twa-vis-platform/code/public/images/*
+!web/twa-vis-platform/code/public/images/defaults/
+!web/twa-vis-platform/code/public/images/utils/
+!web/twa-vis-platform/code/public/images/README.md
+
 web/twa-vis-platform/code/public/optional-pages/*
+!web/twa-vis-platform/code/public/optional-pages/landing-page.md
+!web/twa-vis-platform/code/public/optional-pages/help-page.md
+
+web/*/auth/realm/*.json

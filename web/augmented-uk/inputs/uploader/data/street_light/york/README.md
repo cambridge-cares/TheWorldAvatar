@@ -1,0 +1,1 @@
+Add York street light data in CSV form here from https://www.data.gov.uk/dataset/baf1c264-7160-444b-a4e3-0fe25c5b1e11/street-lighting.

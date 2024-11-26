@@ -1,18 +1,24 @@
+import { Path } from "typescript";
+import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
+
 /**
  * Interface of default settings for landing page.
  */
-export type DefaultSettings = {
+export type UISettings = {
   branding: {
-    [key: string]: string | number | boolean;
+    'navbarLogo': string | string[];
+    'landing': string;
+    'landingDark': string;
   },
   modules: {
     [key: string]: boolean;
   },
+  links?: DefaultPageThumbnailProps[],
   resources?: {
     [key: string]: {
       url: string;
       data?: string;
-    }
+    };
   }
 }
 
@@ -63,16 +69,20 @@ export type LegendSettings = {
   [groupName: string]: LegendGroup;
 }
 
-export type LegendGroup = {
-  [itemName: string]: FillLegend | SymbolLegend;
-}
+export type LegendGroup =  FillLegend[] | SymbolLegend[];
 
 type SymbolLegend = {
+  heading: string;
+  content: string;
   type: "symbol";
   icon: string;
 }
 
 type FillLegend = {
+  heading: string;
+  content: string; 
   type: "fill";
   fill: string;
 }
+
+export type MapboxCredentials = { username: string, token: string }

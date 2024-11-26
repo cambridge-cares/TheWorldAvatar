@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Iterator;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.query.Dataset;
@@ -360,7 +361,7 @@ public class LocalStoreClient implements TripleStoreClientInterface {
 			LOGGER.debug("Create insert for default graph");
 			builder.addInsert(model);
 		} else {
-			LOGGER.debug("Create insert for namde graph: "+graphName);
+			LOGGER.debug("Create insert for named graph: "+graphName);
 			String graphURI = "<" + graphName + ">";
 			builder.addInsert(graphURI, model);
 		}
@@ -425,5 +426,23 @@ public class LocalStoreClient implements TripleStoreClientInterface {
 
 	@Override
 	public void setPassword(String password) {
+	}
+
+	@Override
+	public CloseableHttpResponse executeUpdateByPost(String update) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'executeUpdateByPost'");
+	}
+
+	@Override
+	public void uploadTriples(String triple) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'uploadTriples'");
+	}
+
+	@Override
+	public void uploadTriples(String triple, String extension) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'uploadTriples'");
 	}
 }

@@ -1,0 +1,27 @@
+{
+  "branding": {
+    "navbar": [
+      "/images/defaults/icons/twa.svg",
+      "/images/defaults/icons/cmcl-logo.svg"
+    ],
+    "landing": [
+      "/images/defaults/icons/twa.svg"
+    ],
+    "landingDark": [
+      "/images/defaults/icons/twa.svg"
+    ]
+  },
+  "modules": {
+    "landing": true,
+    "help": true,
+    "map": true
+  },
+  "links": [
+    {
+      "url": "https://theworldavatar.io/collaborate/",
+      "title": "Get Involved",
+      "caption": "Collaborate with us in the areas of research, development, and industry use",
+      "icon": "/images/defaults/icons/involve.svg"
+    }
+  ]
+}

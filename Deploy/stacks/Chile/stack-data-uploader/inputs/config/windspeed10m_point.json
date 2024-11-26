@@ -1,0 +1,23 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "windspeed10m_point",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "windspeed10m_point",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "lon",
+                    "Y_POSSIBLE_NAMES": "lat",
+                    "GEOM_POSSIBLE_NAMES": "wkb_geometry"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+[PrefixDeclaration]
+
+xsd:	http://www.w3.org/2001/XMLSchema#
+city:	http://cui.unige.ch/citygml/2.0/
+plot:   https://www.theworldavatar.com/kg/ontoplot/
+landplot: https://www.theworldavatar.com/kg/landplot/
+
+[MappingDeclaration] @collection [[
+mappingId   Building GFA
+target      city:cityobject/{cityobject_id} plot:hasCalculatedGFA {realval}^^xsd:double .
+source      SELECT cityobject_id, realval FROM citydb.cityobject_genericattrib WHERE attrname='GFA'
+
+mappingId   landplot to buildings
+target      landplot:{ogc_fid} plot:containsBuilding twa:Building/{building_uuid} .
+source      SELECT ogc_fid, building_uuid from landplot_buildings
+]]

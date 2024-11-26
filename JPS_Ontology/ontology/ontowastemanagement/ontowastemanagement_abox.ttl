@@ -1,0 +1,42 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix owm: <https://www.theworldavatar.com/kg/ontowastemanagement/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cmns-dsg:   <https://www.omg.org/spec/Commons/Designators/> .
+@prefix cmns-qtu:   <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
+@prefix cmns-txt:   <https://www.omg.org/spec/Commons/TextDatatype/> .
+
+owm:tonne a cmns-qtu:MeasurementUnit ;
+  cmns-dsg:hasName owm:tonneName;
+  rdfs:comment "The tonne is a unit of mass defined as 1000 kilogram.".
+
+owm:tonneName a cmns-qtu:QuantityName ;
+  cmns-txt:hasTextValue "tonne" .
+
+owm:BinStatus owl:oneOf (
+    owm:Filled
+    owm:Empty
+    owm:Available
+    owm:Unavailable
+    owm:Decomissioned
+) .
+
+owm:Filled a owm:BinStatus ;
+  rdfs:label "Filled";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is filled.".
+
+owm:Empty a owm:BinStatus ;
+  rdfs:label "Empty";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is empty.".
+
+owm:Available a owm:BinStatus ;
+  rdfs:label "Available";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is available.".
+
+owm:Unavailable a owm:BinStatus ;
+  rdfs:label "Unavailable";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is unavailable.".
+
+owm:Decomissioned a owm:BinStatus ;
+  rdfs:label "Decomissioned";
+  rdfs:comment "Represents the status of an item in the system. This status indicates that the item is decommisioned and not in operation.".

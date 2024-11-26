@@ -22,6 +22,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -501,7 +502,7 @@ public class QueryClient {
     }
 
     /**
-     * adds the OntoAgent instance
+     * adds the OntoAgent instance for emissions agent and ship data agent
      */
     void initialiseAgent() {
         Iri service = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service");
@@ -524,6 +525,17 @@ public class QueryClient {
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
         modify.insert(partIri.has(hasType, SHIP).andHas(hasType, SIMULATION_TIME)).prefix(P_DISP);
 
+        // ship data agent
+        Iri operationIri2 = iri(PREFIX + "ship_data_operation");
+        Iri inputIri2 = iri(PREFIX + "ship_data_input");
+        Iri partIri2 = iri(PREFIX + "ship_data_mandatory_part");
+
+        modify.insert(iri(EnvConfig.SHIP_DATA_AGENT_IRI).isA(service).andHas(hasOperation, operationIri2));
+        modify.insert(operationIri2.isA(operation).andHas(hasHttpUrl, iri(EnvConfig.SHIP_DATA_AGENT_URL))
+                .andHas(hasInput, inputIri2));
+        modify.insert(inputIri2.has(hasMandatoryPart, partIri2));
+        modify.insert(partIri2.has(hasType, SHIP));
+
         storeClient.executeUpdate(modify.getQueryString());
     }
 
@@ -534,12 +546,18 @@ public class QueryClient {
     void createNewDerivations(List<Ship> ships) {
         if (Boolean.parseBoolean(EnvConfig.PARALLELISE_CALCULATIONS)) {
             ships.parallelStream()
-                    .forEach(ship -> derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
-                            Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION));
+                    .forEach(ship -> {
+                        derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
+                                Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                        derivationClient.createSyncDerivationForNewInfo(EnvConfig.SHIP_DATA_AGENT_IRI,
+                                Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                    });
         } else {
             for (Ship ship : ships) {
                 try {
                     derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
+                            Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                    derivationClient.createSyncDerivationForNewInfo(EnvConfig.SHIP_DATA_AGENT_IRI,
                             Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
@@ -661,10 +679,10 @@ public class QueryClient {
             shipToMeasuresMap.entrySet().forEach(entry -> {
                 String ship = entry.getKey();
                 List<String> measures = entry.getValue();
-                Instant latestTime = tsClient.getLatestData(measures.get(0), conn).getTimes().get(0);
+                TimeSeries<Instant> tsLatest = tsClient.getLatestData(measures.get(0), conn);
                 Instant earliestTimeTokeep = Instant.now().minus(daysBefore, ChronoUnit.DAYS);
 
-                if (latestTime == null || latestTime.isBefore(earliestTimeTokeep)) {
+                if (tsLatest.getTimes().isEmpty() || tsLatest.getTimes().get(0).isBefore(earliestTimeTokeep)) {
                     shipsToDeleteCompletely.add(entry.getKey());
                     tsClient.deleteTimeSeries(shipToTsMap.get(ship), conn);
                 } else {

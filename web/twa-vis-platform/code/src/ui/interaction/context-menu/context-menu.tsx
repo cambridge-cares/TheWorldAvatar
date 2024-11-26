@@ -15,8 +15,8 @@ interface ContextMenuProps {
   y: number,
   showContextMenu: boolean,
   items?: ContextItemDefinition[],
-  addItem?: (item: ContextItemDefinition) => void,
-  toggleItem?: (name: string) => void
+  addItem?: (_item: ContextItemDefinition) => void,
+  toggleItem?: (_name: string) => void
 }
 
 export const navbarItem: ContextItemDefinition = {

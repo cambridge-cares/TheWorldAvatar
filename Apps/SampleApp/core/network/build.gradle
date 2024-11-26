@@ -1,0 +1,15 @@
+apply plugin: 'com.android.library'
+apply from: "${project.rootDir}/common.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.network'
+}
+
+dependencies {
+
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.android.volley:volley:1.2.1'
+
+    implementation project(path: ':core:utils')
+    implementation project(path: ':core:model')
+}

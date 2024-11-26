@@ -1,0 +1,74 @@
+[PrefixDeclaration]
+dem:		http://www.opengis.net/citygml/relief/2.0/
+owl:		http://www.w3.org/2002/07/owl#
+gml:		http://www.opengis.net/gml/
+grp:		http://www.opengis.net/citygml/cityobjectgroup/2.0/
+tex:		http://www.opengis.net/citygml/texturedsurface/2.0/
+sf:		http://www.opengis.net/ont/sf#
+voc:		http://vocabulary.example.org/
+wtr:		http://www.opengis.net/citygml/waterbody/2.0/
+app:		http://www.opengis.net/citygml/appearance/2.0/
+veg:		http://www.opengis.net/citygml/vegetation/2.0/
+luse:		http://www.opengis.net/citygml/landuse/2.0/
+dc:		http://purl.org/dc/elements/1.1/
+gen:		http://www.opengis.net/citygml/generics/2.0/
+bldg:		http://www.opengis.net/citygml/building/2.0/
+core:		http://www.opengis.net/citygml/2.0/
+xs:		http://www.w3.org/2001/XMLSchema
+obda:		https://w3id.org/obda/vocabulary#
+terms:		http://purl.org/dc/terms/
+frn:		http://www.opengis.net/citygml/cityfurniture/2.0/
+xsd:		http://www.w3.org/2001/XMLSchema#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+www:		http://www.w3.org/2001/
+brid:		http://www.opengis.net/citygml/bridge/2.0/
+tran:		http://www.opengis.net/citygml/transportation/2.0/
+geo:		http://www.opengis.net/ont/geosparql#
+city:		http://cui.unige.ch/citygml/2.0/
+tun:		http://www.opengis.net/citygml/tunnel/2.0/
+xml:		http://www.w3.org/XML/1998/namespace
+data:		http://mydata.example.org/
+twa:        https://www.theworldavatar.com/kg/
+plot:   https://www.theworldavatar.com/kg/ontoplot/
+
+[MappingDeclaration] @collection [[
+mappingId   City Object IRI
+target      twa:{class}/{uuid} obda:isCanonicalIRIOf city:cityobject/{"id"} .
+source      SELECT "objectclass"."classname" AS "class", "strval" AS "uuid", "cityobject"."id" AS "id"
+			FROM "citydb"."cityobject_genericattrib" JOIN "citydb"."cityobject" ON "citydb"."cityobject"."id" = "citydb"."cityobject_genericattrib"."cityobject_id"
+			JOIN "citydb"."objectclass" ON "citydb"."objectclass"."id" = "citydb"."cityobject"."objectclass_id"
+			WHERE "citydb"."cityobject_genericattrib"."attrname"='uuid'
+
+mappingId	Building
+target		city:cityobject/{"id"} a bldg:Building ; bldg:storeysBelowGround {"storeys_below_ground"}^^www:XMLSchema#decimal ; bldg:storeysAboveGround {"storeys_above_ground"}^^www:XMLSchema#decimal ; bldg:function {"function"}^^www:XMLSchema#string ; bldg:usage {"usage"}^^www:XMLSchema#string ; bldg:storeyHeightsAboveGround {"storey_heights_above_ground"}^^www:XMLSchema#decimal ; bldg:yearOfConstruction {"year_of_construction"}^^www:XMLSchema#date ; bldg:yearOfDemolition {"year_of_demolition"}^^www:XMLSchema#date ; bldg:measuredHeight {"measured_height"}^^www:XMLSchema#double ; bldg:storeyHeightsBelowGround {"storey_heights_below_ground"}^^www:XMLSchema#decimal ; bldg:class {"class"}^^www:XMLSchema#string . 
+source		SELECT "building_parent_id", "building_root_id", "class", "function", "id", "measured_height", "measured_height_unit", "storey_heights_above_ground", "storey_heights_below_ground", "storeys_above_ground", "storeys_below_ground", "usage", "year_of_construction", "year_of_demolition"
+			FROM "citydb"."building"
+
+mappingId	Furniture
+target		city:cityobject/{"id"} a frn:CityFurniture .
+source		SELECT "id"
+			FROM "citydb"."city_furniture"
+			
+mappingId	Surface Geometry to City Object
+target		city:cityobject/{"cityobject_id"} geo:hasGeometry city:geometry/{"id"} . 
+source		SELECT "cityobject_id", "id"
+			FROM "citydb"."surface_geometry"
+			WHERE "geometry" IS NOT NULL
+			
+mappingId	Surface Geometry - Parent
+target		city:geometry/{"id"} grp:parent city:geometry/{"parent_id"} . 
+source		SELECT "id", "parent_id"
+			FROM "citydb"."surface_geometry"
+			
+mappingId	Non-Solid Geometry
+target		city:geometry/{"id"} a sf:Polygon ; geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> {geometry_wkt}"^^geo:wktLiteral ; geo:hasMetricArea {"area_sqm"}^^www:XMLSchema#double . 
+source		SELECT "id", ST_ASTEXT(ST_TRANSFORM("geometry", 4326)) AS "geometry_wkt", ST_AREA("geometry") AS "area_sqm"
+			FROM "citydb"."surface_geometry"
+			WHERE "geometry" IS NOT NULL
+			
+mappingId	Building - LoDFootprint
+target		city:cityobject/{"id"} bldg:lod0FootPrint city:geometry/{"lod0_footprint_id"} . 
+source		SELECT "id", "lod0_footprint_id"
+			FROM "citydb"."building"
+]]

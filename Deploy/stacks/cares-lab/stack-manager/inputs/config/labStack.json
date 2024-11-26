@@ -1,0 +1,27 @@
+{
+  "services": {
+    "includes": [
+      "visualisation",
+      "bms-update-agent",
+      "bms-query-agent",
+      "android-status-agent",
+      "feature-info-agent",
+      "data-bridge-agent",
+      "grafana",
+      "keycloak",
+      "fh-sash-and-occupancy-agent",
+      "rfid-update-agent",
+      "rfid-query-agent",
+      "dashboard-agent",
+      "email-agent",
+      "asset-manager-agent",
+      "cares-weather-station-agent",
+      "pips-timeseries-agent"
+  ],
+    "excludes": [
+  ]
+  },
+  "volumes":{
+  "vis-files":"webspace"
+  }
+}

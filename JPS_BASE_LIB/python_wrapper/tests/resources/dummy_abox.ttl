@@ -1,0 +1,26 @@
+@prefix example:		<http://www.example.com/ontology/random.owl#> .
+@prefix rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix :			    <https://www.example.com/triplestore/random/random_data_1/> .
+
+########################################
+## Random number generation instances ##
+########################################
+:numofpoints
+    rdf:type example:NumOfPoints;
+    # the default will be no output at new information generation mode
+    example:hasValue 0;
+.
+
+:upperlimit
+    rdf:type example:UpperLimit;
+    example:hasValue 10;
+.
+
+:lowerlimit
+    rdf:type example:LowerLimit;
+    example:hasValue 1;
+.
+
+# timestamps for these pure inputs are not needed as they will be added by the
+# derivation framework at the creation of derivation markup

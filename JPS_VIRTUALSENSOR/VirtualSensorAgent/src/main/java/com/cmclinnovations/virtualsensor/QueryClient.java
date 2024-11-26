@@ -253,12 +253,30 @@ public class QueryClient {
         TimeSeries<Long> dispRasterTimeSeries = tsClientLong
                 .getTimeSeriesWithinBounds(dispRasterIriList, latestTimeLong, null, conn);
 
+        // there is no new data to add
+        if (dispRasterTimeSeries.getTimes().size() <= 1 && latestTimeLong != null) {
+            return;
+        }
+
+        // ignore first time step because the lower bound provided in the previous query
+        // is inclusive, but only when there is no existing data in this virtual sensor,
+        // indicated by latestTimeLong == null
+        boolean ignoreFirstTimeStep = false;
+        if (latestTimeLong != null) {
+            ignoreFirstTimeStep = true;
+        }
+
         for (Map.Entry<String, String> concToDataIri : concToDataIriMap.entrySet()) {
             String pollutant = concToPollutantMap.get(concToDataIri.getKey());
             String dispRasterIri = pollutantToDispRaster.get(pollutant);
             List<String> dispersionRasterFileNames = dispRasterTimeSeries.getValuesAsString(dispRasterIri);
             List<Double> concentrations = new ArrayList<>();
+
+            // ignore first time step
             for (int j = 0; j < dispersionRasterFileNames.size(); j++) {
+                if (ignoreFirstTimeStep && j == 0) {
+                    continue;
+                }
                 String rasterFileName = dispersionRasterFileNames.get(j);
                 String sql = String.format(
                         "SELECT ST_Value(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) AS val "
@@ -271,9 +289,8 @@ public class QueryClient {
                         double concentration = result.getDouble("val");
                         concentrations.add(concentration);
                     } else {
-                        String errmsg = "Could not obtain raster value";
-                        LOGGER.error(errmsg);
-                        throw new RuntimeException(errmsg);
+                        LOGGER.warn("Could not obtain raster value for {}", rasterFileName);
+                        concentrations.add(null);
                     }
                 } catch (SQLException e) {
                     String errmsg = "Possible error at reading sql query result";
@@ -292,10 +309,17 @@ public class QueryClient {
         List<Long> timeStampsLong = dispRasterTimeSeries.getTimes();
         List<Instant> timeStamps = new ArrayList<>();
 
-        timeStampsLong.stream().forEach(ts -> {
-            Instant timeInstant = Instant.ofEpochSecond(ts);
-            timeStamps.add(timeInstant);
-        });
+        if (ignoreFirstTimeStep) {
+            timeStampsLong.subList(1, timeStampsLong.size()).stream().forEach(ts -> {
+                Instant timeInstant = Instant.ofEpochSecond(ts);
+                timeStamps.add(timeInstant);
+            });
+        } else {
+            timeStampsLong.stream().forEach(ts -> {
+                Instant timeInstant = Instant.ofEpochSecond(ts);
+                timeStamps.add(timeInstant);
+            });
+        }
 
         TimeSeries<Instant> timeSeries = new TimeSeries<>(timeStamps,
                 tsDataList, tsValuesList);

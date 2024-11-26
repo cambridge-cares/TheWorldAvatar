@@ -9,7 +9,7 @@
      xmlns:ontoisochrone="https://www.theworldavatar.com/kg/ontoisochrone/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoisochrone/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 October 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 June 2024</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoIsochrone is an ontology for describing isochrones.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -57,6 +57,19 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an isochrone and the transport mode that is used for the isochrone calculations.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoisochrone/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">assumes transport mode</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoisochrone/hasFloodDepth -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoisochrone/hasFloodDepth">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoisochrone/Flooded"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoflood/FloodDepth"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between flooded road condition and its flood depth</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoisochrone/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has flood depth</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -219,6 +232,13 @@
 
 
     <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoflood/FloodDepth -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoflood/FloodDepth"/>
     
 
 

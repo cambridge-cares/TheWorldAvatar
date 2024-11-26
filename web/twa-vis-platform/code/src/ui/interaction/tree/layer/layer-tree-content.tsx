@@ -1,17 +1,19 @@
 
 
-import styles from './layer-tree.module.css';
 import iconStyles from 'ui/graphic/icon/icon-button.module.css';
+import styles from './layer-tree.module.css';
 
-import SVG from 'react-inlinesvg';
-import React, { useState } from 'react';
 import { Map } from 'mapbox-gl';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import SVG from 'react-inlinesvg';
 
-import { MapLayerGroup, MapLayer } from 'types/map-layer';
-import MaterialIconButton from 'ui/graphic/icon/icon-button';
+import { MapLayer, MapLayerGroup } from 'types/map-layer';
 import IconComponent from 'ui/graphic/icon/icon';
+import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import SimpleDropdownField from 'ui/interaction/dropdown/simple-dropdown';
-import { formatAppUrl } from 'utils/client-utils';
+import SearchModal from 'ui/interaction/modal/search/search-modal';
+import { setFilterFeatureIris, setFilterLayerIds, setFilterTimes } from 'state/map-feature-slice';
 
 // type definition for incoming properties
 interface LayerTreeHeaderProps {
@@ -27,7 +29,7 @@ interface LayerTreeEntryProps {
   layer: MapLayer;
   depth: number;
   currentGrouping: string;
-  handleLayerVisibility: (layerIds: string, isVisible: boolean) => void;
+  handleLayerVisibility: (_layerIds: string, _isVisible: boolean) => void;
 }
 
 /**
@@ -44,8 +46,10 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
   const group: MapLayerGroup = props.group;
   const groupings: string[] = props.group.groupings;
   const initialState: boolean = props.parentShowChildren ? group.showChildren : false;
+  const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState<boolean>(initialState);
   const [currentGroupingView, setCurrentGroupingView] = useState<string>(groupings.length > 0 ? groupings[0] : "");
+  const [isSearchOpenState, setIsSearchOpenState] = useState<boolean>(false);
 
   // A function to hide or show the current group's content and its associated layers based on the expansion button
   const toggleExpansion = () => {
@@ -131,6 +135,18 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
     toggleGroupingVisibility(event.target.value);
   };
 
+  /** A method to open the search modal on click.
+  */
+  const openSearchModal = () => {
+    const layerIds: string[] = group.layers.map(layer => layer.ids)
+    // Add filter layer IDs
+    dispatch(setFilterLayerIds(layerIds));
+    // Reset filtered features state when opened
+    dispatch(setFilterFeatureIris([]));
+    dispatch(setFilterTimes([]));
+    setIsSearchOpenState(true);
+  };
+
   return (
     <div className={styles.treeEntry} key={group.name}>
       <div className={styles.treeEntryHeader}>
@@ -147,7 +163,7 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
         {/* Tree icon, if present */}
         {group.icon != null && (
           <div className={styles.icon + " " + styles.treeIcon}>
-            <SVG src={formatAppUrl(group.icon)} />
+            <SVG src={group.icon} />
           </div>
         )}
 
@@ -164,6 +180,19 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
             />
           </div>
         )}
+
+        {/* A button to open the search modal when available */}
+        {group.search && <MaterialIconButton
+          iconName={"find_replace"}
+          iconStyles={[iconStyles.hover]}
+          onClick={openSearchModal}
+        />}
+        {group.search && isSearchOpenState && <SearchModal
+          id={group.search}
+          stack={group.stack}
+          show={isSearchOpenState}
+          setShowState={setIsSearchOpenState}
+        />}
       </div>
 
       {/* Conditionally show subgroups when expanded */}

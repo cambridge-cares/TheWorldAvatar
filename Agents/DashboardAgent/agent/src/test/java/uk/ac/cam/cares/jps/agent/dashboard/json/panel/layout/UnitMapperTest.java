@@ -8,7 +8,7 @@ class UnitMapperTest {
 
     @Test
     void testGetUnitSyntax_ExistingUnit() {
-        assertEquals("kwatth", UnitMapper.getUnitSyntax("kwh"));
+        assertEquals("kWh", UnitMapper.getUnitSyntax("kwh"));
         assertEquals("celsius", UnitMapper.getUnitSyntax("°c"));
         assertEquals("percent", UnitMapper.getUnitSyntax("%"));
         assertEquals("", UnitMapper.getUnitSyntax("null"));
@@ -16,8 +16,8 @@ class UnitMapperTest {
 
     @Test
     void testGetUnitSyntax_VaryingCapitalisedUnits() {
-        assertEquals("kwatth", UnitMapper.getUnitSyntax("kWh"));
-        assertEquals("kwatth", UnitMapper.getUnitSyntax("KWH"));
+        assertEquals("kWh", UnitMapper.getUnitSyntax("kWh"));
+        assertEquals("kWh", UnitMapper.getUnitSyntax("KWH"));
         assertEquals("celsius", UnitMapper.getUnitSyntax("°C"));
         assertEquals("", UnitMapper.getUnitSyntax("NULL"));
     }

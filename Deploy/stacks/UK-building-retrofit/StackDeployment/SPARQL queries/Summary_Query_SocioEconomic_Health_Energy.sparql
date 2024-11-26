@@ -1,0 +1,34 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX ontobuiltenergy: <https://www.theworldavatar.com/kg/ontobuiltenergy/>
+PREFIX GeoSparql: <http://www.opengis.net/ont/geosparql#>
+PREFIX OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX OCHV: <http://sbmi.uth.tmc.edu/ontology/ochv/CHV_Concept/>
+PREFIX building: <https://www.theworldavatar.com/kg/ontobuiltenv/building>
+
+SELECT ?fuelPovertyRate ?avgElectricity ?avgGas ?averageEPC ?copdRate ?cvdRate
+WHERE {
+  # Note: Please replace "{LSOA_CODE}" with the actual LSOA code if you execute this query in ONTOP endpoint manually
+  ?lsoaEntity ontobuiltenv:hasIdentifier "{LSOA_CODE}"^^xsd:string .
+
+  ?lsoaEntity ontobuiltenergy:hasHousehold ?household .
+  ?household ontobuiltenergy:hasFuelPovertyRate ?fuelPovertyRateEntity .
+  ?fuelPovertyRateEntity OM:hasValue ?fuelPovertyRate .
+
+  ?household ontobuiltenergy:hasAverageElecConsumption ?elecConsumptionEntity .
+  ?elecConsumptionEntity OM:hasValue ?avgElectricity .
+
+  ?household ontobuiltenergy:hasAverageGasConsumption ?gasConsumptionEntity .
+  ?gasConsumptionEntity OM:hasValue ?avgGas .
+
+  ?postcodeEntity GeoSparql:sfWithin ?lsoaEntity ;
+                  ontobuiltenv:hasPostcode ?postcode .
+  ?building ontobuiltenv:hasPostcode ?postcode ;
+            building:hasEnergyEfficiency ?energyEfficiency .
+  BIND(AVG(?energyEfficiency) AS ?averageEPC)
+
+  ?lsoaEntity OCHV:hasCOPDCase ?copdCase .
+  ?copdCase OM:hasRate ?copdRate .
+
+  ?lsoaEntity OCHV:hasCVDCase ?cvdCase .
+  ?cvdCase OM:hasRate ?cvdRate .
+}

@@ -1,0 +1,21 @@
+apply plugin: 'com.android.application'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.sampleapp'
+
+    defaultConfig {
+        applicationId "uk.ac.cam.cares.jps.sampleapp"
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+}
+
+dependencies {
+    implementation project(path: ':core:ui')
+    implementation project(path: ':feature:todo')
+    implementation project(path: ':feature:photo')
+    implementation project(path: ':feature:home')
+}

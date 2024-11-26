@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_fragment_link">android-app://uk.ac.cam.cares.jps.app/home</string>
+    <string name="photo_fragment_link">android-app://uk.ac.cam.cares.jps.app/photo</string>
+    <string name="todo_fragment_link">android-app://uk.ac.cam.cares.jps.app/todo</string>
+</resources>

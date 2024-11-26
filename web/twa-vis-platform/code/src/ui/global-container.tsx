@@ -8,13 +8,13 @@ import Trex from 'utils/trex';
 import ContextMenu from './interaction/context-menu/context-menu';
 import Navbar from './navigation/navbar/navbar';
 import { reduxStore } from 'app/store';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import Footer from './text/footer';
 
 // Incoming properties for global container
 interface GlobalContainerProps {
   children?: React.ReactNode;
-  settings: DefaultSettings;
+  settings: UISettings;
 }
 
 /**
@@ -23,7 +23,6 @@ interface GlobalContainerProps {
 export default function GlobalContainer(
   props: Readonly<GlobalContainerProps>
 ) {
-  const { modules, branding } = props.settings;
   const [popup, setPopup] = useState<boolean>(false);
   const [contextMenuVisible, setContextMenuVisible] = useState<boolean>(false);
   const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -62,11 +61,7 @@ export default function GlobalContainer(
         )}
 
         <Navbar
-          showLanding={modules.landing}
-          showMap={modules.map}
-          showDash={modules.dashboard}
-          showHelp={modules.help}
-          navbarLogo={branding.navbarLogo.toString()}
+          settings={props.settings}
         />
 
         <div id="contentContainer">{props.children}</div>

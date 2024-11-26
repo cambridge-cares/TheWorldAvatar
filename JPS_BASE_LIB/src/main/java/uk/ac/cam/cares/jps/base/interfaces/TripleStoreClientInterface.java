@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.interfaces;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateRequest;
@@ -77,6 +78,29 @@ public interface TripleStoreClientInterface extends StoreClientInterface{
      * @param update as UpdateRequest
      */
     int executeUpdate(UpdateRequest update);
+
+    /**
+     * Executes the update operation supplied by the calling method.
+     * @param update as string
+     */
+    CloseableHttpResponse executeUpdateByPost(String update);
+
+    /**
+     * Upload triple in the from of string
+     * 
+     * @param triples
+     */
+    
+    void uploadTriples(String triple);
+
+    /**
+     * Upload triple in the from of string
+     * 
+     * @param triples
+     * @param extension
+     */
+    
+     void uploadTriples(String triple, String extension);
 
     /**
      * Counts the total number of triples in the repository.

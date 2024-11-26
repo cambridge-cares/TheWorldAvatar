@@ -13,7 +13,11 @@
                   }
               ],
               "Env": [
-                  "BASE_PATH=/visualisation/"
+                  "KEYCLOAK=false",
+                  "PROTECTED_PAGES=/page,/otherpage",
+                  "ROLE_PROTECTED_PAGES=/role,/protected,/pages",
+                  "ROLE=viz:protected",
+                  "ASSET_PREFIX=/visualisation"
                 ],
               "Secrets": [
                   {

@@ -1,0 +1,12 @@
+{
+    "services": {
+        "includes": [
+                    "visualisation",
+                     "feature-info-agent"
+                    ]
+    },
+    "volumes": {
+        "vis-files": "webspace",
+        "fia-queries": "fia-queries"
+    }
+}

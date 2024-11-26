@@ -12,7 +12,7 @@ class NumOp(Enum):
     OUTSIDE_RANGE = "outside"
 
 
-OBE_NUM_OPS = [
+BASIC_NUM_OPS = [
     NumOp.LESS_THAN,
     NumOp.GREATER_THAN,
     NumOp.LESS_THAN_EQUAL,

@@ -1,0 +1,18 @@
+# Querying for specific sea level projections UUID
+
+PREFIX onto: <http://www.ontotext.com/>
+PREFIX ont: <http://purl.org/net/ns/ontology-annot#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontosl:    <https://www.theworldavatar.com/kg/ontosealevel/>
+SELECT ?rcp ?ssp ?year ?value  WHERE {
+  ?sub a ontosl:SeaLevelChange. 
+  ?sub ontosl:hasRCP ?rcp. ?rcp a ontosl:RepresentativeConcentrationPathway85.
+  ?sub ontosl:hasSSP ?ssp. ?ssp a ontosl:SharedSocioeconomicPathway5.
+  ?sub ontosl:hasProjectionYear ?year.
+  ?sub ontosl:hasConfidenceLevel ?confidence. ?confidence a ontosl:MediumConfidence.
+  ?sub ontosl:hasHeight ?change. 
+  ?change om:hasValue ?measure.
+  ?measure om:hasNumericalValue ?value.
+} 

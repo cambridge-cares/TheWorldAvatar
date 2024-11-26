@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/todo_map"
+    app:startDestination="@id/todo_fragment">
+
+    <fragment android:id="@+id/todo_fragment"
+        android:name="uk.ac.cam.cares.jps.todo.TodoFragment"
+        tools:layout="@layout/todo_fragment">
+        <deepLink
+            app:uri="@string/todo_fragment_link">
+        </deepLink>
+        <action
+            android:id="@+id/action_todo_fragment_to_todo_second_setting"
+            app:destination="@id/todo_second_fragment" />
+    </fragment>
+
+    <fragment android:id="@+id/todo_second_fragment"
+        android:name="uk.ac.cam.cares.jps.todo.TodoSecondFragment"
+        tools:layout="@layout/todo_second_fragment"/>
+
+</navigation>

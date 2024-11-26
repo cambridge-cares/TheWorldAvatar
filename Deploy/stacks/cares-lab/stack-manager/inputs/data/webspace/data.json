@@ -1,0 +1,39 @@
+{
+	"name": "The World Avatar",
+    "stack": "https://careslab.theworldavatar.io/",
+	"sources": [
+	{
+            "id": "careslab",
+            "type": "tiles",
+            "uri": "https://careslab.theworldavatar.io/visualisation/data/tileset_lab.json",
+            "position": [103.77391, 1.30410, 0]
+        }
+	], 
+	"layers": [
+        {
+            "id": "3d-tiles-citygml-layer",
+            "name": "Buildings",
+            "source": "buildings"
+        },{
+            "id": "3d-tiles-bim-layer",
+			"name": "CARES Lab", 
+            "source": "careslab",
+            "clipping": {
+                "min": 0,
+                "max": 29.5,
+                "start": 26.5,
+                "labels": {
+                    "0": "Ground level",
+                    "3.9": "Level 1",
+                    "7.9": "Level 2",
+                    "11.9": "Level 3",
+                    "15.9": "Level 4",
+                    "19.9": "Level 5",
+                    "23.9": "Level 6",
+                    "26.5": "Level 7",
+                    "29.5": "Roof"
+                }
+            }    
+        }
+	]
+}

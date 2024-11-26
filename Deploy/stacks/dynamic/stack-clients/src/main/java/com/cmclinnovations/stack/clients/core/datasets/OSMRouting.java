@@ -8,8 +8,6 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.postgis.PGRoutingClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
-
 public class OSMRouting extends GeoServerDataSubset {
     @JsonProperty
     protected Options osm2PGRoutingOptions = new Options();
@@ -36,13 +34,8 @@ public class OSMRouting extends GeoServerDataSubset {
 
     private void createLayer(String workspaceName, String database, String layerName,
             GeoServerVectorSettings geoServerVectorSettings) {
-        GSVirtualTableEncoder virtualTable = geoServerVectorSettings.getVirtualTable();
-        if (null != virtualTable) {
-            virtualTable.setSql(handleFileValues(virtualTable.getSql()));
-        }
-
         GeoServerClient.getInstance()
-                .createPostGISLayer(workspaceName, database, layerName, geoServerVectorSettings);
+                .createPostGISLayer(workspaceName, database, getSchema(), layerName, geoServerVectorSettings);
     }
 
     private String prefixTableName(String tableName) {
@@ -50,6 +43,6 @@ public class OSMRouting extends GeoServerDataSubset {
     }
 
     private String getTablePrefix() {
-        return getName() + "_";
+        return getTable() + "_";
     }
 }

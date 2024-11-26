@@ -54,7 +54,7 @@ By default, these fields within the data need to be named `name` and `descriptio
 
 ## Setting interaction level
 
-Each layer with a visualisation can independently specify the allowed level of mouse interaction. Using the optional `"interactions"` layer parameter, users can set one of four possible values: `"all"`, `"click-only"`, `"hover-only"`, and `"none"` (with `"all"` being the default if unspecified). See the [UK Base World Visualisation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/uk-base-world) for example usage of this parameter.
+Each layer with a visualisation can independently specify the allowed level of mouse interaction. Using the optional `"interactions"` layer parameter, users can set one of four possible values: `"all"`, `"click-only"`, `"hover-only"`, and `"none"` (with `"all"` being the default if unspecified).
 
 <br/>
 

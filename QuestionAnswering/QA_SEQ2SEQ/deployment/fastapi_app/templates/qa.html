@@ -76,10 +76,19 @@
                 </div>
             </div>
             <div class="col-md-5">
+                <div class="card" id="iri-info-card" style="display: none; margin-bottom: 2rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">IRI details</h5>
+                        <div>
+                            <p id="iri-response" style="display: inline-block; margin: 0;"></p>
+                        </div>
+                        <div id="jsmolAppletContainer" style="height: 400px; width: 400px; margin: 0 auto;"></div>
+                    </div>
+                </div>
                 <div class="card" id="infer-metadata-card" style="display: none; margin-bottom: 2rem;">
                     <ul class="list-group list-group-flush" id="infer-metadata-list"></ul>
                 </div>
-                <div class="card" id="chatbot-response-card" style="display: none">
+                <div class="card" id="chatbot-response-card" style="display: none; margin-bottom: 2rem;">
                     <div class="card-body">
                         <h5 class="card-title">{{ title }}'s response</h5>
                         <div>
@@ -100,22 +109,147 @@
     </div>
 </section>
 
-<section class="three-quarter-width">
-    <h3>Example Questions</h3>
+<!-- Include JSmol JavaScript -->
+<script type="text/javascript" src="./static/jmol-16.1.41/jsmol/JSmol.min.js" ></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    {% for question_group in sample_questions %}
-    <button type="submit" class="accordion">{{ question_group["label"] }}</button>
+<section class="three-quarter-width">
+    <button type="submit" class="accordion">Example Questions</button>
     <div class="accordion-panel">
-        <p>{{ question_group["description"] }}</p>
-        <ul>
-            {% for question in question_group["questions"] %}
-            <li class="sample-question"
-                onclick='inputField.populateInputText("{{ question }}"); globalState.set("domain", "{{ question_group["domain"] }}"); askQuestion();'>
-                {{ question }}
-            </li>
-            {% endfor %}
-        </ul>
+        {% for question_group in sample_questions %}
+        <button type="submit" class="accordion">{{ question_group["label"] }}</button>
+        <div class="accordion-panel">
+            <p>{{ question_group["description"] }}</p>
+            <ul>
+                {% for question in question_group["questions"] %}
+                <li class="sample-question"
+                    onclick='inputField.populateInputText("{{ question }}"); askQuestion("{{ question_group.domain }}");'>
+                    {{ question }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </section>
+
+<section class="three-quarter-width">
+    <button type="button" class="accordion">Advanced Search</button>
+    <div class="accordion-panel">
+        {% for search_group in search_groups %}
+        <button type="button" class="accordion">{{ search_group["group_label"] }}</button>
+        <div class="accordion-panel">
+            <form id="search-form-{{ search_group.domain }}" class="search-form" onsubmit="return False">
+                <!-- Loop through each search group -->
+                {% for search_section in search_group["sections"] %}
+                <fieldset class="form-section">
+                    <legend>{{ search_section["section"] }}</legend>
+                    <!-- Loop through each row of inputs -->
+                    {% for input_row in search_section["input_rows"] %}
+                    <div class="input-row">
+                        <!-- Loop through each input in the row -->
+                        {% for input in input_row %}
+                        <div>
+                            <label for="{{ input.entry }}">{{ input.label }}</label>
+                            <input type="text" id="{{ input.entry }}" name="{{ input.entry }}" placeholder="{{ input.description }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </fieldset>
+                {% endfor %}
+                
+            </form>
+            <button onclick='AdvSearch("{{ search_group.domain }}")'>Send</button>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="three-quarter-width">
+    <button type="button" class="accordion">Explore</button>
+    <div class="accordion-panel">
+        {% for explore_group in explore_groups %}
+        <button type="button" class="accordion">{{ explore_group["group_label"] }}</button>
+        <div class="accordion-panel">
+            <iframe src="./dash_{{ explore_group.pathname_prefix }}/" width="100%" height="600px"></iframe>
+        </div>
+        {% endfor %}
+    </div> 
+</section>
+
+<section class="three-quarter-width">
+    <button type="submit" class="accordion">Ontologies</button>
+    <div class="accordion-panel">
+        {% for ontology_group in ontology_groups %}
+        <button type="submit" class="accordion">{{ ontology_group["label"] }}</button>
+        <div class="accordion-panel">
+            <p>{{ ontology_group["description"] }}</p>
+            {% if ontology_group["tbox"] %}
+            <p><b>Download:</b></p>
+            <ul>
+                {% for item in ontology_group["tbox"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if ontology_group["access"] %}
+            <p><b>Access:</b></p>
+            <ul>
+                {% for item in ontology_group["access"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if ontology_group["publications"] %}
+            <p><b>Publications:</b></p>
+            <ul>
+                {% for item in ontology_group["publications"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if ontology_group["preprints"] %}
+            <p><b>Preprints:</b></p>
+            <ul>
+                {% for item in ontology_group["preprints"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="three-quarter-width">
+    <button type="submit" class="accordion">History</button>
+    <div class="accordion-panel">
+        {% for history_group in history_groups %}
+        <button type="submit" class="accordion">{{ history_group["label"] }}</button>
+        <div class="accordion-panel">
+            <ul>
+                {% for item in history_group["list"] %}
+                <li id="content">
+                    {{ item|safe }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
 {% endblock %}
+
+

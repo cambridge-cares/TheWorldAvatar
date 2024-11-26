@@ -10,7 +10,7 @@ export const ribbonComponentSlice = createSlice({
          setOption: (state, action) => {
             // Find entry by name
             const match = state.items.find((item) => 
-                item.name === action.payload.name
+                item.id === action.payload.id
             );
 
             if(match == null) {
@@ -23,9 +23,8 @@ export const ribbonComponentSlice = createSlice({
 })
 
 // Export selectors 
-export const getOption = (name: string) => (state: ReduxState) => {
-    if(state?.ribbonComponents?.items == null) return null;
-    return state.ribbonComponents.items.find((item) => item.name === name)
+export const getOption = (id: string) => (state: ReduxState) => {
+    return state.ribbonComponents.items.find((item) => item.id === id)
 };
 
 // Export the actions

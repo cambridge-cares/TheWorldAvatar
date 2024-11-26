@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { JsonObject } from 'types/json';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 
 /**
  * Handles the retrieval and storage of settings from the user provided configuration files.
@@ -19,20 +19,11 @@ export default class SettingsStore {
   private static readonly DEFAULT_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/ui-settings.json");
   private static readonly DATA_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/data-settings.json");
   private static readonly MAP_SETTINGS_FILE: string = path.join(process.cwd(), "public/config/map-settings.json");
-  private static readonly CSS_OVERRIDE_FILE: string = path.join(process.cwd(), "public/style-overrides.css");
 
   // Cached settings
   private static DEFAULT_SETTINGS: string | null = null;
   private static MAP_SETTINGS: string | null = null;
   private static MAP_DATA_SETTINGS: string | null = null;
-
-  /**
- * Returns true if the "style-overrides.css" file exists within
- * the hosted "uploads" directory.
- */
-  public static hasCssOverrides(): boolean {
-    return fs.existsSync(this.CSS_OVERRIDE_FILE);
-  }
 
   /**
    * Retrieves default settings
@@ -69,14 +60,13 @@ export default class SettingsStore {
    */
   public static readInitialisationSettings(): void {
     const settings: string = this.readFile(this.DEFAULT_SETTINGS_FILE);
-    const jsonifiedSettings: DefaultSettings = JSON.parse(settings);
+    const jsonifiedSettings: UISettings = JSON.parse(settings);
     if (jsonifiedSettings.resources?.dashboard && jsonifiedSettings.resources?.dashboard?.url.trim() !== ""){
       jsonifiedSettings.modules.dashboard = true;
     } else {
       jsonifiedSettings.modules.dashboard = false;
     }
     this.DEFAULT_SETTINGS = JSON.stringify(jsonifiedSettings);
-    console.info("Default settings have been read and cached.");
   }
 
   /**
@@ -85,7 +75,6 @@ export default class SettingsStore {
   public static readMapSettings(): void {
     const settings: string = this.readFile(this.MAP_SETTINGS_FILE);
     this.MAP_SETTINGS = settings;
-    console.info("Map settings have been read and cached.");
   }
 
   /**
@@ -116,28 +105,8 @@ export default class SettingsStore {
       // Wait for all promises to resolve, filter out null values, and stringify the resulting array
       const data: JsonObject[] = (await Promise.all(dataPromises)).filter(Boolean);
       this.MAP_DATA_SETTINGS = JSON.stringify(data);
-      console.info("Map data settings have been read and cached.");
-    } catch (error) {
-      console.info("No local data files detected...");
-    }
-  }
-
-  /**
-   * Reads the Mapbox credentials from Docker secrets.
-   * 
-   * @returns Mapbox credentials.
-   */
-  public static getCredentials(): { username: string, key: string } {
-    try {
-      // Assuming these files exist in your Docker environment
-      const username = this.readFile("/run/secrets/mapbox_username").trim();
-      const key = this.readFile("/run/secrets/mapbox_api_key").trim();
-      return { username, key };
-    } catch (error) {
-      // Fallback to environment variables
-      const username = process.env.MAPBOX_USER;
-      const key = process.env.MAPBOX_API_KEY;
-      return { username: username || "unknown", key: key || "unknown" };
+    } catch (_error) {
+      console.error("No local data files detected...");
     }
   }
 

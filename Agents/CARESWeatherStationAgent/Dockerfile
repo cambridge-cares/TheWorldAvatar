@@ -24,29 +24,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-# Set the required environment variable
-ENV CARESWeatherStation_AGENTPROPERTIES="/root/config/agent.properties"
-
-# Set the required environment variable
-ENV CARESWeatherStation_APIPROPERTIES="/root/config/api.properties"
-
-# Set the required environment variable
-ENV CARESWeatherStation_CLIENTPROPERTIES="/root/config/client.properties"
-
-# Set the required environment variable
-ENV CARESWeatherStation_AGENT_MAPPINGS="/root/config/mappings"
-
-#Variables that determines where the geolocation information will be uploaded to
-
-# also name of the table in PostGIS
-ENV LAYERNAME="weatherstations"
-
-# currently ontop reads from the default database
-ENV DATABASE="postgres"
-
-ENV GEOSERVER_WORKSPACE="weatherstations"
-
-COPY --from=builder /root/CARESWeatherStationInputAgent/output/caresweatherstation-agent##1.5.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/CARESWeatherStationInputAgent/output/cares-weather-station-agent##1.6.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

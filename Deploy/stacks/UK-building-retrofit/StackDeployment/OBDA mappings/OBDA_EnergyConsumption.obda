@@ -1,0 +1,33 @@
+[PrefixDeclaration]
+ontobuiltenv:      https://www.theworldavatar.com/kg/ontobuiltenv/
+OntoONS:           https://www.ordnancesurvey.co.uk/linked-data/ontology/
+GeoSparql:         http://www.opengis.net/ont/geosparql#
+owl:               http://www.w3.org/2002/07/owl#
+rdf:               http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:               http://www.w3.org/2001/XMLSchema#
+ontobuiltenergy:   https://www.theworldavatar.com/kg/ontobuiltenergy/
+OM:                http://www.ontology-of-units-of-measure.org/resource/om-2/
+OntoTimeSeries:    https://www.theworldavatar.com/kg/ontotimeseries/
+
+[MappingDeclaration] @collection [[
+
+mappingId   Household-GasConsumption
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasAverageGasConsumption <https://www.theworldavatar.com/kg/ontobuiltenergy/GasConsumption/{lsoa_code}> .
+source      	SELECT "LSOA11CD" AS lsoa_code
+				FROM "domestic_gas"
+				
+mappingId   GasConsumption-Attributes
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/GasConsumption/{lsoa_code}> a OntoBuiltEnergy:GasConsumption ; OM:hasValue {Mean_consumption}^^xsd:decimal ; OM:hasUnit "kWh_per_meter" ; OntoTimeSeries:hasTimestamp "2024"^^xsd:gYear .
+source      	SELECT "LSOA11CD" AS lsoa_code, "Mean_consumption" AS Mean_consumption
+				FROM "domestic_gas"
+
+mappingId   Household-ElecConsumption
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasAverageElecConsumption <https://www.theworldavatar.com/kg/ontobuiltenergy/ElecConsumption/{lsoa_code}> .
+source      	SELECT "LSOA11CD" AS lsoa_code
+				FROM "domestic_electricity"
+
+mappingId   ElecConsumption-Attributes
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/ElecConsumption/{lsoa_code}> a OntoBuiltEnergy:ElecConsumption ; OM:hasValue {Mean_consumption}^^xsd:decimal ; OM:hasUnit "kWh_per_meter" ; OntoTimeSeries:hasTimestamp "2024"^^xsd:gYear .
+source      	SELECT "LSOA11CD" AS lsoa_code, "Mean_consumption" AS Mean_consumption
+				FROM "domestic_electricity"
+]]

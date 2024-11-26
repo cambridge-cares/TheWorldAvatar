@@ -8,11 +8,20 @@
 **/
 
 const nextConfig = {
-	basePath: "",
-	assetPrefix: process.env.BASE_PATH ?? "",
+	reactStrictMode: true,
+	assetPrefix: process.env.ASSET_PREFIX ?? "",
+	compiler: { removeConsole: false },
+	images: {
+		loader: 'custom',
+		loaderFile: './image-loader.js',
+	},
 	env: {
-		BASE_PATH: process.env.BASE_PATH ?? "",
+		KEYCLOAK: process.env.KEYCLOAK ?? "false",
+		ASSET_PREFIX: process.env.ASSET_PREFIX ?? "",
+		MAPBOX_USER: process.env.MAPBOX_USER,
+		MAPBOX_API_KEY: process.env.MAPBOX_API_KEY,
 	}
 };
 
-module.exports = nextConfig;
+
+export default nextConfig;

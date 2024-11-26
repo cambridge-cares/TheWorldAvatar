@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/photo_map"
+    app:startDestination="@id/photo_fragment">
+
+    <fragment android:id="@+id/photo_fragment"
+        android:name="uk.ac.cam.cares.jps.photo.PhotoFragment"
+        tools:layout="@layout/photo_fragment">
+        <deepLink
+            app:uri="@string/photo_fragment_link">
+        </deepLink>
+    </fragment>
+
+</navigation>

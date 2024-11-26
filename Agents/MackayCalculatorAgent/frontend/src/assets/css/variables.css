@@ -1,0 +1,43 @@
+@import url('./fonts.css');
+
+:root {
+    --border-radius: 0.25rem;
+    /* color */
+    --black: #212121;
+    --secondary-color: #6EC1E4;
+    --secondary-color-dark: #1F89A2;
+    --logo-second-color: var(--secondary-color);
+    --blue-grey: #37474F;
+    --light-grey: #f4f5f9;
+    --white: #fff;
+    --grey: #a1a1a1;
+    --blue-dark: rgb(7, 71, 166);
+    --blue-normal: #1976D2;
+    --red-normal: #D32F2F;
+    --red-dark: #B71C1C;
+    --green-dark: #004D40;
+    --green-normal: #00897B;
+    --orange-dark: #E65100;
+    --orange-normal: #F57C00;
+    --yellow-dark: #F57F17;
+    --yellow-normal: #FBC02D;
+    --brown-dark: #3E2723;
+    --brown-normal: #5D4037;
+    /* color */
+    --theme-color: #0A4452;
+    --default-letter-spacing: .03em;
+    --default-line-height: 21px;
+    --content-background-color: var(--light-grey);
+    /* font family */
+    --default-font-light: poppins-light;
+    --default-font-regular: open-sans-regular;
+    --default-font-semibold: open-sans-semibold;
+    --default-font-bold: open-sans-bold;
+    --default-font-light-italic: poppins-light-italic;
+    /* font family */
+    --sidenav-active-font: var(--default-font-semibold);
+    --sidenav-normal-font: var(--default-font-regular);
+    --sidenav-color: var(--white);
+    --sidenav-active-color: var(--secondary-color);
+    --sidenav-background-color: var(--theme-color);
+}

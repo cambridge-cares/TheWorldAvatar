@@ -1,0 +1,2 @@
+?a p:b <http://c> , <http://e> .
+<http://c> <http://d> <http://e>

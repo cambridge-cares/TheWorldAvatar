@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
+import java.util.Queue;
+
 /**
  * A Java representation of a JSON-like model that encapsulates and enforces information
  * about custom template variable syntax specific to Grafana dashboard. At the moment,
@@ -21,10 +23,10 @@ class CustomVariable extends TemplateVariable {
      *
      * @param name                   The name of the assets or rooms to create for this variable.
      * @param description            The description of this variable
-     * @param values                 An array of values to be included into the query component. Tentatively, this is a value of all available asset types, rooms or individual assets within one type.
+     * @param values                 A queue of values to be included into the query component. Tentatively, this is a value of all available asset types, rooms or individual assets within one type.
      * @param dashboardDisplayOption The display options for the variable on the dashboard by Grafana. 0 - Display both label and values; 1 - Display only value; 2 - Display nothing.
      */
-    protected CustomVariable(String name, String description, String[] values, Integer dashboardDisplayOption) {
+    protected CustomVariable(String name, String description, Queue<String> values, Integer dashboardDisplayOption) {
         this(name, description, values, dashboardDisplayOption, true, true);
     }
 
@@ -33,12 +35,12 @@ class CustomVariable extends TemplateVariable {
      *
      * @param name                   The name of the assets or rooms to create for this variable.
      * @param description            The description of this variable
-     * @param values                 An array of values to be included into the query component. Tentatively, this is a value of all available asset types, rooms or individual assets within one type.
+     * @param values                 A queue of values to be included into the query component. Tentatively, this is a value of all available asset types, rooms or individual assets within one type.
      * @param dashboardDisplayOption The display options for the variable on the dashboard by Grafana. 0 - Display both label and values; 1 - Display only value; 2 - Display nothing.
      * @param isMultiValue           A boolean to indicate if multiple values are allowed for the variable in Grafana.
      * @param selectAllOption        A boolean to indicate if the "All" option should be enabled in Grafana.
      */
-    protected CustomVariable(String name, String description, String[] values, Integer dashboardDisplayOption, boolean isMultiValue, boolean selectAllOption) {
+    protected CustomVariable(String name, String description, Queue<String> values, Integer dashboardDisplayOption, boolean isMultiValue, boolean selectAllOption) {
         // Construct the super class
         super(name, dashboardDisplayOption, isMultiValue, selectAllOption);
         this.label = StringHelper.addSpaceBetweenCapitalWords(name);
@@ -53,8 +55,8 @@ class CustomVariable extends TemplateVariable {
             this.variableSelectionOptions.append(option.construct());
             isDefaultOption = false;
         }
-        // Append each value in the array in the required format
-        for (String value : values) {
+        while (!values.isEmpty()) {
+            String value = values.poll();
             // Only append a comma before if it is not the first value
             if (this.querySyntax.length() != 0) this.querySyntax.append(",");
             this.querySyntax.append(value);

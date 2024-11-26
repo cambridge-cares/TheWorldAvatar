@@ -2,12 +2,11 @@ from dataclasses import dataclass
 import itertools
 from typing import Iterable, Tuple
 
+
+from .abc import GraphPattern
+from .constraint import BrackettedExpression, Constraint
 from .exceptions import SparqlParseError
-from .sparql_base import SparqlBase
 
-
-class GraphPattern(SparqlBase):
-    pass
 
 
 @dataclass(order=True, frozen=True)
@@ -53,7 +52,7 @@ class ValuesClause(GraphPattern):
         while ptr < len(sparql_fragment) and sparql_fragment[ptr] != "}":
             if not (sparql_fragment[ptr] == '"'):
                 raise SparqlParseError(sparql_fragment)
-            
+
             _ptr = ptr + 1
             _ptr_literal_start = _ptr
             while _ptr < len(sparql_fragment) and sparql_fragment[_ptr] != '"':
@@ -74,13 +73,14 @@ class ValuesClause(GraphPattern):
 
 @dataclass(order=True, frozen=True)
 class FilterClause(GraphPattern):
-    constraint: str
+    constraint: Constraint
 
     def __str__(self):
-        return "FILTER ( {constraint} )".format(constraint=self.constraint)
+        return "FILTER {constraint}".format(constraint=self.constraint)
 
     @classmethod
     def extract(cls, sparql_fragment: str):
+        """Only able to extract bracketted expression constraint"""
         sparql_fragment = sparql_fragment[len("FILTER") :].strip()
         if not sparql_fragment.startswith("("):
             raise SparqlParseError(sparql_fragment)
@@ -96,9 +96,9 @@ class FilterClause(GraphPattern):
             ptr += 1
         if not (sparql_fragment[ptr] == ")"):
             raise SparqlParseError(sparql_fragment)
-        constraint = sparql_fragment[:ptr].strip()
+        exprn = sparql_fragment[:ptr].strip()
 
-        return cls(constraint), sparql_fragment[ptr + 1 :]
+        return cls(BrackettedExpression(exprn)), sparql_fragment[ptr + 1 :]
 
 
 @dataclass(order=True, frozen=True)

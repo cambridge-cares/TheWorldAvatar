@@ -1,0 +1,26 @@
+[PrefixDeclaration]
+geo:    http://www.opengis.net/ont/geosparql#
+time:   http://www.w3.org/2006/time#
+tfi:    https://www.theworldavatar.com/ontotrafficincident/
+dbr:    https://dbpedia.org/page/
+sf:     http://www.opengis.net/ont/sf
+
+[MappingDeclaration] @collection [[
+mappingId	trafficincident
+target		tfi:{iri} a tfi:TrafficIncident ;
+                tfi:hasDescription {description};
+                a sf:Point; 
+                geo:asWKT "{geom}"^^geo:wktLiteral;
+                tfi:hasTrafficIncidentType {type};
+                tfi:hasTimeInterval tfi:interval_{iri}.
+            tfi:interval_{iri} a time:Interval;
+                time:hasBeginning tfi:{iri}_{start_time};
+                time:hasEnd tfi:{iri}_{end_time}.
+            tfi:{iri}_{start_time} a time:Instant;
+                time:hasTRS dbr:Unix_time;
+                time:numericPosition {start_time}.
+            tfi:{iri}_{end_time} a time:Instant;
+                time:hasTRS dbr:Unix_time;
+                time:numericPosition {end_time}.
+source      SELECT iri, type, message AS description, latitude, longitude, start_time, end_time, CASE WHEN status = 't' THEN 'Ongoing' ELSE 'Ended' END AS status, ST_ASTEXT(geom) as geom FROM trafficincident
+]]

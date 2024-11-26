@@ -1,7 +1,0 @@
-[
-	{
-		"label": "sensorlogger",
-		"queryEndpoint": "http://<STACK-NAME>-blazegraph:8080/blazegraph/namespace/kb/sparql",
-		"updateEndpoint": "http://<STACK-NAME>-blazegraph:8080/blazegraph/namespace/kb/sparql"
-	}
-]

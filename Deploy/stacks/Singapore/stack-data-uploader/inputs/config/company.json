@@ -1,0 +1,137 @@
+{
+  "database": "postgres",
+  "workspace": "twa",
+  "skip": false,
+  "datasetDirectory": "companies",
+  "namespace": {
+        "name": "company",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
+            "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms"
+        }
+    },
+  "dataSubsets": [
+    {
+      "type": "vector",
+      "table": "data_centres",
+      "skip": false,
+      "subdirectory": "data_centres",
+      "sql": "@/inputs/config/data_centres.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "factories",
+      "skip": false,
+      "subdirectory": "factories",
+      "sql": "@/inputs/config/factories.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "precision_engineering",
+      "skip": false,
+      "subdirectory": "precision_engineering",
+      "sql": "@/inputs/config/precision_engineering.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "printing",
+      "skip": false,
+      "subdirectory": "printing",
+      "sql": "@/inputs/config/printing.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "jurong_island_city_furniture",
+      "skip": false,
+      "subdirectory": "jurong_island_city_furniture",
+      "sql": "@/inputs/config/jurong_island_city_furniture.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:24500",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "lon_epsg_24500",
+          "Y_POSSIBLE_NAMES": "lat_epsg_24500"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "jurong_island_buildings",
+      "skip": false,
+      "subdirectory": "jurong_island_buildings",
+      "sql": "@/inputs/config/jurong_island_buildings.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:24500",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "lon_epsg_24500",
+          "Y_POSSIBLE_NAMES": "lat_epsg_24500"
+        }
+      }
+    },
+    {
+      "type": "rdf",
+      "skip": "false",
+      "subdirectory": "tbox"
+    }
+  ],
+  "mappings": [
+    "company.obda"
+  ]
+}

@@ -9,7 +9,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix: <https://www.theworldavatar.com/kg/test/>.
 @prefix rml4ts: <https://www.theworldavatar.com/kg/rml4ts/>.
-@prefix time: <https://www.w3.org/2006/time#>.
+@prefix time: <http://www.w3.org/2006/time#>.
 
 :Number_773521f9-528e-40fc-9bcb-4218e49f23ds rml4ts:has_ts_mapping :TSMap_pvcapacity.
 

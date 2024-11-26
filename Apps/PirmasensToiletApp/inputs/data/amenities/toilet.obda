@@ -1,0 +1,84 @@
+[PrefixDeclaration]
+xsd:    http://www.w3.org/2001/XMLSchema#
+bot:    https://w3id.org/bot#
+obe: 	https://www.theworldavatar.com/kg/ontobuiltenv/
+iso:    https://www.theworldavatar.com/kg/ontoisochrone/
+geo:    http://www.opengis.net/ont/geosparql#
+time:   http://www.w3.org/2006/time#
+tps:    https://www.theworldavatar.com/kg/ontocitytoilets/
+vcard:  http://www.w3.org/2006/vcard/ns#
+dcat:   http://www.w3.org/ns/dcat#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+schema: https://schema.org/
+
+[MappingDeclaration] @collection [[
+mappingId   pirmasens-toilet
+target		tps:poi_{id} a tps:Toilet;
+                tps:hasID {id}^^xsd:string;
+                tps:hasOperator {operator}^^xsd:string;
+                tps:hasFee tps:poi_{id}/priceSpecification;      
+                tps:isForFemale {female}^^xsd:boolean;
+                geo:hasDefaultGeometry tps:poi_{id}/geometry;
+                tps:isForMale {male}^^xsd:boolean;
+                tps:hasWheelchairAccess {wheelchair}^^xsd:boolean;
+                vcard:street-address {street_address}^^xsd:string; 
+                vcard:locality {locality}^^xsd:string;
+                vcard:postal-code {postal_code}^^xsd:string;
+                tps:hasImage tps:poi_{id}/Dataset;
+                schema:openingHoursSpecification tps:poi_{id}/MondayOpeningHoursSpecification; 
+                schema:openingHoursSpecification tps:poi_{id}/TuesdayOpeningHoursSpecification; 
+                schema:openingHoursSpecification tps:poi_{id}/WednesdayOpeningHoursSpecification; 
+                schema:openingHoursSpecification tps:poi_{id}/ThursdayOpeningHoursSpecification; 
+                schema:openingHoursSpecification tps:poi_{id}/FridayOpeningHoursSpecification; 
+                schema:openingHoursSpecification tps:poi_{id}/SaturdayOpeningHoursSpecification; 
+                schema:openingHoursSpecification tps:poi_{id}/SundayOpeningHoursSpecification; 
+                schema:openingHoursSpecification tps:poi_{id}/PublicHolidaysOpeningHoursSpecification .
+            tps:poi_{id}/priceSpecification tps:price {price}^^xsd:double;
+                tps:priceCurrency {price_currency}^^xsd:string .
+            tps:poi_{id}/MondayOpeningHoursSpecification schema:dayOfWeek schema:Monday;
+                schema:opens {monday_opens}^^xsd:time;
+                schema:closes {monday_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/TuesdayOpeningHoursSpecification schema:dayOfWeek schema:Tuesday;
+                schema:opens {tuesday_opens}^^xsd:time;
+                schema:closes {tuesday_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/WednesdayOpeningHoursSpecification schema:dayOfWeek schema:Wednesday;
+                schema:opens {wednesday_opens}^^xsd:time;
+                schema:closes {wednesday_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/ThursdayOpeningHoursSpecification schema:dayOfWeek schema:Thursday;
+                schema:opens {thursday_opens}^^xsd:time;
+                schema:closes {thursday_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/FridayOpeningHoursSpecification schema:dayOfWeek schema:Friday;
+                schema:opens {friday_opens}^^xsd:time;
+                schema:closes {friday_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/SaturdayOpeningHoursSpecification schema:dayOfWeek schema:Saturday;
+                schema:opens {saturday_opens}^^xsd:time;
+                schema:closes {saturday_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/SundayOpeningHoursSpecification schema:dayOfWeek schema:Sunday;
+                schema:opens {sunday_opens}^^xsd:time;
+                schema:closes {sunday_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/PublicHolidaysOpeningHoursSpecification schema:dayOfWeek schema:PublicHolidays;
+                schema:opens {public_holidays_opens}^^xsd:time;
+                schema:closes {public_holidays_closes}^^xsd:time;
+                schema:validFrom {valid_from}^^xsd:date;
+                schema:validThrough {valid_through}^^xsd:date.
+            tps:poi_{id}/geometry geo:asWKT {"geometryProperty"}^^xsd:string .
+            tps:poi_{id}/Dataset dcat:distribution tps:poi_{id}/Distribution .
+            tps:poi_{id}/Distribution dcat:downloadURL <{image}>;
+                 dcat:mediaType <{media_type}> .
+source      SELECT id, operator, male, female, price, price_currency, wheelchair, street_address, locality, postal_code, image, media_type, ST_AsText("wkb_geometry") as "geometryProperty", monday_opens, monday_closes, tuesday_opens, tuesday_closes, wednesday_opens, wednesday_closes, thursday_opens, thursday_closes, friday_opens, friday_closes, saturday_opens, saturday_closes, sunday_opens, sunday_closes, public_holidays_opens, public_holidays_closes, valid_from, valid_through
+            FROM ps_data
+]]

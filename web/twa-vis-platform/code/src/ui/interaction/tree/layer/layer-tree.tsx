@@ -25,10 +25,6 @@ interface LayerTreeProps {
  * with optional icons, in a LayerTree component.
  */
 export default function LayerTree(props: Readonly<LayerTreeProps>) {
-  // Only parse the groups for the first render
-  if (props.mapGroups.length === 0) {
-    parseIntoTreeStucture(props.dataStore, props.icons, props.setMapGroups);
-  }
   return <div className={styles.layerTreeContainer}>
     {props.mapGroups.map((mapLayerGroup) => {
       return (
@@ -53,16 +49,16 @@ export default function LayerTree(props: Readonly<LayerTreeProps>) {
  * @param dataStore DataStore containing groups.
  * @param icons The mappings for icon names to their corresponding url.
  */
-function parseIntoTreeStucture(
+export function parseIntoTreeStucture(
   dataStore: DataStore,
   icons: IconSettings,
   setMapGroups: React.Dispatch<React.SetStateAction<MapLayerGroup[]>>
 ): void {
-  const root: MapLayerGroup[] = [];
+  const results: MapLayerGroup[] = [];
   dataStore.getGroups().map((group, groupIndex) => {
-    recurseParseTreeStructure(groupIndex, root, group, null, icons);
+    recurseParseTreeStructure(groupIndex, results, group, null, icons);
   });
-  setMapGroups(root);
+  setMapGroups(results);
 }
 
 /**
@@ -73,12 +69,7 @@ function parseIntoTreeStucture(
  * @param parentGroup parent tree group.
  * @param icons The mappings for icon names to their corresponding url.
  */
-function recurseParseTreeStructure(
-  groupIndex: number,
-  results: MapLayerGroup[],
-  dataGroup: DataGroup,
-  parentGroup: MapLayerGroup,
-  icons: IconSettings
+function recurseParseTreeStructure( groupIndex: number, results: MapLayerGroup[], dataGroup: DataGroup, parentGroup: MapLayerGroup, icons: IconSettings
 ): void {
   const mapLayerGroup: MapLayerGroup = {
     name: dataGroup.name,
@@ -87,20 +78,21 @@ function recurseParseTreeStructure(
         ? groupIndex.toString()
         : parentGroup.address + "." + groupIndex,
     icon: dataGroup.treeIcon,
+    stack: dataGroup.stackEndpoint,
+    search: dataGroup.search,
     layers: [],
     subGroups: [],
     showChildren: dataGroup.isExpanded,
     groupings: dataGroup.layerGroupings,
   };
-
   // Group layers by user facing name
-  const layersByName = dataGroup.dataLayers.reduce(
-    (result, layer) => ({
-      ...result,
-      [layer.name]: [...(result[layer.name] || []), layer],
-    }),
-    {} as { [key: string]: DataLayer[] }
-  );
+  const layersByName = dataGroup.dataLayers.reduce((result, layer) => {
+    if (!result[layer.name]) {
+      result[layer.name] = [];
+    }
+    result[layer.name].push(layer);
+    return result;
+  }, {} as { [key: string]: DataLayer[] });
 
   // Construct TreeLayer instances
   for (const [key, layers] of Object.entries(layersByName)) {
@@ -147,6 +139,11 @@ function collectIDs(layers: DataLayer[]): string {
  * @returns {string} the icon name
  */
 function getIcon(layers: DataLayer[], icons: IconSettings): string {
+  const overridelayer: DataLayer = layers.find(layer => layer.definition?.layerTreeIconOverride);
+  if (overridelayer) {
+    const iconOverride: string = overridelayer.definition.layerTreeIconOverride as string
+    return icons[iconOverride];
+  }
   // Retrieve the line and return its color if available
   const lineLayer: DataLayer = layers.find(layer => layer.definition?.type === 'line');
   if (lineLayer) {

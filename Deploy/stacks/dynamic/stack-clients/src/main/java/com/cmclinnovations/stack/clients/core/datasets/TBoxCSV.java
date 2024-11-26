@@ -27,10 +27,9 @@ public class TBoxCSV extends DataSubset {
         RemoteStoreClient remoteStoreClient = BlazegraphClient.getInstance()
                 .getRemoteStoreClient(dataset.getNamespace());
 
-        Path subdirectory = this.getSubdirectory();
-        if (null == subdirectory) {
-            throw new RuntimeException("No 'subdirectory' specified - required for TBoxCSV data");
-        }
+        Path subdirectory = this.getSubdirectory()
+                .orElseThrow(() -> new RuntimeException("No 'subdirectory' specified - required for TBoxCSV data"));
+
         Path datasubsetDir = dataset.getDirectory().resolve(subdirectory);
         if (!Files.exists(datasubsetDir)) {
             throw new RuntimeException("Data subset directory '" + datasubsetDir + "' does not exist.");
@@ -39,9 +38,8 @@ public class TBoxCSV extends DataSubset {
         // Create a temporary directory to contain the generated OWL files
         try (TempDir outputDir = new LocalTempDir();
                 // List all of the CSV files in the datasubset's directory
-                Stream<Path> csvFiles = Files.list(datasubsetDir)
-                        .filter(path -> path.getFileName().toString().endsWith(".csv"))) {
-            csvFiles.forEach(csvFile -> {
+                Stream<Path> files = Files.list(datasubsetDir)) {
+            files.filter(path -> path.getFileName().toString().endsWith(".csv")).forEach(csvFile -> {
                 // Calculate path for current OWL file
                 Path owlFile = outputDir.getPath()
                         .resolve(csvFile.getFileName().toString().replace(".csv", ".owl"));
@@ -57,7 +55,7 @@ public class TBoxCSV extends DataSubset {
                 } catch (Exception ex) {
                     throw new RuntimeException(
                             "Failed to upload ontology file '" + owlFile + "' to the endpoint at '" +
-                                    BlazegraphClient.getInstance().getEndpoint().getUrl(dataset.getNamespace())
+                                    BlazegraphClient.getInstance().readEndpointConfig().getUrl(dataset.getNamespace())
                                     + "'.",
                             ex);
                 }

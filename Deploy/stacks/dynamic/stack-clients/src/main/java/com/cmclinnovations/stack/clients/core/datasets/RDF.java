@@ -13,10 +13,8 @@ public class RDF extends DataSubset {
 
     @Override
     void loadInternal(Dataset parent) {
-        Path subdirectory = this.getSubdirectory();
-        if (null == subdirectory) {
-            throw new RuntimeException("No 'subdirectory' specified - required for RDF data");
-        }
+        Path subdirectory = this.getSubdirectory()
+                .orElseThrow(() -> new RuntimeException("No 'subdirectory' specified - required for RDF data"));
         BlazegraphClient.getInstance().uploadRDFFiles(
                 parent.getDirectory().resolve(subdirectory), parent.getNamespace());
     }

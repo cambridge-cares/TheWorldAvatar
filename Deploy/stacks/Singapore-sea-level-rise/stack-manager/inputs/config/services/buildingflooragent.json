@@ -1,0 +1,50 @@
+{
+    "ServiceSpec": {
+        "Name": "buildingflooragent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/buildingflooragent:2.0.0",
+                "Env": [
+                    "STACK_NAME=${STACK_NAME}",
+                    "DATABASE=postgres",
+                    "floors_csv=/resources/HDBPropertyInformation.csv"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../buildingfloordata",
+                        "Target": "/resources"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "osmagent": {
+            "url": "http://localhost:8080/BuildingFloorAgent/",
+            "externalPath": "/buildingflooragent/"
+        }
+    }
+}

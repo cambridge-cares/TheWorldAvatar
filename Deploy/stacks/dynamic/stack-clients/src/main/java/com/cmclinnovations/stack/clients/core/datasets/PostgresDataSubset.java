@@ -1,37 +1,45 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class PostgresDataSubset extends DataSubset {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(PostgresDataSubset.class);
 
     @JsonProperty(defaultValue = PostGISClient.DEFAULT_SCHEMA_NAME)
-    private String schema;
-    private String table;
+    private final Optional<String> schema = Optional.empty();
+    private final Optional<String> table = Optional.empty();
     @JsonProperty
-    private String sql;
+    private final Optional<String> sql = Optional.empty();
 
     @Override
     public String getName() {
-        String name = super.getName();
-        return (null != name) ? name : table;
+        return Stream.of(name, table)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst()
+                .orElseGet(super::getName);
     }
 
     public String getSchema() {
-        return schema;
+        return schema.orElse(PostGISClient.DEFAULT_SCHEMA_NAME);
     }
 
     public String getTable() {
-        return (null != table) ? table : super.getName();
+        return Stream.of(table, name)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -42,9 +50,9 @@ public abstract class PostgresDataSubset extends DataSubset {
     @Override
     void loadInternal(Dataset parent) {
         String database = parent.getDatabase();
-        Path subdirectory = this.getSubdirectory();
-        if (null != subdirectory) {
-            Path dataSubsetDirectory = parent.getDirectory().resolve(subdirectory);
+        Optional<Path> subdirectory = this.getSubdirectory();
+        if (subdirectory.isPresent()) {
+            Path dataSubsetDirectory = parent.getDirectory().resolve(subdirectory.get());
             PostGISClient.getInstance().resetSchema(database);
             loadData(dataSubsetDirectory, database, parent.baseIRI());
         } else {
@@ -57,25 +65,8 @@ public abstract class PostgresDataSubset extends DataSubset {
     public abstract void loadData(Path dataSubsetDir, String database, String baseIRI);
 
     public void runSQLPostProcess(String database) {
-        if (null != sql) {
-            sql = handleFileValues(sql);
-            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sql);
-        }
+        sql.map(JsonHelper::handleFileValues)
+                .ifPresent(query -> PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(query));
     }
 
-    public String handleFileValues(String sql) {
-        if (null != sql && sql.startsWith("@")) {
-            String sqlFile = sql.substring(1);
-            try {
-                sql = Files.readString(Path.of(sqlFile));
-            } catch (IOException ex) {
-                throw new RuntimeException(
-                        "Failed to read SQL file '" + Path.of(sqlFile).toAbsolutePath().toString()
-                                + "' for data subset '"
-                                + getName() + "'.",
-                        ex);
-            }
-        }
-        return sql;
-    }
 }

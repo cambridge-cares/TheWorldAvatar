@@ -4,6 +4,8 @@ export type MapLayerGroup = {
   subGroups?: MapLayerGroup[];
   icon?: string;
   layers?: MapLayer[];
+  stack?: string; // Optional stack endpoint
+  search?: string; // Optional search resource identifier
   showChildren?: boolean; // track open/closed state
   groupings: string[]; // unique array of groupings
 };

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="todos_url">https://jsonplaceholder.typicode.com/todos</string>
+    <string name="users_url">https://jsonplaceholder.typicode.com/users</string>
+</resources>

@@ -1,0 +1,16 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "GOVcentralhydro",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "GOVcentralhydro",
+            "subdirectory": "vector"
+        }
+    ]
+   
+
+}

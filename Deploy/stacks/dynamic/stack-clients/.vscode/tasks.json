@@ -5,6 +5,55 @@
     "tasks": [
         {
             "type": "shell",
+            "label": "build-manager",
+            "command": "./stack.sh",
+            "args": [
+                "build"
+            ],
+            "options": {
+                "cwd": "${cwd}/../stack-manager",
+                "shell": {
+                    "executable": "bash"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "type": "shell",
+            "label": "build-data-uploader",
+            "command": "./stack.sh",
+            "args": [
+                "build"
+            ],
+            "options": {
+                "cwd": "${cwd}/../stack-data-uploader",
+                "shell": {
+                    "executable": "bash"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "type": "shell",
+            "label": "build-dependents",
+            "dependsOn": [
+                "build-manager",
+                "build-data-uploader"
+            ],
+            "dependsOrder": "parallel",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "type": "shell",
             "label": "compose-build",
             "command": "./stack.sh",
             "args": [
@@ -15,6 +64,18 @@
                     "executable": "bash"
                 }
             },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-all",
+            "dependsOn": [
+                "compose-build",
+                "build-dependents"
+            ],
+            "dependsOrder": "sequence",
             "group": {
                 "kind": "build",
                 "isDefault": true

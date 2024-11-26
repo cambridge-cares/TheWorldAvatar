@@ -1,6 +1,6 @@
 import { DataGroup } from './data-group';
 import { DataLayer } from './data-layer';
-import { DataSource } from './data-source';
+import { LayerSource } from './layer-source';
 
 /**
  * This class handles storage of all data groups and their sources. Definitions of data sources,
@@ -94,7 +94,7 @@ export class DataStore {
      * @param sourceId The source layer ID of interest.
      */
     public getStackEndpoint(sourceId: string): string {
-        const source: DataSource= this.getSourceList().find(source => source.id.trim() === sourceId.trim());
+        const source: LayerSource= this.getSourceList().find(source => source.id.trim() === sourceId.trim());
         return source ? source.stackEndpoint : undefined;
     }
 
@@ -128,11 +128,11 @@ export class DataStore {
     }
 
     /**
-     * Gets a flattened list of all DataSource instances defined across the entire
+     * Gets a flattened list of all LayerSource instances defined across the entire
      * group hierarchy.
      */
-    public getSourceList(): DataSource[] {
-        const results: DataSource[] = [];
+    public getSourceList(): LayerSource[] {
+        const results: LayerSource[] = [];
         this._dataGroups.forEach(topGroup => {
             this.collectSources(topGroup, results);
         })
@@ -146,9 +146,9 @@ export class DataStore {
      * @param currentGroup current data group in hierarchy.
      * @param results collector for flattened sources.
      */
-    private collectSources(currentGroup: DataGroup, results: DataSource[]) {
+    private collectSources(currentGroup: DataGroup, results: LayerSource[]) {
         if(currentGroup != null) {
-            results.push(...currentGroup.dataSources);
+            results.push(...currentGroup.layerSources);
     
             currentGroup.subGroups.forEach(subGroup => {
                 this.collectSources(subGroup, results);

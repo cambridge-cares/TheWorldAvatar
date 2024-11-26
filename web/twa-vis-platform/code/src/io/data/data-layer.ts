@@ -1,6 +1,6 @@
-import { DataSource } from './data-source';
+import { LayerSource } from './layer-source';
 import { Interactions } from 'io/config/interactions';
-import { InjectableMapProperties, InjectableProperty, MapboxHoverProperty } from 'types/map-properties';
+import { InjectableMapProperties, InjectableProperty, MapboxClickableProperty, MapboxHoverProperty } from 'types/map-properties';
 import { JsonArray, JsonObject } from 'types/json';
 
 /**
@@ -21,7 +21,7 @@ export abstract class DataLayer {
     /**
      * Source of the layer's data.
      */
-    public readonly source: DataSource;
+    public readonly source: LayerSource;
 
     /**
      * The JSON object that originally defined this layer (unadjusted).
@@ -51,7 +51,9 @@ export abstract class DataLayer {
      */
     public cachedVisibility: boolean = true;
 
-    // Indicates if the parent is visible
+    /*
+    * Indicates if the parent is visible
+    */
     public isGroupExpanded: boolean;
 
     /**
@@ -62,15 +64,26 @@ export abstract class DataLayer {
      * @param source Source of the layer's data.
      * @param definition The JSON object that originally defined this layer.
      */
-    constructor(id: string, isGroupExpanded: boolean, source: DataSource, definition: object) {
+    constructor(id: string, isGroupExpanded: boolean, source: LayerSource, definition: object) {
         this.id = id;
         this.source = source;
         this.isGroupExpanded = isGroupExpanded;
         this.definition = definition as JsonObject;
         this.name = this.definition["name"] as string;
+
+        if (this.definition["order"]) {
+            this.order = this.definition["order"] as number;
+        }
+
         if (this.definition["grouping"]) {
             this.grouping = this.definition["grouping"] as string;
         }
+        // Inject clickable state if indicated
+        const clickableState: boolean = (this.definition[Interactions.CLICKABLE] ?? true) as boolean;
+        const clickableProperty: MapboxClickableProperty = { style: [clickableState] };
+        this.updateInjectableProperty(Interactions.CLICKABLE, clickableProperty)
+
+        // Inject hover state if indicated
         if (this.definition[Interactions.HOVER]) {
             const hoverJsonArray: JsonArray = this.definition[Interactions.HOVER] as JsonArray;
             if (hoverJsonArray.length !== 2) {
@@ -79,7 +92,6 @@ export abstract class DataLayer {
             const hoverProperty: MapboxHoverProperty = { style: ["case", ["==", ["get", "iri"], "[HOVERED-IRI]"], Number(hoverJsonArray[0]), Number(hoverJsonArray[1])] };
             this.updateInjectableProperty(Interactions.HOVER, hoverProperty)
         }
-        console.info("Created DataLayer instance '" + this.id + "'.");
     }
 
     /**
@@ -110,4 +122,3 @@ export abstract class DataLayer {
         this.injectableProperties[interactionType] = property;
     }
 }
-// End of class.

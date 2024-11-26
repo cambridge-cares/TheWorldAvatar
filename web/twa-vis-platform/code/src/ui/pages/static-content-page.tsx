@@ -6,6 +6,8 @@
 "use client";
 
 import styles from './static-content-page.module.css';
+import returnButtonStyles from '../navigation/return/return.module.css';
+
 import 'github-markdown-css/github-markdown.css';
 
 import React, { ReactNode } from 'react';
@@ -43,7 +45,7 @@ export default function StaticContentPage({ childNodes, childString }: Readonly<
   } else if (childString != null) {
     return (
       <div className={styles.container} key="static-content-page">
-        <ReturnButton />
+        <ReturnButton styles={returnButtonStyles["button-padding"]} />
         <div className={styles.contentOuter}>
           <div
             className={classNames}

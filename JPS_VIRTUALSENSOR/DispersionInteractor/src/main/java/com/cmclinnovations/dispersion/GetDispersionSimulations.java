@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 @WebServlet(urlPatterns = { "/GetDispersionSimulations" })
 public class GetDispersionSimulations extends HttpServlet {
@@ -45,7 +46,8 @@ public class GetDispersionSimulations extends HttpServlet {
 
         try {
             dispersionSimulations.forEach(
-                dispersionSimulation -> results.put(dispersionSimulation.getLabel(), dispersionSimulation.toJson()));
+                    dispersionSimulation -> results.put(dispersionSimulation.getLabel(),
+                            dispersionSimulation.toJson()));
         } catch (JSONException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Failed to create JSON object for HTTP response");
@@ -70,9 +72,10 @@ public class GetDispersionSimulations extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient,
+                new TimeSeriesRDBClientWithReducedTables<>(Long.class));
         TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
-                Instant.class);
+                new TimeSeriesRDBClientWithReducedTables<>(Instant.class));
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
         queryClient.setOntopUrl(endpointConfig.getOntopUrl());
     }

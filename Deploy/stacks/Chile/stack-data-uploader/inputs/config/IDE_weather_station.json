@@ -1,0 +1,16 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "IDE_weather_station",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "IDE_weather_station",
+            "subdirectory": "vector"
+        }
+    ]
+   
+
+}

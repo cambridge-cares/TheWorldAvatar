@@ -1,0 +1,27 @@
+#
+# Compose file for the TWA-VP.
+#
+services:
+  twa-vf:
+    image: ghcr.io/cambridge-cares/twa-vf
+    container_name: "twa-vf"
+    restart: "always"
+    environment:
+      KEYCLOAK: false ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: /page,/otherpage ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /protected/page/ ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: twa-test:protected ## the role required for the above list
+      ASSET_PREFIX: /demos/uk
+    secrets:
+      - mapbox_username
+      - mapbox_api_key
+    volumes:
+      - ./public:/twa/public/
+    ports:
+      - "38384:3000"
+
+secrets:
+    mapbox_username:
+      file: ./mapbox_username
+    mapbox_api_key:
+      file: ./mapbox_api_key

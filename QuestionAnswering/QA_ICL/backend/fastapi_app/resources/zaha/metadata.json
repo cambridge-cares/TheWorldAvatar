@@ -1,0 +1,4 @@
+{
+    "title": "Zaha",
+    "subtitle": "This website presents Zaha, a proof-of-concept search engine system for accessing urban data from the World Avatar Knowledge Graph. Zaha can handle complex questions, for example: \"What's the average property value for a 6 bedroom building?\". The answer is derived from data encoded in a dynamic knowledge graph and then presented in user-friendly tables and text via a chatbot. Currently, Zaha knows all about the built environment of King's Lynn but will soon be expanding to contain many other urban environments.\nTo use the search engine, type a question into the field below, or select one of the provided sample questions. Please note that Zaha is still under development, and the accuracy of the results will increase with further refinement of the underlying ontologies."
+}

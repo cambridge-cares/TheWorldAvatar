@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from .exceptions import SparqlParseError
+from .abc import SparqlBase
 from .query_form import SelectClause
 from .solution_modifier import SolutionModifier
-from .sparql_base import SparqlBase
 from .where_clause import WhereClause
+from .exceptions import SparqlParseError
 
 
 @dataclass(order=True, frozen=True)

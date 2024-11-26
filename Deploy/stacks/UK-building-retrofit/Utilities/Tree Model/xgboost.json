@@ -1,0 +1,7 @@
+{
+  "TRAINING_LA_CODES_PATH": "path/to/training_la_codes.csv",
+  "ANALYSIS_LA_CODES_PATH": "path/to/analysis_la_codes.csv",
+  "XGBOOST_MODEL_PATH": "/your_ideal_path_to_store_model_for_reuse/trained_xgboost_model.pkl",
+  "SCALER_PATH": "/your_ideal_path_to_store_model_for_reuse/scaler.pkl",
+  "API_TOKEN": "your_api_token_here"
+}

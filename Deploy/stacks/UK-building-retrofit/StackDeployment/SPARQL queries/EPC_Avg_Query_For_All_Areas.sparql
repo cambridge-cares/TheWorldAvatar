@@ -1,0 +1,12 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX building: <https://www.theworldavatar.com/kg/ontobuiltenv/building>
+PREFIX GeoSparql: <http://www.opengis.net/ont/geosparql#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT (AVG(?energyEfficiency) AS ?averageEPC)
+WHERE {
+  ?postcodeEntity GeoSparql:sfWithin <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/LSOA_CODE> ;
+                  ontobuiltenv:hasPostcode ?postcode .
+  ?building ontobuiltenv:hasPostcode ?postcode ;
+            building:hasEnergyEfficiency ?energyEfficiency .
+}

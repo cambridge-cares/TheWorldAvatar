@@ -3,7 +3,7 @@
 # ===============================================================================
 from .xlsvmodel import XLSVModel
 from utils.plot_formatter import translateValueIdList,translateControlIdList,translateSingleValueIdList
-from utils.config import XLSMMODELPATH,KG_UPDATE_LIST,NAME_NETZERO
+from utils.config import XLSMMODELPATH, NAME_NETZERO, KG_UPDATE_LIST, KG_UPDATE_LIST_STATIC
 
 import time
 from collections import deque
@@ -16,7 +16,8 @@ class CalculatorModel(XLSVModel):
         self.valueLists = translateValueIdList()
         self.levelLists = translateControlIdList()
         self.singleValueLists = translateSingleValueIdList()
-        self.updateList = KG_UPDATE_LIST
+        self.updateTimeSeriesList = KG_UPDATE_LIST
+        self.updateMetaDataList = KG_UPDATE_LIST_STATIC
 
     #set values of lever config
     def setControls(self, levels):
@@ -88,18 +89,28 @@ class CalculatorModel(XLSVModel):
 
         return current_config, net
 
-
-
     # update all values in the updatelist by querying the KG
-    def updateFromKG(self, new_values):
-        for k in self.updateList:
+    def updateTimeSeriesFromKG(self, new_values):
+        print(new_values)
+        for k in self.updateTimeSeriesList:
             if k not in new_values:
                 print('{} not in update data, could be an error'.format(k))
                 continue
-            cell = self.updateList[k]
-            print(cell)
+            cell = self.updateTimeSeriesList[k]
             new_value = new_values[k]
-            print(new_value)
+            if type(new_value) != list:
+                new_value = [new_value]
+            self.updateValue(cell, new_value,pagename='model',transpose=False)
+            
+    # update all values in the updatelist by querying the KG
+    def updateMetaDataFromKG(self, new_values):
+        print(new_values)
+        for k in self.updateMetaDataList:
+            if k not in new_values:
+                print('{} not in update data, could be an error'.format(k))
+                continue
+            cell = self.updateMetaDataList[k]
+            new_value = new_values[k]
             if type(new_value) != list:
                 new_value = [new_value]
             self.updateValue(cell, new_value,pagename='model',transpose=False)

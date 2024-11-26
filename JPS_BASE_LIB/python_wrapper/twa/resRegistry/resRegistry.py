@@ -6,7 +6,7 @@ import keyword
 import builtins
 import textwrap
 
-_RES_DIR = pkg_resources.resource_filename(__name__,os.path.join('..','resources'))
+_RES_DIR = pkg_resources.resource_filename(__name__, os.path.join('..','resources'))
 _RES_REG_FILE = 'resources_registry.json'
 _DEF_RES_META_FILE = 'default_resources.json'
 _URL_ID = 'url://'
@@ -16,18 +16,15 @@ class resRegistry:
     """
     Registry class for managing jps resources.
 
-    Attributes
-    ----------
-    resReg : dict
-        resource registry dictionary
-
+    Attributes:
+        resReg (dict): resource registry dictionary
     """
     def __init__(self):
         """
         Constructs the registry object. If regsitry file does not exists, it creates one on the fly.
         """
         try:
-            self.resReg = json.load(pkg_resources.resource_stream(__name__,os.path.join('..','resources',_RES_REG_FILE)))
+            self.resReg = json.load(pkg_resources.resource_stream(__name__, os.path.join('..','resources',_RES_REG_FILE)))
         except FileNotFoundError:
             self.resReg = {'resources':{}}
             self._updateRegFile()
@@ -35,7 +32,7 @@ class resRegistry:
         # - enable default resources info once we have a proper resource repo available
         #==============
         #try:
-        #    self.resDefMeta = json.load(pkg_resources.resource_stream(__name__,os.path.join('..','resources',_DEF_RES_META_FILE)))
+        #    self.resDefMeta = json.load(pkg_resources.resource_stream(__name__, os.path.join('..','resources',_DEF_RES_META_FILE)))
         #except FileNotFoundError:
         #    self.resDefMeta = {
         #    'resources':{
@@ -50,16 +47,11 @@ class resRegistry:
         """
         Adds a resource to the registry.
 
-        Arguments:
-        ----------
-        resName : str
-            resource name
-        resLoc : str
-            path to the resource directory
-        resMainJarFile : str, optional
-            resource main jar file, if not provided the first jar found
-            in the resource dir will be selected, if no jars are present
-            it is set to None
+        Args:
+            resName (str): resource name
+            resLoc (str): path to the resource directory
+            resMainJarFile (str): name of the main jar file, if not provided the first jar found
+                in the resource dir will be selected, if no jars are present it is set to None
         """
         if not self._isResInReg(resName):
             print("Info: Adding the {0} resource...".format(resName))
@@ -86,12 +78,10 @@ class resRegistry:
     def removeResFromReg(self, resName):
         """
         Removes a resource from the registry.
-        Note, it removes all the resource files as well.
+        > Note, it removes all the resource files as well.
 
-        Arguments:
-        ----------
-        resName : str
-            resource name
+        Args:
+            resName (str): resource name
         """
         if self._isResInReg(resName):
             print("Info: Removing {0} resource...".format(resName))
@@ -111,9 +101,11 @@ class resRegistry:
         """
         Cleans the registry.
 
-        Use with caution. The command removes:
-            - all registry entries with no corresponding resource files
-            - all resource files with no corresponding registry entries
+        > Use with caution. The command removes:
+
+        > - all registry entries with no corresponding resource files
+
+        > - all resource files with no corresponding registry entries
         """
 
         print("Info: Removing resources that do not exist on the registry...")
@@ -135,14 +127,12 @@ class resRegistry:
         """
         Returns an absolute path to the resource main jar file.
 
-        Arguments:
-        ----------
-        resName : str
-            resource name
+        Args:
+            resName (str): resource name
         """
         if resName in self.resReg['resources']:
             mainFile = self.resReg['resources'][resName]['mainJarFile']
-            return os.path.join(self._getResPath(resName),mainFile)
+            return os.path.join(self._getResPath(resName), mainFile)
         else:
             return None
 
@@ -174,7 +164,7 @@ class resRegistry:
         return resName in self.resReg['resources']
 
     def _getResPath(self, resName):
-        return os.path.abspath(os.path.join(_RES_DIR,resName))
+        return os.path.abspath(os.path.join(_RES_DIR, resName))
 
     def _getResName(self, resDict):
         return list(resDict.keys())[0]
@@ -212,14 +202,14 @@ class resRegistry:
         print("Info: Fetching {0} resource files.".format(resName))
         if not _URL_ID in resLoc:
             try:
-                shutil.copytree(resLoc, os.path.join(_RES_DIR,resName))
+                shutil.copytree(resLoc, os.path.join(_RES_DIR, resName))
                 self._addResClass(resName)
                 self._addResInfoFile(resName)
             except FileExistsError as e:
                 print("Warning: {0} resource files already exist! Cleaning...".format(resName))
                 self._removeResFiles(resName)
                 print("Info: Copying {0} resource files.".format(resName))
-                shutil.copytree(resLoc, os.path.join(_RES_DIR,resName))
+                shutil.copytree(resLoc, os.path.join(_RES_DIR, resName))
                 self._addResClass(resName)
                 self._addResInfoFile(resName)
 
@@ -249,24 +239,24 @@ class resRegistry:
         print('Info: Installing {} files complete.'.format(resName))
 
     def _removeResFiles(self, resName):
-        if os.path.isdir(os.path.join(_RES_DIR,resName)):
+        if os.path.isdir(os.path.join(_RES_DIR, resName)):
             print("Info: Removing {0} resource files.".format(resName))
-            shutil.rmtree(os.path.join(_RES_DIR,resName))
+            shutil.rmtree(os.path.join(_RES_DIR, resName))
        # update resource module init file
         with open(os.path.abspath(os.path.join(_RES_DIR, _INIT_FILE)),'r') as inifile:
             lines = inifile.readlines()
 
     def _updateRegFile(self):
         print("Info: Saving the registry.")
-        self._dumpJsonFile(os.path.join(_RES_DIR,_RES_REG_FILE),self.resReg)
+        self._dumpJsonFile(os.path.join(_RES_DIR,_RES_REG_FILE), self.resReg)
 
     def _updateResDefMetaFile(self):
         print("Info: Saving the default resources metadata file.")
-        self._dumpJsonFile(os.path.join(_RES_DIR,_DEF_RES_META_FILE),self.resDefMeta)
+        self._dumpJsonFile(os.path.join(_RES_DIR,_DEF_RES_META_FILE), self.resDefMeta)
 
-    def _addResInfoFile(self,resName):
+    def _addResInfoFile(self, resName):
         resMeta = {resName: self._getResRegMeta(resName)}
-        self._dumpJsonFile(os.path.join(_RES_DIR,resName,'info.txt'),resMeta)
+        self._dumpJsonFile(os.path.join(_RES_DIR, resName,'info.txt'), resMeta)
 
     def _addResMetaFile(self, resName):
         resMeta = self._getResRegMeta(resName)
@@ -280,6 +270,6 @@ class resRegistry:
         raise Exception("Error: Main jar file could not be located. Aborting installation!")
 
     @staticmethod
-    def _dumpJsonFile(jsonPath,contentDict):
+    def _dumpJsonFile(jsonPath, contentDict):
         with open(jsonPath, "w") as outfile:
             json.dump(contentDict, outfile, indent=4)

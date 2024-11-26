@@ -1,0 +1,17 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "gfabrikNatural",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "gfabrikNatural",
+            "subdirectory": "vector"
+
+        }
+    ]
+   
+
+}

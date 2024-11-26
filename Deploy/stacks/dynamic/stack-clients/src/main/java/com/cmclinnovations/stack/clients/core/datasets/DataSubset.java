@@ -1,6 +1,7 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -17,25 +18,18 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = TBoxCSV.class, names = { "TBoxCSV", "TboxCSV", "tboxcsv" }),
         @Type(value = CityDB.class, names = { "CityDB", "citydb" }),
         @Type(value = XtoCityDB.class, names = { "XtoCityDB", "xtocitydb" }) })
-public abstract class DataSubset {
-
-    private String name;
+public abstract class DataSubset extends AbstractDataObject {
+    protected final Optional<String> name = Optional.empty();
     @JsonProperty
-    private Path subdirectory;
-
-    @JsonProperty
-    private boolean skip;
+    private final Optional<Path> subdirectory = Optional.empty();
 
     public String getName() {
-        return name;
+        return name.orElse(getSubdirectory().map(subdir -> subdir.getFileName().toString())
+                .orElseThrow(() -> new RuntimeException("Not all datasets have a name: " + this.getClass())));
     }
 
-    public Path getSubdirectory() {
-        return subdirectory; 
-    }
-
-    public boolean isSkip() {
-        return skip;
+    public Optional<Path> getSubdirectory() {
+        return subdirectory;
     }
 
     public boolean usesPostGIS() {
@@ -51,10 +45,11 @@ public abstract class DataSubset {
     }
 
     public void load(Dataset dataset) {
-        if (!skip) {
+        if (!isSkip()) {
             loadInternal(dataset);
         }
     }
 
     abstract void loadInternal(Dataset dataset);
+
 }

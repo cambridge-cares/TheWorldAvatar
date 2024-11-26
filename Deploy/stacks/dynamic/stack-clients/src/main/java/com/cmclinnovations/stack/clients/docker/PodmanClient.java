@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.utils.JsonHelper;
 import com.cmclinnovations.swagger.podman.ApiClient;
 import com.cmclinnovations.swagger.podman.ApiException;
 import com.cmclinnovations.swagger.podman.api.SecretsApi;
@@ -64,7 +65,7 @@ public class PodmanClient extends DockerClient {
 
     @Override
     public List<Config> getConfigs() {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = JsonHelper.getMapper();
         return getSecrets().stream().map(secret -> {
             try {
                 return mapper.readValue("{\"ID\":\"" + secret.getId() + "\", \"Spec\":{\"Name\":\""

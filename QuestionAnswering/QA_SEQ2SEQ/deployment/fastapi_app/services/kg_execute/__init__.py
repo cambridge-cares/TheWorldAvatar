@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Iterable
 
-from .kg_client import IKgClient
+from .kg_client import KgClient
 
 
 class UnexpectedDomainError(ValueError):
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class KgExecutor:
-    def __init__(self, domain2sparql: Dict[str, IKgClient]):
+    def __init__(self, domain2sparql: Dict[str, KgClient]):
         self.domain2sparql = domain2sparql
 
     def query(self, domain: str, query: str):
@@ -27,5 +27,5 @@ class KgExecutor:
             UnexpectedDomainError
         """
         if domain not in self.domain2sparql:
-            raise ValueError(domain, self.domain2sparql.keys())
+            raise UnexpectedDomainError(domain, self.domain2sparql.keys())
         return self.domain2sparql[domain].query(query)

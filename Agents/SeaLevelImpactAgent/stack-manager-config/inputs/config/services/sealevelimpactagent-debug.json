@@ -1,0 +1,55 @@
+{
+  "ServiceSpec": {
+    "Name": "sealevelimpactagent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "sealevelimpactagent:1.1.0",
+        "Env": [
+          "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+        ],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "../../../../../../Agents/SeaLevelImpactAgent/inputs",
+            "Target": "/inputs"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "postgis"
+          },
+          {
+            "ConfigName": "geoserver"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+        ]
+      }
+    },
+    "EndpointSpec": {
+      "Ports": [
+        {
+          "Name": "web",
+          "Protocol": "tcp",
+          "TargetPort": "5005",
+          "PublishedPort": "5005"
+        }
+      ]
+    }
+  },
+  "endpoints": {
+    "sealevelimpactagent": {
+      "url": "http://localhost:8080/sealevelimpactagent/",
+      "externalPath": "/sealevelimpactagent/"
+    }
+  }
+}

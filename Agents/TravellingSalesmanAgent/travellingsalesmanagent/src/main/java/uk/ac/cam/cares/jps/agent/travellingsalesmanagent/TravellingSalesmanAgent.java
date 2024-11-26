@@ -136,7 +136,7 @@ public class TravellingSalesmanAgent extends JPSAgent {
             virtualTable.addVirtualTableGeometry("geom", "Geometry", "4326"); // geom needs to match the sql query
             geoServerVectorSettings.setVirtualTable(virtualTable);
             geoServerClient.createPostGISDataStore(workspaceName,"poi_tsp_nearest_node" , dbName, schema);
-            geoServerClient.createPostGISLayer(workspaceName, dbName,"poi_tsp_nearest_node" ,geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(workspaceName, dbName,"public", "poi_tsp_nearest_node" ,geoServerVectorSettings);
 
 
             /**
