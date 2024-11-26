@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * Displays the form page for adding an entity.
  */
 export default function AddFormPage(props: Readonly<AddFormPageProps>) {
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   return (
     <div className="formContainer">
       <FormContainerComponent

@@ -33,14 +33,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function InterceptAddFormPage(props: Readonly<InterceptAddFormPageProps>) {
   const { params } = props;
   const resolvedParams = await params;
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   return (
     <FormModal>
       <FormContainerComponent
         entityType={resolvedParams.type}
         formType={Paths.REGISTRY_ADD}
         agentApi={uiSettings.resources?.registry?.url}
-        isPrimaryEntity={uiSettings.resources?.registry?.data === props.params?.type}
+        isPrimaryEntity={uiSettings.resources?.registry?.data === resolvedParams?.type}
       />
     </FormModal>
   );
