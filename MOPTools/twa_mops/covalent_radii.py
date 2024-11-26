@@ -9,21 +9,17 @@ from rdkit.Chem.rdmolfiles import MolFromXYZFile
 
 
 # Define the directory paths and file names
-xyz_folder = "./data/xyz_mops_regenerate"
-output_csv = "./data/xyz_mops_regenerate/ogm_inner_radius_new.csv"
-covalent_radii_file = "./data/covalent_radii.csv"
+xyz_folder = "./data/xyz_mops_new"
+output_csv = "./data/xyz_mops_new/ogm_inner_radius_new.csv"
 
 
 def diameter_of_largest_inner_sphere(atoms: List[Point]):
-    # find the closest atom to the centroid of the atoms
+    # find the centroid of the atoms
     centriod = Point.centroid(atoms)
-    closest_atom = centriod.rank_distance_to_points(atoms)[0]
 
-    # find those within threshold distance of (the distance of the closest atom to centroid + 0.5)
-    threshold_distance = closest_atom.get_distance_to(centriod) + 0.5
-    atoms_within_threshold = centriod.get_points_within_threshold_distance(atoms, threshold_distance)
+    # find the atom that is closest to the centroid when subtracted covalent radius
     periodic_table = GetPeriodicTable()
-    sorted_by_adjusted_distance = sorted(atoms_within_threshold, key=lambda x: centriod.get_distance_to(x) - periodic_table.GetRcovalent(x.label))
+    sorted_by_adjusted_distance = sorted(atoms, key = lambda x: centriod.get_distance_to(x) - periodic_table.GetRcovalent(x.label))
 
     # calculate the inner diameter as the adjusted distance, as well as the inner volume of the sphere
     inner_radius = sorted_by_adjusted_distance[0].get_distance_to(centriod) - periodic_table.GetRcovalent(sorted_by_adjusted_distance[0].label)
