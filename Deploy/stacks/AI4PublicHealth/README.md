@@ -18,7 +18,7 @@ The [Visualisation] folder contains files that serve as inputs to the TWA Visual
 [Common_Script]: ./Common_Script/
 [Stack_Deployment]: ./Stack_Deployment/
 [Queries]: ./Queries/
-[Visualisation]: ./TWA-VF/
+[Visualisation]: ./TWA-VP/
 
 ## Authors ##
 Jiying Chen (jc2341@cam.ac.uk), Nov 2024
