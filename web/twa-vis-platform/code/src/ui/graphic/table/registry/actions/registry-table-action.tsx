@@ -11,7 +11,6 @@ import { getAfterDelimiter, isValidIRI } from 'utils/client-utils';
 
 interface RegistryRowActionsProps {
   recordType: string;
-  lifecycleStage: string;
   isTaskPage: boolean;
   row: GridRowModel;
   setTaskId: React.Dispatch<React.SetStateAction<string>>;
@@ -22,7 +21,6 @@ interface RegistryRowActionsProps {
  * Renders the possible row actions for each row in the registry.
  * 
  * @param {string} recordType The type of the record.
- * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
  * @param {boolean} isTaskPage Indicator if the table is currently on the task view.
  * @param {GridRowModel} row Row values.
  * @param setTaskId A dispatch method to set task id when required.
@@ -36,11 +34,6 @@ export default function RegistryRowActions(props: Readonly<RegistryRowActionsPro
       getAfterDelimiter(props.row.id, "/") : props.row.id
     : props.row.iri;
 
-  const handleClickEdit = (): void => {
-    // Move to the edit modal page for the specific record
-    router.push(`${Routes.REGISTRY_EDIT}/${props.recordType}/${recordId}`);
-  };
-
   const handleClickView = (): void => {
     if (props.isTaskPage) {
       props.setTaskId(recordId);
@@ -51,29 +44,14 @@ export default function RegistryRowActions(props: Readonly<RegistryRowActionsPro
     }
   };
 
-  const handleClickDelete = (): void => {
-    // Move to the delete modal page for the specific record
-    router.push(`${Routes.REGISTRY_DELETE}/${props.recordType}/${recordId}`);
-  };
-
   return (
     <div className={styles["table-icon-cell"]}>
       {/* Action buttons or icons */}
-      {props.lifecycleStage == Routes.REGISTRY_PENDING && <MaterialIconButton
-        iconName="edit"
-        iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
-        onClick={handleClickEdit}
-      />}
       <MaterialIconButton
         iconName="expand_circle_right"
         iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
         onClick={handleClickView}
       />
-      {props.lifecycleStage == Routes.REGISTRY_PENDING && <MaterialIconButton
-        iconName="delete"
-        iconStyles={[iconStyles["small-icon"], styles["expand-icon"]]}
-        onClick={handleClickDelete}
-      />}
     </div>
   );
 }

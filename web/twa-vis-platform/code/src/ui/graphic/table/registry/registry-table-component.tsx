@@ -89,7 +89,6 @@ export default function RegistryTableComponent(props: Readonly<RegistryTableComp
         <div className={styles["table-contents"]}>
           {refreshFlag || isLoading ? <LoadingSpinner isSmall={false} /> : <RegistryTable
             recordType={props.entityType}
-            lifecycleStage={props.lifecycleStage}
             isTaskPage={isTaskPage}
             setTaskId={setTaskId}
             setTaskStatus={setTaskStatus}

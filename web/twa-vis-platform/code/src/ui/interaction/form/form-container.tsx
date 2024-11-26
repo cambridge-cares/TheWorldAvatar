@@ -2,7 +2,7 @@
 
 import styles from './form.module.css';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -14,8 +14,10 @@ import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { FormComponent } from 'ui/interaction/form/form';
 import ReturnButton from 'ui/navigation/return/return';
 import ResponseComponent from 'ui/text/response/response';
-import { HttpResponse } from 'utils/server-actions';
+import { HttpResponse, sendGetRequest } from 'utils/server-actions';
 import { getAfterDelimiter } from 'utils/client-utils';
+import { ENTITY_STATUS } from './form-utils';
+import { ApiResponse } from 'types/json';
 
 interface FormContainerComponentProps {
   entityType: string;
@@ -37,6 +39,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
   const dispatch = useDispatch();
 
   const [refreshFlag, triggerRefresh] = useRefresh();
+  const [status, setStatus] = useState<ApiResponse>(null);
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
 
@@ -72,6 +75,18 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     router.back(); // Required to close the intercepted modal as the tab cannot be closed
   };
 
+  useEffect(() => {
+    // Declare an async function that retrieves the contract status for a view page
+    const getContractStatus = async (): Promise<void> => {
+      const response: string = await sendGetRequest(`${props.agentApi}/contracts/status/${id}`);
+      setStatus(JSON.parse(response));
+    }
+
+    if (props.isPrimaryEntity && !status && props.formType === Paths.REGISTRY) {
+      getContractStatus();
+    }
+  }, []);
+
   return (
     <div className={styles["container"]}>
       <div className={`${styles["form-title"]} ${styles["form-row"]}`}>
@@ -99,7 +114,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
         {formRef.current?.formState?.isSubmitting && <LoadingSpinner isSmall={false} />}
         {!formRef.current?.formState?.isSubmitting && response && (<ResponseComponent response={response} />)}
         <div className={styles["form-row"]}>
-          {props.formType === Paths.REGISTRY && <MaterialIconButton
+          {props.formType === Paths.REGISTRY && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
             iconName={"edit"}
             className={styles["form-button"]}
             iconStyles={[styles["form-button-icon"]]}
@@ -109,7 +124,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             }}
             onClick={openEditModal}
           />}
-          {props.formType === Paths.REGISTRY && <MaterialIconButton
+          {props.formType === Paths.REGISTRY && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
             iconName={"delete"}
             className={styles["form-button"]}
             iconStyles={[styles["form-button-icon"]]}

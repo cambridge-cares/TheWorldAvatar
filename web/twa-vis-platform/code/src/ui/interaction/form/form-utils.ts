@@ -27,6 +27,12 @@ export const FORM_STATES: Record<string, string> = {
   LONGITUDE: "longitude",
 };
 
+export const ENTITY_STATUS: Record<string, string> = {
+  ACTIVE: "Active",
+  ARCHIVED: "Archived",
+  PENDING: "Pending",
+};
+
 /**
  * Initialises a form field based on the property shape. This function will retrieve the default value
  * as well as append the field ID based on the input.

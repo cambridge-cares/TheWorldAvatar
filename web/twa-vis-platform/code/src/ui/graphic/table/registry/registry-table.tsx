@@ -14,7 +14,6 @@ import { RegistryTableTheme } from './registry-table-theme';
 
 interface RegistryTableProps {
   recordType: string;
-  lifecycleStage: string;
   isTaskPage: boolean;
   instances: RegistryFieldValues[];
   setTaskId: React.Dispatch<React.SetStateAction<string>>;
@@ -26,7 +25,6 @@ interface RegistryTableProps {
  * This component renders a registry of table based on the inputs.
  * 
  * @param {string} recordType The type of the record.
- * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
  * @param {boolean} isTaskPage Indicator if the table is currently on the task view.
  * @param {RegistryFieldValues[]} instances The instance values for the table.
  * @param setTaskId A dispatch method to set task id when required.
@@ -46,7 +44,6 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
         renderCell: (params) => {
           return (<RegistryRowActions
             recordType={props.recordType}
-            lifecycleStage={props.lifecycleStage}
             isTaskPage={props.isTaskPage}
             row={params.row}
             setTaskId={props.setTaskId}
