@@ -52,14 +52,14 @@ app.prepare().then(() => {
     const server = express();
 
     if (keycloakEnabled) { // do keycloak auth stuff if env var is set
-    console.info('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colourYellow : colourRed, process.env.PROTECTED_PAGES, colourReset)
-    console.info('the following pages require the', process.env.ROLE ? colourYellow : colourRed, process.env.ROLE, colourReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colourYellow : colourRed, process.env.ROLE_PROTECTED_PAGES, colourReset)
+        console.info('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colourYellow : colourRed, process.env.PROTECTED_PAGES, colourReset)
+        console.info('the following pages require the', process.env.ROLE ? colourYellow : colourRed, process.env.ROLE, colourReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colourYellow : colourRed, process.env.ROLE_PROTECTED_PAGES, colourReset)
 
         server.set('trust proxy', true); // the client’s IP address is understood as the left-most entry in the X-Forwarded-For header.
 
         if (!dev) {
             let redisClient;
-      console.info(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourGreen, `${redisHost}:${redisPort}`, colourReset);
+            console.info(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourGreen, `${redisHost}:${redisPort}`, colourReset);
             try {
                 redisClient = createClient({
                     socket: {
@@ -68,7 +68,7 @@ app.prepare().then(() => {
                     }
                 });
             } catch (error) {
-        console.info('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container');
+                console.info('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container');
                 console.error(error);
             }
             redisClient.connect().catch('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container', console.error);
@@ -79,7 +79,7 @@ app.prepare().then(() => {
             });
         } else {
             store = new MemoryStore(); // use in-memory store for session data in dev mode
-      console.info(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
+            console.info(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
         }
 
         server.use(
@@ -106,15 +106,11 @@ app.prepare().then(() => {
         const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
         roleProtectedPages.forEach(page => {
             server.get(page, keycloak.protect(process.env.ROLE));
-      console.info('protecting page', page, 'with role', process.env.ROLE);
+            console.info('protecting page', page, 'with role', process.env.ROLE);
         });
 
-        // this is a hack because I cannot figure out why process.env.REACT_APP_USE_GEOSERVER_PROXY is not working on the browser
         const useGeoServerProxy = process.env.REACT_APP_USE_GEOSERVER_PROXY === 'true';
         console.log('REACT_APP_USE_GEOSERVER_PROXY is ' + useGeoServerProxy);
-        server.get('/env/use-geoserver-proxy', (_req, res) => {
-            res.json({ useGeoServerProxy });
-        })
 
         if (useGeoServerProxy) {
             console.log('GeoServer requests from MapBox will be sent to /geoserver-proxy')
@@ -156,6 +152,6 @@ app.prepare().then(() => {
     // Start listening on the specified port and log server status
     server.listen(port, (err) => {
         if (err) throw err;
-    console.info('Running at', colourGreen, `http://localhost:${port}${colourReset}`,`(on host / inside container). Development mode :${dev ? colourYellow : colourGreen}`, dev, colourReset);
+        console.info('Running at', colourGreen, `http://localhost:${port}${colourReset}`, `(on host / inside container). Development mode :${dev ? colourYellow : colourGreen}`, dev, colourReset);
     });
 });

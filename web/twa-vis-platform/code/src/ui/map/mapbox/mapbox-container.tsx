@@ -7,7 +7,6 @@ import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useEffect, useRef } from 'react';
 
 import { CameraPosition, ImageryOption } from 'types/settings';
-import { useGeoServerProxy } from 'hooks/useGeoServerProxy';
 
 // Type definition of incoming properties
 interface MapProperties {
@@ -30,9 +29,7 @@ interface MapProperties {
  * @returns React component for display.
  */
 export default function MapboxMapComponent(props: MapProperties) {
-  const mapRef = useRef();
-  const mapContainerRef = useRef();
-    const { useProxy } = useGeoServerProxy()
+    const mapContainerRef = useRef();
 
     // Run when component loaded
     useEffect(() => {
@@ -44,7 +41,7 @@ export default function MapboxMapComponent(props: MapProperties) {
                 props.setMap(null); // Reset the map ref
             }
         };
-    }, [useProxy]);
+    }, []);
 
     // Initialise the map object
     const initialiseMap = async () => {
@@ -56,17 +53,17 @@ export default function MapboxMapComponent(props: MapProperties) {
             "time": "dusk"
         };
 
-    mapboxgl.accessToken = process.env.MAPBOX_API_KEY;
+        mapboxgl.accessToken = process.env.MAPBOX_API_KEY;
 
         const map: Map = new mapboxgl.Map({
-      container: mapContainerRef.current,
+            container: mapContainerRef.current,
             style: defaultImagery.url,
             center: props.defaultPosition.center,
             zoom: props.defaultPosition.zoom,
             bearing: props.defaultPosition.bearing,
             pitch: props.defaultPosition.pitch,
             transformRequest: (url) => {
-                if (useProxy) {
+                if (process.env.REACT_APP_USE_GEOSERVER_PROXY === 'true') {
                     try {
                         const urlObject = new URL(url);
                         const params = new URLSearchParams(urlObject.search);
@@ -106,9 +103,9 @@ export default function MapboxMapComponent(props: MapProperties) {
     };
 
     return (
-    <>
-      <div id="mapContainer" ref={mapContainerRef} className={props.styles} />
-    </>
+        <>
+            <div id="mapContainer" ref={mapContainerRef} className={props.styles} />
+        </>
     );
 }
 
