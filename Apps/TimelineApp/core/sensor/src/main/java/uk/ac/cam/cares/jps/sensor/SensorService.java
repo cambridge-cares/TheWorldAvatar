@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.sensor;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -138,114 +139,38 @@ public class SensorService extends Service {
             return START_STICKY;
         }
 
-        // Only generate a new task ID if there is no existing recording session
-        sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
-            @Override
-            public void onSuccess(String taskId) {
-                if (taskId == null || taskId.isEmpty()) {
-                    String newId = UUID.randomUUID().toString();
-                    sensorCollectionStateManagerRepository.setTaskId(newId);
-                    LOGGER.info("Started new recording with Task ID: " + newId);
-                } else {
-                    LOGGER.info("Resuming recording with existing Task ID: " + taskId);
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                LOGGER.warn("Not able to retrieve task id.");
-                stopSelf();
-            }
-        });
-
-        String deviceId = intent.getExtras().getString("deviceId");
-
         // Get the list of selected sensors
         List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
-
-        if (selectedSensors == null || selectedSensors.isEmpty()) {
-            LOGGER.warn("No sensors selected or sensor list is empty.");
+        if (selectedSensors == null || !startForegroundService(selectedSensors)) {
             stopSelf();
             return START_STICKY;
         }
 
-        if (selectedSensors.contains(SensorType.ACTIVITY) && !checkActivityRecognitionPermission()) {
-            LOGGER.warn("Activity Recognition permission is required but not granted.");
+        if (selectedSensors.isEmpty()) {
+            LOGGER.warn("No sensors selected or sensor list is empty.");
             stopSelf();
-            return START_NOT_STICKY;
+            return START_STICKY;
         }
-
         sensorHandlerManager.startSelectedSensors(selectedSensors);
 
-
         if (selectedSensors.contains(SensorType.ACTIVITY)) {
-            // registering the activity recognition client
-            Intent activityIntent = new Intent(this, ActivityRecognitionReceiver.class);
-            activityRecognitionClient = ActivityRecognition.getClient(this);
-            activityRecognitionPendingIntent = PendingIntent.getBroadcast(
-                    this,
-                    sensorSettingsMap.get("activity_request_code"),
-                    activityIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-            );
-
-            // Request activity updates
-            activityRecognitionClient.requestActivityUpdates(
-                    sensorSettingsMap.get("activity_recognition_update_interval"),
-                    activityRecognitionPendingIntent
-            ).addOnSuccessListener(aVoid -> {
-                LOGGER.info("Successfully requested activity updates");
-            }).addOnFailureListener(e -> {
-                LOGGER.error("Failed to request activity updates", e);
-            });
+            if (!checkActivityRecognitionPermission()) {
+                LOGGER.warn("Activity Recognition permission is required but not granted.");
+                stopSelf();
+                return START_NOT_STICKY;
+            } else {
+                registerActivityRecognitionClient();
+            }
         }
 
-        // Convert the list of sensors to a JSONArray string
-        JSONArray jsonArray = new JSONArray();
-        for (SensorType sensor : selectedSensors) {
-            jsonArray.put(sensor.name());
-        }
+        scheduleBufferFlushTask();
 
-        // Create Data object for passing parameters to the worker
-        Data uploadData = new Data.Builder()
-                .putString("deviceId", deviceId)
-                .putString("selectedSensors", jsonArray.toString())
-                .build();
+        scheduleUploadDataTask(selectedSensors, intent);
 
+        return START_STICKY;
+    }
 
-        long BUFFER_DELAY = sensorSettingsMap.get("buffer_delay"); // delay in milliseconds
-
-        bufferWorkerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                OneTimeWorkRequest bufferFlushWork = new OneTimeWorkRequest.Builder(BufferFlushWorker.class)
-                        .addTag("bufferFlushWork")
-                        .setInitialDelay(1, TimeUnit.MINUTES)
-                        .build();
-                WorkManager.getInstance(getApplicationContext()).enqueue(bufferFlushWork);
-
-            }
-        }, BUFFER_DELAY, BUFFER_DELAY);
-
-
-        long upload_delay = sensorSettingsMap.get("upload_delay"); // delay in milliseconds
-
-        uploadWorkerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                OneTimeWorkRequest dataUploadWork = new OneTimeWorkRequest.Builder(
-                        SensorUploadWorker.class)
-                        .addTag("dataUploadWork")
-                        .setInitialDelay(1, TimeUnit.MINUTES)
-                        .setInputData(uploadData)
-                        .build();
-                WorkManager.getInstance(getApplicationContext()).enqueue(dataUploadWork);
-
-            }
-        }, upload_delay, upload_delay);
-
-
-        // Determine if location sensor is toggled
+    private boolean startForegroundService(List<SensorType> selectedSensors) {
         boolean isLocationSensorToggled = selectedSensors.contains(SensorType.LOCATION);
         int type = 0;
         if (isLocationSensorToggled) {
@@ -263,24 +188,104 @@ public class SensorService extends Service {
         }
 
         Notification notification = getNotification();
-
         if (isLocationSensorToggled && type != 0) {
             // make sure that the permissions are actually enabled before recording so app doesn't crash
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 ServiceCompat.startForeground(this, FOREGROUND_ID, notification, type);
             } else {
                 LOGGER.warn("Location permission not granted. Unable to start service with location type.");
-                stopSelf();
+                return false;
             }
         } else {
             // For non-location sensors or if no specific type is required
             ServiceCompat.startForeground(this, FOREGROUND_ID, notification, type);
         }
 
-
-        return START_STICKY;
+        return true;
     }
 
+    private void scheduleBufferFlushTask() {
+        long BUFFER_DELAY = sensorSettingsMap.get("buffer_delay"); // delay in milliseconds
+        bufferWorkerTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                OneTimeWorkRequest bufferFlushWork = new OneTimeWorkRequest.Builder(BufferFlushWorker.class)
+                        .addTag("bufferFlushWork")
+                        .setInitialDelay(1, TimeUnit.MINUTES)
+                        .build();
+                WorkManager.getInstance(getApplicationContext()).enqueue(bufferFlushWork);
+
+            }
+        }, BUFFER_DELAY, BUFFER_DELAY);
+
+    }
+
+    private void scheduleUploadDataTask(List<SensorType> selectedSensors, Intent intent) {
+        sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(String id) {
+
+                String taskId;
+                if (id == null || id.isEmpty()) {
+                    taskId = UUID.randomUUID().toString();
+                    sensorCollectionStateManagerRepository.setTaskId(taskId);
+                    LOGGER.info("Started new recording with Task ID: " + taskId);
+                } else {
+                    taskId = id;
+                    LOGGER.info("Resuming recording with existing Task ID: " + id);
+                }
+
+                JSONArray jsonArray = new JSONArray(selectedSensors);
+                String deviceId = intent.getExtras().getString("deviceId");
+                Data uploadData = new Data.Builder()
+                        .putString("deviceId", deviceId)
+                        .putString("selectedSensors", jsonArray.toString())
+                        .putString("sessionId", taskId)
+                        .build();
+                long upload_delay = sensorSettingsMap.get("upload_delay"); // delay in milliseconds
+                uploadWorkerTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        OneTimeWorkRequest dataUploadWork = new OneTimeWorkRequest.Builder(
+                                SensorUploadWorker.class)
+                                .addTag("dataUploadWork")
+                                .setInitialDelay(1, TimeUnit.MINUTES)
+                                .setInputData(uploadData)
+                                .build();
+                        WorkManager.getInstance(getApplicationContext()).enqueue(dataUploadWork);
+
+                    }
+                }, upload_delay, upload_delay);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                LOGGER.warn("Not able to retrieve task id.");
+                stopSelf();
+            }
+        });
+    }
+
+    @SuppressLint("MissingPermission")  // assume checked
+    private void registerActivityRecognitionClient() {
+        Intent activityIntent = new Intent(this, ActivityRecognitionReceiver.class);
+        activityRecognitionClient = ActivityRecognition.getClient(this);
+        activityRecognitionPendingIntent = PendingIntent.getBroadcast(
+                this,
+                sensorSettingsMap.get("activity_request_code"),
+                activityIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+
+        activityRecognitionClient.requestActivityUpdates(
+                sensorSettingsMap.get("activity_recognition_update_interval"),
+                activityRecognitionPendingIntent
+        ).addOnSuccessListener(aVoid -> {
+            LOGGER.info("Successfully requested activity updates");
+        }).addOnFailureListener(e -> {
+            LOGGER.error("Failed to request activity updates", e);
+        });
+    }
 
     /**
      * Create and configure notification to be shown when the service is running
