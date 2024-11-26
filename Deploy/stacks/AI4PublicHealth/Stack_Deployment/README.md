@@ -79,9 +79,9 @@ The UK Food Hygiene Rating Scheme (FHRS) data includes hygiene ratings or inspec
 To integrate this environmental feature, the [xml_converter] processes the its raw online XML file, extracts relevant fields, and converts them into a structured CSV format. This ensures compatibility with subsequent data upload and querying steps.
 
 ### 2) Stack data uploader
-Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy/stacks\dynamic\stack-data-uploader\inputs\config/`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter].
+Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy/stacks\dynamic\stack-data-uploader\inputs\config\`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter].
 
-After completing these steps, navigate to `Deploy/stacks\dynamic\stack-data-uploader`. From this directory, execute the following command in a *bash* terminal and wait until the container stops, indicating that the upload has finished. 
+After completing these steps, navigate to `Deploy\stacks\dynamic\stack-data-uploader`. From this directory, execute the following command in a *bash* terminal and wait until the container stops, indicating that the upload has finished. 
 
 ```bash
 bash ./stack.sh start Healthcare
@@ -98,7 +98,7 @@ The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings se
 
 
 ## 3.3) GPS Trajectories (.csv)
-
+Individual GPS trajectories used in this study are instantiated using the [Fenland Trajectory Agent]. This agent extracts key attributes such as latitude, longitude, speed, heading, and time from CSV files, organises them into triples using the Ontology of Devices ([OntoDevice]), and uploads the data into the knowledge graph and a relational database. Details on deploying this agent can be found [here].
 
 # 4. Visualisation
 
@@ -138,3 +138,5 @@ The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings se
 <!-- Files -->
 [xml_converter]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AI-for-Healthcare/Deploy/stacks/AI4PublicHealth/Common_Script/xml_converter
 [FoodHygieneRating]: ./stack-data-uploader/obda_mappings/FoodHygieneRating.obda
+[here]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-AI-for-Healthcare/Agents/FenlandTrajectoryAgent/README.md
+[OntoDevice]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontodevice
