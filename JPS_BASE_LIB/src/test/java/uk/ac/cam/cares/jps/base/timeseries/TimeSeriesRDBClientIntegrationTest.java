@@ -56,10 +56,11 @@ public class TimeSeriesRDBClientIntegrationTest {
     private static List<Instant> timeList_2;
     private static List<Double> data1_1;
     private static List<String> data2_1;
-    private static List<Integer> data3_1;
-    private static TimeSeries<Instant> ts1, ts2, ts3;
-    private static List<TimeSeries<Instant>> ts_list1, ts_list2, ts_list3;
+    private static List<Integer> data3_1, data3_1v2;
+    private static TimeSeries<Instant> ts1, ts2, ts3, ts1v2;
+    private static List<TimeSeries<Instant>> ts_list1, ts_list2, ts_list3, ts_list1v2;
     private static List<List<?>> dataToAdd_1;
+    private static List<List<?>> dataToAdd_1v2;
     private static List<List<?>> dataToAdd_2;
 
     @BeforeClass
@@ -106,6 +107,7 @@ public class TimeSeriesRDBClientIntegrationTest {
         data1_1 = new ArrayList<>();
         data2_1 = new ArrayList<>();
         data3_1 = new ArrayList<>();
+        data3_1v2 = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
             // Create test time series (maximum temporal resolution of postgres limited to
@@ -114,6 +116,7 @@ public class TimeSeriesRDBClientIntegrationTest {
             data1_1.add((double) i);
             data2_1.add(String.valueOf(i));
             data3_1.add(i);
+            data3_1v2.add(i + 1);
         }
         dataToAdd_1 = new ArrayList<>();
         dataToAdd_1.add(data1_1);
@@ -124,6 +127,15 @@ public class TimeSeriesRDBClientIntegrationTest {
         ts1 = new TimeSeries<>(timeList_1, dataIRI_1, dataToAdd_1);
         ts_list1 = new ArrayList<>();
         ts_list1.add(ts1);
+        // Construct version 2 of 1st time series, where the content of the integer
+        // column is different
+        dataToAdd_1v2 = new ArrayList<>();
+        dataToAdd_1v2.add(data1_1);
+        dataToAdd_1v2.add(data2_1);
+        dataToAdd_1v2.add(data3_1v2);
+        ts1v2 = new TimeSeries<>(timeList_1, dataIRI_1, dataToAdd_1v2);
+        ts_list1v2 = new ArrayList<>();
+        ts_list1v2.add(ts1v2);
         /*
          * Initialise 2nd time series with same associated data series
          */
@@ -307,6 +319,20 @@ public class TimeSeriesRDBClientIntegrationTest {
                     queriedTimeSeries.getValues(dataIRI_1.get(i)));
         }
 
+        // Overwrite time series data
+        client.addTimeSeriesData(ts_list1v2, conn);
+
+        // Check correct data of time series table columns
+        TimeSeries<Instant> queriedTimeSeries1v2 = client.getTimeSeries(dataIRI_1, conn);
+        for (int i = 0; i < dataIRI_1.size(); i++) {
+            // Check data types
+            Assert.assertEquals(dataClass_1.get(i),
+                    queriedTimeSeries1v2.getValues(dataIRI_1.get(i)).get(0).getClass());
+            // Check array content
+            Assert.assertEquals(ts_list1v2.get(0).getValues(dataIRI_1.get(i)),
+                    queriedTimeSeries1v2.getValues(dataIRI_1.get(i)));
+        }
+
         // Add additional data and check whether it has been appended correctly
         client.addTimeSeriesData(ts_list2, conn);
         List<?> combinedList;
@@ -314,7 +340,7 @@ public class TimeSeriesRDBClientIntegrationTest {
         for (int i = 0; i < dataIRI_1.size(); i++) {
             // Check array content
             combinedList = new ArrayList<>();
-            combinedList.addAll((List) dataToAdd_1.get(i));
+            combinedList.addAll((List) dataToAdd_1v2.get(i));
             combinedList.addAll((List) dataToAdd_2.get(i));
             Assert.assertEquals(combinedList, queriedTimeSeries2.getValues(dataIRI_1.get(i)));
         }

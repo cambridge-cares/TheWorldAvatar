@@ -10,15 +10,20 @@ The uploaded content provided by the deploying developer should match the direct
 
 ## Table of Contents
 
-- [1. Configuration](#1-configuration)
-  - [1.1 UI Settings](#11-ui-settings)
-  - [1.2 Map Settings](#12-map-settings)
-    - [1.2.1 General Settings](#121-general-settings)
-    - [1.2.2 Map Data Settings](#122-map-data-settings)
-- [2. Assets](#2-assets)
-- [3. Optional Pages](#3-optional-pages)
-  - [3.1 Fields](#31-fields)
-  - [3.2 Sample](#32-sample)
+- [Customisation of Platform Content](#customisation-of-platform-content)
+  - [Table of Contents](#table-of-contents)
+  - [1. Configuration](#1-configuration)
+    - [1.1 UI Settings](#11-ui-settings)
+    - [1.2 Map Settings](#12-map-settings)
+      - [1.2.1 General Settings](#121-general-settings)
+      - [1.2.2 Map Data Settings](#122-map-data-settings)
+        - [Dataset: Defining a group](#dataset-defining-a-group)
+        - [Dataset: Defining a source](#dataset-defining-a-source)
+        - [Dataset: Defining a layer](#dataset-defining-a-layer)
+  - [2. Assets](#2-assets)
+  - [3. Optional Pages](#3-optional-pages)
+    - [3.1 Fields](#31-fields)
+    - [3.2 Sample](#32-sample)
 
 ## 1. Configuration
 
@@ -70,7 +75,7 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
 
 > [!NOTE]
 > When specifying image paths, be sure to use absolute paths beggining with a `/`
-
+<!--  -->
 > [!NOTE]  
 > The comments seen below are for explanation purposes only, they are not valid JSON. If wishing to use this content in production, remove the comments first.
 
@@ -319,7 +324,7 @@ Definitions of sources vary depending on the chosen mapping provider. Specific p
 - `type` (required): This is the type of the source. Acceptable values differ depending on the mapping library (see the library specific documentation for details).
 - `tiles` (required for `vector` types): A sample format is available below; Do note to replace the contents encapsulated within [] with their respective values; `DOMAIN` is the domain of the website hosting the geoserver layer; `WORKSPACE` is the geoserver workspace name; and `LAYER_NAME` is the name of the geoserver layer for visualisation
 
-```
+```js
 http://[DOMAIN]/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=[WORKSPACE]:[LAYER_NAME]&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile
 ```
 
@@ -352,6 +357,7 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 - `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
 - `source` (required): This is the ID of the source used to populate the layer.
 - `order` (optional): A field that defines the layer hierarchy based on their order. Defaults to 0. Both positive and negative numbers are valid.
+- `layerTreeIconOverride` (optional): Manually specify an icon to display a layer in the floating panel layer tree, useful when there are multiple layers with the same name.
 - `grouping` (optional): A grouping field for displaying only a subset of layers within this group.
 - `clickable` (optional): Enables the layer to be clickable. Set to true by default.
 - `hovering` (optional): Creates a highlight effect when hovering over the layer's features. This parameter is an array of two numbers indicating the opacity for the highlighted and non-highlighted states respectively.

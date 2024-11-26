@@ -6,7 +6,6 @@ import './mapbox.css';
 import mapboxgl, { Map } from 'mapbox-gl';
 import React, { useEffect, useRef } from 'react';
 
-import { Apis } from 'io/config/routes';
 import { CameraPosition, ImageryOption } from 'types/settings';
 import { useGeoServerProxy } from 'hooks/useGeoServerProxy';
 
@@ -31,7 +30,8 @@ interface MapProperties {
  * @returns React component for display.
  */
 export default function MapboxMapComponent(props: MapProperties) {
-    const mapContainer = useRef(null);
+  const mapRef = useRef();
+  const mapContainerRef = useRef();
     const { useProxy } = useGeoServerProxy()
 
     // Run when component loaded
@@ -56,16 +56,10 @@ export default function MapboxMapComponent(props: MapProperties) {
             "time": "dusk"
         };
 
-        const response = await fetch((Apis.MAP_SETTINGS), {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        });
-        const respJson = await response.json();
-        // Set credentials
-        mapboxgl.accessToken = respJson.token;
+    mapboxgl.accessToken = process.env.MAPBOX_API_KEY;
 
         const map: Map = new mapboxgl.Map({
-            container: mapContainer.current,
+      container: mapContainerRef.current,
             style: defaultImagery.url,
             center: props.defaultPosition.center,
             zoom: props.defaultPosition.zoom,
@@ -112,9 +106,9 @@ export default function MapboxMapComponent(props: MapProperties) {
     };
 
     return (
-        <div id="mapContainer" ref={mapContainer} className={props.styles}>
-            {/* Map will be generated here. */}
-        </div>
+    <>
+      <div id="mapContainer" ref={mapContainerRef} className={props.styles} />
+    </>
     );
 }
 

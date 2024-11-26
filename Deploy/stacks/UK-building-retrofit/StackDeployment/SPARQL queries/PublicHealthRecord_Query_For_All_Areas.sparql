@@ -1,0 +1,14 @@
+PREFIX ontobuiltenv: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX OCHV: <http://sbmi.uth.tmc.edu/ontology/ochv/CHV_Concept/>
+PREFIX OM: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?lsoaCode ?copdRate ?cvdRate
+WHERE {
+  ?lsoaEntity ontobuiltenv:hasIdentifier ?lsoaCode .
+
+  ?lsoaEntity OCHV:hasCOPDCase ?copdCase .
+  ?copdCase OM:hasRate ?copdRate .
+
+  ?lsoaEntity OCHV:hasCVDCase ?cvdCase .
+  ?cvdCase OM:hasRate ?cvdRate .
+}

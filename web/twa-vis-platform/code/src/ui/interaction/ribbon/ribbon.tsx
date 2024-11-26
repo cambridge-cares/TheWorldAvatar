@@ -83,7 +83,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
         <RibbonComponentOptions
           key="map-style" id="map-style"
           icon="palette"
-          tooltip="Change map imagery"
+          tooltip="Change base map style"
           options={imageryNames}
           initialOption={currentImagery?.name}
           iconClickable={false}
@@ -104,7 +104,7 @@ export default function Ribbon(props: Readonly<RibbonProps>) {
         <RibbonComponentToggle
           key="placenames" id="placenames"
           icon="glyphs"
-          tooltip="Toggle display of place names."
+          tooltip="Show / hide place names."
           initialState={false}
           action={() => {
             togglePlacenames(props.mapSettings.imagery, props.map);

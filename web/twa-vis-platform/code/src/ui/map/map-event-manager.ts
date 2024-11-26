@@ -3,7 +3,7 @@ import mapboxgl, { MapEvent, MapMouseEvent } from 'mapbox-gl';
 
 import { Interactions } from 'io/config/interactions';
 import { DataStore } from 'io/data/data-store';
-import { Dispatch } from 'react'
+import { Dispatch } from 'react';
 import { setIndex } from 'state/floating-panel-slice';
 import { addFeatures, clearFeatures, MapFeaturePayload } from 'state/map-feature-slice';
 
@@ -129,23 +129,23 @@ export default class MapEventManager {
     const map: mapboxgl.Map = this.map;
     dataStore?.getLayerList().map(layer => {
       if (layer.hasInjectableProperty(Interactions.HOVER)) {
-        const hoverProperty = layer.getInjectableProperty(Interactions.HOVER).style;
+        const hoverProperty = layer.getInjectableProperty(Interactions.HOVER).style ;
         // Updates the conditional paint property with the IRI of the currently hovering feature
         this.addEventListener({ type: "mousemove", target: this.map }, (event) => {
           const e = event as MapMouseEvent;
           const feature = map.queryRenderedFeatures(e.point)[0];
-          const twaFeature = feature as unknown as TWAFeature
-          const prevIri: string = hoverProperty[1][2];
+          const twaFeature = feature as unknown as TWAFeature;
+          const prevIri: string = hoverProperty[1][2] as string; 
           if (twaFeature.properties?.iri != prevIri) {
-            hoverProperty[1][2] = twaFeature.properties?.iri;
+            hoverProperty[1][2] = twaFeature.properties?.iri as string;
           }
-          map.setPaintProperty(layer.id, "fill-opacity", hoverProperty);
+          map.setPaintProperty(layer.id, "fill-opacity", hoverProperty as unknown as number);
         }, layer.id);
 
         // When hovering outside the layer, reset the property to ensure highlight is removed
         this.addEventListener({ type: "mouseleave", target: this.map }, function () {
-          hoverProperty[1][2] = "[HOVERED-IRI]";
-          map.setPaintProperty(layer.id, "fill-opacity", hoverProperty);
+          hoverProperty[1][2] = "[HOVERED-IRI]" as string;
+          map.setPaintProperty(layer.id, "fill-opacity", hoverProperty as unknown as number);
         }, layer.id);
       }
     });
