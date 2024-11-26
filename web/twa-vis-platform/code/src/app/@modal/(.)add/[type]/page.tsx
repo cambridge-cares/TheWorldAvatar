@@ -31,16 +31,15 @@ export async function generateMetadata(): Promise<Metadata> {
  * Displays the intercepted route for adding an entity through a modal.
  */
 export default async function InterceptAddFormPage(props: Readonly<InterceptAddFormPageProps>) {
-  const { params } = props;
-  const resolvedParams = await params;
+  const resolvedParams = await props.params;
   const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   return (
     <FormModal>
       <FormContainerComponent
         entityType={resolvedParams.type}
         formType={Paths.REGISTRY_ADD}
-        agentApi={uiSettings.resources?.registry?.url}
-        isPrimaryEntity={uiSettings.resources?.registry?.data === resolvedParams?.type}
+        agentApi={uiSettings?.resources?.registry?.url}
+        isPrimaryEntity={uiSettings?.resources?.registry?.data === resolvedParams?.type}
       />
     </FormModal>
   );
