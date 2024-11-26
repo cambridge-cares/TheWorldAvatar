@@ -79,7 +79,7 @@ The UK Food Hygiene Rating Scheme (FHRS) data includes hygiene ratings or inspec
 To integrate this environmental feature, the [xml_converter] processes the its raw online XML file, extracts relevant fields, and converts them into a structured CSV format. This ensures compatibility with subsequent data upload and querying steps.
 
 ### 2) Stack data uploader
-Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy/stacks\dynamic\stack-data-uploader\inputs\config\`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter].
+Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter].
 
 After completing these steps, navigate to `Deploy\stacks\dynamic\stack-data-uploader`. From this directory, execute the following command in a *bash* terminal and wait until the container stops, indicating that the upload has finished. 
 
@@ -91,9 +91,14 @@ bash ./stack.sh start Healthcare
 The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings semantically. Leveraging the Ontology of Food Hygiene Rating Score ([OntoFHR]) and a defined OBDA mapping titled [FoodHygieneRating], the endpoint maps relational database records stored in PostGIS, such as business details, geolocation, and hygiene ratings, into a semantic framework. This allows queries to retrieve structured information like business names, inspection ratings, and geographic coordinates, supporting analyses across geographic scales and enabling integration with other datasets.
 
 ## 3.2) Greenspace (.shp) and Points of Interest (.csv)
+The OS Open Greenspace dataset provides a comprehensive mapping of greenspaces across Great Britain, including public parks, sports facilities, and allotments, along with access points. Similarly, the Points of Interest (POI) dataset includes detailed information about commercial and non-commercial establishments, such as businesses, retail spaces, and service providers, with attributes like phone numbers, web URLs, and classifications. These datasets are crucial for spatial analyses related to urban planning, service accessibility, and community health.
 
 ### 1) Stack data uploader
+Similar to the Food Hygiene Rating data, the instantiation of these datasets also relies on the [Stack Data Uploader]. Copy configuration files from `config` to `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`, and replace the `readme.txt` files in the `data` sub-folders with the greenspace shapefiles and POI CSV files. Then, navigate to `Deploy\stacks\dynamic\stack-data-uploader` and execute:
 
+```bash
+bash ./stack.sh start Healthcare
+```
 ### 2) SPARQL query via virtual knowledge graph
 
 
