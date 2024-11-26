@@ -43,34 +43,34 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
 
-  const onSubmit = () => {
-    if (formRef.current) {
-      formRef.current.requestSubmit();
-    }
-  };
-
-  const onReturn = () => {
-    dispatch(setIsOpen(false));
-    router.back();
-  };
-
-  const showReturnButton: boolean = props.formType === Paths.REGISTRY || !!response;
   const id: string = getAfterDelimiter(usePathname(), "/");
+  const showReturnButton: boolean = props.formType === Paths.REGISTRY || !!response;
 
   // An event handler that will navigate to the required form when clicked
-  const openDeleteModal = (e: React.MouseEvent) => {
+  const openDeleteModal: React.MouseEventHandler<HTMLDivElement> = (e: React.MouseEvent) => {
     e.preventDefault();
     const url: string = `../../delete/${props.entityType}/${id}`;
     router.push(url);
   };
 
-  const openEditModal = (e: React.MouseEvent) => {
+  const openEditModal: React.MouseEventHandler<HTMLDivElement> = (e: React.MouseEvent) => {
     e.preventDefault();
     const url: string = `../../edit/${props.entityType}/${id}`;
     router.push(url);
   };
 
-  const closeTab = () => {
+  const onSubmit: React.MouseEventHandler<HTMLDivElement> = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
+
+  const onReturn: React.MouseEventHandler<HTMLDivElement> = () => {
+    dispatch(setIsOpen(false));
+    router.back();
+  };
+
+  const closeTab: React.MouseEventHandler<HTMLDivElement> = () => {
     window.close(); // Closes the tab
     router.back(); // Required to close the intercepted modal as the tab cannot be closed
   };
