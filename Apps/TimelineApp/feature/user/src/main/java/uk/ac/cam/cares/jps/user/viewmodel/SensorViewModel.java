@@ -116,17 +116,7 @@ public class SensorViewModel extends ViewModel {
 
     // Updated method to use sensorCollectionStateManagerRepository
     private void saveSelectedSensors(List<SensorType> sensors) {
-        sensorCollectionStateManagerRepository.setSelectedSensors(sensors, new RepositoryCallback<Void>() {
-            @Override
-            public void onSuccess(Void result) {
-                // Do nothing
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                LOGGER.error("Failed to save selected sensors: " + error.getMessage());
-            }
-        });
+        sensorCollectionStateManagerRepository.setSelectedSensors(sensors);
     }
 
 
@@ -166,7 +156,7 @@ public class SensorViewModel extends ViewModel {
     public void stopRecording() {
         sensorRepository.stopRecording();
         _isRecording.setValue(false);
-        sensorCollectionStateManagerRepository.setTaskId(null);
+        sensorCollectionStateManagerRepository.setTaskId("");
         toggleAllSensors(false);
     }
 

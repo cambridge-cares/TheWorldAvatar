@@ -142,22 +142,11 @@ public class SensorCollectionStateManagerRepository {
     }
 
     public void getSelectedSensors(RepositoryCallback<List<SensorType>> callback) {
-        try {
-            List<SensorType> selectedSensors = sensorCollectionStateManager.getSelectedSensors();
-            callback.onSuccess(selectedSensors);
-        } catch (SensorCollectionStateException e) {
-            callback.onFailure(e);
-        }
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getSelectedSensors());
     }
 
-    public void setSelectedSensors(List<SensorType> sensors, RepositoryCallback<Void> callback) {
-        try {
-            sensorCollectionStateManager.setSelectedSensors(sensors);
-            callback.onSuccess(null);
-        } catch (Exception e) {
-            callback.onFailure(e);
-        }
+    public void setSelectedSensors(List<SensorType> sensors) {
+        sensorCollectionStateManager.setSelectedSensors(sensors);
     }
-
 
 }
