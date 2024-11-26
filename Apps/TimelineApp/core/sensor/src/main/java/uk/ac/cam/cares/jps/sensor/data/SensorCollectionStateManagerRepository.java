@@ -19,7 +19,8 @@ public class SensorCollectionStateManagerRepository {
     LoginRepository loginRepository;
     SensorCollectionStateManager sensorCollectionStateManager;
 
-    public void setTaskId(Object o) {
+    public void setTaskId(String taskId) {
+        sensorCollectionStateManager.setTaskId(taskId);
     }
 
     private interface FunctionRunWithSensorCollectionState<E> {
@@ -80,14 +81,14 @@ public class SensorCollectionStateManagerRepository {
      * @param callback
      */
     public void getUserId(RepositoryCallback<String> callback) {
-        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, (FunctionRunWithSensorCollectionState<String>) () -> sensorCollectionStateManager.getUserId());
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getUserId());
     }
     /**
      * Run provided functions (in Callback) with deviceId
      * @param callback
      */
     public void getDeviceId(RepositoryCallback<String> callback) {
-        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, (FunctionRunWithSensorCollectionState<String>) () -> sensorCollectionStateManager.getDeviceId());
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getDeviceId());
     }
 
     /**
@@ -95,7 +96,7 @@ public class SensorCollectionStateManagerRepository {
      * @param callback
      */
     public void getRecordingStatus(RepositoryCallback<Boolean> callback) {
-        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, (FunctionRunWithSensorCollectionState<Boolean>) () -> sensorCollectionStateManager.getRecordingState());
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getRecordingState());
     }
 
     /**
@@ -115,13 +116,29 @@ public class SensorCollectionStateManagerRepository {
     }
 
     /**
+     * Clear manager and the in memory SensorCollectionState
+     */
+    public void clearManager() {
+        getUserId(new RepositoryCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                sensorCollectionStateManager.clearState(result);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+
+            }
+        });
+    }
+
+    /**
      * Retrieves task id.
      * @param callback The callback that will be invoked with the task ID once it is retrieved,
      * or with an error if the operation fails.
      */
     public void getTaskId(RepositoryCallback<String> callback) {
-        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback,
-                (FunctionRunWithSensorCollectionState<String>) () -> sensorCollectionStateManager.getTaskId());
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getTaskId());
     }
 
     public void getSelectedSensors(RepositoryCallback<List<SensorType>> callback) {

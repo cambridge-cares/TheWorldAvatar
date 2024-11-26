@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.HandlerThread;
 import android.os.IBinder;
+
 import androidx.work.Data;
 
 import androidx.annotation.NonNull;
@@ -46,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.source.activity.ActivityRecognitionReceiver;
 import uk.ac.cam.cares.jps.sensor.source.worker.BufferFlushWorker;
 import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
@@ -56,6 +58,7 @@ import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
+import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 
 import com.google.android.gms.location.ActivityRecognition;
@@ -75,8 +78,7 @@ public class SensorService extends Service {
     @Inject
     SensorLocalSource sensorLocalSource;
     @Inject
-    SensorCollectionStateManager sensorCollectionStateManager;
-
+    SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
 
 
     private final int FOREGROUND_ID = 100;
@@ -95,7 +97,6 @@ public class SensorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
 
         // Register the NetworkChangeReceiver
         if (networkChangeReceiver == null) {
@@ -139,43 +140,30 @@ public class SensorService extends Service {
             return START_STICKY;
         }
 
-        String userId = intent.getExtras().getString("userId");
-
-        // Reinitialize the sensorCollectionState if it is null
-        if (sensorCollectionStateManager.getSensorCollectionState() == null) {
-            if (userId != null) {
-                sensorCollectionStateManager.initSensorCollectionState(userId);
-            } else {
-                LOGGER.warn("UserId is null. Stopping service.");
-                stopSelf();
-                return START_NOT_STICKY;
-            }
-        }
-
-
         // Only generate a new task ID if there is no existing recording session
-        String taskId;
-        try {
-            taskId = sensorCollectionStateManager.getTaskId();
-            if (taskId == null || taskId.isEmpty()) {
-                taskId = UUID.randomUUID().toString();
-                sensorCollectionStateManager.setTaskId(taskId);  // Store task ID using SensorCollectionStateManager
-                LOGGER.info("Started new recording with Task ID: " + taskId);
-            } else {
-                LOGGER.info("Resuming recording with existing Task ID: " + taskId);
+        sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(String taskId) {
+                if (taskId == null || taskId.isEmpty()) {
+                    String newId = UUID.randomUUID().toString();
+                    sensorCollectionStateManagerRepository.setTaskId(newId);
+                    LOGGER.info("Started new recording with Task ID: " + newId);
+                } else {
+                    LOGGER.info("Resuming recording with existing Task ID: " + taskId);
+                }
             }
-        } catch (SensorCollectionStateException e) {
-            LOGGER.warn("Failed to retrieve Task ID, generating a new one.");
-            taskId = UUID.randomUUID().toString();
-            sensorCollectionStateManager.setTaskId(taskId);  // Store task ID using SensorCollectionStateManager
-        }
+
+            @Override
+            public void onFailure(Throwable error) {
+                LOGGER.warn("Not able to retrieve task id.");
+                stopSelf();
+            }
+        });
 
         String deviceId = intent.getExtras().getString("deviceId");
 
         // Get the list of selected sensors
         List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
-        // Always add the activity sensor
-        assert selectedSensors != null;
 
         if (selectedSensors == null || selectedSensors.isEmpty()) {
             LOGGER.warn("No sensors selected or sensor list is empty.");
@@ -211,8 +199,8 @@ public class SensorService extends Service {
                 LOGGER.info("Successfully requested activity updates");
             }).addOnFailureListener(e -> {
                 LOGGER.error("Failed to request activity updates", e);
-        }); }
-
+            });
+        }
 
         // Convert the list of sensors to a JSONArray string
         JSONArray jsonArray = new JSONArray();
@@ -225,7 +213,6 @@ public class SensorService extends Service {
                 .putString("deviceId", deviceId)
                 .putString("selectedSensors", jsonArray.toString())
                 .build();
-
 
 
         long BUFFER_DELAY = sensorSettingsMap.get("buffer_delay"); // delay in milliseconds
@@ -258,7 +245,6 @@ public class SensorService extends Service {
 
             }
         }, upload_delay, upload_delay);
-
 
 
         // Determine if location sensor is toggled
@@ -298,9 +284,9 @@ public class SensorService extends Service {
     }
 
 
-
     /**
      * Create and configure notification to be shown when the service is running
+     *
      * @return notification
      */
     @NonNull
@@ -335,6 +321,7 @@ public class SensorService extends Service {
 
     /**
      * Checks if activity permission has been granted.
+     *
      * @return a boolean indicating false if permission has not been granted and true if it has.
      */
     private boolean checkActivityRecognitionPermission() {
@@ -374,32 +361,32 @@ public class SensorService extends Service {
         }
 
 
-
         LOGGER.info("Stopping sensor service");
         try {
             if (sensorHandlerManager != null) {
                 sensorHandlerManager.stopSensors();
                 LOGGER.info("Sensors have been stopped.");
             }
-            String taskId = sensorCollectionStateManager.getTaskId();
-            LOGGER.info("Stopping sensor service with Task ID: " + taskId);
+
+            sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
+                @Override
+                public void onSuccess(String taskId) {
+                    LOGGER.info("Stopping sensor service with Task ID: " + taskId);
+                }
+
+                @Override
+                public void onFailure(Throwable error) {
+                }
+            });
 
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-
-            if (sensorCollectionStateManager.getSensorCollectionState() != null) {
-                LOGGER.info("Clearing sensor collection state.");
-                sensorCollectionStateManager.clearState(sensorCollectionStateManager.getUserId());
-            } else {
-                LOGGER.warn("SensorCollectionState is already null. No need to clear.");
-            }
+            sensorCollectionStateManagerRepository.clearManager();
 
             LOGGER.info("Sensor service is stopped. Sensors stop recording.");
         } catch (NullPointerException exception) {
             LOGGER.warn("Foreground service has already stopped.");
-        } catch (SensorCollectionStateException e) {
-            throw new RuntimeException(e);
         }
-            super.onDestroy();
+        super.onDestroy();
     }
 
     @Nullable
