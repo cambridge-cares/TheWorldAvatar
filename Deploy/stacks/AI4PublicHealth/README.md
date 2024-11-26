@@ -20,4 +20,5 @@ The [Visualisation] folder contains files that serve as inputs to the TWA Visual
 [Queries]: ./Queries/
 [Visualisation]: ./TWA-VF/
 
-
+## Authors ##
+Jiying Chen (jc2341@cam.ac.uk), Nov 2024
