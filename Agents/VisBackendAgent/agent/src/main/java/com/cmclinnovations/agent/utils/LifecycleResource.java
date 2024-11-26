@@ -161,8 +161,8 @@ public class LifecycleResource {
    */
   public static String genServiceStatusQuery(String contractId) {
     return genPrefixes()
-        + "SELECT DISTINCT ?status WHERE{"
-        + "{SELECT DISTINCT (MAX(?priority_val) AS ?priority) WHERE{"
+        + "SELECT DISTINCT ?iri ?status WHERE{"
+        + "{SELECT DISTINCT ?iri (MAX(?priority_val) AS ?priority) WHERE{"
         + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage/<https://www.omg.org/spec/Commons/Collections/comprises> ?event."
         + "?event_type <https://www.omg.org/spec/Commons/Classifiers/classifies> ?event."
@@ -170,7 +170,8 @@ public class LifecycleResource {
         + "2,IF(?event_type=ontoservice:ContractApproval,1,0)"
         + ") AS ?priority_val)"
         + "FILTER STRENDS(STR(?iri),\"" + contractId + "\")"
-        + "}}"
+        + "}"
+        + "GROUP BY ?iri}"
         + "BIND(IF(?priority=2,\"Archived\","
         + "IF(?priority=1,\"Active\",\"Pending\")"
         + ") AS ?status)"

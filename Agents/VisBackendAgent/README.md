@@ -396,7 +396,7 @@ This endpoint serves to retrieve the status of a contract using a `GET` request 
 <baseURL>/vis-backend-agent/contracts/status/{id}
 ```
 
-where `{id}`is the requested contract ID. If successful, the agent will return either "Pending", "Active", or "Archive" status.
+where `{id}`is the requested contract ID. A successful request will return `{"message": "Pending, Active, or Archived status", "iri" : "associated contract instance"}`.
 
 #### 2.6.2 Draft route
 

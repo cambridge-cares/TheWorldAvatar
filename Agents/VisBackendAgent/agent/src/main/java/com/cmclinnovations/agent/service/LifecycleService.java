@@ -77,11 +77,15 @@ public class LifecycleService {
    * 
    * @param contract The target contract id.
    */
-  public String getStatus(String contract) {
+  public ResponseEntity<ApiResponse> getStatus(String contract) {
     LOGGER.debug("Retrieving the status of the contract...");
     String query = LifecycleResource.genServiceStatusQuery(contract);
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-    return this.kgService.getSingleInstance(results, LifecycleResource.STATUS_KEY);
+    SparqlBinding result = this.kgService.getSingleInstance(results);
+    return new ResponseEntity<>(
+        new ApiResponse(result.getFieldValue(LifecycleResource.STATUS_KEY),
+            result.getFieldValue(LifecycleResource.IRI_KEY)),
+        HttpStatus.OK);
   }
 
   /**
@@ -133,7 +137,7 @@ public class LifecycleService {
   public String getActiveServiceOccurrence(String contract, String date) {
     String activeServiceQuery = LifecycleResource.genActiveServiceTaskQuery(contract, date);
     Queue<SparqlBinding> results = this.kgService.query(activeServiceQuery, SparqlEndpointType.BLAZEGRAPH);
-    return this.kgService.getSingleInstance(results);
+    return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
   }
 
   /**
@@ -153,7 +157,7 @@ public class LifecycleService {
       Queue<SparqlBinding> results = this.kgService.query(LifecycleResource.genTodayDayOfWeekQuery(),
           endpoints.get(index));
       try {
-        dayOfWeekInstance = this.kgService.getSingleInstance(results);
+        dayOfWeekInstance = this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
       } catch (Exception e) {
         // It is possible that there is no day of week instance at some endpoints and
         // this should be ignored
@@ -213,6 +217,6 @@ public class LifecycleService {
         "?iri fibo-fnd-rel-rel:exemplifies <" + LifecycleResource.getStageClass(eventType) + "> ." +
         "}";
     Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
-    return this.kgService.getSingleInstance(results);
+    return this.kgService.getSingleInstance(results).getFieldValue(LifecycleResource.IRI_KEY);
   }
 }
