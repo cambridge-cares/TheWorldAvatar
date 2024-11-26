@@ -1,0 +1,28 @@
+[PrefixDeclaration]
+ontopoi:       https://www.theworldavatar.com/kg/ontopoi/
+rdf:           http://www.w3.org/1999/02/22-rdf-syntax-ns#
+owl:           http://www.w3.org/2002/07/owl#
+xsd:           http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId       POIBasicInfo
+target      ontopoi:{ref_no} a ontopoi:PointOfInterest ;
+                     ontopoi:hasName "{name}"^^xsd:string ;
+                     ontopoi:hasBrand "{brand}"^^xsd:string ;
+                     ontopoi:hasPostcode "{postcode}"^^xsd:string ;
+                     ontopoi:hasTelephone "{telephone_number}"^^xsd:string .
+source      SELECT "ref_no", "name", "brand", "postcode", "telephone_number"
+            FROM "points_of_interest"
+
+mappingId       POILocation
+target      ontopoi:GeoPoint_{ref_no} a ontopoi:SpatialLocation ;
+                     ontopoi:hasGeometry "{geometry}"^^xsd:string ;
+                     ontopoi:linkedToPOI ontopoi:{ref_no} .
+source      SELECT "ref_no", ST_AsText("geom") AS "geometry"
+            FROM "points_of_interest"
+
+mappingId       POIAdministrativeBoundary
+target      ontopoi:{ref_no} ontopoi:hasAdminBoundary "{admin_boundary}"^^xsd:string .
+source      SELECT "ref_no", "admin_boundary"
+            FROM "points_of_interest"
+]]
