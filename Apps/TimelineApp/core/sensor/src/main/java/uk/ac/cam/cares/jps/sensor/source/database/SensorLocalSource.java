@@ -3,10 +3,7 @@ package uk.ac.cam.cares.jps.sensor.source.database;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.room.Room;
-import androidx.room.migration.Migration;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -14,16 +11,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,7 +49,6 @@ import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SensorData;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.SoundLevel;
 import uk.ac.cam.cares.jps.sensor.source.database.model.entity.UnsentData;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
-import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
 
 
 /**
@@ -84,8 +75,11 @@ public class SensorLocalSource {
     @Inject
     public SensorLocalSource(Context context) {
         this.context = context;
+    }
+
+    public void initAppDataBase(String dbName) {
         AppDatabase appDatabase = Room.databaseBuilder(context.getApplicationContext(),
-                        AppDatabase.class, "timeline-database")
+                        AppDatabase.class, dbName)
                 .build();
 
         locationDao = appDatabase.locationDao();
@@ -100,7 +94,6 @@ public class SensorLocalSource {
         this.unsentDataDao = appDatabase.unsentDataDao();
         activityDataDao = appDatabase.activityDataDao();
         this.unsentData = new HashMap<>();
-
     }
 
     /**

@@ -56,8 +56,6 @@ import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
-import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateException;
-import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
 

@@ -55,7 +55,7 @@ public class SensorCollectionStateManager {
      * @param userId User id of the current logged in user
      */
     public void initSensorCollectionState(String userId) {
-        String sharedPrefFileName = getHashedPrefsFileName(userId);
+        String sharedPrefFileName = getHashedFileName(userId);
         File sharedPrefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + sharedPrefFileName + ".xml");
 
         SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
@@ -115,7 +115,7 @@ public class SensorCollectionStateManager {
         synchronized (sensorCollectionState.get()) {
             sensorCollectionState.get().setTaskId(taskId);
 
-            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(sensorCollectionState.get().getUserId()));
+            SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(sensorCollectionState.get().getUserId()));
             sharedPreferences.edit()
                     .putString("task_id", taskId)
                     .apply();
@@ -167,7 +167,7 @@ public class SensorCollectionStateManager {
         synchronized (sensorCollectionState.get()) {
             sensorCollectionState.get().setRecordingState(isRecording);
 
-            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(sensorCollectionState.get().getUserId()));
+            SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(sensorCollectionState.get().getUserId()));
             sharedPreferences.edit()
                     .putBoolean(RECORDING_STATE_KEY, isRecording)
                     .apply();
@@ -195,7 +195,7 @@ public class SensorCollectionStateManager {
         sensorCollectionState.set(null);
         LOGGER.info("sensor collection state is set to null");
 
-        SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(userId));
+        SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(userId));
         sharedPreferences.edit()
                 .putBoolean(RECORDING_STATE_KEY, false)
                 .apply();
@@ -216,7 +216,7 @@ public class SensorCollectionStateManager {
 
     /**
      * Get current userId
-     * @return
+     * @return user id
      * @throws SensorCollectionStateException
      */
     public String getUserId() throws SensorCollectionStateException {
@@ -252,11 +252,11 @@ public class SensorCollectionStateManager {
     }
 
     /**
-     * Get the SharedPreference file name with the provided user Id
-     * @param userId
-     * @return
+     * Get the hashed file name with the provided user Id
+     * @param userId user id
+     * @return hashed file name
      */
-    private String getHashedPrefsFileName(String userId) {
+    private String getHashedFileName(String userId) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = digest.digest(userId.getBytes(StandardCharsets.UTF_8));
@@ -271,6 +271,18 @@ public class SensorCollectionStateManager {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Get the hashed file name with the current status's user id
+     * @return hashed file name
+     */
+    public String getHashedFileName() throws SensorCollectionStateException {
+        if (sensorCollectionState.get() == null) {
+            throw new SensorCollectionStateException("SensorCollectionState is null. Need to reinitialize with userId.");
+        }
+
+        return getHashedFileName(sensorCollectionState.get().getUserId());
     }
 
     public List<SensorType> getSelectedSensors() throws SensorCollectionStateException {
@@ -288,7 +300,7 @@ public class SensorCollectionStateManager {
             sensorCollectionState.get().setSelectedSensors(sensors);
 
             // Save to SharedPreferences
-            SharedPreferences sharedPreferences = getSharedPreferences(getHashedPrefsFileName(sensorCollectionState.get().getUserId()));
+            SharedPreferences sharedPreferences = getSharedPreferences(getHashedFileName(sensorCollectionState.get().getUserId()));
             Set<String> sensorNames = new HashSet<>();
             for (SensorType sensor : sensors) {
                 sensorNames.add(sensor.name());
@@ -298,8 +310,6 @@ public class SensorCollectionStateManager {
                     .apply();
         }
     }
-
-
 
 }
 

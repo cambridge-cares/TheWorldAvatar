@@ -99,6 +99,10 @@ public class SensorCollectionStateManagerRepository {
         checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getRecordingState());
     }
 
+    public void getHashedFileName(RepositoryCallback<String> callback) {
+        checkOrInitSensorCollectionStateManagerWithLoginInfo(callback, () -> sensorCollectionStateManager.getHashedFileName());
+    }
+
     /**
      * Set recording state
      * @param isRecording
