@@ -12,12 +12,17 @@ import { setIsOpen } from 'state/modal-slice';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { FormComponent } from 'ui/interaction/form/form';
+import ActionButton from 'ui/interaction/action/action';
 import ReturnButton from 'ui/navigation/return/return';
 import ResponseComponent from 'ui/text/response/response';
 import { HttpResponse, sendGetRequest, sendPostRequest } from 'utils/server-actions';
 import { getAfterDelimiter } from 'utils/client-utils';
-import { ENTITY_STATUS } from './form-utils';
+import { genBooleanClickHandler } from 'utils/event-handler';
+import { ENTITY_STATUS, FORM_STATES } from './form-utils';
 import { ApiResponse, JsonObject } from 'types/json';
+import { FormTemplate } from './template/form-template';
+import { remarksShape } from 'types/form';
+import { FieldValues, SubmitHandler } from 'react-hook-form';
 
 interface FormContainerComponentProps {
   entityType: string;
@@ -40,6 +45,8 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
 
   const [refreshFlag, triggerRefresh] = useRefresh();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRescindAction, setIsRescindAction] = useState<boolean>(false);
+  const [isTerminateAction, setIsTerminateAction] = useState<boolean>(false);
   const [status, setStatus] = useState<ApiResponse>(null);
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
@@ -59,6 +66,25 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     const url: string = `../../edit/${props.entityType}/${id}`;
     router.push(url);
   };
+
+  // Rescind the target contract
+  const rescindContract: SubmitHandler<FieldValues> = async (formData: FieldValues) => {
+    rescindOrTerminateAction(formData, `${props.agentApi}/contracts/archive/rescind`);
+  }
+
+  // Terminate the target contract
+  const terminateContract: SubmitHandler<FieldValues> = async (formData: FieldValues) => {
+    rescindOrTerminateAction(formData, `${props.agentApi}/contracts/archive/terminate`);
+  }
+
+  // Reusable action method to rescind or terminate the contract
+  const rescindOrTerminateAction = async (formData: FieldValues, endpoint: string) => {
+    // Add contract and date field
+    formData[FORM_STATES.CONTRACT] = status.iri;
+    formData[FORM_STATES.DATE] = new Date().toISOString().split("T")[0];
+    const response: HttpResponse = await sendPostRequest(endpoint, JSON.stringify(formData));
+    setResponse(response);
+  }
 
   // Action when approve button is clicked
   const onApproval: React.MouseEventHandler<HTMLDivElement> = async () => {
@@ -111,7 +137,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
         <span>{`${props.formType.toUpperCase()} ${props.entityType.toUpperCase().replace("_", " ")}`}</span>
       </div>
       <div className={styles["form-contents"]}>
-        {refreshFlag ? <LoadingSpinner isSmall={false} /> :
+        {!(isRescindAction || isTerminateAction) && (refreshFlag ? <LoadingSpinner isSmall={false} /> :
           <FormComponent
             formRef={formRef}
             entityType={props.entityType}
@@ -119,8 +145,14 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             agentApi={props.agentApi}
             setResponse={setResponse}
             isPrimaryEntity={props.isPrimaryEntity}
-          />
-        }
+          />)}
+        {(isRescindAction || isTerminateAction) && <FormTemplate
+          agentApi={props.agentApi}
+          entityType={isRescindAction ? "rescission" : "termination"}
+          formRef={formRef}
+          fields={[remarksShape]}
+          submitAction={isRescindAction ? rescindContract : terminateContract}
+        />}
       </div>
       <div className={styles["form-footer"]}>
         {!formRef.current?.formState?.isSubmitting && !response && <MaterialIconButton
@@ -131,6 +163,19 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
         {formRef.current?.formState?.isSubmitting || isLoading && <LoadingSpinner isSmall={false} />}
         {!formRef.current?.formState?.isSubmitting && response && (<ResponseComponent response={response} />)}
         <div className={styles["form-row"]}>
+          {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.ACTIVE && <ActionButton
+            icon={"error"}
+            title={"RESCIND"}
+            className={styles["footer-button"]}
+            onClick={genBooleanClickHandler(setIsRescindAction)}
+          />}
+          {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.ACTIVE &&
+            <ActionButton
+              icon={"cancel"}
+              title={"TERMINATE"}
+              className={styles["footer-button"]}
+              onClick={genBooleanClickHandler(setIsTerminateAction)}
+            />}
           {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
             iconName={"done_outline"}
             className={styles["form-button"]}
@@ -163,14 +208,15 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
           />
           }
           <MaterialIconButton
-            iconName={showReturnButton ? "logout" : "publish"}
+            iconName={(isRescindAction || isTerminateAction || !showReturnButton) && !response ? "publish" : "logout"}
             className={styles["form-button"]}
             iconStyles={[styles["form-button-icon"]]}
             text={{
               styles: [styles["form-button-text"]],
-              content: showReturnButton ? "RETURN" : "SUBMIT"
+              content: (isRescindAction || isTerminateAction || !showReturnButton) && !response ? "SUBMIT" : "RETURN"
             }}
-            onClick={showReturnButton ? props.formType === Paths.REGISTRY_DELETE ? closeTab : onReturn : onSubmit}
+            onClick={(isRescindAction || isTerminateAction) && !response ? onSubmit :
+              showReturnButton ? props.formType === Paths.REGISTRY_DELETE ? closeTab : onReturn : onSubmit}
           />
         </div>
       </div>

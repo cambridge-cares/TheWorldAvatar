@@ -37,6 +37,10 @@
   border-width: 1px 0 0 0;
 }
 
+.footer-button {
+  padding: 0.25rem 1rem !important; 
+}
+
 .form-button {
   flex-direction: row-reverse;
   padding-left: 1rem;
