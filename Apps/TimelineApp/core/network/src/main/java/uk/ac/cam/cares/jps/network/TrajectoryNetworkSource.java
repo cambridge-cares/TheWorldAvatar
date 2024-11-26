@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -118,8 +119,6 @@ public class TrajectoryNetworkSource {
             throw new RuntimeException("Not able to handle the agent response. Please check the backend");
         }
 
-
-
         String getTrajectoryUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.geoserver_jwt_proxy_geoserver_twa_wfs))
                 .addQueryParameter("service", "WFS")
@@ -135,7 +134,7 @@ public class TrajectoryNetworkSource {
         Response.Listener<String> onGetTrajectorySuccess = s1 -> {
             try {
                 // Log the full server response
-                LOGGER.error("Full server response: " + s1);
+                LOGGER.debug("Full server response: " + s1);
 
                 if (s1.startsWith("<?xml")) {
                     // Handle XML response
@@ -156,9 +155,7 @@ public class TrajectoryNetworkSource {
                 throw new RuntimeException(e);
             }
         };
-
-
-        return new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
+        StringRequest request = new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -166,5 +163,8 @@ public class TrajectoryNetworkSource {
                 return headers;
             }
         };
+        request.setRetryPolicy(new DefaultRetryPolicy(10000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        return request;
     }
 }
