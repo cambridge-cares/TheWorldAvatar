@@ -14,10 +14,10 @@ import LoadingSpinner from 'ui/graphic/loader/spinner';
 import { FormComponent } from 'ui/interaction/form/form';
 import ReturnButton from 'ui/navigation/return/return';
 import ResponseComponent from 'ui/text/response/response';
-import { HttpResponse, sendGetRequest } from 'utils/server-actions';
+import { HttpResponse, sendGetRequest, sendPostRequest } from 'utils/server-actions';
 import { getAfterDelimiter } from 'utils/client-utils';
 import { ENTITY_STATUS } from './form-utils';
-import { ApiResponse } from 'types/json';
+import { ApiResponse, JsonObject } from 'types/json';
 
 interface FormContainerComponentProps {
   entityType: string;
@@ -39,6 +39,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
   const dispatch = useDispatch();
 
   const [refreshFlag, triggerRefresh] = useRefresh();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<ApiResponse>(null);
   const [response, setResponse] = useState<HttpResponse>(null);
   const formRef: React.MutableRefObject<HTMLFormElement> = useRef<HTMLFormElement>();
@@ -57,6 +58,22 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     e.preventDefault();
     const url: string = `../../edit/${props.entityType}/${id}`;
     router.push(url);
+  };
+
+  // Action when approve button is clicked
+  const onApproval: React.MouseEventHandler<HTMLDivElement> = async () => {
+    setIsLoading(true);
+    const reqBody: JsonObject = {
+      contract: status.iri,
+      remarks: "Contract has been approved successfully!"
+    }
+    const response: HttpResponse = await sendPostRequest(`${props.agentApi}/contracts/service/commence`, JSON.stringify(reqBody));
+    setResponse(response);
+    setIsLoading(false);
+    setTimeout(() => {
+      dispatch(setIsOpen(false));
+      router.back();
+    }, 2000);
   };
 
   const onSubmit: React.MouseEventHandler<HTMLDivElement> = () => {
@@ -111,10 +128,20 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
           iconStyles={[styles["form-button-icon"]]}
           onClick={triggerRefresh}
         />}
-        {formRef.current?.formState?.isSubmitting && <LoadingSpinner isSmall={false} />}
+        {formRef.current?.formState?.isSubmitting || isLoading && <LoadingSpinner isSmall={false} />}
         {!formRef.current?.formState?.isSubmitting && response && (<ResponseComponent response={response} />)}
         <div className={styles["form-row"]}>
-          {props.formType === Paths.REGISTRY && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
+          {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
+            iconName={"done_outline"}
+            className={styles["form-button"]}
+            iconStyles={[styles["form-button-icon"]]}
+            text={{
+              styles: [styles["form-button-text"]],
+              content: "APPROVE"
+            }}
+            onClick={onApproval}
+          />}
+          {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
             iconName={"edit"}
             className={styles["form-button"]}
             iconStyles={[styles["form-button-icon"]]}
@@ -124,7 +151,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             }}
             onClick={openEditModal}
           />}
-          {props.formType === Paths.REGISTRY && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
+          {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
             iconName={"delete"}
             className={styles["form-button"]}
             iconStyles={[styles["form-button-icon"]]}
