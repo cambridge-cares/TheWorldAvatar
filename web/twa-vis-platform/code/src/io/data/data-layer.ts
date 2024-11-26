@@ -51,7 +51,9 @@ export abstract class DataLayer {
      */
     public cachedVisibility: boolean = true;
 
-    // Indicates if the parent is visible
+    /*
+    * Indicates if the parent is visible
+    */
     public isGroupExpanded: boolean;
 
     /**
@@ -90,7 +92,6 @@ export abstract class DataLayer {
             const hoverProperty: MapboxHoverProperty = { style: ["case", ["==", ["get", "iri"], "[HOVERED-IRI]"], Number(hoverJsonArray[0]), Number(hoverJsonArray[1])] };
             this.updateInjectableProperty(Interactions.HOVER, hoverProperty)
         }
-        console.info("Created DataLayer instance '" + this.id + "'.");
     }
 
     /**
@@ -121,4 +122,3 @@ export abstract class DataLayer {
         this.injectableProperties[interactionType] = property;
     }
 }
-// End of class.

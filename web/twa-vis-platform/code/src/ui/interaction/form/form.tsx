@@ -161,6 +161,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         // For interacting with min and max fields in the search form
         Object.keys(formData).forEach(field => {
           // Append range key to field if they have min and max fields and values in either their min or max field
+          // eslint-disable-next-line no-prototype-builtins
           if (formData.hasOwnProperty(`min ${field}`) && formData.hasOwnProperty(`max ${field}`) &&
             (formData[`min ${field}`] != undefined || formData[`max ${field}`] != undefined)) {
             formData = {

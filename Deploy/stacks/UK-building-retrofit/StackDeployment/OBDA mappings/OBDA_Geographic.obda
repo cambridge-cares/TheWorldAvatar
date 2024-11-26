@@ -1,0 +1,41 @@
+[PrefixDeclaration]
+ontobuiltenv:      https://www.theworldavatar.com/kg/ontobuiltenv/
+OntoONS:           https://www.ordnancesurvey.co.uk/linked-data/ontology/
+GeoSparql:         http://www.opengis.net/ont/geosparql#
+owl:               http://www.w3.org/2002/07/owl#
+rdf:               http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:               http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+
+mappingId   	Geographic-Classification-Postcode
+target      ontobuiltenv:{postcode_encoded} a <https://www.theworldavatar.com/kg/ontobuiltenv/Postcode> ; GeoSparql:sfWithin OntoONS:LSOA/{lsoa_code} ; ontobuiltenv:hasPostcode "{postcode}"^^xsd:string .
+source          SELECT "POSTCODE" AS postcode, REPLACE("POSTCODE", ' ', '') AS postcode_encoded, "LSOA11CD" AS lsoa_code
+                FROM "uk_geographic_hierarchy"
+
+mappingId       Geographic-Classification-LSOA
+target      OntoONS:LSOA/{lsoa_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; ontobuiltenv:hasIdentifier {lsoa_code}^^xsd:string ; ontobuiltenv:hasName "{lsoa_name}"^^xsd:string ; GeoSparql:sfWithin OntoONS:{msoa_code} .
+source          SELECT "LSOA11CD" AS lsoa_code, "MSOA11CD" AS msoa_code, "LSOA11NM" AS lsoa_name
+                FROM "uk_geographic_hierarchy"
+
+mappingId   Geographic-Classification-MSOA
+target      OntoONS:{msoa_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/MSOA> ; ontobuiltenv:hasIdentifier {msoa_code}^^xsd:string ; ontobuiltenv:hasName "{msoa_name}"^^xsd:string ; GeoSparql:sfWithin OntoONS:{la_code} .
+source          SELECT "MSOA11CD" AS msoa_code, "LAD20CD" AS la_code, "MSOA11NM" AS msoa_name
+                FROM "uk_geographic_hierarchy"
+
+mappingId   Geographic-Classification-LA
+target      OntoONS:{la_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LocalAuthorityDistrict> ; ontobuiltenv:hasIdentifier {la_code}^^xsd:string ; ontobuiltenv:hasName "{la_name}"^^xsd:string .
+source          SELECT DISTINCT "LAD20CD" AS la_code, "LAD20NM" AS la_name
+                FROM "uk_geographic_hierarchy"
+
+mappingId   Geographic-Classification-LSOA-Constituency
+target      OntoONS:LSOA/{lsoa_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; ontobuiltenv:hasIdentifier {lsoa_code}^^xsd:string ; ontobuiltenv:isPartOfConstituency OntoONS:{PCON11CD} ; ontobuiltenv:hasConstituencyName "{PCON11NM}"^^xsd:string ; ontobuiltenv:hasConstituencyCode {PCON11CD}^^xsd:string .
+source          SELECT "LSOA11CD" AS lsoa_code, "PCON11NM" AS PCON11NM, "PCON11CD" AS PCON11CD
+                FROM "geographic_hierarchy_constituency"
+
+mappingId   Geographic-LSOA-Centroid
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; GeoSparql:hasCentroidX {centroid_x}^^xsd:decimal ; GeoSparql:hasCentroidY {centroid_y}^^xsd:decimal .
+source          SELECT "LSOA11CD" AS lsoa_code, "centroid_x" AS centroid_x, "centroid_y" AS centroid_y
+                FROM "centroid_lsoa"
+
+]]

@@ -20,7 +20,7 @@ interface ScenarioModalProperties {
 }
 
 export function scenarioTypeIcon(scenarioType: string) {
-  return scenarioType ? `images/credo-misc/${scenarioType}.svg` : "images/defaults/icons/about.svg";
+  return scenarioType ? `/images/credo-misc/${scenarioType}.svg` : "images/defaults/icons/about.svg";
 }
 /**
  * A modal component for users to select their scenario
@@ -44,8 +44,6 @@ export default function ScenarioModal(props: Readonly<ScenarioModalProperties>) 
   const onClick = async () => {
     const data = await getScenarios(scenarioUrl)
     dispatch(setScenarioDefinitions(data)); // can't do this in getsScenarios code bc server
-
-    console.log("Refreshed")
   };
 
 

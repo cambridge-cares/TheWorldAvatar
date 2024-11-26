@@ -155,9 +155,9 @@ export function getDefaultImageryOption(imagerySettings: ImagerySettings): Image
   if (typeof window !== "undefined" && imagerySettings.default.toLowerCase() == "auto") {
     // Auto detect browser theme
     if (window?.matchMedia && window?.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return getImageryOption("3D (Night)", imagerySettings);
+      return getImageryOption("Dark", imagerySettings);
     } else {
-      return getImageryOption("3D (Day)", imagerySettings);
+      return getImageryOption("Light", imagerySettings);
     }
   } else {
     return getImageryOption(imagerySettings.default, imagerySettings);
@@ -227,10 +227,8 @@ export function setImagery(imagerySettings: ImagerySettings, map: Map): void {
 
   map.on('style.load', () => {
     if (imageryOption.time != null) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (map as any).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
+      (map as Map).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
     }
-
     // Ensure placenames match previous state
     togglePlacenames(imagerySettings, map);
   });
@@ -253,13 +251,13 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): vo
 
   if (imageryOption.time != null) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as any).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
+    (map as Map).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
   } else {
     // The above only works when using the "Standard" style from Mapbox v3, if using any
     // other style (such as "Light", or "Dark"), then it will fail. In which case we do it

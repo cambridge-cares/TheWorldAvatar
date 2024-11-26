@@ -8,14 +8,14 @@ import KeycloakSession from 'authorisation/keycloak-session';
 
 import { Routes } from 'io/config/routes';
 import { selectItem } from 'state/context-menu-slice';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import IconComponent from 'ui/graphic/icon/icon';
 import { navbarItem } from 'ui/interaction/context-menu/context-menu';
 import NavbarComponent from './navbar-component';
 
 // Type definition for navbar properties
 interface NavbarProps {
-  settings: DefaultSettings;
+  settings: UISettings;
 }
 
 /**
@@ -23,6 +23,7 @@ interface NavbarProps {
  * custom navbar components.
  */
 export default function Navbar(props: Readonly<NavbarProps>) {
+  const keycloakEnabled = process.env.KEYCLOAK === 'true';
 
   // Visibility state of navigation bar
   const navbarState = useSelector(selectItem(navbarItem.name));
@@ -35,26 +36,35 @@ export default function Navbar(props: Readonly<NavbarProps>) {
   return (
     <div id="navbar" className={styles.navbar}>
       {/* Render navbar logo if set */}
-      {props.settings?.branding?.navbar?.length > 0 &&
+      {props.settings?.branding?.navbarLogo?.length > 0 &&
+          // Handle the case where navbarLogo is a list
         <div className={styles["logo-ribbon"]}>
           {
-            props.settings?.branding?.navbar?.map(logo => {
-              return (
+            Array.isArray(props.settings?.branding?.navbarLogo) ? (
+              props.settings?.branding?.navbarLogo.map(logo => (
                 <Link key={logo} href={Routes.HOME}>
                   <IconComponent
                     icon={logo}
                     classes={styles["logo"]}
                   />
                 </Link>
-              )
-            })
+              ))
+            ) : (
+              // Handle the case where navbarLogo is a string
+              <Link href={Routes.HOME}>
+                <IconComponent
+                  icon={props.settings?.branding?.navbarLogo}
+                  classes={styles["logo"]}
+                />
+              </Link>
+            )
           }
         </div>
       }
 
       {/* Render each component as required */}
       <div className="navbarElements">
-        <KeycloakSession />
+        {keycloakEnabled && <KeycloakSession />}
         {props.settings?.modules?.landing &&
           <NavbarComponent
             name="LANDING"

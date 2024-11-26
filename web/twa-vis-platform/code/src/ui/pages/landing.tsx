@@ -13,7 +13,7 @@ import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 import { Modules, Routes } from 'io/config/routes';
 import LandingImage from 'ui/graphic/image/landing';
 import { DefaultPageThumbnail, DefaultPageThumbnailProps, MarkdownPageThumbnail } from './page-thumbnail';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({
@@ -24,7 +24,7 @@ const markdowner = markdownit({
 });
 
 interface LandingPageProps {
-  settings: DefaultSettings,
+  settings: UISettings,
 }
 
 /**
@@ -56,8 +56,8 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
 
       <div className={`${styles.thumbnailContainer} hidden-scrollbar`}>
         {props.settings.branding.landing && (<LandingImage
-          lightUrl={props.settings.branding?.landing?.[0]}
-          darkUrl={props.settings.branding?.landingDark?.[0]}
+          lightUrl={props.settings.branding?.landing}
+          darkUrl={props.settings.branding?.landingDark}
         />)}
         {getThumbnails()}
 

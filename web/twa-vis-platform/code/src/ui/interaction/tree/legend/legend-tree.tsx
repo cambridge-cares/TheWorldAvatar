@@ -24,7 +24,6 @@ interface LegendTreeNodeProps {
 export default function LegendTree(props: Readonly<LegendTreeProps>) {
   return (
     <div className={styles.legendContainer}>
-      <h2>Legend</h2>
       {Object.entries(props.settings).map(([groupName, group]) => {
         return <LegendTreeNode key={groupName} groupName={groupName} group={group} />
       })}
@@ -46,27 +45,51 @@ function LegendTreeNode(props: Readonly<LegendTreeNodeProps>) {
         icon={collapsedIcon}
         containerStyle={parentStyles.treeHeader}
         headerNameStyle={parentStyles.treeHeaderName}
-        isLoading = {false}
+        isLoading={false}
         spacing="0"
         toggleExpansion={toggleExpansion}
       />
       {Object.entries(props.group).map(([item, legendSettings]) => {
         if (!isCollapsed) {
-          return (
-            <div key={props.groupName + item} className={styles.legendEntry}>
-              {legendSettings.type === "symbol" &&
-                <IconComponent
-                  icon={legendSettings.icon}
-                  classes={styles.legendIcon}
-                />}
-              {legendSettings.type === "fill" &&
-                <DecagonIconComponent
-                  color={legendSettings.fill}
-                  classes={styles.legendIcon}
-                />}
-              {item}
-            </div>
-          )
+          if (legendSettings.description) {
+            return (
+              <div key={props.groupName + item}>
+                <div className={styles.legendEntryHeader}>
+                  {legendSettings.type === "symbol" &&
+                    <IconComponent
+                      icon={legendSettings.icon}
+                      classes={styles.legendIcon}
+                    />}
+                  {legendSettings.type === "fill" &&
+                    <DecagonIconComponent
+                      color={legendSettings.fill}
+                      classes={styles.legendIcon}
+                    />}
+                  <h4 className={styles.header}>{item}</h4>
+                </div>
+                <span className={styles.legendEntryDescription}>{legendSettings.description}</span>
+              </div>
+            )
+          }
+          else {
+            return (
+              <div key={props.groupName + item}>
+                <div className={styles.legendEntryHeader}>
+                  {legendSettings.type === "symbol" &&
+                    <IconComponent
+                      icon={legendSettings.icon}
+                      classes={styles.legendIcon}
+                    />}
+                  {legendSettings.type === "fill" &&
+                    <DecagonIconComponent
+                      color={legendSettings.fill}
+                      classes={styles.legendIcon}
+                    />}
+                  <span className={styles.legendEntryDescription}>{item}</span>
+                </div>
+              </div>
+            )
+          }
         }
       })}
     </div>
