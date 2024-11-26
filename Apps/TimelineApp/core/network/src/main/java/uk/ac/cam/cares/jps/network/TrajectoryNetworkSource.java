@@ -60,11 +60,6 @@ public class TrajectoryNetworkSource {
                 .build().toString();
         LOGGER.info(createLayerUri);
 
-        // Get the user's current location and then build the request
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
         StringRequest createLayerRequest = buildCreateLayerRequest(accessToken, onSuccessUpper, onFailureUpper, createLayerUri, lowerbound, upperbound);
         requestQueue.add(createLayerRequest);
     }
