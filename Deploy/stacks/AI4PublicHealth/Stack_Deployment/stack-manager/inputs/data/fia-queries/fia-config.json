@@ -5,6 +5,10 @@
             "metaFile": "EP_meta.sparql"
         },
         {
+            "class": "https://www.theworldavatar.com/kg/ontopoi/",
+            "metaFile": "poi.sparql"
+        },
+        {
             "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
             "metaFile": "ReportingStations.sparql",
             "timeFile": "ReportingStations_time.sparql",
