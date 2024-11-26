@@ -75,7 +75,7 @@ public class LifecycleService {
   /**
    * Retrieve the status of the contract.
    * 
-   * @param contract The target contract instance.
+   * @param contract The target contract id.
    */
   public String getStatus(String contract) {
     LOGGER.debug("Retrieving the status of the contract...");

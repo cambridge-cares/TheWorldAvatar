@@ -157,18 +157,19 @@ public class LifecycleResource {
   /**
    * Generates a SPARQL query to get the current status of the contract.
    * 
-   * @param contract the target contract instance.
+   * @param contractId the target contract id.
    */
   public static String genServiceStatusQuery(String contractId) {
     return genPrefixes()
         + "SELECT DISTINCT ?status WHERE{"
         + "{SELECT DISTINCT (MAX(?priority_val) AS ?priority) WHERE{"
-        + StringResource.parseIriForQuery(contractId) + " a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "?iri a fibo-fnd-pas-pas:ServiceAgreement;"
         + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage/<https://www.omg.org/spec/Commons/Collections/comprises> ?event."
         + "?event_type <https://www.omg.org/spec/Commons/Classifiers/classifies> ?event."
         + "BIND(IF(?event_type=ontoservice:ContractDischarge||?event_type=ontoservice:ContractRescission||?event_type=ontoservice:ContractTermination,"
         + "2,IF(?event_type=ontoservice:ContractApproval,1,0)"
         + ") AS ?priority_val)"
+        + "FILTER STRENDS(STR(?iri),\"" + contractId + "\")"
         + "}}"
         + "BIND(IF(?priority=2,\"Archived\","
         + "IF(?priority=1,\"Active\",\"Pending\")"

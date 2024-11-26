@@ -393,10 +393,10 @@ This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to man
 This endpoint serves to retrieve the status of a contract using a `GET` request at the following endpoint:
 
 ```
-<baseURL>/vis-backend-agent/contracts/status?id={id}
+<baseURL>/vis-backend-agent/contracts/status/{id}
 ```
 
-where `{id}`is the requested contract instance. If successful, the agent will return either "Pending", "Active", or "Archive" status.
+where `{id}`is the requested contract ID. If successful, the agent will return either "Pending", "Active", or "Archive" status.
 
 #### 2.6.2 Draft route
 
