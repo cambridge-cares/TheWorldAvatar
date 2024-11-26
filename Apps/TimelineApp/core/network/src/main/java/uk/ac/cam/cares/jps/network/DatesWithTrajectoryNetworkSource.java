@@ -80,7 +80,6 @@ public class DatesWithTrajectoryNetworkSource {
         public Map<String, String> getHeaders() {
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + accessToken);
-            LOGGER.info("token" + accessToken);
             return headers;
         }
     };
