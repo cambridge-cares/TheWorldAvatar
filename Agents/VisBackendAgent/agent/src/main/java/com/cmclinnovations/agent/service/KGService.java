@@ -404,15 +404,27 @@ public class KGService {
   }
 
   /**
-   * A method to retrieve the value of the iri variable. Note that this method is
-   * only application for one result sparql binding and will return an error
-   * otherwise.
+   * An overloaded method to retrieve the value of the iri variable.
+   * Note that this method is only applicable for one result sparql binding and
+   * will return an error otherwise.
    * 
    * @param results Results to parse.
    */
   public String getSingleInstance(Queue<SparqlBinding> results) {
+    return this.getSingleInstance(results, LifecycleResource.IRI_KEY);
+  }
+
+  /**
+   * A method to retrieve the value of the field variable. Note that this method
+   * is only applicable for one result sparql binding and will return an error
+   * otherwise.
+   * 
+   * @param results Results to parse.
+   * @param field   Field name
+   */
+  public String getSingleInstance(Queue<SparqlBinding> results, String field) {
     if (results.size() == 1) {
-      return results.poll().getFieldValue(LifecycleResource.IRI_KEY);
+      return results.poll().getFieldValue(field);
     } else if (results.isEmpty()) {
       LOGGER.error("No valid instance found!");
       throw new NullPointerException("No valid instance found!");

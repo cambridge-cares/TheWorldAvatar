@@ -155,6 +155,28 @@ public class LifecycleResource {
   }
 
   /**
+   * Generates a SPARQL query to get the current status of the contract.
+   * 
+   * @param contract the target contract instance.
+   */
+  public static String genServiceStatusQuery(String contractId) {
+    return genPrefixes()
+        + "SELECT DISTINCT ?status WHERE{"
+        + "{SELECT DISTINCT (MAX(?priority_val) AS ?priority) WHERE{"
+        + StringResource.parseIriForQuery(contractId) + " a fibo-fnd-pas-pas:ServiceAgreement;"
+        + "fibo-fnd-arr-lif:hasLifecycle/fibo-fnd-arr-lif:hasStage/<https://www.omg.org/spec/Commons/Collections/comprises> ?event."
+        + "?event_type <https://www.omg.org/spec/Commons/Classifiers/classifies> ?event."
+        + "BIND(IF(?event_type=ontoservice:ContractDischarge||?event_type=ontoservice:ContractRescission||?event_type=ontoservice:ContractTermination,"
+        + "2,IF(?event_type=ontoservice:ContractApproval,1,0)"
+        + ") AS ?priority_val)"
+        + "}}"
+        + "BIND(IF(?priority=2,\"Archived\","
+        + "IF(?priority=1,\"Active\",\"Pending\")"
+        + ") AS ?status)"
+        + "}";
+  }
+
+  /**
    * Generates a SPARQL query to get today's day of week IRI from the cmns-dt
    * ontology.
    */
@@ -285,7 +307,8 @@ public class LifecycleResource {
         + "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>"
         + "PREFIX fibo-fnd-pas-pas: <https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/>"
         + "PREFIX geo: <http://opengis.net/ont/geosparql#>"
-        + "PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>";
+        + "PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>"
+        + "PREFIX ontoservice: <https://www.theworldavatar.com/kg/ontoservice/>";
   }
 
   /**

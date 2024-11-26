@@ -73,6 +73,18 @@ public class LifecycleService {
   }
 
   /**
+   * Retrieve the status of the contract.
+   * 
+   * @param contract The target contract instance.
+   */
+  public String getStatus(String contract) {
+    LOGGER.debug("Retrieving the status of the contract...");
+    String query = LifecycleResource.genServiceStatusQuery(contract);
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    return this.kgService.getSingleInstance(results, LifecycleResource.STATUS_KEY);
+  }
+
+  /**
    * Retrieve all the contract instances and their information based on the
    * resource ID.
    * 

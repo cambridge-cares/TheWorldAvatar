@@ -21,11 +21,12 @@ The Vis-Backend Agent is a supporting service to The World Avatar's [visualisati
       - [2.5.3 Update route](#253-update-route)
       - [2.5.4 Get route](#254-get-route)
     - [2.6 Service Lifecycle Route](#26-service-lifecycle-route)
-      - [2.6.1 Draft route](#261-draft-route)
-      - [2.6.2 Schedule route](#262-schedule-route)
-      - [2.6.3 Service commencement route](#263-service-commencement-route)
-      - [2.6.4 Service order route](#264-service-order-route)
-      - [2.6.5 Archive contract route](#265-archive-contract-route)
+      - [2.6.1 Status route](#261-status-route)
+      - [2.6.2 Draft route](#262-draft-route)
+      - [2.6.3 Schedule route](#263-schedule-route)
+      - [2.6.4 Service commencement route](#264-service-commencement-route)
+      - [2.6.5 Service order route](#265-service-order-route)
+      - [2.6.6 Archive contract route](#266-archive-contract-route)
   - [3. SHACL Restrictions](#3-shacl-restrictions)
     - [3.1 Form Generation](#31-form-generation)
     - [3.2 Automated Data Retrieval](#32-automated-data-retrieval)
@@ -387,7 +388,17 @@ where `{type}`is the requested identifier that must correspond to a target class
 
 This `<baseURL>/vis-backend-agent/contracts/` route serves as an endpoint to manage the lifecycle of contracts and their associated services.
 
-#### 2.6.1 Draft route
+#### 2.6.1 Status route
+
+This endpoint serves to retrieve the status of a contract using a `GET` request at the following endpoint:
+
+```
+<baseURL>/vis-backend-agent/contracts/status?id={id}
+```
+
+where `{id}`is the requested contract instance. If successful, the agent will return either "Pending", "Active", or "Archive" status.
+
+#### 2.6.2 Draft route
 
 This endpoint serves to draft a new contract, inclusive of its lifecycle and the schedule, or retrieve all draft contracts that are awaiting approval.
 
@@ -399,7 +410,7 @@ Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `P
 <baseURL>/vis-backend-agent/contracts/draft
 ```
 
-Note that this route will interact with the [schedule route](#262-schedule-route) directly, and users should not sent a separate request to the schedule route unless they wish to interact with the schedule. The draft route will require the following `JSON` request parameters:
+Note that this route will interact with the [schedule route](#263-schedule-route) directly, and users should not sent a separate request to the schedule route unless they wish to interact with the schedule. The draft route will require the following `JSON` request parameters:
 
 ```json
 {
@@ -429,9 +440,9 @@ Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/dra
 
 There is also an additional optional parameter `label` to retrieve draft contracts with only human readable values. Users may pass in `yes` if the response should all be labelled and `no` otherwise.
 
-#### 2.6.2 Schedule route
+#### 2.6.3 Schedule route
 
-The endpoint serves to assign the upcoming schedule for the services for the specified contract. **WARNING**: It is not intended that this route is called directly, as the [draft route](#261-draft-route) will call this route when a request is received. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
+The endpoint serves to assign the upcoming schedule for the services for the specified contract. **WARNING**: It is not intended that this route is called directly, as the [draft route](#262-draft-route) will call this route when a request is received. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
 
 ```
 <baseURL>/vis-backend-agent/contracts/schedule
