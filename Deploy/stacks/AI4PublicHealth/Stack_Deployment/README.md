@@ -73,19 +73,31 @@ When interacting with the GeoServer GUI remotely, some issues may arise (e.g., i
 The following provides an overview of all steps and agents required to instantiate the environmental features and phyical activity data. 
 
 ## 3.1 Food Hygiene Ratings (.xml)
+The UK Food Hygiene Rating Scheme (FHRS) data includes hygiene ratings or inspection results for businesses such as restaurants, cafes, and supermarkets. This data reflects food hygiene standards observed during inspections conducted by local authorities and is available in XML format via a public API. 
+
 ### 1) XML converter
+To integrate this environmental feature, the [xml_converter] processes the its raw online XML file, extracts relevant fields, and converts them into a structured CSV format. This ensures compatibility with subsequent data upload and querying steps.
+
 ### 2) Stack data uploader
+Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy/stacks\dynamic\stack-data-uploader\inputs\config/`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter].
+
+After completing these steps, navigate to `Deploy/stacks\dynamic\stack-data-uploader`. From this directory, execute the following command in a *bash* terminal and wait until the container stops, indicating that the upload has finished. 
+
+```bash
+bash ./stack.sh start Healthcare
+```
+
 ### 3) SPARQL query via virtual knowledge graph
+The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings semantically. Leveraging the Ontology of Food Hygiene Rating Score ([OntoFHR]) and a defined OBDA mapping titled [FoodHygieneRating], the endpoint maps relational database records stored in PostGIS, such as business details, geolocation, and hygiene ratings, into a semantic framework. This allows queries to retrieve structured information like business names, inspection ratings, and geographic coordinates, supporting analyses across geographic scales and enabling integration with other datasets.
 
-## 3.2) Greenspace (.shp)
+## 3.2) Greenspace (.shp) and Points of Interest (.csv)
+
 ### 1) Stack data uploader
+
 ### 2) SPARQL query via virtual knowledge graph
 
-## 3.3) Points of Interest (.csv)
-### 1) Stack data uploader
-### 2) SPARQL query via virtual knowledge graph
 
-## 3.4) GPS Trajectories (.csv)
+## 3.3) GPS Trajectories (.csv)
 
 
 # 4. Visualisation
@@ -114,7 +126,7 @@ The following provides an overview of all steps and agents required to instantia
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
-[Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
+[Stack Data Uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 
 <!-- Agents -->
@@ -124,3 +136,5 @@ The following provides an overview of all steps and agents required to instantia
 [AirQuality Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AirQualityAgent
 
 <!-- Files -->
+[xml_converter]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-AI-for-Healthcare/Deploy/stacks/AI4PublicHealth/Common_Script/xml_converter
+[FoodHygieneRating]: ./stack-data-uploader/obda_mappings/FoodHygieneRating.obda
