@@ -25,10 +25,10 @@ do
 	if [ -n "$(docker ps -f "name=$STACK_NAME_stack-manager" -f "status=running" -q )" ]; then
 		#echo "the manager is running!"
 		duration=$(( SECONDS - beginning))
-		echo "$duration second has passed since manager starts!"
+		echo "$duration seconds have passed since stack manager started"
 	else
-		echo "the manager stops with the following status:"
-		echo "$(docker ps -a -f "name=$STACK_NAME_stack-manager" --format="{{.Status}}")"
+		echo "manager has exited with the following status:"
+		docker ps -a -f "name=$STACK_NAME_stack-manager" --format="{{.Status}}"
 		spin_up=true
 	fi
 done
@@ -49,10 +49,10 @@ do
 	if [ -n "$(docker ps -f "name=$STACK_NAME_stack-data-uploader" -f "status=running" -q )" ]; then
 		#echo "the uploader is running!"
 		duration=$(( SECONDS - beginning))
-		echo "$duration second has passed since uploader starts!"
+		echo "$duration seconds have passed since data upload commenced"
 	else
 		echo "the uploader stops with the following status:"
-		echo "$(docker ps -a -f "name=$STACK_NAME_stack-data-uploader" --format="{{.Status}}")"
+		docker ps -a -f "name=$STACK_NAME_stack-data-uploader" --format="{{.Status}}"
 		uploaded=true
 	fi
 done
