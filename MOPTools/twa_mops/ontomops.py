@@ -475,14 +475,17 @@ class ChemicalBuildingUnit(BaseClass):
         if cbu_assemb_center is None:
             lst_binding_points = [cbu_binding_points[k].binding_coordinates for k in cbu_binding_points]
             if len(lst_binding_points) > 2:
+                # when the number of binding sites are greater than 2
+                # find the plane from the binding sites and the circumcenter of the binding sites
+                # then project the center of the CBU on the normal vector of the plane
+                # to find the assembly center of the CBU
+                # even the assembly center is overshooting from the molecule
+                # the sin/cos calculations will make sure its coordinates is transformed correctly
                 cbu_binding_sites_plane = Plane.fit_from_points(lst_binding_points)
                 cbu_binding_sites_circumcenter = Point.fit_circle_2d(lst_binding_points)[0]
-                if 'planar' in gbu_type.lower():
-                    cbu_assemb_center = cbu_binding_sites_circumcenter
-                else:
-                    cbu_geo_center = Point.centroid(atom_points)
-                    line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
-                    cbu_assemb_center = line.project_point(cbu_geo_center)
+                cbu_geo_center = Point.centroid(atom_points)
+                line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
+                cbu_assemb_center = line.project_point(cbu_geo_center)
             else:
                 bindingsite_mid_point = Point.mid_point(*lst_binding_points)
                 if 'linear' in gbu_type.lower():
