@@ -1,4 +1,3 @@
-import { Path } from "typescript";
 import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
 
 /**
@@ -6,7 +5,8 @@ import { DefaultPageThumbnailProps } from "ui/pages/page-thumbnail";
  */
 export type UISettings = {
   branding: {
-    'navbarLogo': string | string[];
+    'navbarLogo': string | string[]; // Backwards compatibility but do not use this going forward
+    'navbar': string | string[];
     'landing': string;
     'landingDark': string;
   },
