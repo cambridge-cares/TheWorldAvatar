@@ -79,9 +79,9 @@ The UK Food Hygiene Rating Scheme (FHRS) data includes hygiene ratings or inspec
 To integrate this environmental feature, the [xml_converter] processes the its raw online XML file, extracts relevant fields, and converts them into a structured CSV format. This ensures compatibility with subsequent data upload and querying steps.
 
 ### 2) Stack data uploader
-Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter]. In addition, copy the [FoodHygieneRating] file from [mapping folder] and paste to `Deploy\stacks\dynamic\stack-data-uploader`.
+Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy/stacks/AI4PublicHealth/Stack_Deployment/stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy/stacks/dynamic/stack-data-uploader/inputs/config/`. Then replace the `readme.txt` files in the `Deploy/stacks/AI4PublicHealth/Stack_Deployment/stack-data-uploader/data/FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter]. In addition, copy the [FoodHygieneRating] file from [mapping folder] and paste to `Deploy/stacks/dynamic/stack-data-uploader`.
 
-After completing these steps, navigate to `Deploy\stacks\dynamic\stack-data-uploader`. From this directory, execute the following command in a *bash* terminal and wait until the container stops, indicating that the upload has finished. 
+After completing these steps, navigate to `Deploy/stacks/dynamic/stack-data-uploader`. From this directory, execute the following command in a *bash* terminal and wait until the container stops, indicating that the upload has finished. 
 
 ```bash
 bash ./stack.sh start Healthcare
@@ -94,9 +94,9 @@ The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings se
 The OS Open Greenspace dataset provides a comprehensive mapping of greenspaces across Great Britain, including public parks, sports facilities, and allotments, along with access points. Similarly, the Points of Interest (POI) dataset includes detailed information about commercial and non-commercial establishments, such as businesses, retail spaces, and service providers, with attributes like phone numbers, web URLs, and classifications. These datasets are crucial for spatial analyses related to urban planning, service accessibility, and community health.
 
 ### 1) Stack data uploader
-Similar to the Food Hygiene Rating data, the instantiation of these datasets also relies on the [Stack Data Uploader]. Copy configuration files from `config` to `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`, and replace the `readme.txt` files in the `data` sub-folders with the greenspace shapefiles and POI CSV files. Also, copy the files (.obda) from [mapping folder] and paste to `Deploy\stacks\dynamic\stack-data-uploader`.
+Similar to the Food Hygiene Rating data, the instantiation of these datasets also relies on the [Stack Data Uploader]. Copy configuration files from `config` to `Deploy/stacks/dynamic/stack-data-uploader/inputs/config/`, and replace the `readme.txt` files in the `data` sub-folders with the greenspace shapefiles and POI CSV files. Also, copy the files (.obda) from [mapping folder] and paste to `Deploy/stacks/dynamic/stack-data-uploader`.
 
-Finally, navigate to `Deploy\stacks\dynamic\stack-data-uploader` and execute:
+Finally, navigate to `Deploy/stacks/dynamic/stack-data-uploader` and execute:
 
 ```bash
 bash ./stack.sh start Healthcare
@@ -110,18 +110,18 @@ Individual GPS trajectories used in this study are instantiated using the [Fenla
 
 # 4. Visualisation
 ## 4.1 TWA Visualisation Framework (TWA-VF)
-
-
-
+The TWA-VF is a built-in service included in the stack configuration file. Therefore, simply ensure that the folders named [fia-queries] and [webspace-mapbox] are placed in the directory `Deploy/stacks/dynamic/stack-manager/inputs/data`. Once the core stack is initiated, the TWA-VF container will automatically start running.
 
 ## 4.2 TWA Visualisation Platform (TWA-VP)
-
+To deploy TWA-VP stack, copy all the files from the [public] folder and paste them into the directory `web/twa-vis-platform/code/public`.
+Navigator to the `web/twa-vis-platform` directory, and execute the following command  in the terminal:
 ```bash
 docker compose up
 ```
-
+The default port for the TWA-VP is 3000. Please ensure this port is open before deploying the visualisation stack.
 
 # Potential refinements/next steps
+
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages

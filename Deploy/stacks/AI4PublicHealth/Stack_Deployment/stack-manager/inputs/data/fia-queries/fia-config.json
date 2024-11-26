@@ -1,0 +1,20 @@
+{
+    "queries": [
+        {
+            "class": "https://www.theworldavatar.com/kg/Building",
+            "metaFile": "EP_meta.sparql"
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "metaFile": "ReportingStations.sparql",
+            "timeFile": "ReportingStations_time.sparql",
+            "databaseName": "postgres"
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation",
+            "metaFile": "ReportingStations.sparql",
+            "timeFile": "ReportingStations_time.sparql",
+            "databaseName": "postgres"
+        }
+    ]
+}

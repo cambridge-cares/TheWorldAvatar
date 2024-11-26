@@ -1,0 +1,63 @@
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX building: <https://www.theworldavatar.com/kg/Building/>
+PREFIX os: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/>
+
+SELECT ?Property (GROUP_CONCAT(?tmp; separator=", ") AS ?Value) WHERE {
+    SERVICE <http://174.138.27.240:3838/ontop/sparql> {
+        {
+            BIND("Building Instance" AS ?Property)
+            BIND([IRI] AS ?tmp)
+        } UNION {
+            BIND("UPRN" AS ?Property)
+            [IRI] os:hasUPRN ?tmp .
+        } UNION {
+            BIND("Energy Efficiency" AS ?Property)
+            [IRI] building:hasEnergyEfficiency ?tmp .
+        } UNION {
+            BIND("EPC Rating" AS ?Property)
+            [IRI] building:hasEPCrating ?tmp .
+        } UNION {
+            BIND("Postcode" AS ?Property)
+            [IRI] building:hasPostcode ?tmp .
+        } UNION {
+            BIND("Address1" AS ?Property)
+            [IRI] building:hasAddress1 ?tmp .
+        } UNION {
+            BIND("Property Type" AS ?Property)
+            [IRI] building:hasPropertyType ?tmp .
+        } UNION {
+            BIND("Built Form" AS ?Property)
+            [IRI] building:hasBuiltForm ?tmp .
+        } UNION {
+            BIND("CO2 Emissions Current" AS ?Property)
+            [IRI] building:hasCO2EmissionsCurrent ?tmp .
+        } UNION {
+            BIND("Heating Cost Current" AS ?Property)
+            [IRI] building:hasHeatingCostCurrent ?tmp .
+        } UNION {
+            BIND("Hot Water Cost Current" AS ?Property)
+            [IRI] building:hasHotWaterCostCurrent ?tmp .
+        } UNION {
+            BIND("Lighting Cost Current" AS ?Property)
+            [IRI] building:hasLightingCostCurrent ?tmp .
+        } UNION {
+            BIND("Glazed Type" AS ?Property)
+            [IRI] building:hasGlazedType ?tmp .
+        } UNION {
+            BIND("Floor Description" AS ?Property)
+            [IRI] building:hasFloorDescription ?tmp .
+        } UNION {
+            BIND("Windows Description" AS ?Property)
+            [IRI] building:hasWindowsDescription ?tmp .
+        } UNION {
+            BIND("Walls Description" AS ?Property)
+            [IRI] building:hasWallsDescription ?tmp .
+        } UNION {
+            BIND("Second Heat Description" AS ?Property)
+            [IRI] building:hasSecondHeatDescription ?tmp .
+        } UNION {
+            BIND("Roof Description" AS ?Property)
+            [IRI] building:hasRoofDescription ?tmp .
+        }
+    }
+} GROUP BY ?Property
