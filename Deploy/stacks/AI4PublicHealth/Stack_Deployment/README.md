@@ -91,7 +91,7 @@ bash ./stack.sh start Healthcare
 The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings semantically. Leveraging the Ontology of Food Hygiene Rating Score ([OntoFHR]) and a defined OBDA mapping titled [FoodHygieneRating], the endpoint maps relational database records stored in PostGIS, such as business details, geolocation, and hygiene ratings, into a semantic framework. This allows queries to retrieve structured information like business names, inspection ratings, and geographic coordinates, supporting analyses across geographic scales and enabling integration with other datasets.
 
 ## 3.2) Greenspace (.shp) and Points of Interest (.csv)
-The OS Open Greenspace dataset provides a comprehensive mapping of greenspaces across Great Britain, including public parks, sports facilities, and allotments, along with access points. Similarly, the Points of Interest (POI) dataset includes detailed information about commercial and non-commercial establishments, such as businesses, retail spaces, and service providers, with attributes like phone numbers, web URLs, and classifications. These datasets are crucial for spatial analyses related to urban planning, service accessibility, and community health.
+The [OS Open Greenspace] dataset provides a comprehensive mapping of greenspaces across Great Britain, including public parks, sports facilities, and allotments, along with access points. Similarly, the [Points of Interest (POI)] dataset includes detailed information about commercial and non-commercial establishments, such as businesses, retail spaces, and service providers, with attributes like phone numbers, web URLs, and classifications. These datasets are crucial for spatial analyses related to urban planning, service accessibility, and community health.
 
 ### 1) Stack data uploader
 Similar to the Food Hygiene Rating data, the instantiation of these datasets also relies on the [Stack Data Uploader]. Copy configuration files from `config` to `Deploy/stacks/dynamic/stack-data-uploader/inputs/config/`, and replace the `readme.txt` files in the `data` sub-folders with the greenspace shapefiles and POI CSV files. Also, copy the files (.obda) from [mapping folder] and paste to `Deploy/stacks/dynamic/stack-data-uploader`.
@@ -110,10 +110,10 @@ Individual GPS trajectories used in this study are instantiated using the [Fenla
 
 # 4. Visualisation
 ## 4.1 TWA Visualisation Framework (TWA-VF)
-The TWA-VF is a built-in service included in the stack configuration file. Therefore, simply ensure that the folders named [fia-queries] and [webspace-mapbox] are placed in the directory `Deploy/stacks/dynamic/stack-manager/inputs/data`. Once the core stack is initiated, the TWA-VF container will automatically start running.
+The [TWA-VF] is a built-in service included in the stack configuration file. Therefore, simply ensure that the folders named [fia-queries] and [webspace-mapbox] are placed in the directory `Deploy/stacks/dynamic/stack-manager/inputs/data`. Once the core stack is initiated, the TWA-VF container will automatically start running.
 
 ## 4.2 TWA Visualisation Platform (TWA-VP)
-To deploy TWA-VP stack, copy all the files from the [public] folder and paste them into the directory `web/twa-vis-platform/code/public`.
+To deploy [TWA-VP] stack, copy all the files from the `public` folder under `Deploy/stacks/AI4PublicHealth/TWA-VF/public` and paste them into the directory `web/twa-vis-platform/code/public`.
 Navigator to the `web/twa-vis-platform` directory, and execute the following command  in the terminal:
 ```bash
 docker compose up
@@ -121,7 +121,7 @@ docker compose up
 The default port for the TWA-VP is 3000. Please ensure this port is open before deploying the visualisation stack.
 
 # Potential refinements/next steps
-
+To further advance this project, the next steps involve developing a high-level exposure ontology to semantically represent environmental data and exposure quantifications, enabling the integration of additional datasets and the automated assessment of exposure. In parallel, SPARQL queries will be developed to quantify environmental exposure metrics, supporting spatial and temporal analyses that establish links between environmental factors and public health outcomes.
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
@@ -141,6 +141,12 @@ The default port for the TWA-VP is 3000. Please ensure this port is open before 
 [OntoFHRS]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontofhrs
 [OntoPOI]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontopoi
 [OntoGreenspace]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontogreenspace
+[fia-queries]:./stack-manager/inputs/data/fia-queries/
+[webspace-mapbox]: ./stack-manager/inputs/data/webspace-mapbox/
+[TWA-VF]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-framework
+[TWA-VP]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform
+[OS Open Greenspace]: https://www.ordnancesurvey.co.uk/products/os-open-greenspace
+[Points of Interest (POI)]: https://www.ordnancesurvey.co.uk/products/points-of-interest
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
