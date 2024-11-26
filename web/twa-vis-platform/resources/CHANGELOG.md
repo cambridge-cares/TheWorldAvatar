@@ -3,6 +3,10 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.12.0
+
+- Add ability to include JWT token in header for MapBox source requests.
+
 ## 5.11.0
 
 ## Improvements
