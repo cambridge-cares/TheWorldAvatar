@@ -58,7 +58,7 @@ bash ./stack.sh remove Healthcare -v
 # Remove individual service
 bash ./stack.sh remove Healthcare <service name>
 ```
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The exact endpoints and login details can be found in the [Stack Manager README].
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. Adminer, Ontop, Blazegraph, Geoserver). The exact endpoints and login details can be found in the [Stack Manager README].
 
 ## Spinning up the stack remotely via SSH
 
@@ -79,7 +79,7 @@ The UK Food Hygiene Rating Scheme (FHRS) data includes hygiene ratings or inspec
 To integrate this environmental feature, the [xml_converter] processes the its raw online XML file, extracts relevant fields, and converts them into a structured CSV format. This ensures compatibility with subsequent data upload and querying steps.
 
 ### 2) Stack data uploader
-Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter].
+Once converted, the Food Hygiene Ratings data in CSV format is uploaded to the stack using the [Stack Data Uploader]. Firstly, navigate to the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader` directory. Copy the configuration files from the `config` directory to the corresponding directory in `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`. Then replace the `readme.txt` files in the `Deploy\stacks\AI4PublicHealth\Stack_Deployment\stack-data-uploader\data\FoodHygiene` sub-folders with the CSV file obtained by the [xml_converter]. In addition, copy the [FoodHygieneRating] file from [mapping folder] and paste to `Deploy\stacks\dynamic\stack-data-uploader`.
 
 After completing these steps, navigate to `Deploy\stacks\dynamic\stack-data-uploader`. From this directory, execute the following command in a *bash* terminal and wait until the container stops, indicating that the upload has finished. 
 
@@ -94,18 +94,31 @@ The stack provides an Ontop SPARQL endpoint for querying Food Hygiene Ratings se
 The OS Open Greenspace dataset provides a comprehensive mapping of greenspaces across Great Britain, including public parks, sports facilities, and allotments, along with access points. Similarly, the Points of Interest (POI) dataset includes detailed information about commercial and non-commercial establishments, such as businesses, retail spaces, and service providers, with attributes like phone numbers, web URLs, and classifications. These datasets are crucial for spatial analyses related to urban planning, service accessibility, and community health.
 
 ### 1) Stack data uploader
-Similar to the Food Hygiene Rating data, the instantiation of these datasets also relies on the [Stack Data Uploader]. Copy configuration files from `config` to `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`, and replace the `readme.txt` files in the `data` sub-folders with the greenspace shapefiles and POI CSV files. Then, navigate to `Deploy\stacks\dynamic\stack-data-uploader` and execute:
+Similar to the Food Hygiene Rating data, the instantiation of these datasets also relies on the [Stack Data Uploader]. Copy configuration files from `config` to `Deploy\stacks\dynamic\stack-data-uploader\inputs\config\`, and replace the `readme.txt` files in the `data` sub-folders with the greenspace shapefiles and POI CSV files. Also, copy the files (.obda) from [mapping folder] and paste to `Deploy\stacks\dynamic\stack-data-uploader`.
+
+Finally, navigate to `Deploy\stacks\dynamic\stack-data-uploader` and execute:
 
 ```bash
 bash ./stack.sh start Healthcare
 ```
 ### 2) SPARQL query via virtual knowledge graph
 
+The Ontop endpoint is also employed to support querying Greenspace and Points of Interest data semantically. Using [OntoGreenspace] and [OntoPOI] along with defined OBDA mappings, the endpoint semantically represents relational database records, including greenspace locations, access points, business details, and geographic coordinates.
 
 ## 3.3) GPS Trajectories (.csv)
 Individual GPS trajectories used in this study are instantiated using the [Fenland Trajectory Agent]. This agent extracts key attributes such as latitude, longitude, speed, heading, and time from CSV files, organises them into triples using the Ontology of Devices ([OntoDevice]), and uploads the data into the knowledge graph and a relational database. Details on deploying this agent can be found [here].
 
 # 4. Visualisation
+## 4.1 TWA Visualisation Framework (TWA-VF)
+
+
+
+
+## 4.2 TWA Visualisation Platform (TWA-VP)
+
+```bash
+docker compose up
+```
 
 
 # Potential refinements/next steps
@@ -145,3 +158,4 @@ Individual GPS trajectories used in this study are instantiated using the [Fenla
 [FoodHygieneRating]: ./stack-data-uploader/obda_mappings/FoodHygieneRating.obda
 [here]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-AI-for-Healthcare/Agents/FenlandTrajectoryAgent/README.md
 [OntoDevice]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-ai4ph-ontologies/JPS_Ontology/ontology/ontodevice
+[mapping folder]: ./stack-data-uploader/obda_mappings
