@@ -12,6 +12,7 @@ import ActionButton from 'ui/interaction/action/action';
 import ResponseComponent from 'ui/text/response/response';
 import { FormTemplate } from 'ui/interaction/form/template/form-template';
 import { FORM_STATES } from 'ui/interaction/form/form-utils';
+import { genBooleanClickHandler } from 'utils/event-handler';
 import { HttpResponse, sendPostRequest } from 'utils/server-actions';
 
 interface TaskModalProps {
@@ -47,26 +48,6 @@ export default function TaskModal(props: Readonly<TaskModalProps>) {
   // Form actions
   const [response, setResponse] = useState<HttpResponse>(null);
 
-  // Event handlers to set the respective state on clicking the corresponding button
-  const onCompleteAction: React.MouseEventHandler<HTMLButtonElement> = () => {
-    setIsCompleteAction(true);
-  };
-
-  const onCancelAction: React.MouseEventHandler<HTMLButtonElement> = () => {
-    setIsCancelAction(true);
-  };
-
-  const onReportAction: React.MouseEventHandler<HTMLButtonElement> = () => {
-    setIsReportAction(true);
-  };
-
-  // Execute form submit action on click
-  const onSubmit: React.MouseEventHandler<HTMLDivElement> = () => {
-    if (formRef.current) {
-      formRef.current.requestSubmit();
-    }
-  };
-
   // Closes the modal on click
   const onClose: React.MouseEventHandler<HTMLDivElement> = () => {
     props.setIsOpen(false);
@@ -93,6 +74,12 @@ export default function TaskModal(props: Readonly<TaskModalProps>) {
     setResponse(response);
   }
 
+  const onSubmit: React.MouseEventHandler<HTMLDivElement> = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
+
   // Closes the modal only if response is successfull
   useEffect(() => {
     if (response?.success) {
@@ -112,7 +99,7 @@ export default function TaskModal(props: Readonly<TaskModalProps>) {
         </section>
         <section className={styles["section-contents"]}>
           {isCompleteAction && <p className={styles["instructions"]}>
-           THIS ACTION IS UNDER CONSTRUCTION
+            THIS ACTION IS UNDER CONSTRUCTION
           </p>}
           {isCancelAction && <p className={styles["instructions"]}>
             Cancel the scheduled service on {props.date}. <br /> Please provide a reason for the cancellation:
@@ -134,21 +121,20 @@ export default function TaskModal(props: Readonly<TaskModalProps>) {
               <ActionButton
                 icon={"done_outline"}
                 title={"COMPLETE"}
-                onClick={onCompleteAction}
+                onClick={genBooleanClickHandler(setIsCompleteAction)}
               />
               <ActionButton
                 icon={"cancel"}
                 title={"CANCEL"}
-                onClick={onCancelAction}
+                onClick={genBooleanClickHandler(setIsCancelAction)}
               />
               <ActionButton
                 icon={"report"}
                 title={"REPORT"}
-                onClick={onReportAction}
+                onClick={genBooleanClickHandler(setIsReportAction)}
               />
             </>
           }
-
         </section>
         <section className={styles["section-footer"]}>
           {formRef.current?.formState?.isSubmitting && <LoadingSpinner isSmall={false} />}

@@ -76,12 +76,6 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
     }, 2000);
   };
 
-  const onSubmit: React.MouseEventHandler<HTMLDivElement> = () => {
-    if (formRef.current) {
-      formRef.current.requestSubmit();
-    }
-  };
-
   const onReturn: React.MouseEventHandler<HTMLDivElement> = () => {
     dispatch(setIsOpen(false));
     router.back();
@@ -90,6 +84,12 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
   const closeTab: React.MouseEventHandler<HTMLDivElement> = () => {
     window.close(); // Closes the tab
     router.back(); // Required to close the intercepted modal as the tab cannot be closed
+  };
+
+  const onSubmit: React.MouseEventHandler<HTMLDivElement> = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
   };
 
   useEffect(() => {
