@@ -66,10 +66,6 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         if (field[TYPE_KEY].includes(PROPERTY_GROUP_TYPE)) {
           const fieldset: PropertyGroup = field as PropertyGroup;
           const properties: PropertyShape[] = fieldset.property.map(fieldProp => {
-            // For any schedule related information, it should follow groupless properties
-            if (fieldset.label[VALUE_KEY].includes("schedule")) {
-              return initFormField(fieldProp, initialState, fieldProp.name[VALUE_KEY]);
-            }
             // For property shapes with no node kind property
             // Add node shapes and their corresponding field name to the map to facilite parent dependencies links
             if (!fieldProp.nodeKind) {
