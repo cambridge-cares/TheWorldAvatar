@@ -9,7 +9,6 @@ Section Overview:
 - [4. Visualisation](#4-visualisation): How to visualise instantiated cross-domain data via TWA tools
 - [Potential refinements/next steps](#potential-refinementsnext-steps): Potential refinements for future work
 
-&nbsp;
 # 1. Prerequisites
 
 ## Required software installation
@@ -30,7 +29,7 @@ To authenticate with the container registry, execute the following command and p
 $ docker login ghcr.io -u <github_username>
 $ <github_personal_access_token>
 ```
-&nbsp;
+
 # 2. Spinning up the stack
 
 This section explains how to spin up the core stack. If using VSCode, ensure that all required VSCode extensions (e.g., [Remote - SSH], [Docker], and [REST Client]) are installed to enable all convenience scripts to function correctly.
@@ -109,10 +108,7 @@ The Ontop endpoint is also employed to support querying Greenspace and Points of
 Individual GPS trajectories used in this study are instantiated using the [Fenland Trajectory Agent]. This agent extracts key attributes such as latitude, longitude, speed, heading, and time from CSV files, organises them into triples using the Ontology of Devices ([OntoDevice]), and uploads the data into the knowledge graph and a relational database. Details on deploying this agent can be found [here].
 
 # 4. Visualisation
-## 4.1 TWA Visualisation Framework (TWA-VF)
-The [TWA-VF] is a built-in service included in the stack configuration file. Therefore, simply ensure that the folders named [fia-queries] and [webspace-mapbox] are placed in the directory `Deploy/stacks/dynamic/stack-manager/inputs/data`. Once the core stack is initiated, the TWA-VF container will automatically start running.
-
-## 4.2 TWA Visualisation Platform (TWA-VP)
+## 4.1 TWA Visualisation Platform (TWA-VP)
 To deploy [TWA-VP] stack, copy all the files from the `public` folder under `Deploy/stacks/AI4PublicHealth/TWA-VF/public` and paste them into the directory `web/twa-vis-platform/code/public`.
 Navigator to the `web/twa-vis-platform` directory, and execute the following command  in the terminal:
 ```bash
