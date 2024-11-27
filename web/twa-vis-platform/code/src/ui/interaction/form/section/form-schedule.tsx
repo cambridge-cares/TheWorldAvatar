@@ -5,12 +5,13 @@ import React, { useMemo, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import Select from 'react-select';
 
-import { FormOptionType } from 'types/form';
+import { FormOptionType, SEARCH_FORM_TYPE } from 'types/form';
 import { selectorStyles } from 'ui/css/selector-style';
 import { parseWordsForLabels } from 'utils/client-utils';
 import FormCheckboxField from '../field/form-checkbox-field';
 import { FORM_STATES } from '../form-utils';
 import FormFieldComponent from '../field/form-field';
+import { Paths } from 'io/config/routes';
 
 interface FormScheduleProps {
   fieldId: string;
@@ -30,6 +31,7 @@ export const daysOfWeek: string[] = [FORM_STATES.SUN, FORM_STATES.MON, FORM_STAT
  * @param {boolean} options.disabled Optional indicator if the fields should be disabled. Defaults to false.
  */
 export default function FormSchedule(props: Readonly<FormScheduleProps>) {
+  const formType: string = props.form.getValues(FORM_STATES.FORM_TYPE);
   const daysOfWeekLabel: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const singleService: string = "Single Service";
   const regularService: string = "Regular Service";
@@ -42,8 +44,12 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
       props.form.getValues(FORM_STATES.RECURRENCE) == -1 ? alternateService : regularService
   );
 
+  if (formType == Paths.REGISTRY_ADD || formType == SEARCH_FORM_TYPE) {
+    props.form.setValue(FORM_STATES.RECURRENCE, 1);
+  }
+
   // Updates the service description whenever the service option changes
-  const serviceDescription = useMemo(():string => {
+  const serviceDescription = useMemo((): string => {
     if (selectedServiceOption === singleService) {
       return "A one-off service that will occur once on the specified date.";
     } else if (selectedServiceOption === alternateService) {
