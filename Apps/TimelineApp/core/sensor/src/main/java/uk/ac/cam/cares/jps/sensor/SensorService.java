@@ -89,7 +89,8 @@ public class SensorService extends Service {
     Timer uploadWorkerTimer = new Timer();
     private PendingIntent activityRecognitionPendingIntent;
     private Map<String, Integer> sensorSettingsMap;
-
+    private OneTimeWorkRequest dataUploadWork;
+    private OneTimeWorkRequest bufferFlushWork;
 
     @Override
     public void onCreate() {
@@ -221,7 +222,7 @@ public class SensorService extends Service {
         bufferWorkerTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                OneTimeWorkRequest bufferFlushWork = new OneTimeWorkRequest.Builder(BufferFlushWorker.class)
+                bufferFlushWork = new OneTimeWorkRequest.Builder(BufferFlushWorker.class)
                         .addTag("bufferFlushWork")
                         .setInitialDelay(1, TimeUnit.MINUTES)
                         .build();
@@ -262,7 +263,7 @@ public class SensorService extends Service {
                 uploadWorkerTimer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        OneTimeWorkRequest dataUploadWork = new OneTimeWorkRequest.Builder(
+                        dataUploadWork = new OneTimeWorkRequest.Builder(
                                 SensorUploadWorker.class)
                                 .addTag("dataUploadWork")
                                 .setInitialDelay(1, TimeUnit.MINUTES)
@@ -272,7 +273,6 @@ public class SensorService extends Service {
 
                     }
                 }, upload_delay, upload_delay);
-
             }
 
             @Override
@@ -358,12 +358,19 @@ public class SensorService extends Service {
     public void onDestroy() {
         sensorNetworkSource.resetMessageId();
 
-        // cancel timers for workers
+        // cancel timers for workers and execute works with the remaining data
         if (bufferWorkerTimer != null) {
             bufferWorkerTimer.cancel();
         }
+        if (bufferFlushWork != null) {
+            WorkManager.getInstance(getApplicationContext()).enqueue(bufferFlushWork);
+        }
+
         if (uploadWorkerTimer != null) {
             uploadWorkerTimer.cancel();
+        }
+        if (dataUploadWork != null) {
+            WorkManager.getInstance(getApplicationContext()).enqueue(dataUploadWork);
         }
 
         // Unregister the NetworkChangeReceiver when the service is destroyed
