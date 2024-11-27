@@ -89,6 +89,19 @@ public class LifecycleService {
   }
 
   /**
+   * Retrieve the schedule details of the contract.
+   * 
+   * @param contract The target contract id.
+   */
+  public ResponseEntity<Map<String, SparqlResponseField>> getSchedule(String contract) {
+    LOGGER.debug("Retrieving the schedule details of the contract...");
+    String query = LifecycleResource.genServiceScheduleQuery(contract);
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    SparqlBinding result = this.kgService.getSingleInstance(results);
+    return new ResponseEntity<>(result.get(), HttpStatus.OK);
+  }
+
+  /**
    * Retrieve all the contract instances and their information based on the
    * resource ID.
    * 

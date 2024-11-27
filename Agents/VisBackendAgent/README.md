@@ -442,7 +442,20 @@ There is also an additional optional parameter `label` to retrieve draft contrac
 
 #### 2.6.3 Schedule route
 
-The endpoint serves to assign the upcoming schedule for the services for the specified contract. **WARNING**: It is not intended that this route is called directly, as the [draft route](#262-draft-route) will call this route when a request is received. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
+> Get contract schedule
+
+Users can send a `GET` request to the `<baseURL>/vis-backend-agent/contracts/schedule/{id}` endpoint to retrieve the schedule details for the specified contract, where `{id}`is the requested contract ID. This route serves to support form generation for the viewing of existing contracts. If successful, the request will return the following `JSON` fields:
+
+1. `start_date`: Service start date in the `YYYY-MM-DD` format
+2. `end_date`: Service end date in the `YYYY-MM-DD` format
+3. `start_time`: The expected starting time of the time slot that services are delivered in the `HH:MM` format
+4. `end_time`: The expected ending time of the time slot that services are delivered in the `HH:MM` format
+5. `recurrence`: The recurrence interval between services eg `P1D`, `P2D`, `P7D`, `P14D`...
+6. `monday` ~ `sunday`: Variables indicating if the service should be delivered on the corresponding day of week
+
+> Schedule upcoming tasks
+
+This endpoint serves to assign the upcoming schedule for the services for the specified contract. **WARNING**: It is not intended that this route is called directly, as the [draft route](#262-draft-route) will call this route when a request is received. Users can _EITHER_ send a `POST` request to create a new instance _OR_ send a `PUT` request to update the draft lifecycle at the following endpoint:
 
 ```
 <baseURL>/vis-backend-agent/contracts/schedule
@@ -775,7 +788,7 @@ base:ServiceLocationShape
     sh:name "geopoint" ;
     sh:description "The WKT serialization of the location." ;
     sh:order 1 ;
-    sh:path ( 
+    sh:path (
       geo:hasGeometry
       geo:asWKT
     ) ;
@@ -787,7 +800,7 @@ base:ServiceLocationShape
     sh:name "address" ;
     sh:description "Address of the service site." ;
     sh:order 2 ;
-    sh:path ( 
+    sh:path (
       [sh:inversePath ontoservice:hasServiceLocation]
       fibo-fnd-plc-adr:hasAddress
     ) ;

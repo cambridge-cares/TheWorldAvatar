@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cmclinnovations.agent.model.SparqlResponseField;
 import com.cmclinnovations.agent.model.response.ApiResponse;
 import com.cmclinnovations.agent.model.type.LifecycleEventType;
 import com.cmclinnovations.agent.service.AddService;
@@ -326,6 +327,15 @@ public class LifecycleController {
   public ResponseEntity<ApiResponse> getStatus(@PathVariable String id) {
     LOGGER.info("Received request to retrieve the status for the contract: {}...", id);
     return this.lifecycleService.getStatus(id);
+  }
+
+  /**
+   * Retrieve the schedule details for the specified contract to populate the form template
+   */
+  @GetMapping("/contracts/schedule/{id}")
+  public ResponseEntity<Map<String, SparqlResponseField>> getSchedule(@PathVariable String id) {
+    LOGGER.info("Received request to retrieve the schedule for the contract: {}...", id);
+    return this.lifecycleService.getSchedule(id);
   }
 
   /**

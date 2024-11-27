@@ -188,6 +188,34 @@ public class LifecycleResource {
   }
 
   /**
+   * Generates a SPARQL query to get the schedule of the contract.
+   * 
+   * @param contractId the target contract id.
+   */
+  public static String genServiceScheduleQuery(String contractId) {
+    return genPrefixes()
+        + "SELECT DISTINCT * WHERE{"
+        + genScheduleTemplateQuery()
+        + "?iri a fibo-fnd-pas-pas:ServiceAgreement."
+        // Nested query for all days
+        + "{SELECT ?iri "
+        + "(MAX(IF(?day=fibo-fnd-dt-fd:Monday,\"Monday\",\"\")) AS ?monday) "
+        + "(MAX(IF(?day=fibo-fnd-dt-fd:Tuesday,\"Tuesday\",\"\")) AS ?tuesday) "
+        + "(MAX(IF(?day=fibo-fnd-dt-fd:Wednesday,\"Wednesday\",\"\")) AS ?wednesday) "
+        + "(MAX(IF(?day=fibo-fnd-dt-fd:Thursday,\"Thursday\",\"\")) AS ?thursday) "
+        + "(MAX(IF(?day=fibo-fnd-dt-fd:Friday,\"Friday\",\"\")) AS ?friday) "
+        + "(MAX(IF(?day=fibo-fnd-dt-fd:Saturday,\"Saturday\",\"\")) AS ?saturday) "
+        + "(MAX(IF(?day=fibo-fnd-dt-fd:Sunday,\"Sunday\",\"\")) AS ?sunday) "
+        + "WHERE{?iri " + LIFECYCLE_STAGE_PREDICATE_PATH
+        + "/<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasSchedule>/fibo-fnd-dt-fd:hasRecurrenceInterval ?day.}"
+        + "GROUP BY ?iri}"
+        // WARNING: FedX seems to execute filters at the end and will return inaccurate
+        // values otherwise
+        + "FILTER STRENDS(STR(?iri),\"" + contractId + "\")"
+        + "}";
+  }
+
+  /**
    * Generates a SPARQL query to get today's day of week IRI from the cmns-dt
    * ontology.
    */
