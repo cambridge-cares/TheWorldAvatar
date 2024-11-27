@@ -242,7 +242,6 @@ public class SensorLocalSource {
 
         // Check each selected sensor and retrieve data accordingly
         for (SensorType sensor : selectedSensors) {
-            String sensorName = sensor.getSensorName();
             switch (sensor) {
                 case LOCATION:
                     List<LocationData> locationDataList = Arrays.asList(locationDao.getAllUnUploadedData(limit, offset));

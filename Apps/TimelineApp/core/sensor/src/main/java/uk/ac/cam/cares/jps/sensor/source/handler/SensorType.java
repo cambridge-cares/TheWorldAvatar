@@ -72,6 +72,7 @@ public enum SensorType implements Parcelable {
         }
     };
 
+    //todo: need to standardize the sensorName and sensorType.name()
     public final String getSensorName() {
         return switch (this) {
             case LOCATION -> "location";
