@@ -21,7 +21,10 @@ COPY ./code/package.json  ./
 FROM base AS develop
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 COPY ./code ./
-CMD [ "/bin/bash", "-c", "pnpm run dev-docker" ]
+# Script should not be at twa directory as volume mount will override any copied contents
+COPY ./dev-start.sh /dev-start.sh
+RUN chmod +x /dev-start.sh
+CMD [ "/dev-start.sh" ]
 
 # ---- Production Image ----
 FROM base AS production
