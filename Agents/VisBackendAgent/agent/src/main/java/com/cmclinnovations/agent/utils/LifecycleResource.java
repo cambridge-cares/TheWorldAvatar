@@ -19,6 +19,10 @@ public class LifecycleResource {
   public static final String STAGE_KEY = "stage";
   public static final String STATUS_KEY = "status";
   public static final String REMARKS_KEY = "remarks";
+  public static final String SCHEDULE_DATE_KEY = "start day";
+  public static final String SCHEDULE_START_TIME_KEY = "start time";
+  public static final String SCHEDULE_END_TIME_KEY = "end time";
+  public static final String SCHEDULE_TYPE_KEY = "schedule type";
 
   public static final String LIFECYCLE_STAGE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>";
   public static final String LIFECYCLE_STAGE_EVENT_PREDICATE_PATH = "<https://www.omg.org/spec/Commons/Collections/comprises>";
@@ -202,6 +206,18 @@ public class LifecycleResource {
         // 2000-01-01
         + "FILTER(?day=xsd:integer(floor(?days_diff-(7*floor(?days_diff/7)))))"
         + "}";
+  }
+
+  /**
+   * Generates a query template for human readable schedule details.
+   */
+  public static String genReadableScheduleQuery() {
+    return genScheduleTemplateQuery()
+        + "BIND(IF(?recurrence=\"P1D\",\"Single Service\","
+        + "IF(?recurrence=\"P2D\",\"Alternate Day Service\", "
+        + "CONCAT(\"Regular Service\")"
+        + ")" // Close IF statement
+        + ") AS ?schedule_type)";
   }
 
   /**
@@ -391,5 +407,17 @@ public class LifecycleResource {
       query.append("NOT").append(ShaclResource.WHITE_SPACE);
     }
     query.append("EXISTS{").append(contents).append("}");
+  }
+
+  /**
+   * Generate a template query for regular schedules.
+   */
+  private static String genScheduleTemplateQuery() {
+    return "?iri " + LIFECYCLE_STAGE_PREDICATE_PATH
+        + "/<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasSchedule> ?schedule."
+        + "?schedule <https://www.omg.org/spec/Commons/DatesAndTimes/hasStartDate>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDateValue> ?start_day;"
+        + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasStart>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?start_time;"
+        + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasEndTime>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?end_time;"
+        + "<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasRecurrenceInterval>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDurationValue> ?recurrence.";
   }
 }

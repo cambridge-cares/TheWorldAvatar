@@ -2,7 +2,6 @@ package com.cmclinnovations.agent.template;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -103,6 +102,10 @@ public class QueryTemplateFactory {
       // Add a status variable for lifecycle if available
       if (lifecycleEvent != null) {
         this.varSequence.put(LifecycleResource.STATUS_KEY, Stream.of(1, 0).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_DATE_KEY, Stream.of(2, 0).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_START_TIME_KEY, Stream.of(2, 1).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_END_TIME_KEY, Stream.of(2, 2).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_TYPE_KEY, Stream.of(2, 3).toList());
       }
       this.sortedVars = new ArrayList<>(this.varSequence.keySet());
       this.sortedVars
@@ -456,6 +459,7 @@ public class QueryTemplateFactory {
    */
   private void appendOptionalLifecycleFilters(StringBuilder query, LifecycleEventType lifecycleEvent) {
     if (lifecycleEvent != null) {
+      query.append(LifecycleResource.genReadableScheduleQuery());
       switch (lifecycleEvent) {
         case LifecycleEventType.APPROVED:
           LifecycleResource.appendFilterExists(query, false, LifecycleResource.EVENT_APPROVAL);
