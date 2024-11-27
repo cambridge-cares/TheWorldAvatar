@@ -470,7 +470,7 @@ Note that this route does require the following `JSON` request parameters:
 
 A successful request will return `{"message": "Schedule has been successfully drafted for the contract! _OR_ Draft schedule has been successfully updated!", "iri" : "root iri that is instantiated"}`.
 
-#### 2.6.3 Service commencement route
+#### 2.6.4 Service commencement route
 
 The endpoint serves to commence the delivery of services by approving the specified contract. Users must send a `POST` request to approve the contract at the following endpoint:
 
@@ -490,7 +490,7 @@ Note that this route does require the following `JSON` request parameters:
 
 A successful request will return `{"message": "Contract has been approved for service execution!", "iri" : "root iri that is instantiated"}`.
 
-#### 2.6.4 Service order route
+#### 2.6.5 Service order route
 
 This `<baseURL>/vis-backend-agent/contracts/service` endpoint serves to interact with all active contracts and tasks.
 
@@ -538,7 +538,7 @@ Users can send a `POST` request to the `<baseURL>/vis-backend-agent/contracts/se
 
 A successful request will return `{"message": "Service has been successfully cancelled!", "iri" : "root iri that is instantiated"}`.
 
-#### 2.6.5 Archive contract route
+#### 2.6.6 Archive contract route
 
 The endpoint serves to archive in progress contracts as well as retrieve all contracts that have expired and are in archive.
 
