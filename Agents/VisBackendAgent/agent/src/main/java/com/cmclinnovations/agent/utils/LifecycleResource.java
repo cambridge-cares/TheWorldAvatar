@@ -19,7 +19,8 @@ public class LifecycleResource {
   public static final String STAGE_KEY = "stage";
   public static final String STATUS_KEY = "status";
   public static final String REMARKS_KEY = "remarks";
-  public static final String SCHEDULE_DATE_KEY = "start day";
+  public static final String SCHEDULE_START_DATE_KEY = "start date";
+  public static final String SCHEDULE_END_DATE_KEY = "end date";
   public static final String SCHEDULE_START_TIME_KEY = "start time";
   public static final String SCHEDULE_END_TIME_KEY = "end time";
   public static final String SCHEDULE_TYPE_KEY = "schedule type";
@@ -217,7 +218,7 @@ public class LifecycleResource {
         + "IF(?recurrence=\"P2D\",\"Alternate Day Service\", "
         + "CONCAT(\"Regular Service\")"
         + ")" // Close IF statement
-        + ") AS ?schedule_type)";
+        + ") AS ?" + StringResource.parseQueryVariable(SCHEDULE_TYPE_KEY) + ")";
   }
 
   /**
@@ -415,9 +416,14 @@ public class LifecycleResource {
   private static String genScheduleTemplateQuery() {
     return "?iri " + LIFECYCLE_STAGE_PREDICATE_PATH
         + "/<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasSchedule> ?schedule."
-        + "?schedule <https://www.omg.org/spec/Commons/DatesAndTimes/hasStartDate>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDateValue> ?start_day;"
-        + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasStart>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?start_time;"
-        + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasEndTime>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?end_time;"
+        + "?schedule <https://www.omg.org/spec/Commons/DatesAndTimes/hasStartDate>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDateValue> ?"
+        + StringResource.parseQueryVariable(SCHEDULE_START_DATE_KEY) + ";"
+        + "^<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasSchedule>/<https://www.omg.org/spec/Commons/PartiesAndSituations/holdsDuring>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasEndDate>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDateValue> ?"
+        + StringResource.parseQueryVariable(SCHEDULE_END_DATE_KEY) + ";"
+        + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasStart>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?"
+        + StringResource.parseQueryVariable(SCHEDULE_START_TIME_KEY) + ";"
+        + "<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimePeriod>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasEndTime>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasTimeValue> ?"
+        + StringResource.parseQueryVariable(SCHEDULE_END_TIME_KEY) + ";"
         + "<https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasRecurrenceInterval>/<https://www.omg.org/spec/Commons/DatesAndTimes/hasDurationValue> ?recurrence.";
   }
 }

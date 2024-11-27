@@ -102,10 +102,11 @@ public class QueryTemplateFactory {
       // Add a status variable for lifecycle if available
       if (lifecycleEvent != null) {
         this.varSequence.put(LifecycleResource.STATUS_KEY, Stream.of(1, 0).toList());
-        this.varSequence.put(LifecycleResource.SCHEDULE_DATE_KEY, Stream.of(2, 0).toList());
-        this.varSequence.put(LifecycleResource.SCHEDULE_START_TIME_KEY, Stream.of(2, 1).toList());
-        this.varSequence.put(LifecycleResource.SCHEDULE_END_TIME_KEY, Stream.of(2, 2).toList());
-        this.varSequence.put(LifecycleResource.SCHEDULE_TYPE_KEY, Stream.of(2, 3).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_START_DATE_KEY, Stream.of(2, 0).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_END_DATE_KEY, Stream.of(2, 1).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_START_TIME_KEY, Stream.of(2, 2).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_END_TIME_KEY, Stream.of(2, 3).toList());
+        this.varSequence.put(LifecycleResource.SCHEDULE_TYPE_KEY, Stream.of(2, 4).toList());
       }
       this.sortedVars = new ArrayList<>(this.varSequence.keySet());
       this.sortedVars

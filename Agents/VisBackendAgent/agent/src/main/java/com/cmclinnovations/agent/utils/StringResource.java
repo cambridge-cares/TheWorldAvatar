@@ -82,6 +82,15 @@ public class StringResource {
   }
 
   /**
+   * Parses a SPARQL query variable to ensure that any spaces are replaced.
+   * 
+   * @param variable Target variable input.
+   */
+  public static String parseQueryVariable(String variable) {
+    return variable.replaceAll("\\s+", "_");
+  }
+
+  /**
    * Parses the string literal for SPARQL queries ie enclosing it with "".
    * 
    * @param literal Target literal input.
