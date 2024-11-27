@@ -37,7 +37,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
   const regularService: string = "Regular Service";
   const alternateService: string = "Alternate Day Service";
   const scheduleType: string = "schedule";
-
+  const isDisabledOption: { disabled: boolean; } = { disabled: formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE };
   // Define the state to store the selected value
   const [selectedServiceOption, setSelectedServiceOption] = useState<string>(
     props.form.getValues(FORM_STATES.RECURRENCE) == 0 ? singleService :
@@ -88,6 +88,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             isLoading={false}
             isMulti={false}
             isSearchable={true}
+            isDisabled={formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE}
           />
           <p className={fieldStyles["info-text"]}>
             <b className={fieldStyles["field-text"]}>Description: </b>
@@ -106,7 +107,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             order: 0,
           }}
           form={props.form}
-          options={props.options}
+          options={isDisabledOption}
         />
         {selectedServiceOption != singleService && <FormFieldComponent
           entityType={scheduleType}
@@ -120,7 +121,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             order: 0,
           }}
           form={props.form}
-          options={props.options}
+          options={isDisabledOption}
         />}
         {selectedServiceOption === regularService && <div className={styles["schedule-occurrence-container"]}>
           <span className={fieldStyles["field-text"]}>Repeat once every</span>
@@ -129,7 +130,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             type={"number"}
             className={`${styles["schedule-occurrence-input"]} ${props.options?.disabled && styles["field-disabled"]}`}
             step={"1"}
-            readOnly={props.options?.disabled}
+            readOnly={formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE}
             aria-label={FORM_STATES.RECURRENCE}
             {...props.form.register(FORM_STATES.RECURRENCE)}
           />
@@ -145,7 +146,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
                   field={dayOfWeek}
                   label={daysOfWeekLabel[index]}
                   form={props.form}
-                  options={props.options}
+                  options={isDisabledOption}
                 />
               </div>
             })}
@@ -167,7 +168,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
                 order: 0,
               }}
               form={props.form}
-              options={props.options}
+              options={isDisabledOption}
             />
             <FormFieldComponent
               entityType={scheduleType}
@@ -181,7 +182,7 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
                 order: 1,
               }}
               form={props.form}
-              options={props.options}
+              options={isDisabledOption}
             />
           </div>
         </div>

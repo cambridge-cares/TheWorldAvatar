@@ -76,6 +76,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
               styles={{
                 label: [styles["form-input-label"]],
               }}
+              options={props.options}
             />
           </div>
         </div>
