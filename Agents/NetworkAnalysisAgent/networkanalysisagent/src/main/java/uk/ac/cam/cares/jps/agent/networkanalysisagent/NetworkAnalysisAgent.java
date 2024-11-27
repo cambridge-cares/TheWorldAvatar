@@ -23,7 +23,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 @WebServlet(urlPatterns = "/runtc")
 
 public class NetworkAnalysisAgent extends JPSAgent {
-    
+
     private static String tcFunction = null;
 
     private static final String PROPETIES_PATH = "/inputs/config.properties";
@@ -35,7 +35,10 @@ public class NetworkAnalysisAgent extends JPSAgent {
     private String kgEndpoint;
     private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
-
+    private String routeTablePrefix = "routing_";
+    private String workspaceName = "twa";
+    private String schema = "public";
+    private String floodCostTableName = "flood_cost_30cm";
 
     /**
      * Initialise agent
@@ -43,14 +46,13 @@ public class NetworkAnalysisAgent extends JPSAgent {
     public void init() {
         readConfig();
 
-        if(!kgEndpoint.isEmpty() ){
+        if (!kgEndpoint.isEmpty()) {
             try {
                 this.storeClient = new RemoteStoreClient(kgEndpoint, kgEndpoint);
             } catch (Exception e) {
-             System.out.println(e + "Invalid blazegraph endpoint specified");
+                System.out.println(e + "Invalid blazegraph endpoint specified");
             }
-        }else
-        {   //Follow the running stack's blazegraph URL
+        } else { // Follow the running stack's blazegraph URL
             this.storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         }
 
@@ -67,7 +69,18 @@ public class NetworkAnalysisAgent extends JPSAgent {
             prop.load(input);
             this.dbName = prop.getProperty("db.name");
             this.kgEndpoint = prop.getProperty("kgEndpoint");
-
+            if (prop.getProperty("routeTablePrefix") != null) {
+                this.routeTablePrefix = prop.getProperty("routeTablePrefix");
+            }
+            if (prop.getProperty("workspaceName") != null) {
+                this.workspaceName = prop.getProperty("workspaceName");
+            }
+            if (prop.getProperty("schema") != null) {
+                this.schema = prop.getProperty("schema");
+            }
+            if (prop.getProperty("floodCostTableName") != null) {
+                this.floodCostTableName = prop.getProperty("floodCostTableName");
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new JPSRuntimeException("config.properties file not found");
@@ -78,12 +91,14 @@ public class NetworkAnalysisAgent extends JPSAgent {
     }
 
     /**
-     * Process request parameters and run functions within agent in the following flow
+     * Process request parameters and run functions within agent in the following
+     * flow
      * 1) Read files
      * 2) Retrieve POI locations from KG
      * 3) Find nearest_node of POI
      * 4) Create trip centrality table
      * 5) Create geoserver layer
+     * 
      * @param requestParams
      * @return
      */
@@ -101,10 +116,8 @@ public class NetworkAnalysisAgent extends JPSAgent {
         JSONObject response = new JSONObject();
         response.put("message", "Successfully set tcFunction to " + tcFunction);
 
-
-        Path POI_PATH = Path.of("/inputs/"+ tcFunction +"/POIqueries");
-        Path EDGESTABLESQL_PATH = Path.of("/inputs/"+ tcFunction +"/edgesSQLTable");
-
+        Path POI_PATH = Path.of("/inputs/" + tcFunction + "/POIqueries");
+        Path EDGESTABLESQL_PATH = Path.of("/inputs/" + tcFunction + "/edgesSQLTable");
 
         try {
             init();
@@ -112,28 +125,30 @@ public class NetworkAnalysisAgent extends JPSAgent {
             Map<String, String> POImap = FileReader.readPOIsparql(POI_PATH);
             Map<String, String> EdgesTableSQLMap = FileReader.readEdgesTableSQL(EDGESTABLESQL_PATH);
 
-            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs to the cumulative array
+            // Iterate through the SPARQL entries, execute the SPARQL queries and add POIs
+            // to the cumulative array
             JSONArray cumulativePOI = FileReader.getPOILocation(storeClient, POImap);
 
-            TripCentralityCalculator tripCentralityCalculator = new TripCentralityCalculator();
-            
-            if (tcFunction.equals("UR")){
+            TripCentralityCalculator tripCentralityCalculator = new TripCentralityCalculator(routeTablePrefix);
+
+            if (tcFunction.equals("UR")) {
                 List<String> tcTableNameList = new ArrayList<>();
 
                 for (Map.Entry<String, String> entry : EdgesTableSQLMap.entrySet()) {
                     String tableName = entry.getKey().toLowerCase();
                     String sql = entry.getValue();
                     tcTableNameList.add(tableName);
-                    System.out.println("Begin generating tables for "+tableName+" with the edgeTableSQL as " + sql);
-                    tripCentralityCalculator.calculateTripCentrality(remoteRDBStoreClient, cumulativePOI, tableName, sql);
+                    System.out.println("Begin generating tables for " + tableName + " with the edgeTableSQL as " + sql);
+                    tripCentralityCalculator.calculateTripCentrality(remoteRDBStoreClient, cumulativePOI, tableName,
+                            sql);
                 }
 
-                //Create geoserver layer
+                // Create geoserver layer
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                String workspaceName= "twa";
-                String schema = "public";
                 geoServerClient.createWorkspace(workspaceName);
-                tripCentralityCalculator.generateTCLayer(geoServerClient, workspaceName, schema, dbName, "tripcentrality_"+tcTableNameList.get(1),tcTableNameList.get(0), tcTableNameList.get(1));
+                tripCentralityCalculator.generateTCLayer(geoServerClient, workspaceName, schema, dbName,
+                        "tripcentrality_" + tcTableNameList.get(1), tcTableNameList.get(0), tcTableNameList.get(1),
+                        floodCostTableName);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,7 +158,9 @@ public class NetworkAnalysisAgent extends JPSAgent {
     }
 
     /**
-     * Check if the JSONObject in the processRequestParameters inputs are correct or missing.
+     * Check if the JSONObject in the processRequestParameters inputs are correct or
+     * missing.
+     * 
      * @param requestParams
      * @return
      * @throws BadRequestException
@@ -156,6 +173,5 @@ public class NetworkAnalysisAgent extends JPSAgent {
         }
         return true;
     }
-
 
 }

@@ -3,14 +3,14 @@
     "Name": "isochroneagent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "isochroneagent:1.4.0",
+        "Image": "isochroneagent:1.5.0",
         "Env": [
           "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
         ],
         "Mounts": [
           {
             "Type": "bind",
-            "Source": "<REPLACE_WITH_YOUR_DIRECTORY>/TheWorldAvatar/Agents/IsochroneAgent/inputs",
+            "Source": "../../../../../../Agents/IsochroneAgent/inputs",
             "Target": "/inputs"
           }
         ],

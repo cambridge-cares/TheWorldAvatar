@@ -19,6 +19,8 @@ The agent has been implemented to work in the stack. Follow the instructions in 
 
 1) `kgEndpoint` - The blazegraph endpoint for retrieval of POI information. Blazegraph endpoint can be on the same stack or different stack. When left blank, it is assumed to be on the same stack.
 
+Other optional inputs are described by comments in [config.properties](inputs/config.properties).
+
 ### 3.2 SPARQL Queries
 
 SPARQL queries are used to retrieve the locations of POI.
@@ -73,8 +75,8 @@ The agent is reachable at the `/runtsp` endpoint.
 Generates travelling salesman route via geoserver SQL view. this route runs through the points of interest and return back to the original location. The SQL view layers takes TWA-VF marker location as the target node for its calculations. The geoserver layers generated include:
 
 - Normal wading depth capability
-- 30cm wading depth capability
-- 90cm wading depth capability
+- 30 cm wading depth capability
+- 90 cm wading depth capability
 
 To run the agent, simply run the following cURL command:
 

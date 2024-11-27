@@ -1,0 +1,17 @@
+PREFIX obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX geo:       <http://www.opengis.net/ont/geosparql#>
+PREFIX geof:      <http://www.opengis.net/def/function/geosparql/>
+PREFIX uom:       <http://www.opengis.net/def/uom/OGC/1.0/>
+
+SELECT DISTINCT ?poi_iri ?poi_type ?geometry
+WHERE {
+  
+  # Binding variable names as requested
+  BIND(<http://example.com/hospital001> AS ?poi_iri)
+  BIND(obe:Hospital AS ?poi_type)
+  BIND("POINT(0.4449964774757034 52.756232805460925)" AS ?geometry)
+  #EPSG 4326 long lat format
+
+}
+LIMIT 1

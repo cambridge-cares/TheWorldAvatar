@@ -2,16 +2,49 @@
 xsd:    http://www.w3.org/2001/XMLSchema#
 bot:    https://w3id.org/bot#
 obe: 	https://www.theworldavatar.com/kg/ontobuiltenv/
-iso:    https://www.theworldavatar.com/kg/ontoisochrone/
 geo:    http://www.opengis.net/ont/geosparql#
 time:   http://www.w3.org/2006/time#
 ex:   https://example.org/
 twa: https://www.theworldavatar.com/kg/
 
 [MappingDeclaration] @collection [[
-mappingId   pirmasens-toilet
-target		twa:Building/{osm_id} a obe:Toilet;
-                geo:asWKT {"geom"}^^xsd:string.
-source      SELECT "SiteName", geom FROM grid_primary_site
-
+mappingId	grid_primary_site
+target		twa:{"uuid"} a twa:Grid ;
+ ex:hasName {"SiteName"}^^xsd:string ;
+  ex:hasSiteType {"SiteType"}^^xsd:string ;
+   ex:hasLicenceArea {"LicenceArea"}^^xsd:string ;
+    ex:hasSiteVoltage {"SiteVoltage"}^^xsd:string ;
+     ex:hasESQCROverallRisk {"ESQCROverallRisk"}^^xsd:string ;
+      ex:hasGridRef {"GridRef"}^^xsd:string ;
+       ex:hasSiteAssetCount {"SiteAssetCount"}^^xsd:string ;
+        ex:hasPowerTransformerCount {"PowerTransformerCount"}^^xsd:string ;
+         ex:hasElectricalAssetCount {"ElectricalAssetCount"}^^xsd:string ;
+          ex:hasCivilAssetCount {"CivilAssetCount"}^^xsd:string ;
+           ex:hasStreet {"Street"}^^xsd:string ;
+            ex:hasSuburb {"Suburb"}^^xsd:string ;
+             ex:hasTownCity {"TownCity"}^^xsd:string ;
+              ex:hasCounty {"County"}^^xsd:string ;
+               ex:hasPostCode {"PostCode"}^^xsd:string ;
+                ex:hasYearCommissioned {"YearCommissioned"}^^xsd:string ;
+                 ex:hasDateCommissioned {"DateCommissioned"}^^xsd:string ;
+                  ex:hasSiteClassification {"SiteClassification"}^^xsd:string ;
+                   ex:hasAssessmentDate {"AssessmentDate"}^^xsd:string ;
+                    ex:hasLastReport {"Last_Report"}^^xsd:string ;
+                     ex:hasCalculatedResistance {"CalculatedResistance"}^^xsd:string ;
+                      ex:hasMeasuredResistance {"MeasuredResistance"}^^xsd:string ;
+                       ex:hasNextAssessmentDate {"Next_AssessmentDate"}^^xsd:string ;
+                        ex:hasEasting {"Easting"}^^xsd:string ;
+                         ex:hasNorthing {"Northing"}^^xsd:string ;
+                          ex:hasTransRatingWinter {"transratingwinter"}^^xsd:string ;
+                           ex:hasTransRatingSummer {"transratingsummer"}^^xsd:string ;
+                            ex:hasReversePower {"reversepower"}^^xsd:string ;
+                             ex:hasMaxDemandSummer {"maxdemandsummer"}^^xsd:string ;
+                              ex:hasMaxDemandWinter {"maxdemandwinter"}^^xsd:string ;
+                               ex:hasLocalAuthority {"local_authority"}^^xsd:string ;
+                                ex:hasLocalAuthorityCode {"local_authority_code"}^^xsd:string ; geo:asWKT {"geom"}^^xsd:string . 
+                                
+source		SELECT
+			"ogc_fid", "SiteFunctionalLocation", "LicenceArea", "SiteName", "SiteType", "SiteVoltage", "ESQCROverallRisk", "GridRef", "SiteAssetCount", "PowerTransformerCount", "ElectricalAssetCount", "CivilAssetCount", "Longitude", "Latitude", "Street", "Suburb", "TownCity", "County", "PostCode", "YearCommissioned", "DateCommissioned", "SiteClassification", "AssessmentDate", "Last_Report", "CalculatedResistance", "MeasuredResistance.Ohm." as "MeasuredResistance", "Next_AssessmentDate", "Easting", "Northing", "transratingwinter", "transratingsummer", "reversepower", "maxdemandsummer", "maxdemandwinter", "Spatial Coordinates", "local_authority", "local_authority_code",  ST_ASTEXT(ST_TRANSFORM("geom", 4326)) as "geom", "uuid"
+			FROM
+			"grid_primary_site"
 ]]

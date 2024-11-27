@@ -1,0 +1,18 @@
+{
+    "name": "kingslynn-isochrone",
+    "database": "postgres",
+    "workspace": "kingslynn",
+    "datasetDirectory": "kingslynn",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "sql": "@/inputs/data/kingslynn/sql/static/isochrone.sql",
+            "table": "isochrone"
+        }
+    ],
+    "mappings": [
+        "isochrone.obda"
+    ]
+}
