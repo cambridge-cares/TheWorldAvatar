@@ -20,7 +20,11 @@ public class LifecycleResource {
   public static final String STATUS_KEY = "status";
   public static final String REMARKS_KEY = "remarks";
 
-  public static final String LIFECYCLE_EVENT_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>/<https://www.omg.org/spec/Commons/Collections/comprises>/^<https://www.omg.org/spec/Commons/Classifiers/classifies>";
+  public static final String LIFECYCLE_STAGE_PREDICATE_PATH = "<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasLifecycle>/<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/hasStage>";
+  public static final String LIFECYCLE_STAGE_EVENT_PREDICATE_PATH = "<https://www.omg.org/spec/Commons/Collections/comprises>";
+  public static final String LIFECYCLE_EVENT_TYPE_PREDICATE_PATH = "<https://www.omg.org/spec/Commons/Classifiers/classifies>";
+  public static final String LIFECYCLE_EVENT_PREDICATE_PATH = LIFECYCLE_STAGE_PREDICATE_PATH + "/"
+      + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/^" + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH;
   public static final String EVENT_APPROVAL = "https://www.theworldavatar.com/kg/ontoservice/ContractApproval";
   public static final String EVENT_DELIVERY = "https://www.theworldavatar.com/kg/ontoservice/ServiceDeliveryEvent";
   public static final String EVENT_CANCELLATION = "https://www.theworldavatar.com/kg/ontoservice/TerminatedServiceEvent";
@@ -320,12 +324,12 @@ public class LifecycleResource {
    */
   public static void appendArchivedStateQuery(StringBuilder query) {
     String eventVar = ShaclResource.VARIABLE_MARK + EVENT_KEY;
-    StringResource.appendTriple(query, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH, eventVar);
-    String statement = "FILTER(" + eventVar + " IN ("
-        + StringResource.parseIriForQuery(EVENT_CONTRACT_COMPLETION)
-        + "," + StringResource.parseIriForQuery(EVENT_CONTRACT_RESCISSION) + ","
-        + StringResource.parseIriForQuery(EVENT_CONTRACT_TERMINATION) + "))"
-        + "BIND("
+    StringBuilder tempBuilder = new StringBuilder();
+    StringResource.appendTriple(tempBuilder, ShaclResource.VARIABLE_MARK + IRI_KEY,
+        LIFECYCLE_STAGE_PREDICATE_PATH + "/" + LIFECYCLE_STAGE_EVENT_PREDICATE_PATH + "/^"
+            + LIFECYCLE_EVENT_TYPE_PREDICATE_PATH,
+        ShaclResource.VARIABLE_MARK + EVENT_KEY);
+    String statement = "BIND("
         + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(EVENT_CONTRACT_COMPLETION)
         + ",\"Completed\","
         + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(EVENT_CONTRACT_RESCISSION)
@@ -333,8 +337,10 @@ public class LifecycleResource {
         + "IF(" + eventVar + "=" + StringResource.parseIriForQuery(EVENT_CONTRACT_TERMINATION)
         + ",\"Terminated\""
         + ",\"Unknown\"))) AS ?" + STATUS_KEY
-        + ")";
-    query.append(statement);
+        + ")"
+        + "FILTER(?" + STATUS_KEY + "!=\"Unknown\")";
+    query.append("{").append(tempBuilder).append("}")
+        .append(statement);
   }
 
   /**
@@ -344,17 +350,15 @@ public class LifecycleResource {
    * @param exists Indicate if using FILTER EXISTS or FILTER NOT EXISTS.
    */
   public static void appendArchivedFilterExists(StringBuilder query, boolean exists) {
+    String stageVar = ShaclResource.VARIABLE_MARK + STAGE_KEY;
     StringBuilder tempBuilder = new StringBuilder();
-    tempBuilder.append("{");
-    StringResource.appendTriple(tempBuilder, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
-        StringResource.parseIriForQuery(EVENT_CONTRACT_COMPLETION));
-    tempBuilder.append(ShaclResource.UNION_OPERATOR);
-    StringResource.appendTriple(tempBuilder, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
-        StringResource.parseIriForQuery(EVENT_CONTRACT_RESCISSION));
-    tempBuilder.append(ShaclResource.UNION_OPERATOR);
-    StringResource.appendTriple(tempBuilder, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
-        StringResource.parseIriForQuery(EVENT_CONTRACT_TERMINATION));
-    tempBuilder.append("}");
+    StringResource.appendTriple(tempBuilder, ShaclResource.VARIABLE_MARK + IRI_KEY,
+        LIFECYCLE_STAGE_PREDICATE_PATH, stageVar);
+    StringResource.appendTriple(tempBuilder, stageVar,
+        "<https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/exemplifies>",
+        StringResource.parseIriForQuery(LifecycleResource.getStageClass(LifecycleEventType.ARCHIVE_COMPLETION)));
+    StringResource.appendTriple(tempBuilder, stageVar, LIFECYCLE_STAGE_EVENT_PREDICATE_PATH,
+        ShaclResource.VARIABLE_MARK + EVENT_KEY);
     LifecycleResource.appendFilterExists(query, tempBuilder.toString(), exists);
   }
 
