@@ -292,7 +292,7 @@ public class TimeSeriesClient<T> {
         List<String> singleListDataIri = new ArrayList<>();
         dataIRIs.forEach(singleListDataIri::addAll);
 
-        if (rdfClient.checkAnyTimeSeriesExists(singleListDataIri)) {
+        if (rdfClient.hasAnyExistingTimeSeries(singleListDataIri)) {
             throw new JPSRuntimeException(
                     exceptionPrefix + "One or more of the provided data IRI already has a time series attached. " +
                             "Instantiate them individually with initTimeSeries if needed.");
@@ -307,27 +307,29 @@ public class TimeSeriesClient<T> {
 
         // Step2: Try to initialise time series in relational database
         List<List<String>> failedDataIris = new ArrayList<>(dataIRIs.size());
-        for (int i = 0; i < dataIRIs.size(); i++) {
+        List<String> failedTsIRIs = new ArrayList<>(dataIRIs.size());
+        List<Integer> failedIndex = rdbClient.bulkInitTimeSeriesTable(dataIRIs, dataClass, tsIRIs, srid, conn);
+        failedIndex.forEach(i -> {
+            failedTsIRIs.add(tsIRIs.get(i));
+            failedDataIris.add(dataIRIs.get(i));
+        });
+
+        for (String tsIRI : failedTsIRIs) {
+            // For exceptions thrown when initialising RDB elements in relational database,
+            // try to revert previous knowledge base instantiation
+            // TODO Ideally try to avoid throwing exceptions in a catch block - potential
+            // solution: have removeTimeSeries throw
+            // a different exception depending on what the problem was, and how it should be
+            // handled
             try {
-                rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i), srid, conn);
-            } catch (JPSRuntimeException eRdbCreate) {
-                LOGGER.error("Failed to create Timeseries for data IRI '{}'.", dataIRIs.get(i), eRdbCreate);
-                // For exceptions thrown when initialising RDB elements in relational database,
-                // try to revert previous knowledge base instantiation
-                // TODO Ideally try to avoid throwing exceptions in a catch block - potential
-                // solution: have removeTimeSeries throw
-                // a different exception depending on what the problem was, and how it should be
-                // handled
-                try {
-                    rdfClient.removeTimeSeries(tsIRIs.get(i));
-                } catch (Exception eRdfDelete) {
-                    throw new JPSRuntimeException(exceptionPrefix
-                            + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
-                            " , as database related instantiation failed but KG triples were created.");
-                }
-                failedDataIris.add(dataIRIs.get(i));
+                rdfClient.removeTimeSeries(tsIRI);
+            } catch (Exception eRdfDelete) {
+                throw new JPSRuntimeException(exceptionPrefix
+                        + "Inconsistent state created when initialising time series " + tsIRI +
+                        " , as database related instantiation failed but KG triples were created.");
             }
         }
+
         if (!failedDataIris.isEmpty())
             throw new JPSRuntimeException(
                     exceptionPrefix + "Timeseries was not created for the following data IRIs: " + failedDataIris);

@@ -10,15 +10,20 @@ The uploaded content provided by the deploying developer should match the direct
 
 ## Table of Contents
 
-- [1. Configuration](#1-configuration)
-  - [1.1 UI Settings](#11-ui-settings)
-  - [1.2 Map Settings](#12-map-settings)
-    - [1.2.1 General Settings](#121-general-settings)
-    - [1.2.2 Map Data Settings](#122-map-data-settings)
-- [2. Assets](#2-assets)
-- [3. Optional Pages](#3-optional-pages)
-  - [3.1 Fields](#31-fields)
-  - [3.2 Sample](#32-sample)
+- [Customisation of Platform Content](#customisation-of-platform-content)
+  - [Table of Contents](#table-of-contents)
+  - [1. Configuration](#1-configuration)
+    - [1.1 UI Settings](#11-ui-settings)
+    - [1.2 Map Settings](#12-map-settings)
+      - [1.2.1 General Settings](#121-general-settings)
+      - [1.2.2 Map Data Settings](#122-map-data-settings)
+        - [Dataset: Defining a group](#dataset-defining-a-group)
+        - [Dataset: Defining a source](#dataset-defining-a-source)
+        - [Dataset: Defining a layer](#dataset-defining-a-layer)
+  - [2. Assets](#2-assets)
+  - [3. Optional Pages](#3-optional-pages)
+    - [3.1 Fields](#31-fields)
+    - [3.2 Sample](#32-sample)
 
 ## 1. Configuration
 
@@ -61,16 +66,16 @@ Note that resources are optional and their configuration options can differ from
   - `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
 - Registry: Activate the `registry` page based on the backend resource indicated in the `url` parameter. The registry page provides a table for viewing all records, as well as pages to add, delete, edit, and view these records individually using a form UI.
   - `url`: The registry agent endpoint (close it with /), which should be able to generate a form template, csv template, and retrieve data from the knowledge graph. The form template for generating the form UI must follow the template listed in [this document](form.md).
-  - `data`: The entity of interest that acts as the first landing page for the registry. This should be `contract` at the moment. 
+  - `data`: The entity of interest that acts as the first landing page for the registry. This should be `contract` at the moment.
 - Scheduler: Enables `scheduler` capabilities based on the backend resource indicated in the `url` parameter. These capabilities require that registry is also activated, and will have additional functionalities to schedule from the frontend.
   - `url`: The scheduler agent endpoint (close it with /), which should have a `schedule` route for scheduling purposes
-  - `data`: The entity of interest that acts as the page with scheduling capabilities. This should be `service` at the moment. 
+  - `data`: The entity of interest that acts as the page with scheduling capabilities. This should be `service` at the moment.
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
 > [!NOTE]
 > When specifying image paths, be sure to use absolute paths beggining with a `/`
-
+<!--  -->
 > [!NOTE]  
 > The comments seen below are for explanation purposes only, they are not valid JSON. If wishing to use this content in production, remove the comments first.
 
@@ -275,7 +280,7 @@ The `data.json` requires at least one defined data group. Each data group contai
 - `expanded` (optional): A boolean indicating if the starting state of the data group should be expanded. False to collapse the group.
 - `tree-icon` (optional): An image that will be displayed on the layer tree.
 - `stack` (optional): This is the URL for the stack containing metadata on this group's data. Note that this should be the base URL of the stack (i.e. without "/geoserver"). If missing, dynamic metadata from a remote FeatureInfoAgent cannot be utilised. This parameter can also be set with different values for different subgroups.
-- `search` (optional): This is the target resource identifier that will activate the search feature capability to find the requested feature(s). The search feature will depend on the [VisBackendAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VisBackendAgent) running on the same stack, which must be deployed.
+- `search` (optional): This is the target resource identifier that will activate the search feature capability to find the requested feature(s). The search feature will depend on the [VisBackendAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/VisBackendAgent) running on the same stack, which must be deployed. Please define filters at the layers if only a subset of features should be visible by default.
 - `sources` (optional): This is an array of objects defining data sources (see below for info on sources).
 - `layers` (optional): This is an array of objects defining data layers (see below for info on layers).
 - `groups` (optional): This is an array of its data subgroups, which follows the same structure and is used to build the data hierarchy.
@@ -317,15 +322,29 @@ Definitions of sources vary depending on the chosen mapping provider. Specific p
 
 - `id` (required): This is the internal ID of the source. It needs to be unique within the current group, but is not required to be globally unique.
 - `type` (required): This is the type of the source. Acceptable values differ depending on the mapping library (see the library specific documentation for details).
+- `tiles` (required for `vector` types): A sample format is available below; Do note to replace the contents encapsulated within [] with their respective values; `DOMAIN` is the domain of the website hosting the geoserver layer; `WORKSPACE` is the geoserver workspace name; and `LAYER_NAME` is the name of the geoserver layer for visualisation
 
-A sample definition for Mapbox is as follows:
+```js
+http://[DOMAIN]/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=[WORKSPACE]:[LAYER_NAME]&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile
+```
+
+Sample Mapbox definitions for the common geojson and vector types are as follows:
 
 ```json
-{
-  "id": "example-mapbox-source",
-  "type": "geojson",
-  "data": "./my-example-data.geojson"
-}
+[
+  {
+    "id": "example-mapbox-source",
+    "type": "geojson",
+    "data": "./my-example-data.geojson"
+  },
+  {
+    "id": "example-mapbox-source",
+    "type": "vector",
+    "tiles": [
+      "http://[DOMAIN]/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=[WORKSPACE]:[LAYER_NAME]&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+    ]
+  }
+]
 ```
 
 ##### Dataset: Defining a layer
@@ -338,6 +357,7 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 - `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
 - `source` (required): This is the ID of the source used to populate the layer.
 - `order` (optional): A field that defines the layer hierarchy based on their order. Defaults to 0. Both positive and negative numbers are valid.
+- `layerTreeIconOverride` (optional): Manually specify an icon to display a layer in the floating panel layer tree, useful when there are multiple layers with the same name.
 - `grouping` (optional): A grouping field for displaying only a subset of layers within this group.
 - `clickable` (optional): Enables the layer to be clickable. Set to true by default.
 - `hovering` (optional): Creates a highlight effect when hovering over the layer's features. This parameter is an array of two numbers indicating the opacity for the highlighted and non-highlighted states respectively.
@@ -362,6 +382,10 @@ Instructions:
 
 1. All related layers must belong to the same data group and be assigned a `grouping` field
 2. The dropdown sequence is determined by the order the layers appear in the `data.json`; use the `Default` grouping to ensure that it is the first option
+
+> Mapbox properties
+
+1. Filters: Developers may add a filter for the entire layer by adding [Mapbox Expressions](https://docs.mapbox.com/style-spec/reference/expressions/) to the `filter` key, which is found at the root level of the layer specification. This is especially relevant for layers with searchable parameters and they should display only a subset of feature by default
 
 ## 2. Assets
 

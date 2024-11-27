@@ -10,12 +10,13 @@ const KeycloakSession = () => {
     useEffect(() => {
         const fetchUsername = async () => {
             try {
-                const response = await fetch('/api/userinfo');
-                const userInfo = await response.json();
-                setDisplayName(userInfo.fullName);
-                console.log(userInfo.firstName);
+                const response: Response = await fetch('/api/userinfo');
+                if (response.ok) {
+                    const userInfo = await response.json();
+                    setDisplayName(userInfo.fullName);
+                }
             } catch (error) {
-                console.error('Error fetching user Info', error);
+                console.warn('Error fetching user info:', error);
             }
         };
 
@@ -27,7 +28,7 @@ const KeycloakSession = () => {
             <div id="keycloakSession" className={styles.keycloakSession}>
                 <span id="userName" className={styles.dropbtn}>{displayName}</span>
                 <div className={styles.dropdownContent}>
-                    <Link href="/logout">Log Out</Link>
+                    <Link prefetch={false} href="/logout">Log Out</Link>
                 </div>
             </div>)
     );

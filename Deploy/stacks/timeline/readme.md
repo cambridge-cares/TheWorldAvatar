@@ -1,5 +1,18 @@
 # Starting the stack
 
+Prepare these secret files in [](./stack-manager/test/inputs/secrets)
+
+- geoserver_password
+- postgis_password
+- keycloak_admin_password_test
+- keycloak_admin_username_test
+
+Majority of KeyCloak settings are set using environment variables in [keycloak.json].
+
+Set value of KC_DB_PASSWORD to match value in postgis_password.
+
+Set value of KC_HOSTNAME_ADMIN and KC_HOSTNAME to external URL of KeyCloak depending on where it is deployed, e.g. `http://localhost:58085/keycloak`
+
 Use port 58085 for test stack when deploying the test stack
 
 ```bash
@@ -19,20 +32,6 @@ then restart stack manager again:
 ```
 
 where <STACK_NAME> should be replaced by either "timeline-test" or "timeline".
-
-## KeyCloak settings
-
-Based on testing, KeyCloak version 25 requires some manual set up to include the user ID in the JWT, the following steps are not required in version 26 is used.
-- Opening the Keycloak Admin Console in your browser and logging in
-- Select the realm 'timeline' from the dropdown menu
-- Go to clients tab on the left hand side. 
-- Select twa-timeline-app, then client scopes. 
-- Under client scopes select twa-timeline-app-dedicated and select add mapper. 
-  - Select by configuration
-  - Scroll to select Subject (sub)
-  - Ensure add to access token and add to introspection are toggled 
-  - Name the mapper
-  - Click save to apply the changes. 
 
 ## Import data from Singapore stack
 
@@ -54,3 +53,5 @@ IMPORT FOREIGN SCHEMA public
     FROM SERVER foreign_server
     INTO public;
 ```
+
+[keycloak.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json

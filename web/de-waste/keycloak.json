@@ -1,0 +1,8 @@
+{
+  "realm": "BNL",
+  "auth-server-url": "https://bnl.theworldavatar.io/authorisation/",
+  "ssl-required": "external",
+  "resource": "job-portal",
+  "public-client": true,
+  "confidential-port": 8443
+}
