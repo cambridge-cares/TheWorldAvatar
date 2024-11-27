@@ -257,20 +257,13 @@ public class LoginSource {
     }
 
     public void getAccessToken(RepositoryCallback<String> callback) {
-        AuthState authState = authStateManager.getCurrent();
-
-        if (authState.getAccessToken() == null || authState.getNeedsTokenRefresh()) {
-            performActionWithFreshTokens((accessToken, idToken, ex) -> {
-                if (ex == null) {
-                    authStateManager.replace(authState);
-                    callback.onSuccess(accessToken);
-                } else {
-                    callback.onFailure(new AccountException("Failed to refresh access token"));
-                }
-            });
-        } else {
-            callback.onSuccess(authState.getAccessToken());
-        }
+        performActionWithFreshTokens((accessToken, idToken, ex) -> {
+            if (ex == null) {
+                callback.onSuccess(accessToken);
+            } else {
+                callback.onFailure(new AccountException("Failed to refresh access token"));
+            }
+        });
     }
 
 

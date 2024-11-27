@@ -31,6 +31,7 @@ import androidx.work.WorkManager;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -75,17 +76,14 @@ public class SensorService extends Service {
     @Inject
     SensorHandlerManager sensorHandlerManager;
     @Inject
-    SensorLocalSource sensorLocalSource;
+    NetworkChangeReceiver networkChangeReceiver;
     @Inject
     SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
-
 
     private final int FOREGROUND_ID = 100;
     private final String CHANNEL_ID = "Sensors";
     private final int SENSOR_FRAGMENT_REQUEST_CODE = 100;
     private final Logger LOGGER = Logger.getLogger(SensorService.class);
-    private HandlerThread thread;
-    private NetworkChangeReceiver networkChangeReceiver;
     private ActivityRecognitionClient activityRecognitionClient;
     Timer bufferWorkerTimer = new Timer();
     Timer uploadWorkerTimer = new Timer();
@@ -96,13 +94,6 @@ public class SensorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // Register the NetworkChangeReceiver
-        if (networkChangeReceiver == null) {
-            networkChangeReceiver = new NetworkChangeReceiver(sensorLocalSource, sensorNetworkSource);
-            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            registerReceiver(networkChangeReceiver, filter);
-        }
 
         sensorSettingsMap = loadSensorSettingsConfig(this);
 
@@ -139,6 +130,9 @@ public class SensorService extends Service {
             return START_STICKY;
         }
 
+        // Register NetworkChangeReceiver
+        registerNetworkChangeReceiver();
+
         // Get the list of selected sensors
         List<SensorType> selectedSensors = intent.getParcelableArrayListExtra("selectedSensors");
         if (selectedSensors == null || !startForegroundService(selectedSensors)) {
@@ -146,6 +140,7 @@ public class SensorService extends Service {
             return START_STICKY;
         }
 
+        // start sensors
         if (selectedSensors.isEmpty()) {
             LOGGER.warn("No sensors selected or sensor list is empty.");
             stopSelf();
@@ -153,6 +148,7 @@ public class SensorService extends Service {
         }
         sensorHandlerManager.startSelectedSensors(selectedSensors);
 
+        // register activity recognition
         if (selectedSensors.contains(SensorType.ACTIVITY)) {
             if (!checkActivityRecognitionPermission()) {
                 LOGGER.warn("Activity Recognition permission is required but not granted.");
@@ -168,6 +164,22 @@ public class SensorService extends Service {
         scheduleUploadDataTask(selectedSensors, intent);
 
         return START_STICKY;
+    }
+
+    private void registerNetworkChangeReceiver() {
+        sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(String taskId) {
+                networkChangeReceiver.setTaskId(taskId);
+                IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+                registerReceiver(networkChangeReceiver, filter);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+
+            }
+        });
     }
 
     private boolean startForegroundService(List<SensorType> selectedSensors) {
@@ -224,6 +236,7 @@ public class SensorService extends Service {
         sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
             @Override
             public void onSuccess(String id) {
+                sensorNetworkSource.resetMessageId();
 
                 String taskId;
                 if (id == null || id.isEmpty()) {
@@ -235,7 +248,10 @@ public class SensorService extends Service {
                     LOGGER.info("Resuming recording with existing Task ID: " + id);
                 }
 
-                JSONArray jsonArray = new JSONArray(selectedSensors);
+                JSONArray jsonArray = new JSONArray();
+                for (SensorType sensor : selectedSensors) {
+                    jsonArray.put(sensor.name());
+                }
                 String deviceId = intent.getExtras().getString("deviceId");
                 Data uploadData = new Data.Builder()
                         .putString("deviceId", deviceId)
@@ -256,6 +272,7 @@ public class SensorService extends Service {
 
                     }
                 }, upload_delay, upload_delay);
+
             }
 
             @Override
@@ -339,6 +356,7 @@ public class SensorService extends Service {
 
     @Override
     public void onDestroy() {
+        sensorNetworkSource.resetMessageId();
 
         // cancel timers for workers
         if (bufferWorkerTimer != null) {
@@ -351,7 +369,6 @@ public class SensorService extends Service {
         // Unregister the NetworkChangeReceiver when the service is destroyed
         if (networkChangeReceiver != null) {
             unregisterReceiver(networkChangeReceiver);
-            networkChangeReceiver = null;
         }
 
         // Stop activity recognition updates
@@ -362,7 +379,6 @@ public class SensorService extends Service {
             }
             activityRecognitionClient.removeActivityUpdates(activityRecognitionPendingIntent);
         }
-
 
         LOGGER.info("Stopping sensor service");
         try {

@@ -32,6 +32,7 @@ public class SensorUploadWorker extends Worker {
     private final SensorLocalSource sensorLocalSource;
     private final Logger LOGGER = Logger.getLogger(SensorUploadWorker.class);
     private String deviceId;
+    private String sessionId;
     private List<SensorType> selectedSensors;
 
     @AssistedInject
@@ -42,6 +43,7 @@ public class SensorUploadWorker extends Worker {
         this.sensorNetworkSource = sensorNetworkSource;
         this.sensorLocalSource = sensorLocalSource;
         deviceId = workerParams.getInputData().getString("deviceId");
+        sessionId = workerParams.getInputData().getString("sessionId");
         String selectedSensorsJson = workerParams.getInputData().getString("selectedSensors");
         selectedSensors = new ArrayList<>();
 
@@ -89,14 +91,13 @@ public class SensorUploadWorker extends Worker {
             // Send to the network
             if (allSensorData.length() > 0) {
                 LOGGER.info("Attempting to send " + allSensorData.length() + " items to the network.");
-                sensorNetworkSource.sendPostRequest(deviceId, compressedData, allSensorData);
+                sensorNetworkSource.sendPostRequest(deviceId, sessionId, compressedData, allSensorData);
                 LOGGER.info("Accumulated data sent to network.");
             } else {
                 LOGGER.info("No accumulated data to send to the network.");
             }
             offset += PAGE_SIZE;
         }
-
 
     }
 

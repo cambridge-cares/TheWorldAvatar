@@ -37,6 +37,7 @@ public class SensorCollectionStateManager {
     private static final String DEVICE_ID_KEY = "device_id";
     private static final String USER_ID_KEY = "user_id";
     private static final String RECORDING_STATE_KEY = "recording_state";
+    private static final String TASK_ID_KEY = "task_id";
     private AtomicReference<SensorCollectionState> sensorCollectionState = new AtomicReference<>();
     private Context context;
     private Logger LOGGER = Logger.getLogger(SensorCollectionStateManager.class);
@@ -59,23 +60,26 @@ public class SensorCollectionStateManager {
         File sharedPrefsFile = new File(context.getApplicationInfo().dataDir + "/shared_prefs/" + sharedPrefFileName + ".xml");
 
         SharedPreferences sharedPreferences = getSharedPreferences(sharedPrefFileName);
-        String deviceId;
-        Boolean recordingState;
-        String taskId;
+        String deviceId = "";
+        Boolean recordingState = false;
+        String taskId = "";
 
         if (sharedPrefsFile.exists()) {
             deviceId = sharedPreferences.getString(DEVICE_ID_KEY, "");
             recordingState = sharedPreferences.getBoolean(RECORDING_STATE_KEY, false);
-            taskId = sharedPreferences.getString("task_id", UUID.randomUUID().toString());
-        } else {
-            deviceId = UUID.randomUUID().toString();
+            taskId = sharedPreferences.getString(TASK_ID_KEY, "");
+        }
+
+        if (deviceId.isEmpty() || taskId.isEmpty()) {
+            deviceId = deviceId.isEmpty() ? UUID.randomUUID().toString() : deviceId;
             recordingState = false;
-            taskId = UUID.randomUUID().toString();
+            taskId = taskId.isEmpty() ? UUID.randomUUID().toString() : taskId;
+
             sharedPreferences.edit()
                     .putString(USER_ID_KEY, userId)
                     .putString(DEVICE_ID_KEY, deviceId)
                     .putBoolean(RECORDING_STATE_KEY, recordingState)
-                    .putString("task_id", taskId)
+                    .putString(TASK_ID_KEY, taskId)
                     .apply();
         }
 
