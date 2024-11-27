@@ -10,7 +10,7 @@ import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 public class SensorItem {
     private final String sensorName;
     private boolean isToggled;
-    private final String sensorDescription;
+    private final Integer sensorDescription;
     private SensorType sensorType;
     private boolean isToggleEnabled;
 
@@ -21,7 +21,7 @@ public class SensorItem {
      * @param sensorDescription A brief description of the sensor's functionality.
      * @param sensorType The type of sensor
      */
-    public SensorItem(String sensorName, String sensorDescription, SensorType sensorType) {
+    public SensorItem(String sensorName, Integer sensorDescription, SensorType sensorType) {
         this.sensorName = sensorName;
         this.sensorDescription = sensorDescription;
         this.sensorType = sensorType;
@@ -80,7 +80,7 @@ public class SensorItem {
      *
      * @return A brief description of the sensor.
      */
-    public String getSensorDescription() {
+    public Integer getSensorDescription() {
         return sensorDescription;
     }
 

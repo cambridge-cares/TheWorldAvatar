@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
+import uk.ac.cam.cares.jps.user.R;
 import uk.ac.cam.cares.jps.user.SensorItem;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
@@ -46,7 +47,8 @@ public class SensorViewModel extends ViewModel {
 
     /**
      * Constructor of the class. Instantiation is done with ViewProvider and dependency injection
-     * @param repository SensorRepository object
+     *
+     * @param repository                             SensorRepository object
      * @param sensorCollectionStateManagerRepository SensorCollectionStateManagerRepository object
      * @param userPhoneRepository
      */
@@ -82,25 +84,25 @@ public class SensorViewModel extends ViewModel {
     public void loadSensorItems() {
         // initialize sensor items and post value to LiveData
         List<SensorItem> items = new ArrayList<>();
-        items.add(new SensorItem("Accelerometer", "Measures acceleration.", SensorType.ACCELEROMETER));
-        items.add(new SensorItem("Gyroscope", "Tracks rotation rate.", SensorType.GYROSCOPE));
-        items.add(new SensorItem("Magnetometer", "Detects magnetic fields.", SensorType.MAGNETOMETER));
-        items.add(new SensorItem("Light", "Senses light levels.", SensorType.LIGHT));
-        items.add(new SensorItem("Humidity", "Monitors air moisture.", SensorType.HUMIDITY));
-        items.add(new SensorItem("Pressure", "Gauges atmospheric pressure.", SensorType.PRESSURE));
-        items.add(new SensorItem("Gravity", "Detects gravity vector.", SensorType.GRAVITY));
-        items.add(new SensorItem("Location", "Tracks GPS position.", SensorType.LOCATION));
-        items.add(new SensorItem("Microphone", "Captures sound levels.", SensorType.SOUND));
-        items.add(new SensorItem("Activity", "Detects user activity.", SensorType.ACTIVITY));
+        items.add(new SensorItem("Accelerometer", R.string.sensor_description_accelerometer, SensorType.ACCELEROMETER));
+        items.add(new SensorItem("Gyroscope", R.string.sensor_description_gyroscope, SensorType.GYROSCOPE));
+        items.add(new SensorItem("Magnetometer", R.string.sensor_description_magnetometer, SensorType.MAGNETOMETER));
+        items.add(new SensorItem("Light", R.string.sensor_description_light, SensorType.LIGHT));
+        items.add(new SensorItem("Humidity", R.string.sensor_description_humidity, SensorType.HUMIDITY));
+        items.add(new SensorItem("Pressure", R.string.sensor_description_pressure, SensorType.PRESSURE));
+        items.add(new SensorItem("Gravity", R.string.sensor_description_gravity, SensorType.GRAVITY));
+        items.add(new SensorItem("Location", R.string.sensor_description_location, SensorType.LOCATION));
+        items.add(new SensorItem("Microphone", R.string.sensor_description_microphone, SensorType.SOUND));
+        items.add(new SensorItem("Activity", R.string.sensor_description_activity, SensorType.ACTIVITY));
 
 
         sensorItems.addAll(items);
     }
 
 
-
     /**
      * Toggles the selected sensors for recording.
+     *
      * @param sensorItem the sensor selected to be recorded
      */
     public void toggleSensor(SensorType sensorItem) {
@@ -119,12 +121,9 @@ public class SensorViewModel extends ViewModel {
         sensorCollectionStateManagerRepository.setSelectedSensors(sensors);
     }
 
-
-
     public LiveData<List<SensorType>> getSelectedSensors() {
         return selectedSensors;
     }
-
 
     /**
      * Start recording
@@ -133,20 +132,20 @@ public class SensorViewModel extends ViewModel {
         List<SensorType> sensorsToRecord = selectedSensors.getValue();
         LOGGER.info("Sensors to record: " + sensorsToRecord);
 
-            if (sensorsToRecord != null && !sensorsToRecord.isEmpty()) {
-        sensorRepository.startRecording(sensorsToRecord, new RepositoryCallback<>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                _isRecording.setValue(result);
-            }
+        if (sensorsToRecord != null && !sensorsToRecord.isEmpty()) {
+            sensorRepository.startRecording(sensorsToRecord, new RepositoryCallback<>() {
+                @Override
+                public void onSuccess(Boolean result) {
+                    _isRecording.setValue(result);
+                }
 
-            @Override
-            public void onFailure(Throwable error) {
-                _hasAccountError.setValue(true);
-                _isRecording.setValue(false);
-            }
-        });
-    }
+                @Override
+                public void onFailure(Throwable error) {
+                    _hasAccountError.setValue(true);
+                    _isRecording.setValue(false);
+                }
+            });
+        }
     }
 
 
@@ -174,11 +173,11 @@ public class SensorViewModel extends ViewModel {
      *
      * @param context The context in which this method is called. It is used to check the status of the service
      *                associated with the recording task.
-     * This method retrieves the task ID from the sensor collection state manager repository. It then checks whether
-     * the task is currently running by calling isTaskRunning. Based on the result, it updates
-     * the `_isRecording` LiveData, which in turn triggers the UI to update the recording status.
-     * If the task ID retrieval fails, the `_isRecording` LiveData is set to `false`, ensuring that the UI reflects that no
-     * recording is in progress.
+     *                This method retrieves the task ID from the sensor collection state manager repository. It then checks whether
+     *                the task is currently running by calling isTaskRunning. Based on the result, it updates
+     *                the `_isRecording` LiveData, which in turn triggers the UI to update the recording status.
+     *                If the task ID retrieval fails, the `_isRecording` LiveData is set to `false`, ensuring that the UI reflects that no
+     *                recording is in progress.
      */
     public void checkRecordingStatusAndUpdateUI(Context context) {
         sensorCollectionStateManagerRepository.getTaskId(new RepositoryCallback<>() {
@@ -233,6 +232,7 @@ public class SensorViewModel extends ViewModel {
 
     /**
      * Toggles all the sensors when the user selects to do so.
+     *
      * @param toggle boolean t/f value which denotes if a sensor has or has not been toggled
      */
     public void toggleAllSensors(boolean toggle) {
@@ -279,7 +279,6 @@ public class SensorViewModel extends ViewModel {
             }
         });
     }
-
 
 
 }
