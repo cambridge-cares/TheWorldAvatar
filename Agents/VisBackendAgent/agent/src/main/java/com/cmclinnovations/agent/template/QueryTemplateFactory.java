@@ -113,7 +113,7 @@ public class QueryTemplateFactory {
           .sort((key1, key2) -> ShaclResource.compareLists(this.varSequence.get(key1), this.varSequence.get(key2)));
       // Append a ? before the property
       this.sortedVars.forEach(variable -> selectVariableBuilder.append(ShaclResource.VARIABLE_MARK)
-          .append(variable.replaceAll("\\s+", "_"))
+          .append(StringResource.parseQueryVariable(variable))
           .append(ShaclResource.WHITE_SPACE));
 
     }
@@ -335,7 +335,7 @@ public class QueryTemplateFactory {
       // If the field is a parent field, and the template requires a parent, store the
       // parent field
       if (Boolean.parseBoolean(binding.getFieldValue(IS_PARENT_VAR)) && hasParent) {
-        this.parentField = propertyName.replaceAll("\\s+", "_");
+        this.parentField = StringResource.parseQueryVariable(propertyName);
       }
       if (parentNode != null) {
         SparqlQueryLine parentLine = queryLineMappings.get(parentNode);
@@ -387,7 +387,7 @@ public class QueryTemplateFactory {
       } else {
         StringResource.appendTriple(currentLine, "?iri", jointPredicate,
             // Note to add a _ to the property
-            ShaclResource.VARIABLE_MARK + queryLine.property().replaceAll("\\s+", "_"));
+            ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(queryLine.property()));
       }
       // Optional lines should be parsed differently
       if (queryLine.isOptional()) {
@@ -488,7 +488,7 @@ public class QueryTemplateFactory {
    */
   private String genSearchCriteria(String variable, Map<String, String> criterias) {
     String criteriaVal = criterias.get(variable);
-    String formattedVar = variable.replaceAll("\\s+", "_");
+    String formattedVar = StringResource.parseQueryVariable(variable);
     if (criteriaVal.isEmpty()) {
       return criteriaVal;
     }
@@ -584,7 +584,7 @@ public class QueryTemplateFactory {
       if (replacementType.equals("iri") && replacementId.equals("id")) {
         return StringResource.parseIriForQuery(replacementNode.path("prefix").asText() + targetId);
       }
-      return ShaclResource.VARIABLE_MARK + replacementId.replaceAll("\\s+", "_");
+      return ShaclResource.VARIABLE_MARK + StringResource.parseQueryVariable(replacementId);
     } else {
       // Otherwise, default to text
       return StringResource.parseIriForQuery(((TextNode) replacementNode).textValue());
