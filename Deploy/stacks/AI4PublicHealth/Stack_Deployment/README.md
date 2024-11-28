@@ -37,8 +37,8 @@ This section explains how to spin up the core stack. If using VSCode, ensure tha
 ## Spinning up the stack locally
 Before spinning up the stack using the [Stack Manager], please provide the following files in `./stack-manager/inputs/secrets`:
 
-    - `postgis_password`
-    - `geoserver_password`
+- `postgis_password`
+- `geoserver_password`
 
 Subsequently, copy all files in `./stack-manager/inputs` into their corresponding repositories of the [Stack Manager] tool under `Deploy/stacks/dynamic/stack-manager/`.
 
