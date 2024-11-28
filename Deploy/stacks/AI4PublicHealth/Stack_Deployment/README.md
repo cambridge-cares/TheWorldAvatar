@@ -108,7 +108,12 @@ Individual GPS trajectories used in this study are instantiated using the [Fenla
 # 4. Visualisation
 ## 4.1 TWA Visualisation Platform (TWA-VP)
 To deploy [TWA-VP] stack, copy all the files from the `public` folder under `Deploy/stacks/AI4PublicHealth/TWA-VP/public` and paste them into the directory `web/twa-vis-platform/code/public`.
-Navigate to the `web/twa-vis-platform` directory, and execute the following command  in the terminal:
+Navigate to the `web/twa-vis-platform` directory, and create the following files:
+
+    - `mapbox_username`
+    - `mapbox_api_key`
+
+Then, execute the following command  in the terminal:
 ```bash
 docker compose up
 ```
