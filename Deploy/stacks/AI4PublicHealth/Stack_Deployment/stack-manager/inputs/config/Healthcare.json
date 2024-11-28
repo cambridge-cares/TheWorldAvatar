@@ -1,13 +1,11 @@
 {
     "services": {
         "includes": [
-                    "visualisation",
                      "feature-info-agent",
                      "fenland-trajectory-agent"
                     ]
     },
     "volumes": {
-        "vis-files": "webspace-mapbox",
         "fia-queries": "fia-queries"
     }
 }
