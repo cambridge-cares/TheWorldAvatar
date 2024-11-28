@@ -40,8 +40,6 @@ Before spinning up the stack using the [Stack Manager], please provide the follo
 -  Four secret files in `./stack-manager/inputs/secrets`:
     - `postgis_password`
     - `geoserver_password`
-    - `mapbox_username`
-    - `mapbox_api_key`
 
 Subsequently, copy all files in `./stack-manager/inputs` into their corresponding repositories of the [Stack Manager] tool under `Deploy/stacks/dynamic/stack-manager/`.
 
