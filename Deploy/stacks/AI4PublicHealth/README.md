@@ -12,7 +12,7 @@ The [Stack_Deployment] folder contains a step-by-step guide on how to spin up th
 The [Queries] folder contains SQL scripts designed to evaluate individual exposure to environmental features. These queries include methods for calculating exposure to food retailers, greenspaces, and other points of interest based on GPS trajectories, leveraging spatial analysis techniques such as buffers and proximity calculations to produce dynamic results. The SQL queries form the foundation for developing SPARQL-based calculations, which will be utilised in the interoperable platform.
 
 ## Visualisation
-The [Visualisation] folder contains files that serve as inputs to the TWA Visualisation Framework (TWA-VF) and also specifies customisations required to drive the TWA Visualisation Platform (TWA-VP).
+The [Visualisation] folder specifies customisations required to drive the TWA Visualisation Platform (TWA-VP).
 
 <!-- Links -->
 [Common_Script]: ./Common_Script/
