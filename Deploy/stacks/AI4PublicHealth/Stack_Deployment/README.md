@@ -35,9 +35,8 @@ $ <github_personal_access_token>
 This section explains how to spin up the core stack. If using VSCode, ensure that all required VSCode extensions (e.g., [Remote - SSH], [Docker], and [REST Client]) are installed to enable all convenience scripts to function correctly.
 
 ## Spinning up the stack locally
-Before spinning up the stack using the [Stack Manager], please provide the following files to the specified folder:
+Before spinning up the stack using the [Stack Manager], please provide the following files in `./stack-manager/inputs/secrets`:
 
--  Four secret files in `./stack-manager/inputs/secrets`:
     - `postgis_password`
     - `geoserver_password`
 
