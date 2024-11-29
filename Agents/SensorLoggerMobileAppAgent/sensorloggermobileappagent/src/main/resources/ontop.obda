@@ -142,17 +142,4 @@ target      sensorloggerapp:smartphone_{device_id} ontodevice:hasScreenBrightnes
                 om:hasValue sensorloggerapp:brightness_measure_{device_id} .
             sensorloggerapp:brightness_measure_{device_id} a om:Measure .
 source      SELECT device_id, sensor_class FROM devices WHERE sensor_class='RelativeBrightness'
-
-mappingId   activity
-target      sensorloggerapp:activity_{device_id}_{timestamp} a ontodevice:Activity ;
-                ontodevice:hasActivityType sensorloggerapp:activitytype_{device_id}_{timestamp} ;
-                ontodevice:hasConfidenceLevel sensorloggerapp:confidencelevel_{device_id}_{timestamp} ;
-                ontodevice:detectedByDevice sensorloggerapp:smartphone_{device_id} ;
-                ontodevice:hasTimestamp "{timestamp}"^^xsd:dateTime .
-            sensorloggerapp:activitytype_{device_id}_{timestamp} a ontodevice:ActivityType ;
-                ontodevice:hasValue "{activity_type}" .
-            sensorloggerapp:confidencelevel_{device_id}_{timestamp} a ontodevice:ConfidenceLevel ;
-                ontodevice:hasNumericalValue {confidence_level} .
-source      SELECT device_id, timestamp, activity_type, confidence_level
-            FROM activity_data
 ]]
