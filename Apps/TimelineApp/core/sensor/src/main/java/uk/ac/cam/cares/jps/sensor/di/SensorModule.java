@@ -13,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.login.LoginRepository;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorHandlerManager;
+import uk.ac.cam.cares.jps.sensor.source.network.NetworkChangeReceiver;
 import uk.ac.cam.cares.jps.sensor.source.state.SensorCollectionStateManager;
 import uk.ac.cam.cares.jps.sensor.data.SensorCollectionStateManagerRepository;
 import uk.ac.cam.cares.jps.sensor.source.network.SensorNetworkSource;
@@ -44,8 +45,9 @@ public class SensorModule {
     @Provides
     @Singleton
     public SensorRepository provideSensorRepository(@ApplicationContext Context applicationContext,
-                                                    SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
-        return new SensorRepository(applicationContext, sensorCollectionStateManagerRepository);
+                                                    SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository,
+                                                    SensorLocalSource sensorLocalSource) {
+        return new SensorRepository(applicationContext, sensorCollectionStateManagerRepository, sensorLocalSource);
     }
 
     @Provides
@@ -80,5 +82,13 @@ public class SensorModule {
             SensorCollectionStateManager sensorCollectionStateManager,
             LoginRepository loginRepository) {
         return new SensorCollectionStateManagerRepository(sensorCollectionStateManager, loginRepository);
+    }
+
+    @Provides
+    @Singleton
+    public NetworkChangeReceiver provideNetworkChangeReceiver(
+            SensorLocalSource localSource,
+            SensorNetworkSource networkSource) {
+        return new NetworkChangeReceiver(localSource, networkSource);
     }
 }

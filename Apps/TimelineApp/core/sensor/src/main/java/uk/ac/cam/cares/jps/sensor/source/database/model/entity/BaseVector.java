@@ -11,8 +11,6 @@ import org.json.JSONObject;
  * It provides common properties and methods for handling sensor data.
  */
 public abstract class BaseVector extends SensorData {
-    @PrimaryKey
-    public long time;
 
     public double x;
 
@@ -35,7 +33,7 @@ public abstract class BaseVector extends SensorData {
      * @param z the z-component of the sensor data.
      */
     public BaseVector(long time, double x, double y, double z) {
-        this.time = time;
+        this.time = time * 1_000_000L;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -53,7 +51,7 @@ public abstract class BaseVector extends SensorData {
         super(jo);
         try {
             // Extract time from the JSONObject
-            this.time = jo.getLong("time");
+            this.time = jo.getLong("time") * 1_000_000L;
 
             // Extract the nested values JSONObject
             JSONObject values = jo.getJSONObject("values");

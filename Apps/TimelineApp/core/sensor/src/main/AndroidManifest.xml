@@ -29,9 +29,13 @@
                 android:value="for other sensors foreground data collection"/>
         </service>
 
-        <service
-            android:name=".ActivityRecognitionService"
-            android:exported="false"/>
+
+        <receiver android:name=".source.activity.ActivityRecognitionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.location.ACTIVITY_RECOGNITION" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

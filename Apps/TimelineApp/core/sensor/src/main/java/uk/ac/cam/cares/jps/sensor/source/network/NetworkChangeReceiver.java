@@ -38,6 +38,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     private final SensorLocalSource sensorLocalSource;
     private final SensorNetworkSource sensorNetworkSource;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private String taskId;
 
     public NetworkChangeReceiver(SensorLocalSource sensorLocalSource, SensorNetworkSource sensorNetworkSource) {
         this.sensorLocalSource = sensorLocalSource;
@@ -65,7 +66,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                             JSONArray allSensorData = convertMapToSensorData(allSensorDataMap);
                             String jsonString = allSensorData.toString();
                             byte[] compressedData = compressData(jsonString);
-                            sensorNetworkSource.sendPostRequest(unsentData.deviceId, compressedData, allSensorData);
+                            sensorNetworkSource.sendPostRequest(unsentData.deviceId, taskId, compressedData, allSensorData);
                             sensorLocalSource.deleteUnsentData(unsentData);
                             Log.e("network change receiver", "unsent data operations completed");
                         } catch (Exception e) {
@@ -152,6 +153,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         return combinedSensorData;
     }
 
-
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
 }

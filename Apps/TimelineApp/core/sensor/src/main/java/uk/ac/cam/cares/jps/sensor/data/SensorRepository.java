@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.sensor.SensorService;
+import uk.ac.cam.cares.jps.sensor.source.database.SensorLocalSource;
 import uk.ac.cam.cares.jps.sensor.source.handler.SensorType;
 import uk.ac.cam.cares.jps.utils.RepositoryCallback;
 
@@ -21,6 +22,7 @@ import uk.ac.cam.cares.jps.utils.RepositoryCallback;
  */
 public class SensorRepository {
     SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository;
+    SensorLocalSource sensorLocalSource;
     Logger LOGGER = Logger.getLogger(SensorRepository.class);
     Intent serviceIntent;
     Context context;
@@ -30,9 +32,11 @@ public class SensorRepository {
      * @param sensorCollectionStateManagerRepository SensorCollectionStateManagerRepository object
      */
     public SensorRepository(Context applicationContext,
-                            SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository) {
+                            SensorCollectionStateManagerRepository sensorCollectionStateManagerRepository,
+                            SensorLocalSource sensorLocalSource) {
         this.context = applicationContext;
         this.sensorCollectionStateManagerRepository = sensorCollectionStateManagerRepository;
+        this.sensorLocalSource = sensorLocalSource;
 
         serviceIntent = new Intent(context, SensorService.class);
     }
@@ -43,6 +47,27 @@ public class SensorRepository {
      */
     public void startRecording(List<SensorType> selectedSensorTypes, RepositoryCallback<Boolean> callback) {
         LOGGER.info("start recording with selected sensors");
+        prepareAndStartCollection(selectedSensorTypes, callback);
+    }
+
+    private void prepareAndStartCollection(List<SensorType> selectedSensorTypes, RepositoryCallback<Boolean> callback) {
+        sensorCollectionStateManagerRepository.getHashedFileName(new RepositoryCallback<>() {
+            @Override
+            public void onSuccess(String hashedFileName) {
+                sensorLocalSource.initAppDataBase(hashedFileName);
+                LOGGER.info("successfully init local database");
+
+                startSensorCollection(selectedSensorTypes, callback);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                callback.onFailure(error);
+            }
+        });
+    }
+
+    private void startSensorCollection(List<SensorType> selectedSensorTypes, RepositoryCallback<Boolean> callback) {
         sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<>() {
             @Override
             public void onSuccess(String result) {

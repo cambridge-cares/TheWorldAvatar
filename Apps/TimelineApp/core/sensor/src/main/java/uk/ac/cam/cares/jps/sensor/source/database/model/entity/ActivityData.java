@@ -8,9 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @Entity(tableName = "activity_data")
-public class ActivityData extends SensorData{
-    @PrimaryKey
-    public long time;
+public class ActivityData extends SensorData {
+
     public String activityType;
     @NonNull
     public int confidence;
@@ -21,7 +20,7 @@ public class ActivityData extends SensorData{
     public ActivityData(String activityType, int confidence, long timestamp) {
         this.activityType = activityType;
         this.confidence = confidence;
-        this.time = timestamp;
+        this.time = timestamp * 1_000_000L;
         this.uploaded = 0;
     }
 

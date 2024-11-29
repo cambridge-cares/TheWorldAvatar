@@ -6,10 +6,6 @@ apply from: "${project.rootDir}/worker_dependencies.gradle"
 
 android {
     namespace 'uk.ac.cam.cares.jps.sensor'
-
-    testOptions {
-        unitTests.includeAndroidResources = true
-    }
 }
 
 

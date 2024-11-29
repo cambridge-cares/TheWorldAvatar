@@ -33,29 +33,30 @@ public class SensorHandlerManager {
     @Inject
     public SensorHandlerManager(Context applicationContext) {
         android.hardware.SensorManager sensorManager = (android.hardware.SensorManager) applicationContext.getSystemService(SENSOR_SERVICE);
-        sensorHandlers = new SensorHandler[]{
-                new AccelerometerHandler(sensorManager),
-                new GyroscopeHandler(sensorManager),
-                new MagnetometerHandler(sensorManager),
-                new LightSensorHandler(sensorManager),
-                new RelativeHumiditySensorHandler(sensorManager),
-                new PressureSensorHandler(sensorManager),
-                new GravitySensorHandler(sensorManager),
-                new LocationHandler(applicationContext),
-                new SoundLevelHandler(applicationContext, sensorManager)
-        };
         samplingRatesMap = loadSamplingRatesConfig(applicationContext);
-
         sensorHandlersMap = new HashMap<>();
-        sensorHandlersMap.put(SensorType.ACCELEROMETER, new AccelerometerHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.GYROSCOPE, new GyroscopeHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.MAGNETOMETER, new MagnetometerHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.LIGHT, new LightSensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.HUMIDITY, new RelativeHumiditySensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.PRESSURE, new PressureSensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.GRAVITY, new GravitySensorHandler(sensorManager));
-        sensorHandlersMap.put(SensorType.LOCATION, new LocationHandler(applicationContext));
-        sensorHandlersMap.put(SensorType.SOUND, new SoundLevelHandler(applicationContext, sensorManager));
+
+        AccelerometerHandler accelerometerHandler = new AccelerometerHandler(sensorManager);
+        GyroscopeHandler gyroscopeHandler = new GyroscopeHandler(sensorManager);
+        MagnetometerHandler magnetometerHandler = new MagnetometerHandler(sensorManager);
+        LightSensorHandler lightSensorHandler = new LightSensorHandler(sensorManager);
+        RelativeHumiditySensorHandler humidityHandler = new RelativeHumiditySensorHandler(sensorManager);
+        PressureSensorHandler pressureHandler = new PressureSensorHandler(sensorManager);
+        GravitySensorHandler gravityHandler = new GravitySensorHandler(sensorManager);
+        LocationHandler locationHandler = new LocationHandler(applicationContext);
+        SoundLevelHandler soundHandler = new SoundLevelHandler(applicationContext, sensorManager);
+
+        sensorHandlersMap.put(SensorType.ACCELEROMETER, accelerometerHandler);
+        sensorHandlersMap.put(SensorType.GYROSCOPE, gyroscopeHandler);
+        sensorHandlersMap.put(SensorType.MAGNETOMETER, magnetometerHandler);
+        sensorHandlersMap.put(SensorType.LIGHT, lightSensorHandler);
+        sensorHandlersMap.put(SensorType.HUMIDITY, humidityHandler);
+        sensorHandlersMap.put(SensorType.PRESSURE, pressureHandler);
+        sensorHandlersMap.put(SensorType.GRAVITY, gravityHandler);
+        sensorHandlersMap.put(SensorType.LOCATION, locationHandler);
+        sensorHandlersMap.put(SensorType.SOUND, soundHandler);
+
+        sensorHandlers = sensorHandlersMap.values().toArray(new SensorHandler[0]);
 
     }
 
@@ -135,14 +136,15 @@ public class SensorHandlerManager {
         // Directly add all elements of each sensor's data to the single array
         for(SensorHandler handler : sensorHandlersMap.values()) {
             if (handler.isRunning()) {
+                JSONArray sensorData;
                 synchronized (handler.getSensorDataLock()) {
-                    JSONArray sensorData = handler.getSensorData();
-                    localStorageData.put(handler.getSensorName(), sensorData);
+                    sensorData = handler.getSensorData();
+                    handler.clearSensorData();
                 }
+                localStorageData.put(handler.getSensorName(), sensorData);
             }
         }
 
-        clearAllSensorData();
         return localStorageData;
     }
 
