@@ -40,7 +40,7 @@ Before spinning up the stack using the [Stack Manager], please provide the follo
 - `postgis_password`
 - `geoserver_password`
 
-Additionally, because this stack includes the [Fenland Trajectory Agent] as a service to instantiate GPS trajectories, and this agent's image cannot currently be pulled directly from the container registry, it needs to be built locally. Please copy the JSON file named `fenland-trajectory-agent.json` from `Agents/FenlandTrajectoryAgent/stack-manager-input-config-service/` and paste it into `Deploy/stacks/dynamic/stack-manager/inputs/config/services`. Then, navigate to the directory `Agents/FenlandTrajectoryAgent` and execute the following command in a bash terminal to build the agent:
+Additionally, because this stack includes the [Fenland Trajectory Agent] as a service to instantiate GPS trajectories, and this agent's image cannot be pulled directly from the container registry, it needs to be built locally before spinning up the project stack. Please copy the JSON file named `fenland-trajectory-agent.json` from `Agents/FenlandTrajectoryAgent/stack-manager-input-config-service/` and paste it into `Deploy/stacks/dynamic/stack-manager/inputs/config/services`. Then, navigate to the directory `Agents/FenlandTrajectoryAgent` and execute the following command in a bash terminal to build the agent:
 
 ```
 bash ./stack.sh build
