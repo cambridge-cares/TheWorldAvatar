@@ -77,6 +77,7 @@ public class TrajectoryViewModel extends ViewModel {
         return endOfDay.toInstant().toEpochMilli();
     }
 
+    //todo: should use the phone's time zone instead of UTC
     private String convertDateFormat(LocalDate date) {
         ZonedDateTime convertedDateStart = date.atStartOfDay(ZoneId.systemDefault())
                 .withZoneSameInstant(ZoneId.of("UTC"));
