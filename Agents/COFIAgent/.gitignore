@@ -1,0 +1,30 @@
+# Ignore all files in the cof_data folder
+cof_data/
+
+# Ignore all files in the cofenv folder
+cofenv/
+
+# Ignore all files in the old_codes folder
+old_codes/
+
+# Ignore all JSON files
+*.json
+
+# Ignore all CSV files
+*.csv
+
+# Ignore macOS Finder and Windows Explorer files
+.DS_Store
+Thumbs.db
+
+# Ignore compiled Python files
+*.pyc
+
+# Ignore compiled Java class files
+*.class
+
+# Ignore Vim swap files
+*.swp
+
+# Ignore Python bytecode cache directory
+__pycache__/
