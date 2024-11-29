@@ -40,9 +40,12 @@ Before spinning up the stack using the [Stack Manager], please provide the follo
 - `postgis_password`
 - `geoserver_password`
 
-Subsequently, copy all files in `./stack-manager/inputs` into their corresponding repositories of the [Stack Manager] tool under `Deploy/stacks/dynamic/stack-manager/`.
+Additionally, as this stack includes the [Fenland Trajectory Agent] as a service to instantiate GPS trajectories, and since this agent's image cannot currently be pulled directly from the container registry, it needs to be built locally. Please navigate to the directory `TheWorldAvatarAgents/FenlandTrajectoryAgent` and execute the following command in a bash terminal to build the agent:
 
-Then navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. There are several [common stack scripts] provided to manage the stack:
+```
+bash ./stack.sh build
+```
+Afterwards, copy all files in `./stack-manager/inputs` into their corresponding repositories of the [Stack Manager] tool under `Deploy/stacks/dynamic/stack-manager/`. Then navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. There are several [common stack scripts] provided to manage the stack:
 
 ```bash
 # Start the stack (please note that this might take some time)
