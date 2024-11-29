@@ -1,0 +1,133 @@
+{
+    "type": "mapbox",
+    "camera": {
+        "default": "Cambridge",
+        "positions": [
+            {
+                "name": "Kings Lynn",
+                "center": [
+                    0.4023,
+                    52.7517
+                ],
+                "zoom": 13,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "Cambridge",
+                "center": [
+                    0.11926,
+                    52.20472
+                ],
+                "zoom": 14,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "Ely",
+                "center": [
+                    0.26196,
+                    52.39964
+                ],
+                "zoom": 16,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "Wisbech",
+                "center": [
+                    0.1593800,
+                    52.666220
+                ],
+                "zoom": 16,
+                "bearing": 0,
+                "pitch": 45
+            },
+            {
+                "name": "London",
+                "center": [
+                    -0.12794,
+                    51.50774
+                ],
+                "zoom": 18,
+                "bearing": 0,
+                "pitch": 45
+            }
+        ]
+    },
+    "imagery": {
+        "default": "3D (Night)",
+        "options": [
+            {
+                "name": "Light",
+                "url": "mapbox://styles/mapbox/light-v11?optimize=true"
+            },
+            {
+                "name": "Dark",
+                "url": "mapbox://styles/mapbox/dark-v11?optimize=true"
+            },
+            {
+                "name": "Outdoors",
+                "url": "mapbox://styles/mapbox/outdoors-v12?optimize=true"
+            },
+            {
+                "name": "Satellite",
+                "url": "mapbox://styles/mapbox/satellite-streets-v12?optimize=true"
+            },
+            {
+                "name": "3D (Day)",
+                "url": "mapbox://styles/mapbox/standard",
+                "time": "dawn"
+            },
+            {
+                "name": "3D (Night)",
+                "url": "mapbox://styles/mapbox/standard",
+                "time": "dusk"
+            }
+        ]
+    },
+    "icons": {
+        "metoffice": "/images/Fenland/icons/metoffice.png",
+        "floodmonitoring": "/images/Fenland/icons/floodmonitoring.png",
+        "ukair": "/images/Fenland/icons/ukair.png",
+        "weather": "/images/Fenland/icons/weather.png",
+        "weather-for": "/images/Fenland/icons/weather-for.png",
+        "weather-obs": "/images/Fenland/icons/weather-obs.png",
+        "airquality": "/images/Fenland/icons/airquality.png",
+        "flow": "/images/Fenland/icons/flow.png",
+        "rainfall": "/images/Fenland/icons/rainfall.png",
+        "temperature": "/images/Fenland/icons/temperature.png",
+        "water-level": "/images/Fenland/icons/water-level.png",
+        "wind": "/images/Fenland/icons/wind.png",
+        "met_weather": "/images/Fenland/icons/met_weather.png",
+        "met_weather-for": "/images/Fenland/icons/met_weather-for.png",
+        "met_weather-obs": "/images/Fenland/icons/met_weather-obs.png",
+        "ea_flow": "/images/Fenland/icons/ea_flow.png",
+        "ea_rainfall": "/images/Fenland/icons/ea_rainfall.png",
+        "ea_temperature": "/images/Fenland/icons/ea_temperature.png",
+        "ea_water-level": "/images/Fenland/icons/ea_water-level.png",
+        "ea_wind": "/images/Fenland/icons/ea_wind.png",
+        "air_airquality": "/images/Fenland/icons/air_airquality.png",
+        "FoodHygieneRating": "/images/Fenland/icons/FoodHygieneRating.png",
+        "gpslocation": "/images/Fenland/icons/gpslocation.png",
+        "gpslocation2": "/images/Fenland/icons/gpslocation2.png",
+        "takeaway": "/images/Fenland/icons/takeaway.png",
+        "supermarket": "/images/Fenland/icons/supermarket.png",
+        "supermarket_circle": "/images/Fenland/icons/supermarket_circle.png",
+        "sports": "/images/Fenland/icons/sports.png",
+        "sports_circle": "/images/Fenland/icons/sports_circle.png",
+        "edu": "/images/Fenland/icons/edu_and_health.png",
+        "edu_circle": "/images/Fenland/icons/edu_and_health_circle.png",
+        "public": "/images/Fenland/icons/public_infras.png",
+        "public_circle": "/images/Fenland/icons/public_infras_circle.png",
+        "power-primary": "/images/Fenland/icons/power-primary.png",
+        "power-secondary": "/images/Fenland/icons/power-secondary.png",
+        "water-clean": "/images/Fenland/icons/water-clean.png",
+        "water-sewage": "/images/Fenland/icons/water-sewage.png",
+        "water-sludge": "/images/Fenland/icons/water-sludge.png",
+        "circle": "/images/Fenland/icons/circle-sdf.png",
+        "octagon": "/images/Fenland/icons/octagon-sdf.png",
+        "square": "/images/Fenland/icons/square-sdf.png",
+        "arrow": "/images/Fenland/icons/arrow-sdf.png"
+    }
+}

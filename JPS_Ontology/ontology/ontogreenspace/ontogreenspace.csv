@@ -1,0 +1,25 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+ontogreenspace,TBox,https://www.theworldavatar.com/kg/ontogreenspace/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+ontogreenspace,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+ontogreenspace,TBox,OntoGreenspace is an ontology developed for representing greenspaces.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+ontogreenspace,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Greenspace,Class,,,,,,"A spatial area object that is partly or completely covered with grass, trees, shrubs, or other vegetation",https://www.theworldavatar.com/kg/ontogreenspace,Greenspace
+AccessPoint,Class,,,,,,A designated entry location that provides public or restricted access into a greenspace area,https://www.theworldavatar.com/kg/ontogreenspace,Access Point
+http://ies.data.gov.uk/ontology/ies4#BoundingState,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Bounding State
+http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,Class,,,,,,,http://ies.data.gov.uk/ontology/ies4,Particular Period
+GreenspaceStart,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,Tthe official date when a greenspace entity began operations or was inaugurated.,https://www.theworldavatar.com/kg/ontogreenspace,Greenspace Start
+GreenspaceEnd,Class,http://ies.data.gov.uk/ontology/ies4#BoundingState,IS-A,,,,The date of decommissioning or closure of a greenspace entity.,https://www.theworldavatar.com/kg/ontogreenspace,Greenspace End
+http://ies.data.gov.uk/ontology/ies4#isStartOf,Object Property,,,GreenspaceStart,Greenspace,only,,http://ies.data.gov.uk/ontology/ies4,is Start Of
+http://ies.data.gov.uk/ontology/ies4#isEndOf,Object Property,,,GreenspaceEnd,Greenspace,only,,http://ies.data.gov.uk/ontology/ies4,is End Of
+http://ies.data.gov.uk/ontology/ies4#inPeriod,Object Property,,,GreenspaceStart UNION GreenspaceEnd,http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,,An object property relating the start or end of a greenspace or accesspoint entity to a specific period.,http://ies.data.gov.uk/ontology/ies4,in Period
+http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation,Data Property,,,http://ies.data.gov.uk/ontology/ies4#ParticularPeriod,any uri,,,http://ies.data.gov.uk/ontology/ies4,iso 8601 Period Representation
+hasGID,Data Property,,,Greenspace,integer,,An identifier indicating the sequential appearance of a greenspace or access point within a single dataset,https://www.theworldavatar.com/kg/ontogreenspace,has GID
+hasID,Data Property,,,Greenspace,String,,A unique identifier that distinctly identifies a greenspace or access point across all datasets,https://www.theworldavatar.com/kg/ontogreenspace,has ID
+hasFunction,Data Property,,,Greenspace,String,,A description of the intended purpose of a greenspace,https://www.theworldavatar.com/kg/ontogreenspace,has Function
+hasName,Data Property,,,Greenspace,String,,The name of a greenspace,https://www.theworldavatar.com/kg/ontogreenspace,has Name
+hasFirstAlternativeName,Data Property,,,Greenspace,String,,The first alternative name for a greespace,https://www.theworldavatar.com/kg/ontogreenspace,has First Alternative Name
+hasSecondAlternativeName,Data Property,,,Greenspace,String,,The second alternative name for a greespace,https://www.theworldavatar.com/kg/ontogreenspace,has Second Alternative Name
+hasThirdAlternativeName,Data Property,,,Greenspace,String,,The third alternative name for a greespace,https://www.theworldavatar.com/kg/ontogreenspace,has Third Alternative Name
+http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,Greenspace UNION AccessPoint,http://www.opengis.net/ont/geosparql#wktLiteral,,"The spatial geometry of a greenspace, represented in Well-Known Text (WKT) format, detailing its shape and boundaries",http://www.opengis.net/ont/geosparql,as WKT
+hasAccessType,Data Property,,,AccessPoint,String,,"The type or level of access allowed at an access point, such as pedestrian, and motor vehicle and pedestrian",https://www.theworldavatar.com/kg/ontogreenspace,has Access Type
+hasReferenceToGreenspaceSite,Object Property,,,AccessPoint,Greenspace,,The relationship linking the access point to its associated greenspace site,https://www.theworldavatar.com/kg/ontogreenspace,has Reference To Greenspace Site

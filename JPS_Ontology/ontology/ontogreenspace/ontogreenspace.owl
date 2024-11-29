@@ -1,0 +1,375 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontogreenspace/"
+     xml:base="https://www.theworldavatar.com/kg/ontogreenspace/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontogreenspace="https://www.theworldavatar.com/kg/ontogreenspace/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/">
+        <dc:date>11 November 2024</dc:date>
+        <rdfs:comment>OntoGreenspace is an ontology developed for representing greenspaces.</rdfs:comment>
+        <owl:versionInfo>1</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#wktLiteral -->
+
+
+    <rdfs:Datatype rdf:about="http://www.opengis.net/ont/geosparql#wktLiteral"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#inPeriod -->
+
+
+    <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#inPeriod">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceEnd"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceStart"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://ies.data.gov.uk/ontology/ies4#ParticularPeriod"/>
+        <rdfs:comment>An object property relating the start or end of a greenspace or accesspoint entity to a specific period.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>in Period</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#isEndOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#isEndOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceEnd"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>is End Of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#isStartOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#isStartOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceStart"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>is Start Of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasReferenceToGreenspaceSite -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasReferenceToGreenspaceSite">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/AccessPoint"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:comment>The relationship linking the access point to its associated greenspace site</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has Reference To Greenspace Site</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation -->
+
+
+    <owl:DatatypeProperty rdf:about="http://ies.data.gov.uk/ontology/ies4#iso8601PeriodRepresentation">
+        <rdfs:domain rdf:resource="http://ies.data.gov.uk/ontology/ies4#ParticularPeriod"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>iso 8601 Period Representation</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#asWKT -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/AccessPoint"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.opengis.net/ont/geosparql#wktLiteral"/>
+        <rdfs:comment>The spatial geometry of a greenspace, represented in Well-Known Text (WKT) format, detailing its shape and boundaries</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="http://www.opengis.net/ont/geosparql"/>
+        <rdfs:label>as WKT</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasAccessType -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasAccessType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/AccessPoint"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The type or level of access allowed at an access point, such as pedestrian, and motor vehicle and pedestrian</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has Access Type</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasFirstAlternativeName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasFirstAlternativeName">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The first alternative name for a greespace</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has First Alternative Name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasFunction -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasFunction">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A description of the intended purpose of a greenspace</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has Function</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasGID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasGID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>An identifier indicating the sequential appearance of a greenspace or access point within a single dataset</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has GID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>A unique identifier that distinctly identifies a greenspace or access point across all datasets</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasName">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The name of a greenspace</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has Name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasSecondAlternativeName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasSecondAlternativeName">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The second alternative name for a greespace</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has Second Alternative Name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/hasThirdAlternativeName -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/hasThirdAlternativeName">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The third alternative name for a greespace</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>has Third Alternative Name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#BoundingState -->
+
+
+    <owl:Class rdf:about="http://ies.data.gov.uk/ontology/ies4#BoundingState">
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>Bounding State</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://ies.data.gov.uk/ontology/ies4#ParticularPeriod -->
+
+
+    <owl:Class rdf:about="http://ies.data.gov.uk/ontology/ies4#ParticularPeriod">
+        <rdfs:isDefinedBy rdf:resource="http://ies.data.gov.uk/ontology/ies4"/>
+        <rdfs:label>Particular Period</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/AccessPoint -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/AccessPoint">
+        <rdfs:comment>A designated entry location that provides public or restricted access into a greenspace area</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>Access Point</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/Greenspace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace">
+        <rdfs:comment>A spatial area object that is partly or completely covered with grass, trees, shrubs, or other vegetation</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>Greenspace</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceEnd -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceEnd">
+        <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isEndOf"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The date of decommissioning or closure of a greenspace entity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>Greenspace End</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceStart -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontogreenspace/GreenspaceStart">
+        <rdfs:subClassOf rdf:resource="http://ies.data.gov.uk/ontology/ies4#BoundingState"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ies.data.gov.uk/ontology/ies4#isStartOf"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace/Greenspace"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Tthe official date when a greenspace entity began operations or was inaugurated.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontogreenspace"/>
+        <rdfs:label>Greenspace Start</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
+
+

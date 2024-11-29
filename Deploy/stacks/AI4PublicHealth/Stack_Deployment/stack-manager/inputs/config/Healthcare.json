@@ -1,0 +1,11 @@
+{
+    "services": {
+        "includes": [
+                     "feature-info-agent",
+                     "fenland-trajectory-agent"
+                    ]
+    },
+    "volumes": {
+        "fia-queries": "fia-queries"
+    }
+}
