@@ -118,7 +118,7 @@ Populate these files with your Mapbox username and API key. After that, execute 
 ```bash
 docker compose up -d
 ```
-The default port for the TWA-VP is 3000. Please ensure this port is open before deploying the visualisation stack.
+The default port for the TWA-VP is 3000. Please ensure this port is open before deploying the visualisation stack. It is worth mentioning that, as of the time of writing, the visualisation stack is configured with hard-coded IP addresses for its data sources. Even after completing the data instantiation and uploading steps outlined in Section 3, the visualisation will, by default, display data from these hard-coded IP addresses (if they are active), rather than the data you have instantiated. To display your own data, you need to update the visualisation configuration files to point to your data sources. The file used to specify data layers is `data-twa-vp-demo.json`, located at `\AI4PublicHealth\TWA-VP\public\config\data-twa-vp-demo.json`. Refer to the [Mapbox visualisation guidance] for the standard way to add a new layer or change icons.
 
 # Potential refinements/next steps
 To further advance this project, the next steps involve developing a high-level exposure ontology to semantically represent environmental data and exposure quantifications, enabling the integration of additional datasets and the automated assessment of exposure. In parallel, SPARQL queries will be developed to quantify environmental exposure metrics, supporting spatial and temporal analyses that establish links between environmental factors and public health outcomes.
@@ -150,6 +150,7 @@ Jiying Chen (jc2341@cam.ac.uk), Nov 2024
 [TWA-VP]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/twa-vis-platform
 [OS Open Greenspace]: https://www.ordnancesurvey.co.uk/products/os-open-greenspace
 [Points of Interest (POI)]: https://www.ordnancesurvey.co.uk/products/points-of-interest
+[Mapbox visualisation guidance]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/web/twa-vis-framework/docs/mapbox.md
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
