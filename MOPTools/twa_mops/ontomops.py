@@ -10,7 +10,7 @@ import json
 from twa.data_model.base_ontology import BaseOntology, BaseClass, ObjectProperty, DatatypeProperty, KnowledgeGraph
 import ontospecies
 import om
-from covalent_radii import diameter_of_largest_inner_sphere
+import cavity_and_pore_size as cap
 
 from geo import Point, Vector, Line, Plane, RotationMatrix
 
@@ -54,6 +54,17 @@ HasGBUCoordinateCenter = ObjectProperty.create_from_base('HasGBUCoordinateCenter
 HasCBUAssemblyCenter = ObjectProperty.create_from_base('HasCBUAssemblyCenter', OntoMOPs)
 HasBindingPoint = ObjectProperty.create_from_base('HasBindingPoint', OntoMOPs)
 HasGBUType = ObjectProperty.create_from_base('HasGBUType', OntoMOPs)
+RefersTo = ObjectProperty.create_from_base('RefersTo', OntoMOPs)
+Connects = ObjectProperty.create_from_base('Connects', OntoMOPs)
+# for pore ring
+HasPoreRing = ObjectProperty.create_from_base('HasPoreRing', OntoMOPs)
+IsFormedBy = ObjectProperty.create_from_base('IsFormedBy', OntoMOPs)
+MeasuresPoreRing = ObjectProperty.create_from_base('MeasuresRing', OntoMOPs)
+HasPoreSize = ObjectProperty.create_from_base('HasPoreSize', OntoMOPs)
+HasPoreDiameter = ObjectProperty.create_from_base('HasPoreDiameter', OntoMOPs)
+# for cavity
+HasLargestInnerSphereDiameter = ObjectProperty.create_from_base('HasLargestInnerSphereDiameter', OntoMOPs)
+HasOuterDiameter = ObjectProperty.create_from_base('HasOuterDiameter', OntoMOPs)
 
 
 # data properties
@@ -72,8 +83,8 @@ HasBindingFragment = DatatypeProperty.create_from_base('HasBindingFragment', Ont
 HasX = DatatypeProperty.create_from_base('HasX', OntoMOPs)
 HasY = DatatypeProperty.create_from_base('HasY', OntoMOPs)
 HasZ = DatatypeProperty.create_from_base('HasZ', OntoMOPs)
-RefersTo = ObjectProperty.create_from_base('RefersTo', OntoMOPs)
-Connects = ObjectProperty.create_from_base('Connects', OntoMOPs)
+# for pore ring
+HasProbingVector = DatatypeProperty.create_from_base('HasProbingVector', OntoMOPs)
 
 
 # classes
@@ -124,6 +135,21 @@ class GenericBuildingUnitNumber(BaseClass):
     isNumberOf: IsNumberOf[GenericBuildingUnit]
     hasUnitNumberValue: HasUnitNumberValue[int]
 
+class PoreRing(BaseClass):
+    rdfs_isDefinedBy = OntoMOPs
+    isFormedBy: IsFormedBy[GBUCoordinateCenter]
+    hasProbingVector: HasProbingVector[str]
+
+    @property
+    def probing_vector(self):
+        vec = list(self.hasProbingVector)[0].split('#')
+        return Vector(x=float(vec[0]), y=float(vec[1]), z=float(vec[2]))
+
+class PoreSize(BaseClass):
+    rdfs_isDefinedBy = OntoMOPs
+    measuresPoreRing: MeasuresPoreRing[PoreRing]
+    hasPoreDiameter: HasPoreDiameter[om.Diameter]
+
 class AssemblyModel(BaseClass):
     rdfs_isDefinedBy = OntoMOPs
     hasGenericBuildingUnit: HasGenericBuildingUnit[GenericBuildingUnit]
@@ -132,6 +158,7 @@ class AssemblyModel(BaseClass):
     hasSymmetryPointGroup: HasSymmetryPointGroup[str]
     hasGBUCoordinateCenter: HasGBUCoordinateCenter[GBUCoordinateCenter]
     hasGBUConnectingPoint: HasGBUConnectingPoint[GBUConnectingPoint]
+    hasPoreRing: Optional[HasPoreRing[PoreRing]] = None
 
     @staticmethod
     def process_geometry_json(am_json, gbu_type_1_label, gbu_type_2_label):
@@ -271,7 +298,7 @@ class Volume(BaseClass):
 
 class Cavity(BaseClass):
     rdfs_isDefinedBy = OntoMOPs
-    hasMOPCavityVolume: HasMOPCavityVolume[Volume]
+    hasLargestInnerSphereDiameter: HasLargestInnerSphereDiameter[om.Diameter]
 
 class PolyhedralShape(BaseClass):
     rdfs_isDefinedBy = OntoMOPs
@@ -661,6 +688,8 @@ class MetalOrganicPolyhedron(CoordinationCage):
     hasGeometry: Optional[ontospecies.HasGeometry[ontospecies.Geometry]] = None
     hasCCDCNumber: Optional[HasCCDCNumber[str]] = None
     hasMOPFormula: HasMOPFormula[str]
+    hasPoreSize: Optional[HasPoreSize[PoreSize]] = None
+    hasOuterDiameter: Optional[HasOuterDiameter[om.Diameter]] = None
 
     @classmethod
     def from_assemble(
@@ -834,8 +863,18 @@ class MetalOrganicPolyhedron(CoordinationCage):
                 _lst_points.extend(pts)
         _atoms = [p for p in _lst_points if p.label.lower() not in ['x', 'center']]
         adjusted_atoms = Point.translate_points_to_target_centroid(_atoms, Point.from_array([0, 0, 0]))
-        # calculate the largest inner sphere radius and volume
-        inner_radius_atom, inner_radius, inner_volume = diameter_of_largest_inner_sphere(adjusted_atoms)
+        # calculate cavity (in terms of largest inner sphere diameter), outer diameter, and pore size diameter
+        inner_diameter_atom, inner_diameter, inner_volume = cap.largest_inner_sphere_diameter(adjusted_atoms)
+        outer_diameter = cap.outer_diameter(adjusted_atoms)
+        pore_sizes = []
+        for pr in am.hasPoreRing:
+            ps_val = cap.pore_size_diameter(adjusted_atoms, pr.probing_vector)
+            pore_sizes.append(
+                PoreSize(
+                    measuresPoreRing=pr,
+                    hasPoreDiameter=om.Diameter(hasValue=om.Measure(hasNumericalValue=ps_val, hasUnit=om.angstrom))
+                )
+            )
 
         # prepare the geometry file and upload
         mop_iri = cls.init_instance_iri()
@@ -863,6 +902,9 @@ class MetalOrganicPolyhedron(CoordinationCage):
             hasMOPFormula=mop_formula,
             hasCCDCNumber=ccdc,
             hasGeometry=mop_geo,
+            hasCavity=Cavity(hasLargestInnerSphereDiameter=om.Diameter(hasValue=om.Measure(hasNumericalValue=inner_diameter, hasUnit=om.angstrom))),
+            hasOuterDiameter=om.Diameter(hasValue=om.Measure(hasNumericalValue=outer_diameter, hasUnit=om.angstrom)),
+            hasPoreSize=pore_sizes,
         )
 
     def visualise(self, sparql_client = None):

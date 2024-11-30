@@ -39,6 +39,10 @@ class Point(BaseModel):
     def get_distance_to(self, other: 'Point'):
         return np.linalg.norm(self.as_array - other.as_array)
 
+    def get_distance_to_vector(self, vector: 'Vector'):
+        projection = vector.projection_of_point(self)
+        return self.get_distance_to(projection)
+
     def get_mid_point_to(self, other: 'Point'):
         return Point(x=(self.x+other.x)/2, y=(self.y+other.y)/2, z=(self.z+other.z)/2)
 
@@ -184,6 +188,12 @@ class Vector(BaseModel):
 
     def get_deg_angle_to(self, other: 'Vector'):
         return np.degrees(self.get_rad_angle_to(other))
+
+    def projection_of_point(self, point: Point):
+        vector_unit = self.get_unit_vector()
+        scalar_projection = np.dot(point.as_array, vector_unit.as_array)
+        projection = scalar_projection * vector_unit.as_array
+        return Point(x=projection[0], y=projection[1], z=projection[2])
 
     def get_rotation_matrix_to_parallel(
         self,

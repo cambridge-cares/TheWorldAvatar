@@ -29,6 +29,27 @@ class CompoundUnit(Unit):
 class UnitDivision(CompoundUnit):
     rdfs_isDefinedBy = OM
 
+class Quantity(BaseClass):
+    rdfs_isDefinedBy = OM
+    hasValue: HasValue[Measure]
+
+    @property
+    def num_value(self):
+        return list(self.hasValue)[0].hasNumericalValue
+
+    @property
+    def unit(self):
+        return list(self.hasValue)[0].hasUnit
+
+class Length(Quantity):
+    rdfs_isDefinedBy = OM
+
+class Radius(Length):
+    rdfs_isDefinedBy = OM
+
+class Diameter(Length):
+    rdfs_isDefinedBy = OM
+
 class Measure(BaseClass):
     rdfs_isDefinedBy = OM
     hasUnit: HasUnit[Unit]
@@ -37,3 +58,4 @@ class Measure(BaseClass):
 # TODO need to find a better way for defining the units
 gramPerMole = OM.namespace_iri + 'gramPerMole'
 elementaryCharge = OM.namespace_iri + 'elementaryCharge'
+angstrom = OM.namespace_iri + 'angstrom'
