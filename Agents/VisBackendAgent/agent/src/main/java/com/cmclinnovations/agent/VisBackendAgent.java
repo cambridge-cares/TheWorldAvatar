@@ -46,6 +46,13 @@ public class VisBackendAgent {
         HttpStatus.OK);
   }
 
+  @GetMapping("/location")
+  public ResponseEntity<?> getCoordinates(
+      @RequestParam(required = true) String iri) {
+    LOGGER.info("Received request to retrieve coordinates for {}...", iri);
+    return this.geocodingService.getCoordinates(iri);
+  }
+
   @GetMapping("/location/geocode")
   public ResponseEntity<?> getGeoCoordinates(
       @RequestParam(required = false) String block,

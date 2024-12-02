@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.GeoLocationType;
+import com.cmclinnovations.agent.model.type.SparqlEndpointType;
 import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
@@ -89,6 +90,18 @@ public class GeocodingService {
   }
 
   /**
+   * Retrieve the coordinates based on the location instance.
+   * 
+   * @param location The IRI of the location.
+   */
+  public ResponseEntity<?> getCoordinates(String location) {
+    LOGGER.debug("Querying for coordinates...");
+    String query = this.genCoordinateQuery(location);
+    Queue<SparqlBinding> results = this.kgService.query(query, SparqlEndpointType.BLAZEGRAPH);
+    return this.parseCoordinates(results);
+  }
+
+  /**
    * Retrieve the coordinates based on the street address or postal code.
    * 
    * @param block      The street block identifier.
@@ -110,19 +123,7 @@ public class GeocodingService {
     String query = this.genCoordinateQueryTemplate(block, street, city, country, postalCode);
     LOGGER.debug("Retrieving coordinates for postal code: {} ...", postalCode);
     Queue<SparqlBinding> results = this.kgService.query(query, geocodingEndpointResponse.getBody());
-    if (results.isEmpty()) {
-      LOGGER.info("No coordinates found...");
-      return new ResponseEntity<>(
-          "There are no coordinates associated with the parameters in the knowledge graph.",
-          HttpStatus.NOT_FOUND);
-    } else {
-      LOGGER.info("Found geocoordinates associated with the request!");
-      // Returns the first geoPoint as the same address may have multiple results
-      String geoPoint = results.poll().getFieldValue(LOCATION_VAR);
-      return new ResponseEntity<>(
-          this.parseCoordinates(geoPoint),
-          HttpStatus.OK);
-    }
+    return this.parseCoordinates(results);
   }
 
   /**
@@ -252,6 +253,42 @@ public class GeocodingService {
         ShaclResource.VARIABLE_MARK + ADDRESS_VAR + " a fibo-fnd-plc-adr:ConventionalStreetAddress;" +
         whereClauseLines +
         "}";
+  }
+
+  /**
+   * Generates the query to retrieve the coordinates associated with a location
+   * instance.
+   * 
+   * @param location The IRI of the location.
+   */
+  private String genCoordinateQuery(String location) {
+    String locationVar = ShaclResource.VARIABLE_MARK + LOCATION_VAR;
+    return LifecycleResource.genPrefixes() +
+        "SELECT DISTINCT " + locationVar + " WHERE {" +
+        StringResource.parseIriForQuery(location) + " a fibo-fnd-plc-loc:PhysicalLocation;" +
+        "geo:hasGeometry/geo:asWKT " + locationVar + "." +
+        "}";
+  }
+
+  /**
+   * Parses the coordinates from query results into longitude and latitude.
+   * 
+   * @param results The query results.
+   */
+  private ResponseEntity<?> parseCoordinates(Queue<SparqlBinding> results) {
+    if (results.isEmpty()) {
+      LOGGER.info("No coordinates found...");
+      return new ResponseEntity<>(
+          "There are no coordinates associated with the parameters in the knowledge graph.",
+          HttpStatus.NOT_FOUND);
+    } else {
+      LOGGER.info("Found the associated geocoordinates!");
+      // Returns the first geoPoint as the same location may have multiple results
+      String geoPoint = results.poll().getFieldValue(LOCATION_VAR);
+      return new ResponseEntity<>(
+          this.parseCoordinates(geoPoint),
+          HttpStatus.OK);
+    }
   }
 
   /**

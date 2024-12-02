@@ -153,6 +153,8 @@ To retrieve the geographic coordinates, users can send a `GET` request to `<base
 
 If successful, the response will return the coordinates in the `[longitude, latitude]` format that is compliant with `JSON`.
 
+Users may also send a `GET` request to `<baseURL>/vis-backend-agent/location?iri={location}` where `location` is the location IRI, to retrieve the associated geocoordinates.
+
 #### 2.2.2 Address search route
 
 To search for the address based on postal code, users can send a `GET` request to `<baseURL>/vis-backend-agent/location/addresses` with the following parameter:
