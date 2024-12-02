@@ -53,6 +53,7 @@ import com.github.dockerjava.api.model.ServiceSpec;
 import com.github.dockerjava.api.model.SwarmInfo;
 import com.github.dockerjava.api.model.SwarmSpec;
 import com.github.dockerjava.api.model.Task;
+import com.github.dockerjava.api.model.TaskSpec;
 import com.github.dockerjava.api.model.TaskState;
 import com.github.dockerjava.api.model.TaskStatus;
 import com.github.dockerjava.api.model.VolumeOptions;
@@ -335,13 +336,15 @@ public class DockerService extends AbstractService
         ServiceSpec serviceSpec = service.getServiceSpec()
                 .withName(service.getContainerName())
                 .withLabels(StackClient.getStackNameLabelMap());
-        service.getTaskTemplate()
-                .withRestartPolicy(new ServiceRestartPolicy()
-                        .withCondition(ServiceRestartCondition.ON_FAILURE)
-                        .withMaxAttempts(3l))
-                .withNetworks(List.of(new NetworkAttachmentConfig()
-                        .withTarget(network.getId())
-                        .withAliases(List.of(service.getName()))));
+        TaskSpec taskTemplate = service.getTaskTemplate();
+        if (null == taskTemplate.getRestartPolicy()) {
+            taskTemplate.withRestartPolicy(new ServiceRestartPolicy()
+                    .withCondition(ServiceRestartCondition.ON_FAILURE)
+                    .withMaxAttempts(3l));
+        }
+        taskTemplate.withNetworks(List.of(new NetworkAttachmentConfig()
+                .withTarget(network.getId())
+                .withAliases(List.of(service.getName()))));
         ContainerSpec containerSpec = service.getContainerSpec()
                 .withLabels(StackClient.getStackNameLabelMap())
                 .withHostname(service.getName());
