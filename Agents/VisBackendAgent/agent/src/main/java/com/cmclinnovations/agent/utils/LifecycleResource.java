@@ -351,15 +351,19 @@ public class LifecycleResource {
     return "PREFIX cmns-dt: <https://www.omg.org/spec/Commons/DatesAndTimes/>"
         + "PREFIX cmns-dsg: <https://www.omg.org/spec/Commons/Designators/>"
         + "PREFIX cmns-rlcmp: <https://www.omg.org/spec/Commons/RolesAndCompositions/>"
+        + "PREFIX fibo-fnd-arr-id:<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/>"
+        + "PREFIX fibo-fnd-plc-adr:<https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/>"
+        + "PREFIX fibo-fnd-plc-loc:<https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/>"
         + "PREFIX fibo-fnd-arr-lif: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/>"
         + "PREFIX fibo-fnd-arr-rep: <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/>"
         + "PREFIX fibo-fnd-dt-fd: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/>"
         + "PREFIX fibo-fnd-dt-oc: <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/Occurrences/>"
         + "PREFIX fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/>"
         + "PREFIX fibo-fnd-pas-pas: <https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/>"
-        + "PREFIX geo: <http://opengis.net/ont/geosparql#>"
+        + "PREFIX geo: <http://www.opengis.net/ont/geosparql#>"
         + "PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>"
-        + "PREFIX ontoservice: <https://www.theworldavatar.com/kg/ontoservice/>";
+        + "PREFIX ontoservice: <https://www.theworldavatar.com/kg/ontoservice/>"
+        + "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>";
   }
 
   /**

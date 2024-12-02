@@ -779,7 +779,7 @@ The `SHACL` property shape for location must target the `https://www.omg.org/spe
 @prefix fibo-fnd-plc-loc: <https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/> .
 @prefix fibo-fnd-rel-rel: <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> .
 @prefix lcc-cr:           <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/> .
-@prefix geo:              <http://opengis.net/ont/geosparql#> .
+@prefix geo:              <http://www.opengis.net/ont/geosparql#> .
 
 base:ServiceLocationShape
   a sh:NodeShape ;

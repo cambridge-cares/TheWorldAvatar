@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.cmclinnovations.agent.model.SparqlBinding;
 import com.cmclinnovations.agent.model.type.GeoLocationType;
+import com.cmclinnovations.agent.utils.LifecycleResource;
 import com.cmclinnovations.agent.utils.ShaclResource;
 import com.cmclinnovations.agent.utils.StringResource;
 
@@ -246,14 +247,7 @@ public class GeocodingService {
    * @param whereClauseLines The query lines for the WHERE clause.
    */
   private String genQueryTemplate(String selectVariables, String whereClauseLines) {
-    return "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-        "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> " +
-        "PREFIX fibo-fnd-arr-id:<https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/IdentifiersAndIndices/> " +
-        "PREFIX fibo-fnd-plc-adr:<https://spec.edmcouncil.org/fibo/ontology/FND/Places/Addresses/> " +
-        "PREFIX fibo-fnd-plc-loc:<https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/> " +
-        "PREFIX fibo-fnd-rel-rel:<https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/> " +
-        "PREFIX geo:<http://www.opengis.net/ont/geosparql#> " +
-        "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> " +
+    return LifecycleResource.genPrefixes() +
         "SELECT DISTINCT " + selectVariables + " WHERE {" +
         ShaclResource.VARIABLE_MARK + ADDRESS_VAR + " a fibo-fnd-plc-adr:ConventionalStreetAddress;" +
         whereClauseLines +
