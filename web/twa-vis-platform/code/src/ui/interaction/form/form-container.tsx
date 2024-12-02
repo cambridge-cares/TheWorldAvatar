@@ -125,7 +125,9 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
       setStatus(JSON.parse(response));
     }
 
-    if (props.isPrimaryEntity && !status && props.formType === Paths.REGISTRY) {
+    if (props.isPrimaryEntity && !status &&
+      (props.formType === Paths.REGISTRY || props.formType === Paths.REGISTRY_DELETE || props.formType === Paths.REGISTRY_EDIT)
+    ) {
       getContractStatus();
     }
   }, []);
@@ -144,6 +146,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             formType={props.formType}
             agentApi={props.agentApi}
             setResponse={setResponse}
+            primaryInstance={status?.iri}
             isPrimaryEntity={props.isPrimaryEntity}
           />)}
         {(isRescindAction || isTerminateAction) && <FormTemplate

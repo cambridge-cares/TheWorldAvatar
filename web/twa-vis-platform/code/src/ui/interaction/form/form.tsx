@@ -23,6 +23,7 @@ interface FormComponentProps {
   formType: string;
   agentApi: string;
   setResponse: React.Dispatch<React.SetStateAction<HttpResponse>>;
+  primaryInstance?: string;
   isPrimaryEntity?: boolean;
 }
 
@@ -34,6 +35,7 @@ interface FormComponentProps {
  * @param {string} formType The type of submission. Valid inputs include add and update.
  * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {React.Dispatch<React.SetStateAction<HttpResponse>>} setResponse A dispatch function for setting the response after submission.
+ * @param {string} primaryInstance An optional instance for the primary entity.
  * @param {boolean} isPrimaryEntity An optional indicator if the form is targeting a primary entity.
  */
 export function FormComponent(props: Readonly<FormComponentProps>) {
@@ -153,7 +155,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         if (props.isPrimaryEntity) {
           const reqBody: string = JSON.stringify({
             ...formData,
-            contract: formData.id,
+            contract: props.primaryInstance,
           });
           pendingResponse = await updateEntity(`${props.agentApi}/contracts/draft`, reqBody);
         } else {
