@@ -4,7 +4,8 @@
             "sensorloggermobileappagent",
             "user-agent",
             "trajectoryqueryagent",
-            "keycloak-prod"
+            "keycloak-prod",
+            "geoserver-jwt-proxy"
         ],
         "excludes": [
             "citydbimpexp",
