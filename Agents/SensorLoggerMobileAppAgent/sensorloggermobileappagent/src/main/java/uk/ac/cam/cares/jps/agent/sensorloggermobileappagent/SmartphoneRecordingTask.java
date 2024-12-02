@@ -17,7 +17,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import java.io.IOException;
@@ -151,11 +150,6 @@ public class SmartphoneRecordingTask {
                 locationDataProcessor,
                 magnetometerDataProcessor,
                 relativeBrightnessProcessor);
-        logger.info("sensor data iri created: " + sensorDataProcessorList.stream()
-                .map(SensorDataProcessor::getDataIRIMap)
-                .flatMap(map -> map.entrySet().stream())
-                .map(Entry::getValue)
-                .collect(Collectors.joining("; ")));
     }
 
     private void initKgUsingOntop() {
@@ -196,7 +190,7 @@ public class SmartphoneRecordingTask {
         List<List<Class<?>>> dataClasses = new ArrayList<>();
         while (iterator.hasNext()) {
             SensorDataProcessor p = iterator.next();
-            dataIris.add(new ArrayList<>(p.getDataIRIMap().values()));
+            dataIris.add(p.getDataIRIs());
             dataClasses.add(p.getDataClass());
         }
 

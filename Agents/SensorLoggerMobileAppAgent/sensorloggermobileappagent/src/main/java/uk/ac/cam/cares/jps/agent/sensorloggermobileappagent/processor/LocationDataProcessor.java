@@ -22,11 +22,13 @@ public class LocationDataProcessor extends SensorDataProcessor {
     private String speedIRI = null;
     private String altitudeIRI = null;
     private String pointIRI = null;
+    private String sessionIRI = null;
 
     private final List<Double> bearingList = new ArrayList<>();
     private final List<Double> speedList = new ArrayList<>();
     private final List<Double> altitudeList = new ArrayList<>();
     private final List<Point> geomLocationList = new ArrayList<>();
+    private final List<String> sessionIdList = new ArrayList<>();
 
     public LocationDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
@@ -40,16 +42,17 @@ public class LocationDataProcessor extends SensorDataProcessor {
         speedList.addAll((List<Double>) data.get("speedList"));
         altitudeList.addAll((List<Double>) data.get("altitudeList"));
         geomLocationList.addAll((List<Point>) data.get("geomLocationList"));
+        sessionIdList.addAll((List<String>) data.get("sessionIdList"));
     }
 
     @Override
     public TimeSeries<Long> getProcessedTimeSeries() {
         // todo: do processing of location data
-        List<String> dataIRIList = Arrays.asList(bearingIRI, speedIRI, altitudeIRI, pointIRI);
+        List<String> dataIRIList = Arrays.asList(bearingIRI, speedIRI, altitudeIRI, pointIRI, sessionIRI);
         List<List<?>> valueList = Arrays.asList(new ArrayList<>(bearingList),
                 new ArrayList<>(speedList),
                 new ArrayList<>(altitudeList),
-                new ArrayList<>(geomLocationList));
+                new ArrayList<>(geomLocationList), new ArrayList<>(sessionIdList));
 
         List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli())
                 .collect(Collectors.toList());
@@ -75,19 +78,15 @@ public class LocationDataProcessor extends SensorDataProcessor {
 
     @Override
     public List<Class<?>> getDataClass() {
-        List<Class<?>> dataClass = new ArrayList<>(Collections.nCopies(getDataIRIMap().size() - 1, Double.class));
+        List<Class<?>> dataClass = new ArrayList<>(Collections.nCopies(3, Double.class));
         dataClass.add(Point.class);
+        dataClass.add(String.class);
         return dataClass;
     }
 
     @Override
-    public Map<String, String> getDataIRIMap() {
-        Map<String, String> iriHashMap = new HashMap<>();
-        iriHashMap.put("bearing", bearingIRI);
-        iriHashMap.put("speed", speedIRI);
-        iriHashMap.put("altitude", altitudeIRI);
-        iriHashMap.put("point", pointIRI);
-        return iriHashMap;
+    public List<String> getDataIRIs() {
+        return List.of(bearingIRI, speedIRI, altitudeIRI, pointIRI, sessionIRI);
     }
 
     @Override
@@ -97,6 +96,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
         speedList.clear();
         altitudeList.clear();
         geomLocationList.clear();
+        sessionIdList.clear();
     }
 
     @Override
@@ -105,6 +105,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
         Var altitude = Var.alloc("altitude");
         Var speed = Var.alloc("speed");
         Var point = Var.alloc("point");
+        Var session = Var.alloc("session");
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("saref", SAREF)
@@ -113,6 +114,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
                 .addPrefix("om", OM)
                 .addPrefix("sf", SF)
                 .addWhere(smartphoneIRINode, "saref:consistsOf", "?GPSDevice")
+                .addWhere(smartphoneIRINode, "ontodevice:hasSessionID", "?session")
                 .addWhere("?GPSDevice", "rdf:type", "ontodevice:GPSDevice")
                 .addWhere("?GPSDevice", "ontodevice:measures", "?Bearing")
                 .addWhere("?Bearing", "rdf:type", "ontodevice:Bearing")
@@ -127,7 +129,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
                 .addWhere(point, "rdf:type", "sf:Point");
 
         SelectBuilder sb = new SelectBuilder()
-                .addVar(bearing).addVar(altitude).addVar(speed).addVar(point).addWhere(wb);
+                .addVar(bearing).addVar(altitude).addVar(speed).addVar(point).addVar(session).addWhere(wb);
         JSONArray queryResult;
         try {
             queryResult = storeClient.executeQuery(sb.buildString());
@@ -142,6 +144,7 @@ public class LocationDataProcessor extends SensorDataProcessor {
         altitudeIRI = queryResult.getJSONObject(0).optString("altitude");
         speedIRI = queryResult.getJSONObject(0).optString("speed");
         pointIRI = queryResult.getJSONObject(0).optString("point");
+        sessionIRI = queryResult.getJSONObject(0).optString("session");
     }
 
     @Override

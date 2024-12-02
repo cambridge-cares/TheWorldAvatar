@@ -108,6 +108,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
             // extract the compressed data string from the request
             String deviceId = requestParams.getString("deviceId");
+            String sessionId = requestParams.getString("sessionId");
             LOGGER.info(deviceId + ": receive request");
             result.put("message", deviceId + ": receive request");
 
@@ -122,13 +123,13 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                         byte[] compressedData = Base64.getDecoder().decode(compressedDataString);
                         String decompressedData = decompressGzip(compressedData);
                         JSONArray payload = new JSONArray(decompressedData);
-                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload, sessionId);
 
                         task.addData(dataHashmap);
                     } else {
                         // retrieving non-compressed data
                         JSONArray payload = requestParams.getJSONArray("payload");
-                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload);
+                        HashMap<String, List<?>> dataHashmap = processRequestQueue(payload, sessionId);
                         LOGGER.info(deviceId + " is fetched and start to add data");
                         task.addData(dataHashmap);
                     }
@@ -181,7 +182,8 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         }
     }
 
-    private HashMap<String, List<?>> processRequestQueue(JSONArray payload) throws JsonProcessingException {
+    private HashMap<String, List<?>> processRequestQueue(JSONArray payload, String sessionId)
+            throws JsonProcessingException {
         // Accelerometer list
         ArrayList<OffsetDateTime> accel_tsList = new ArrayList<>();
         List<Double> accelList_x = new ArrayList<>();
@@ -206,6 +208,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         List<Double> speedList = new ArrayList<>();
         List<Double> altitudeList = new ArrayList<>();
         List<Point> geomLocationList = new ArrayList<>();
+        List<String> sessionIdList = new ArrayList<>();
 
         // Microphone lists
         ArrayList<OffsetDateTime> dBFS_tsList = new ArrayList<>();
@@ -266,6 +269,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                 point.setSrid(4326);
 
                 geomLocationList.add(point);
+                sessionIdList.add(sessionId);
             }
 
             if (sensor.textValue().equals("microphone")) {
@@ -302,6 +306,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         dataHashmap.put("speedList", speedList);
         dataHashmap.put("altitudeList", altitudeList);
         dataHashmap.put("geomLocationList", geomLocationList);
+        dataHashmap.put("sessionIdList", sessionIdList);
         dataHashmap.put("dBFS_tsList", dBFS_tsList);
         dataHashmap.put("dBFSList", dBFSList);
         dataHashmap.put("lightValue_tsList", lightValue_tsList);
