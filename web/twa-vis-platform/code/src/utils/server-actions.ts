@@ -182,18 +182,14 @@ export async function addEntity(agentApi: string, form: FieldValues, entityType:
  * Update the entity information within the knowledge graph.
  * 
  * @param {string} agentApi API endpoint.
- * @param {FieldValues} form Form storing the input data.
- * @param {string} entityType Target entity type.
+ * @param {string} jsonBody JSON body for updating.
  */
-export async function updateEntity(agentApi: string, form: FieldValues, entityType: string): Promise<HttpResponse> {
-  const reqBody: string = JSON.stringify({
-    ...form,
-    entity: entityType,
-  });
-  const response = await sendRequest(`${agentApi}/${entityType}/${form.id}`, "PUT", "application/json", reqBody);
+export async function updateEntity(agentApi: string, jsonBody: string): Promise<HttpResponse> {
+  const response = await sendRequest(agentApi, "PUT", "application/json", jsonBody);
   const responseBody: HttpResponse = await response.json();
   return { success: response.ok, ...responseBody };
 }
+
 
 /**
  * Delete the entity associated with the id.

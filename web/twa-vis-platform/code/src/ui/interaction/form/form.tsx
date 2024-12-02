@@ -150,7 +150,19 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         break;
       }
       case Paths.REGISTRY_EDIT: {
-        pendingResponse = await updateEntity(props.agentApi, formData, props.entityType);
+        if (props.isPrimaryEntity) {
+          const reqBody: string = JSON.stringify({
+            ...formData,
+            contract: formData.id,
+          });
+          pendingResponse = await updateEntity(`${props.agentApi}/contracts/draft`, reqBody);
+        } else {
+          const reqBody: string = JSON.stringify({
+            ...formData,
+            entity: props.entityType,
+          });
+          pendingResponse = await updateEntity(`${props.agentApi}/${props.entityType}/${formData.id}`, reqBody);
+        }
         break;
       }
       case SEARCH_FORM_TYPE: {
