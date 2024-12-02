@@ -189,7 +189,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             }}
             onClick={onApproval}
           />}
-          {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
+          {props.formType === Paths.REGISTRY && !response && (status?.message === ENTITY_STATUS.PENDING || !props.isPrimaryEntity) && <MaterialIconButton
             iconName={"edit"}
             className={styles["form-button"]}
             iconStyles={[styles["form-button-icon"]]}
@@ -199,7 +199,7 @@ export default function FormContainerComponent(props: Readonly<FormContainerComp
             }}
             onClick={openEditModal}
           />}
-          {props.formType === Paths.REGISTRY && !response && status?.message === ENTITY_STATUS.PENDING && <MaterialIconButton
+          {props.formType === Paths.REGISTRY && !response && (status?.message === ENTITY_STATUS.PENDING || !props.isPrimaryEntity) && <MaterialIconButton
             iconName={"delete"}
             className={styles["form-button"]}
             iconStyles={[styles["form-button-icon"]]}
