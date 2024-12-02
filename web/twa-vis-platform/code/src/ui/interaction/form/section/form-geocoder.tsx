@@ -192,15 +192,15 @@ export default function FormGeocoder(props: Readonly<FormGeocoderProps>) {
 
   return (
     <fieldset className={styles["form-fieldset"]}>
+      <legend className={styles["form-fieldset-label"]}>
+        {parseWordsForLabels(props.field.name[VALUE_KEY])}
+      </legend>
       {isInitialFetching.current &&
         <div className={styles["loader-container"]}>
-          <LoadingSpinner isSmall={false} />
+          <LoadingSpinner isSmall={true} />
         </div>
       }
       {!isInitialFetching.current && <>
-        <legend className={styles["form-fieldset-label"]}>
-          {parseWordsForLabels(props.field.name[VALUE_KEY])}
-        </legend>
         <div className={styles["form-fieldset-contents"]}>
           {postalCodeShape && <FormFieldComponent
             entityType={props.field.name[VALUE_KEY]}
