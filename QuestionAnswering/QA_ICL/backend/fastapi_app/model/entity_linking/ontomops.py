@@ -9,14 +9,14 @@ class CBULinkingArgs(BaseModel):
     formula: str
 
 
-class GBULinkingArgs(BaseModel):
-    typeModularity: int
-    typePlanarity: str
+class GBUTypeLinkingArgs(BaseModel):
+    modularity: int | None = None
+    planarity: str
 
-class GBUWithNumLinkingArgs(GBULinkingArgs):
+class GBUTypeWithNumLinkingArgs(GBUTypeLinkingArgs):
     num: int
 
 
 class AMLinkingArgs(BaseModel):
-    GBU: list[GBUWithNumLinkingArgs] = list()
+    GBUType: list[GBUTypeWithNumLinkingArgs] = list()
     symmetry_point_group: str | None = None

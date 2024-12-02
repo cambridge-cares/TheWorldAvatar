@@ -7,7 +7,7 @@ from constants.namespace import ONTOMOPS
 from model.entity_linking.ontomops import (
     AMLinkingArgs,
     CBULinkingArgs,
-    GBULinkingArgs,
+    GBUTypeLinkingArgs,
     MOPLinkingArgs,
 )
 from services.sparql import SparqlClient, get_ontomops_endpoint
@@ -26,7 +26,7 @@ class OntomopsLinkerManager(LinkerManager):
         return {
             "mops:MetalOrganicPolyhedron": self.linkMOP,
             "mops:ChemicalBuildingUnit": self.linkCBU,
-            "mops:GenericBuildingUnit": self.linkGBU,
+            "mops:GenericBuildingUnitType": self.linkGBUType,
             "mops:AssemblyModel": self.linkAM,
         }
 
@@ -72,10 +72,10 @@ WHERE {{
         iris = [binding["CBU"] for binding in bindings]
         return iris
 
-    def linkGBU(self, text: str | None, **kwargs):
+    def linkGBUType(self, text: str | None, **kwargs):
         logger.info(f"Linking generic building unit with args: {kwargs}")
         try:
-            args = GBULinkingArgs.model_validate(kwargs)
+            args = GBUTypeLinkingArgs.model_validate(kwargs)
         except Exception as e:
             logger.error(
                 f"Invalid linking args for generic building unit with error: {e}"
@@ -88,7 +88,7 @@ WHERE {{
 SELECT DISTINCT *
 WHERE {{
     ?GBU mops:hasGBUType ?GBUType .
-    ?GBUType mops:hasModularity {args.typeModularity} ; mops:hasPlanarity "{args.typePlanarity}" .
+    ?GBUType mops:hasModularity {args.modularity} ; mops:hasPlanarity "{args.planarity}" .
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["GBU"] for binding in bindings]
@@ -106,12 +106,12 @@ WHERE {{
         clauses_GBU = [
             *(
                 triple
-                for i, gbu_args in enumerate(args.GBU)
+                for i, gbu_type_args in enumerate(args.GBUType)
                 for triple in [
                     f"?AM mops:hasGenericBuildingUnit ?GBU{i} ; mops:hasGenericBuildingUnitNumber ?GBUNum{i} .",
                     f'?GBU{i} mops:hasGBUType ?GBUType{i} .',
-                    f'?GBUType{i} mops:hasModularity {gbu_args.typeModularity} ; mops:hasPlanarity "{gbu_args.typePlanarity}" .',
-                    f"?GBUNum{i} mops:hasUnitNumberValue {gbu_args.num} .",
+                    f'?GBUType{i} mops:hasModularity {gbu_type_args.modularity} ; mops:hasPlanarity "{gbu_type_args.planarity}" .',
+                    f"?GBUNum{i} mops:hasUnitNumberValue {gbu_type_args.num} .",
                     f"?GBUNum{i} mops:isNumberOf ?GBU{i} .",
                 ]
             ),
@@ -123,12 +123,12 @@ WHERE {{
                         [
                             f"?AM mops:hasGenericBuildingUnit ?GBUExclude .",
                             "FILTER ( ?GBUExclude NOT IN ( {} ) )".format(
-                                ", ".join(f"?GBU{i}" for i in range(len(args.GBU)))
+                                ", ".join(f"?GBU{i}" for i in range(len(args.GBUType)))
                             ),
                         ]
                     )
                 )
-                if args.GBU
+                if args.GBUType
                 else None
             ),
         ]
