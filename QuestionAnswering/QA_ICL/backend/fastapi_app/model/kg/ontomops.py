@@ -19,5 +19,9 @@ class OntomopsAM(RDFEntity):
 
 
 class OntomopsGBU(RDFEntity):
+    modularity: int = RDFField(path=ONTOMOPS.hasGBUType / ONTOMOPS.hasModularity)
+    planarity: str = RDFField(path=ONTOMOPS.hasGBUType / ONTOMOPS.hasPlanarity)
+
+class OntomopsGBUType(RDFEntity):
     modularity: int = RDFField(path=ONTOMOPS.hasModularity)
     planarity: str = RDFField(path=ONTOMOPS.hasPlanarity)
