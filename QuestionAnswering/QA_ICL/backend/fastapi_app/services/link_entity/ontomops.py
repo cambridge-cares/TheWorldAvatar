@@ -87,7 +87,8 @@ WHERE {{
         
 SELECT DISTINCT *
 WHERE {{
-    ?GBU mops:hasModularity {args.modularity} ; mops:hasPlanarity "{args.planarity}" .
+    ?GBU mops:hasGBUType ?GBUType .
+    ?GBUType mops:hasModularity {args.typeModularity} ; mops:hasPlanarity "{args.typePlanarity}" .
 }}"""
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["GBU"] for binding in bindings]
@@ -108,7 +109,8 @@ WHERE {{
                 for i, gbu_args in enumerate(args.GBU)
                 for triple in [
                     f"?AM mops:hasGenericBuildingUnit ?GBU{i} ; mops:hasGenericBuildingUnitNumber ?GBUNum{i} .",
-                    f'?GBU{i} mops:hasModularity {gbu_args.modularity} ; mops:hasPlanarity "{gbu_args.planarity}" .',
+                    f'?GBU{i} mops:hasGBUType ?GBUType{i} .',
+                    f'?GBUType{i} mops:hasModularity {gbu_args.typeModularity} ; mops:hasPlanarity "{gbu_args.typePlanarity}" .',
                     f"?GBUNum{i} mops:hasUnitNumberValue {gbu_args.num} .",
                     f"?GBUNum{i} mops:isNumberOf ?GBU{i} .",
                 ]

@@ -10,9 +10,8 @@ class CBULinkingArgs(BaseModel):
 
 
 class GBULinkingArgs(BaseModel):
-    modularity: int
-    planarity: str
-
+    typeModularity: int
+    typePlanarity: str
 
 class GBUWithNumLinkingArgs(GBULinkingArgs):
     num: int
