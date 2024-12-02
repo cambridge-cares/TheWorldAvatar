@@ -1,20 +1,23 @@
 import styles from '../form.module.css';
 import fieldStyles from '../field/field.module.css';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import Select from 'react-select';
 
-import { FormOptionType, SEARCH_FORM_TYPE } from 'types/form';
+import { FormOptionType, RegistryFieldValues, SEARCH_FORM_TYPE } from 'types/form';
 import { selectorStyles } from 'ui/css/selector-style';
 import { parseWordsForLabels } from 'utils/client-utils';
 import FormCheckboxField from '../field/form-checkbox-field';
-import { FORM_STATES } from '../form-utils';
+import { FORM_STATES, getDefaultVal } from '../form-utils';
 import FormFieldComponent from '../field/form-field';
 import { Paths } from 'io/config/routes';
+import { sendGetRequest } from 'utils/server-actions';
+import LoadingSpinner from 'ui/graphic/loader/spinner';
 
 interface FormScheduleProps {
   fieldId: string;
+  agentApi: string;
   form: UseFormReturn;
   options?: {
     disabled?: boolean;
@@ -27,6 +30,7 @@ export const daysOfWeek: string[] = [FORM_STATES.SUN, FORM_STATES.MON, FORM_STAT
  * This component renders a form schedule as a form section.
  * 
  * @param {string} fieldId Field name.
+ * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {UseFormReturn} form A react-hook-form hook containing methods and state for managing the associated form.
  * @param {boolean} options.disabled Optional indicator if the fields should be disabled. Defaults to false.
  */
@@ -38,15 +42,39 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
   const alternateService: string = "Alternate Day Service";
   const scheduleType: string = "schedule";
   const isDisabledOption: { disabled: boolean; } = { disabled: formType == Paths.REGISTRY || formType == Paths.REGISTRY_DELETE };
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   // Define the state to store the selected value
   const [selectedServiceOption, setSelectedServiceOption] = useState<string>(
     props.form.getValues(FORM_STATES.RECURRENCE) == 0 ? singleService :
       props.form.getValues(FORM_STATES.RECURRENCE) == -1 ? alternateService : regularService
   );
 
-  if (formType == Paths.REGISTRY_ADD || formType == SEARCH_FORM_TYPE) {
-    props.form.setValue(FORM_STATES.RECURRENCE, 1);
-  }
+  useEffect(() => {
+    const getAndSetScheduleDefaults = async (): Promise<void> => {
+      const response: string = await sendGetRequest(`${props.agentApi}/contracts/schedule/${props.form.getValues("id")}`);
+      const jsonResponse: RegistryFieldValues = JSON.parse(response);
+
+      // Retrieve recurrence and selected service option
+      const recurrence: number = getDefaultVal(FORM_STATES.RECURRENCE, jsonResponse[FORM_STATES.RECURRENCE].value, formType) as number;
+      setSelectedServiceOption(recurrence == 0 ? singleService : recurrence == -1 ? alternateService : regularService);
+      props.form.setValue(FORM_STATES.RECURRENCE, recurrence);
+
+      props.form.setValue(FORM_STATES.START_DATE, getDefaultVal(FORM_STATES.START_DATE, jsonResponse[FORM_STATES.START_DATE.replace(/\s+/g, "_")].value, formType));
+      props.form.setValue(FORM_STATES.END_DATE, getDefaultVal(FORM_STATES.END_DATE, jsonResponse[FORM_STATES.END_DATE.replace(/\s+/g, "_")].value, formType));
+      props.form.setValue(FORM_STATES.TIME_SLOT_START, getDefaultVal(FORM_STATES.TIME_SLOT_START, jsonResponse["start_time"].value, formType));
+      props.form.setValue(FORM_STATES.TIME_SLOT_END, getDefaultVal(FORM_STATES.TIME_SLOT_END, jsonResponse["end_time"].value, formType));
+      daysOfWeek.map(dayOfWeek => {
+        props.form.setValue(dayOfWeek, getDefaultVal(dayOfWeek, jsonResponse[dayOfWeek].value, formType));
+      });
+      setIsLoading(false);
+    }
+    if (formType == Paths.REGISTRY_ADD || formType == SEARCH_FORM_TYPE) {
+      props.form.setValue(FORM_STATES.RECURRENCE, 1);
+      setIsLoading(false);
+    } else {
+      getAndSetScheduleDefaults();
+    }
+  }, [])
 
   // Updates the service description whenever the service option changes
   const serviceDescription = useMemo((): string => {
@@ -76,7 +104,8 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
       <legend className={styles["form-fieldset-label"]}>
         {parseWordsForLabels(props.fieldId)}
       </legend>
-      <div className={styles["form-fieldset-contents"]}>
+      {isLoading && <LoadingSpinner isSmall={true} />}
+      {!isLoading && <div className={styles["form-fieldset-contents"]}>
         <div className={styles["schedule-occurrence-container"]}>
           <label className={fieldStyles["field-text"]} htmlFor="select-input">Service type:</label>
           <Select
@@ -186,6 +215,6 @@ export default function FormSchedule(props: Readonly<FormScheduleProps>) {
             />
           </div>
         </div>
-      </div>
+      </div>}
     </fieldset>);
 }

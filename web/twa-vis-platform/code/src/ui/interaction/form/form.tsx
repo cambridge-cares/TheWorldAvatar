@@ -225,6 +225,7 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
                 return <FormSchedule
                   key={fieldProp.name[VALUE_KEY] + index}
                   fieldId={fieldProp.name[VALUE_KEY]}
+                  agentApi={props.agentApi}
                   form={form}
                   options={{
                     disabled: disableAllInputs,
