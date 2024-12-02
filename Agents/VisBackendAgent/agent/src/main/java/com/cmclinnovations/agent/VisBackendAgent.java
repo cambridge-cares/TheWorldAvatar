@@ -192,7 +192,7 @@ public class VisBackendAgent {
     ResponseEntity<ApiResponse> deleteResponse = this.deleteService.delete(type, id);
     if (deleteResponse.getStatusCode().equals(HttpStatus.OK)) {
       ResponseEntity<ApiResponse> addResponse = this.addService.instantiate(type, id, updatedEntity);
-      if (addResponse.getStatusCode() == HttpStatus.OK) {
+      if (addResponse.getStatusCode() == HttpStatus.CREATED) {
         LOGGER.info("{} has been successfully updated for {}", type, id);
         return new ResponseEntity<>(
             new ApiResponse(type + " has been successfully updated for " + id,
