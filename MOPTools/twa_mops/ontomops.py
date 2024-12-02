@@ -53,6 +53,9 @@ HasGBUCoordinateCenter = ObjectProperty.create_from_base('HasGBUCoordinateCenter
 HasCBUAssemblyCenter = ObjectProperty.create_from_base('HasCBUAssemblyCenter', OntoMOPs)
 HasBindingPoint = ObjectProperty.create_from_base('HasBindingPoint', OntoMOPs)
 HasGBUType = ObjectProperty.create_from_base('HasGBUType', OntoMOPs)
+HasCBUAssemblyTransformation = ObjectProperty.create_from_base('HasCBUAssemblyTransformation', OntoMOPs)
+Transforms = ObjectProperty.create_from_base('Transforms', OntoMOPs)
+AlignsTo = ObjectProperty.create_from_base('AlignsTo', OntoMOPs)
 # for pore ring
 HasPoreRing = ObjectProperty.create_from_base('HasPoreRing', OntoMOPs)
 IsFormedBy = ObjectProperty.create_from_base('IsFormedBy', OntoMOPs)
@@ -80,6 +83,9 @@ HasBindingFragment = DatatypeProperty.create_from_base('HasBindingFragment', Ont
 HasX = DatatypeProperty.create_from_base('HasX', OntoMOPs)
 HasY = DatatypeProperty.create_from_base('HasY', OntoMOPs)
 HasZ = DatatypeProperty.create_from_base('HasZ', OntoMOPs)
+QuaternionToRotate = DatatypeProperty.create_from_base('QuaternionToRotate', OntoMOPs)
+ScaleFactorToAlignCoordinateCenter = DatatypeProperty.create_from_base('ScaleFactorToAlignCoordinateCenter', OntoMOPs)
+TranslationVectorToAlignOrigin = DatatypeProperty.create_from_base('TranslationVectorToAlignOrigin', OntoMOPs)
 # for pore ring
 HasProbingVector = DatatypeProperty.create_from_base('HasProbingVector', OntoMOPs)
 
@@ -675,6 +681,15 @@ class ChemicalBuildingUnit(BaseClass):
         return fig
 
 
+class CBUAssemblyTransformation(BaseClass):
+    rdfs_isDefinedBy = OntoMOPs
+    transforms: Transforms[ChemicalBuildingUnit]
+    alignsTo: AlignsTo[GBUCoordinateCenter]
+    quaternionToRotate: QuaternionToRotate[str]
+    scaleFactorToAlignCoordinateCenter: ScaleFactorToAlignCoordinateCenter[float]
+    translationVectorToAlignOrigin: TranslationVectorToAlignOrigin[str]
+
+
 class MetalOrganicPolyhedron(CoordinationCage):
     hasAssemblyModel: HasAssemblyModel[AssemblyModel]
     hasCavity: Optional[HasCavity[Cavity]] = None
@@ -684,6 +699,7 @@ class MetalOrganicPolyhedron(CoordinationCage):
     hasMolecularWeight: ontospecies.HasMolecularWeight[ontospecies.MolecularWeight]
     hasGeometry: Optional[ontospecies.HasGeometry[ontospecies.Geometry]] = None
     hasCCDCNumber: Optional[HasCCDCNumber[str]] = None
+    hasCBUAssemblyTransformation: Optional[HasCBUAssemblyTransformation[CBUAssemblyTransformation]] = None
     hasMOPFormula: HasMOPFormula[str]
     hasPoreSize: Optional[HasPoreSize[PoreSize]] = None
     hasOuterDiameter: Optional[HasOuterDiameter[om.Diameter]] = None
@@ -859,7 +875,20 @@ class MetalOrganicPolyhedron(CoordinationCage):
             for gcc, pts in gcc_pts.items():
                 _lst_points.extend(pts)
         _atoms = [p for p in _lst_points if p.label.lower() not in ['x', 'center']]
-        adjusted_atoms = Point.translate_points_to_target_centroid(_atoms, Point.from_array([0, 0, 0]))
+        adjusted_atoms, translation_vector_to_origin = Point.translate_points_to_target_centroid(_atoms, Point.from_array([0, 0, 0]))
+
+        # collect information on the CBU transformation
+        cbu_assembly_transformation_lst = []
+        for cbu_iri, rm_to_gbu in cbu_rotation_matrix.items():
+            for gc in rm_to_gbu:
+                cbu_assembly_transformation_lst.append(CBUAssemblyTransformation(
+                    transforms=cbu_iri,
+                    alignsTo=gc,
+                    quaternionToRotate=rm_to_gbu[gc][1].combine(rm_to_gbu[gc][0]).as_quaternion_str(),
+                    scaleFactorToAlignCoordinateCenter=scaling_factor_cbu1 if gc1.instance_iri in rm_to_gbu else scaling_factor_cbu2,
+                    translationVectorToAlignOrigin=translation_vector_to_origin.as_str()
+                ))
+
         # calculate cavity (in terms of largest inner sphere diameter), outer diameter, and pore size diameter
         inner_diameter_atom, inner_diameter, inner_volume = cap.largest_inner_sphere_diameter(adjusted_atoms)
         outer_diameter = cap.outer_diameter(adjusted_atoms)
@@ -902,6 +931,7 @@ class MetalOrganicPolyhedron(CoordinationCage):
             hasCavity=Cavity(hasLargestInnerSphereDiameter=om.Diameter(hasValue=om.Measure(hasNumericalValue=inner_diameter, hasUnit=om.angstrom))),
             hasOuterDiameter=om.Diameter(hasValue=om.Measure(hasNumericalValue=outer_diameter, hasUnit=om.angstrom)),
             hasPoreSize=pore_sizes,
+            hasCBUAssemblyTransformation=cbu_assembly_transformation_lst
         )
 
     def visualise(self, sparql_client = None):

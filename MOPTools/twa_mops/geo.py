@@ -1,5 +1,5 @@
 # This file contains utility classes for geometric calculations
-from typing import List, Optional
+from typing import List, Tuple, Optional
 from itertools import combinations
 import numpy as np
 from scipy.spatial.transform import Rotation as R
@@ -15,8 +15,18 @@ class RotationMatrix():
     def apply(self, vector: np.ndarray):
         return self.matrix @ vector
 
+    def combine(self, other: 'RotationMatrix'):
+        return RotationMatrix(matrix=self.matrix @ other.matrix)
+
     def as_matrix(self):
         return self.matrix
+
+    def as_quaternion(self):
+        return R.from_matrix(self.matrix).as_quat()
+
+    def as_quaternion_str(self):
+        q = self.as_quaternion()
+        return f'{q[0]:f}#{q[1]:f}#{q[2]:f}#{q[3]:f}'
 
     @classmethod
     def identity(cls):
@@ -94,10 +104,10 @@ class Point(BaseModel):
         return cls(x=point.x + vector.x, y=point.y + vector.y, z=point.z + vector.z, label=point.label)
 
     @classmethod
-    def translate_points_to_target_centroid(cls, points: List['Point'], target_centroid: 'Point'):
+    def translate_points_to_target_centroid(cls, points: List['Point'], target_centroid: 'Point') -> Tuple[List['Point'], 'Vector']:
         current_centroid = cls.centroid(points)
         translation = current_centroid.get_translation_vector_to(target_centroid)
-        return [cls.translate(pt, translation) for pt in points]
+        return [cls.translate(pt, translation) for pt in points], translation
 
     @classmethod
     def farthest_pair(cls, points: List['Point']):
@@ -161,6 +171,9 @@ class Vector(BaseModel):
 
     def __repr__(self):
         return f"Vector({self.x}, {self.y}, {self.z})"
+
+    def as_str(self):
+        return f"{self.x:f}#{self.y:f}#{self.z:f}"
 
     @property
     def as_array(self):
