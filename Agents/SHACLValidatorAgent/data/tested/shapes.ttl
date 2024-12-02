@@ -1,0 +1,669 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix om-2: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix mpo: <http://www.theworldavatar.com/kg/ontomatpassport#> .
+
+
+#Each Product, Component, ConstituentMaterial, Constituent or ConstituentPart must have a unique identifier.
+mpo:ProductIdShape a sh:NodeShape ;
+    sh:targetClass mpo:Product ; # Apply the shape to all mpo:Product instances
+    sh:property [
+        sh:path mpo:id ; # Check the mpo:id property
+        sh:message "Each Product must have a unique identifier (mpo:id)" ;
+        sh:sparql [
+            sh:prefixes (mpo:) ; 
+            sh:select """
+                PREFIX mpo: <http://www.theworldavatar.com/kg/ontomatpassport#>
+                SELECT ?this
+                WHERE {
+                    ?this mpo:id ?id1 .
+                    ?other mpo:id ?id2 .
+                    ?this a mpo:Product .
+                    ?other a mpo:Product .
+                    FILTER ((?id1 = ?id2 && ?this != ?other) || (?id1 != ?id2 && ?this = ?other)) # Find cases where mpo:id is not unique
+                }
+            """ ;
+        ] ;
+    ] .
+
+mpo:ComponentIdShape a sh:NodeShape ;
+    sh:targetClass mpo:Component ; # Apply the shape to all mpo:Product instances
+    sh:property [
+        sh:path mpo:id ; # Check the mpo:id property
+        sh:message "Each Component must have a unique identifier (mpo:id)" ;
+        sh:sparql [
+            sh:prefixes (mpo:) ; 
+            sh:select """
+                PREFIX mpo: <http://www.theworldavatar.com/kg/ontomatpassport#>
+                SELECT ?this
+                WHERE {
+                    ?this mpo:id ?id1 .
+                    ?other mpo:id ?id2 .
+                    ?this a mpo:Component .
+                    ?other a mpo:Component .
+                    FILTER ((?id1 = ?id2 && ?this != ?other) || (?id1 != ?id2 && ?this = ?other)) # Find cases where mpo:id is not unique
+                }
+            """ ;
+        ] ;
+    ] .
+
+mpo:ConstituentMaterialIdShape a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentMaterial ; # Apply the shape to all mpo:Product instances
+    sh:property [
+        sh:path mpo:id ; # Check the mpo:id property
+        sh:message "Each ConstituentMaterial must have a unique identifier (mpo:id)" ;
+        sh:sparql [
+            sh:prefixes (mpo:) ; 
+            sh:select """
+                PREFIX mpo: <http://www.theworldavatar.com/kg/ontomatpassport#>
+                SELECT ?this
+                WHERE {
+                    ?this mpo:id ?id1 .
+                    ?other mpo:id ?id2 .
+                    ?this a mpo:ConstituentMaterial .
+                    ?other a mpo:ConstituentMaterial .
+                    FILTER ((?id1 = ?id2 && ?this != ?other) || (?id1 != ?id2 && ?this = ?other)) # Find cases where mpo:id is not unique
+                }
+            """ ;
+        ] ;
+    ] .
+
+mpo:ConstituenttIdShape a sh:NodeShape ;
+    sh:targetClass mpo:Constituent ; # Apply the shape to all mpo:Product instances
+    sh:property [
+        sh:path mpo:id ; # Check the mpo:id property
+        sh:message "Each Constituent must have a unique identifier (mpo:id)" ;
+        sh:sparql [
+            sh:prefixes (mpo:) ; 
+            sh:select """
+                PREFIX mpo: <http://www.theworldavatar.com/kg/ontomatpassport#>
+                SELECT ?this
+                WHERE {
+                    ?this mpo:id ?id1 .
+                    ?other mpo:id ?id2 .
+                    ?this a mpo:Constituent .
+                    ?other a mpo:Constituent .
+                    FILTER ((?id1 = ?id2 && ?this != ?other) || (?id1 != ?id2 && ?this = ?other)) # Find cases where mpo:id is not unique
+                }
+            """ ;
+        ] ;
+    ] .
+
+mpo:ConstituentPartIdShape a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentPart ; # Apply the shape to all mpo:Product instances
+    sh:property [
+        sh:path mpo:id ; # Check the mpo:id property
+        sh:message "Each ConstituentPart must have a unique identifier (mpo:id)" ;
+        sh:sparql [
+            sh:prefixes (mpo:) ; 
+            sh:select """
+                PREFIX mpo: <http://www.theworldavatar.com/kg/ontomatpassport#>
+                SELECT ?this
+                WHERE {
+                    ?this mpo:id ?id1 .
+                    ?other mpo:id ?id2 .
+                    ?this a mpo:ConstituentPart .
+                    ?other a mpo:ConstituentPart .
+                    FILTER ((?id1 = ?id2 && ?this != ?other) || (?id1 != ?id2 && ?this = ?other)) # Find cases where mpo:id is not unique
+                }
+            """ ;
+        ] ;
+    ] .
+
+#Each Product or Component must have at least one associated manufacturer.
+mpo:ProductManufacturerShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Product ;
+    
+    sh:property [
+        sh:path mpo:hasManufacturer ;
+        sh:minCount 1 ;
+        sh:node mpo:Manufacturer ;
+    ] .
+
+mpo:ComponentManufacturerShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Component ;
+
+    sh:property [
+        sh:path mpo:hasManufacturer ;
+        sh:minCount 1 ;
+        sh:node mpo:Manufacturer ;
+    ] .
+
+#It indicates whether individual classes contains hazardous materials.
+mpo:ProductHazardousShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Product ;
+    sh:or (
+        # Non-hazardous products
+        [
+            sh:not [
+                sh:path mpo:isHazardous ;
+                sh:hasValue true ;
+            ]
+        ]
+        # Hazardous products with a compulsory hazard summary document
+        [
+            sh:property [
+                sh:path mpo:hasHazardSummaryDocument ;
+                sh:minCount 1 ;
+                sh:nodeKind sh:IRI ;
+                sh:pattern "^https?://.+" ;
+            ]
+        ]
+    ) ;
+    sh:message "If a product is hazardous, it must have a hazard summary document through a valid URL starting with 'http://' or 'https://'." .
+
+mpo:ComponentHazardousShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Component ;
+    sh:or (
+        # Non-hazardous Component
+        [
+            sh:not [
+                sh:path mpo:isHazardous ;
+                sh:hasValue true ;
+            ]
+        ]
+        # Hazardous Component with a compulsory hazard summary document
+        [
+            sh:property [
+                sh:path mpo:hasHazardSummaryDocument ;
+                sh:minCount 1 ;
+                sh:nodeKind sh:IRI ;
+                sh:pattern "^https?://.+" ;
+            ] ;
+        ]
+    ) ;
+    sh:message "If a product is hazardous, it must have a hazard summary document." .
+
+mpo:ConstituentMaterialHazardousShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentMaterial ;
+    sh:or (
+        # Non-hazardous ConstituentMaterial
+        [
+            sh:not [
+                sh:path mpo:isHazardous ;
+                sh:hasValue true ;
+            ]
+        ]
+        # Hazardous ConstituentMaterial with a compulsory hazard summary document
+        [
+            sh:property [
+                sh:path mpo:hasHazardSummaryDocument ;
+                sh:minCount 1 ;
+                sh:nodeKind sh:IRI ;
+                sh:pattern "^https?://.+" ;
+            ] ;
+        ]
+    ) ;
+    sh:message "If a product is hazardous, it must have a hazard summary document." .
+
+mpo:ConstituentHazardousShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Constituent ;
+    sh:or (
+        # Non-hazardous Constituent
+        [
+            sh:not [
+                sh:path mpo:isHazardous ;
+                sh:hasValue true ;
+            ]
+        ]
+        # Hazardous Constituent with a compulsory hazard summary document
+        [
+            sh:property [
+                sh:path mpo:hasHazardSummaryDocument ;
+                sh:minCount 1 ;
+                sh:nodeKind sh:IRI ;
+                sh:pattern "^https?://.+" ;
+            ] ;
+        ]
+    ) ;
+    sh:message "If a product is hazardous, it must have a hazard summary document." .
+
+mpo:ConstituentPartHazardousShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentPart ;
+    sh:or (
+        # Non-hazardous ConstituentPart
+        [
+            sh:not [
+                sh:path mpo:isHazardous ;
+                sh:hasValue true ;
+            ]
+        ]
+        # Hazardous ConstituentPart with a compulsory hazard summary document
+        [
+            sh:property [
+                sh:path mpo:hasHazardSummaryDocument ;
+                sh:minCount 1 ;
+                sh:nodeKind sh:IRI ;
+                sh:pattern "^https?://.+" ;
+            ] ;
+        ]
+    ) ;
+    sh:message "If a product is hazardous, it must have a hazard summary document." .
+
+#A Product or Component must have at least a GTIN or EAN
+mpo:ProductGtinEanShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Product ;
+    sh:or (
+        [ 
+            sh:path mpo:hasGTIN ; 
+            sh:minCount 1 ;
+            sh:datatype xsd:string ;
+            sh:pattern "^\\d+$" ;
+            sh:or(
+                [
+                    sh:minLength 8 ;  
+                    sh:maxLength 8 ;
+                ][
+                    sh:minLength 12 ;  
+                    sh:maxLength 14 ; 
+                ]
+            )
+        ]
+        [ 
+            sh:path mpo:hasEAN ; 
+            sh:minCount 1 ;
+            sh:datatype xsd:string ;
+            sh:pattern "^\\d+$" ;
+            sh:or(
+                [
+                    sh:minLength 8 ;  
+                    sh:maxLength 8 ;
+                ][
+                    sh:minLength 13 ;  
+                    sh:maxLength 13 ;
+                ]
+            )
+        ]
+    ) ;
+    sh:message "A Product must have at least a GTIN or EAN." .
+
+mpo:ComponentGtinEanShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Component ;
+    sh:or (
+        [ 
+            sh:path mpo:hasGTIN ; 
+            sh:minCount 1 ;
+            sh:datatype xsd:string ;
+            sh:pattern "^\\d+$" ;
+            sh:or(
+                [
+                    sh:minLength 8 ;  
+                    sh:maxLength 8 ;
+                ][
+                    sh:minLength 12 ;  
+                    sh:maxLength 14 ; 
+                ]
+            )
+        ]
+        [ 
+            sh:path mpo:hasEAN ; 
+            sh:minCount 1 ;
+            sh:datatype xsd:string ;
+            sh:pattern "^\\d+$" ;
+            sh:or(
+                [
+                    sh:minLength 8 ;  
+                    sh:maxLength 8 ;
+                ][
+                    sh:minLength 13 ;  
+                    sh:maxLength 13 ;
+                ]
+            )
+        ]
+    ) ;
+    sh:message "A Component must have at least a GTIN or EAN." .
+
+#Material Circularity Indicator of a <Product,Component,ConstituentMaterial,Constituent,ConstituentPart> must indicate the value between 0 and 1.
+mpo:ProductMaterialCircularityShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Product ;
+    sh:or(
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive 0 ;
+                sh:maxInclusive 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "Material Circularity Indicator value should be a decimal between 0 and 1." .
+
+mpo:ComponentMaterialCircularityShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Component ;
+    sh:or(
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive 0 ;
+                sh:maxInclusive 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "Material Circularity Indicator value a of Component should be a decimal between 0 and 1." .
+
+mpo:ConstituentMaterialMaterialCircularityShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentMaterial ;
+    sh:or(
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive 0 ;
+                sh:maxInclusive 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "Material Circularity Indicator value a of ConstituentMaterial should be a decimal between 0 and 1." .
+
+mpo:ConstituentMaterialCircularityShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Constituent ;
+    sh:or(
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive 0 ;
+                sh:maxInclusive 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "Material Circularity Indicator value of a Constituent should be a decimal between 0 and 1." .
+
+mpo:ConstituentPartMaterialCircularityShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentPart ;
+    sh:or(
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:hasMaterialCircularityIndicator ;
+                sh:datatype xsd:decimal ;
+                sh:minInclusive 0 ;
+                sh:maxInclusive 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "Material Circularity Indicator value of a ConstituentPart should be a decimal between 0 and 1." .
+
+#Each <product,Component,ConstituentMaterial,Constituent,ConstituentPart> must have its mass instantiated.
+mpo:ProductMassInKgShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Product ;
+    sh:property [
+        sh:path mpo:hasMassInKg ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+mpo:ComponentMassInKgShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Component ;
+    sh:property [
+        sh:path mpo:hasMassInKg ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+mpo:ConstituentMaterialMassInKgShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentMaterial ;
+    sh:property [
+        sh:path mpo:hasMassInKg ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+mpo:ConstituentMassInKgShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Constituent ;
+    sh:property [
+        sh:path mpo:hasMassInKg ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+mpo:ConstituentPartMassInKgShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentPart ;
+    sh:property [
+        sh:path mpo:hasMassInKg ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+#Specify whether a  <product,Component,ConstituentMaterial,Constituent,ConstituentPart> is biodegradable.
+mpo:CheckBiodegradablePresenceShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Product ;
+    sh:or (
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:datatype xsd:boolean ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "If provided with Product, 'isBiodegradable' must be a boolean and have a single value." .
+
+mpo:ComponentBiodegradablePropertyShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Component ;
+    sh:or (
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:datatype xsd:boolean ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "If provided with Component, 'isBiodegradable' must be a boolean and have a single value." .
+
+mpo:ConstituentMaterialBiodegradablePropertyShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentMaterial ;
+    sh:or (
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:datatype xsd:boolean ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "If provided with ConstituentMaterial, 'isBiodegradable' must be a boolean and have a single value." .
+
+mpo:ConstituentBiodegradablePropertyShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Constituent ;
+    sh:or (
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:datatype xsd:boolean ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "If provided with Constituent, 'isBiodegradable' must be a boolean and have a single value." .
+
+mpo:ConstituentPartBiodegradablePropertyShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:ConstituentPart ;
+    sh:or (
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:minCount 0 ;  # Explicitly state it may be absent
+                sh:maxCount 0 ;
+            ]
+        ]
+        [
+            sh:property [
+                sh:path mpo:isBiodegradable ;
+                sh:datatype xsd:boolean ;
+                sh:minCount 1 ;
+                sh:maxCount 1 ;
+            ]
+        ]
+    ) ;
+    sh:message "If provided with ConstituentPart, 'isBiodegradable' must be a boolean and have a single value." .
+
+###### Mass definition for Sustainability Properties ##########
+#Specify the mass of Virgin Content in a Product
+mpo:VirginContentMassShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:VirginContentMass ;
+    sh:property [
+        sh:path om-2:hasValue ;
+        sh:node mpo:MeasureShape ;
+    ] .
+
+#Specify the mass of recycled content in a Product
+mpo:RecycledContentShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:RecycledContent ;
+    sh:property [
+        sh:path om-2:hasValue ;
+        sh:node mpo:MeasureShape ;
+    ] .
+
+#Each Product must have the total waste mass
+mpo:WasteMassShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:WasteMass ;
+    sh:property [
+        sh:path om-2:hasValue ;
+        sh:node mpo:MeasureShape ;
+    ] .
+
+#Must specify w_0, waste mass after taking recyclable and reusable portions
+mpo:WasteMassAfterTakingRecyclableAndReusablePortionShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:WasteMassAfterTakingRecyclableAndReusablePortion ;
+    sh:property [
+        sh:path om-2:hasValue ;
+        sh:node mpo:MeasureShape ;
+    ] .
+
+#Must specify w_c portions
+mpo:WasteMassGeneratedInRecyclingCollectionPortionShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:WasteMassGeneratedInRecyclingCollectionPortion ;
+    sh:property [
+        sh:path om-2:hasValue ;
+        sh:node mpo:MeasureShape ;
+    ] .
+
+#Must Specify w_f portions
+mpo:WasteMassGeneratedInProducingRecycledFeedstockShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:WasteMassGeneratedInProducingRecycledFeedstock ;
+    sh:property [
+        sh:path om-2:hasValue ;
+        sh:node mpo:MeasureShape ;
+    ] .
+
+###Defining the shape for Measure #######
+mpo:MeasureShape
+    a sh:NodeShape ;
+    sh:targetClass mpo:Measure ;
+    sh:property [
+        sh:path om-2:hasNumericValue ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0 ;
+        sh:minCount 1 ;
+        sh:maxCount 1;
+    ] ;
+    sh:property [
+        sh:path om-2:hasUnit ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1;
+    ] .
