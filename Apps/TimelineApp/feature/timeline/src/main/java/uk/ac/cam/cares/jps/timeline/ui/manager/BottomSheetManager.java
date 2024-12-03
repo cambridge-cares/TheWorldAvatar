@@ -18,7 +18,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.apache.log4j.Logger;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -89,7 +88,7 @@ public class BottomSheetManager {
         connectionViewModel.getHasConnection().observe(lifecycleOwner, hasConnection -> {
             if (hasConnection) {
                 setBottomSheet(normalBottomSheet);
-                trajectoryViewModel.getTrajectory(convertDateFormat(normalBottomSheetViewModel.selectedDate.getValue()));
+                trajectoryViewModel.getTrajectory(normalBottomSheetViewModel.selectedDate.getValue());
             } else {
                 errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.CONNECTION_ERROR);
                 setAndExtendBottomSheet(errorBottomSheet);
@@ -105,7 +104,7 @@ public class BottomSheetManager {
     }
 
     private void configureTrajectoryRetrieval() {
-        trajectoryViewModel.isFetchingTrajecjtory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
+        trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
         trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheet::showTrajectoryInfo);
     }
 
@@ -163,6 +162,7 @@ public class BottomSheetManager {
                 // retry register phone to user
                 errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.ACCOUNT_ERROR);
             } else {
+                LOGGER.error("error in trajectory retrieval: " + error.getMessage(), error);
                 errorBottomSheet.setErrorType(ErrorBottomSheet.ErrorType.TRAJECTORY_ERROR);
             }
             setAndExtendBottomSheet(errorBottomSheet);
@@ -183,8 +183,4 @@ public class BottomSheetManager {
         }
     }
 
-    private String convertDateFormat(LocalDate date) {
-        ZonedDateTime convertedDateStart = date.atStartOfDay(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
-        return convertedDateStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSx"));
-    }
 }

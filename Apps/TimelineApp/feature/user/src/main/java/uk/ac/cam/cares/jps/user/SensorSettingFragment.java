@@ -49,16 +49,13 @@ public class SensorSettingFragment extends Fragment {
     private Runnable locationPermissionCallback;
     private Runnable audioPermissionCallback;
     private Runnable activityRecognitionPermissionCallback;
-    private boolean activityRecognitionNeeded = true;
-
-
-
+    private Runnable notificationPermissionCallback;
 
     /**
      * Called to have the fragment instantiate its user interface view.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      * @return Return the View for the fragment's UI, or null.
      */
@@ -66,7 +63,7 @@ public class SensorSettingFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentSensorSettingBinding.inflate(inflater);
-        sensorViewModel = new ViewModelProvider(this).get(SensorViewModel.class);
+        sensorViewModel = new ViewModelProvider(requireActivity()).get(SensorViewModel.class);
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         sensorViewModel.getHasAccountError().observe(getViewLifecycleOwner(), hasAccountError -> {
             if (!hasAccountError) {
@@ -81,17 +78,13 @@ public class SensorSettingFragment extends Fragment {
     /**
      * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
      *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     *                           from a previous saved state as given here.
      */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //reduce memory
-        disableEmojiCompat(binding.startRecordTv);
-        disableEmojiCompat(binding.toggleAllBtn);
 
         sensorViewModel.checkRecordingStatusAndUpdateUI(requireContext());
 
@@ -99,9 +92,7 @@ public class SensorSettingFragment extends Fragment {
 
         setupObservers();
 
-        binding.startRecordTv.setOnClickListener(view1 -> {
-            onRecordButtonClicked(view);
-        });
+        binding.startRecordTv.setOnClickListener(view1 -> onRecordButtonClicked(view));
 
         setupUIInteractions();
 
@@ -135,9 +126,11 @@ public class SensorSettingFragment extends Fragment {
             if (isRecording) {
                 binding.startRecordTv.setText(R.string.stop_recording);
                 binding.toggleAllBtn.setEnabled(false);
+                adapter.setTogglesEnabled(false);
             } else {
                 binding.startRecordTv.setText(R.string.start_recording);
                 binding.toggleAllBtn.setEnabled(true);
+                adapter.setTogglesEnabled(true);
             }
         });
         adapter.updateSensorItems(sensorViewModel.getSensorItems());
@@ -168,7 +161,6 @@ public class SensorSettingFragment extends Fragment {
         binding.topAppbar.setNavigationOnClickListener(view1 -> NavHostFragment.findNavController(this).navigateUp());
     }
 
-
     /**
      * Handles the logic for starting or stopping sensor recording when the button is clicked.
      *
@@ -193,31 +185,32 @@ public class SensorSettingFragment extends Fragment {
         assert selectedSensorTypes != null;
         boolean locationToggled = selectedSensorTypes.contains(SensorType.LOCATION);
         boolean audioToggled = selectedSensorTypes.contains(SensorType.SOUND);
+        boolean activityToggled = selectedSensorTypes.contains(SensorType.ACTIVITY);
 
 
-        Runnable startRecordingRunnable =  () -> sensorViewModel.toggleRecording();
+        Runnable startRecordingRunnable = () -> sensorViewModel.toggleRecording();
 
-        if (activityRecognitionNeeded) {
+        if (activityToggled) {
             requestActivityRecognitionPermission(() -> {
-                this.activityRecognitionNeeded = false;
-                if (locationToggled) {
-                    requestLocationPermission(() -> requestAudioPermission(startRecordingRunnable));
-                } else if (audioToggled) {
-                    requestAudioPermission(startRecordingRunnable);
-                } else {
-                    startRecordingRunnable.run();
-                }
+                requestSensorPermissions(locationToggled, audioToggled, startRecordingRunnable);
             });
-        } else if (locationToggled && audioToggled) {
-            requestLocationPermission(() -> requestAudioPermission(startRecordingRunnable));
-        } else if (locationToggled) {
-            requestLocationPermission(startRecordingRunnable);
-        } else if (audioToggled) {
-            requestAudioPermission(startRecordingRunnable);
         } else {
-            startRecordingRunnable.run();
+            requestSensorPermissions(locationToggled, audioToggled, startRecordingRunnable);
         }
 
+    }
+
+    // todo: should redesign this permission request flow
+    private void requestSensorPermissions(boolean locationToggled, boolean audioToggled, Runnable onGranted) {
+        if (locationToggled && audioToggled) {
+            requestLocationPermission(() -> requestAudioPermission(() -> requestAudioPermission(onGranted)));
+        } else if (locationToggled) {
+            requestLocationPermission(() -> requestNotificationPermission(onGranted));
+        } else if (audioToggled) {
+            requestAudioPermission(() -> requestNotificationPermission(onGranted));
+        } else {
+            requestNotificationPermission(onGranted);
+        }
     }
 
     /**
@@ -229,7 +222,6 @@ public class SensorSettingFragment extends Fragment {
     private void promptSelectSensors(List<SensorType> selectedSensorTypes) {
         if (selectedSensorTypes == null || selectedSensorTypes.isEmpty()) {
             Toast.makeText(requireContext(), "Please enable at least one sensor or click Toggle All", Toast.LENGTH_SHORT).show();
-            return;
         }
     }
 
@@ -240,32 +232,27 @@ public class SensorSettingFragment extends Fragment {
         StringBuilder permissionNotGranted = new StringBuilder();
         List<SensorType> selectedSensorTypes = sensorViewModel.getSelectedSensors().getValue();
 
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            permissionNotGranted.append("Notification ");
+        }
+
+        if (selectedSensorTypes.contains(SensorType.ACTIVITY) &&
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
             permissionNotGranted.append("Activity ");
+        }
 
-            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && selectedSensorTypes.contains(SensorType.LOCATION)) {
-                permissionNotGranted.append("Location ");
-            }
-
-            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-                    && selectedSensorTypes.contains(SensorType.SOUND)) {
-                permissionNotGranted.append("Audio ");
-            }
-        } else if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && selectedSensorTypes.contains(SensorType.LOCATION)) {
+        if (selectedSensorTypes.contains(SensorType.LOCATION) &&
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionNotGranted.append("Location ");
-            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-                    && selectedSensorTypes.contains(SensorType.SOUND)) {
-                permissionNotGranted.append("Audio ");
-            }
-        } else if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-                && selectedSensorTypes.contains(SensorType.SOUND)) {
+        }
+
+        if (selectedSensorTypes.contains(SensorType.SOUND) &&
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             permissionNotGranted.append("Audio ");
         }
 
         if (permissionNotGranted.length() > 0) {
-            Toast.makeText(requireContext(), permissionNotGranted.toString() + "permission(s) not granted. Not able to start recording.", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), permissionNotGranted.length() + "permission(s) not granted. Not able to start recording.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -279,30 +266,28 @@ public class SensorSettingFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             onGranted.run();
         } else {
+            locationPermissionCallback = onGranted;
             requestFineLocationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION);
-            locationPermissionCallback  = onGranted;
         }
     }
 
     private void requestActivityRecognitionPermission(Runnable onGranted) {
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
             onGranted.run();
         } else {
-            requestActivityRecognitionPermissionLauncher.launch(android.Manifest.permission.ACTIVITY_RECOGNITION);
             activityRecognitionPermissionCallback = onGranted;
+            requestActivityRecognitionPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION);
         }
     }
 
-    private final ActivityResultLauncher<String> requestActivityRecognitionPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted && activityRecognitionPermissionCallback != null) {
-            activityRecognitionPermissionCallback.run();
-            activityRecognitionPermissionCallback = null;
+    private void requestNotificationPermission(Runnable onGranted) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            onGranted.run();
         } else {
-            Toast.makeText(requireContext(), "Activity Recognition permission is required to start recording.", Toast.LENGTH_SHORT).show();
+            notificationPermissionCallback = onGranted;
+            requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
-    });
-
-
+    }
 
     /**
      * Requests audio recording permission if it hasn't been granted. If granted, runs the provided callback.
@@ -313,42 +298,35 @@ public class SensorSettingFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             onGranted.run();
         } else {
-            requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO);
             audioPermissionCallback = onGranted;
+            requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO);
         }
     }
-
 
     private final ActivityResultLauncher<String> requestFineLocationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted && locationPermissionCallback != null) {
             locationPermissionCallback.run();
-            locationPermissionCallback = null;
+        }
+    });
+
+    private final ActivityResultLauncher<String> requestActivityRecognitionPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        if (isGranted && activityRecognitionPermissionCallback != null) {
+            activityRecognitionPermissionCallback.run();
+        } else {
+            Toast.makeText(requireContext(), "Activity Recognition permission is required to start recording.", Toast.LENGTH_SHORT).show();
         }
     });
 
     private final ActivityResultLauncher<String> requestAudioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted && audioPermissionCallback != null) {
             audioPermissionCallback.run();
-            audioPermissionCallback = null;
         }
     });
 
     private final ActivityResultLauncher<String> requestNotificationPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted) {
-
+        if (isGranted && notificationPermissionCallback != null) {
+            notificationPermissionCallback.run();
         }
     });
-
-    /**
-     * Disables EmojiCompat for the given TextView by directly setting a CharSequence
-     * without emoji handling.
-     *
-     * @param textView The TextView to disable EmojiCompat on.
-     */
-    private void disableEmojiCompat(TextView textView) {
-        SpannableStringBuilder plainText = new SpannableStringBuilder(textView.getText());
-        textView.setText(plainText, TextView.BufferType.SPANNABLE);
-    }
-
 
 }

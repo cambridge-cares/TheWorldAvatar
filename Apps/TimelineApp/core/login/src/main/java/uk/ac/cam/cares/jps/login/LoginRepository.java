@@ -48,6 +48,10 @@ public class LoginRepository {
         loginSource.processAuthorizationResponse(data, repositoryCallback);
     }
 
+    public void getAccessToken(RepositoryCallback<String> callback) {
+        loginSource.getAccessToken(callback);
+    }
+
     public void getUserInfo(RepositoryCallback<User> repositoryCallback) {
         LOGGER.info("retrieving user info");
         if (!loginSource.hasConfigurationChanged() && user != null) {

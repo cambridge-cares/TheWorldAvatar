@@ -218,3 +218,5 @@ hasOperatingRange,Object Property,,,https://saref.etsi.org/core/State,OperatingR
 hasMaximum,Object Property,,,OperatingRange,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship that describes the maximum of a range.,https://www.theworldavatar.com/kg/ontodevice/,has maximum
 hasMinimum,Object Property,,,OperatingRange,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship that describes the minimum of a range.,https://www.theworldavatar.com/kg/ontodevice/,has minimum
 hasID,Data Property,,,Device,String,,A relationship that describes the ID assigned to a device.,https://www.theworldavatar.com/kg/ontodevice/,has ID
+SessionID,Class,,,,,,"Represents the login session of a device, stored as time series",https://www.theworldavatar.com/kg/ontodevice/,Session ID
+hasSessionID,Object Property,,,CommunicationDevice,SessionID,,,https://www.theworldavatar.com/kg/ontodevice/,has session id

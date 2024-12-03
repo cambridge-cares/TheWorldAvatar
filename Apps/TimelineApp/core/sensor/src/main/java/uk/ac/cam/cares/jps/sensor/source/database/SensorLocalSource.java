@@ -11,9 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -74,11 +71,15 @@ public class SensorLocalSource {
     Map<String, JSONArray> unsentData;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+
     @Inject
     public SensorLocalSource(Context context) {
         this.context = context;
-        AppDatabase appDatabase =  Room.databaseBuilder(context.getApplicationContext(),
-                        AppDatabase.class, "timeline-database")
+    }
+
+    public void initAppDataBase(String dbName) {
+        AppDatabase appDatabase = Room.databaseBuilder(context.getApplicationContext(),
+                        AppDatabase.class, dbName)
                 .build();
 
         locationDao = appDatabase.locationDao();
@@ -93,7 +94,6 @@ public class SensorLocalSource {
         this.unsentDataDao = appDatabase.unsentDataDao();
         activityDataDao = appDatabase.activityDataDao();
         this.unsentData = new HashMap<>();
-
     }
 
     /**
@@ -120,16 +120,16 @@ public class SensorLocalSource {
     public void writeToDatabase(Map<String, JSONArray> allSensorData) {
         LOGGER.info("Start to write to database");
 
-        writeToDatabaseHelper(allSensorData, "location", locationDao, LocationData.class);
-        writeToDatabaseHelper(allSensorData, "accelerometer", accelerationDao, Acceleration.class);
-        writeToDatabaseHelper(allSensorData, "gravity", gravityDao, Gravity.class);
-        writeToDatabaseHelper(allSensorData, "gyroscope", gyroDao, GyroData.class);
-        writeToDatabaseHelper(allSensorData, "light", lightDao, LightData.class);
-        writeToDatabaseHelper(allSensorData, "magnetometer", magnetFieldStrengthDao, MagnetFieldStrength.class);
-        writeToDatabaseHelper(allSensorData, "pressure", pressureDao, Pressure.class);
-        writeToDatabaseHelper(allSensorData, "microphone", soundLevelDao, SoundLevel.class);
-        writeToDatabaseHelper(allSensorData, "humidity", relativeHumidityDao, RelativeHumidity.class);
-        writeToDatabaseHelper(allSensorData, "activity", activityDataDao, ActivityData.class);
+        writeToDatabaseHelper(allSensorData, SensorType.LOCATION.getSensorName(), locationDao, LocationData.class);
+        writeToDatabaseHelper(allSensorData, SensorType.ACCELEROMETER.getSensorName(), accelerationDao, Acceleration.class);
+        writeToDatabaseHelper(allSensorData, SensorType.GRAVITY.getSensorName(), gravityDao, Gravity.class);
+        writeToDatabaseHelper(allSensorData, SensorType.GYROSCOPE.getSensorName(), gyroDao, GyroData.class);
+        writeToDatabaseHelper(allSensorData, SensorType.LIGHT.getSensorName(), lightDao, LightData.class);
+        writeToDatabaseHelper(allSensorData, SensorType.MAGNETOMETER.getSensorName(), magnetFieldStrengthDao, MagnetFieldStrength.class);
+        writeToDatabaseHelper(allSensorData, SensorType.PRESSURE.getSensorName(), pressureDao, Pressure.class);
+        writeToDatabaseHelper(allSensorData, SensorType.SOUND.getSensorName(), soundLevelDao, SoundLevel.class);
+        writeToDatabaseHelper(allSensorData, SensorType.HUMIDITY.getSensorName(), relativeHumidityDao, RelativeHumidity.class);
+        writeToDatabaseHelper(allSensorData, SensorType.ACTIVITY.getSensorName(), activityDataDao, ActivityData.class);
     }
 
     /**
@@ -156,7 +156,6 @@ public class SensorLocalSource {
 
                 T[] sensorDataArray = sensorDataList.values().toArray((T[]) java.lang.reflect.Array.newInstance(sensorClass, sensorDataList.size()));
                 sensorDao.insertAll(sensorDataArray); // maybe better to collect into a list and insert all at once
-                LOGGER.info("Finished writing " + sensorType + ": " + sensorArray.length());
             } catch (JSONException | NoSuchMethodException e) {
                 LOGGER.error("Error processing sensor data for type " + sensorType + ": " + e.getMessage());
                 throw new RuntimeException("Could not write data to database", e);
@@ -201,12 +200,12 @@ public class SensorLocalSource {
     public void deleteUnsentData(UnsentData unsentData) {
         try {
             executor.execute(() -> {
-        unsentDataDao.deleteById(unsentData.id);
+                unsentDataDao.deleteById(unsentData.id);
             });
-        Log.e("local source", "unsent data deleted");
-            } catch (Exception e){
-                Log.e("local source", "error deleting unsent data", e);
-            }
+            Log.e("local source", "unsent data deleted");
+        } catch (Exception e){
+            Log.e("local source", "error deleting unsent data", e);
+        }
     }
 
     /**
@@ -228,7 +227,6 @@ public class SensorLocalSource {
         activityDataDao.delete(cutoffTime);
     }
 
-
     /**
      * Retrieves unsent sensor data from the local database for the specified sensor types,
      * paginates the results using limit and offset, and prepares the data for upload.
@@ -241,120 +239,72 @@ public class SensorLocalSource {
      */
     public JSONArray retrieveUnUploadedSensorData(List<SensorType> selectedSensors, int limit, int offset) {
         List<SensorData> allSensorData = new ArrayList<>();
-        Map<String, List<Long>> timesToMarkAsUploaded = new HashMap<>();
 
         // Check each selected sensor and retrieve data accordingly
         for (SensorType sensor : selectedSensors) {
-            switch(sensor) {
+            switch (sensor) {
                 case LOCATION:
                     List<LocationData> locationDataList = Arrays.asList(locationDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(locationDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(locationDataList));
+                    locationDao.markAsUploaded(extractTimes(locationDataList));
                     break;
                 case ACCELEROMETER:
                     List<Acceleration> accelerationDataList = Arrays.asList(accelerationDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(accelerationDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(accelerationDataList));
+                    accelerationDao.markAsUploaded(extractTimes(accelerationDataList));
                     break;
                 case GRAVITY:
                     List<Gravity> gravityDataList = Arrays.asList(gravityDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(gravityDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(gravityDataList));
+                    gravityDao.markAsUploaded(extractTimes(gravityDataList));
                     break;
                 case GYROSCOPE:
                     List<GyroData> gyroDataList = Arrays.asList(gyroDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(gyroDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(gyroDataList));
+                    gyroDao.markAsUploaded(extractTimes(gyroDataList));
                     break;
                 case LIGHT:
                     List<LightData> lightDataList = Arrays.asList(lightDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(lightDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(lightDataList));
+                    lightDao.markAsUploaded(extractTimes(lightDataList));
                     break;
                 case MAGNETOMETER:
                     List<MagnetFieldStrength> magnetDataList = Arrays.asList(magnetFieldStrengthDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(magnetDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(magnetDataList));
+                    magnetFieldStrengthDao.markAsUploaded(extractTimes(magnetDataList));
                     break;
                 case PRESSURE:
                     List<Pressure> pressureDataList = Arrays.asList(pressureDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(pressureDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(pressureDataList));
+                    pressureDao.markAsUploaded(extractTimes(pressureDataList));
                     break;
                 case SOUND:
                     List<SoundLevel> soundDataList = Arrays.asList(soundLevelDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(soundDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(soundDataList));
+                    soundLevelDao.markAsUploaded(extractTimes(soundDataList));
                     break;
                 case HUMIDITY:
                     List<RelativeHumidity> humidityDataList = Arrays.asList(relativeHumidityDao.getAllUnUploadedData(limit, offset));
                     allSensorData.addAll(humidityDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(humidityDataList));
+                    relativeHumidityDao.markAsUploaded(extractTimes(humidityDataList));
                     break;
                 case ACTIVITY:
-                    List<ActivityData> activityDataListDataList = Arrays.asList(activityDataDao.getAllUnUploadedData(limit, offset));
-                    allSensorData.addAll(activityDataListDataList);
-                    timesToMarkAsUploaded.put(String.valueOf(sensor), extractTimes(activityDataListDataList));
+                    List<ActivityData> activityDataList = Arrays.asList(activityDataDao.getAllUnUploadedData(limit, offset));
+                    allSensorData.addAll(activityDataList);
+                    activityDataDao.markAsUploaded(extractTimes(activityDataList));
                     break;
             }
         }
-        JSONArray allSensorDataArray = new JSONArray();
 
-        for(SensorData sensorData : allSensorData) {
+        // Convert to JSON Array for network upload
+        JSONArray allSensorDataArray = new JSONArray();
+        for (SensorData sensorData : allSensorData) {
             allSensorDataArray.put(sensorData.toJson());
         }
-
-        // Mark each type of data as being sent to get uploaded
-        for (Map.Entry<String, List<Long>> entry : timesToMarkAsUploaded.entrySet()) {
-            markDataAsBeingUploaded(SensorType.valueOf(entry.getKey()), entry.getValue());
-        }
-
-
 
         return allSensorDataArray;
     }
 
-    /**
-     * Marks sensor data as uploaded for a specific sensor type by updating the 'uploaded' field
-     * for the provided timestamps.
-     *
-     * @param sensorType The {@link SensorType} for which the data is being marked as uploaded.
-     * @param times A list of timestamps representing the data that should be marked as uploaded.
-     */
-    public void markDataAsBeingUploaded(SensorType sensorType, List<Long> times) {
-        switch(sensorType) {
-            case LOCATION:
-                locationDao.markAsUploaded(times);
-                break;
-            case ACCELEROMETER:
-                accelerationDao.markAsUploaded(times);
-                break;
-            case GRAVITY:
-                gravityDao.markAsUploaded(times);
-                break;
-            case GYROSCOPE:
-                gyroDao.markAsUploaded(times);
-                break;
-            case LIGHT:
-                lightDao.markAsUploaded(times);
-                break;
-            case MAGNETOMETER:
-                magnetFieldStrengthDao.markAsUploaded(times);
-                break;
-            case PRESSURE:
-                pressureDao.markAsUploaded(times);
-                break;
-            case SOUND:
-                soundLevelDao.markAsUploaded(times);
-                break;
-            case HUMIDITY:
-                relativeHumidityDao.markAsUploaded(times);
-                break;
-            case ACTIVITY:
-                activityDataDao.markAsUploaded(times);
-                break;
-        }
-    }
 
 
     /**
@@ -370,6 +320,7 @@ public class SensorLocalSource {
         }
         return times;
     }
+
 
     /**
      * Checks if the given data already exists in the UnsentData table.
@@ -392,11 +343,5 @@ public class SensorLocalSource {
         }
     }
 
-    public void shutdownExecutor() {
-        executor.shutdown();
-    }
 
 }
-
-
-

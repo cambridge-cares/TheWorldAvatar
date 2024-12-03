@@ -15,6 +15,8 @@ services:
       REACT_APP_USE_GEOSERVER_PROXY: false
 
       REDIS_HOST: host.docker.internal
+
+      ASSET_PREFIX: # fILL this in if app is to be deployed at a reverse proxy path other than root  
     secrets:
       - mapbox_username
       - mapbox_api_key

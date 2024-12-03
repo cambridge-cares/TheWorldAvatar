@@ -1,0 +1,30 @@
+[PrefixDeclaration]
+fh:         http://www.theworldavatar.com/ontology/OntoFHRS/
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+owl:        http://www.w3.org/2002/07/owl#
+xsd:        http://www.w3.org/2001/XMLSchema#
+
+[MappingDeclaration] @collection [[
+mappingId       BasicBusinessInfo
+target      fh:{FHRSID} a fh:BusinessEstablishment ;
+                     fh:hasBusinessName "{BusinessName}"^^xsd:string ;
+                     fh:hasBusinessType "{BusinessType}"^^xsd:string ;
+                     fh:hasPostcode "{PostCode}"^^xsd:string .
+source      SELECT FHRSID, BusinessName, BusinessType, PostCode
+            FROM Food_Rating_Cambridge
+
+mappingId       BusinessLocation
+target      fh:GeoPoint_{FHRSID} a fh:Geolocation ;
+                     fh:hasLongitude "{Geocode/Longitude}"^^xsd:float ;
+                     fh:hasLatitude "{Geocode/Latitude}"^^xsd:float ;
+                     fh:hasPostcode "{PostCode}"^^xsd:string .
+source      SELECT FHRSID, `Geocode/Longitude`, `Geocode/Latitude`, PostCode
+            FROM Food_Rating_Cambridge
+
+mappingId       RatingDetails
+target      fh:{FHRSID} fh:hasRatingValue "{RatingValue}"^^xsd:string ;
+                     fh:hasRatingDate "{RatingDate}"^^xsd:date .
+source      SELECT FHRSID, RatingValue, RatingDate
+            FROM Food_Rating_Cambridge
+
+]]

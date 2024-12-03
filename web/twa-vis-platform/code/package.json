@@ -1,14 +1,14 @@
 {
-    "name": "twa-visualisation-platform",
-  "version": "5.11",
-    "private": true,
-    "type": "module",
-    "eslintConfig": {
-        "extends": "next/core-web-vitals"
-    },
-    "jest": {
-        "verbose": true
-    },
+  "name": "twa-visualisation-platform",
+  "version": "5.11.1",
+  "private": true,
+  "type": "module",
+  "eslintConfig": {
+    "extends": "next/core-web-vitals"
+  },
+  "jest": {
+    "verbose": true
+  },
   "engines": {
     "node": ">=22.0.0"
   },

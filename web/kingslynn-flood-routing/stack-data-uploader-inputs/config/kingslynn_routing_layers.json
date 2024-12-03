@@ -3,6 +3,7 @@
     "database": "postgres",
     "workspace": "kingslynn",
     "datasetDirectory": "kingslynn",
+    "skip": false,
     "dataSubsets": [
         {
             "type": "vector",
@@ -91,6 +92,5 @@
                 }
             }
         }
-       
     ]
 }

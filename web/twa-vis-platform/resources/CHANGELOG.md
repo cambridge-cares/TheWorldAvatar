@@ -7,6 +7,12 @@
 
 - Add ability to include JWT token in header for MapBox source requests.
 
+## 5.11.1
+
+## Bug Fixes
+
+- Fixed links to optional pages behind nginx
+
 ## 5.11.0
 
 ## Improvements

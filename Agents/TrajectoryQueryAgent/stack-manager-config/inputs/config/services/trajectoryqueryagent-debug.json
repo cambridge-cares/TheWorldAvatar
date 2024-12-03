@@ -3,7 +3,7 @@
         "Name": "trajectoryqueryagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:3.0.0",
+                "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:4.0.0",
                 "Env": [
                     "KEYCLOAK_SERVER=http://host.docker.internal:8080",
                     "KEYCLOAK_REALM=twa-test",

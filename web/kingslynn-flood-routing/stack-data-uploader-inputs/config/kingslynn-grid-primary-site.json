@@ -1,0 +1,19 @@
+{
+    "name": "kingslynn-grid-primary-site",
+    "database": "postgres",
+    "workspace": "kingslynn",
+    "datasetDirectory": "kingslynn",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "sql": "@/inputs/data/kingslynn/sql/static/grid_primary_site.sql",
+            "table": "grid_primary_site",
+            "subdirectory": "grid_primary_site"
+        }
+    ],
+    "mappings": [
+        "grid_primary_site.obda"
+    ]
+}
