@@ -25,7 +25,7 @@ WORKDIR /root/UserAgent
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/UserAgent/output/user-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/UserAgent/output/user-agent##*.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 # Port for Java debugging
