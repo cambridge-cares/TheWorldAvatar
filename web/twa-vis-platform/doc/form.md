@@ -106,6 +106,8 @@ With that said, the properties `PropertyShape` themselves must comply with [SHAC
 
 ### 2.1. Form section/field representation
 
+The following are applicable for all form types:
+
 1. `datatype`: Generates form input types from the associated value of data type specified in the `xsd` namespace
 
 - **Text**: `string`
@@ -117,6 +119,25 @@ With that said, the properties `PropertyShape` themselves must comply with [SHAC
 
 - `qualifiedValueShape`: An optional property that must be included with `class` to enable dependencies between two fields. For instance, an employee must always be linked to a specific employer. This property must contain an array of the associated node shape instances in the format `{"@id": "node shape"}`. Note that one property may have as many node shapes as possible using the `sh:and` property in the original `SHACL` format.
 - `nodeKind`: An optional property that must be included with `class` and `qualifiedValueShape` to denote if the property is a dependent property, that is dependent on a separate (independent) field with the same node shape. If `nodeKind` is not added, we assume that the property is an independent field that other dependent fields will require.
+
+In the search form, users can also search within a selected time period using the following `Time Series` property to invoke a special form section UI. However, the corresponding `GeoServer` layer must contain a `time` column using the UNIX Epoch timestamp format in its SQL view.
+
+```
+@prefix ontotimeseries: <https://www.theworldavatar.com/kg/ontotimeseries/> .
+
+base:ExampleShape
+  a sh:NodeShape ;
+  sh:targetClass base:ExampleClass ;
+  sh:property [
+    sh:name "time series";
+    sh:description "The description for the time series.";
+    sh:order 1 ;
+    sh:path (base:examplePath ontotimeseries:hasTimeSeries) ;
+    sh:class ontotimeseries:TimeSeries ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ] .
+```
 
 ### 2.2. Form utilities
 

@@ -7,7 +7,7 @@ import StaticContentPage from 'ui/pages/static-content-page';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
 import SettingsStore from 'io/config/settings';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import { Modules, PageTitles } from 'io/config/routes';
 
 // Utilities to render markdown into HTML
@@ -24,7 +24,7 @@ const markdowner = markdownIt({
  * @returns metadata promise.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === Modules.HELP);
   return {
     title: metadata?.title ?? PageTitles.HELP,

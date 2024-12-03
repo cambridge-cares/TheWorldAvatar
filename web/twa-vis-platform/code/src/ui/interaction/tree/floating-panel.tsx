@@ -146,13 +146,14 @@ export default function FloatingPanelContainer(
       {isPanelVisible && (
         <>
           <div className={styles.floatingPanelBody}>
-            {mapLayerGroups.length > 0 && activeIndex === 0 && <LayerTree
-              map={props.map}
-              dataStore={props.dataStore}
-              icons={props.icons}
-              mapGroups={mapLayerGroups}
-              setMapGroups={setMapLayerGroups}
-            />}
+            {mapLayerGroups.length > 0 && activeIndex === 0 &&
+              <LayerTree
+                map={props.map}
+                dataStore={props.dataStore}
+                icons={props.icons}
+                mapGroups={mapLayerGroups}
+                setMapGroups={setMapLayerGroups}
+              />}
             {activeIndex === 1 && <LegendTree settings={props.legend} />}
             {activeIndex === 2 &&
               <InfoTree

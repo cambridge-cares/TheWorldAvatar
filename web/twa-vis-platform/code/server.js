@@ -28,13 +28,15 @@ const colourYellow = "\x1b[33m";
 
 
 // Configure the server port; default to 3000 if not specified in environment variables
-if (process.env.PORT) { console.log('port specified in .env file: ', colourGreen, process.env.PORT, colourReset); }
+if (process.env.PORT) { console.info('port specified in environment variable: ', colourGreen, process.env.PORT, colourReset); }
 const port = process.env.PORT || 3000;
 const keycloakEnabled = process.env.KEYCLOAK === 'true';
 const redisHost = process.env.REDIS_HOST || 'localhost';
 const redisPort = process.env.REDIS_PORT || 6379;
 
-console.log('keycloak authorisation required: ', keycloakEnabled ? colourYellow : colourGreen, process.env.KEYCLOAK, colourReset)
+if (process.env.ASSET_PREFIX) { console.info('Resource and Asset Prefix: ', colourGreen, process.env.ASSET_PREFIX, colourReset); }
+
+console.info('keycloak authorisation required: ', keycloakEnabled ? colourYellow : colourGreen, process.env.KEYCLOAK, colourReset)
 
 // Determine the deployment mode based on NODE_ENV; default to 'development' mode if not specified
 const dev = process.env.NODE_ENV !== "production";
@@ -49,14 +51,14 @@ app.prepare().then(() => {
   const server = express();
 
   if (keycloakEnabled) { // do keycloak auth stuff if env var is set
-    console.log('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colourYellow : colourRed, process.env.PROTECTED_PAGES, colourReset)
-    console.log('the following pages require the', process.env.ROLE ? colourYellow : colourRed, process.env.ROLE, colourReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colourYellow : colourRed, process.env.ROLE_PROTECTED_PAGES, colourReset)
+    console.info('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colourYellow : colourRed, process.env.PROTECTED_PAGES, colourReset)
+    console.info('the following pages require the', process.env.ROLE ? colourYellow : colourRed, process.env.ROLE, colourReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colourYellow : colourRed, process.env.ROLE_PROTECTED_PAGES, colourReset)
 
     server.set('trust proxy', true); // the client’s IP address is understood as the left-most entry in the X-Forwarded-For header.
 
     if (!dev) {
       let redisClient;
-      console.log(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourGreen, `${redisHost}:${redisPort}`, colourReset);
+      console.info(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourGreen, `${redisHost}:${redisPort}`, colourReset);
       try {
         redisClient = createClient({
           socket: {
@@ -65,7 +67,7 @@ app.prepare().then(() => {
           }
         });
       } catch (error) {
-        console.log('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container');
+        console.info('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container');
         console.error(error);
       }
       redisClient.connect().catch('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container', console.error);
@@ -76,7 +78,7 @@ app.prepare().then(() => {
       });
     } else {
       store = new MemoryStore(); // use in-memory store for session data in dev mode
-      console.log(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
+      console.info(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
     }
 
     server.use(
@@ -96,13 +98,6 @@ app.prepare().then(() => {
       res.json({ userName, firstName, lastName, fullName, roles, clientRoles });
     });
 
-    server.get('/logout', (req, res) => {
-      req.logout(); // Keycloak adapter logout
-      req.session.destroy(() => { // This destroys the session
-        res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
-      });
-    });
-
     const protectedPages = process.env.PROTECTED_PAGES.split(',');
     protectedPages.forEach(page => {
       server.get(page, keycloak.protect());
@@ -110,7 +105,7 @@ app.prepare().then(() => {
     const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
     roleProtectedPages.forEach(page => {
       server.get(page, keycloak.protect(process.env.ROLE));
-      console.log('protecting page', page, 'with role', process.env.ROLE);
+      console.info('protecting page', page, 'with role', process.env.ROLE);
     });
   }
 
@@ -122,6 +117,6 @@ app.prepare().then(() => {
   // Start listening on the specified port and log server status
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log('Running at', colourGreen, `http://localhost:${port}`, colourReset, `development mode is:`, dev ? colourYellow : colourGreen, dev, colourReset);
+    console.info('Running at', colourGreen, `http://localhost:${port}${colourReset}`,`(on host / inside container). Development mode :${dev ? colourYellow : colourGreen}`, dev, colourReset);
   });
 });

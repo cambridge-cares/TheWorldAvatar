@@ -29,7 +29,6 @@
   flex-direction: column;
 }
 
-
 .section-title {
   display: flex;
   flex-direction: row;
@@ -60,6 +59,11 @@
   border-style: solid;
   border-color: var(--border-primary);
   border-width: 1px 0 0 0;
+}
+
+.footer-button-row {
+  display: flex;
+  flex-direction: row;
 }
 
 .section-footer-button {

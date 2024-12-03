@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
 import { Paths, PageTitles, Modules } from 'io/config/routes';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 import RegistryTableComponent from 'ui/graphic/table/registry/registry-table-component';
 
@@ -20,7 +20,7 @@ interface ViewRegistryPageProps {
  * @returns metadata promise.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === Modules.REGISTRY);
   return {
     title: metadata?.title ?? PageTitles.REGISTRY,
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * @returns React component for display. 
  */
 export default function ViewRegistryPage(props: Readonly<ViewRegistryPageProps>) {
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   // Scheduler API should only be given IF scheduling is enabled in the configuration and current route matches the entity of interest
   const schedulerApi: string = uiSettings.modules.scheduler && uiSettings.resources?.scheduler?.data === props.params?.type
     ? uiSettings.resources?.scheduler?.url : null;

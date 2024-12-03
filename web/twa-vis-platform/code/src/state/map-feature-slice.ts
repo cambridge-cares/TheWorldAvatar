@@ -20,6 +20,7 @@ export const mapFeatureSlice = createSlice({
         features: [] as MapFeaturePayload[],
         filterLayerIds: [],
         filterFeatureIris: [],
+        filterTimes: [],
     },
     reducers: {
         setProperties: (state, action) => {
@@ -55,6 +56,9 @@ export const mapFeatureSlice = createSlice({
         setFilterFeatureIris: (state, action) => {
             state.filterFeatureIris = action.payload
         },
+        setFilterTimes: (state, action) => {
+            state.filterTimes = action.payload
+        },
     },
 });
 
@@ -69,9 +73,23 @@ export const getScenarioName = (state: ReduxState) => state.mapFeature.scenarioN
 export const getFeatures = (state: ReduxState) => state.mapFeature.features;
 export const getFilterLayerIds = (state: ReduxState) => state.mapFeature.filterLayerIds;
 export const getFilterFeatureIris = (state: ReduxState) => state.mapFeature.filterFeatureIris;
+export const getFilterTimes = (state: ReduxState) => state.mapFeature.filterTimes;
 
 // Export the actions
-export const { setProperties, setIri, setStack, setScenarioID, setScenarioName, setScenarioType, setScenarioDefinitions, addFeatures, clearFeatures, setFilterLayerIds, setFilterFeatureIris } = mapFeatureSlice.actions;
+export const {
+    setProperties,
+    setIri,
+    setStack,
+    setScenarioID,
+    setScenarioName,
+    setScenarioType,
+    setScenarioDefinitions,
+    addFeatures,
+    clearFeatures,
+    setFilterLayerIds,
+    setFilterFeatureIris,
+    setFilterTimes,
+} = mapFeatureSlice.actions;
 
 // Export the reducer
 export default mapFeatureSlice.reducer;

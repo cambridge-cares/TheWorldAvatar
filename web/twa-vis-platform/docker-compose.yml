@@ -4,7 +4,7 @@
 services:
   # Empty visualisation image for deployment.
   base:
-    image: ghcr.io/cambridge-cares/twa-vf
+    image: ghcr.io/cambridge-cares/twa-vf:5.11.1
     container_name: "twa-vf"
     restart: "no"
     environment:
@@ -14,6 +14,8 @@ services:
       ROLE: twa-test:protected ## the role required for the above list
 
       REDIS_HOST: host.docker.internal
+
+      ASSET_PREFIX: # fILL this in if app is to be deployed at a reverse proxy path other than root  
     secrets:
       - mapbox_username
       - mapbox_api_key
@@ -27,30 +29,30 @@ services:
     volumes:
       - ./code/public:/twa/public/
     ports:
-      - "3000:3000" 
-  
+      - "3000:3000"
+
   latest:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:latest
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
   semantic-snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}.${MINOR}.${PATCH}-${SNAPSHOT}
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
   major-snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}-${SNAPSHOT}
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
   snapshot:
     extends: base
     image: ghcr.io/cambridge-cares/twa-vf:${SNAPSHOT}
-    profiles: ["build-only"]
+    profiles: [ "build-only" ]
 
 secrets:
-    mapbox_username:
-      file: ./mapbox_username
-    mapbox_api_key:
-      file: ./mapbox_api_key
+  mapbox_username:
+    file: ./mapbox_username
+  mapbox_api_key:
+    file: ./mapbox_api_key

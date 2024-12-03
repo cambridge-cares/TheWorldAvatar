@@ -58,8 +58,10 @@ class QueryTemplateFactoryTest {
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_NESTED_PRED_PATH, "", false, false);
     nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, null, false);
+    Queue<String> results = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, null, false);
     // Assert
+    assertEquals(2, results.size());
+    String result = results.poll();
     assertNotNull(result);
     assertTrue(result.startsWith("SELECT * WHERE {"));
     assertEquals(
@@ -81,8 +83,10 @@ class QueryTemplateFactoryTest {
     genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_NESTED_PRED_PATH, "", false, false);
     nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, SAMPLE_FILTER, false);
+    Queue<String> results = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, SAMPLE_FILTER, false);
     // Assert
+    assertEquals(2, results.size());
+    String result = results.poll();
     assertNotNull(result);
     assertTrue(result.startsWith(
         genExpectedQueryStart(SAMPLE_CONCEPT) + genQueryLine(
@@ -114,12 +118,14 @@ class QueryTemplateFactoryTest {
     // Set up
     Queue<Queue<SparqlBinding>> nestedBindings = new ArrayDeque<>();
     Queue<SparqlBinding> bindings = new ArrayDeque<>();
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_PARENT_FIELD, SAMPLE_SUB_PATH, false, true);
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_PARENT_FIELD, SAMPLE_PARENT_PATH, SAMPLE_SUB_PATH, false, true);
     nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, SAMPLE_FILTER, true);
+    Queue<String> results = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, SAMPLE_FILTER, true);
     // Assert
     String parentVariable = SAMPLE_PARENT_FIELD.replaceAll("\\s+", "_");
+    assertEquals(2, results.size());
+    String result = results.poll();
     assertNotNull(result);
     assertTrue(result.startsWith(
         genExpectedQueryStart(SAMPLE_CONCEPT) + genQueryLine(
@@ -136,15 +142,17 @@ class QueryTemplateFactoryTest {
     // Set up
     Queue<Queue<SparqlBinding>> nestedBindings = new ArrayDeque<>();
     Queue<SparqlBinding> bindings = new ArrayDeque<>();
-    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_FIELD, SAMPLE_OPTIONAL_PATH, "", true, false);
+    genMockSPARQLBinding(bindings, SAMPLE_CONCEPT, SAMPLE_OPTIONAL_FIELD, SAMPLE_OPTIONAL_PATH, "", true, false);
     nestedBindings.offer(bindings);
     // Execute
-    String result = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, null, false);
+    Queue<String> results = TEMPLATE_FACTORY.genGetTemplate(nestedBindings, null, false);
     // Assert
     String optVariable = SAMPLE_OPTIONAL_FIELD.replaceAll("\\s+", "_");
-    assertNotNull(result);
+    assertEquals(2, results.size());
     // Additional optional field
-    assertTrue(result.endsWith(
+    assertTrue(results.poll().endsWith(
+        "OPTIONAL{" + genQueryLine(StringResource.parseIriForQuery(SAMPLE_OPTIONAL_PATH), "?" + optVariable) + "}}"));
+    assertTrue(results.poll().endsWith(
         "OPTIONAL{" + genQueryLine(StringResource.parseIriForQuery(SAMPLE_OPTIONAL_PATH), "?" + optVariable) + "}}"));
   }
 

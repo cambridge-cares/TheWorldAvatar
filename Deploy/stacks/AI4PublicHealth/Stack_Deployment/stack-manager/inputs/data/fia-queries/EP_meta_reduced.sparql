@@ -1,0 +1,18 @@
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX building: <https://www.theworldavatar.com/kg/Building/>
+PREFIX os: <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/>
+
+SELECT ?Property (GROUP_CONCAT(?tmp; separator=", ") AS ?Value) WHERE {
+    SERVICE [ONTOP] {
+        {
+            BIND("UPRN" AS ?Property)
+            [IRI] os:hasUPRN ?tmp .
+        } UNION {
+            BIND("Energy Efficiency" AS ?Property )
+            [IRI] building:hasEnergyEfficiency ?tmp .
+        } UNION {
+            BIND("EPC Rating" AS ?Property )
+            [IRI] building:hasEPCrating ?tmp .
+        }
+    }
+} GROUP BY ?Property

@@ -44,7 +44,7 @@ export default function FormInputField(props: Readonly<InputFieldProps>) {
         id={props.field.fieldId}
         type={inputType}
         className={`${inputClassNames} ${props.options?.disabled && (styles["input-disabled"] + " " + styles["field-disabled"])}`}
-        step={props.field.datatype === "decimal" ? "0.01" : undefined}
+        step={props.field.datatype === "decimal" ? "0.00000000000000001" : undefined}
         placeholder={`Add ${label} here`}
         readOnly={props.options?.disabled}
         aria-label={label}

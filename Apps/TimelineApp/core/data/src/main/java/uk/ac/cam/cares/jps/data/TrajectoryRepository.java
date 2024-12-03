@@ -32,24 +32,17 @@ public class TrajectoryRepository {
 
     /**
      * Get trajectory of the logged in user on the chosen date
-     * @param date Date chosen for which trajectory to show
+     * @param lowerbound lower bound of the chosen date in millisecond
+     * @param upperbound upper bound of the chosen date in millisecond
      * @param callback Callback to notify UI level components when responses are returned from server
      */
-    public void getTrajectory(String date, RepositoryCallback<String> callback) {
-        loginRepository.getUserInfo(new RepositoryCallback<>() {
+    public void getTrajectory(long lowerbound, long upperbound, RepositoryCallback<String> callback) {
+        loginRepository.getAccessToken(new RepositoryCallback<>() {
             @Override
-            public void onSuccess(User result) {
-                trajectoryNetworkSource.getTrajectory(result.getId(), date,
+            public void onSuccess(String accessToken) {
+                trajectoryNetworkSource.getTrajectory(accessToken, lowerbound, upperbound,
                         callback::onSuccess,
-                        volleyError -> {
-                            if (volleyError.getMessage() != null &&
-                                    volleyError.getMessage().equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
-                                callback.onFailure(new AccountException(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user)));
-                                return;
-                            }
-
-                            callback.onFailure(new Throwable("Failed to get trajectory"));
-                        });
+                        error -> callback.onFailure(new Throwable("Failed to get trajectory", error)));
             }
 
             @Override

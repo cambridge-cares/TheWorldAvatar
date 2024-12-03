@@ -92,9 +92,9 @@ export default function RibbonComponentOptions(props: Readonly<RibbonComponentOp
                             keyboard_arrow_down
                         </Icon>
                     </div>
-                    {expanded && dropdown}
                 </div>
             </Tooltip>
+            {expanded && dropdown}
         </div>
     );
 }

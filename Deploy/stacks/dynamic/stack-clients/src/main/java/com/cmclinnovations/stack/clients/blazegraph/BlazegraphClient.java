@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,7 @@ import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.datasets.CopyDatasetQuery;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
+import com.cmclinnovations.stack.clients.utils.SparqlRulesFile;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -104,6 +106,11 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
                     throw ex;
             }
         }
+    }
+
+    public void runRules(RemoteStoreClient remoteStoreClient, List<Path> ruleFiles) {
+        SparqlRulesFile sparqlRules = new SparqlRulesFile(ruleFiles);
+        sparqlRules.getRules().forEach(remoteStoreClient::executeUpdate);
     }
 
     private String generateMessage(String namespace, BaseCmd command, String serviceUrl) {

@@ -13,7 +13,7 @@ import IconComponent from 'ui/graphic/icon/icon';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import SimpleDropdownField from 'ui/interaction/dropdown/simple-dropdown';
 import SearchModal from 'ui/interaction/modal/search/search-modal';
-import { setFilterFeatureIris, setFilterLayerIds } from 'state/map-feature-slice';
+import { setFilterFeatureIris, setFilterLayerIds, setFilterTimes } from 'state/map-feature-slice';
 
 // type definition for incoming properties
 interface LayerTreeHeaderProps {
@@ -143,6 +143,7 @@ export default function LayerTreeHeader(props: Readonly<LayerTreeHeaderProps>) {
     dispatch(setFilterLayerIds(layerIds));
     // Reset filtered features state when opened
     dispatch(setFilterFeatureIris([]));
+    dispatch(setFilterTimes([]));
     setIsSearchOpenState(true);
   };
 

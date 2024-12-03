@@ -119,3 +119,5 @@ web/twa-vis-platform/code/public/images/*
 web/twa-vis-platform/code/public/optional-pages/*
 !web/twa-vis-platform/code/public/optional-pages/landing-page.md
 !web/twa-vis-platform/code/public/optional-pages/help-page.md
+
+web/*/auth/realm/*.json

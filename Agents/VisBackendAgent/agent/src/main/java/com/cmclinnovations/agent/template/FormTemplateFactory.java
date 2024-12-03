@@ -206,7 +206,7 @@ public class FormTemplateFactory {
         Map<String, Object> nameLiteral = this.objectMapper.convertValue(shapeFieldNode.get(0), Map.class);
         inputModel.put(StringResource.getLocalName(shapeField), nameLiteral);
         if (!defaultVals.isEmpty()) {
-          String parsedField = nameLiteral.get(ShaclResource.VAL_KEY).toString().replace(" ", "_");
+          String parsedField = nameLiteral.get(ShaclResource.VAL_KEY).toString().replace(ShaclResource.WHITE_SPACE, "_");
           inputModel.put("defaultValue", defaultVals.get(parsedField));
         }
       } else if (shapeField.equals(ShaclResource.SHACL_PREFIX + ShaclResource.ORDER_PROPERTY)) {

@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation';
 
 import SettingsStore from 'io/config/settings';
 import { Paths, PageTitles, Modules } from 'io/config/routes';
-import MapContainer from 'map/map-container';
 import { ScenarioDefinition } from 'types/scenario';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 import { getScenarios } from 'utils/getScenarios';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
+import MapContainer from 'ui/map/map-container';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic';
  * @returns metadata promise.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   const metadata: DefaultPageThumbnailProps = uiSettings.links?.find(link => link.url === Modules.MAP);
   return {
     title: metadata?.title ?? PageTitles.MAP,
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * 
  */
 export default async function VisualisationPage() {
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   if (uiSettings.modules.map) {
     let scenarios: ScenarioDefinition[];
     // When scenarios are available, retrieve their definitions on the server side

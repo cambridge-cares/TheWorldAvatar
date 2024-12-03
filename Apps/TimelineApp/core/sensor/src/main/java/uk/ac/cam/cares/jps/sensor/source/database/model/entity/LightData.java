@@ -14,7 +14,6 @@ import org.json.JSONObject;
 @Entity(tableName = "light")
 public class LightData extends SensorData {
 
-
     /**
      * The SI unit of illuminance, equal to one lumen per square metre.
      */

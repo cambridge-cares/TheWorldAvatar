@@ -1,7 +1,46 @@
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix os: <https://www.theworldavatar.com/kg/ontoservice/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:                <http://www.w3.org/2002/07/owl#> .
+@prefix os:                 <https://www.theworldavatar.com/kg/ontoservice/> .
+@prefix rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cmns-col:           <https://www.omg.org/spec/Commons/Collections/> .
+@prefix cmns-dt:            <https://www.omg.org/spec/Commons/DatesAndTimes/> .
+@prefix fibo-fnd-arr-lif:   <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/> .
+@prefix fibo-fbc-pas-fpas:  <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/> .
+
+fibo-fbc-pas-fpas:ContractLifecycle fibo-fnd-arr-lif:hasStage os:CreationStage ;
+  fibo-fnd-arr-lif:hasStage os:ServiceExecutionStage ;
+  fibo-fnd-arr-lif:hasStage os:ExpirationStage .
+
+os:CreationStage cmns-col:comprises os:ContractCreation ;
+  cmns-col:comprises os:ContractApproval .
+
+os:ServiceExecutionStage cmns-dt:succeeds os:CreationStage ;
+  cmns-col:comprises os:ServiceDeliveryEvent ;
+  cmns-col:comprises os:MissedServiceEvent ;
+  cmns-col:comprises os:TerminatedServiceEvent .
+
+os:ExpirationStage cmns-dt:succeeds os:ServiceExecutionStage ;
+  cmns-col:comprises os:ContractDischarge ;
+  cmns-col:comprises os:ContractRescission ;
+  cmns-col:comprises os:ContractTermination .
+
+fibo-fbc-pas-fpas:ContractLifecycleStage owl:oneOf (
+  os:CreationStage
+  os:ServiceExecutionStage
+  os:ExpirationStage
+) .
+
+os:CreationStage a fibo-fbc-pas-fpas:ContractLifecycleStage ;
+  rdfs:label "Creation Stage";
+  rdfs:comment "The phase in the lifecycle of a contract to create a new contract.".
+
+os:ServiceExecutionStage a fibo-fbc-pas-fpas:ContractLifecycleStage ;
+  rdfs:label "Service Execution Stage";
+  rdfs:comment "The phase in the lifecycle of a contract where the services agreed should be executed.".
+
+os:ExpirationStage a fibo-fbc-pas-fpas:ContractLifecycleStage ;
+  rdfs:label "Expiration Stage";
+  rdfs:comment "The phase in the lifecycle of a contract where the contract has ended.".
 
 fibo-fbc-pas-fpas:ContractLifecycleEvent owl:oneOf (
   os:ServiceDeliveryEvent

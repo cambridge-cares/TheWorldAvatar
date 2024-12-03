@@ -9,6 +9,12 @@ export const Modules: {
   HELP: "help",
 };
 
+export const Apis: {
+  [key: string]: string;
+} = {
+  MAP_SETTINGS: `${ASSET_PREFIX}/api/map/settings`,
+};
+
 export const Paths: {
   [key: string]: string;
 } = {

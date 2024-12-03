@@ -1,12 +1,15 @@
 package com.cmclinnovations.agent.service;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystemNotFoundException;
 import java.text.MessageFormat;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +18,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +39,7 @@ public class FileService {
   private static final String QUERY_CONSTR_DIR = QUERY_DIR + "construct/";
   private static final String QUERY_GET_DIR = QUERY_DIR + "get/";
   public static final String FORM_QUERY_RESOURCE = QUERY_CONSTR_DIR + "form.sparql";
+  public static final String ENDPOINT_QUERY_RESOURCE = QUERY_GET_DIR + "endpoint.sparql";
   public static final String INSTANCE_QUERY_RESOURCE = QUERY_GET_DIR + "instance.sparql";
   public static final String SHACL_PATH_QUERY_RESOURCE = QUERY_GET_DIR + "property_path.sparql";
   public static final String SHACL_PATH_LABEL_QUERY_RESOURCE = QUERY_GET_DIR + "property_path_label.sparql";
@@ -65,7 +68,7 @@ public class FileService {
     LOGGER.debug("Retrieving the contents at {}...", resourceFilePath);
     String contents = "";
     try (InputStream inputStream = this.resourceLoader.getResource(resourceFilePath).getInputStream()) {
-      contents = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+      contents = this.parseSparqlFile(inputStream);
       contents = contents.replace(REPLACEMENT_TARGET, replacement);
     } catch (FileNotFoundException e) {
       LOGGER.info("Resource at {} is not found. Please ensure you have a valid resource in the file path.",
@@ -146,6 +149,19 @@ public class FileService {
     } catch (IOException e) {
       LOGGER.info(e.getMessage());
       throw new UncheckedIOException(e);
+    }
+  }
+
+  /**
+   * Parse the SPARQL content by removing all comments starting with #.
+   * 
+   * @param inputStream File contents as an input stream.
+   */
+  private String parseSparqlFile(InputStream inputStream) throws IOException {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+      return reader.lines()
+          .filter(line -> !line.trim().startsWith("#")) // Remove lines starting with "#"
+          .collect(Collectors.joining("\n")); // Append each line with a newline character
     }
   }
 }

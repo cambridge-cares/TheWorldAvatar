@@ -11,10 +11,12 @@ import androidx.work.WorkerParameters;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static uk.ac.cam.cares.jps.utils.di.UtilsModule.compressData;
 
 import dagger.assisted.Assisted;
@@ -30,6 +32,7 @@ public class SensorUploadWorker extends Worker {
     private final SensorLocalSource sensorLocalSource;
     private final Logger LOGGER = Logger.getLogger(SensorUploadWorker.class);
     private String deviceId;
+    private String sessionId;
     private List<SensorType> selectedSensors;
 
     @AssistedInject
@@ -40,14 +43,16 @@ public class SensorUploadWorker extends Worker {
         this.sensorNetworkSource = sensorNetworkSource;
         this.sensorLocalSource = sensorLocalSource;
         deviceId = workerParams.getInputData().getString("deviceId");
+        sessionId = workerParams.getInputData().getString("sessionId");
         String selectedSensorsJson = workerParams.getInputData().getString("selectedSensors");
         selectedSensors = new ArrayList<>();
 
         try {
             JSONArray jsonArray = new JSONArray(selectedSensorsJson);
             for (int i = 0; i < jsonArray.length(); i++) {
-                String sensorName = jsonArray.getString(i);
+                String sensorName = jsonArray.getString(i).toUpperCase();
                 selectedSensors.add(SensorType.valueOf(sensorName));
+                LOGGER.info(SensorType.valueOf(sensorName));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -69,13 +74,12 @@ public class SensorUploadWorker extends Worker {
     }
 
     private void uploadSensorData() throws JSONException, IOException {
-        int PAGE_SIZE = 1500;
+        int PAGE_SIZE = 800;
         int offset = 0;
         boolean hasMoreData = true;
 
         while (hasMoreData) {
             JSONArray allSensorData = sensorLocalSource.retrieveUnUploadedSensorData(selectedSensors, PAGE_SIZE, offset);
-            Log.i("DataUploadWorker", "Retrieved " + allSensorData.length() + " items from local storage.");
 
             if (allSensorData.length() < PAGE_SIZE) {
                 hasMoreData = false;
@@ -87,15 +91,13 @@ public class SensorUploadWorker extends Worker {
             // Send to the network
             if (allSensorData.length() > 0) {
                 LOGGER.info("Attempting to send " + allSensorData.length() + " items to the network.");
-                LOGGER.info("All sensor data " + allSensorData);
-                sensorNetworkSource.sendPostRequest(deviceId, compressedData, allSensorData);
+                sensorNetworkSource.sendPostRequest(deviceId, sessionId, compressedData, allSensorData);
                 LOGGER.info("Accumulated data sent to network.");
             } else {
                 LOGGER.info("No accumulated data to send to the network.");
             }
             offset += PAGE_SIZE;
         }
-
 
     }
 

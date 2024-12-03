@@ -50,9 +50,12 @@ export default function FormDateTimePicker(props: Readonly<FormDateTimePickerPro
     currentDateTime = currentDateTime.split("T")[0];
   } else if (props.field.datatype === timeType) {
     currentDateTime = currentDateTime.split("T")[1].split(":")[0] + ":00";
+  } else {
+    const splitFormat: string[] = currentDateTime.split(":");
+    currentDateTime = splitFormat[0] + ":" + splitFormat[1];
   }
 
-  if (props.form.getValues(props.field.fieldId) === "") {
+  if (!props.form.getValues(props.field.fieldId) || props.form.getValues(props.field.fieldId) === "") {
     props.form.setValue(props.field.fieldId, currentDateTime);
   }
 

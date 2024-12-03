@@ -18,6 +18,7 @@ import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.datasets.CopyDatasetQuery;
+import com.cmclinnovations.stack.clients.utils.SparqlRulesFile;
 import com.cmclinnovations.stack.clients.utils.TempFile;
 
 public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
@@ -91,9 +92,7 @@ public class OntopClient extends ClientWithEndpoint<OntopEndpointConfig> {
     public void uploadRules(List<Path> ruleFiles) {
         String containerId = getContainerId(getContainerName());
         Path sparqlRulesFilePath = getFilePath(containerId, ONTOP_SPARQL_RULES_FILE);
-        SparqlRulesFile sparqlRules = new SparqlRulesFile();
-
-        ruleFiles.forEach(sparqlRules::addRules);
+        SparqlRulesFile sparqlRules = new SparqlRulesFile(ruleFiles);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             sparqlRules.write(outputStream);

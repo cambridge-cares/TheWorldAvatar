@@ -35,10 +35,10 @@ public class UserPhoneRepository {
      * @param callback Callback to UI level
      */
     public void registerAppToUser(RepositoryCallback<Boolean> callback) {
-        sensorCollectionStateManagerRepository.getUserId(new RepositoryCallback<>() {
+        sensorCollectionStateManagerRepository.getUserId(new RepositoryCallback<String>() {
             @Override
             public void onSuccess(String userId) {
-                sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<>() {
+                sensorCollectionStateManagerRepository.getDeviceId(new RepositoryCallback<String>() {
                     @Override
                     public void onSuccess(String deviceId) {
                         userPhoneNetworkSource.registerAppToUser(userId,

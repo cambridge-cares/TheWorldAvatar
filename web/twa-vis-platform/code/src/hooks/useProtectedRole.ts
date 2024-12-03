@@ -7,25 +7,28 @@ export function useProtectedRole() {
   const [authorised, setAuthorised] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const { roles } = await (await fetch('/api/userinfo')).json() as { roles: Roles };
-        setRoles(roles);
-      } catch (error) {
-        console.error('Error fetching user Info', error);
-      }
-    };
-
-    fetchRoles();
+    if (process.env.KEYCLOAK) {
+      const fetchRoles = async () => {
+        try {
+          const { roles } = await (await fetch('/api/userinfo')).json() as { roles: Roles };
+          setRoles(roles);
+        } catch (error) {
+          console.warn('Error fetching user Info', error);
+        }
+      };
+      fetchRoles();
+    }
   }, []);
 
   useEffect(() => {
-    if (roles && roles.includes('protected')) {
+
+    if (process.env.KEYCLOAK && roles && roles.includes('protected')) {
       setAuthorised(true);
     } else {
       setAuthorised(false);
     }
   }, [roles]);
+
 
   return { authorised };
 }

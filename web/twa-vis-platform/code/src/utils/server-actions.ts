@@ -42,6 +42,26 @@ export async function getData(agentApi: string, entityType: string, identifier?:
 }
 
 /**
+ * Retrieves the geolocation from the API endpoint based on the query parameters.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {Record<string, string | undefined>} params query parameters.
+ */
+export async function getGeolocation(agentApi: string, params: Record<string, string | undefined>): Promise<number[]> {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    // Only append the search param if there is a value
+    if (value) searchParams.append(key, value);
+  });
+  const url: string = `${agentApi}/location/geocode?${searchParams.toString()}`;
+  const results = await sendGetRequest(url);
+  if (results == "There are no coordinates associated with the parameters in the knowledge graph.") {
+    return [];
+  }
+  return JSON.parse(results);
+}
+
+/**
  * Retrieves all data of the specified type with human-readable labels for the fields.
  * 
  * @param {string} agentApi API endpoint.

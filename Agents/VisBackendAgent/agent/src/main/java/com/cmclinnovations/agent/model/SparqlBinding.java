@@ -38,10 +38,13 @@ public class SparqlBinding {
     while (iterator.hasNext()) {
       Map.Entry<String, JsonNode> sparqlCol = iterator.next();
       JsonNode sparqlField = sparqlCol.getValue();
+      String type = StringResource.getNodeString(sparqlField, "type");
+      // Defaults to null if it is a URI, else it should be string
+      String dataTypeDefaultOption = type.equals("uri") ? null : "http://www.w3.org/2001/XMLSchema#string";
       this.bindings.put(sparqlCol.getKey(), new SparqlResponseField(
-          StringResource.getNodeString(sparqlField, "type"),
+          type,
           StringResource.getNodeString(sparqlField, "value"),
-          StringResource.optNodeString(sparqlField, "datatype", "http://www.w3.org/2001/XMLSchema#string"),
+          StringResource.optNodeString(sparqlField, "datatype", dataTypeDefaultOption),
           StringResource.optNodeString(sparqlField, "xml:lang", null)));
     }
   }

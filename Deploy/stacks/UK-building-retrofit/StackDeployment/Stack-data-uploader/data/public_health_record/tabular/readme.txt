@@ -1,0 +1,2 @@
+Unzip the file named "public_health_record" from https://www.dropbox.com/scl/fi/wtioum2b4ajde08wv6xy2/public_health_record.zip?rlkey=5wxt0ma6s3swip2qw2x5qicil&st=z0psvsej&dl=0
+and place extracted ".csv" file here 
