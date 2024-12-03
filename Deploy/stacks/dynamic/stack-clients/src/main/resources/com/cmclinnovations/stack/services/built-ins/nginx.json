@@ -12,11 +12,6 @@
                         "Target": "/etc/nginx/conf.d"
                     }
                 ]
-            },
-            "RestartPolicy": {
-                "Condition": "on-failure",
-                "Delay": 5000000000,
-                "MaxAttempts": 10
             }
         },
         "EndpointSpec": {
