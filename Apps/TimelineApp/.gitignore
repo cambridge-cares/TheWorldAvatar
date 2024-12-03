@@ -24,7 +24,7 @@ local.properties
 /core/data/build
 /core/model/build
 /core/login/build
-/core/login/auth_config_*
+/core/login/src/main/res/raw/auth_config_*
 /core/network/build
 /core/sensor/build
 /feature/user/build
