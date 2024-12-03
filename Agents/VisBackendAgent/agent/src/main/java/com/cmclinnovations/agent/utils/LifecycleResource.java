@@ -262,8 +262,7 @@ public class LifecycleResource {
     StringResource.appendTriple(stageFilters, "?iri", LIFECYCLE_EVENT_PREDICATE_PATH,
         StringResource.parseIriForQuery(EVENT_APPROVAL));
     // Generate FILTER NOT EXISTS to ensure no occurrence exist yet for today
-    String occurenceFilterQuery = "?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?occurrence_date."
-        + "FILTER(?occurrence_date=?today)";
+    String occurenceFilterQuery = "?stage <https://www.omg.org/spec/Commons/Collections/comprises>/fibo-fnd-dt-oc:hasEventDate ?today.";
     LifecycleResource.appendFilterExists(stageFilters, occurenceFilterQuery, false);
     return genPrefixes()
         + "SELECT DISTINCT ?iri WHERE{"
