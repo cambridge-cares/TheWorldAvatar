@@ -87,6 +87,8 @@ Figure 1: TBox representation for a Service Agreement in the waste management se
         rdfs-comments remarks_string
     }
 
+    "ontowm:WasteService" ||--|{ "fibo-fnd-plc-fac:Capability" : "fibo-fnd-rel-rel:provides"
+    "fibo-fnd-plc-fac:Capability" ||--|{ "ontobim:Facility" : "fibo-fnd-rel-rel:involves"
     "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
 
     "bot:Building" ||--|| "fibo-fnd-plc-loc:PhysicalLocation" : "ontoservice:hasServiceLocation"
