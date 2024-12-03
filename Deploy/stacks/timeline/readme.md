@@ -1,5 +1,9 @@
 # Starting the stack
 
+## Test stack
+
+Stack name should be `timeline-test`.
+
 Prepare these secret files in [](./stack-manager/test/inputs/secrets)
 
 - geoserver_password
@@ -7,7 +11,7 @@ Prepare these secret files in [](./stack-manager/test/inputs/secrets)
 - keycloak_admin_password_test
 - keycloak_admin_username_test
 
-Majority of KeyCloak settings are set using environment variables in [keycloak.json].
+Majority of KeyCloak settings are set using environment variables in [keycloak-test.json].
 
 Set value of KC_DB_PASSWORD to match value in postgis_password.
 
@@ -31,7 +35,40 @@ then restart stack manager again:
 ./stack.sh start timeline-test
 ```
 
-where <STACK_NAME> should be replaced by either "timeline-test" or "timeline".
+## Production stack
+
+Stack name should be `timeline`.
+
+Prepare these secret files in [](./stack-manager/prod/inputs/secrets)
+
+- geoserver_password
+- postgis_password
+- keycloak_admin_password
+- keycloak_admin_username
+- privkey.pem
+- fullchain.pem
+
+fullchain.pem is the https certificate file for KeyCloak and privkey.pem is the https certificate key file for KeyCloak. To generate the files, please refer to <https://mindsers.blog/en/post/https-using-nginx-certbot-docker/>.
+
+Populate value of KC_DB_PASSWORD in [keycloak-prod.json].
+
+Then start the stack
+
+```bash
+./stack.sh start timeline
+```
+
+At the time of writing, keycloak will fail to start in the first startup due to the absence of the keycloak schema. Create the schema manually in PostGIS, execute this SQL command in adminer:
+
+```sql
+CREATE SCHEMA IF NOT EXISTS keycloak
+```
+
+then restart stack manager again:
+
+```bash
+./stack.sh start timeline
+```
 
 ## Import data from Singapore stack
 
@@ -54,4 +91,5 @@ IMPORT FOREIGN SCHEMA public
     INTO public;
 ```
 
-[keycloak.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json
+[keycloak-test.json]: ./stack-manager/test/inputs/config/services/keycloak-test.json
+[keycloak-prod.json]: ./stack-manager/test/inputs/config/services/keycloak-prod.json
