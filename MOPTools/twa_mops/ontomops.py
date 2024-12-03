@@ -12,7 +12,7 @@ import ontospecies
 import om
 import cavity_and_pore_size as cap
 
-from geo import Point, Vector, Line, Plane, RotationMatrix
+from geo import Point, Vector, Line, Plane, RotationMatrix, Quaternion
 
 HALF_BOND_LENGTH = 1.4 / 2
 BINDING_FRAGMENT_METAL = 'Metal'
@@ -148,9 +148,24 @@ class PoreRing(BaseClass):
         vec = list(self.hasProbingVector)[0].split('#')
         return Vector(x=float(vec[0]), y=float(vec[1]), z=float(vec[2]))
 
+    @property
+    def pair_of_ring_forming_gbus(self):
+        _pairs = {}
+        for cc in self.isFormedBy:
+            cc: GBUCoordinateCenter
+            cps = list(cc.hasGBUConnectingPoint)
+            for cp in cps:
+                if cp.instance_iri not in _pairs:
+                    _pairs[cp.instance_iri] = [cc]
+                else:
+                    _pairs[cp.instance_iri].append(cc)
+        pairs = {k: v for k, v in _pairs.items() if len(v) == 2}
+        return pairs
+
 class PoreSize(BaseClass):
     rdfs_isDefinedBy = OntoMOPs
     measuresPoreRing: MeasuresPoreRing[PoreRing]
+    hasProbingVector: HasProbingVector[str]
     hasPoreDiameter: HasPoreDiameter[om.Diameter]
 
 class AssemblyModel(BaseClass):
@@ -689,6 +704,30 @@ class CBUAssemblyTransformation(BaseClass):
     scaleFactorToAlignCoordinateCenter: ScaleFactorToAlignCoordinateCenter[float]
     translationVectorToAlignOrigin: TranslationVectorToAlignOrigin[str]
 
+    @property
+    def transformed_binding_sites(self):
+        cbu = list(self.transforms)[0]
+        if isinstance(cbu, str):
+            cbu: ChemicalBuildingUnit = KnowledgeGraph.get_object_from_lookup(cbu)
+        gcc = list(self.alignsTo)[0]
+        if isinstance(gcc, str):
+            gcc: GBUCoordinateCenter = KnowledgeGraph.get_object_from_lookup(gcc)
+        # retrieve the active binding sites
+        bs_points = [bs.binding_coordinates for bs in cbu.active_binding_sites]
+        # rotate according to the quaternion
+        rotation_matrix = Quaternion.from_string(list(self.quaternionToRotate)[0]).as_rotation_matrix()
+        rotated_bs_points = [Point.from_array(rotation_matrix.apply(bs.as_array)) for bs in bs_points]
+        # scale the rotated binding sites
+        scaling_factor = list(self.scaleFactorToAlignCoordinateCenter)[0]
+        translate_vector_for_scaling = Point.from_array(
+            rotation_matrix.apply(list(cbu.hasCBUAssemblyCenter)[0].coordinates.as_array)
+        ).get_translation_vector_to(Point.scale(gcc.coordinates, scaling_factor))
+        scaled_bs_points = [Point.translate(bs, translate_vector_for_scaling) for bs in rotated_bs_points]
+        # translation for the final alignment to minimise numerical errors
+        translation_vector = Vector.from_string(list(self.translationVectorToAlignOrigin)[0])
+        translated_bs_points = [Point.translate(bs, translation_vector) for bs in scaled_bs_points]
+        return {gcc: translated_bs_points}
+
 
 class MetalOrganicPolyhedron(CoordinationCage):
     hasAssemblyModel: HasAssemblyModel[AssemblyModel]
@@ -879,26 +918,37 @@ class MetalOrganicPolyhedron(CoordinationCage):
 
         # collect information on the CBU transformation
         cbu_assembly_transformation_lst = []
+        cbu_binding_sites_transformation_dct = {}
         for cbu_iri, rm_to_gbu in cbu_rotation_matrix.items():
             for gc in rm_to_gbu:
-                cbu_assembly_transformation_lst.append(CBUAssemblyTransformation(
+                cbu_transformation = CBUAssemblyTransformation(
                     transforms=cbu_iri,
                     alignsTo=gc,
                     quaternionToRotate=rm_to_gbu[gc][1].combine(rm_to_gbu[gc][0]).as_quaternion_str(),
                     scaleFactorToAlignCoordinateCenter=scaling_factor_cbu1 if gc1.instance_iri in rm_to_gbu else scaling_factor_cbu2,
                     translationVectorToAlignOrigin=translation_vector_to_origin.as_str()
-                ))
+                )
+                cbu_assembly_transformation_lst.append(cbu_transformation)
+                cbu_binding_sites_transformation_dct.update(cbu_transformation.transformed_binding_sites)
 
         # calculate cavity (in terms of largest inner sphere diameter), outer diameter, and pore size diameter
         inner_diameter_atom, inner_diameter, inner_volume = cap.largest_inner_sphere_diameter(adjusted_atoms)
         outer_diameter = cap.outer_diameter(adjusted_atoms)
         pore_sizes = []
         for pr in am.hasPoreRing:
-            ps_val = cap.pore_size_diameter(adjusted_atoms, pr.probing_vector)
+            pr: PoreRing
+            lst_of_points_for_probing_vector = []
+            pair_gbus = pr.pair_of_ring_forming_gbus
+            for pair in pair_gbus.values():
+                pair_of_binding_sites = Point.closest_pair_across_lists(cbu_binding_sites_transformation_dct[pair[0]], cbu_binding_sites_transformation_dct[pair[1]])
+                lst_of_points_for_probing_vector.extend(pair_of_binding_sites)
+            probing_vector: Vector = Vector.from_two_points(start=Point(x=0, y=0, z=0), end=Point.centroid(lst_of_points_for_probing_vector))
+            ps_val = cap.pore_size_diameter(adjusted_atoms, probing_vector)
             pore_sizes.append(
                 PoreSize(
                     measuresPoreRing=pr,
-                    hasPoreDiameter=om.Diameter(hasValue=om.Measure(hasNumericalValue=ps_val, hasUnit=om.angstrom))
+                    hasProbingVector=probing_vector.as_str(),
+                    hasPoreDiameter=om.Diameter(hasValue=om.Measure(hasNumericalValue=ps_val, hasUnit=om.angstrom)),
                 )
             )
 

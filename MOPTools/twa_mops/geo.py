@@ -1,8 +1,9 @@
 # This file contains utility classes for geometric calculations
 from typing import List, Tuple, Optional
-from itertools import combinations
+from itertools import combinations, product
 import numpy as np
 from scipy.spatial.transform import Rotation as R
+from scipy.spatial import Delaunay
 from pydantic import BaseModel
 
 
@@ -31,6 +32,36 @@ class RotationMatrix():
     @classmethod
     def identity(cls):
         return cls(matrix=np.eye(3))
+
+
+class Quaternion(BaseModel):
+    x: float
+    y: float
+    z: float
+    w: float
+
+    @property
+    def as_array(self):
+        return np.array([self.x, self.y, self.z, self.w])
+
+    def as_str(self):
+        return f'{self.x:f}#{self.y:f}#{self.z:f}#{self.w:f}'
+
+    def as_rotation_matrix(self):
+        return RotationMatrix(matrix=R.from_quat(self.as_array).as_matrix())
+
+    def rotate_points(self, points: List['Point']):
+        return [Point.rotate(pt, self.as_rotation_matrix()) for pt in points]
+
+    @classmethod
+    def from_rotation_matrix(cls, rotation_matrix: RotationMatrix):
+        q = R.from_matrix(rotation_matrix.matrix).as_quat()
+        return cls(x=q[0], y=q[1], z=q[2], w=q[3])
+
+    @classmethod
+    def from_string(cls, q_str: str):
+        q = q_str.split('#')
+        return cls(x=float(q[0]), y=float(q[1]), z=float(q[2]), w=float(q[3]))
 
 
 class Point(BaseModel):
@@ -91,7 +122,7 @@ class Point(BaseModel):
         return cls(x=arr[0], y=arr[1], z=arr[2], label=label)
 
     @classmethod
-    def rotate(cls, point: 'Point', rotation: R):
+    def rotate(cls, point: 'Point', rotation: RotationMatrix):
         _ = rotation.apply(point.as_array)
         return cls(x=_[0], y=_[1], z=_[2], label=point.label)
 
@@ -125,6 +156,17 @@ class Point(BaseModel):
         min_dist = np.inf
         min_points = (None, None)
         for pt1, pt2 in combinations(points, 2):
+            dist = pt1.get_distance_to(pt2)
+            if dist < min_dist:
+                min_dist = dist
+                min_points = (pt1, pt2)
+        return min_points
+
+    @classmethod
+    def closest_pair_across_lists(cls, point_list1: List['Point'], point_list2: List['Point']):
+        min_dist = np.inf
+        min_points = (None, None)
+        for pt1, pt2 in product(point_list1, point_list2):
             dist = pt1.get_distance_to(pt2)
             if dist < min_dist:
                 min_dist = dist
@@ -240,6 +282,11 @@ class Vector(BaseModel):
         return cls(x=arr[0], y=arr[1], z=arr[2])
 
     @classmethod
+    def from_string(cls, string):
+        arr = string.split('#')
+        return cls(x=float(arr[0]), y=float(arr[1]), z=float(arr[2]))
+
+    @classmethod
     def from_two_points(cls, start: Point, end: Point):
         return cls(x = end.x - start.x, y = end.y - start.y, z = end.z - start.z)
 
@@ -300,6 +347,15 @@ class Plane(BaseModel):
 
     def __repr__(self):
         return f"Plane(Point={self.point}, Normal={self.normal})"
+
+    @property
+    def local_2d_coordinate_system_vectors(self):
+        if self.normal.x != 0 or self.normal.y != 0:
+            v1 = Vector(x=-self.normal.y, y=self.normal.x, z=0).get_unit_vector()
+        else:
+            v1 = Vector(x=1, y=0, z=0)
+        v2 = Vector.from_array(self.normal.get_cross_product(v1))
+        return v1, v2
 
     @classmethod
     def from_point_and_normal(cls, point: Point, normal: Vector):
@@ -381,3 +437,19 @@ class Plane(BaseModel):
         t = np.linalg.lstsq(a, b, rcond=None)[0][0]
         intersection = proj_l1.point.as_array + t * proj_l1.direction.as_array
         return Point.from_array(intersection)
+
+    def project_points_to_local_2d_coordinate(self, points: List['Point']):
+        projected_points = [self.project_point(pt) for pt in points]
+        v1, v2 = self.local_2d_coordinate_system_vectors
+        # project the points to the local 2-D coordinate system
+        local_points = []
+        for pt in projected_points:
+            x = np.dot(pt.as_array - self.point.as_array, v1.as_array)
+            y = np.dot(pt.as_array - self.point.as_array, v2.as_array)
+            local_points.append(Point(x=x, y=y, z=0))
+        return local_points
+
+    def local_2d_delaunay_triangulation(self, points: List['Point']):
+        local_points = self.project_points_to_local_2d_coordinate(points)
+        delaunay = Delaunay(np.array([pt.as_array for pt in local_points]))
+        return delaunay
