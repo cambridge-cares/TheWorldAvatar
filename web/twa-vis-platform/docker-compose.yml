@@ -4,7 +4,7 @@
 services:
   # Empty visualisation image for deployment.
   base:
-    image: ghcr.io/cambridge-cares/twa-vf:5.11.1-SNAPSHOT
+    image: ghcr.io/cambridge-cares/twa-vf:5.11.1
     container_name: "twa-vf"
     restart: "no"
     environment:
