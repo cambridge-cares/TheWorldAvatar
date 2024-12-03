@@ -43,15 +43,13 @@ public class DatesWithTrajectoryNetworkSource {
 
     /**
      * Get all dates where there is trajectory data
-     * @param userId User id for the logged in user
      * @param timezone Current timezone of the phone
      * @param onSuccessUpper Success callback
      * @param onFailureUpper Failure callback
      */
-    public void getDates(String userId, String timezone, Response.Listener<Map<YearMonthCompositeKey, List<Integer>>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
+    public void getDates(String accessToken, String timezone, Response.Listener<Map<YearMonthCompositeKey, List<Integer>>> onSuccessUpper, Response.ErrorListener onFailureUpper) {
         String getDatesWithTrajectory = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
                 .addPathSegments(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryqueryagent_getDatesWithData))
-                .addQueryParameter("userID", userId)
                 .addQueryParameter("timezone", timezone)
                 .build().toString();
         LOGGER.info(getDatesWithTrajectory);
@@ -76,7 +74,15 @@ public class DatesWithTrajectoryNetworkSource {
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-        }, onFailureUpper);
+        }, onFailureUpper) {
+
+        @Override
+        public Map<String, String> getHeaders() {
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + accessToken);
+            return headers;
+        }
+    };
         requestQueue.add(request);
     }
 

@@ -43,10 +43,10 @@ public class DatesWithTrajectoryRepository {
      * @param callback Callback to notify UI level components when responses are returned from server
      */
     public void getDatesWithTrajectory(String timezone, RepositoryCallback<Map<YearMonthCompositeKey, List<Integer>>> callback) {
-        loginRepository.getUserInfo(new RepositoryCallback<>() {
+        loginRepository.getAccessToken(new RepositoryCallback<>() {
             @Override
-            public void onSuccess(User result) {
-                datesWithTrajectoryNetworkSource.getDates(result.getId(), timezone,
+            public void onSuccess(String result) {
+                datesWithTrajectoryNetworkSource.getDates(result, timezone,
                         callback::onSuccess,
                         volleyError -> LOGGER.error("error when retrieving dates, not sure how to handle yet"));
             }
