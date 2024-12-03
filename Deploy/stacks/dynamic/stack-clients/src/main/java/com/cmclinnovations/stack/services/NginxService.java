@@ -45,11 +45,16 @@ public final class NginxService extends ContainerService implements ReverseProxy
         super(stackName, config);
 
         updateExternalPort(config);
+    }
 
+    protected void doPreStartUpConfiguration() {
         try (InputStream inStream = new BufferedInputStream(
                 NginxService.class.getResourceAsStream(SERVER_CONF_TEMPLATE))) {
             NginxConfigParser parser = new NginxConfigParser(inStream);
             NgxConfig defaultConfigTemplate = parser.parse();
+            NgxParam resolverParam = defaultConfigTemplate.findParam("resolver");
+            resolverParam.addValue(getDNSIPAddress());
+            resolverParam.addValue("valid=5s");
             sender.addConfig(defaultConfigTemplate, "default.conf");
         } catch (ParseException | IOException ex) {
             throw new InvalidTemplateException(TEMPLATE_TYPE, SERVER_CONF_TEMPLATE, ex);
