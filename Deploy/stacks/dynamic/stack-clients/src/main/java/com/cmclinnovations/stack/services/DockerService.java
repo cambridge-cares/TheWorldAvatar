@@ -218,7 +218,7 @@ public class DockerService extends AbstractService
 
     private Optional<Service> getSwarmService(String containerName) {
         try (ListServicesCmd listServicesCmd = dockerClient.getInternalClient().listServicesCmd()) {
-            return listServicesCmd.withNameFilter(List.of(StackClient.prependStackName(containerName, "-")))
+            return listServicesCmd.withNameFilter(List.of(containerName))
                     .exec().stream().findAny();
         }
     }
