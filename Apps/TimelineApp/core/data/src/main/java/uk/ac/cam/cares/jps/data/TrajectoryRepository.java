@@ -32,10 +32,11 @@ public class TrajectoryRepository {
 
     /**
      * Get trajectory of the logged in user on the chosen date
-     * @param date Date chosen for which trajectory to show
+     * @param lowerbound lower bound of the chosen date in millisecond
+     * @param upperbound upper bound of the chosen date in millisecond
      * @param callback Callback to notify UI level components when responses are returned from server
      */
-    public void getTrajectory(String date, long lowerbound, long upperbound, RepositoryCallback<String> callback) {
+    public void getTrajectory(long lowerbound, long upperbound, RepositoryCallback<String> callback) {
         loginRepository.getAccessToken(new RepositoryCallback<>() {
             @Override
             public void onSuccess(String accessToken) {

@@ -1,11 +1,8 @@
 package uk.ac.cam.cares.jps.network;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -69,13 +66,7 @@ public class TrajectoryNetworkSource {
         Response.Listener<String> onCreateLayerSuccess = s -> {
             try {
                 // Log the full server response
-                LOGGER.error("Full server response: " + s);
-
-                if (s.startsWith("<?xml")) {
-                    // Handle XML response
-                    LOGGER.error("Received XML response instead of JSON: " + s);
-                    throw new RuntimeException("Unexpected XML response when JSON was expected");
-                }
+                LOGGER.debug("Full server response: " + s);
                 JSONObject rawResponse = new JSONObject(s);
 
                 StringRequest getTrajectoryRequest = buildGetTrajectoryRequest(accessToken,onSuccessUpper, onFailureUpper, rawResponse, lowerbound, upperbound);
@@ -83,13 +74,14 @@ public class TrajectoryNetworkSource {
                     requestQueue.add(getTrajectoryRequest);
                 }
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                LOGGER.error("Received XML response instead of JSON: " + s);
+                onFailureUpper.onErrorResponse(new VolleyError("geoserver error"));
             }
         };
 
        return new StringRequest(Request.Method.GET, createLayerUri, onCreateLayerSuccess, onFailureUpper) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Authorization", "Bearer " + accessToken);
                 return headers;
@@ -100,7 +92,9 @@ public class TrajectoryNetworkSource {
 
     private StringRequest buildGetTrajectoryRequest(String accessToken, Response.Listener<String> onSuccessUpper, Response.ErrorListener onFailureUpper, JSONObject rawResponse, long lowerbound, long upperbound) throws JSONException {
         if (!rawResponse.has("message")) {
-            throw new RuntimeException("Not able to handle the agent response. Please check the backend");
+            LOGGER.error("Not able to handle the agent response. Please check the backend");
+            onFailureUpper.onErrorResponse(new VolleyError("Server error"));
+            return null;
         }
 
         if (rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_no_phone_id_on_the_user))) {
@@ -110,8 +104,10 @@ public class TrajectoryNetworkSource {
             LOGGER.info("No trajectory retrieved for this user id");
             onSuccessUpper.onResponse("");
             return null;
-        } else if (!rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.rtajectoryagent_layer_created))) {
-            throw new RuntimeException("Not able to handle the agent response. Please check the backend");
+        } else if (!rawResponse.getString("message").equals(context.getString(uk.ac.cam.cares.jps.utils.R.string.trajectoryagent_layer_created))) {
+            LOGGER.error("Not able to handle the agent response. Please check the backend");
+            onFailureUpper.onErrorResponse(new VolleyError("Server error"));
+            return null;
         }
 
         String getTrajectoryUri = HttpUrl.get(context.getString(uk.ac.cam.cares.jps.utils.R.string.host_with_port)).newBuilder()
@@ -124,18 +120,13 @@ public class TrajectoryNetworkSource {
                 .addQueryParameter("viewparams", String.format(Locale.ENGLISH, "upperbound:%d;lowerbound:%d;", upperbound, lowerbound))
                 .build().toString();
 
-        LOGGER.error("Print out uri: " + getTrajectoryUri);
+        LOGGER.info("Print out uri: " + getTrajectoryUri);
 
         Response.Listener<String> onGetTrajectorySuccess = s1 -> {
             try {
                 // Log the full server response
                 LOGGER.debug("Full server response: " + s1);
 
-                if (s1.startsWith("<?xml")) {
-                    // Handle XML response
-                    LOGGER.error("Received XML response instead of JSON: " + s1);
-                    throw new RuntimeException("Unexpected XML response when JSON was expected");
-                }
                 JSONObject trajectoryResponse = new JSONObject(s1);
                 if (trajectoryResponse.getInt("totalFeatures") == 1 && trajectoryResponse
                         .getJSONArray("features")
@@ -146,8 +137,8 @@ public class TrajectoryNetworkSource {
                     onSuccessUpper.onResponse(trajectoryResponse.toString());
                 }
             } catch (JSONException e) {
-                LOGGER.error("Failed to parse JSON: " + s1, e);
-                throw new RuntimeException(e);
+                LOGGER.error("Received XML response instead of JSON: " + s1);
+                onFailureUpper.onErrorResponse(new VolleyError("Geoserver error"));
             }
         };
         StringRequest request = new StringRequest(Request.Method.GET, getTrajectoryUri, onGetTrajectorySuccess, onFailureUpper) {
