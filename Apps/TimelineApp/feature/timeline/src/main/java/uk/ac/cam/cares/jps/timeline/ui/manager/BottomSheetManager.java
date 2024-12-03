@@ -18,7 +18,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.apache.log4j.Logger;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -105,7 +104,7 @@ public class BottomSheetManager {
     }
 
     private void configureTrajectoryRetrieval() {
-        trajectoryViewModel.isFetchingTrajecjtory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
+        trajectoryViewModel.isFetchingTrajectory.observe(lifecycleOwner, normalBottomSheet::showFetchingAnimation);
         trajectoryViewModel.trajectory.observe(lifecycleOwner, normalBottomSheet::showTrajectoryInfo);
     }
 

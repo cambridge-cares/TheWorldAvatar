@@ -29,7 +29,7 @@ public class TrajectoryViewModel extends ViewModel {
     private final MutableLiveData<Boolean> _isFetchingTrajectory = new MutableLiveData<>();
     public LiveData<String> trajectory = _trajectory;
     public LiveData<Throwable> trajectoryError = _trajectoryError;
-    public LiveData<Boolean> isFetchingTrajecjtory = _isFetchingTrajectory;
+    public LiveData<Boolean> isFetchingTrajectory = _isFetchingTrajectory;
     private static final Logger LOGGER = Logger.getLogger(String.valueOf(TrajectoryViewModel.class));
 
 
@@ -41,11 +41,10 @@ public class TrajectoryViewModel extends ViewModel {
     public void getTrajectory(LocalDate date) {
         _isFetchingTrajectory.setValue(true);
 
-        String formattedDate = convertDateFormat(date);
         long lowerbound = calculateLowerbound(date);
         long upperbound = calculateUpperbound(date);
 
-        trajectoryRepository.getTrajectory(formattedDate, lowerbound, upperbound, new RepositoryCallback<>() {
+        trajectoryRepository.getTrajectory(lowerbound, upperbound, new RepositoryCallback<>() {
             @Override
             public void onSuccess(String result) {
                 _trajectory.postValue(result);
@@ -55,11 +54,6 @@ public class TrajectoryViewModel extends ViewModel {
 
             @Override
             public void onFailure(Throwable error) {
-                if (error != null) {
-                    LOGGER.error("Trajectory retrieval failed: " + error.getMessage(), error);
-                } else {
-                    LOGGER.error("Trajectory retrieval failed with an unknown error.");
-                }
                 _trajectoryError.postValue(error);
                 _isFetchingTrajectory.postValue(false);
             }
