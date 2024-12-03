@@ -94,7 +94,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
                     for (Entry<String, String> upstream : upstreams.entrySet()) {
                         addUpstream(upstreamConfigOut, upstream);
                     }
-                    sender.addConfig(upstreamConfigOut, service.getName() + "_upstream.conf");
+                    sender.addConfig(upstreamConfigOut, "upstreams/" + service.getName() + ".conf");
 
                     sender.sendConfigs();
                 } catch (ParseException | IOException ex) {
