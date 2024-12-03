@@ -110,11 +110,8 @@ app.prepare().then(() => {
         });
 
         const useGeoServerProxy = process.env.REACT_APP_USE_GEOSERVER_PROXY === 'true';
-        console.log('REACT_APP_USE_GEOSERVER_PROXY is ' + useGeoServerProxy);
-
-        if (useGeoServerProxy) {
-            console.log('GeoServer requests from MapBox will be sent to /geoserver-proxy')
-        }
+        console.info('REACT_APP_USE_GEOSERVER_PROXY is ' + useGeoServerProxy);
+        console.info('GeoServer requests from MapBox will be sent to /geoserver-proxy')
 
         if (useGeoServerProxy) {
             server.get('/geoserver-proxy', async (req, res) => {
