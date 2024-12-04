@@ -72,7 +72,7 @@ public class SmartphoneRecordingTask {
                 rdbStoreClient.getUser(), rdbStoreClient.getPassword());
     }
 
-    public synchronized void addData(HashMap<String, List<?>> data) {
+    public synchronized void addData(Payload data) {
         logger.info("adding data...");
         sensorDataProcessorList.forEach(p -> p.addData(data));
         lastActiveTime = System.currentTimeMillis();

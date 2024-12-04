@@ -7,6 +7,7 @@ import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -26,9 +27,9 @@ public class IlluminationProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("lightValue_tsList"));
-        illuminationList.addAll((List<Double>) data.get("lightValueList"));
+    public void addData(Payload data) {
+        timeList.addAll(data.getLightValueTs());
+        illuminationList.addAll(data.getLightValues());
     }
 
     @Override

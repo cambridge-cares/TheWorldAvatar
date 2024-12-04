@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 
 import org.apache.jena.graph.Node;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -24,7 +25,7 @@ public abstract class SensorDataProcessor {
         initIRIs();
     }
 
-    public abstract void addData(HashMap<String, List<?>> data);
+    public abstract void addData(Payload data);
 
     public abstract TimeSeries<Long> getProcessedTimeSeries() throws Exception;
 

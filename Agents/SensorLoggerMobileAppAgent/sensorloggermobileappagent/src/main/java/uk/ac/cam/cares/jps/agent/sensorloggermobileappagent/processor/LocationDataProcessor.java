@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.postgis.Point;
 
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -35,13 +36,13 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("location_tsList"));
-        bearingList.addAll((List<Double>) data.get("bearingList"));
-        speedList.addAll((List<Double>) data.get("speedList"));
-        altitudeList.addAll((List<Double>) data.get("altitudeList"));
-        geomLocationList.addAll((List<Point>) data.get("geomLocationList"));
-        sessionIdList.addAll((List<String>) data.get("sessionIdList"));
+    public void addData(Payload data) {
+        timeList.addAll(data.getLocationTs());
+        bearingList.addAll(data.getBearings());
+        speedList.addAll(data.getSpeeds());
+        altitudeList.addAll(data.getAltitudes());
+        geomLocationList.addAll(data.getGeomLocations());
+        sessionIdList.addAll(data.getSessionIds());
     }
 
     @Override

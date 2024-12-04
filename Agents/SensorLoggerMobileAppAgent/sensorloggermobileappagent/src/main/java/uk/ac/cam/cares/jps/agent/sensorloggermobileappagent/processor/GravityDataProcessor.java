@@ -7,6 +7,7 @@ import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -31,11 +32,11 @@ public class GravityDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("gravity_tsList"));
-        xList.addAll((List<Double>) data.get("gravityList_x"));
-        yList.addAll((List<Double>) data.get("gravityList_y"));
-        zList.addAll((List<Double>) data.get("gravityList_z"));
+    public void addData(Payload data) {
+        timeList.addAll(data.getGravityTs());
+        xList.addAll(data.getGravityXs());
+        yList.addAll(data.getGravityYs());
+        zList.addAll(data.getGravityZs());
     }
 
     @Override

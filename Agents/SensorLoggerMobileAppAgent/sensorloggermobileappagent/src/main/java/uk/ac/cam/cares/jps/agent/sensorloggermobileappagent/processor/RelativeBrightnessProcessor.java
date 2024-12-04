@@ -8,6 +8,7 @@ import org.json.JSONArray;
 
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -27,9 +28,9 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("brightness_tsList"));
-        brightnessList.addAll((List<Double>) data.get("brightnessList"));
+    public void addData(Payload data) {
+        timeList.addAll(data.getBrightnessTs());
+        brightnessList.addAll(data.getBrightness());
     }
 
     @Override

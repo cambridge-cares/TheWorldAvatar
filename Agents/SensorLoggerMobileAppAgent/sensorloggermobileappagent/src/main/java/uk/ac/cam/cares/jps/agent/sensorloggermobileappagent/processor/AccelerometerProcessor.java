@@ -8,6 +8,7 @@ import org.json.JSONArray;
 
 import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -31,11 +32,11 @@ public class AccelerometerProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void addData(HashMap<String, List<?>> data) {
-        timeList.addAll((List<OffsetDateTime>) data.get("accel_tsList"));
-        xList.addAll((List<Double>) data.get("accelList_x"));
-        yList.addAll((List<Double>) data.get("accelList_y"));
-        zList.addAll((List<Double>) data.get("accelList_z"));
+    public void addData(Payload data) {
+        timeList.addAll(data.getAccelTs());
+        xList.addAll(data.getAccelXs());
+        yList.addAll(data.getAccelYs());
+        zList.addAll(data.getAccelZs());
     }
 
     @Override
