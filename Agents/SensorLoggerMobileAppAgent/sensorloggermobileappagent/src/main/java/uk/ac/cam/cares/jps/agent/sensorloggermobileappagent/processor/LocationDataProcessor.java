@@ -8,28 +8,23 @@ import org.json.JSONArray;
 import org.postgis.Point;
 
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
 public class LocationDataProcessor extends SensorDataProcessor {
-    private String bearingIRI = null;
-    private String speedIRI = null;
-    private String altitudeIRI = null;
-    private String pointIRI = null;
-    private String sessionIRI = null;
 
-    private final List<Double> bearingList = new ArrayList<>();
-    private final List<Double> speedList = new ArrayList<>();
-    private final List<Double> altitudeList = new ArrayList<>();
-    private final List<Point> geomLocationList = new ArrayList<>();
-    private final List<String> sessionIdList = new ArrayList<>();
+    private SensorData<Double> bearing;
+    private SensorData<Double> speed;
+    private SensorData<Double> altitude;
+    private SensorData<Point> geomLocation;
+    private SensorData<String> session;
 
     public LocationDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
@@ -38,25 +33,20 @@ public class LocationDataProcessor extends SensorDataProcessor {
     @Override
     public void addData(Payload data) {
         timeList.addAll(data.getLocationTs());
-        bearingList.addAll(data.getBearings());
-        speedList.addAll(data.getSpeeds());
-        altitudeList.addAll(data.getAltitudes());
-        geomLocationList.addAll(data.getGeomLocations());
-        sessionIdList.addAll(data.getSessionIds());
+        bearing.addData(data.getBearings());
+        speed.addData(data.getSpeeds());
+        altitude.addData(data.getAltitudes());
+        geomLocation.addData(data.getGeomLocations());
+        session.addData(data.getSessionIds());
     }
 
     @Override
     public TimeSeries<Long> getProcessedTimeSeries() {
         // todo: do processing of location data
-        List<String> dataIRIList = Arrays.asList(bearingIRI, speedIRI, altitudeIRI, pointIRI, sessionIRI);
-        List<List<?>> valueList = Arrays.asList(new ArrayList<>(bearingList),
-                new ArrayList<>(speedList),
-                new ArrayList<>(altitudeList),
-                new ArrayList<>(geomLocationList),
-                new ArrayList<>(sessionIdList));
+        List<String> dataIRIList = getDataIRIs();
+        List<List<?>> valueList = getValues();
 
-        List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli())
-                .collect(Collectors.toList());
+        List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli()).toList();
         TimeSeries<Long> ts = new TimeSeries<>(new ArrayList<>(epochlist), dataIRIList, valueList);
 
         clearData();
@@ -64,26 +54,13 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class<?>> getDataClass() {
-        List<Class<?>> dataClass = new ArrayList<>(Collections.nCopies(3, Double.class));
-        dataClass.add(Point.class);
-        dataClass.add(String.class);
-        return dataClass;
-    }
-
-    @Override
-    public List<String> getDataIRIs() {
-        return List.of(bearingIRI, speedIRI, altitudeIRI, pointIRI, sessionIRI);
-    }
-
-    @Override
-    void clearData() {
-        timeList.clear();
-        bearingList.clear();
-        speedList.clear();
-        altitudeList.clear();
-        geomLocationList.clear();
-        sessionIdList.clear();
+    void initSensorData() {
+        bearing = new SensorData<>(Double.class);
+        speed = new SensorData<>(Double.class);
+        altitude = new SensorData<>(Double.class);
+        geomLocation = new SensorData<>(Point.class);
+        session = new SensorData<>(String.class);
+        sensorData = List.of(bearing, speed, altitude, geomLocation, session);
     }
 
     @Override
@@ -127,11 +104,11 @@ public class LocationDataProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        bearingIRI = queryResult.getJSONObject(0).optString("bearing");
-        altitudeIRI = queryResult.getJSONObject(0).optString("altitude");
-        speedIRI = queryResult.getJSONObject(0).optString("speed");
-        pointIRI = queryResult.getJSONObject(0).optString("point");
-        sessionIRI = queryResult.getJSONObject(0).optString("session");
+        this.bearing.setIri(queryResult.getJSONObject(0).optString("bearing"));
+        this.altitude.setIri(queryResult.getJSONObject(0).optString("altitude"));
+        this.speed.setIri(queryResult.getJSONObject(0).optString("speed"));
+        this.geomLocation.setIri(queryResult.getJSONObject(0).optString("point"));
+        this.session.setIri(queryResult.getJSONObject(0).optString("session"));
     }
 
     @Override

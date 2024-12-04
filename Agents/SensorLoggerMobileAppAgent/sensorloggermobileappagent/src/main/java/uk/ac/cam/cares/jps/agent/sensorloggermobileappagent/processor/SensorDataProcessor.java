@@ -2,12 +2,14 @@ package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor;
 
 import org.apache.jena.graph.Node;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class SensorDataProcessor {
     AgentConfig config;
@@ -16,18 +18,21 @@ public abstract class SensorDataProcessor {
     final List<OffsetDateTime> timeList = new ArrayList<>();
     boolean isIriInstantiationNeeded = false;
     boolean isRbdInstantiationNeeded = false;
+    List<SensorData<?>> sensorData;
 
     public SensorDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         this.config = config;
         this.storeClient = storeClient;
         this.smartphoneIRINode = smartphoneIRINode;
 
+        initSensorData();
         initIRIs();
     }
 
     public abstract void addData(Payload data);
 
     public abstract TimeSeries<Long> getProcessedTimeSeries() throws Exception;
+    abstract void initSensorData();
 
     public void initIRIs() {
         List<String> iris = getDataIRIs();
@@ -43,11 +48,26 @@ public abstract class SensorDataProcessor {
         }
     };
 
-    public abstract List<Class<?>> getDataClass();
+    public List<SensorData<?>> getSensorData() {
+        return sensorData;
+    };
 
-    public abstract List<String> getDataIRIs();
+    public List<Class<?>> getDataClass() {
+        return getSensorData().stream().map(SensorData::getType).collect(Collectors.toList());
+    };
 
-    abstract void clearData();
+    public List<String> getDataIRIs() {
+        return getSensorData().stream().map(SensorData::getIri).toList();
+    };
+
+    public List<List<?>> getValues() {
+        return getSensorData().stream().map(SensorData::getValues).collect(Collectors.toList());
+    }
+
+    void clearData() {
+        timeList.clear();
+        getSensorData().forEach(SensorData::clearData);
+    };
 
     abstract void getIrisFromKg();
 

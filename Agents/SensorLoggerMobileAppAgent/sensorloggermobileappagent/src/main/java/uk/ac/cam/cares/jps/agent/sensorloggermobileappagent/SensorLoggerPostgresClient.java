@@ -1,23 +1,23 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import org.jooq.impl.DSL;
-import org.springframework.core.io.ClassPathResource;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.InputStream;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
+import org.jooq.impl.DSL;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * column names need to match with obda file in resources
@@ -60,8 +60,7 @@ public class SensorLoggerPostgresClient {
         try (Connection conn = getConnection(); Statement statement = conn.createStatement()) {
             String condition = String.format("table_name = '%s'", DEVICES_TABLE);
 
-            if (getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0,
-                    int.class) != 1) {
+            if (getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) != 1) {
                 // table does not exist
                 firstTime = true;
                 initFunctionsForGeoServer(conn);

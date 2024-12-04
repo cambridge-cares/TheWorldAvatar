@@ -8,6 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.processor.*;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -219,12 +220,7 @@ public class SmartphoneRecordingTask {
 
         // downsampling algorithm applied in getProcessedTimeSeries might make a time
         // series empty
-        Iterator<TimeSeries<Long>> tsIterator = tsList.iterator();
-        while (tsIterator.hasNext()) {
-            if (tsIterator.next().getTimes().isEmpty()) {
-                tsIterator.remove();
-            }
-        }
+        tsList.removeIf(longTimeSeries -> longTimeSeries.getTimes().isEmpty());
 
         logger.info(String.format("bulk adding %d time series", tsList.size()));
         tsClient.bulkaddTimeSeriesData(tsList);
@@ -252,7 +248,7 @@ public class SmartphoneRecordingTask {
 
     public void instantiate() {
         initKgUsingOntop();
-        sensorDataProcessorList.forEach(s -> s.initIRIs());
+        sensorDataProcessorList.forEach(SensorDataProcessor::initIRIs);
         bulkInitRdb();
     }
 }

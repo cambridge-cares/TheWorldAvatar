@@ -6,7 +6,8 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
@@ -18,11 +19,8 @@ import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants
 
 public class ActivityProcessor extends SensorDataProcessor {
 
-    private String confidenceIRI = null;
-    private String activityTypeIRI = null;
-
-    private List<Integer> confidenceList = new ArrayList<>();
-    private List<String> activityTypeList = new ArrayList<>();
+    private SensorData<Integer> confidence;
+    private SensorData<String> activityType;
 
     public ActivityProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
@@ -31,14 +29,14 @@ public class ActivityProcessor extends SensorDataProcessor {
     @Override
     public void addData(Payload data) {
         timeList.addAll(data.getActivityTs());
-        confidenceList.addAll(data.getConfidences());
-        activityTypeList.addAll(data.getActivityTypes());
+        confidence.addData(data.getConfidences());
+        activityType.addData(data.getActivityTypes());
     }
 
     @Override
     public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
-        List<String> iriList = Arrays.asList(confidenceIRI, activityTypeIRI);
-        List<List<?>> valueList = Arrays.asList(confidenceList, activityTypeList);
+        List<String> iriList = getDataIRIs();
+        List<List<?>> valueList = getValues();
         List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli())
                 .collect(Collectors.toList());
 
@@ -47,20 +45,10 @@ public class ActivityProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public List<Class<?>> getDataClass() {
-        return List.of(Integer.class, String.class);
-    }
-
-    @Override
-    public List<String> getDataIRIs() {
-        return List.of(confidenceIRI, activityTypeIRI);
-    }
-
-    @Override
-    void clearData() {
-        timeList.clear();
-        confidenceList.clear();
-        activityTypeList.clear();
+    void initSensorData() {
+        confidence = new SensorData<>(Integer.class);
+        activityType = new SensorData<>(String.class);
+        sensorData = List.of(confidence, activityType);
     }
 
     @Override
@@ -91,8 +79,8 @@ public class ActivityProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        confidenceIRI = queryResult.getJSONObject(0).optString("confidence");
-        activityTypeIRI = queryResult.getJSONObject(0).optString("activityType");
+        this.confidence.setIri(queryResult.getJSONObject(0).optString("confidence"));
+        this.activityType.setIri(queryResult.getJSONObject(0).optString("activityType"));
     }
 
     @Override

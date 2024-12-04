@@ -6,73 +6,42 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.downsampling.Downsampling;
 import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.AgentConfig;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.Payload;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.model.SensorData;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.OntoConstants.*;
 
-public class AccelerometerProcessor extends SensorDataProcessor {
-    private String xIri = null;
-    private String yIri = null;
-    private String zIri = null;
+public class AccelerometerProcessor extends SensorDataDownsampledProcessor {
 
-    private List<Double> xList = new ArrayList<>();
-    private List<Double> yList = new ArrayList<>();
-    private List<Double> zList = new ArrayList<>();
+    SensorData<Double> x;
+    SensorData<Double> y;
+    SensorData<Double> z;
 
     public AccelerometerProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
-        super(config, storeClient, smartphoneNode);
+        super(config, storeClient, smartphoneNode,
+                config.getAccelDSResolution(),
+                config.getAccelDSType()
+                );
+    }
+
+    @Override
+    void initSensorData() {
+        x = new SensorData<>(Double.class);
+        y = new SensorData<>(Double.class);
+        z = new SensorData<>(Double.class);
+        sensorData = List.of(x, y, z);
     }
 
     @Override
     public void addData(Payload data) {
         timeList.addAll(data.getAccelTs());
-        xList.addAll(data.getAccelXs());
-        yList.addAll(data.getAccelYs());
-        zList.addAll(data.getAccelZs());
-    }
-
-    @Override
-    public TimeSeries<Long> getProcessedTimeSeries() throws Exception {
-        List<List<?>> valueList = Arrays.asList(xList, yList, zList);
-        List<String> iriList = Arrays.asList(xIri, yIri, zIri);
-
-        TimeSeries<OffsetDateTime> ts = new TimeSeries<>(timeList, iriList, valueList);
-        ts = Downsampling.downsampleTS(ts, config.getAccelDSResolution(), config.getAccelDSType());
-
-        List<Long> epochlist = ts.getTimes().stream().map(t -> t.toInstant().toEpochMilli())
-                .collect(Collectors.toList());
-
-        List<List<?>> downsampledValuesList = Arrays.asList(ts.getValuesAsDouble(xIri), ts.getValuesAsDouble(yIri),
-                ts.getValuesAsDouble(zIri));
-
-        clearData();
-        return new TimeSeries<>(epochlist, iriList, downsampledValuesList);
-    }
-
-    @Override
-    public List<Class<?>> getDataClass() {
-        return Collections.nCopies(getDataIRIs().size(), Double.class);
-    }
-
-    @Override
-    public List<String> getDataIRIs() {
-        return List.of(xIri, yIri, zIri);
-    }
-
-    @Override
-    void clearData() {
-        timeList.clear();
-        xList.clear();
-        yList.clear();
-        zList.clear();
+        x.addData(data.getAccelXs());
+        y.addData(data.getAccelYs());
+        z.addData(data.getAccelZs());
     }
 
     @Override
@@ -110,9 +79,10 @@ public class AccelerometerProcessor extends SensorDataProcessor {
         if (queryResult.isEmpty()) {
             return;
         }
-        xIri = queryResult.getJSONObject(0).optString("x");
-        yIri = queryResult.getJSONObject(0).optString("y");
-        zIri = queryResult.getJSONObject(0).optString("z");
+
+        this.x.setIri(queryResult.getJSONObject(0).optString("x"));
+        this.y.setIri(queryResult.getJSONObject(0).optString("y"));
+        this.z.setIri(queryResult.getJSONObject(0).optString("z"));
     }
 
     @Override
