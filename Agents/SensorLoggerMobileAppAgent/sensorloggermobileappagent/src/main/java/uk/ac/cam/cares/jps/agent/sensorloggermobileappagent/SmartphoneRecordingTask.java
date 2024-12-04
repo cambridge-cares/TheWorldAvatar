@@ -32,6 +32,7 @@ public class SmartphoneRecordingTask {
     LocationDataProcessor locationDataProcessor;
     MagnetometerDataProcessor magnetometerDataProcessor;
     RelativeBrightnessProcessor relativeBrightnessProcessor;
+    ActivityProcessor activityProcessor;
     List<SensorDataProcessor> sensorDataProcessorList;
 
     private final Node smartphoneIRI;
@@ -126,11 +127,7 @@ public class SmartphoneRecordingTask {
     }
 
     public synchronized boolean shouldTerminateTask() {
-        if (System.currentTimeMillis() - lastActiveTime > config.getTaskInactiveTime() * 1000L) {
-            return true;
-        }
-
-        return false;
+        return System.currentTimeMillis() - lastActiveTime > config.getTaskInactiveTime() * 1000L;
     }
 
     private void initSensorProcessors() {
@@ -142,6 +139,7 @@ public class SmartphoneRecordingTask {
         magnetometerDataProcessor = new MagnetometerDataProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
         relativeBrightnessProcessor = new RelativeBrightnessProcessor(this.config, ontopRemoteStoreClient,
                 smartphoneIRI);
+        activityProcessor = new ActivityProcessor(this.config, ontopRemoteStoreClient, smartphoneIRI);
 
         sensorDataProcessorList = Arrays.asList(accelerometerProcessor,
                 dbfsDataProcessor,
@@ -149,7 +147,8 @@ public class SmartphoneRecordingTask {
                 illuminationProcessor,
                 locationDataProcessor,
                 magnetometerDataProcessor,
-                relativeBrightnessProcessor);
+                relativeBrightnessProcessor,
+                activityProcessor);
     }
 
     private void initKgUsingOntop() {
