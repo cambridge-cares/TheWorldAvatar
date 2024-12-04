@@ -28,6 +28,7 @@ Others will return only return a the "jobID" and the "SimulationType" in a JSON 
 - Surrogate Generation and Multi-Objective Optimisation (`MOO`)
 - Multi-Objective Optimisation with a pregenerated saved surrogate (`MOOonly`)
 - Evaluation of a pregenerated saved surrogate (`Evaluate`)
+- Deep Kernel Learning Surrogate Generation (`DKL`)
 The JSON object returned by this query (URL-encoded if working through a browser) can then be passed as the "`query`" parameter to this URL https://kg.cmclinnovations.com/mods-agent/output/request (remote on KG server) or http://localhost:58085/output/request (local) to retrieve the results when the simulation is complete.
 
 The MoDS Simple Agent supports the loading and saving of surrogates generated.
