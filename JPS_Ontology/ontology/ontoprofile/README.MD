@@ -11,12 +11,12 @@ The namespace for the ontology is:
 - [1. Ontology for the Profiles of Organizations and People](#1-ontology-for-the-profiles-of-organizations-and-people)
 - [2. Data Model](#2-data-model)
   - [Legend](#legend)
-  - [2.1 Organisations](#21-organisations)
-    - [2.1.1 Overview](#211-overview)
-    - [2.1.2 Employer-Employee relationships](#212-employer-employee-relationships)
-  - [2.2 Person](#22-person)
-    - [2.2.1 Overview](#221-overview)
-  - [2.3 Relationships with facilities](#23-relationships-with-facilities)
+  - [2.1 Profiles](#21-profiles)
+    - [2.1.1 Organisations](#211-organisations)
+    - [2.1.2 Person](#212-person)
+  - [2.2 Situations](#22-situations)
+    - [2.2.1 Employment](#221-employment)
+    - [2.2.2 Facility usage](#222-facility-usage)
 
 # 2. Data Model
 
@@ -54,9 +54,11 @@ The namespace for the ontology is:
 | ontobim           | `https://www.theworldavatar.com/kg/ontobim/`                                              |
 | ontoprofile       | `https://www.theworldavatar.com/kg/ontoprofile/`                                          |
 
-## 2.1 Organisations
+## 2.1 Profiles
 
-### 2.1.1 Overview
+This section describes the profile details about an organisation and/or person, as well as the roles they could play.
+
+### 2.1.1 Organisations
 
 The profiles of organisations generally includes their organisation names, mailing address, as well as their different roles. An organization may also play the following roles represented under the `cmns-pts:PartyRole` concept:
 
@@ -64,7 +66,7 @@ The profiles of organisations generally includes their organisation names, maili
 2. `fibo-fnd-pas-pas:Client` - party that purchases professional services from another party
 3. `fibo-fnd-pas-pas:ServiceProvider` - party that provides and typically provisions professional services.
 
-Figure 1: TBox representation for an organisation
+Figure 1: TBox representation for an organisation's profile
 
 ```mermaid
     erDiagram
@@ -94,30 +96,7 @@ Figure 1: TBox representation for an organisation
     "cmns-pts:PartyRole" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
 ```
 
-### 2.1.2 Employer-Employee relationships
-
-The following figure depicts how an employee and employer relationship can be represented in an ontology. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation. Employees also have their associated work responsibilities that they must fulfil. These work responsibilities are intended to be instantiated as enums based on the corresponding Abox `OntoProfile_abox.ttl`.
-
-Figure 2: TBox representation for an employer-employee relationship
-
-```mermaid
-    erDiagram
-    "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
-    "fibo-fnd-org-fm:Employee" ||--o{ "ontoprofile:EmployeeStatus" : "ontoprofile:hasStatus"
-
-    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "fibo-fnd-aap-ppl:Person" : "cmns-col:hasMember"
-    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
-```
-
-Note that the employee status are represented as enums in the corresponding ABox. The available statuses are as follows:
-
-- OnLeave
-- OnWork
-
-## 2.2 Person
-
-### 2.2.1 Overview
+### 2.1.2 Person
 
 The profile of a person generally includes their name and may include their contact information. A person may also play the following roles represented under the `cmns-pts:PartyRole` concept:
 
@@ -128,7 +107,7 @@ The profile of a person generally includes their name and may include their cont
 5. `ontoprofile:SalesAdmin`- An employee who is specifically employed to communicate with clients about the company's products and/or services
 6. `ontoprofile:Student` - A person who has a membership role within an educational institution, typically enrolled in a course of study or program, and is involved in learning or training activities under the supervision of educators
 
-Figure 3: TBox representation for a person
+Figure 2: TBox representation for a person's profile
 
 ```mermaid
     erDiagram
@@ -150,9 +129,43 @@ Figure 3: TBox representation for a person
     }
 ```
 
-## 2.3 Relationships with facilities
+## 2.2 Situations
 
-This section depicts how organisations and their employees can be linked to a facility. An organisation may have facilities operating in a building which is associated with a corresponding address and geolocation.
+This section describes the various situations that organisations or people are involved in.
+
+### 2.2.1 Employment
+
+In this situation, a person can be employed by an organisation, who plays an employer role. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation. Employees also have their associated work responsibilities that they must fulfil.
+
+Figure 3: TBox representation for an employment situation
+
+```mermaid
+    erDiagram
+    "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
+    "fibo-fnd-org-fm:Employee" ||--o{ "ontoprofile:EmployeeStatus" : "ontoprofile:hasStatus"
+
+    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "fibo-fnd-aap-ppl:Person" : "cmns-col:hasMember"
+    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
+
+    "fibo-fnd-org-fm:Employment" ||--|{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:hasEmployingParty"
+    "fibo-fnd-org-fm:Employment" ||--|{ "fibo-fnd-org-fm:Employee" : "fibo-fnd-org-fm:hasEmployedParty"
+    "fibo-fnd-org-fm:Employment" ||--|{ "cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
+    "cmns-dt:DatePeriod" ||--o{ "cmns-dt:Date" : "cmns-dt:hasStartDate"
+    "cmns-dt:DatePeriod" ||--o{ "cmns-dt:Date" : "cmns-dt:hasEndDate"
+    "cmns-dt:Date" {
+        cmns-dt-hasDateValue xsd-date
+    }
+```
+
+Note that the employee status are represented as enums in the corresponding ABox `OntoProfile_abox.ttl`. The available statuses are as follows:
+
+- OnLeave
+- OnWork
+
+### 2.2.2 Facility usage
+
+This section depicts the usage of facility by organisations and employees. These facilities may operate in a building which is associated with a corresponding address and geolocation. The ontology also enables the inclusion of employees from external organisations.
 
 Figure 4: TBox representation for relationships within facilities
 
