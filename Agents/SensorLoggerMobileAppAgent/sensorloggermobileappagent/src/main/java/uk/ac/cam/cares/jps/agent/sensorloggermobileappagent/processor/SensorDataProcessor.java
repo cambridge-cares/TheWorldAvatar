@@ -23,6 +23,8 @@ public abstract class SensorDataProcessor {
         this.config = config;
         this.storeClient = storeClient;
         this.smartphoneIRINode = smartphoneIRINode;
+
+        initIRIs();
     }
 
     public abstract void addData(HashMap<String, List<?>> data);

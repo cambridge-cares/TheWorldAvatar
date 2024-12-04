@@ -28,7 +28,6 @@ public class AccelerometerProcessor extends SensorDataProcessor {
 
     public AccelerometerProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
         super(config, storeClient, smartphoneNode);
-        initIRIs();
     }
 
     @Override

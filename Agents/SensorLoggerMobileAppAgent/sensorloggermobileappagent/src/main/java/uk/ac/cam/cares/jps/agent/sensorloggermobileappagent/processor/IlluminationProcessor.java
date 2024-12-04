@@ -23,7 +23,6 @@ public class IlluminationProcessor extends SensorDataProcessor {
 
     public IlluminationProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
-        initIRIs();
     }
 
     @Override

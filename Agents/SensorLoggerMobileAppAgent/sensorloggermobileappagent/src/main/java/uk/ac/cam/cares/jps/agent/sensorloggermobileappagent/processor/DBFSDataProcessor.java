@@ -22,7 +22,6 @@ public class DBFSDataProcessor extends SensorDataProcessor {
 
     public DBFSDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneNode) {
         super(config, storeClient, smartphoneNode);
-        initIRIs();
     }
 
     @Override

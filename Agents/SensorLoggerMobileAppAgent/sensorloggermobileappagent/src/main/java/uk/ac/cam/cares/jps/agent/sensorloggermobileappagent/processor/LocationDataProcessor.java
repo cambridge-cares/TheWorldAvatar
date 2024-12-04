@@ -32,7 +32,6 @@ public class LocationDataProcessor extends SensorDataProcessor {
 
     public LocationDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
-        initIRIs();
     }
 
     @Override
@@ -52,7 +51,8 @@ public class LocationDataProcessor extends SensorDataProcessor {
         List<List<?>> valueList = Arrays.asList(new ArrayList<>(bearingList),
                 new ArrayList<>(speedList),
                 new ArrayList<>(altitudeList),
-                new ArrayList<>(geomLocationList), new ArrayList<>(sessionIdList));
+                new ArrayList<>(geomLocationList),
+                new ArrayList<>(sessionIdList));
 
         List<Long> epochlist = timeList.stream().map(t -> t.toInstant().toEpochMilli())
                 .collect(Collectors.toList());

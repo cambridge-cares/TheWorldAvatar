@@ -27,7 +27,6 @@ public class MagnetometerDataProcessor extends SensorDataProcessor {
 
     public MagnetometerDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
-        initIRIs();
     }
 
     @Override

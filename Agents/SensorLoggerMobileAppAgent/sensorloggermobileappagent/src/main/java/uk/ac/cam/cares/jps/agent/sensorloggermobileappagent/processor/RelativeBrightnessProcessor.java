@@ -24,7 +24,6 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
 
     public RelativeBrightnessProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
-        initIRIs();
     }
 
     @Override

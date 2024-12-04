@@ -28,7 +28,6 @@ public class GravityDataProcessor extends SensorDataProcessor {
 
     public GravityDataProcessor(AgentConfig config, RemoteStoreClient storeClient, Node smartphoneIRINode) {
         super(config, storeClient, smartphoneIRINode);
-        initIRIs();
     }
 
     @Override
