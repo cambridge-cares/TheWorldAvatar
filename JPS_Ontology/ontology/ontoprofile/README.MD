@@ -34,7 +34,7 @@ flowchart TD
     %% Diagram
     clazz[Class]
     instance[/Instance/]
-    clazzLiteral["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>Class</b></tr><tr><td>data property</td><td>literal type</td></tr></table>"]:::literal
+    clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
 ```
 
 For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Default lines are relations between two classes, whereas dotted lines are relations between instances of one or more classes.
@@ -100,17 +100,17 @@ flowchart LR
     %% Styling
     classDef literal fill:none
 
-    %% Diagram
+    %% Contents
     cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm: FormalOrganization]]
-    Organisation -. cmns-dsg:hasName .-> OrganizationName[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-org-org: OrganizationName</b></tr><tr><td>fibo-be-le-lei: hasTransliteratedName</td><td>string</td></tr></table>"]]:::literal
+    Organisation -. cmns-dsg:hasName .-> OrganizationName[["<h4>fibo-fnd-org-org: OrganizationName</h4><p style='font-size:0.75rem;'>fibo-be-le-lei:hasTransliteratedName &quot;string&quot;</p>"]]:::literal
 
-    Organisation -. fibo-fnd-pty-pty: hasMailingAddress .-> ConventionalStreetAddress[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-plc-adr: ConventionalStreetAddress</b></tr><tr><td>fibo-fnd-plc-loc: hasCityName</td><td>string</td></tr><tr><td>fibo-fnd-plc-adr: hasPostalCode</td><td>string</td></tr></table>"]]:::literal
+    Organisation -. fibo-fnd-pty-pty: hasMailingAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
     ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country[[lcc-cr: Country]]
     ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr: StreetAddress]]
 
-    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-plc-adr: PrimaryAddressNumber</b></tr><tr><td>fibo-fnd-rel-rel:hasTag</td><td>string</td></tr></table>"]]:::literal
-    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-plc-adr: StreetName</b></tr><tr><td>fibo-fnd-rel-rel:hasTag</td><td>string</td></tr></table>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
 ```
 
 ### 2.1.2 Person
@@ -131,13 +131,13 @@ flowchart LR
     %% Styling
     classDef literal fill:none
 
-    %% Diagram
+    %% Contents
     cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
-    Person -. cmns-dsg:hasName .-> PersonName[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-aap-ppl: PersonName</b></tr><tr><td>rdfs:label</td><td>string</td></tr><tr><td>fibo-fnd-aap-ppl: hasFullLegalName</td><td>string</td></tr><tr><td>fibo-fnd-aap-ppl: hasSurname</td><td>string</td></tr></table>"]]:::literal
+    Person -. cmns-dsg:hasName .-> PersonName[["<h4>fibo-fnd-aap-ppl: PersonName</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot; <br> fibo-fnd-aap-ppl:hasFullLegalName &quot;string&quot; <br> fibo-fnd-aap-ppl:hasSurname &quot;string&quot;</p>"]]:::literal
 
-    Person -. ontoprofile:hasInitials .-> Initials[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>ontoprofile:Initials</b></tr><tr><td>rdfs:label</td><td>string</td></tr></table>"]]:::literal
+    Person -. ontoprofile:hasInitials .-> Initials[["<h4>ontoprofile:Initials</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"]]:::literal
 
-    Person -. vcard:hasTelephone .-> Cell[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>vcard:Cell</b></tr><tr><td>vcard:hasValue</td><td>string</td></tr></table>"]]:::literal
+    Person -. vcard:hasTelephone .-> Cell[["<h4>vcard:Cell</h4><p style='font-size:0.75rem;'>vcard:hasValue &quot;string&quot;</p>"]]:::literal
 ```
 
 ## 2.2 Situations
@@ -155,13 +155,13 @@ flowchart LR
     %% Styling
     classDef literal fill:none
 
-    %% Diagram
+    %% Contents
     Employment[[fibo-fnd-org-fm: Employment]] -. fibo-fnd-org-fm: hasEmployingParty .-> Employer[[fibo-fnd-org-fm: Employer]]
     Employment[[fibo-fnd-org-fm: Employment]] -. fibo-fnd-org-fm: hasEmployedParty .-> Employee[[fibo-fnd-org-fm: Employee]]
     Employment[[fibo-fnd-org-fm: Employment]] -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
     DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
     DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
-    StartDate -.-> Date["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>cmns-dt:Date</b></tr><tr><td>cmns-dt-hasDateValue</td><td>xsd date</td></tr></table>"]:::literal
+    StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
     Employee -. fibo-fnd-org-fm: isEmployeeOf .-> Employer
@@ -187,17 +187,17 @@ flowchart LR
     %% Styling
     classDef literal fill:none
 
-    %% Diagram
+    %% Contents
+    Org[[fibo-fnd-org-fm:FormalOrganization]] -. ontoprofile:hasFacility .-> Facility
+    Employee[[fibo-fnd-org-fm:Employee]] -. ontoprofile:worksAt .-> Facility
+
     Building[[bot:Building]] -. ontobim:hasFacility .-> Facility[[ontobim:Facility]]
     Building --> geo:Feature
-    Building -. fibo-fnd-pty-adr: hasAddress .-> ConventionalStreetAddress[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-plc-adr: ConventionalStreetAddress</b></tr><tr><td>fibo-fnd-plc-loc: hasCityName</td><td>string</td></tr><tr><td>fibo-fnd-plc-adr: hasPostalCode</td><td>string</td></tr></table>"]]:::literal
+    Building -. fibo-fnd-pty-adr: hasAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
     ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country[[lcc-cr: Country]]
     ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr: StreetAddress]]
 
-    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-plc-adr: PrimaryAddressNumber</b></tr><tr><td>fibo-fnd-rel-rel:hasTag</td><td>string</td></tr></table>"]]:::literal
-    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<table border='1' style='font-size:0.75rem;'><tr style='font-size:1.25rem;'><b>fibo-fnd-plc-adr: StreetName</b></tr><tr><td>fibo-fnd-rel-rel:hasTag</td><td>string</td></tr></table>"]]:::literal
-
-    Org[[fibo-fnd-org-fm:FormalOrganization]] -. ontoprofile:hasFacility .-> Facility
-    Employee[[fibo-fnd-org-fm:Employee]] -. ontoprofile:worksAt .-> Facility
+    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
 ```
