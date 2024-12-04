@@ -24,7 +24,7 @@ The namespace for the ontology is:
 
 > Ontology Diagram
 
-The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literal are represented via a table within the node of the class
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class.
 
 ```mermaid
 flowchart TD
@@ -33,7 +33,7 @@ flowchart TD
 
     %% Diagram
     clazz[Class]
-    instance[/Instance/]
+    instance[[Instance]]
     clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
 ```
 
