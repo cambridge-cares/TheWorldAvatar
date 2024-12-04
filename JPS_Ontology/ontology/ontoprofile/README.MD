@@ -24,7 +24,7 @@ The namespace for the ontology is:
 
 > Ontology Diagram
 
-The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class.
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literal are represented via a table within the node of the class
 
 ```mermaid
 flowchart TD
@@ -33,7 +33,7 @@ flowchart TD
 
     %% Diagram
     clazz[Class]
-    instance(Instance)
+    instance[/Instance/]
     clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
 ```
 
@@ -42,9 +42,9 @@ For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for
 ```mermaid
 flowchart LR
     subclass[SubClass] --> superclass[SuperClass]
-    instance(Instance) -.-> clazz[Class]
+    instance[[Instance]] -.-> clazz[Class]
     Domain -- relation --> Range
-    domainInst(Domain) -. relation .-> rangeInst(Range)
+    domainInst[[Domain]] -. relation .-> rangeInst[[Range]]
 ```
 
 > Namespace Prefix
@@ -101,16 +101,16 @@ flowchart LR
     classDef literal fill:none
 
     %% Contents
-    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Organisation(fibo-fnd-org-fm: FormalOrganization)
-    Organisation -. cmns-dsg:hasName .-> OrganizationName("<h4>fibo-fnd-org-org: OrganizationName</h4><p style='font-size:0.75rem;'>fibo-be-le-lei:hasTransliteratedName &quot;string&quot;</p>"):::literal
+    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm: FormalOrganization]]
+    Organisation -. cmns-dsg:hasName .-> OrganizationName[["<h4>fibo-fnd-org-org: OrganizationName</h4><p style='font-size:0.75rem;'>fibo-be-le-lei:hasTransliteratedName &quot;string&quot;</p>"]]:::literal
 
-    Organisation -. fibo-fnd-pty-pty: hasMailingAddress .-> ConventionalStreetAddress("<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"):::literal
+    Organisation -. fibo-fnd-pty-pty: hasMailingAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
-    ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country(lcc-cr: Country)
-    ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress(fibo-fnd-plc-adr: StreetAddress)
+    ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country[[lcc-cr: Country]]
+    ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr: StreetAddress]]
 
-    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber("<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"):::literal
-    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName("<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"):::literal
+    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
 ```
 
 ### 2.1.2 Person
@@ -132,12 +132,12 @@ flowchart LR
     classDef literal fill:none
 
     %% Contents
-    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Person(fibo-fnd-aap-ppl:Person)
-    Person -. cmns-dsg:hasName .-> PersonName("<h4>fibo-fnd-aap-ppl: PersonName</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot; <br> fibo-fnd-aap-ppl:hasFullLegalName &quot;string&quot; <br> fibo-fnd-aap-ppl:hasSurname &quot;string&quot;</p>"):::literal
+    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
+    Person -. cmns-dsg:hasName .-> PersonName[["<h4>fibo-fnd-aap-ppl: PersonName</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot; <br> fibo-fnd-aap-ppl:hasFullLegalName &quot;string&quot; <br> fibo-fnd-aap-ppl:hasSurname &quot;string&quot;</p>"]]:::literal
 
-    Person -. ontoprofile:hasInitials .-> Initials("<h4>ontoprofile:Initials</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"):::literal
+    Person -. ontoprofile:hasInitials .-> Initials[["<h4>ontoprofile:Initials</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"]]:::literal
 
-    Person -. vcard:hasTelephone .-> Cell("<h4>vcard:Cell</h4><p style='font-size:0.75rem;'>vcard:hasValue &quot;string&quot;</p>"):::literal
+    Person -. vcard:hasTelephone .-> Cell[["<h4>vcard:Cell</h4><p style='font-size:0.75rem;'>vcard:hasValue &quot;string&quot;</p>"]]:::literal
 ```
 
 ## 2.2 Situations
@@ -156,23 +156,23 @@ flowchart LR
     classDef literal fill:none
 
     %% Contents
-    Employment(fibo-fnd-org-fm: Employment) -. fibo-fnd-org-fm: hasEmployingParty .-> Employer(fibo-fnd-org-fm: Employer)
-    Employment -. fibo-fnd-org-fm: hasEmployedParty .-> Employee(fibo-fnd-org-fm: Employee)
-    Employment -. cmns-pts:holdsDuring .-> DatePeriod(cmns-dt:DatePeriod)
-    DatePeriod -. cmns-dt:hasStartDate .-> StartDate(Date)
-    DatePeriod -. cmns-dt:hasEndDate .-> EndDate(Date)
+    Employment[[fibo-fnd-org-fm: Employment]] -. fibo-fnd-org-fm: hasEmployingParty .-> Employer[[fibo-fnd-org-fm: Employer]]
+    Employment -. fibo-fnd-org-fm: hasEmployedParty .-> Employee[[fibo-fnd-org-fm: Employee]]
+    Employment -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
     Employee -. fibo-fnd-org-fm: isEmployeeOf .-> Employer
     Employee -. ontoprofile:hasStatus .-> ontoprofile:EmployeeStatus
-    Employer -. cmns-rlcmp:isPlayedBy .-> Org(fibo-fnd-org-fm:FormalOrganization)
-    Employee -. cmns-rlcmp:isPlayedBy .-> Person(fibo-fnd-aap-ppl:Person)
+    Employer -. cmns-rlcmp:isPlayedBy .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
+    Employee -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
     Org -. cmns-col:hasMember .-> Person
 
-    Employee -. cmns-dt:hasTimePeriod .-> TimePeriod(cmns-dt:TimePeriod)
-    TimePeriod -. cmns-dt:hasStart .-> StartTime(Time)
-    TimePeriod -. cmns-dt:hasEndTime .-> EndTime(Time)
+    Employee -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:TimePeriod]]
+    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
+    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
     StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
     EndTime -.-> Time
 ```
@@ -194,21 +194,21 @@ flowchart TD
     classDef literal fill:none
 
     %% Contents
-    Situation(cmns-pts:Situation) -. cmns-pts:hasSubjectRole .-> Driver(ontoprofile:EmployeeDriver)
-    Situation -. cmns-pts:hasObjectRole .-> VDriver(ontoprofile:VehicleDriver)
-    Situation -. cmns-pts:holdsDuring .-> DatePeriod(cmns-dt:DatePeriod)
-    DatePeriod -. cmns-dt:hasStartDate .-> StartDate(Date)
-    DatePeriod -. cmns-dt:hasEndDate .-> EndDate(Date)
+    Situation[[cmns-pts:Situation]] -. cmns-pts:hasSubjectRole .-> Driver[[ontoprofile:EmployeeDriver]]
+    Situation -. cmns-pts:hasObjectRole .-> VDriver[[ontoprofile:VehicleDriver]]
+    Situation -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
-    Driver --> Employee(fibo-fnd-org-fm:Employee)
-    Driver -. cmns-rlcmp:isPlayedBy .-> Person(fibo-fnd-aap-ppl:Person)
+    Driver --> Employee[[fibo-fnd-org-fm:Employee]]
+    Driver -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
     VDriver --> cmns-rlcmp:FunctionalRole
-    VDriver -. fibo-fnd-rel-rel:controls .-> Vehicle("<h4>vc:Vehicle</h4><p style='font-size:0.75rem;'>vc:vehicleIdentificationNumber &quot;string&quot;</p>"):::literal
-    Vehicle -. vc:owner .-> Org(fibo-fnd-org-fm:FormalOrganization)
+    VDriver -. fibo-fnd-rel-rel:controls .-> Vehicle[["<h4>vc:Vehicle</h4><p style='font-size:0.75rem;'>vc:vehicleIdentificationNumber &quot;string&quot;</p>"]]:::literal
+    Vehicle -. vc:owner .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
     Employee -. fibo-fnd-org-fm: isEmployeeOf .-> Employer
-    Employer(fibo-fnd-org-fm: Employer) -. cmns-rlcmp:isPlayedBy .-> Org
+    Employer[[fibo-fnd-org-fm: Employer]] -. cmns-rlcmp:isPlayedBy .-> Org
 ```
 
 ### 2.2.2 Facility usage
@@ -223,16 +223,16 @@ flowchart LR
     classDef literal fill:none
 
     %% Contents
-    Org(fibo-fnd-org-fm:FormalOrganization) -. fibo-fnd-rel-rel:controls .-> Facility
-    Employee(fibo-fnd-org-fm:Employee) -. ontoprofile:worksAt .-> Facility
+    Org[[fibo-fnd-org-fm:FormalOrganization]] -. fibo-fnd-rel-rel:controls .-> Facility
+    Employee[[fibo-fnd-org-fm:Employee]] -. ontoprofile:worksAt .-> Facility
 
-    Building(bot:Building) -. ontobim:hasFacility .-> Facility(ontobim:Facility)
+    Building[[bot:Building]] -. ontobim:hasFacility .-> Facility[[ontobim:Facility]]
     Building --> geo:Feature
-    Building -. fibo-fnd-pty-adr: hasAddress .-> ConventionalStreetAddress("<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"):::literal
+    Building -. fibo-fnd-pty-adr: hasAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
-    ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country(lcc-cr: Country)
-    ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress(fibo-fnd-plc-adr: StreetAddress)
+    ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country[[lcc-cr: Country]]
+    ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr: StreetAddress]]
 
-    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber("<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"):::literal
-    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName("<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"):::literal
+    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
 ```
