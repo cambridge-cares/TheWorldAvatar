@@ -188,7 +188,7 @@ flowchart LR
     classDef literal fill:none
 
     %% Contents
-    Org[[fibo-fnd-org-fm:FormalOrganization]] -. ontoprofile:hasFacility .-> Facility
+    Org[[fibo-fnd-org-fm:FormalOrganization]] -. fibo-fnd-rel-rel:controls .-> Facility
     Employee[[fibo-fnd-org-fm:Employee]] -. ontoprofile:worksAt .-> Facility
 
     Building[[bot:Building]] -. ontobim:hasFacility .-> Facility[[ontobim:Facility]]

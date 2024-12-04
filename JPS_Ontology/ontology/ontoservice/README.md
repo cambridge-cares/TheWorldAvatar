@@ -76,7 +76,7 @@ Figure 1: TBox representation for a Service Agreement following the FIBO ontolog
 
     "fibo-fnd-pas-pas:Service" ||--|{ "fibo-fnd-plc-fac:Capability" : "fibo-fnd-rel-rel:provides"
     "fibo-fnd-plc-fac:Capability" ||--|{ "ontobim:Facility" : "fibo-fnd-rel-rel:involves"
-    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "ontoprofile:hasFacility "
+    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "fibo-fnd-rel-rel:controls"
 
     "bot:Building" ||--|| "fibo-fnd-plc-loc:PhysicalLocation" : "ontoservice:hasServiceLocation"
     "fibo-fnd-plc-loc:PhysicalLocation" ||--|{ "geo:Feature" : "rdfs:subClassOf"
