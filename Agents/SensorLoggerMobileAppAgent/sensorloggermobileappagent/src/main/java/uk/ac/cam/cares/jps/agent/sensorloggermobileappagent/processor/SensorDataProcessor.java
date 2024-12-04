@@ -6,10 +6,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class SensorDataProcessor {
     AgentConfig config;
@@ -31,7 +28,19 @@ public abstract class SensorDataProcessor {
 
     public abstract TimeSeries<Long> getProcessedTimeSeries() throws Exception;
 
-    public abstract void initIRIs();
+    public void initIRIs() {
+        List<String> iris = getDataIRIs();
+        if (iris.stream().allMatch(Objects::nonNull)) {
+            return;
+        }
+
+        getIrisFromKg();
+
+        if (iris.stream().allMatch(Objects::isNull)) {
+            isIriInstantiationNeeded = true;
+            isRbdInstantiationNeeded = true;
+        }
+    };
 
     public abstract List<Class<?>> getDataClass();
 

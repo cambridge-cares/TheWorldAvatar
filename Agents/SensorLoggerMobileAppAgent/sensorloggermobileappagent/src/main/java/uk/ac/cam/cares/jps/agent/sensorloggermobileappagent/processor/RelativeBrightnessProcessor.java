@@ -50,20 +50,6 @@ public class RelativeBrightnessProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void initIRIs() {
-        if (relativeBrightnessIRI != null) {
-            return;
-        }
-
-        getIrisFromKg();
-
-        if (relativeBrightnessIRI == null) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
-        }
-    }
-
-    @Override
     public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIs().size(), Double.class);
     }

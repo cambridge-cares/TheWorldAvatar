@@ -63,20 +63,6 @@ public class LocationDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void initIRIs() {
-        if (bearingIRI != null && speedIRI != null && altitudeIRI != null && pointIRI != null) {
-            return;
-        }
-
-        getIrisFromKg();
-
-        if (bearingIRI == null && speedIRI == null && altitudeIRI == null && pointIRI == null) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
-        }
-    }
-
-    @Override
     public List<Class<?>> getDataClass() {
         List<Class<?>> dataClass = new ArrayList<>(Collections.nCopies(3, Double.class));
         dataClass.add(Point.class);

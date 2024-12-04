@@ -48,21 +48,6 @@ public class DBFSDataProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void initIRIs() {
-        if (dbfsIRI != null) {
-            // already instantiated in previous call
-            return;
-        }
-
-        getIrisFromKg();
-
-        if (dbfsIRI == null) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
-        }
-    }
-
-    @Override
     public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIs().size(), Double.class);
     }

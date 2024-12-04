@@ -57,21 +57,6 @@ public class AccelerometerProcessor extends SensorDataProcessor {
     }
 
     @Override
-    public void initIRIs() {
-        if (xIri != null && yIri != null && zIri != null) {
-            // already instantiated in previous call
-            return;
-        }
-
-        getIrisFromKg();
-
-        if (xIri == null && yIri == null && zIri == null) {
-            isIriInstantiationNeeded = true;
-            isRbdInstantiationNeeded = true;
-        }
-    }
-
-    @Override
     public List<Class<?>> getDataClass() {
         return Collections.nCopies(getDataIRIs().size(), Double.class);
     }
