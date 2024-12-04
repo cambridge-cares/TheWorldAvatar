@@ -3,6 +3,7 @@
 import Confetti from 'react-confetti';
 import React, { PureComponent } from 'react';
 import { easeInOut, motion} from 'framer-motion';
+import { Assets } from 'io/config/assets';
 
 // Incoming properties
 type Props = {
@@ -17,7 +18,7 @@ type Props = {
 export default class Trex extends PureComponent<Props> {
 
     // Audio player
-    audio = new Audio("./images/utils/trex.wav");
+    audio = new Audio(Assets.UTILS);
 
     // Runs once component is added
     componentDidMount() {

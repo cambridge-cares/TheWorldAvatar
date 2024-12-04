@@ -1,0 +1,210 @@
+[PrefixDeclaration]
+twa:        https://www.theworldavatar.com/kg/
+building:   https://www.theworldavatar.com/kg/ontobuiltenv/building
+ontobuiltenergy:  https://www.theworldavatar.com/kg/ontobuiltenergy/
+ocgml:      http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#
+os:         http://data.ordnancesurvey.co.uk/ontology/spatialrelations/
+owl:        http://www.w3.org/2002/07/owl#
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:        http://www.w3.org/XML/1998/namespace
+xsd:        http://www.w3.org/2001/XMLSchema#
+obda:       https://w3id.org/obda/vocabulary#
+rdfs:       http://www.w3.org/2000/01/rdf-schema#
+GeoSparql:        http://www.opengis.net/ont/geosparql#
+ontobuiltenv:      https://www.theworldavatar.com/kg/ontobuiltenv/
+OCHV:              http://sbmi.uth.tmc.edu/ontology/ochv/CHV_Concept/
+OM:               http://www.ontology-of-units-of-measure.org/resource/om-2/
+
+[MappingDeclaration] @collection [[
+mappingId       Building-Class-Declaration
+target      https://www.theworldavatar.com/kg/ontobuiltenv/building rdf:type owl:Class .
+source      SELECT 1
+
+mappingId       Asset-mapping-UUID-UPRN-via-Standard-Table
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenv:hasUPRN {uprn}^^xsd:string ; ontobuiltenv:hasTOID {os_topo_toid}^^xsd:string .
+source          SELECT ga_uuid.strval as uuid, mt."IDENTIFIER_1" as uprn, mt."IDENTIFIER_2" AS os_topo_toid
+                FROM "citydb"."cityobject_genericattrib" ga_uuid
+                JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+				JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+                WHERE ga_uuid.attrname = 'uuid'
+                AND ga_toid.attrname = 'os_topo_toid' 
+
+mappingId       Asset-mapping-UUID-Geometry
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; GeoSparql:hasGeometry "{wkt}"^^geo:wktLiteral .
+source          SELECT ga_uuid.strval as uuid, public.ST_AsText(sg.geometry) as wkt
+                FROM "citydb".cityobject_genericattrib ga_uuid
+                JOIN "citydb".surface_geometry sg ON ga_uuid.cityobject_id = sg.cityobject_id
+                WHERE ga_uuid.attrname = 'uuid'
+                AND sg.parent_id IS NOT NULL;
+
+mappingId       Asset-mapping-Building-EnergyProperty
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenergy:hasEnergyEfficiency {CURRENT_ENERGY_EFFICIENCY}^^xsd:decimal ; ontobuiltenergy:hasEPCrating {CURRENT_ENERGY_RATING}^^xsd:string .
+source          SELECT ga_uuid.strval as uuid, dep."CURRENT_ENERGY_EFFICIENCY", dep."CURRENT_ENERGY_RATING"
+                FROM "citydb"."cityobject_genericattrib" ga_uuid
+                JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+				JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+				JOIN "public"."Domestic EPC" dep ON mt."IDENTIFIER_1" = dep."UPRN"
+				WHERE ga_uuid.attrname = 'uuid'
+                AND ga_toid.attrname = 'os_topo_toid'mappingId       Asset-mapping-GenericBuildingDescription
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenv:hasPostcode {POSTCODE}^^xsd:string ; ontobuiltenv:hasAddress1 {ADDRESS1}^^xsd:string ; ontobuiltenv:hasPropertyType {PROPERTY_TYPE}^^xsd:string ; ontobuiltenv:hasBuiltForm {BUILT_FORM}^^xsd:string .
+source      	SELECT ga_uuid.strval as uuid, "public"."Domestic EPC"."POSTCODE", "public"."Domestic EPC"."ADDRESS1", "public"."Domestic EPC"."PROPERTY_TYPE", "public"."Domestic EPC"."BUILT_FORM"
+				FROM "citydb"."cityobject_genericattrib" ga_uuid
+				JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+				JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+				JOIN "public"."Domestic EPC" ON mt."IDENTIFIER_1" = "public"."Domestic EPC"."UPRN"
+				WHERE ga_uuid.attrname = 'uuid'
+				AND ga_toid.attrname = 'os_topo_toid'
+
+mappingId       Asset-mapping-EnergyCost
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenergy:hasCO2EmissionsCurrent {CO2_EMISSIONS_CURRENT}^^xsd:string ; ontobuiltenergy:hasHeatingCostCurrent {HEATING_COST_CURRENT}^^xsd:string ; ontobuiltenergy:hasHotWaterCostCurrent {HOT_WATER_COST_CURRENT}^^xsd:string ; ontobuiltenergy:hasLightingCostCurrent {LIGHTING_COST_CURRENT}^^xsd:string .
+source      	SELECT ga_uuid.strval as uuid, "public"."Domestic EPC"."CO2_EMISSIONS_CURRENT", "public"."Domestic EPC"."HEATING_COST_CURRENT", "public"."Domestic EPC"."HOT_WATER_COST_CURRENT", "public"."Domestic EPC"."LIGHTING_COST_CURRENT"
+				FROM "citydb"."cityobject_genericattrib" ga_uuid
+				JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+				JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+				JOIN "public"."Domestic EPC" ON mt."IDENTIFIER_1" = "public"."Domestic EPC"."UPRN"
+				WHERE ga_uuid.attrname = 'uuid'
+				AND ga_toid.attrname = 'os_topo_toid'
+
+mappingId       Asset-mapping-StructureProperty
+target      building:{uuid} a <https://www.theworldavatar.com/kg/Building> ; ontobuiltenergy:hasGlazedType {GLAZED_TYPE}^^xsd:string ; ontobuiltenergy:hasFloorDescription {FLOOR_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasWindowsDescription {WINDOWS_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasWallsDescription {WALLS_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasSecondHeatDescription {SECONDHEAT_DESCRIPTION}^^xsd:string ; ontobuiltenergy:hasRoofDescription {ROOF_DESCRIPTION}^^xsd:string .
+source      	SELECT ga_uuid.strval as uuid, "public"."Domestic EPC"."GLAZED_TYPE", "public"."Domestic EPC"."FLOOR_DESCRIPTION", "public"."Domestic EPC"."WINDOWS_DESCRIPTION", "public"."Domestic EPC"."WALLS_DESCRIPTION", "public"."Domestic EPC"."SECONDHEAT_DESCRIPTION", "public"."Domestic EPC"."ROOF_DESCRIPTION"
+				FROM "citydb"."cityobject_genericattrib" ga_uuid
+				JOIN "citydb"."cityobject_genericattrib" ga_toid ON ga_uuid.cityobject_id = ga_toid.cityobject_id
+				JOIN "public"."TOID_UPRN_MatchingTable" mt ON ga_toid.strval = mt."IDENTIFIER_2"
+				JOIN "public"."Domestic EPC" ON mt."IDENTIFIER_1" = "public"."Domestic EPC"."UPRN"
+				WHERE ga_uuid.attrname = 'uuid'
+				AND ga_toid.attrname = 'os_topo_toid'
+				
+mappingId   	Geographic-Classification-Postcode
+target      ontobuiltenv:{postcode_encoded} a <https://www.theworldavatar.com/kg/ontobuiltenv/Postcode> ; GeoSparql:sfWithin OntoONS:LSOA/{lsoa_code} ; ontobuiltenv:hasPostcode "{postcode}"^^xsd:string .
+source          SELECT "POSTCODE" AS postcode, REPLACE("POSTCODE", ' ', '') AS postcode_encoded, "LSOA11CD" AS lsoa_code
+                FROM "uk_geographic_hierarchy"
+
+mappingId       Geographic-Classification-LSOA
+target      OntoONS:LSOA/{lsoa_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; ontobuiltenv:hasIdentifier {lsoa_code}^^xsd:string ; ontobuiltenv:hasName "{lsoa_name}"^^xsd:string ; GeoSparql:sfWithin OntoONS:{msoa_code} .
+source          SELECT "LSOA11CD" AS lsoa_code, "MSOA11CD" AS msoa_code, "LSOA11NM" AS lsoa_name
+                FROM "uk_geographic_hierarchy"
+
+mappingId   Geographic-Classification-MSOA
+target      OntoONS:{msoa_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/MSOA> ; ontobuiltenv:hasIdentifier {msoa_code}^^xsd:string ; ontobuiltenv:hasName "{msoa_name}"^^xsd:string ; GeoSparql:sfWithin OntoONS:{la_code} .
+source          SELECT "MSOA11CD" AS msoa_code, "LAD20CD" AS la_code, "MSOA11NM" AS msoa_name
+                FROM "uk_geographic_hierarchy"
+
+mappingId   Geographic-Classification-LA
+target      OntoONS:{la_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LocalAuthorityDistrict> ; ontobuiltenv:hasIdentifier {la_code}^^xsd:string ; ontobuiltenv:hasName "{la_name}"^^xsd:string .
+source          SELECT DISTINCT "LAD20CD" AS la_code, "LAD20NM" AS la_name
+                FROM "uk_geographic_hierarchy"
+
+mappingId   Geographic-Classification-LSOA-Constituency
+target      OntoONS:LSOA/{lsoa_code} a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; ontobuiltenv:hasIdentifier {lsoa_code}^^xsd:string ; ontobuiltenv:isPartOfConstituency OntoONS:{PCON11CD} ; ontobuiltenv:hasConstituencyName "{PCON11NM}"^^xsd:string ; ontobuiltenv:hasConstituencyCode {PCON11CD}^^xsd:string .
+source          SELECT "LSOA11CD" AS lsoa_code, "PCON11NM" AS PCON11NM, "PCON11CD" AS PCON11CD
+                FROM "geographic_hierarchy_constituency"
+
+mappingId   Geographic-LSOA-Centroid
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; GeoSparql:hasCentroidX {centroid_x}^^xsd:decimal ; GeoSparql:hasCentroidY {centroid_y}^^xsd:decimal .
+source          SELECT "LSOA11CD" AS lsoa_code, "centroid_x" AS centroid_x, "centroid_y" AS centroid_y
+                FROM "centroid_lsoa"
+
+mappingId   PublicHealth-LSOA-COPD-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasCOPDCase <https://www.theworldavatar.com/kg/ontobuiltenv/COPDCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-COPDCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/COPDCase/{lsoa_code}> a OCHV:COPDCase ; OM:hasRate {copd_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "copd_rate" AS copd_rate
+				FROM "public_health_record"
+
+mappingId   PublicHealth-LSOA-CvD-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasCVDCase <https://www.theworldavatar.com/kg/ontobuiltenv/CVDCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-CVDCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/CVDCase/{lsoa_code}> a OCHV:CVDCase ; OM:hasRate {cvd_rate}^^xsd:decimal .
+source      SELECT "lsoa_code" AS lsoa_code, "coronary_heart_disease_rate" AS cvd_rate
+            FROM "public_health_record"
+
+
+mappingId   PublicHealth-LSOA-HeartFailure-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasHeartFailureCase <https://www.theworldavatar.com/kg/ontobuiltenv/HeartFailureCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-HeartFailureCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/HeartFailureCase/{lsoa_code}> a OCHV:HeartFailureCase ; OM:hasRate {heart_failure_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "heart_failure_rate" AS heart_failure_rate
+				FROM "public_health_record"
+
+mappingId   PublicHealth-LSOA-Stroke-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasStrokeCase <https://www.theworldavatar.com/kg/ontobuiltenv/StrokeCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-StrokeCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/StrokeCase/{lsoa_code}> a OCHV:StrokeCase ; OM:hasRate {stroke_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "stroke_rate" AS stroke_rate
+				FROM "public_health_record"
+
+
+mappingId   PublicHealth-LSOA-Hypertension-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasHypertensionCase <https://www.theworldavatar.com/kg/ontobuiltenv/HypertensionCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-HypertensionCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/HypertensionCase/{lsoa_code}> a OCHV:HypertensionCase ; OM:hasRate {hypertension_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "hypertension_rate" AS hypertension_rate
+				FROM "public_health_record"
+
+mappingId   PublicHealth-LSOA-RheumatoidArthritis-Relation
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OCHV:hasRheumatoidArthritisCase <https://www.theworldavatar.com/kg/ontobuiltenv/RheumatoidArthritisCase/{lsoa_code}> .
+source      	SELECT "lsoa_code" AS lsoa_code
+				FROM "public_health_record"
+
+mappingId   PublicHealth-RheumatoidArthritisCase
+target      <https://www.theworldavatar.com/kg/ontobuiltenv/RheumatoidArthritisCase/{lsoa_code}> a OCHV:RheumatoidArthritisCase ; OM:hasRate {rheumatoid_arthritis_rate}^^xsd:decimal .
+source      	SELECT "lsoa_code" AS lsoa_code, "rheumatoid_arthritis_rate" AS rheumatoid_arthritis_rate
+				FROM "public_health_record"
+
+mappingId   LSOA-Household-Attributes
+target      <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA/{lsoa_code}> a <https://www.ordnancesurvey.co.uk/linked-data/ontology/LSOA> ; OntoBuiltEnergy:hasHousehold <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> .
+source          SELECT "LSOA11CD" AS lsoa_code
+                FROM "fuel_poverty_lsoa"
+
+mappingId   Household-NumberOfHouseholds
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasHouseholdCount {Number_of_households}^^xsd:integer .
+source          SELECT "LSOA11CD" AS lsoa_code, "Number_of_households" AS Number_of_households
+                FROM "fuel_poverty_lsoa"
+
+mappingId   Household-FuelPovertyRate
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasFuelPovertyRate <https://www.theworldavatar.com/kg/ontobuiltenergy/FuelPovertyRate/{lsoa_code}> .
+source          SELECT "LSOA11CD" AS lsoa_code
+                FROM "fuel_poverty_lsoa"
+
+mappingId   FuelPovertyRate-Attributes
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/FuelPovertyRate/{lsoa_code}> a OntoBuiltEnergy:FuelPovertyRate ; OM:hasValue {Proportion_of_households_fuel_poor}^^xsd:decimal ; OM:hasTimestamp "2024"^^xsd:gYear .
+source          SELECT "LSOA11CD" AS lsoa_code, "Proportion_of_households_fuel_poor" AS Proportion_of_households_fuel_poor
+                FROM "fuel_poverty_lsoa"
+				
+mappingId   Household-GasConsumption
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasAverageGasConsumption <https://www.theworldavatar.com/kg/ontobuiltenergy/GasConsumption/{lsoa_code}> .
+source      	SELECT "LSOA11CD" AS lsoa_code
+				FROM "Domestic_gas"
+				
+mappingId   GasConsumption-Attributes
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/GasConsumption/{lsoa_code}> a OntoBuiltEnergy:GasConsumption ; OM:hasValue {Mean_consumption}^^xsd:decimal ; OM:hasUnit "kWh_per_meter" ; OntoTimeSeries:hasTimestamp "2024"^^xsd:gYear .
+source      	SELECT "LSOA11CD" AS lsoa_code, "Mean_consumption" AS Mean_consumption
+				FROM "Domestic_gas"
+
+mappingId   Household-ElecConsumption
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/Household/{lsoa_code}> a OntoBuiltEnergy:Household ; OntoBuiltEnergy:hasAverageElecConsumption <https://www.theworldavatar.com/kg/ontobuiltenergy/ElecConsumption/{lsoa_code}> .
+source      	SELECT "LSOA11CD" AS lsoa_code
+				FROM "Domestic_electricity"
+
+mappingId   ElecConsumption-Attributes
+target      <https://www.theworldavatar.com/kg/ontobuiltenergy/ElecConsumption/{lsoa_code}> a OntoBuiltEnergy:ElecConsumption ; OM:hasValue {Mean_consumption}^^xsd:decimal ; OM:hasUnit "kWh_per_meter" ; OntoTimeSeries:hasTimestamp "2024"^^xsd:gYear .
+source      	SELECT "LSOA11CD" AS lsoa_code, "Mean_consumption" AS Mean_consumption
+				FROM "Domestic_electricity"
+
+]]

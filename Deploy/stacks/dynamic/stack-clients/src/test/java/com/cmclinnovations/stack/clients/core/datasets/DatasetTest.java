@@ -45,7 +45,8 @@ class DatasetTest {
         Assertions.assertFalse(dataset.isSkip());
         Assertions.assertEquals(SparqlConstants.DEFAULT_BASE_IRI, dataset.baseIRI());
         Assertions.assertEquals(Collections.emptyList(), dataset.getExternalDatasetNames());
-        Assertions.assertEquals(Collections.emptyList(), dataset.getExternalDatasets());
+        Assertions.assertEquals(Collections.emptyList(), dataset.getOntologyDatasetNames());
+        Assertions.assertEquals(Collections.emptyList(), dataset.getReferencedDatasets());
         Assertions.assertEquals(Collections.emptyList(), dataset.getOntopMappings());
         Assertions.assertEquals(Collections.emptyList(), dataset.getGeoserverStyles());
         Assertions.assertFalse(dataset.hasStaticGeoServerData());

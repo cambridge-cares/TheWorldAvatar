@@ -6,6 +6,29 @@ The TWA Visualisation Platform takes the form of a [Next.js](https://nextjs.org/
 
 This document is split into three key sections: [Architecture](#1-architecture), [Style Guide](#2-style-guide) and [Local Development](#3-local-development-workflow).
 
+## Table of Contents
+
+- [TWA Visualisation Platform (TWA-ViP)](#twa-visualisation-platform-twa-vip)
+  - [Table of Contents](#table-of-contents)
+  - [1. Architecture](#1-architecture)
+    - [1.1 Routing](#11-routing)
+    - [1.2 Component Hierarchy](#12-component-hierarchy)
+    - [1.3 Server vs Client components](#13-server-vs-client-components)
+    - [1.4 State Management](#14-state-management)
+    - [1.5 Runtime Resources](#15-runtime-resources)
+    - [1.6 Reverse Proxy urls](#16-reverse-proxy-urls)
+    - [1.7 Dependent services](#17-dependent-services)
+  - [2. Style Guide](#2-style-guide)
+    - [2.1 File extensions](#21-file-extensions)
+    - [2.2 Code conventions](#22-code-conventions)
+    - [React components](#react-components)
+    - [2.3 Client-Side](#23-client-side)
+  - [3. Local Development Workflow](#3-local-development-workflow)
+    - [3.1 Requirements](#31-requirements)
+  - [3.2 Installation](#32-installation)
+  - [3.3 Configuration](#33-configuration)
+  - [3.4 Execution](#34-execution)
+
 ## 1. Architecture
 
 The code architecture adheres to industry-standard practices for Next.js and React. It is worth noting, though, that the TWA-ViP is a work in progress and not a perfect, static codebase. A brief breakdown is given below, but more detailed information can be seen within the code (and the code's comments) itself.
@@ -32,7 +55,7 @@ CSS colors, font and icon sizes are standardised and available as variables in `
 
 ### 1.1 Routing
 
-Following Next.js' current routing system (known as the `AppRouter`), rather that the older `PagesRouter`, the [app/page.tsx](./src/app/page.tsx) file acts as the entry point to the application when accessed by the user via a web browser. This reads the UI settings file on the server and then proceeds to load the Landing Page or, if disabled, the Map container.
+Following Next.js' current routing system (known as the `AppRouter`), rather than the older `PagesRouter`, the [app/page.tsx](./src/app/page.tsx) file acts as the entry point to the application when accessed by the user via a web browser. This reads the UI settings file on the server and then proceeds to load the Landing Page or, if disabled, the Map container.
 
 The current design of the application presents a number of different pages, each with their own URL route. This includes pages such as the landing page, the visualisation page, and a number of optional additional pages (generated from user-provided Markdown files). It's worth noting, however, that this could also be accomplished by presenting the application as a single page, with these components swapping in and out. Whilst this would remove the ability to bookmark/provide a link for a particular page, it may be more efficient and should be investigated.
 
@@ -64,25 +87,19 @@ Note that this may not be the optimal solution. Some further research is warrant
 
 ### 1.5 Runtime Resources
 
-Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. To provide a location in which deploying developers can add their context-specific images & configurations, the `uploads` directory aims to be the target for mounting Docker volumes. Do note that this directory will be mapped automatically within a Docker container to the corresponding location for server or client interactions, but requires manual modification for local development.
-
-The uploaded content provided by the deploying developer should match the directory structure below.
-
-- `config/`: Should contain config/settings files.
-  - `data.json`: Specifies data sources and layers to be mapped.
-  - `map-settings.json`: Non-data specific configuration for maps. The format is documented [here](../docs/map-settings.md)
-  - `ui-settings.json`: UI configuration settings, format is documented [here](../docs/ui-settings.json).
-- `images/`: Custom image files.
-- `optional-pages/`: Markdown files for optional static content (with metadata from [gray-matter](https://www.npmjs.com/package/gray-matter)).
-- `style-overrides.css`: Optional CSS overrides.
+Next.js uses the `public` directory by default to house resources such as images, videos, configuration files etc. Unfortunately, Next requires this directory and its contents to be present at build time. To provide a location in which deploying developers can add their context-specific images & configurations, the `code/public` directory aims to be the target for mounting Docker volumes. Do note that this directory will be mapped automatically within a Docker container to the corresponding location for server or client interactions, but requires manual modification for local development.
 
 ### 1.6 Reverse Proxy urls
 
-The default Next.js configuration is designed to function seamlessly when the base URL starts directly from the domain with no page paths. However, in cases where page paths are utilised (e.g., `http://www.example.org/page/`), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. This includes specifying the `assetPrefix` option in the `next.config.js` file.
+Next.js assumes by default that the app will be deployed at a top level domain or subdomain.
+However, in cases where page paths are utilised (e.g., `https://www.example.org/page/`), as seen in stack deployment and reverse proxy scenarios, additional configuration is necessary for Next.js to operate. 
+This includes specifying the `assetPrefix` option in the `next.config.js` file, or rather by specifying `ASSET_PREFIX` as an environment variable. 
 
-To accommodate developers deploying applications to various subdomains and environments, this option within the platform is configured to retrieve an environment variable called `BASE_PATH`. If this variable is not set, the `assetPrefix` defaults to an empty string. It is advisable to define the `BASE_PATH` variable primarily when deploying in a stack or for containers utilising subdomains.
+without proper handling, deploying at a subpath will break static CDN like imports (css and js chunks), media resources (images and other contents of the public folder), and page routing.
+These should all be handled correctly if `ASSET_PREFIX` is set - it will append to all image URLs, page routes, and serve static chunks at that path.
 
-It's important to note that this URL configuration impacts both routes and images referenced with relative paths within your Next.js application.
+> [!IMPORTANT]  
+> Always use next/Image i.e. `<Image>` and not `<img>` so that the URLs can be properly sanitised.
 
 ### 1.7 Dependent services
 
@@ -140,9 +157,7 @@ class Button extends React.Component<ButtonProps> {
 
 ### 2.3 Client-Side
 
-All client-side elements using relative pathing should be wrapped around the `formatAppUrl` method in `utils/client-utils.ts`. This is necessary to ensure that the elements will properly retrieve the url when reverse proxy is utilised.
-
-Additionally, reusable components are provided to facilitate this. For navigation, `AppLink` is available at `ui/navigation/link/link.tsx`. For graphics, import either `AppImage` or `IconComponent` from `ui/graphic/image/image.tsx` and `ui/graphic/icon/icon.tsx` respectively.
+Additionally, reusable components are provided to facilitate this. For navigation, `AppLink` is available at `ui/navigation/link/link.tsx`. For graphics, use the default `<Image>` element provided by next
 
 ## 3. Local Development Workflow
 
@@ -174,7 +189,7 @@ To install on the host machine, navigate to the `code` directory and run the `np
 
 ## 3.3 Configuration
 
-In order to ensure that the code runs as expected, set the contents of the `uploads` directory to `<root>\code\public\`.
+In order to ensure that the code runs as expected, all configuration files must be placed at `<root>\code\public\`.
 
 ## 3.4 Execution
 

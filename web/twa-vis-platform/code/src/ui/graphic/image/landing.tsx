@@ -11,8 +11,8 @@ interface LandingImageProps {
 /**
  * An image component that sets the landing page logo based on the current theme.
  * 
- * @param {string} lightUrl The url for the light mode image.
- * @param {string} darkUrl An optional url for the dark mode image. Defaults to light url if undefined
+ * @prop {string} lightUrl The url for the light mode image.
+ * @prop {string} darkUrl An optional url for the dark mode image. Defaults to light url if undefined
 */
 export default function LandingImage(props: Readonly<LandingImageProps>) {
   const [imageUrl, setImageUrl] = useState<string>(props.lightUrl);

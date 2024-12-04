@@ -101,7 +101,7 @@ The following snippet provides an overview of the expected instantiation structu
 
 # Both Frequency and Duration need to be represented as follows
 <IRI_of_Duration> time:numericDuration <xsd:decimal> ;
-                  ts:unitType <time:unitHour> .
+                  time:unitType <time:unitHour> .
 # Alternative unit concepts: time:unitDay, time:unitMinute, time:unitSecond
 
 

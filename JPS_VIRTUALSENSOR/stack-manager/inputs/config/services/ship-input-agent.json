@@ -3,7 +3,7 @@
         "Name": "ship-input-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.7",
+                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.8",
 				"Env": [
 					"DATABASE=postgres",
 					"DATA_DIR=/data",

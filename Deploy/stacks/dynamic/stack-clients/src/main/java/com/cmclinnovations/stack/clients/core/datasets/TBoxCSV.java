@@ -55,7 +55,7 @@ public class TBoxCSV extends DataSubset {
                 } catch (Exception ex) {
                     throw new RuntimeException(
                             "Failed to upload ontology file '" + owlFile + "' to the endpoint at '" +
-                                    BlazegraphClient.getInstance().getEndpointConfig().getUrl(dataset.getNamespace())
+                                    BlazegraphClient.getInstance().readEndpointConfig().getUrl(dataset.getNamespace())
                                     + "'.",
                             ex);
                 }

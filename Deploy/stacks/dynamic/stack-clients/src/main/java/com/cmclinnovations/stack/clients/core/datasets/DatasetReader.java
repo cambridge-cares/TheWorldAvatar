@@ -42,8 +42,9 @@ public class DatasetReader {
         DirectedAcyclicGraph<Dataset, DefaultEdge> graph = new DirectedAcyclicGraph<>(
                 DefaultEdge.class);
 
-        // Add an edge when one Dataset references another in its "externalDatasets"
-        // node. Throw an exception if the referenced Dataset doesn't exist.
+        // Add an edge when one Dataset references another in its "externalDatasets" or
+        // "ontologyDatasets" node. Throw an exception if the referenced Dataset doesn't
+        // exist.
         selectedDatasets.forEach(dataset -> addToGraph(allDatasets, graph, dataset));
 
         return StreamSupport.stream(graph.spliterator(), false);
@@ -92,19 +93,19 @@ public class DatasetReader {
     private static void addToGraph(List<Dataset> allDatasets, DirectedAcyclicGraph<Dataset, DefaultEdge> graph,
             Dataset current) {
         if (graph.addVertex(current)) {
-            current.getExternalDatasetNames().forEach(datasetName -> {
+            current.getReferencedDatasetNames().forEach(datasetName -> {
                 Optional<Dataset> potentialChild = allDatasets.stream()
                         .filter(dataset -> dataset.getName().equals(datasetName))
                         .findAny();
                 if (potentialChild.isEmpty()) {
-                    throw new RuntimeException("Failed to find external dataset '"
+                    throw new RuntimeException("Failed to find referenced dataset '"
                             + datasetName + "' referenced in dataset '"
                             + current.getName() + "'.");
                 } else {
                     Dataset child = potentialChild.get();
                     addToGraph(allDatasets, graph, child);
                     graph.addEdge(child, current);
-                    current.addExternalDataset(child);
+                    current.addReferencedDataset(child);
                 }
             });
         }

@@ -132,7 +132,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
         private InputStream inputStream = null;
         private OutputStream outputStream = null;
-        private OutputStream errorStream = null;
+        private OutputStream errorStream = new ByteArrayOutputStream();
 
         private String hereDocument = null;
 
@@ -373,6 +373,9 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     private void sendFileEntries(String containerId, String remoteDirPath, Iterable<Entry<String, byte[]>> fileEntries)
             throws IOException {
+        // Should use the Linux path separator '/'
+        remoteDirPath = remoteDirPath.replace('\\', '/');
+
         makeDir(containerId, remoteDirPath);
 
         byte[] byteArray;
@@ -476,13 +479,16 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public Map<String, byte[]> retrieveFiles(String containerId, String remoteDirPath) throws IOException {
         Map<String, byte[]> files = new HashMap<>();
+
+        remoteDirPath = remoteDirPath.replaceFirst("([^/])/*$", "$1/");
+
         try (InputStream is = internalClient.copyArchiveFromContainerCmd(containerId, remoteDirPath).exec();
                 TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(is)) {
 
             TarArchiveEntry tarArchiveEntry;
             while (null != (tarArchiveEntry = tarArchiveInputStream.getNextTarEntry())) {
                 if (!tarArchiveEntry.isDirectory()) {
-                    files.put(Path.of(remoteDirPath, tarArchiveEntry.getName()).toString(),
+                    files.put(remoteDirPath + tarArchiveEntry.getName().replaceFirst("^[^/]*/", ""),
                             tarArchiveInputStream.readAllBytes());
                 }
             }

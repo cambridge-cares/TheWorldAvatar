@@ -1,8 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
-
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,15 +16,19 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.Mockito;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.containers.PostgreSQLContainer;
 
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.BlazegraphContainer;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 /**
  * This class provides integration tests for the TimeSeriesClient class,
@@ -40,26 +41,18 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 // "Requires Docker to run the tests. When on Windows, WSL2 as backend is
 // required to ensure proper execution")
 @Testcontainers
-class TimeSeriesClientIntegrationWithoutConnTest {
+public class TimeSeriesClientIntegrationWithoutConnTest {
     // TimeSeries client (with RDB and Sparql client)
-    private static TimeSeriesClient<Instant> tsClient;
-
+    protected TimeSeriesClient<Instant> tsClient;
     private static RemoteRDBStoreClient rdbStoreClient;
     private static RemoteStoreClient kbClient;
 
     // Time series test data
-    private static List<String> dataIRI_1, dataIRI_2;
-    private static List<Class<?>> dataClass_1, dataClass_2;
-    private static String timeUnit;
+    private List<String> dataIRI_1, dataIRI_2;
+    private List<Class<?>> dataClass_1, dataClass_2;
+    private String timeUnit;
 
     // Will create two Docker containers for Blazegraph and postgreSQL
-    // NOTE: requires access to the docker.cmclinnovations.com registry from the
-    // machine the test is run on.
-
-    // Create Docker container with Blazegraph image from CMCL registry (image uses
-    // port 8080)
-    // For more information regarding the registry, see:
-    // https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
     private static BlazegraphContainer blazegraph = new BlazegraphContainer();
     // Create Docker container with postgres 13.3 image from Docker Hub
@@ -68,7 +61,7 @@ class TimeSeriesClientIntegrationWithoutConnTest {
 
     // Initialise 2 test time series data sets
     @BeforeEach
-    void initialiseData() {
+    public void initialiseData() {
         // Initialise time unit for all test data series
         timeUnit = "http://s";
         /*
@@ -108,17 +101,17 @@ class TimeSeriesClientIntegrationWithoutConnTest {
                 // Start postgreSQL container
                 postgres.start();
             }
-            
+
             // Set up a kb client that points to the location of the triple store
             kbClient = blazegraph.getRemoteStoreClient();
 
             // Initialise TimeSeriesClient client with pre-configured kb client
-            tsClient = new TimeSeriesClient<>(kbClient, Instant.class);
+            setTsClient(kbClient);
+            tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 
             // Configure database access
             rdbStoreClient = new RemoteRDBStoreClient(postgres.getJdbcUrl(), postgres.getUsername(),
                     postgres.getPassword());
-            tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 
             clearTriples();
             clearDatabase();
@@ -128,6 +121,10 @@ class TimeSeriesClientIntegrationWithoutConnTest {
                     "TimeSeriesClientIntegrationTest: Docker container startup failed. Please try running tests again",
                     e);
         }
+    }
+
+    protected void setTsClient(RemoteStoreClient remoteStoreClient) {
+        tsClient = new TimeSeriesClient<>(remoteStoreClient, Instant.class);
     }
 
     // Clear all tables after each test to ensure clean slate
@@ -147,7 +144,6 @@ class TimeSeriesClientIntegrationWithoutConnTest {
 
     @Test
     void testInitTimeSeriesWithoutExceptions() {
-
         // Verify kb is initially empty
         Assertions.assertEquals(0, tsClient.countTimeSeries());
 
@@ -169,10 +165,8 @@ class TimeSeriesClientIntegrationWithoutConnTest {
         Assertions.assertEquals(kb, db);
     }
 
-    @Disabled("Not sure how useful this test is and it takes a non-trivial amount of time.")
     @Test
     void testInitTimeSeriesWithKGInitException() {
-
         // Interrupt triple store connection
         blazegraph.stop();
 
@@ -184,7 +178,6 @@ class TimeSeriesClientIntegrationWithoutConnTest {
 
     @Test
     void testDeleteIndividualTimeSeriesWithoutExceptions() {
-
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 
@@ -240,10 +233,8 @@ class TimeSeriesClientIntegrationWithoutConnTest {
         Assertions.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
     }
 
-    @Disabled("Not sure how useful this test is and it takes a non-trivial amount of time.")
     @Test
     void testDeleteIndividualTimeSeriesWithUnavailableKG() {
-
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
         String dataIRI = dataIRI_1.get(0);
@@ -260,7 +251,6 @@ class TimeSeriesClientIntegrationWithoutConnTest {
     @Test
     void testDeleteIndividualTimeSeriesWithKGDeleteException()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
         String dataIRI = dataIRI_1.get(0);
@@ -295,7 +285,6 @@ class TimeSeriesClientIntegrationWithoutConnTest {
 
     @Test
     void testDeleteTimeSeriesWithoutExceptions() {
-
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
         tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit);
@@ -332,10 +321,8 @@ class TimeSeriesClientIntegrationWithoutConnTest {
                 .contains("<" + dataIRI_2.get(0) + "> does not have an assigned time series instance"));
     }
 
-    @Disabled("Not sure how useful this test is and it takes a non-trivial amount of time.")
     @Test
     void testDeleteTimeSeriesWithUnavailableKG() {
-
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
         // Retrieve tsIRI to be deleted
@@ -353,7 +340,6 @@ class TimeSeriesClientIntegrationWithoutConnTest {
     @Test
     void testDeleteTimeSeriesWithKGDeleteException()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 
@@ -389,7 +375,6 @@ class TimeSeriesClientIntegrationWithoutConnTest {
 
     @Test
     void testDeleteAllWithoutExceptions() {
-
         // Initialise time series in knowledge base and database
         tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
         tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit);
@@ -412,5 +397,29 @@ class TimeSeriesClientIntegrationWithoutConnTest {
                     () -> tsClient.getTimeSeries(s));
             Assertions.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
+    }
+
+    @Test
+    void testBulkInitTimeSeries() {
+        List<List<String>> dataIRIs = new ArrayList<>();
+        dataIRIs.add(dataIRI_1);
+        dataIRIs.add(dataIRI_2);
+
+        List<List<Class<?>>> classes = new ArrayList<>();
+        classes.add(dataClass_1);
+        classes.add(dataClass_2);
+
+        List<String> units = new ArrayList<>();
+        units.add(timeUnit);
+        units.add(timeUnit);
+
+        tsClient.bulkInitTimeSeries(dataIRIs, classes, units);
+
+        // Verify correct instantiation in both kb and database
+        Assertions.assertEquals(2, tsClient.countTimeSeries());
+        TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI_1);
+        Assertions.assertEquals(dataIRI_1.size(), ts1.getDataIRIs().size());
+        TimeSeries<Instant> ts2 = tsClient.getTimeSeries(dataIRI_2);
+        Assertions.assertEquals(dataIRI_2.size(), ts2.getDataIRIs().size());
     }
 }

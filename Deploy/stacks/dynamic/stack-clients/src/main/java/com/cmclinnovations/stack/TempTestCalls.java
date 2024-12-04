@@ -37,13 +37,13 @@ public class TempTestCalls {
             postGISClient.createDatabase(databaseName);
 
             String fileContents = Files.readString(Path.of(filePath));
-            gdalClient.uploadVectorStringToPostGIS(databaseName, "layer_from_string",
+            gdalClient.uploadVectorStringToPostGIS(databaseName, PostGISClient.DEFAULT_SCHEMA_NAME, "layer_from_string",
                     fileContents, new Ogr2OgrOptions().setSridIn("EPSG:4326"), false);
 
-            gdalClient.uploadVectorFileToPostGIS(databaseName, "layer_from_file",
+            gdalClient.uploadVectorFileToPostGIS(databaseName, PostGISClient.DEFAULT_SCHEMA_NAME, "layer_from_file",
                     filePath, new Ogr2OgrOptions(), true);
 
-            gdalClient.uploadVectorURLToPostGIS(databaseName, "layer_from_url",
+            gdalClient.uploadVectorURLToPostGIS(databaseName, PostGISClient.DEFAULT_SCHEMA_NAME, "layer_from_url",
                     "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/031WAF112/polygon",
                     new Ogr2OgrOptions().setSridIn("EPSG:4326").setSridOut("EPSG:27700"), false);
 

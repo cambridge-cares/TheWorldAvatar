@@ -1,0 +1,4 @@
+{
+    "xml_url": "https://ratings.food.gov.uk/api/open-data-files/FHRS297en-GB.xml",
+    "csv_file_path": "Your_Output_Path/output.csv"
+}

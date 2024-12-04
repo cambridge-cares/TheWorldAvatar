@@ -17,6 +17,7 @@ import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
+import com.cmclinnovations.stack.clients.docker.DockerConfigHandler;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -125,6 +126,10 @@ public class ContainerService extends AbstractService {
         dockerClient.sendFilesContent(containerId, files, remoteDirPath);
     }
 
+    public boolean fileExists(String filePath) {
+        return dockerClient.fileExists(containerId, filePath);
+    }
+
     public final void executeCommand(String... cmd) {
         dockerClient.executeSimpleCommand(containerId, cmd);
     }
@@ -154,11 +159,11 @@ public class ContainerService extends AbstractService {
     }
 
     private <E extends @Nonnull EndpointConfig> void writeEndpointConfig(E endpointConfig) {
-        dockerClient.writeEndpointConfig(endpointConfig);
+        DockerConfigHandler.writeEndpointConfig(endpointConfig);
     }
 
     public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
-        return dockerClient.readEndpointConfig(endpointName, endpointConfigClass);
+        return DockerConfigHandler.readEndpointConfig(endpointName, endpointConfigClass);
     }
 
     /**

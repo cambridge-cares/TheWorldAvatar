@@ -275,7 +275,12 @@ An example of a style specification in the configuration file is:
 ]
 ```
 
-#### `"mappings"`
+### `"ontologyDataset"`
+
+Specify a list of datasets that serve as ontologies for this dataset.
+These are treated like [`"externalDatasets"`](#externalDatasets) but the contents of the Blazegraph endpoint of that dataset is added as an [Ontop ontology](https://ontop-vkg.org/guide/concepts.html#ontology) and/or loaded into the relevant triplestore namespace.
+
+### `"mappings"`
 
 A list of Ontop mapping file definition objects provided as paths relative to the [`"datasetDirectory"`](#datasetdirectory).
 Currently only the Ontop native format (`.obda`) is supported as it is much easier for both humans and Ontop to work with.
@@ -284,10 +289,17 @@ Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader 
 The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)) shows the Ontop OBDA format.
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
-#### `"staticGeoServerData"`
+### `"rules"`
+
+Specify list of `.toml` files provided as paths relative to the [`"datasetDirectory"`](#datasetdirectory).
+These `.toml` files specify a list of sparql insert queries in the Ontop rules format.
+An example of such a file can be found [here](https://github.com/ontop/ontop/blob/f46dabab12aa1e0f0ab9a2b78b16393bee49b9c5/binding/rdf4j/src/test/resources/employee/employee-rules.toml).
+For Blazegraph these insert queries are run once after data is uploaded.
+For Ontop they are assigned as Ontop rules.
+
+### `"staticGeoServerData"`
 
 A description of static data to be loaded into and served by GeoServer.
-These are served with the base directory `GEOSERVER_URL/www/icons`.
 The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
 
 | Key            | Description                                                                                                                                                                                                                   |
@@ -301,21 +313,27 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
   "otherFiles": [
     {
       "source": "my_additional_data/index.html",
-      "target": "additional_data"
+      "target": "additional_data/index.html"
+    },
+    {
+      "source": "my_other_additional_data_directory",
+      "target": "other_additional_data"
     }
   ]
 }
 ```
 
-Note: If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
+Notes: 
+
+- If you want to reference icons uploaded in this way from a GeoServer `.sld` file, you will need to use stack-internal URLs, e.g.:
 
 ```html
 <OnlineResource xlink:type="simple" xlink:href="http://localhost:8080/geoserver/www/icons/myicon.png" />
 ```
 
-Relative file-system paths containing `..` are not supported.
+- The behaviour is similar to the `cp -R` command.
 
-> :warning: **Warning:** If you upload any static data in this way, you *must* make sure that your `dataSubsets` are stored within their own `subdirectory`, even if you have only a single dataset. Otherwise, the data uploader will consider your static files as part of the dataset and not only upload them to GeoServer, but also attempt to upload them to PostGIS etc. and either fail or create unnecessary duplicate uploads.
+- Relative file-system paths containing `..` are not supported.
 
 ## Data Types
 

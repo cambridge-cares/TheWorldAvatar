@@ -1,0 +1,22 @@
+.button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  border: none
+}
+
+.button-container:hover {
+  background-color: var(--background-tertiary);
+}
+
+.icon {
+  color: var(--text-color-primary);
+  font-size: var(--small-icon-size) !important;
+}
+
+.text {
+  font-size: var(--font-size-tertiary-text);
+  margin-left: 0.25rem;
+}

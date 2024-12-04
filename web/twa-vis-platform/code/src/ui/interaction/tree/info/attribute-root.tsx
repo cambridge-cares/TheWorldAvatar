@@ -2,10 +2,11 @@ import styles from './info-tree.module.css';
 import parentStyles from '../floating-panel.module.css';
 
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { Attribute, AttributeGroup } from 'types/attribute';
 import HeaderField from 'ui/text/header';
-import { useDispatch } from 'react-redux';
+import { Assets } from 'io/config/assets';
 import { setHasExistingData } from 'state/floating-panel-slice';
 import { setIri, setStack } from 'state/map-feature-slice';
 
@@ -72,7 +73,7 @@ function AttributeNode(props: Readonly<AttributeNodeProps>) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(group.isCollapsed);
   const [isSubqueryLoading, setIsSubqueryLoading] = useState<boolean>(false);
   const collapsedIcon: string = isCollapsed ? "keyboard_arrow_right" : "keyboard_arrow_down";
-  const displayIcon: string = group.subQueryIri ? "./images/defaults/icons/sparkle.svg" : collapsedIcon;
+  const displayIcon: string = group.subQueryIri ? Assets.SUBQUERY : collapsedIcon;
 
   const toggleExpansion = () => {
     if (group.subQueryIri) {

@@ -1,0 +1,42 @@
+{
+    "ServiceSpec": {
+        "Name": "trajectoryqueryagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:4.0.0",
+                "Env": [
+                    "KEYCLOAK_SERVER=http://host.docker.internal:8080",
+                    "KEYCLOAK_REALM=twa-test"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    },
+                    {
+                        "ConfigName": "user-agent-rest"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/trajectoryqueryagent/",
+            "externalPath": "/trajectoryqueryagent/"
+        }
+    }
+}

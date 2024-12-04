@@ -5,7 +5,7 @@ import React from 'react';
 
 interface SimpleDropdownFieldProps {
   options: string[];
-  handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleChange: (_event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 /**

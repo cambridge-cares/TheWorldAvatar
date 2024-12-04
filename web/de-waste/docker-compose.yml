@@ -1,0 +1,57 @@
+#
+# Compose file for the TWA-VP.
+#
+services:
+  # Empty visualisation image for deployment.
+  base:
+    image: ghcr.io/cambridge-cares/twa-vf:5.9.2
+    container_name: "de-waste-app"
+    restart: "no"
+    environment:
+      KEYCLOAK: true ## whether or not to use kc authentication on the server
+      PROTECTED_PAGES: /* ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /add/agreement ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: protected ## the role required for the above list
+
+      REDIS_HOST: 192.168.1.159
+    secrets:
+      - mapbox_username
+      - mapbox_api_key
+    build:
+      context: .
+      dockerfile: "Dockerfile"
+      target: production
+      labels:
+        authors: "support@cmcl.io"
+        description: "TWA Visualisation Platform image."
+    volumes:
+      - ../twa-vis-platform/code/public:/twa/public/
+      - ./keycloak.json:/twa/keycloak.json
+    ports:
+      - "3000:3000"
+
+  latest:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:latest
+    profiles: [ "build-only" ]
+
+  semantic-snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}.${MINOR}.${PATCH}-${SNAPSHOT}
+    profiles: [ "build-only" ]
+
+  major-snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${MAJOR}-${SNAPSHOT}
+    profiles: [ "build-only" ]
+
+  snapshot:
+    extends: base
+    image: ghcr.io/cambridge-cares/twa-vf:${SNAPSHOT}
+    profiles: [ "build-only" ]
+
+secrets:
+  mapbox_username:
+    file: ./mapbox_username
+  mapbox_api_key:
+    file: ./mapbox_api_key

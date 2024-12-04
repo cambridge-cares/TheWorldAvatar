@@ -53,5 +53,5 @@
                 "2024-05-30T14:09:42.790Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
                 "testDataset";
-        <http://www.w3.org/ns/dcat#catalog>
+        <http://purl.org/dc/terms/references>
                 <https://theworldavatar.io/kg/2f9da96d-5bc4-415e-9d71-e03f179e7cb6> , <https://theworldavatar.io/kg/2b05d34c-a49a-43be-8362-5af042c944c3> .

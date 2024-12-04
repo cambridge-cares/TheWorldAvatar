@@ -1,0 +1,13 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoBatchExperiment,TBox,https://www.theworldavatar.com/kg/ontobatchexperiment/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoBatchExperiment,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoBatchExperiment,TBox,OntoBatchExperiment is an ontology to represent batch experiments and relevant information.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+BatchExperiment,Class,https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment,IS-A,,,,A type of experiment or process in which a fixed quantity of materials is processed together in a single batch or lot.,https://www.theworldavatar.com/kg/ontobatchexperiment/,Batch experiment
+BatchExperimentCategory,Class,,,,,,A classification or type of batch experiment based on specific criteria or characteristics.,https://www.theworldavatar.com/kg/ontobatchexperiment/,Batch experiment category
+Identifier,Class,,,,,,"A unique identifier assigned to a batch experiment that is derived from other types of information (e.g. work code, batch number, initials, BatchExperimentCategory).",https://www.theworldavatar.com/kg/ontobatchexperiment/,Identifier
+WorkCode,Class,,,,,,A confidential internal identifier assigned to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,Work code
+BatchNumber,Class,,,,,,A number assigned to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,Batch number
+hasBatchExperimentCategory,Object Property,,,BatchExperiment,BatchExperimentCategory,,A relationship to describe the category of a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has batch experiment category
+hasIdentifier,Object Property,,,BatchExperiment,Identifier,,A relationship that describes the identifier allocated to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has identifier
+hasWorkCode,Object Property,,,BatchExperiment,WorkCode,,A relationship that describes the work code allocated to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has work code
+hasBatchNumber,Object Property,,,BatchExperiment,BatchNumber,,A relationship that describes the batch number allocated to a batch experiment.,https://www.theworldavatar.com/kg/ontobatchexperiment/,has batch number

@@ -75,7 +75,7 @@ export default function RibbonComponentOptions(props: Readonly<RibbonComponentOp
                 leaveDelay={100}
                 placement="bottom-start">
 
-                <>
+                <div>
                     <div className={innerClass} onClick={props.action}>
                         <div className={styles.ribbonComponentIcon}>
                             <IconComponent icon={props.icon} />
@@ -92,9 +92,9 @@ export default function RibbonComponentOptions(props: Readonly<RibbonComponentOp
                             keyboard_arrow_down
                         </Icon>
                     </div>
-                    {expanded && dropdown}
-                </>
+                </div>
             </Tooltip>
+            {expanded && dropdown}
         </div>
     );
 }
@@ -110,7 +110,7 @@ export default function RibbonComponentOptions(props: Readonly<RibbonComponentOp
 function createOptions(
     options: string[],
     selectedOption: string,
-    selectAction: (selection: string) => void) {
+    selectAction: (_selection: string) => void) {
 
     return (
         <div id="ribbonDropdown" className={styles.ribbonDropdown}>

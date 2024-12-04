@@ -1,55 +1,55 @@
 {
     "ServiceSpec": {
-      "Name": "sensorloggermobileappagent",
-      "TaskTemplate": {
-        "ContainerSpec": {
-          "Image": "sensorloggermobileappagent:1.1.0",
-          "Mounts": [
-            {
-                "Type": "bind",
-                "Source": "../../../../../../Agents/SensorLoggerMobileAppAgent/sensorloggermobileappagent/src/main/resources",
-                "Target": "/resources"
+        "Name": "sensorloggermobileappagent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/sensorloggermobileappagent:4.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "../../../../../../Agents/SensorLoggerMobileAppAgent/sensorloggermobileappagent/src/main/resources",
+                        "Target": "/resources"
+                    }
+                ],
+                "Env": [
+                    "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
             }
-          ],
-          "Env": [
-            "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
-          ],  
-          "Configs": [
-            {
-              "ConfigName": "blazegraph"
-            },
-            {
-              "ConfigName": "postgis"
-            },
-            {
-              "ConfigName": "geoserver"
-            }
-          ],
-          "Secrets": [
-            {
-              "SecretName": "postgis_password"
-            },
-            {
-              "SecretName": "geoserver_password"
-            }
-          ]
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "5005",
+                    "PublishedPort": "5005"
+                }
+            ]
         }
-      },
-      "EndpointSpec": {
-        "Ports": [
-          {
-            "Name": "web",
-            "Protocol": "tcp",
-            "TargetPort": "5005",
-            "PublishedPort": "5005"
-          }
-        ]
-      }
     },
     "endpoints": {
-      "isochroneagent": {
-        "url": "http://localhost:8080/sensorloggermobileappagent/",
-        "externalPath": "/sensorloggermobileappagent/"
-      }
+        "isochroneagent": {
+            "url": "http://localhost:8080/SensorLoggerMobileAppAgent/",
+            "externalPath": "/sensorloggermobileappagent/"
+        }
     }
-  }
+}

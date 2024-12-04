@@ -18,7 +18,7 @@ interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
 
 interface IndexedButtonProps extends ButtonProps {
     index?: number,
-    onButtonClick: (index: number) => void;
+    onButtonClick: (_index: number) => void;
 }
 
 /**
