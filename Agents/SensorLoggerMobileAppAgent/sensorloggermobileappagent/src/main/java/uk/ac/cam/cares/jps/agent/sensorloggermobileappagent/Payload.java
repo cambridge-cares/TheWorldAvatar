@@ -55,62 +55,58 @@ public class Payload {
                     timeEPOCH.longValue() % 1000000000);
             OffsetDateTime timestamp = OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
 
-            if (sensor.textValue().equals("accelerometer")) {
-                accelTs.add(timestamp);
-                accelXs.add(values.get("x").doubleValue());
-                accelYs.add(values.get("y").doubleValue());
-                accelZs.add(values.get("z").doubleValue());
-            }
+            switch (sensor.textValue()) {
+                case "accelerometer" -> {
+                    accelTs.add(timestamp);
+                    accelXs.add(values.get("x").doubleValue());
+                    accelYs.add(values.get("y").doubleValue());
+                    accelZs.add(values.get("z").doubleValue());
+                }
+                case "magnetometer" -> {
+                    magnetometerTs.add(timestamp);
+                    magnetometerXs.add(values.get("x").doubleValue());
+                    magnetometerYs.add(values.get("y").doubleValue());
+                    magnetometerZs.add(values.get("z").doubleValue());
+                }
+                case "gravity" -> {
+                    gravityTs.add(timestamp);
+                    gravityXs.add(values.get("x").doubleValue());
+                    gravityYs.add(values.get("y").doubleValue());
+                    gravityZs.add(values.get("z").doubleValue());
+                }
+                case "location" -> {
+                    locationTs.add(timestamp);
+                    bearings.add(values.get("bearing").doubleValue());
+                    speeds.add(values.get("speed").doubleValue());
+                    altitudes.add(values.get("altitude").doubleValue());
 
-            if (sensor.textValue().equals("magnetometer")) {
-                magnetometerTs.add(timestamp);
-                magnetometerXs.add(values.get("x").doubleValue());
-                magnetometerYs.add(values.get("y").doubleValue());
-                magnetometerZs.add(values.get("z").doubleValue());
-            }
-
-            if (sensor.textValue().equals("gravity")) {
-                gravityTs.add(timestamp);
-                gravityXs.add(values.get("x").doubleValue());
-                gravityYs.add(values.get("y").doubleValue());
-                gravityZs.add(values.get("z").doubleValue());
-            }
-
-            if (sensor.textValue().equals("location")) {
-                locationTs.add(timestamp);
-                bearings.add(values.get("bearing").doubleValue());
-                speeds.add(values.get("speed").doubleValue());
-                altitudes.add(values.get("altitude").doubleValue());
-
-                // Parse latitude and longitude into geomLocationList
-                double latitude = values.get("latitude").doubleValue();
-                double longitude = values.get("longitude").doubleValue();
-                Point point = new Point(longitude, latitude);
-                point.setSrid(4326);
-
-                geomLocations.add(point);
-                sessionIds.add(sessionId);
-            }
-
-            if (sensor.textValue().equals("microphone")) {
-                dBFSTs.add(timestamp);
-                dBFSs.add(values.get("dBFS").doubleValue());
-            }
-
-            if (sensor.textValue().equals("light")) {
-                lightValueTs.add(timestamp);
-                lightValues.add(values.get("lux").doubleValue());
-            }
-
-            if (sensor.textValue().equals("brightness")) {
-                brightnessTs.add(timestamp);
-                brightness.add(values.get("brightness").doubleValue());
-            }
-
-            if (sensor.textValue().equals("activity")) {
-                activityTs.add(timestamp);
-                confidences.add(values.get("confidence").intValue());
-                activityTypes.add(values.get("type").textValue());
+                    // Parse latitude and longitude into geomLocations
+                    double latitude = values.get("latitude").doubleValue();
+                    double longitude = values.get("longitude").doubleValue();
+                    Point point = new Point(longitude, latitude);
+                    point.setSrid(4326);
+                    geomLocations.add(point);
+                    sessionIds.add(sessionId);
+                }
+                case "microphone" -> {
+                    dBFSTs.add(timestamp);
+                    dBFSs.add(values.get("dBFS").doubleValue());
+                }
+                case "light" -> {
+                    lightValueTs.add(timestamp);
+                    lightValues.add(values.get("lux").doubleValue());
+                }
+                case "brightness" -> {
+                    brightnessTs.add(timestamp);
+                    brightness.add(values.get("brightness").doubleValue());
+                }
+                case "activity" -> {
+                    activityTs.add(timestamp);
+                    confidences.add(values.get("confidence").intValue());
+                    activityTypes.add(values.get("type").textValue());
+                }
+                default -> {
+                }
             }
         }
     }
