@@ -62,15 +62,14 @@ export default function MapboxMapComponent(props: MapProperties) {
             zoom: props.defaultPosition.zoom,
             bearing: props.defaultPosition.bearing,
             pitch: props.defaultPosition.pitch,
-            transformRequest: (url) => {
+            transformRequest: (url: string) => {
                 if (process.env.REACT_APP_USE_GEOSERVER_PROXY === 'true') {
                     try {
                         const urlObject = new URL(url);
                         const params = new URLSearchParams(urlObject.search);
                         if (params.get('request') === 'GetMap') {
                             // not sure if this will work across all conditions
-                            const serverUrl = `${window.location.protocol}//${window.location.host}`;
-                            const proxyUrl = `${serverUrl}/geoserver-proxy?url=${encodeURIComponent(url)}`;
+                            const proxyUrl = `${process.env.REACT_APP_SERVER_URL}/geoserver-proxy?url=${encodeURIComponent(url)}`;
                             return {
                                 url: proxyUrl
                             }

@@ -21,6 +21,7 @@ const nextConfig = {
         MAPBOX_USER: process.env.MAPBOX_USER,
         MAPBOX_API_KEY: process.env.MAPBOX_API_KEY,
         REACT_APP_USE_GEOSERVER_PROXY: process.env.REACT_APP_USE_GEOSERVER_PROXY,
+        REACT_APP_SERVER_URL: process.env.REACT_APP_SERVER_URL // only used when REACT_APP_USE_GEOSERVER_PROXY is true
     }
 };
 

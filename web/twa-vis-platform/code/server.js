@@ -111,10 +111,11 @@ app.prepare().then(() => {
 
         const useGeoServerProxy = process.env.REACT_APP_USE_GEOSERVER_PROXY === 'true';
         console.info('REACT_APP_USE_GEOSERVER_PROXY is ' + useGeoServerProxy);
-        console.info('GeoServer requests from MapBox will be sent to /geoserver-proxy')
 
         if (useGeoServerProxy) {
-            server.get('/geoserver-proxy', async (req, res) => {
+            console.info('Server URL REACT_APP_SERVER_URL is ' + process.env.REACT_APP_SERVER_URL);
+            console.info('GeoServer requests from MapBox will be sent to ' + process.env.REACT_APP_SERVER_URL + '/geoserver-proxy')
+            server.get('/geoserver-proxy', keycloak.protect(), async (req, res) => {
                 const targetUrl = req.query.url;
                 let headers = { ...req.headers };
 
