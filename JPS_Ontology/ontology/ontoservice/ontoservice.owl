@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>14 November 2024</dc:date>
+        <dc:date>04 December 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -71,19 +71,6 @@
         <rdfs:comment>A relationship describing the service metric that the variable rate is based on.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>depends on</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/hasAssignedDriver -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasAssignedDriver">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Driver"/>
-        <rdfs:comment>A relationship describing the vehicle and its assigned driver.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has assigned driver</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -264,15 +251,7 @@
     <!-- https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle -->
 
 
-    <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoservice/hasAssignedDriver"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/Driver"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
+    <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
     
 
 
@@ -308,13 +287,6 @@
 
 
     <owl:Class rdf:about="https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoprofile/Driver -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/Driver"/>
     
 
 

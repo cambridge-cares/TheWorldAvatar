@@ -118,7 +118,7 @@ flowchart LR
 The profile of a person generally includes their name and may include their contact information. A person may also play the following roles represented under the `cmns-pts:PartyRole` concept:
 
 1. `fibo-fnd-org-fm:Employee` - A person in the service of another under any contract of hire
-2. `ontoprofile:Driver`- An employee who is specifically employed to drive a vehicle
+2. `ontoprofile:EmployeeDriver`- An employee who is specifically employed to drive a vehicle
 3. `ontoprofile:OperationManager`- An employee who is specifically employed to manage and supervise the operational conditions of a service
 4. `ontoprofile:OperationScheduler`- An employee who is specifically employed to manage the operational schedule of a service
 5. `ontoprofile:SalesAdmin`- An employee who is specifically employed to communicate with clients about the company's products and/or services
@@ -146,7 +146,7 @@ This section describes the various situations that organisations or people are i
 
 ### 2.2.1 Employment
 
-In this situation, a person can be employed by an organisation, who plays an employer role. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation. Employees also have their associated work responsibilities that they must fulfil.
+In this situation, a person can be employed by an organisation, who plays an employer role. It is pertinent to realise that both the employee and employer concepts are established as party roles that is played either by a person or an organisation. Employees also have their associated work responsibilities that they must fulfil, such as their working hours specified by `cmns-dt:hasTimePeriod`.
 
 Figure 3: TBox representation for an employment situation
 
@@ -157,8 +157,8 @@ flowchart LR
 
     %% Contents
     Employment[[fibo-fnd-org-fm: Employment]] -. fibo-fnd-org-fm: hasEmployingParty .-> Employer[[fibo-fnd-org-fm: Employer]]
-    Employment[[fibo-fnd-org-fm: Employment]] -. fibo-fnd-org-fm: hasEmployedParty .-> Employee[[fibo-fnd-org-fm: Employee]]
-    Employment[[fibo-fnd-org-fm: Employment]] -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    Employment -. fibo-fnd-org-fm: hasEmployedParty .-> Employee[[fibo-fnd-org-fm: Employee]]
+    Employment -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
     DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
     DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
@@ -169,6 +169,12 @@ flowchart LR
     Employer -. cmns-rlcmp:isPlayedBy .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
     Employee -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
     Org -. cmns-col:hasMember .-> Person
+
+    Employee -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:TimePeriod]]
+    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
+    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
+    StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
+    EndTime -.-> Time
 ```
 
 Note that the employee status are represented as enums in the corresponding ABox `OntoProfile_abox.ttl`. The available statuses are as follows:
@@ -176,11 +182,40 @@ Note that the employee status are represented as enums in the corresponding ABox
 - OnLeave
 - OnWork
 
+> Driver's employment
+
+When a person is employed by an organisation as a driver, they may be assigned to a truck through the representation of a functional role for a period stipulated in the situation.
+
+Figure 4: TBox representation of driver's employment
+
+```mermaid
+flowchart TD
+    %% Styling
+    classDef literal fill:none
+
+    %% Contents
+    Situation[[cmns-pts:Situation]] -. cmns-pts:hasSubjectRole .-> Driver[[ontoprofile:EmployeeDriver]]
+    Situation -. cmns-pts:hasObjectRole .-> VDriver[[ontoprofile:VehicleDriver]]
+    Situation -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
+    EndDate -.-> Date
+
+    Driver --> Employee[[fibo-fnd-org-fm:Employee]]
+    Driver -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
+    VDriver --> cmns-rlcmp:FunctionalRole
+    VDriver -. fibo-fnd-rel-rel:controls .-> Vehicle[["<h4>vc:Vehicle</h4><p style='font-size:0.75rem;'>vc:vehicleIdentificationNumber &quot;string&quot;</p>"]]:::literal
+    Vehicle -. vc:owner .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
+    Employee -. fibo-fnd-org-fm: isEmployeeOf .-> Employer
+    Employer[[fibo-fnd-org-fm: Employer]] -. cmns-rlcmp:isPlayedBy .-> Org
+```
+
 ### 2.2.2 Facility usage
 
 This section depicts the usage of facility by organisations and employees. These facilities may operate in a building which is associated with a corresponding address and geolocation. The ontology also enables the inclusion of employees from external organisations.
 
-Figure 4: TBox representation for relationships within facilities
+Figure 5: TBox representation for facility usage
 
 ```mermaid
 flowchart LR

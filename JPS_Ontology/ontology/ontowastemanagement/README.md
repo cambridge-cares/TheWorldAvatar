@@ -261,7 +261,6 @@ Figure 5: TBox representation of a service delivery event occurrence for waste s
     "ontowm:Bin" ||--|| "ontowm:BinStatus" : "ontowm:hasStatus"
 
     "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "ontowm:RearEndLoaderTruck/HookliftTruck" : "ontoservice:hasAssignedTransport"
-    "ontowm:RearEndLoaderTruck/HookliftTruck" ||--|| "ontoprofile:Driver" : "ontoservice:hasAssignedDriver"
 
     "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-col:comprises"
     "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "ontoservice:ServiceExecutionStage" : "fibo-fnd-rel-rel:exemplifies"
@@ -404,11 +403,12 @@ The following truck types are employed in the waste management sector:
 2. **Hooklift Truck**: A versatile truck equipped with a hydraulic hooklift system, used for transporting various container types, including heavy industrial and commercial waste containers.
 3. **Recycling Truck**: A truck specifically designed and equipped to collect, transport, and sometimes sort recyclable materials from various collection points to recycling facilities.
 
+For more information on the driver of the truck, please see the representation in [OntoProfile](../ontoprofile#221-employment).
+
 Figure 9: TBox representation of a truck for the waste management sector
 
 ```mermaid
     erDiagram
-    "vc:Truck" ||--|| "ontoprofile:Driver" : "ontoservice:hasAssignedDriver"
     "vc:Truck" ||--|| "geo:Feature" : "rdfs:subClassOf"
     "vc:Truck" {
         vc-vehicleIdentificationNumber plate_number_string
