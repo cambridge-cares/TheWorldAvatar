@@ -99,6 +99,7 @@ Figure 1: TBox representation for an organisation's profile
 flowchart LR
     %% Styling
     classDef literal fill:none
+    classDef node text-wrap:pretty
 
     %% Contents
     cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm: FormalOrganization]]
@@ -130,6 +131,7 @@ Figure 2: TBox representation for a person's profile
 flowchart LR
     %% Styling
     classDef literal fill:none
+    classDef node text-wrap:pretty
 
     %% Contents
     cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
@@ -154,6 +156,7 @@ Figure 3: TBox representation for an employment situation
 flowchart LR
     %% Styling
     classDef literal fill:none
+    classDef node text-wrap:pretty
 
     %% Contents
     Employment[[fibo-fnd-org-fm: Employment]] -. fibo-fnd-org-fm: hasEmployingParty .-> Employer[[fibo-fnd-org-fm: Employer]]
@@ -192,6 +195,7 @@ Figure 4: TBox representation of driver's employment
 flowchart TD
     %% Styling
     classDef literal fill:none
+    classDef node text-wrap:pretty
 
     %% Contents
     Situation[[cmns-pts:Situation]] -. cmns-pts:hasSubjectRole .-> Driver[[ontoprofile:EmployeeDriver]]
@@ -221,6 +225,7 @@ Figure 5: TBox representation for facility usage
 flowchart LR
     %% Styling
     classDef literal fill:none
+    classDef node text-wrap:pretty
 
     %% Contents
     Org[[fibo-fnd-org-fm:FormalOrganization]] -. fibo-fnd-rel-rel:controls .-> Facility
