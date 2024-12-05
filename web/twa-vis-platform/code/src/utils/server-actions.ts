@@ -3,13 +3,15 @@
  */
 'use server';
 
+import { Apis, Paths } from 'io/config/routes';
 import { FieldValues } from 'react-hook-form';
 
 import { RegistryFieldValues, FormTemplate, OntologyConcept } from 'types/form';
 
 export interface HttpResponse {
-  success: boolean;
   message: string;
+  success?: boolean;
+  iri?: string;
 }
 
 /**
@@ -53,7 +55,7 @@ export async function getGeolocation(agentApi: string, params: Record<string, st
     // Only append the search param if there is a value
     if (value) searchParams.append(key, value);
   });
-  const url: string = `${agentApi}/location/geocode?${searchParams.toString()}`;
+  const url: string = `${agentApi}?${searchParams.toString()}`;
   const results = await sendGetRequest(url);
   if (results == "There are no coordinates associated with the parameters in the knowledge graph.") {
     return [];
@@ -62,13 +64,35 @@ export async function getGeolocation(agentApi: string, params: Record<string, st
 }
 
 /**
- * Retrieves all data of the specified type with human-readable labels for the fields.
+ * Retrieves all data of the specified type associated with a lifecycle. Fields are returned with human-readable labels.
  * 
  * @param {string} agentApi API endpoint.
+ * @param {string} currentStage Current stage of the lifecycle.
  * @param {string} entityType Type of entity to retrieve.
  */
-export async function getLabelledData(agentApi: string, entityType: string): Promise<RegistryFieldValues[]> {
-  const res = await sendRequest(`${agentApi}/${entityType}/label`, "GET");
+export async function getLifecycleData(agentApi: string, currentStage: string, entityType: string): Promise<RegistryFieldValues[]> {
+  let stagePath: string;
+  if (currentStage == Paths.REGISTRY_PENDING) {
+    stagePath = "draft";
+  } else if (currentStage == Paths.REGISTRY_ACTIVE) {
+    stagePath = "service";
+  } else if (currentStage == Paths.REGISTRY_ARCHIVE) {
+    stagePath = "archive";
+  }
+  const res = await sendRequest(`${agentApi}/contracts/${stagePath}?type=${entityType}&label=yes`, "GET");
+  const responseData = await res.json();
+  return responseData;
+}
+
+
+/**
+ * Retrieves all service tasks in a lifecycle on the specified day. Fields are returned with human-readable labels.
+ * 
+ * @param {string} agentApi API endpoint.
+ * @param {number} time Target day in UNIX timestamp format.
+ */
+export async function getServiceTasks(agentApi: string, time: number): Promise<RegistryFieldValues[]> {
+  const res = await sendRequest(`${agentApi}/contracts/service/${time}`, "GET");
   const responseData = await res.json();
   return responseData;
 }
@@ -150,26 +174,22 @@ export async function addEntity(agentApi: string, form: FieldValues, entityType:
     entity: entityType,
   });
   const response = await sendRequest(`${agentApi}/${entityType}`, "POST", "application/json", reqBody);
-  const responseBody: string = await response.text();
-  return { success: response.ok, message: responseBody };
+  const responseBody: HttpResponse = await response.json();
+  return { success: response.ok, ...responseBody };
 }
 
 /**
  * Update the entity information within the knowledge graph.
  * 
  * @param {string} agentApi API endpoint.
- * @param {FieldValues} form Form storing the input data.
- * @param {string} entityType Target entity type.
+ * @param {string} jsonBody JSON body for updating.
  */
-export async function updateEntity(agentApi: string, form: FieldValues, entityType: string): Promise<HttpResponse> {
-  const reqBody: string = JSON.stringify({
-    ...form,
-    entity: entityType,
-  });
-  const response = await sendRequest(`${agentApi}/${entityType}/${form.id}`, "PUT", "application/json", reqBody);
-  const responseBody: string = await response.text();
-  return { success: response.ok, message: responseBody };
+export async function updateEntity(agentApi: string, jsonBody: string): Promise<HttpResponse> {
+  const response = await sendRequest(agentApi, "PUT", "application/json", jsonBody);
+  const responseBody: HttpResponse = await response.json();
+  return { success: response.ok, ...responseBody };
 }
+
 
 /**
  * Delete the entity associated with the id.
@@ -180,8 +200,8 @@ export async function updateEntity(agentApi: string, form: FieldValues, entityTy
  */
 export async function deleteEntity(agentApi: string, id: string, entityType: string): Promise<HttpResponse> {
   const response = await sendRequest(`${agentApi}/${entityType}/${id}`, "DELETE", "application/json");
-  const responseBody: string = await response.text();
-  return { success: response.ok, message: responseBody };
+  const responseBody: HttpResponse = await response.json();
+  return { success: response.ok, ...responseBody };
 }
 
 /**

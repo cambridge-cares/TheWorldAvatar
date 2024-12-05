@@ -37,9 +37,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
   const [isFetching, setIsFetching] = useState<boolean>(true);
   // Any id field in the search form should be ignored
   if (!(formType == SEARCH_FORM_TYPE && props.field.name[VALUE_KEY] == "id")) {
-    if (props.options?.disabled || (
-      props.field.datatype && ["string", "integer", "decimal"].includes(props.field.datatype)
-    )) {
+    if (props.field.datatype && ["string", "integer", "decimal"].includes(props.field.datatype)) {
       return (
         <div className={styles["form-field-container"]}>
           <div className={styles["form-input-container"]}>
@@ -78,6 +76,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
               styles={{
                 label: [styles["form-input-label"]],
               }}
+              options={props.options}
             />
           </div>
         </div>
@@ -100,6 +99,7 @@ export default function FormFieldComponent(props: Readonly<FormFieldProps>) {
               styles={{
                 label: [styles["form-input-label"]],
               }}
+              options={props.options}
             />
           </div>
         </div>

@@ -2,20 +2,28 @@
 
 import styles from './table.ribbon.module.css';
 import fieldStyles from 'ui/interaction/form/field/field.module.css';
+import actionStyles from 'ui/interaction/action/action.module.css';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useProtectedRole } from 'hooks/useProtectedRole';
 import { useRouter } from 'next/navigation';
 
+import { Routes } from 'io/config/routes';
+import { DownloadButton } from 'ui/interaction/action/download/download';
+import RedirectButton from 'ui/interaction/action/redirect/redirect-button';
+import ActionButton from 'ui/interaction/action/action';
 import MaterialIconButton from 'ui/graphic/icon/icon-button';
 import { sendPostRequest } from 'utils/server-actions';
-import { DownloadButton } from 'ui/interaction/download/download';
 
 interface TableRibbonProps {
   entityType: string;
   registryAgentApi: string;
-  schedulerAgentApi: string;
-  setSubmitScheduling: React.Dispatch<React.SetStateAction<boolean>>;
+  lifecycleStage: string;
+  selectedDate: string;
+  isTaskPage: boolean;
+  setSelectedDate: React.Dispatch<React.SetStateAction<string>>;
+  setIsTaskPage: React.Dispatch<React.SetStateAction<boolean>>;
+  triggerRefresh: () => void;
 }
 
 /**
@@ -23,75 +31,101 @@ interface TableRibbonProps {
  * 
  * @param {string} entityType The type of entity.
  * @param {string} registryAgentApi The target endpoint for default registry agents.
- * @param {string} schedulerAgentApi The target endpoint for scheduler specific functionality.
- * @param setSubmitScheduling Set the submit scheduling state for submitting the scheduler.
+ * @param {string} lifecycleStage The current stage of a contract lifecycle to display.
+ * @param {string} selectedDate The selected date in the date field input.
+ * @param {boolean} isTaskPage Indicator if the table is currently on the task view.
+ * @param setSelectedDate Method to update selected date.
+ * @param setIsTaskPage Method to update task page indicator.
+ * @param triggerRefresh Method to trigger refresh.
  */
 export default function TableRibbon(props: Readonly<TableRibbonProps>) {
   const router = useRouter();
 
   const isKeycloakEnabled = process.env.KEYCLOAK === 'true';
-  
+
   const authorised = useProtectedRole().authorised;
 
-  const scheduleId: string = "schedule date";
-  // Users can only either add or schedule at one time; schedule is expected to add new instances but with restrictions
-  const buttonIcon: string = props.schedulerAgentApi ? "schedule_send" : "add";
-  const buttonText: string = props.schedulerAgentApi ? "schedule" : "add " + props.entityType;
-
-  // Start off with today's date
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const taskId: string = "task date";
 
   // Handle change event for the date input
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
+    props.setSelectedDate(event.target.value);
   };
 
-  const openAddModal: React.MouseEventHandler<HTMLDivElement> = () => {
-    router.push(`../add/${props.entityType}`);
+  const openAddModal: React.MouseEventHandler<HTMLButtonElement> = () => {
+    router.push(`${Routes.REGISTRY_ADD}/${props.entityType}`);
   };
 
-  const sendScheduleRequest: React.MouseEventHandler<HTMLDivElement> = () => {
-    const jsonBody: string = JSON.stringify({
-      date: selectedDate,
-    });
-    sendPostRequest(`${props.schedulerAgentApi}/schedule`, jsonBody);
-    props.setSubmitScheduling(true);
+  const switchTaskPage: React.MouseEventHandler<HTMLButtonElement> = () => {
+    props.setIsTaskPage(!props.isTaskPage);
   };
-  const buttonEvent: React.MouseEventHandler<HTMLDivElement> = props.schedulerAgentApi ? sendScheduleRequest : openAddModal;
+
+  const triggerRefresh: React.MouseEventHandler<HTMLDivElement> = () => {
+    sendPostRequest(`${props.registryAgentApi}/contracts/service/schedule`, "{}");
+    props.triggerRefresh();
+  };
 
   return (
     <div className={styles.menu}>
       <div className={styles["ribbon-button-container"]}>
-        {(authorised || !isKeycloakEnabled) && props.schedulerAgentApi && <div>
-          <label className={fieldStyles["form-input-label"]} htmlFor={scheduleId}>
-            Date:
-          </label>
-          <input
-            id={scheduleId}
-            className={fieldStyles["dtpicker"]}
-            style={{ width: "5.5rem" }}
-            type={"date"}
-            defaultValue={selectedDate}
-            aria-label={scheduleId}
-            onChange={handleDateChange}
+        <RedirectButton
+          icon="pending"
+          url={`${Routes.REGISTRY_PENDING}/${props.entityType}`}
+          isActive={props.lifecycleStage == Routes.REGISTRY_PENDING}
+          title="Pending"
+        />
+        <RedirectButton
+          icon="schedule"
+          url={`${Routes.REGISTRY_ACTIVE}/${props.entityType}`}
+          isActive={props.lifecycleStage == Routes.REGISTRY_ACTIVE}
+          title="Active"
+        />
+        <RedirectButton
+          icon="archive"
+          url={`${Routes.REGISTRY_ARCHIVE}/${props.entityType}`}
+          isActive={props.lifecycleStage == Routes.REGISTRY_ARCHIVE}
+          title="Archive"
+        />
+      </div>
+      <div className={styles["ribbon-button-container"]}>
+        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_PENDING &&
+          <ActionButton
+            icon={"add"}
+            title={"add " + props.entityType}
+            onClick={openAddModal}
           />
-        </div>
         }
-        {(authorised || !isKeycloakEnabled) &&
-          <MaterialIconButton
-            iconName={buttonIcon}
-            className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
-            text={{
-              styles: [styles["button-text"]],
-              content: buttonText
-            }}
-            onClick={buttonEvent}
-          />
-        }
+        {props.lifecycleStage == Routes.REGISTRY_ACTIVE && <ActionButton
+          icon={"task"}
+          title={"view tasks"}
+          onClick={switchTaskPage}
+          className={props.isTaskPage ? actionStyles["active"] : ""}
+        />}
         <DownloadButton
           agentApi={`${props.registryAgentApi}/csv/${props.entityType}`}
-          className={styles["ribbon-button"] + " " + styles["ribbon-button-layout"]}
         />
+        {(authorised || !isKeycloakEnabled) && props.lifecycleStage == Routes.REGISTRY_ACTIVE && props.isTaskPage && <>
+          <div style={{ margin: "auto 0" }}>
+            <label className={fieldStyles["form-input-label"]} htmlFor={taskId}>
+              Date:
+            </label>
+            <input
+              id={taskId}
+              className={fieldStyles["dtpicker"]}
+              style={{ width: "5.5rem" }}
+              type={"date"}
+              defaultValue={props.selectedDate}
+              aria-label={taskId}
+              onChange={handleDateChange}
+            />
+          </div>
+          <MaterialIconButton
+            iconName={"cached"}
+            iconStyles={[styles["icon"]]}
+            onClick={triggerRefresh}
+          />
+        </>
+        }
       </div>
     </div>
   );

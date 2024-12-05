@@ -3,6 +3,18 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.13.0
+
+### Features
+
+- Added use of lifecycle in registry 
+- Removal of scheduler configuration, which is part of the new lifecycle
+- General enhancements to forms in the registry
+
+### Bug Fixes
+
+- Fixed mapbox token not being read in development environment
+
 ## 5.12.0
 
 - Add ability to include JWT token in header for MapBox source requests.

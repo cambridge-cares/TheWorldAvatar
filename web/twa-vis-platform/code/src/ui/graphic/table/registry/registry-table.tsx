@@ -4,7 +4,7 @@ import React from 'react';
 import { FieldValues } from 'react-hook-form';
 
 import { RegistryFieldValues } from 'types/form';
-import { getAfterDelimiter, isValidIRI, parseWordsForLabels } from 'utils/client-utils';
+import { parseWordsForLabels } from 'utils/client-utils';
 import RegistryRowActions from './actions/registry-table-action';
 import StatusComponent from 'ui/text/status/status';
 
@@ -14,7 +14,10 @@ import { RegistryTableTheme } from './registry-table-theme';
 
 interface RegistryTableProps {
   recordType: string;
+  isTaskPage: boolean;
   instances: RegistryFieldValues[];
+  setTaskId: React.Dispatch<React.SetStateAction<string>>;
+  setTaskStatus: React.Dispatch<React.SetStateAction<string>>;
   limit?: number;
 }
 
@@ -22,7 +25,10 @@ interface RegistryTableProps {
  * This component renders a registry of table based on the inputs.
  * 
  * @param {string} recordType The type of the record.
+ * @param {boolean} isTaskPage Indicator if the table is currently on the task view.
  * @param {RegistryFieldValues[]} instances The instance values for the table.
+ * @param setTaskId A dispatch method to set task id when required.
+ * @param setTaskStatus A dispatch method to set task status when required.
  * @param {number} limit Optional limit to the number of columns shown.
  */
 export default function RegistryTable(props: Readonly<RegistryTableProps>) {
@@ -36,12 +42,12 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
         headerName: "",
         width: 100,
         renderCell: (params) => {
-          const recordId: string = isValidIRI(params.row.id) ?
-            getAfterDelimiter(params.row.id, "/")
-            : params.row.id;
           return (<RegistryRowActions
-            recordId={recordId}
             recordType={props.recordType}
+            isTaskPage={props.isTaskPage}
+            row={params.row}
+            setTaskId={props.setTaskId}
+            setTaskStatus={props.setTaskStatus}
           />);
         }
       },
@@ -95,8 +101,9 @@ export default function RegistryTable(props: Readonly<RegistryTableProps>) {
           checkboxSelection={false}
           disableRowSelectionOnClick={false}
           autosizeOnMount={true}
+          getRowId={(row) => row.id || row.iri}
         />
       </Box>
-    </RegistryTableTheme> 
+    </RegistryTableTheme>
   )
 }
