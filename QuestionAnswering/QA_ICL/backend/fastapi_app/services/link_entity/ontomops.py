@@ -83,13 +83,17 @@ WHERE {{
             lst: list[str] = []
             return lst
 
-        query = f"""PREFIX mops: <{ONTOMOPS}>
-        
+        clause_gbu = f"?GBU mops:hasGBUType ?GBUType ."
+        clause_modularity = (f"?GBUType mops:hasModularity {args.modularity} ." if args.modularity else None)
+        clause_planarity = (f'?GBUType mops:hasPlanarity "{args.planarity}" .' if args.planarity else None)
+        query = """PREFIX mops: <{mops}>
 SELECT DISTINCT *
 WHERE {{
-    ?GBU mops:hasGBUType ?GBUType .
-    ?GBUType mops:hasModularity {args.modularity} ; mops:hasPlanarity "{args.planarity}" .
-}}"""
+    {clauses}
+}}""".format(
+            mops=ONTOMOPS, clauses="\n    ".join([clause for clause in [clause_gbu, clause_modularity, clause_planarity] if clause])
+        )
+
         _, bindings = self.sparql_client.querySelectThenFlatten(query)
         iris = [binding["GBU"] for binding in bindings]
         return iris
