@@ -14,10 +14,9 @@ import cavity_and_pore_size as cap
 
 from geo import Point, Vector, Line, Plane, RotationMatrix, Quaternion
 
-HALF_BOND_LENGTH = 1.4 / 2
 BINDING_FRAGMENT_METAL = 'Metal'
 BINDING_FRAGMENT_CO2 = 'CO2'
-BINDING_FRAGMENT_O = 'O'
+BINDING_FRAGMENT_O3 = 'O3'
 BINDING_FRAGMENT_N2 = 'N2'
 GBU_TYPE_2_BENT = '2-bent'
 GBU_TYPE_2_LINEAR = '2-linear'
@@ -336,6 +335,97 @@ class BindingSite(BaseClass):
     def binding_coordinates(self) -> Point:
         return list(self.hasBindingPoint)[0].coordinates
 
+    def binding_atoms(self, atoms: List[Point]) -> List[Point]:
+        # count the atoms
+        def get_atom_count(s):
+            atom_counts = {}
+            i = 0
+            while i < len(s):
+                if s[i].isupper():
+                    name = s[i]
+                    i += 1
+                    # collect lowercase characters to form the full name
+                    while i < len(s) and s[i].islower():
+                        name += s[i]
+                        i += 1
+                    # collect digits to count the atoms (if any)
+                    count = 1
+                    num = ''
+                    while i < len(s) and s[i].isdigit():
+                        num += s[i]
+                        i += 1
+                    count = int(num) if num else 1
+                    # store the count of atoms
+                    atom_counts[name] = atom_counts.get(name, 0) + count
+                else:
+                    i += 1
+            return atom_counts
+
+        counts = get_atom_count(list(self.hasBindingFragment)[0])
+        # binding fragments situations: CO2, O, N2, single metal, multiple metals
+        # find the centroid of the relevant atoms that are close
+        sorted_atoms = self.binding_coordinates.rank_distance_to_points(atoms)
+        all_binding_atoms = []
+        for atom, num in counts.items():
+            all_binding_atoms.extend([a for a in sorted_atoms if a.label == atom][:num])
+        return all_binding_atoms
+
+    @staticmethod
+    def compute_assembly_center_from_binding_sites(
+        lst_binding_sites: List['BindingSite'],
+        atom_points: List['Point'],
+        gbu_type: str,
+        binding_fragment: str,
+    ) -> 'CBUAssemblyCenter':
+        # compute the CBU assembly center, which is the geometry (coordinates) center point of the CBU structure (average of all atoms)
+        # projected on the normal vector of the plane formed by the binding sites (dummy atoms) that pass through the circumcenter point of all binding sites
+        lst_binding_points = [bs.binding_coordinates for bs in lst_binding_sites]
+        if len(lst_binding_points) > 2:
+            # when the number of binding sites are greater than 2
+            # find the plane from the binding sites and the circumcenter of the binding sites
+            # then project the center of the CBU on the normal vector of the plane
+            # to find the assembly center of the CBU
+            # even the assembly center is overshooting from the molecule
+            # the sin/cos calculations will make sure its coordinates is transformed correctly
+            cbu_binding_sites_plane = Plane.fit_from_points(lst_binding_points)
+            cbu_binding_sites_circumcenter = Point.fit_circle_2d(lst_binding_points)[0]
+            cbu_geo_center = Point.centroid(atom_points)
+            line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
+            cbu_assemb_center = line.project_point(cbu_geo_center)
+        else:
+            bindingsite_mid_point = Point.mid_point(*lst_binding_points)
+            if 'linear' in gbu_type.lower():
+                # if the CBU is expected to function as 2-linear, take the average of the two binding sites
+                cbu_assemb_center = bindingsite_mid_point
+            else:
+                # if the CBU is expected to function as 2-bent, then compute the intersection of the two vectors
+                # to be used as the third point to fit a plane with the two binding sites
+                if binding_fragment == BINDING_FRAGMENT_CO2:
+                    # first find the closest two O atoms and the C atoms for each binding sites
+                    v_dct = {}
+                    lst_pts_for_plane = []
+                    for bs in lst_binding_sites:
+                        bp: Point = bs.binding_coordinates
+                        ranked_atoms = bp.rank_distance_to_points(atom_points)
+                        closest_two_O = [a for a in ranked_atoms if a.label == 'O'][:2]
+                        closest_C = [a for a in ranked_atoms if a.label == 'C'][0]
+                        # find the average of the O atoms and use it to form line with the closest C atom
+                        avg_O = Point.mid_point(*closest_two_O)
+                        v_dct[bs.instance_iri] = {'avg_O': avg_O, 'closest_C': closest_C, 'line': Line.from_two_points(start=avg_O, end=closest_C)}
+                        lst_pts_for_plane.extend([closest_C, avg_O])
+                    # find the plane from these points
+                    plane = Plane.fit_from_points(lst_pts_for_plane)
+                    # find the intersection of these lines when they are projected on the plane
+                    proj_lines = [v['line'] for v in v_dct.values()]
+                    intersection = plane.find_intersection_of_lines_projected(*proj_lines)
+                    # use the intersection and two binding site to form the plane
+                    plane_of_bs = Plane.from_three_points(pt1=intersection, pt2=lst_binding_points[0], pt3=lst_binding_points[1])
+                    perpendicular_bisector = plane_of_bs.find_perpendicular_bisector_on_plane(*lst_binding_points)
+                    cbu_assemb_center = perpendicular_bisector.project_point(intersection)
+                else:
+                    raise NotImplementedError(f'CBUs functioning as a {gbu_type} with binding fragment {binding_fragment} is not yet supported.')
+        return CBUAssemblyCenter(hasX=cbu_assemb_center.x, hasY=cbu_assemb_center.y, hasZ=cbu_assemb_center.z)
+
 class MetalSite(BindingSite):
     pass
 
@@ -486,13 +576,12 @@ class ChemicalBuildingUnit(BaseClass):
         }
         """
         cbu_binding_points = {}
-        lst_binding_sits = []
+        lst_binding_sites = []
         cbu_atoms = {}
         atom_points = []
         cbu_atoms_acc_x = 0.0
         cbu_atoms_acc_y = 0.0
         cbu_atoms_acc_z = 0.0
-        cbu_assemb_center = None
 
         # iterate through the json file and process the coordinates
         _bs_clz = MetalSite if metal_site else OrganicSite
@@ -504,9 +593,9 @@ class ChemicalBuildingUnit(BaseClass):
                     hasBindingFragment=binding_fragment,
                 )
                 cbu_binding_points[k] = pt
-                lst_binding_sits.append(pt)
+                lst_binding_sites.append(pt)
             elif str(v['atom']).lower() == 'center':
-                cbu_assemb_center = Point(x=v['coordinate_x'], y=v['coordinate_y'], z=v['coordinate_z'])
+                print('NOTE!!! Center point is not used in the current implementation.')
             else:
                 pt = Point(x=v['coordinate_x'], y=v['coordinate_y'], z=v['coordinate_z'], label=v['atom'])
                 cbu_atoms_acc_x += v['coordinate_x']
@@ -515,57 +604,9 @@ class ChemicalBuildingUnit(BaseClass):
                 cbu_atoms[k] = pt
                 atom_points.append(pt)
 
-        # compute the CBU assembly center, which is the geometry (coordinates) center point of the CBU structure (average of all atoms)
-        # projected on the normal vector of the plane formed by the binding sites (dummy atoms) that pass through the circumcenter point of all binding sites
-        if cbu_assemb_center is None:
-            lst_binding_points = [cbu_binding_points[k].binding_coordinates for k in cbu_binding_points]
-            if len(lst_binding_points) > 2:
-                # when the number of binding sites are greater than 2
-                # find the plane from the binding sites and the circumcenter of the binding sites
-                # then project the center of the CBU on the normal vector of the plane
-                # to find the assembly center of the CBU
-                # even the assembly center is overshooting from the molecule
-                # the sin/cos calculations will make sure its coordinates is transformed correctly
-                cbu_binding_sites_plane = Plane.fit_from_points(lst_binding_points)
-                cbu_binding_sites_circumcenter = Point.fit_circle_2d(lst_binding_points)[0]
-                cbu_geo_center = Point.centroid(atom_points)
-                line = Line(point=cbu_binding_sites_circumcenter, direction=cbu_binding_sites_plane.normal)
-                cbu_assemb_center = line.project_point(cbu_geo_center)
-            else:
-                bindingsite_mid_point = Point.mid_point(*lst_binding_points)
-                if 'linear' in gbu_type.lower():
-                    # if the CBU is expected to function as 2-linear, take the average of the two binding sites
-                    cbu_assemb_center = bindingsite_mid_point
-                else:
-                    # if the CBU is expected to function as 2-bent, then compute the intersection of the two vectors
-                    # to be used as the third point to fit a plane with the two binding sites
-                    if binding_fragment == 'CO2':
-                        # first find the closest two O atoms and the C atoms for each binding sites
-                        v_dct = {}
-                        lst_pts_for_plane = []
-                        for k in cbu_binding_points:
-                            bp: Point = cbu_binding_points[k].binding_coordinates
-                            ranked_atoms = bp.rank_distance_to_points(atom_points)
-                            closest_two_O = [a for a in ranked_atoms if a.label == 'O'][:2]
-                            closest_C = [a for a in ranked_atoms if a.label == 'C'][0]
-                            # find the average of the O atoms and use it to form line with the closest C atom
-                            avg_O = Point.mid_point(*closest_two_O)
-                            v_dct[k] = {'avg_O': avg_O, 'closest_C': closest_C, 'line': Line.from_two_points(start=avg_O, end=closest_C)}
-                            lst_pts_for_plane.extend([closest_C, avg_O])
-                        # find the plane from these points
-                        plane = Plane.fit_from_points(lst_pts_for_plane)
-                        # find the intersection of these lines when they are projected on the plane
-                        proj_lines = [v['line'] for v in v_dct.values()]
-                        intersection = plane.find_intersection_of_lines_projected(*proj_lines)
-                        # use the intersection and two binding site to form the plane
-                        plane_of_bs = Plane.from_three_points(pt1=intersection, pt2=lst_binding_points[0], pt3=lst_binding_points[1])
-                        perpendicular_bisector = plane_of_bs.find_perpendicular_bisector_on_plane(*lst_binding_points)
-                        cbu_assemb_center = perpendicular_bisector.project_point(intersection)
-                    else:
-                        raise NotImplementedError(f'CBUs functioning as a {gbu_type} with binding fragment {binding_fragment} is not yet supported.')
-        assemb_center = CBUAssemblyCenter(hasX=cbu_assemb_center.x, hasY=cbu_assemb_center.y, hasZ=cbu_assemb_center.z)
+        assemb_center = BindingSite.compute_assembly_center_from_binding_sites(lst_binding_sites, atom_points, gbu_type, binding_fragment)
 
-        return lst_binding_sits, assemb_center, atom_points
+        return lst_binding_sites, assemb_center, atom_points
 
     @classmethod
     def from_geometry_json(cls, cbu_formula, cbu_json, charge, ocn, binding_fragment, gbu_type, gbu: str = None, direct_binding: bool = True, metal_site: bool = False):
@@ -612,12 +653,12 @@ class ChemicalBuildingUnit(BaseClass):
         if len(binding_sites) < 3:
             line = Line.from_two_points(start=binding_sites[0].binding_coordinates, end=binding_sites[1].binding_coordinates)
             if line.is_point_on_line(center):
-                # if the center point is on the line then we approximate the plane fitted by the closest 2 atoms of CBU
+                # if the center point is on the line then we approximate the plane fitted by the binding fragments of CBU
                 # to each binding site and we take the normal vector of the plane
-                lst_atoms = []
+                lst_binding_atoms = []
                 for bs in binding_sites:
-                    lst_atoms.extend(bs.binding_coordinates.rank_distance_to_points(list(self.hasGeometry)[0].hasPoints)[:2])
-                plane = Plane.fit_from_points(lst_atoms)
+                    lst_binding_atoms.extend(bs.binding_atoms(list(self.hasGeometry)[0].hasPoints))
+                plane = Plane.fit_from_points(lst_binding_atoms)
                 v = plane.normal_vector_from_point_to_plane(center)
             else:
                 v = line.normal_vector_from_point_to_line(center)
@@ -660,7 +701,7 @@ class ChemicalBuildingUnit(BaseClass):
         # rotate the binding sites with the rotation matrix
         most_possible_binding_site_angle = 90 # in degrees
         rotated_binding_vector = None
-        length_center_to_binding_site = None
+        length_center_to_binding = None
         for bs in self.active_binding_sites:
             bs: BindingSite
             v = Vector.from_two_points(start=center, end=bs.binding_coordinates)
@@ -671,8 +712,23 @@ class ChemicalBuildingUnit(BaseClass):
             if angle < most_possible_binding_site_angle:
                 rotated_binding_vector = v
                 most_possible_binding_site_angle = angle
-                length_center_to_binding_site = center.get_distance_to(bs.binding_coordinates)
-        return rotated_binding_vector, most_possible_binding_site_angle, length_center_to_binding_site
+                # NOTE we are not rotating atoms here as we are computing the distance which are not changed before/after rotation
+                # and we are using the original coordinates of the binding site, therefore the original coordinates of atoms would work
+                binding_atoms = bs.binding_atoms(list(self.hasGeometry)[0].hasPoints)
+                length_center_to_binding_atoms = center.get_distance_to(Point.centroid(binding_atoms))
+
+                # NOTE here we are adjusting the length from center to binding fragment (atoms) to account for the half bond length (covalent radius)
+                # although some of the binding site in the initial data already has additional length
+                # i.e. the dummy atom already away from the actually binding atoms
+                # we will compute on-the-fly to determine the suitable side length to be added
+                # beyond the distance between assembly center to the binding atoms
+                # NOTE TODO here we take the shortcut that we take the minimal covalent radius of the binding atoms as the half bond length
+                # NOTE TODO to improve it, one might want to also consider the angle between the two sets of binding sites
+                # NOTE TODO as the actual bond formed will be a projection of such added length
+                # NOTE it's generally easier to optimise the geometry if the molecules are too far compared to overlapping (see SI of 10.1021/jp507643v)
+                # NOTE so one could potentially add more distance to it to ensure there's no overlapping
+                length_center_to_binding = length_center_to_binding_atoms + min([cap.PERIODIC_TABLE.GetRcovalent(a.label) for a in binding_atoms])
+        return rotated_binding_vector, most_possible_binding_site_angle, length_center_to_binding
 
     def visualise(self, sparql_client = None):
         rows = []
@@ -829,14 +885,7 @@ class MetalOrganicPolyhedron(CoordinationCage):
             if gc1.instance_iri in rm_to_gbu:
                 # get the rotation matrix for the CBU, for the first GBU
                 rm = rm_to_gbu[gc1.instance_iri]
-                rotated_binding_vector_cbu1, vector_plane_angle_cbu1, side_length_cbu1 = cbu.vector_of_most_possible_binding_site(plane, rm)
-                # NOTE here we are adjusting the side length to account for the half bond length
-                # although some of the binding site in the initial data already has additional length
-                # i.e. the dummy atom already away from the actually binding atoms
-                # we still use the half bond length to adjust the side length
-                # as it's generally easier to optimise the geometry if the molecules are too far compared to overlapping (see SI of 10.1021/jp507643v)
-                # NOTE we only add half bond length to the organic site as the metal site would be added already
-                adjusted_side_length_cbu1 = side_length_cbu1 + HALF_BOND_LENGTH if not cbu.is_metal_cbu else side_length_cbu1
+                rotated_binding_vector_cbu1, vector_plane_angle_cbu1, adjusted_side_length_cbu1 = cbu.vector_of_most_possible_binding_site(plane, rm)
                 projected_adjusted_side_length_cbu1 = adjusted_side_length_cbu1 * np.cos(np.deg2rad(vector_plane_angle_cbu1))
                 projected_binding_vector_cbu1 = plane.get_projected_vector(rotated_binding_vector_cbu1)
                 _gbu_projected_cbu_angle_cbu1 = projected_binding_vector_cbu1.get_rad_angle_to(v_gbu1)
@@ -847,14 +896,7 @@ class MetalOrganicPolyhedron(CoordinationCage):
             elif gc2.instance_iri in rm_to_gbu:
                 # get the rotation matrix for the CBU, for the second GBU
                 rm = rm_to_gbu[gc2.instance_iri]
-                rotated_binding_vector_cbu2, vector_plane_angle_cbu2, side_length_cbu2 = cbu.vector_of_most_possible_binding_site(plane, rm)
-                # NOTE here we are adjusting the side length to account for the half bond length
-                # although some of the binding site in the initial data already has additional length
-                # i.e. the dummy atom already away from the actually binding atoms
-                # we still use the half bond length to adjust the side length
-                # as it's generally easier to optimise the geometry if the molecules are too far compared to overlapping (see SI of 10.1021/jp507643v)
-                # NOTE we only add half bond length to the organic site as the metal site would be added already
-                adjusted_side_length_cbu2 = side_length_cbu2 + HALF_BOND_LENGTH if not cbu.is_metal_cbu else side_length_cbu2
+                rotated_binding_vector_cbu2, vector_plane_angle_cbu2, adjusted_side_length_cbu2 = cbu.vector_of_most_possible_binding_site(plane, rm)
                 projected_adjusted_side_length_cbu2 = adjusted_side_length_cbu2 * np.cos(np.deg2rad(vector_plane_angle_cbu2))
                 projected_binding_vector_cbu2 = plane.get_projected_vector(rotated_binding_vector_cbu2)
                 _gbu_projected_cbu_angle_cbu2 = projected_binding_vector_cbu2.get_rad_angle_to(v_gbu2)

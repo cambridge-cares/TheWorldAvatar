@@ -12,6 +12,7 @@ from rdkit.Chem.rdmolfiles import MolFromXYZFile
 xyz_folder = "./data/xyz_mops_new"
 output_csv = "./data/xyz_mops_new/ogm_inner_diameter_new.csv"
 
+PERIODIC_TABLE = GetPeriodicTable()
 
 def outer_diameter(atoms: List[Point]):
     positions = np.array([atom.as_array for atom in atoms])
@@ -24,11 +25,10 @@ def largest_inner_sphere_diameter(atoms: List[Point]):
     centriod = Point.centroid(atoms)
 
     # find the atom that is closest to the centroid when subtracted covalent radius
-    periodic_table = GetPeriodicTable()
-    sorted_by_adjusted_distance = sorted(atoms, key = lambda x: centriod.get_distance_to(x) - periodic_table.GetRcovalent(x.label))
+    sorted_by_adjusted_distance = sorted(atoms, key = lambda x: centriod.get_distance_to(x) - PERIODIC_TABLE.GetRcovalent(x.label))
 
     # calculate the inner diameter as the adjusted distance, as well as the inner volume of the sphere
-    inner_radius = sorted_by_adjusted_distance[0].get_distance_to(centriod) - periodic_table.GetRcovalent(sorted_by_adjusted_distance[0].label)
+    inner_radius = sorted_by_adjusted_distance[0].get_distance_to(centriod) - PERIODIC_TABLE.GetRcovalent(sorted_by_adjusted_distance[0].label)
     inner_radius = max(0, inner_radius) # set it to 0 if it's negative (meaning the centroid is within distance of the atom's covalent radius)
     inner_diameter = inner_radius * 2
     inner_diameter_atom = sorted_by_adjusted_distance[0].label
@@ -42,11 +42,10 @@ def pore_size_diameter(atoms: List[Point], probing_vector: Vector):
     if not postive_atoms:
         return None
     # calculate the perpendicular distances of the atoms to the probing direction and sort them by the adjusted distance (subtracting covalent radius)
-    periodic_table = GetPeriodicTable()
-    sorted_by_adjusted_distance = sorted(postive_atoms, key = lambda x: x.get_distance_to_vector(probing_vector) - periodic_table.GetRcovalent(x.label))
-    pore_size = sorted_by_adjusted_distance[0].get_distance_to_vector(probing_vector) - periodic_table.GetRcovalent(sorted_by_adjusted_distance[0].label)
-    pore_size = max(0, pore_size) # set it to 0 if it's negative (meaning the vector is within distance of the atom's covalent radius)
-    return pore_size
+    sorted_by_adjusted_distance = sorted(postive_atoms, key = lambda x: x.get_distance_to_vector(probing_vector) - PERIODIC_TABLE.GetRcovalent(x.label))
+    pore_size = sorted_by_adjusted_distance[0].get_distance_to_vector(probing_vector) - PERIODIC_TABLE.GetRcovalent(sorted_by_adjusted_distance[0].label)
+    pore_size_diameter = max(0, pore_size) * 2 # set it to 0 if it's negative (meaning the vector is within distance of the atom's covalent radius)
+    return pore_size_diameter
 
 
 if __name__ == '__main__':
