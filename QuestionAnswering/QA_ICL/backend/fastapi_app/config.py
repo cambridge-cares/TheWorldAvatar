@@ -17,7 +17,7 @@ class RedisSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     host: str
-    port:str = 6379
+    port:int = 6379
 
 
 class TextEmbeddingSettingsTriton(BaseModel):

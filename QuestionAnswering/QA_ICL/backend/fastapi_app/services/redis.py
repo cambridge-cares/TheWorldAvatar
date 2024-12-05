@@ -9,7 +9,7 @@ from config import AppSettings, get_app_settings
 
 @cache
 def get_redis_client(settings: Annotated[AppSettings, Depends(get_app_settings)]):
-    return Redis(host=settings.redis.host, decode_responses=True)
+    return Redis(host=settings.redis.host, port=settings.redis.port,decode_responses=True)
 
 
 def get_index_existence(redis_client: Redis, index_name: str):
