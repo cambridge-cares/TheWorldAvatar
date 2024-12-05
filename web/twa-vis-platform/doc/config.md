@@ -361,6 +361,7 @@ As with sources, definitions of layers vary depending on the chosen mapping prov
 - `grouping` (optional): A grouping field for displaying only a subset of layers within this group.
 - `clickable` (optional): Enables the layer to be clickable. Set to true by default.
 - `hovering` (optional): Creates a highlight effect when hovering over the layer's features. This parameter is an array of two numbers indicating the opacity for the highlighted and non-highlighted states respectively.
+- `isLive` (optional): If set to true, layer will regularly update and repaint. Useful for live data
 
 ```json
 {
