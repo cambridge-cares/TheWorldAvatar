@@ -37,14 +37,15 @@ flowchart TD
     clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
 ```
 
-For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Default lines are relations between two classes, whereas dotted lines are relations between instances of one or more classes.
+For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Default lines are relations that involve at least one class, whereas dotted lines are relations between instances of one or more classes.
 
 ```mermaid
 flowchart LR
     subclass[SubClass] --> superclass[SuperClass]
     instance[[Instance]] -.-> clazz[Class]
-    Domain -- relation --> Range
-    domainInst[[Domain]] -. relation .-> rangeInst[[Range]]
+    domainClazz[Class] -- relation --> rangeClazz[Class]
+    domainInst[[Instance]] -- relation --> rangeClazz[Class]
+    domainInst -. relation .-> rangeInst[[Instance]]
 ```
 
 > Namespace Prefix
