@@ -22,17 +22,15 @@ public class PopulationMapper {
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             for (String populationTable : populationTables) {
                 try {
-                        String mapPopulation_sql="UPDATE isochrone_aggregated\n" +
+                        String mapPopulationSQL="UPDATE isochrone_aggregated\n" +
                                                 "SET "+populationTable+" = subquery.sum\n" +
-                                                "FROM (\n" +
-                                                "SELECT isochrone_aggregated.geom, SUM((ST_SummaryStats(ST_Clip("+populationTable+".rast, isochrone_aggregated.geom, TRUE))).sum) \n" +
+                                                "FROM (\nSELECT isochrone_aggregated.geom, " + 
+                                                "SUM((ST_SummaryStats(ST_Clip("+populationTable+".rast, isochrone_aggregated.geom, TRUE))).sum) \n" +
                                                 "FROM "+populationTable+", isochrone_aggregated\n" +
-                                                "GROUP BY isochrone_aggregated.geom\n" +
-                                                ") AS subquery\n" +
+                                                "GROUP BY isochrone_aggregated.geom\n) AS subquery\n" +
                                                 "WHERE subquery.geom = isochrone_aggregated.geom;";
-                        executeSql(connection, mapPopulation_sql);
+                        executeSql(connection, mapPopulationSQL);
                         System.out.println(populationTable+ "'s population sum successfully mapped with isochrone.");
-                    
                 } catch (Exception e) {
                     System.out.println(populationTable+ " unable to be mapped.");
                 }
@@ -69,10 +67,10 @@ public class PopulationMapper {
         }
     }
 
-    public void addPostgisRasterAndGDALDriver(RemoteRDBStoreClient remoteRDBStoreClient, String DBname) throws SQLException {
+    public void addPostgisRasterAndGDALDriver(RemoteRDBStoreClient remoteRDBStoreClient, String dbName) throws SQLException {
 
-        String sql= "ALTER DATABASE "+DBname+" SET postgis.enable_outdb_rasters = True;\n" +
-                "ALTER DATABASE "+DBname+" SET postgis.gdal_enabled_drivers = 'GTiff';";
+        String sql= "ALTER DATABASE "+dbName+" SET postgis.enable_outdb_rasters = True;\n" +
+                "ALTER DATABASE "+dbName+" SET postgis.gdal_enabled_drivers = 'GTiff';";
 
         try (Connection connection = remoteRDBStoreClient.getConnection()) {
             try (Statement statement = connection.createStatement()) {

@@ -9,7 +9,6 @@
         "help": true,
         "map": true,
         "dashboard": false,
-        "registry": false,
-        "scheduler": false
+        "registry": false
     }
 }

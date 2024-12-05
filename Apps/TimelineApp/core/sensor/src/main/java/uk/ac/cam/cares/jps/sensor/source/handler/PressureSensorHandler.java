@@ -38,7 +38,7 @@ public class PressureSensorHandler extends AbstractSensorHandler {
             values.put("pressure", event.values[0]);
 
             dataPoint.put("name", this.sensorName);
-            dataPoint.put("time", System.currentTimeMillis() * 1000000);
+            dataPoint.put("time", System.currentTimeMillis());
             dataPoint.put("values", values);
 
             synchronized (sensorDataLock) {

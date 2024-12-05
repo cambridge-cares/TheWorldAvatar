@@ -16,9 +16,14 @@ export default function StatusComponent(props: Readonly<StatusComponentProps>) {
 
   switch (props.status.toLowerCase()) {
     case "available":
+    case "completed":
       statusColor = "#52B7A5";
       break;
     case "unavailable":
+    case "cancelled":
+    case "incomplete":
+    case "rescinded":
+    case "terminated":
       statusColor = "#D7653D";
       break;
     default:

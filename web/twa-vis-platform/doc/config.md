@@ -47,7 +47,6 @@ The `config/ui-settings.json` file provides general settings for the platform. T
   - `dashboard`: REQUIRED. Displays the dashboard page if enabled
   - `help`: REQUIRED. Displays help page if enabled
   - `registry`: REQUIRED. Displays the registry page if enabled
-  - `scheduler`: REQUIRED. Displays the schedule page if enabled
 - `links`: optional configuration for adding or updating redirect links on the landing page. This configuration can overwrite the defaults for the map, dashboard, and help modules. It requires an `ARRAY` of the following JSON format:
   - `url`: REQUIRED. The url is either targeted at either an external or internal link. For internal link usage, please input `map`, `dashboard`, `help`, and `registry` accordingly.
   - `title`: REQUIRED. Thumbnail title on landing page. Optional for only internal links, which defaults to the default if not set.
@@ -64,12 +63,9 @@ Note that resources are optional and their configuration options can differ from
 - Scenario: Enables scenario selection in the `map` page
   - `url`: This is a required field that specifies the URL from which the scenarios and their settings can be retrieved. In this example, the URL points to a stack deployed on theworldavatar.io platform.
   - `data`: This required field indicates the target dataset that should be accessible to the user from the central stack. In the given example, the data field is set to "water", indicating that the scenario contains information only on water assets and not power nor telecoms etc.
-- Registry: Activate the `registry` page based on the backend resource indicated in the `url` parameter. The registry page provides a table for viewing all records, as well as pages to add, delete, edit, and view these records individually using a form UI.
+- Registry: Activate the `registry` page based on the backend resource indicated in the `url` parameter. The registry page provides a table for viewing all records within a lifecycle, as well as pages to add, delete, edit, and view these records individually using a form UI.
   - `url`: The registry agent endpoint (close it with /), which should be able to generate a form template, csv template, and retrieve data from the knowledge graph. The form template for generating the form UI must follow the template listed in [this document](form.md).
   - `data`: The entity of interest that acts as the first landing page for the registry. This should be `contract` at the moment.
-- Scheduler: Enables `scheduler` capabilities based on the backend resource indicated in the `url` parameter. These capabilities require that registry is also activated, and will have additional functionalities to schedule from the frontend.
-  - `url`: The scheduler agent endpoint (close it with /), which should have a `schedule` route for scheduling purposes
-  - `data`: The entity of interest that acts as the page with scheduling capabilities. This should be `service` at the moment.
 
 Below is an example of the contents for a valid `ui-settings.json` file with additional comments explaining each entry. The format of the file should be consistent whether implementing mapbox or cesium maps.
 
@@ -92,7 +88,6 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
     "dashboard": false, // Should the analytics page be enabled
     "map": true, // Should the map page be enabled
     "registry": false, // Should the registry page be enabled
-    "scheduler": false // Should the scheduler capabilities be enabled
   },
   "links": [
     {
@@ -109,10 +104,6 @@ Below is an example of the contents for a valid `ui-settings.json` file with add
     "registry": {
       "url": "http://sample.org/agent/", // Edit registry agent's API here
       "data": "type" // Specify only the type to reach the registry page of interest
-    },
-    "scheduler": {
-      "url": "http://sample.org/schedule-agent/", // Edit scheduler agent's API here
-      "data": "type" // Specify only the type to reach the registry page of interest with scheduling
     },
     "scenario": {
       "url": "https://theworldavatar.io/demos/credo-ofwat/central/CentralStackAgent", // Edit scenario url here

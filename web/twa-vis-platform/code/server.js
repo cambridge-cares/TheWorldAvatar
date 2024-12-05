@@ -20,6 +20,7 @@ import session, { MemoryStore } from 'express-session';
 import { createClient } from "redis"
 import RedisStore from 'connect-redis';
 import Keycloak from 'keycloak-connect';
+import axios from 'axios';
 
 const colourReset = "\x1b[0m";
 const colourRed = "\x1b[31m";
@@ -48,75 +49,107 @@ let store;
 
 // Prepare the Next.js application and then start the Express server
 app.prepare().then(() => {
-  const server = express();
+    const server = express();
 
-  if (keycloakEnabled) { // do keycloak auth stuff if env var is set
-    console.info('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colourYellow : colourRed, process.env.PROTECTED_PAGES, colourReset)
-    console.info('the following pages require the', process.env.ROLE ? colourYellow : colourRed, process.env.ROLE, colourReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colourYellow : colourRed, process.env.ROLE_PROTECTED_PAGES, colourReset)
+    if (keycloakEnabled) { // do keycloak auth stuff if env var is set
+        console.info('the following pages require keycloak authentication', process.env.PROTECTED_PAGES ? colourYellow : colourRed, process.env.PROTECTED_PAGES, colourReset)
+        console.info('the following pages require the', process.env.ROLE ? colourYellow : colourRed, process.env.ROLE, colourReset, 'role: ', process.env.ROLE_PROTECTED_PAGES ? colourYellow : colourRed, process.env.ROLE_PROTECTED_PAGES, colourReset)
 
-    server.set('trust proxy', true); // the client’s IP address is understood as the left-most entry in the X-Forwarded-For header.
+        server.set('trust proxy', true); // the client’s IP address is understood as the left-most entry in the X-Forwarded-For header.
 
-    if (!dev) {
-      let redisClient;
-      console.info(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourGreen, `${redisHost}:${redisPort}`, colourReset);
-      try {
-        redisClient = createClient({
-          socket: {
-            host: redisHost,
-            port: redisPort
-          }
+        if (!dev) {
+            let redisClient;
+            console.info(`development mode is:`, colourGreen, dev, colourReset, `-> connecting to redis session store at`, colourGreen, `${redisHost}:${redisPort}`, colourReset);
+            try {
+                redisClient = createClient({
+                    socket: {
+                        host: redisHost,
+                        port: redisPort
+                    }
+                });
+            } catch (error) {
+                console.info('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container');
+                console.error(error);
+            }
+            redisClient.connect().catch('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container', console.error);
+            store = new RedisStore({
+                client: redisClient,
+                prefix: "redis",
+                ttl: undefined,
+            });
+        } else {
+            store = new MemoryStore(); // use in-memory store for session data in dev mode
+            console.info(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
+        }
+
+        server.use(
+            session({
+                secret: 'login',
+                resave: false,
+                saveUninitialized: true,
+                store: store,
+            })
+        );
+
+        const keycloak = new Keycloak({ store: store });
+        server.use(keycloak.middleware());
+
+        server.get('/api/userinfo', keycloak.protect(), (req, res) => {
+            const { preferred_username: userName, given_name: firstName, family_name: lastName, name: fullName, realm_access: { roles }, resource_access: clientRoles } = req.kauth.grant.access_token.content;
+            res.json({ userName, firstName, lastName, fullName, roles, clientRoles });
         });
-      } catch (error) {
-        console.info('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container');
-        console.error(error);
-      }
-      redisClient.connect().catch('Error while creating Redis Client, please ensure that Redis is running and the host is specified as an environment variable if this viz app is in a Docker container', console.error);
-      store = new RedisStore({
-        client: redisClient,
-        prefix: "redis",
-        ttl: undefined,
-      });
-    } else {
-      store = new MemoryStore(); // use in-memory store for session data in dev mode
-      console.info(`development mode is:`, dev ? colourYellow : colourRed, dev, colourReset, `-> using in-memory session store (express-session MemoryStore())`);
+
+        const protectedPages = process.env.PROTECTED_PAGES.split(',');
+        protectedPages.forEach(page => {
+            server.get(page, keycloak.protect());
+        });
+        const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
+        roleProtectedPages.forEach(page => {
+            server.get(page, keycloak.protect(process.env.ROLE));
+            console.info('protecting page', page, 'with role', process.env.ROLE);
+        });
+
+        const useGeoServerProxy = process.env.REACT_APP_USE_GEOSERVER_PROXY === 'true';
+        console.info('REACT_APP_USE_GEOSERVER_PROXY is ' + useGeoServerProxy);
+
+        if (useGeoServerProxy) {
+            console.info('Server URL REACT_APP_SERVER_URL is ' + process.env.REACT_APP_SERVER_URL);
+            console.info('GeoServer requests from MapBox will be sent to ' + process.env.REACT_APP_SERVER_URL + '/geoserver-proxy')
+            server.get('/geoserver-proxy', keycloak.protect(), async (req, res) => {
+                const targetUrl = req.query.url;
+                let headers = { ...req.headers };
+
+                if (req.kauth?.grant) {
+                    headers['Authorization'] = 'Bearer ' + req.kauth.grant.access_token.token;
+                }
+
+                try {
+                    // Forward the request to the target URL with the modified headers
+                    const response = await axios({
+                        url: targetUrl,
+                        method: req.method,
+                        headers: headers,
+                        responseType: 'stream', // To stream the response back
+                    });
+
+                    // Pipe the response back to the client
+                    response.data.pipe(res);
+                } catch (err) {
+                    // most of these errors can probably be ignored
+                    console.error(err);
+                }
+            });
+        }
     }
 
-    server.use(
-      session({
-        secret: 'login',
-        resave: false,
-        saveUninitialized: true,
-        store: store,
-      })
-    );
-
-    const keycloak = new Keycloak({ store: store });
-    server.use(keycloak.middleware());
-
-    server.get('/api/userinfo', keycloak.protect(), (req, res) => {
-      const { preferred_username: userName, given_name: firstName, family_name: lastName, name: fullName, realm_access: { roles }, resource_access: clientRoles } = req.kauth.grant.access_token.content;
-      res.json({ userName, firstName, lastName, fullName, roles, clientRoles });
+    // Handle all other requests using Next.js
+    server.all("*", (req, res) => {
+        return handle(req, res);
     });
 
-    const protectedPages = process.env.PROTECTED_PAGES.split(',');
-    protectedPages.forEach(page => {
-      server.get(page, keycloak.protect());
+    // Start listening on the specified port and log server status
+    server.listen(port, (err) => {
+        if (err) throw err;
+        console.info('Running at', colourGreen, `http://localhost:${port}${colourReset}`, `(on host / inside container). Development mode :${dev ? colourYellow : colourGreen}`, dev, colourReset);
     });
-    const roleProtectedPages = process.env.ROLE_PROTECTED_PAGES.split(',');
-    roleProtectedPages.forEach(page => {
-      server.get(page, keycloak.protect(process.env.ROLE));
-      console.info('protecting page', page, 'with role', process.env.ROLE);
-    });
-  }
-
-  // Handle all other requests using Next.js
-  server.all("*", (req, res) => {
-    return handle(req, res);
-  });
-
-  // Start listening on the specified port and log server status
-  server.listen(port, (err) => {
-    if (err) throw err;
-    console.info('Running at', colourGreen, `http://localhost:${port}${colourReset}`,`(on host / inside container). Development mode :${dev ? colourYellow : colourGreen}`, dev, colourReset);
-  });
 });

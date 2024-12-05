@@ -17,6 +17,9 @@ interface FormSelectorProps {
   styles?: {
     label?: string[],
   };
+  options?: {
+    disabled?: boolean;
+  };
 }
 
 /**
@@ -165,6 +168,7 @@ export default function FormSelector(props: Readonly<FormSelectorProps>) {
               isLoading={false}
               isMulti={false}
               isSearchable={true}
+              isDisabled={props.options?.disabled}
             />
           )}
         />

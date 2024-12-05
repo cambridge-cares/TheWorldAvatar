@@ -54,7 +54,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
     @Override
     public void start(Integer samplingRate) {
         sensorManager.registerListener(this, sensor, samplingRate);
-        startTime = System.currentTimeMillis() * 1000000;
+        startTime = System.currentTimeMillis();
         isRunning = true;
     }
 
@@ -102,7 +102,7 @@ public abstract class AbstractSensorHandler implements SensorHandler, SensorEven
             values.put("z", event.values[2]);
 
             dataPoint.put("name", this.sensorName);
-            dataPoint.put("time", System.currentTimeMillis() * 1000000);
+            dataPoint.put("time", System.currentTimeMillis());
             dataPoint.put("values", values);
 
             synchronized (sensorDataLock) {
