@@ -1,0 +1,28 @@
+@startuml
+database "Blazegraph\nservers" as bg
+interface "SPARQL\nprotocol" as sparql
+bg -right- sparql
+
+component "Backend" {
+  [Triton\ninference\nserver] as triton
+  interface "gRPC" as grpc
+  triton -up- grpc
+
+  [Redis] as redis
+  interface "RESP" as resp
+  redis -up- resp
+
+  [FastAPI app] as fastapi
+  fastapi -right-( sparql
+  fastapi -down-( grpc
+  fastapi -down-( resp
+  interface "HTTP" as http
+  fastapi -up- http
+
+  port " " as p
+  p -right-( http
+}
+
+[Next.js app] as nextapp
+nextapp -down- p
+@enduml

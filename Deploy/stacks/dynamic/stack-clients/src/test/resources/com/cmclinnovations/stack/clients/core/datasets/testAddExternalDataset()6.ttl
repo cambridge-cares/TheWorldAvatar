@@ -31,7 +31,7 @@
                 "2024-05-30T15:44:10.333Z"^^xsd:dateTime , "2024-05-30T15:44:10.269Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
                 "testDataset";
-        <http://www.w3.org/ns/dcat#catalog>
+        <http://purl.org/dc/terms/references>
                 <https://theworldavatar.io/kg/46b23c07-cacd-4fe9-9d06-c22fe68e644b> , <https://theworldavatar.io/kg/83e8fd4d-1095-47c7-bcdd-69447c22f194> .
 
 <https://theworldavatar.io/kg/46b23c07-cacd-4fe9-9d06-c22fe68e644b>
@@ -55,7 +55,7 @@
                 "2024-05-30T15:44:10.433Z"^^xsd:dateTime;
         <http://purl.org/dc/terms/title>
                 "testDataset3";
-        <http://www.w3.org/ns/dcat#catalog>
+        <http://purl.org/dc/terms/references>
                 <https://theworldavatar.io/kg/83e8fd4d-1095-47c7-bcdd-69447c22f194> , <https://theworldavatar.io/kg/fc4e721e-d2af-4b65-8009-e4e2422b470a> .
 
 <https://theworldavatar.io/kg/83e8fd4d-1095-47c7-bcdd-69447c22f194>

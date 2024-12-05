@@ -13,10 +13,17 @@ services:
       WATCHPACK_POLLING: true
       UUID: 1000 # or your user. Run `id` in bash to find out these two
       GUID: 1000 # or your guid. This is so you own node modules that the container makes on your host machine
+
       KEYCLOAK: false ## whether or not to use kc authentication on the server
-      PROTECTED_PAGES: page,/otherpage ## pages that a user must be logged in to see
-      ROLE_PROTECTED_PAGES: /role,/protected,/pages ## pages that require a user to have a given REALM or CLIENT role
-      ROLE: viz:protected ## the role required for the above list
+      PROTECTED_PAGES: / ## pages that a user must be logged in to see
+      ROLE_PROTECTED_PAGES: /add/* ## pages that require a user to have a given REALM or CLIENT role
+      ROLE: protected ## the role required for the above list
+      REACT_APP_USE_GEOSERVER_PROXY: false
+      REACT_APP_SERVER_URL: http://localhost:3000 # only applicable for REACT_APP_USE_GEOSERVER_PROXY = true
+      MAPBOX_USERNAME: 
+      MAPBOX_API_KEY:
+
+      REDIS_HOST: host.docker.internal
     secrets:
       - mapbox_username
       - mapbox_api_key
@@ -29,6 +36,8 @@ services:
         description: "Development environment for TWA Visualisation Platform image."
     volumes:
       - ./code:/twa/
+      - /twa/node_modules/
+      - /twa/.next/      
     ports:
       - "3000:3000" 
 secrets:

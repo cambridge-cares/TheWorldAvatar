@@ -1,0 +1,43 @@
+{
+    "ServiceSpec": {
+        "Name": "geoserver-jwt-proxy",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/geoserver-jwt-proxy:1.0",
+                "Env": [
+                    "VIEWPARAM_NAME=user_id",
+                    "KEYCLOAK_SERVER=http://timeline-test-keycloak:8080/keycloak",
+                    "KEYCLOAK_REALM=timeline"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "isochroneagent": {
+            "url": "http://localhost:8080/GeoServerJwtProxy/",
+            "externalPath": "/geoserver-jwt-proxy/"
+        }
+    }
+}

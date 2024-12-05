@@ -15,7 +15,7 @@
         <http://cmcl.io/rdfs#label>  "Hello"^^<http://cmcl.io/xsd#string> .
 
 <https://theworldavatar.io/kg/2392a385-be18-4c8b-9562-fe04ee6a3295>
-        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox>;
+        rdf:type  <http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#TBox> , <http://www.w3.org/ns/dcat#Catalog>;
         <http://purl.org/dc/terms/description>
                 "Dataset for testing";
         <http://purl.org/dc/terms/issued>

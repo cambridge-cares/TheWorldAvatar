@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="host_with_port"></string>
+
+    <string name="trajectoryqueryagent_createLayer">trajectoryqueryagent/createLayer</string>
+    <string name="trajectoryqueryagent_getDatesWithData">trajectoryqueryagent/getDatesWithData</string>
+    <string name="useragent_registerphone">user-agent/registerPhone</string>
+    <string name="geoserver_jwt_proxy_geoserver_twa_wfs">geoserver-jwt-proxy/geoserver/twa/wfs</string>
+    <string name="sensorloggeragent_update">sensorloggermobileappagent/update</string>
+</resources>

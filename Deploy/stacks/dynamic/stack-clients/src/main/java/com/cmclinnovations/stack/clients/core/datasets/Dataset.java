@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.rdf4j.model.vocabulary.DCAT;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
@@ -47,7 +49,7 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty("externalDatasets")
     private final Optional<List<String>> externalDatasetNames;
     @JsonIgnore
-    private final List<Dataset> externalDatasets = new ArrayList<>();
+    private final List<Dataset> referencedDatasets = new ArrayList<>();
     @JsonProperty
     private final Optional<List<DataSubset>> dataSubsets;
 
@@ -59,6 +61,9 @@ public class Dataset extends AbstractDataObject {
     @JsonProperty("mappings")
     private final Optional<List<String>> ontopMappings;
 
+    @JsonProperty("ontologyDatasets")
+    private final Optional<List<String>> ontologyDatasetNames;
+
     @JsonProperty
     private final Optional<String> rdfType;
     @JsonProperty
@@ -66,6 +71,9 @@ public class Dataset extends AbstractDataObject {
 
     @JsonProperty
     private final Optional<Metadata> additionalMetadata;
+
+    @JsonProperty
+    private final Optional<List<String>> rules;
 
     @JsonCreator
     Dataset() {
@@ -79,6 +87,8 @@ public class Dataset extends AbstractDataObject {
         this.geoserverStyles = Optional.empty();
         this.staticGeoServerData = Optional.empty();
         this.ontopMappings = Optional.empty();
+        this.rules = Optional.empty();
+        this.ontologyDatasetNames = Optional.empty();
         this.rdfType = Optional.empty();
         this.baseIRI = Optional.empty();
         this.additionalMetadata = Optional.empty();
@@ -98,6 +108,8 @@ public class Dataset extends AbstractDataObject {
             Optional<List<GeoServerStyle>> geoserverStyles,
             Optional<StaticGeoServerData> staticGeoServerData,
             Optional<List<String>> ontopMappings,
+            Optional<List<String>> rules,
+            Optional<List<String>> ontologyDatasetNames,
             boolean skip,
             Optional<String> rdfType,
             Optional<String> baseIRI,
@@ -113,6 +125,8 @@ public class Dataset extends AbstractDataObject {
         this.geoserverStyles = geoserverStyles;
         this.staticGeoServerData = staticGeoServerData;
         this.ontopMappings = ontopMappings;
+        this.rules = rules;
+        this.ontologyDatasetNames = ontologyDatasetNames;
         this.rdfType = rdfType;
         this.baseIRI = baseIRI;
         this.additionalMetadata = metadataRDF;
@@ -178,6 +192,19 @@ public class Dataset extends AbstractDataObject {
         return ontopMappings.orElse(Collections.emptyList());
     }
 
+    public List<String> getRules() {
+        return rules.orElse(Collections.emptyList());
+    }
+
+    public List<String> getOntologyDatasetNames() {
+        return ontologyDatasetNames.orElse(Collections.emptyList());
+    }
+
+    public List<String> getReferencedDatasetNames() {
+        return Stream.concat(getExternalDatasetNames().stream(), getOntologyDatasetNames().stream())
+                .collect(Collectors.toList());
+    }
+
     public StaticGeoServerData getStaticGeoServerData() {
         return staticGeoServerData.get();
     }
@@ -190,12 +217,12 @@ public class Dataset extends AbstractDataObject {
         return Rdf.iri(rdfType.orElse(DCAT.CATALOG.stringValue()));
     }
 
-    public void addExternalDataset(Dataset dataset) {
-        externalDatasets.add(dataset);
+    public void addReferencedDataset(Dataset dataset) {
+        referencedDatasets.add(dataset);
     }
 
-    public List<Dataset> getExternalDatasets() {
-        return externalDatasets;
+    public List<Dataset> getReferencedDatasets() {
+        return referencedDatasets;
     }
 
     public Metadata getAdditionalMetadata() {

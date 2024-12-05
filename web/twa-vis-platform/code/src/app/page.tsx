@@ -8,9 +8,9 @@ import { redirect } from 'next/navigation';
 
 import LandingPage from 'ui/pages/landing';
 import OptionalPages from 'io/config/optional-pages';
-import { PathNames } from 'io/config/routes';
+import { Paths } from 'io/config/routes';
 import SettingsStore from 'io/config/settings';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 
 /**
  * Set page metadata.
@@ -37,12 +37,12 @@ export async function generateMetadata(): Promise<Metadata> {
  * @returns JSX for default (home) page.
  */
 export default function App() {
-  const uiSettings: DefaultSettings = JSON.parse(SettingsStore.getDefaultSettings());
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   if (uiSettings.modules.landing) {
     return (<LandingPage
       settings={uiSettings}
     />);
   } else {
-    redirect(PathNames.MAP);
+    redirect(Paths.MAP);
   }
 }

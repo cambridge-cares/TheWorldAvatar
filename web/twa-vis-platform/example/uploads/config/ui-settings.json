@@ -1,11 +1,14 @@
 {
     "branding": {
-        "logo": "./images/whatever.svg",
-        "navbarLogo": "./images/defaults/navbar-logo.svg"
+        "navbar": ["/images/defaults/navbar-logo.svg"],
+        "landing": ["/images/defaults/icons/twa.svg"],
+        "landingDark": ["/images/defaults/icons/twa.svg"]
     },
     "modules": {
         "landing": true,
         "help": true,
-        "map": true
+        "map": true,
+        "dashboard": false,
+        "registry": false
     }
 }

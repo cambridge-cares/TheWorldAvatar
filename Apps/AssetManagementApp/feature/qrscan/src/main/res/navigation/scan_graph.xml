@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scan_navigation"
+    app:startDestination="@id/scan">
+
+    <fragment
+        android:id="@+id/scan"
+        android:name="uk.ac.cam.cares.jps.qrscan.ui.ScanFragment"
+        android:label="Scan Fragment"
+        tools:layout="@layout/fragment_scan">
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/scan_page" />
+    </fragment>
+
+
+
+</navigation>

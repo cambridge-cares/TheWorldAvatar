@@ -67,7 +67,7 @@ public class AgentCallerTest {
     @Test
     public void testexecutePost() {
 
-        String path = "https://www.example.com/index.html" ;
+        String path = "https://httpbin.org/post" ;
         String body = "test" ;
         String res = AgentCaller.executePost(path,body) ;
         assertNotNull(res);

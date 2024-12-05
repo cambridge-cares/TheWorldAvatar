@@ -22,6 +22,7 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
 @WebServlet(urlPatterns = { ShipInputAgent.UPDATE_PATH, ShipInputAgent.LIVE_SERVER_PATH,
         ShipInputAgent.CLEAR_OLD_DATA_PATH, ShipInputAgent.LOAD_RDB_PATH }, loadOnStartup = 1)
@@ -39,7 +40,8 @@ public class ShipInputAgent extends HttpServlet {
     public void init() throws ServletException {
         EndpointConfig endpointConfig = new EndpointConfig();
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(storeClient, Instant.class);
+        TimeSeriesRDBClientWithReducedTables<Instant> timeSeriesRdbClient = new TimeSeriesRDBClientWithReducedTables<>(Instant.class);
+        TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(storeClient, timeSeriesRdbClient);
         DerivationClient derivationClient = new DerivationClient(storeClient, QueryClient.PREFIX);
         RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());

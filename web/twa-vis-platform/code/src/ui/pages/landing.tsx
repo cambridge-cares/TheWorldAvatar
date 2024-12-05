@@ -8,11 +8,12 @@ import styles from './landing.module.css';
 import markdownit from 'markdown-it';
 import React from 'react';
 
+import { Assets } from 'io/config/assets';
 import OptionalPages, { OptionalPage } from 'io/config/optional-pages';
-import { Routes } from 'io/config/routes';
+import { Modules, Routes } from 'io/config/routes';
 import LandingImage from 'ui/graphic/image/landing';
 import { DefaultPageThumbnail, DefaultPageThumbnailProps, MarkdownPageThumbnail } from './page-thumbnail';
-import { DefaultSettings } from 'types/settings';
+import { UISettings } from 'types/settings';
 
 // Utilities to render markdown into HTML
 const markdowner = markdownit({
@@ -23,7 +24,7 @@ const markdowner = markdownit({
 });
 
 interface LandingPageProps {
-  settings: DefaultSettings,
+  settings: UISettings,
 }
 
 /**
@@ -36,9 +37,11 @@ interface LandingPageProps {
 export default function LandingPage(props: Readonly<LandingPageProps>) {
   // CSS class names
   const introClasses = ["markdown-body", styles.introInner].join(" ");
-  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "dashboard");
-  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "help");
-  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === "map");
+  // Retrieve links
+  const dashboardLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.DASHBOARD);
+  const helpLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.HELP);
+  const mapLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.MAP);
+  const registryLinkProps: DefaultPageThumbnailProps = props.settings.links?.find(link => link.url === Modules.REGISTRY);
 
   return (
     <div className={styles.container}>
@@ -53,15 +56,16 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
 
       <div className={`${styles.thumbnailContainer} hidden-scrollbar`}>
         {props.settings.branding.landing && (<LandingImage
-          lightUrl={props.settings.branding.landing}
-          darkUrl={props.settings.branding.landingDark}
+          lightUrl={props.settings.branding?.landing}
+          darkUrl={props.settings.branding?.landingDark}
         />)}
         {getThumbnails()}
+
         {props.settings.modules.map && (
           <DefaultPageThumbnail
             title={mapLinkProps?.title ?? "Explore"}
             caption={mapLinkProps?.caption ?? "Discover geospatial relationships in our environment"}
-            icon={mapLinkProps?.icon ?? "./images/defaults/icons/map.svg"}
+            icon={mapLinkProps?.icon ?? Assets.MAP}
             url={Routes.MAP}
           />
         )}
@@ -69,20 +73,28 @@ export default function LandingPage(props: Readonly<LandingPageProps>) {
           <DefaultPageThumbnail
             title={dashboardLinkProps?.title ?? "Analyse"}
             caption={dashboardLinkProps?.caption ?? "Discover trends and insights at a glance"}
-            icon={dashboardLinkProps?.icon ?? "./images/defaults/icons/dash.svg"}
+            icon={dashboardLinkProps?.icon ?? Assets.DASHBOARD}
             url={Routes.DASHBOARD}
+          />
+        )}
+        {props.settings.modules.registry && (
+          <DefaultPageThumbnail
+            title={registryLinkProps?.title ?? "Registry"}
+            caption={registryLinkProps?.caption ?? "Manage and view your records"}
+            icon={registryLinkProps?.icon ?? Assets.REGISTRY}
+            url={`${Routes.REGISTRY_PENDING}/${props.settings.resources?.registry?.data}`}
           />
         )}
 
         <DefaultPageThumbnail
           title={helpLinkProps?.title ?? "Help Centre"}
           caption={helpLinkProps?.caption ?? "Get help for this web platform"}
-          icon={helpLinkProps?.icon ?? "./images/defaults/icons/help.svg"}
+          icon={helpLinkProps?.icon ?? Assets.HELP}
           url={Routes.HELP}
         />
 
         {props.settings.links?.map((externalLink, index) => {
-          if (!["map", "dashboard", "help"].includes(externalLink.url)) {
+          if (![Modules.MAP, Modules.DASHBOARD, Modules.HELP, Modules.REGISTRY].includes(externalLink.url)) {
             return <DefaultPageThumbnail
               key={externalLink.title + index}
               title={externalLink.title}

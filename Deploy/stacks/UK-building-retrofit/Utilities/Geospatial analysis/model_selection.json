@@ -1,0 +1,7 @@
+{
+    "_comment": "Model options for spatial_matrix_type are 'knn', 'gaussian', 'fixed_distance', 'kernel'. Just replace the keyword" ,
+    "spatial_matrix_type": "knn",  
+    "k": 8,  
+    "distance_threshold": 10000,
+    "output_file": "/your_local_path/output_results_with_hotspots.csv" 
+}

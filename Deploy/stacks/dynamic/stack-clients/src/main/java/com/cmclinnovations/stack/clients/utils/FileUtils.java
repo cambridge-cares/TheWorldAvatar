@@ -19,6 +19,8 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.base.Preconditions;
+
 public final class FileUtils {
 
     private FileUtils() {
@@ -144,5 +146,12 @@ public final class FileUtils {
 
     public static boolean hasFileExtension(Path file, String extension) {
         return file.toString().endsWith("." + extension);
+    }
+
+    public static void checkPathIsRelative(String path, String fieldName) {
+        Preconditions.checkArgument(!path.startsWith("/"),
+                "The field '" + fieldName + "' must be a relative path, '%s' provided.", path);
+        Preconditions.checkArgument(!path.isBlank(),
+                "The field '" + fieldName + "' must not be blank, '%s' provided.", path);
     }
 }

@@ -30,6 +30,10 @@ class DatasetBuilder {
 
     private List<String> ontopMappings;
 
+    private List<String> rules;
+
+    private List<String> ontologyDatasetNames;
+
     private StaticGeoServerData staticGeoServerData;
 
     private String rdfType;
@@ -94,6 +98,16 @@ class DatasetBuilder {
         return this;
     }
 
+    public DatasetBuilder withRules(List<String> rules) {
+        this.rules = rules;
+        return this;
+    }
+
+    public DatasetBuilder withOntologyDataset(List<String> ontologyDatasetNames) {
+        this.ontologyDatasetNames = ontologyDatasetNames;
+        return this;
+    }
+
     public DatasetBuilder withStaticGeoServerData(StaticGeoServerData staticGeoServerData) {
         this.staticGeoServerData = staticGeoServerData;
         return this;
@@ -119,7 +133,8 @@ class DatasetBuilder {
                 Optional.ofNullable(database), Optional.ofNullable(namespace), Optional.ofNullable(workspaceName),
                 Optional.ofNullable(externalDatasetNames), Optional.ofNullable(dataSubsets),
                 Optional.ofNullable(geoserverStyles), Optional.ofNullable(staticGeoServerData),
-                Optional.ofNullable(ontopMappings), false, Optional.ofNullable(rdfType),
+                Optional.ofNullable(ontopMappings), Optional.ofNullable(rules),
+                Optional.ofNullable(ontologyDatasetNames), false, Optional.ofNullable(rdfType),
                 Optional.ofNullable(baseIRI), Optional.ofNullable(metadataRDF), services);
     }
 
@@ -146,13 +161,15 @@ class DatasetBuilder {
                 Optional<List<GeoServerStyle>> geoserverStyles,
                 Optional<StaticGeoServerData> staticGeoServerData,
                 Optional<List<String>> ontopMappings,
+                Optional<List<String>> rules,
+                Optional<List<String>> ontologyDatasetNames,
                 boolean skip,
                 Optional<String> rdfType,
                 Optional<String> baseIRI,
                 Optional<Metadata> metadataRDF, List<Service> services) {
             super(name, description, datasetDirectory, database, namespace, workspaceName, externalDatasetNames,
-                    dataSubsets, geoserverStyles, staticGeoServerData, ontopMappings, skip, rdfType, baseIRI,
-                    metadataRDF);
+                    dataSubsets, geoserverStyles, staticGeoServerData, ontopMappings, rules,
+                    ontologyDatasetNames, skip, rdfType, baseIRI, metadataRDF);
             this.services = services;
         }
 
@@ -177,5 +194,5 @@ class DatasetBuilder {
             return services.contains(Service.ONTOP) || super.usesOntop();
         }
 
-    };
+    }
 }

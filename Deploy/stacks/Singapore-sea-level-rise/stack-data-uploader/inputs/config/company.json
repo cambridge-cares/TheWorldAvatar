@@ -1,0 +1,188 @@
+{
+  "database": "postgres",
+  "workspace": "twa",
+  "skip": false,
+  "datasetDirectory": "companies",
+  "namespace": "kb",
+  "dataSubsets": [
+    {
+      "type": "vector",
+      "table": "data_centres",
+      "skip": false,
+      "subdirectory": "data_centres",
+      "sql": "@/inputs/config/data_centres.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "chemicals",
+      "skip": false,
+      "subdirectory": "chemicals",
+      "sql": "@/inputs/config/chemicals.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "food_beverages",
+      "skip": false,
+      "subdirectory": "food_beverages",
+      "sql": "@/inputs/config/food_beverages.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "semiconductors",
+      "skip": false,
+      "subdirectory": "semiconductors",
+      "sql": "@/inputs/config/semiconductors.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "pharmaceuticals",
+      "skip": false,
+      "subdirectory": "pharmaceuticals",
+      "sql": "@/inputs/config/pharmaceuticals.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "precision_engineering",
+      "skip": false,
+      "subdirectory": "precision_engineering",
+      "sql": "@/inputs/config/precision_engineering.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "printing",
+      "skip": false,
+      "subdirectory": "printing",
+      "sql": "@/inputs/config/printing.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:4326",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "longitude",
+          "Y_POSSIBLE_NAMES": "latitude"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "jurong_island_city_furniture",
+      "skip": false,
+      "subdirectory": "jurong_island_city_furniture",
+      "sql": "@/inputs/config/jurong_island_city_furniture.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:24500",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "lon_epsg_24500",
+          "Y_POSSIBLE_NAMES": "lat_epsg_24500"
+        }
+      }
+    },
+    {
+      "type": "vector",
+      "table": "jurong_island_buildings",
+      "skip": false,
+      "subdirectory": "jurong_island_buildings",
+      "sql": "@/inputs/config/jurong_island_buildings.sql",
+      "ogr2ogrOptions": {
+        "sridIn": "EPSG:24500",
+        "layerCreationOptions": {
+          "schema": "public"
+        },
+        "inputDatasetOpenOptions": {
+          "DIM": 2,
+          "EMPTY_STRING_AS_NULL": "YES",
+          "X_POSSIBLE_NAMES": "lon_epsg_24500",
+          "Y_POSSIBLE_NAMES": "lat_epsg_24500"
+        }
+      }
+    },
+    {
+      "type": "rdf",
+      "skip": "false",
+      "subdirectory": "tbox"
+    }
+  ],
+  "mappings": [
+    "company.obda"
+  ]
+}

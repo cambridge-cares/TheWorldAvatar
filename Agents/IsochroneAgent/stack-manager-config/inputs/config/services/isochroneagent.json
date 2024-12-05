@@ -3,7 +3,7 @@
         "Name": "isochroneagent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/isochroneagent:1.3.0",
+                "Image": "ghcr.io/cambridge-cares/isochroneagent:1.5.0",
                 "Mounts": [
                     {
                         "Type": "bind",
