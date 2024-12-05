@@ -15,7 +15,7 @@ export interface NavbarComponentProps {
   icon: string,
   url: string,
   active?: boolean,
-  callback?: (name: string) => void
+  callback?: (_name: string) => void
 }
 
 /**

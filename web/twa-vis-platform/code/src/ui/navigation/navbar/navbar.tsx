@@ -3,45 +3,30 @@
 import styles from './navbar.module.css';
 
 import { useSelector } from 'react-redux';
+import Link from 'next/link';
+import KeycloakSession from 'authorisation/keycloak-session';
 
 import { Routes } from 'io/config/routes';
 import { selectItem } from 'state/context-menu-slice';
+import { UISettings } from 'types/settings';
 import IconComponent from 'ui/graphic/icon/icon';
 import { navbarItem } from 'ui/interaction/context-menu/context-menu';
 import NavbarComponent from './navbar-component';
-import Link from 'next/link';
-import KeycloakSession from 'authorisation/keycloak-session';
-// import KeycloakSession from './keycloak-session';
 
 // Type definition for navbar properties
 interface NavbarProps {
-  showLanding?: boolean,
-  showMap?: boolean,
-  showDash?: boolean,
-  showHelp?: boolean,
-  navbarLogo?: string
+  settings: UISettings;
 }
-
-// Default values for navbar properties
-const defaultProps: NavbarProps = {
-  showLanding: true,
-  showMap: true,
-  showDash: true,
-  showHelp: true,
-  navbarLogo: null
-};
 
 /**
  * Represents the top level navigation bar, that loads a number of 
  * custom navbar components.
  */
 export default function Navbar(props: Readonly<NavbarProps>) {
+  const keycloakEnabled = process.env.KEYCLOAK === 'true';
 
   // Visibility state of navigation bar
   const navbarState = useSelector(selectItem(navbarItem.name));
-
-  // Apply defaults to any missing props
-  props = { ...defaultProps, ...props };
 
   // Do not show if state exists and is disabled
   if (navbarState?.toggled != null && !navbarState.toggled) {
@@ -51,50 +36,78 @@ export default function Navbar(props: Readonly<NavbarProps>) {
   return (
     <div id="navbar" className={styles.navbar}>
       {/* Render navbar logo if set */}
-      {props.navbarLogo != null &&
-        <Link href={Routes.HOME}>
-          <div className="navbarLogo">
-            <IconComponent
-              icon={props.navbarLogo}
-            />
-          </div>
-        </Link>
+      {props.settings?.branding?.navbarLogo?.length > 0 &&
+          // Handle the case where navbarLogo is a list
+        <div className={styles["logo-ribbon"]}>
+          {
+            Array.isArray(props.settings?.branding?.navbarLogo) ? (
+              props.settings?.branding?.navbarLogo.map(logo => (
+                <Link key={logo} href={Routes.HOME}>
+                  <IconComponent
+                    icon={logo}
+                    classes={styles["logo"]}
+                  />
+                </Link>
+              ))
+            ) : (
+              // Handle the case where navbarLogo is a string
+              <Link href={Routes.HOME}>
+                <IconComponent
+                  icon={props.settings?.branding?.navbarLogo}
+                  classes={styles["logo"]}
+                />
+              </Link>
+            )
+          }
+        </div>
       }
 
       {/* Render each component as required */}
       <div className="navbarElements">
-        <KeycloakSession />
-        {props.showLanding &&
+        {keycloakEnabled && <KeycloakSession />}
+        {props.settings?.modules?.landing &&
           <NavbarComponent
             name="LANDING"
             tooltip="Return to landing page."
             icon="home"
             url={Routes.HOME} />
         }
-        {props.showMap &&
+        {props.settings?.modules?.map &&
           <NavbarComponent
             name="MAP"
             tooltip="Geospatial view."
             icon="public"
             url={Routes.MAP} />
         }
-        {props.showDash &&
+        {props.settings?.modules?.dashboard &&
           <NavbarComponent
             name="DASH"
             tooltip="Analytics view."
             icon="monitoring"
             url={Routes.DASHBOARD} />
         }
-        {props.showHelp &&
+        {props.settings?.modules?.help &&
           <NavbarComponent
             name="HELP"
             tooltip="Open help page."
             icon="help"
             url={Routes.HELP} />
         }
+        {props.settings?.modules?.registry &&
+          <NavbarComponent
+            name="REGISTRY"
+            tooltip="Open registry."
+            icon="contract"
+            url={`${process.env.ASSET_PREFIX}/view/${props.settings?.resources?.registry?.data}`} />
+        }
+        {props.settings?.modules?.scheduler &&
+          <NavbarComponent
+            name="SCHEDULER"
+            tooltip="Open scheduler"
+            icon="calendar_month"
+            url={`${process.env.ASSET_PREFIX}/view/${props.settings?.resources?.scheduler?.data}`} />
+        }
       </div>
-
-
     </div>
   );
 }

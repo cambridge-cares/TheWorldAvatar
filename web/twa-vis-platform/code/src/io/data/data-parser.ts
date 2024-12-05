@@ -104,7 +104,10 @@ export class DataParser {
         if (current["tree-icon"]) {
             dataGroup.treeIcon = current["tree-icon"] as string;
         }
-
+        // Add search resource identifier (if set)
+        if (current["search"]) {
+            dataGroup.search = current["search"] as string;
+        }
         // Recurse into sub groups (if present)
         if (current["groups"]) {
             const groupArray = current["groups"] as JsonArray;

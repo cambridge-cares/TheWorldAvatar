@@ -1,0 +1,6 @@
+CONSTRUCT { ?subject ?predicate ?object . }
+WHERE { SERVICE <http://catalog1> {{ ?service <http://www.w3.org/ns/dcat#servesDataset> / <http://purl.org/dc/terms/title> ?ontologyDataset ;
+    a <https://theworldavatar.io/kg/service#Blazegraph> ;
+    <http://www.w3.org/ns/dcat#endpointURL> ?serviceUrl .
+SERVICE ?serviceUrl {?subject ?predicate ?object .}
+ VALUES ( ?ontologyDataset )   { ("datasetA") ("datasetB") }  }} }

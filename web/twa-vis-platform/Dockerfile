@@ -11,20 +11,21 @@
 #
 
 # ---- Base Image ----
-FROM node:22.4-slim AS base
+FROM node:22.11-slim AS base
 RUN corepack enable
 WORKDIR /twa
 ENV NEXT_TELEMETRY_DISABLED 1
-COPY ./code/package.json ./code/pnpm-lock.yaml ./
+COPY ./code/package.json  ./
 
 # ---- Development Image ----
 FROM base AS develop
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 COPY ./code ./
 CMD [ "/bin/bash", "-c", "pnpm run dev-docker" ]
 
 # ---- Production Image ----
 FROM base AS production
+COPY ./code/pnpm-lock.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 COPY ./code ./
 COPY check-build-start.sh /twa/check-build-start.sh

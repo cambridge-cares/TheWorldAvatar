@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/component_margin"
+    android:paddingTop="@dimen/component_margin_xs">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="@dimen/component_margin_small" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/date_left_bt"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/baseline_keyboard_arrow_left_24"
+            android:contentDescription="@string/last_date_button" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/date_picker_layout"
+            android:background="@drawable/ripple"
+            android:clickable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/component_margin_small"
+                android:text="Mon, March 14, 2024"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:id="@+id/date_tv"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/component_margin_small"
+                android:background="@drawable/baseline_arrow_drop_down_24"
+                android:contentDescription="@string/date_picker_button"
+                />
+        </LinearLayout>
+
+
+        <ImageButton
+            android:id="@+id/date_right_bt"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/baseline_keyboard_arrow_right_24"
+            android:contentDescription="@string/next_date_button" />
+    </LinearLayout>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/component_margin_small"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:id="@+id/progress_linear"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nested_scroll_view"
+        android:layout_marginVertical="@dimen/component_margin_small">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/more_information_about_the_trajectory_will_be_shown_here"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:gravity="center"
+                android:id="@+id/trajectory_info_tv"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

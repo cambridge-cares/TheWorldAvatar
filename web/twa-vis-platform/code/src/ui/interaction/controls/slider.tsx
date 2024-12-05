@@ -25,11 +25,6 @@ export default function DimensionSlider({ data }: DimensionSliderProps) {
     const dimensionSliderValue = useSelector(selectDimensionSliderValue);
     const [tempValue, setTempValue] = useState(dimensionSliderValue);
     
-    // TODO Debug purposes only, remove later
-    useEffect(() => {
-        console.log(`${Object.keys(data).flat()} Redux stored value is ${dimensionSliderValue}`);
-    }, [data, dimensionSliderValue]);
-
     const handleChange = (event : React.SyntheticEvent | Event, newValue: number | number[]) => {
         setTempValue(newValue);
     };
@@ -45,7 +40,6 @@ export default function DimensionSlider({ data }: DimensionSliderProps) {
         const label = selectedStep ? selectedStep.label : 'Unknown';
 
         dispatch(setValue(value));
-        console.log(`${Object.keys(data).flat()} slider moved to index ${firstValue} with label: ${label}. Previous value from Redux value is ${dimensionSliderValue}`);
     }
 
     return (

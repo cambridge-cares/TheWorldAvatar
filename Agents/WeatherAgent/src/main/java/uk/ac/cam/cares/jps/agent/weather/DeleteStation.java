@@ -15,55 +15,64 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClientWithReducedTables;
 
-@WebServlet(urlPatterns = {"/DeleteStation"})
-public class DeleteStation extends HttpServlet{
+@WebServlet(urlPatterns = { "/DeleteStation" })
+public class DeleteStation extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	// for logging
-	private static final Logger LOGGER = LogManager.getLogger(DeleteStation.class);
-	private WeatherQueryClient weatherClient = null;
+    private static final long serialVersionUID = 1L;
+    // for logging
+    private static final Logger LOGGER = LogManager.getLogger(DeleteStation.class);
+    private WeatherQueryClient weatherClient = null;
 
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		LOGGER.info("Received DELETE request");
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        LOGGER.info("Received DELETE request");
         new Config().initProperties();
-		
-		// replaced with mock client in the junit tests
-		if (weatherClient == null) {
-			RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-			TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(kgClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-			weatherClient = new WeatherQueryClient(kgClient, tsClient, null);
-		}
 
-		String station = req.getParameter("iri");
-		WeatherPostGISClient postgisClient = new WeatherPostGISClient(Config.dburl,Config.dbuser, Config.dbpassword);
-		
-		String response;
-		try (Connection conn = postgisClient.getConnection()) {
-			postgisClient.deleteRow(station, conn);
-		} catch (SQLException e) {
-			LOGGER.error("Probably failed to disconnect from rdb");
-			LOGGER.error(e.getMessage());
-		}
-		weatherClient.deleteStation(station);
-		response = "Deleted station: <" + station + ">";
-		LOGGER.info(response);
+        // replaced with mock client in the junit tests
+        if (weatherClient == null) {
+            RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl, Config.kgurl, Config.kguser,
+                    Config.kgpassword);
+            TimeSeriesRDBClientWithReducedTables<Instant> rdbClient = new TimeSeriesRDBClientWithReducedTables<>(
+                    Instant.class);
+            rdbClient.setRdbURL(Config.dburl);
+            rdbClient.setRdbUser(Config.dbuser);
+            rdbClient.setRdbPassword(Config.dbpassword);
+            TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<>(kgClient, rdbClient);
+            weatherClient = new WeatherQueryClient(kgClient, tsClient, null);
+        }
 
-		try {
-			resp.getWriter().write(response);
-		} catch (IOException e) {
-			LOGGER.error(e.getMessage());
-			LOGGER.error("Failed to write response");
-		}
+        String station = req.getParameter("iri");
+        WeatherPostGISClient postgisClient = new WeatherPostGISClient(Config.dburl, Config.dbuser, Config.dbpassword);
+
+        String response;
+        try (Connection conn = postgisClient.getConnection()) {
+            postgisClient.deleteRow(station, conn);
+        } catch (SQLException e) {
+            LOGGER.error("Probably failed to disconnect from rdb");
+            LOGGER.error(e.getMessage());
+        }
+        weatherClient.deleteStation(station);
+        response = "Deleted station: <" + station + ">";
+        LOGGER.info(response);
+
+        try {
+            resp.getWriter().write(response);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to write response");
+        }
     }
 
-	/**
-     * this setter is created purely for the purpose of junit testing where 
-     * the weather client is replaced with a mock client that does not 
+    /**
+     * this setter is created purely for the purpose of junit testing where
+     * the weather client is replaced with a mock client that does not
      * connect to the weather API
+     * 
      * @param weatherClient
      */
     void setWeatherQueryClient(WeatherQueryClient weatherClient) {
-    	this.weatherClient = weatherClient;
+        this.weatherClient = weatherClient;
     }
 }

@@ -20,7 +20,7 @@ export class DataGroup {
      * The stack endpoint that stores the associated data for this data group. Note that the subgroups may have different endpoints.
      */
     public readonly stackEndpoint: string;
-
+        
     /**
      * Should this group be expanded in the layer tree?
      */
@@ -49,6 +49,11 @@ export class DataGroup {
      * Parent group
      */
     public parentGroup: DataGroup;
+
+    /**
+     * Optional search resource identifier on the endpoint.
+     */
+    public search: string;
 
     /**
      * Optional icon for display in layer tree.

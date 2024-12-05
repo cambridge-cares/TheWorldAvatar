@@ -1,0 +1,41 @@
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontopoi: <https://www.theworldavatar.com/kg/ontopoi/>
+
+SELECT ?Property (GROUP_CONCAT(?tmp; separator=", ") AS ?Value) WHERE {
+    SERVICE [ONTOP] {
+        {
+            BIND("Reference Number" AS ?Property)
+            [IRI] ontopoi:hasReferenceNumber ?tmp .
+        } UNION {
+            BIND("Name" AS ?Property)
+            [IRI] ontopoi:hasName ?tmp .
+        } UNION {
+            BIND("Brand" AS ?Property)
+            [IRI] ontopoi:hasBrand ?tmp .
+        } UNION {
+            BIND("Postcode" AS ?Property)
+            [IRI] ontopoi:hasPostcode ?tmp .
+        } UNION {
+            BIND("Telephone" AS ?Property)
+            [IRI] ontopoi:hasTelephone ?tmp .
+        } UNION {
+            BIND("PointX Class" AS ?Property)
+            [IRI] ontopoi:hasPointXClass ?tmp .
+        } UNION {
+            BIND("Supply Date" AS ?Property)
+            [IRI] ontopoi:hasSupplyDate ?tmp .
+        } UNION {
+            BIND("UPRN" AS ?Property)
+            [IRI] ontopoi:hasUPRN ?tmp .
+        } UNION {
+            BIND("USRN" AS ?Property)
+            [IRI] ontopoi:hasUSRN ?tmp .
+        } UNION {
+            BIND("TOID" AS ?Property)
+            [IRI] ontopoi:hasTOID ?tmp .
+        } UNION {
+            BIND("Administrative Boundary" AS ?Property)
+            [IRI] ontopoi:hasAdminBoundary ?tmp .
+        }
+    }
+} GROUP BY ?Property

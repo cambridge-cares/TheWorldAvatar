@@ -130,7 +130,7 @@ public class OSMAgent extends JPSAgent {
             // create geoserver layer
             GeoServerClient geoServerClient = GeoServerClient.getInstance();
             String workspaceName= "twa";
-            String schema = "public";
+            String schema = DATA_SCHEMA;
             geoServerClient.createWorkspace(workspaceName);
             geoServerClient.createPostGISDataStore(workspaceName, "building_usage" , dbName, schema);
 
@@ -169,5 +169,5 @@ public class OSMAgent extends JPSAgent {
     }
 
 
-    private static final String buildingSQLQuery = "SELECT building_iri AS iri, ontobuilt, usageshare, name, geometry, building_height FROM %s";
+    private static final String buildingSQLQuery = "SELECT iri, ontobuilt, usageshare, name, geometry, building_height FROM %s";
 }

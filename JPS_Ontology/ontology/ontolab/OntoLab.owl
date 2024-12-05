@@ -1,19 +1,45 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontolab/"
      xml:base="https://www.theworldavatar.com/kg/ontolab/"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:ontolab="https://www.theworldavatar.com/kg/ontolab/"
-     xmlns:dc="http://purl.org/dc/elements/1.1/">
+     xmlns:ontolab="https://www.theworldavatar.com/kg/ontolab/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontolab/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 May 2023</dc:date>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoLab is an ontology developed for expressing facilities in a research lab.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.10</owl:versionInfo>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <dc:date>02 October 2024</dc:date>
+        <rdfs:comment>OntoLab is an ontology developed for expressing facilities in a research lab.</rdfs:comment>
+        <owl:versionInfo>1.11</owl:versionInfo>
+        <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/gitCommitHash -->
+
+
+    <owl:AnnotationProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/gitCommitHash"/>
     
 
 
@@ -35,8 +61,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/contains">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/Laboratory"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the laboratory and the lab equipment located in it.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation between the laboratory and the lab equipment located in it.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -47,8 +73,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasFillLevel">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the current filling level of a chemical container.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation indicates the current filling level of a chemical container.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -59,8 +85,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasHeight">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the height of a laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation specifies the height of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -71,8 +97,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasLength">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the length of a laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation specifies the length of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -83,8 +109,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasMaxLevel">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the maximum filling level of a chemical container.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation indicates the maximum filling level of a chemical container.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -95,8 +121,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasPowerSupply">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the power supply type of a laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation specifies the power supply type of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -107,8 +133,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasPrice">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the price of a laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation specifies the price of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -119,8 +145,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasQuantity">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the parameter setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation between the parameter setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -131,8 +157,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasSetting">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the equipment settings and its individual parameter setting.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation between the equipment settings and its individual parameter setting.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -143,8 +169,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasWarningLevel">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the fill level of a chemical container below which a warning to researcher should be sent.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation indicates the fill level of a chemical container below which a warning to researcher should be sent.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -155,8 +181,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasWeight">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/BodyMass"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the weight of a laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation specifies the weight of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -167,8 +193,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasWidth">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the width of a laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation specifies the width of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -179,8 +205,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/isFilledWith">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chemical container and the chemical amount it contains.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation between the chemical container and the chemical amount it contains.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -191,8 +217,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/isManagedBy">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relationship between lab equipment and the agent service that manages it.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relationship between lab equipment and the agent service that manages it.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -203,8 +229,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/isPreparedBy">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chemical amount and its preparation method.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation between the chemical amount and its preparation method.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -215,8 +241,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/specifies">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the equipment settings and the laboratory equipment it governs.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation between the equipment settings and the laboratory equipment it governs.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -227,8 +253,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/wasGeneratedFor">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the equipment settings and the reaction experiment it was generated for.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The relation between the equipment settings and the reaction experiment it was generated for.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:ObjectProperty>
     
 
@@ -251,8 +277,8 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/containsUnidentifiedComponent">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The boolean flag to indicate if there are unidentified components in the collected chemical amount.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The boolean flag to indicate if there are unidentified components in the collected chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:DatatypeProperty>
     
 
@@ -263,8 +289,8 @@
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/stateLastUpdatedAt">
         <rdfs:domain rdf:resource="https://saref.etsi.org/core/State"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The timestamp when the state of lab equipment was last updated at.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The timestamp when the state of lab equipment was last updated at.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:DatatypeProperty>
     
 
@@ -365,10 +391,245 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/AccessoryModule -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/AccessoryModule">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipmentAccessory"/>
+        <rdfs:comment>A module that adds specific functionalities to laboratory instruments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Accessory module</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/AirFlowCalibrator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/AirFlowCalibrator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Calibrator"/>
+        <rdfs:comment>A calibrator that measures and adjusts airflow.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Airflow calibrator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/AnalyticalBalance -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/AnalyticalBalance">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Balance"/>
+        <rdfs:comment>A balance with high precision for analytical purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Analytical balance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Analyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Analyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device or instrument used to measure, assess, and analyze various properties of substances or samples.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Analyzer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ArcLamp -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ArcLamp">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Lamp"/>
+        <rdfs:comment>A lamp that produces light through an electric arc.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Arc lamp</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/AttenuatedTotalReflectionAccessory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/AttenuatedTotalReflectionAccessory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/SpectroscopyAccessory"/>
+        <rdfs:comment>An accessory used in ATR spectroscopy for analyzing samples.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Attenuated total reflection accessory</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Autoclave -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Autoclave">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to sterilize equipment by applying high-pressure steam.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Autoclave</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Autoinjector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Autoinjector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used for automatically injecting substances into a system.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Autoinjector</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Balance -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Balance">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Scale"/>
+        <rdfs:comment>A device used to measure the mass of an object.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Balance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Bath -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Bath">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used for heating or cooling substances through immersion in a liquid.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Bath</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/BatteryTester -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/BatteryTester">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that tests battery performance, either capacity or behaviour in a cycle.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Battery tester</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/BipotentiostatModule -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/BipotentiostatModule">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/AccessoryModule"/>
+        <rdfs:comment>A module that combines two potentiostat functionalities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Bipotentiostat module</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/BubbleGenerator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/BubbleGenerator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Generator"/>
+        <rdfs:comment>A device that generates bubbles in liquids for scientific applications.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Bubble generator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Burner -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Burner">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Heater"/>
+        <rdfs:comment>A device used to produce heat or flame for experimental purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Burner</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Calibrator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Calibrator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to adjust and standardize the output of instruments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Calibrator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Carousel -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Carousel">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A rotating storage system for lab supplies or equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Carousel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Centrifuge -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Centrifuge">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that uses centrifugal force to separate substances of different densities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Centrifuge</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/CentrifugeRotor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/CentrifugeRotor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A rotor used in centrifuges for separating materials by density.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Centrifuge rotor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Chassis -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Chassis">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A framework used to support and protect laboratory devices.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Chassis</rdfs:label>
+    </owl:Class>
     
 
 
@@ -377,8 +638,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concrete realisation of chemical amount in the physical world, e.g., a liquid holdup in a vessel.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The concrete realisation of chemical amount in the physical world, e.g., a liquid holdup in a vessel.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:Class>
     
 
@@ -416,8 +677,104 @@
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A container in the lab that is filled with chemical amount.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>A container in the lab that is filled with chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ChemisorptionAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChemisorptionAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Analyzer"/>
+        <rdfs:comment>A device used to analyze chemisorption phenomena.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Chemisorption analyzer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Chiller -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Chiller">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to cool liquids or gases.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Chiller</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ChillerPlate -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChillerPlate">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Chiller"/>
+        <rdfs:comment>A plate used for chilling samples or materials in a laboratory setting.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Chiller plate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Circulator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Circulator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that circulates a fluid for temperature control or mixing.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Circulator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ControlledEvaporatorMixer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ControlledEvaporatorMixer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Mixer"/>
+        <rdfs:comment>A mixer that combines evaporation and mixing processes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Controlled evaporator mixer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Coupler -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Coupler">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to join two systems or components together.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Coupler</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Degasser -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Degasser">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that removes gases from liquids.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Degasser</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/DiffuseReflectionAccessory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/DiffuseReflectionAccessory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/SpectroscopyAccessory"/>
+        <rdfs:comment>An accessory used for measuring diffuse reflection in optical experiments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Diffuse reflection accessory</rdfs:label>
     </owl:Class>
     
 
@@ -427,8 +784,32 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Dried">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is dried from received.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The chemical amount is dried from received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/DryCabinet -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/DryCabinet">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet"/>
+        <rdfs:comment>A cabinet designed to keep items dry and moisture-free.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Dry cabinet</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Dryer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Dryer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that removes moisture from a substance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Dryer</rdfs:label>
     </owl:Class>
     
 
@@ -438,8 +819,56 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/DurationSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the duration.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Setting that specifies the duration.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ECDModule -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ECDModule">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/AccessoryModule"/>
+        <rdfs:comment>A module for enhanced electrochemical detection.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>ECD module</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/EEGAmplifier -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/EEGAmplifier">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/SignalAmplifier"/>
+        <rdfs:comment>A device that amplifies brainwave signals for EEG analysis.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>EEG amplifier</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/EISModule -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/EISModule">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/AccessoryModule"/>
+        <rdfs:comment>A module for electrochemical impedance spectroscopy.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>EIS module</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ElectrosprayIonSource -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ElectrosprayIonSource">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that generates ions using electrospray for mass spectrometry.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Electrospray ion source</rdfs:label>
     </owl:Class>
     
 
@@ -448,8 +877,32 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifications that are used to set the operating conditions of laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Specifications that are used to set the operating conditions of laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Etcher -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Etcher">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used for etching materials using chemical or plasma processes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Etcher</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Evaporator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Evaporator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that removes liquid by vaporization.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Evaporator</rdfs:label>
     </owl:Class>
     
 
@@ -459,8 +912,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ExternalBattery">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through an external battery.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Power supply through an external battery.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:Class>
     
 
@@ -470,8 +923,104 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ExternalDC">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">External power supply through DC.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>External power supply through DC.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FaradayCage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FaradayCage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A structure that shields against electromagnetic fields.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Faraday cage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FiberOpticCoupler -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FiberOpticCoupler">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Coupler"/>
+        <rdfs:comment>A coupler designed for connecting fiber optic cables.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Fiber optic coupler</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FiberOpticProbe -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FiberOpticProbe">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Probe"/>
+        <rdfs:comment>A probe designed for use with fiber optic technology.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Fiber optic probe</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Filter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Filter">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that separates a solution into several parts of different composition.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Filter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FilterDryer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FilterDryer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Dryer"/>
+        <rdfs:comment>A dryer that uses a filtering mechanism to separate and remove moisture.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Filter dryer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FlowCellAnvil -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FlowCellAnvil">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/FlowCellReactor"/>
+        <rdfs:comment>A component in flow cell reactors that applies pressure during the reaction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Flow cell anvil</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FlowCellReactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FlowCellReactor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/FlowChemistryReactor"/>
+        <rdfs:comment>A reactor that uses a flow cell to perform continuous reactions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Flow cell reactor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FlowChemistryReactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FlowChemistryReactor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Reactor"/>
+        <rdfs:comment>A reactor used for performing flow chemistry, allowing reactions to occur in a continuous flow.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Flow chemistry reactor</rdfs:label>
     </owl:Class>
     
 
@@ -481,8 +1030,153 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FlowRateSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the flow rate.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Setting that specifies the flow rate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Furnace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Furnace">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Heater"/>
+        <rdfs:comment>A device used for heating materials to high temperatures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Furnace</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Galvanostat -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Galvanostat">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to control the current in an electrochemical system.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Galvanostat</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/GasAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/GasAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Analyzer"/>
+        <rdfs:comment>A device that measures the composition of gases.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Gas analyzer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/GasChromatograph -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/GasChromatograph">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/GasAnalyzer"/>
+        <rdfs:comment>A device used for separating and analyzing compounds in gas mixtures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Gas chromatograph</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Generator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Generator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that generates gas, vapour, or electricity for use in experiments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Lab generator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/GloveBox -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/GloveBox">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A sealed container used to handle sensitive materials in a controlled atmosphere.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Glove box</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/HTHPRig -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/HTHPRig">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Rig"/>
+        <rdfs:comment>A high-temperature, high-pressure rig used for experiments under extreme conditions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>HTHP rig</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/HeatedFlowCellReactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/HeatedFlowCellReactor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/FlowCellReactor"/>
+        <rdfs:comment>A flow cell reactor with heating capabilities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Heated flow cell reactor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Heater -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Heater">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that generates heat for various applications.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Heater</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/HotPlate -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/HotPlate">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Heater"/>
+        <rdfs:comment>A plate that provides controlled heat for laboratory experiments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Hot plate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/HotPlateStirrer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/HotPlateStirrer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Heater"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Stirrer"/>
+        <rdfs:comment>A stirrer that provides heat while mixing liquids.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Hot Plate stirrer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Incubator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Incubator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to maintain a controlled environment for growth or experimentation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Incubator</rdfs:label>
     </owl:Class>
     
 
@@ -541,8 +1235,20 @@
                 <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Equipment used for laboratory experiments. [https://www.wikidata.org/wiki/Q834028]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Equipment used for laboratory experiments. [https://www.wikidata.org/wiki/Q834028]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/LabEquipmentAccessory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LabEquipmentAccessory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A supplementary item used to enhance laboratory processes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Lab equipment accessory</rdfs:label>
     </owl:Class>
     
 
@@ -552,8 +1258,56 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Laboratory">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Facility that provides controlled conditions in which scientific or technological research, experiments, and measurement may be performed. [https://www.wikidata.org/wiki/Q483242]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Facility that provides controlled conditions in which scientific or technological research, experiments, and measurement may be performed. [https://www.wikidata.org/wiki/Q483242]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Lamp -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Lamp">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that emits light for scientific or experimental purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Lamp</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Laser -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Laser">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that emits coherent light for scientific or industrial use.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Laser</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/LaserAccessory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LaserAccessory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipmentAccessory"/>
+        <rdfs:comment>An accessory designed to enhance the functionality of laser systems.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Laser accessory</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/LaserTableBase -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LaserTableBase">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Platform"/>
+        <rdfs:comment>A base designed to support laser systems.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Laser table base</rdfs:label>
     </owl:Class>
     
 
@@ -563,8 +1317,152 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LithiumBattery">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through a lithium battery.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Power supply through a lithium battery.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MagneticStirrer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MagneticStirrer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Stirrer"/>
+        <rdfs:comment>A stirrer that uses a magnetic field to mix liquids.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>magnetic stirrer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ManualTranslationStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ManualTranslationStage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/TranslationStage"/>
+        <rdfs:comment>A manually operated device for translating samples or instruments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Manual translation stage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MeasurementApparatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MeasurementApparatus">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used for measuring physical properties.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Measurement apparatus</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MicroReactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MicroReactor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Reactor"/>
+        <rdfs:comment>A small-scale reactor used for precise control of reaction conditions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Microreactor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MicrolabBox -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MicrolabBox">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A compact box for storing laboratory materials and equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Microlab box</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Microscope -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Microscope">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to magnify and visualize small objects.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Microscope</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Mixer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Mixer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to blend substances together.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Mixer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MotorisedSlide -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MotorisedSlide">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A motorized device for moving slides in microscopy.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Motorised slide</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MotorizedRotaryStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MotorizedRotaryStage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/RotaryStage"/>
+        <rdfs:comment>A motorized version of a rotary stage for precise control.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Motorized rotary stage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MotorizedTranslationStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MotorizedTranslationStage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/TranslationStage"/>
+        <rdfs:comment>A motorized device for translating samples or instruments automatically.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Motorized translation stage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/MuffleFurnace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/MuffleFurnace">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Furnace"/>
+        <rdfs:comment>A furnace that uses insulated walls to maintain high temperatures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Muffle furnace</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Neutralizer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Neutralizer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Filter"/>
+        <rdfs:comment>A filter that neutralizes radioactivity of a material that passes through.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Neutralizer</rdfs:label>
     </owl:Class>
     
 
@@ -574,8 +1472,68 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/NiMHRechargeableBattery">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through a NiMH rechargeable battery.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Power supply through a NiMH rechargeable battery.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/NitrogenGenerator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/NitrogenGenerator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Generator"/>
+        <rdfs:comment>A generator that produces nitrogen gas for laboratory use.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Nitrogen generator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Nozzle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Nozzle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to direct or control the flow of fluids or gases.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Nozzle</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/OsmosisFilter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/OsmosisFilter">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Filter"/>
+        <rdfs:comment>A filter that separates solutions through the principles of osmosis.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Osmosis filter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/OverheadStirrer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/OverheadStirrer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Stirrer"/>
+        <rdfs:comment>A stirrer that operates from above the container.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Overhead stirrer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/OzoneCleaner -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/OzoneCleaner">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that uses ozone gas to clean or disinfect.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Ozone cleaner</rdfs:label>
     </owl:Class>
     
 
@@ -591,8 +1549,104 @@
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each parameter setting refers to one specific setting of the laboratory equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Each parameter setting refers to one specific setting of the laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ParticleAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ParticleAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Analyzer"/>
+        <rdfs:comment>A device used to analyze and characterize particles in a sample.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Particle analyzer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PelletFeeder -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PelletFeeder">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that feeds pellets into a system for experimental or industrial processes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Pellet feeder</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PhotoChemicalReactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PhotoChemicalReactor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Reactor"/>
+        <rdfs:comment>A reactor designed for carrying out photochemical reactions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Photochemical reactor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PlanetaryMixer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PlanetaryMixer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Mixer"/>
+        <rdfs:comment>A mixer that moves in a planetary motion for thorough mixing.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Planetary mixer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PlasmaEtcher -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PlasmaEtcher">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Etcher"/>
+        <rdfs:comment>A device that uses plasma to etch materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Plasma etcher</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Platform -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Platform">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A base or surface used to support laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Platform</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Potentiostat -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Potentiostat">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that controls the potential difference in electrochemical cells.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Potentiostat</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PotentiostatGalvanostat -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PotentiostatGalvanostat">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that combines potentiostat and galvanostat functionalities.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Potentiostat-galvanostat</rdfs:label>
     </owl:Class>
     
 
@@ -601,8 +1655,20 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PowerSupply">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply of lab equipment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Power supply of lab equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PrecisionBalance -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PrecisionBalance">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Balance"/>
+        <rdfs:comment>A balance that provides accurate measurements for scientific use.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Precision balance</rdfs:label>
     </owl:Class>
     
 
@@ -611,8 +1677,56 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PreparationMethod">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Preparation method of a chemical amount.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Preparation method of a chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PressureRegulator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PressureRegulator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that maintains a consistent pressure within a system.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Pressure regulator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Probe -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Probe">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to investigate or measure properties of materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Probe</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/RailInjectionEngine -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/RailInjectionEngine">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>An engine that uses rail injection technology to control fuel flow.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Rail injection engine</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Reactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Reactor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device where chemical or physical reactions take place.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Reactor</rdfs:label>
     </owl:Class>
     
 
@@ -622,8 +1736,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ReagentBottle">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The container that hosts chemical stock solutions.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The container that hosts chemical stock solutions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:Class>
     
 
@@ -633,8 +1747,116 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Repurified">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is repurified from received.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The chemical amount is repurified from received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Rig -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Rig">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A combination of equipment used for conducting experiments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Rig</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/RotaryEvaporator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/RotaryEvaporator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Evaporator"/>
+        <rdfs:comment>A device that uses rotation to evaporate solvents from mixtures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Rotary evaporator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/RotaryStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/RotaryStage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/TranslationStage"/>
+        <rdfs:comment>A device that rotates samples or instruments around a fixed point.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Rotary stage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SafetyCabinet -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SafetyCabinet">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet"/>
+        <rdfs:comment>A cabinet designed to store hazardous materials safely.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Safety cabinet</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Scale -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Scale">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/MeasurementApparatus"/>
+        <rdfs:comment>A device that measures weight or mass.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Scale</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SemiconductorMaskAligner -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SemiconductorMaskAligner">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used in the semiconductor industry for aligning masks during lithography.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Semiconductor mask aligner</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Shaker -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Shaker">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to agitate substances in containers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Shaker</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SignalAmplifier -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SignalAmplifier">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that increases the strength of a signal.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Signal amplifier</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SmokePointLamp -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SmokePointLamp">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Lamp"/>
+        <rdfs:comment>A lamp used to determine the smoke point of oils and fats.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Smoke point lamp</rdfs:label>
     </owl:Class>
     
 
@@ -644,8 +1866,20 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SolarPowerPack">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through a solar power pack.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Power supply through a solar power pack.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SolidStateLaser -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SolidStateLaser">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Laser"/>
+        <rdfs:comment>A laser that uses a solid material as the gain medium.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Solid-state laser</rdfs:label>
     </owl:Class>
     
 
@@ -655,8 +1889,116 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Sparged">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is sparged from received.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The chemical amount is sparged from received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SpectroscopyAccessory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SpectroscopyAccessory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipmentAccessory"/>
+        <rdfs:comment>An accessory that enhances the capabilities of spectroscopy instruments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Spectroscopy accessory</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SpectroscopyCamera -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SpectroscopyCamera">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A camera used for capturing spectra in spectroscopy experiments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Spectroscopy camera</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SpecularReflectionAccessory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SpecularReflectionAccessory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/SpectroscopyAccessory"/>
+        <rdfs:comment>An accessory used for measuring specular reflection in optics.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Specular reflection accessory</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SpillKit -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SpillKit">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A kit containing materials to manage and clean up spills.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Spill kit</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SpinCoater -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SpinCoater">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used for evenly coating a surface with a liquid by spinning.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Spin coater</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SprayDryer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SprayDryer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Dryer"/>
+        <rdfs:comment>A dryer that uses spray techniques to rapidly dry liquids into powders.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Spray dryer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Stand -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Stand">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A supporting structure used to hold equipment in place.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Stand</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Stirrer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Stirrer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used for stirring liquids or mixtures.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Stirrer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SublimationApparatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SublimationApparatus">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>An apparatus used to convert a substance directly from a solid to a gas.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Sublimation apparatus</rdfs:label>
     </owl:Class>
     
 
@@ -666,8 +2008,20 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SynthesisedInHouse">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is synthesised in house.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The chemical amount is synthesised in house.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/TGA-DSCAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TGA-DSCAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Analyzer"/>
+        <rdfs:comment>A device that combines thermogravimetric analysis and differential scanning calorimetry.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>TGA-DSC analyzer</rdfs:label>
     </owl:Class>
     
 
@@ -677,8 +2031,164 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TemperatureSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the temperature.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Setting that specifies the temperature.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/TestBed -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TestBed">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A controlled environment used for testing and experimentation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Test bed</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ThermoGravimetricAnalyzer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ThermoGravimetricAnalyzer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Analyzer"/>
+        <rdfs:comment>A thermogravimetric analyzer used for measuring changes in weight.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Thermo gravimetric analyzer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ThermocoupleInputModule -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ThermocoupleInputModule">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/AccessoryModule"/>
+        <rdfs:comment>A module for connecting thermocouples to measuring devices.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Thermocouple input module</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ThinFilmDepositionApparatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ThinFilmDepositionApparatus">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>An apparatus used for depositing thin films on substrates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Thin film deposition apparatus</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Titrator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Titrator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that measures and adds titrants to a solution for chemical analysis.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Titrator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/TranslationStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TranslationStage">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to move samples or instruments in a controlled manner.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Translation stage</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/TriggerBox -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TriggerBox">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device used to trigger events or start processes in an experimental setup.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Trigger box</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Trolley -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Trolley">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A wheeled cart used for transporting laboratory supplies.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Trolley</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/TubeFurnace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TubeFurnace">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Furnace"/>
+        <rdfs:comment>A furnace designed in a tubular shape for specific heating applications.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Tube furnace</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/TubularReactor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TubularReactor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Reactor"/>
+        <rdfs:comment>A reactor in the form of a tube where reactions occur as substances flow through.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Tubular reactor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/UVKit -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/UVKit">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Lamp"/>
+        <rdfs:comment>A kit used to generate and control ultraviolet light for laboratory use.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>UV kit</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/UltrasonicBath -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/UltrasonicBath">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Bath"/>
+        <rdfs:comment>A bath that uses ultrasonic waves to clean or treat materials.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Ultrasonic bath</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/UltrasonicSprayNozzle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/UltrasonicSprayNozzle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Nozzle"/>
+        <rdfs:comment>A nozzle that uses ultrasonic waves to create fine sprays.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Ultrasonic spray nozzle</rdfs:label>
     </owl:Class>
     
 
@@ -688,8 +2198,44 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/UsedAsReceived">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is used as received.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The chemical amount is used as received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/VaccuumFurnace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/VaccuumFurnace">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Furnace"/>
+        <rdfs:comment>A furnace that operates under vacuum conditions to prevent oxidation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Vacuum furnace</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/VaccuumTable -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/VaccuumTable">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Platform"/>
+        <rdfs:comment>A table that creates a vacuum for holding samples in place during experiments.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Vacuum table</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/VapourGenerator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/VapourGenerator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Generator"/>
+        <rdfs:comment>A device that produces vapour for laboratory or industrial processes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Vapour generator</rdfs:label>
     </owl:Class>
     
 
@@ -699,8 +2245,20 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Vial">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The container that hosts a small amount of chemical amount.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The container that hosts a small amount of chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/VibrationIsolator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/VibrationIsolator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment>A device that minimizes vibrations for sensitive laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Vibration isolator</rdfs:label>
     </owl:Class>
     
 
@@ -710,8 +2268,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/VolumeSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the volume.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>Setting that specifies the volume.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
     </owl:Class>
     
 
@@ -721,8 +2279,20 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/WasteBottle">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The container that hosts waste chemicals.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:comment>The container that hosts waste chemicals.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/WaveformGenerator -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/WaveformGenerator">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/Generator"/>
+        <rdfs:comment>A device that generates electrical waveforms for experimental purposes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontolab/"/>
+        <rdfs:label>Waveform generator</rdfs:label>
     </owl:Class>
     
 
@@ -735,6 +2305,6 @@
 
 
 
-<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+<!-- Generated by the OWL API (version 5.5.0.2023-01-14T12:41:38Z) https://github.com/owlcs/owlapi/ -->
 
 

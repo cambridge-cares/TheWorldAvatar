@@ -1,0 +1,25 @@
+
+apply plugin: 'com.android.application'
+apply plugin: 'dagger.hilt.android.plugin'
+apply from: "${project.rootDir}/common.gradle"
+apply from: "${project.rootDir}/ui.gradle"
+apply from: "${project.rootDir}/worker_dependencies.gradle"
+
+android {
+    namespace 'uk.ac.cam.cares.jps.timeline'
+
+    defaultConfig {
+        applicationId "uk.ac.cam.cares.jps.timeline"
+        versionCode 2
+        versionName "2.0.0"
+
+    }
+}
+
+dependencies {
+
+    implementation project(path: ':core:ui')
+    implementation project(path: ':feature:timeline')
+    implementation project(path: ':feature:user')
+
+}

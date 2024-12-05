@@ -5,6 +5,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +14,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jetty.client.util.BasicAuthentication;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +25,9 @@ import com.bigdata.rdf.sail.webapp.client.HttpException;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
+import com.cmclinnovations.stack.clients.core.datasets.CopyDatasetQuery;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
+import com.cmclinnovations.stack.clients.utils.SparqlRulesFile;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -58,7 +64,7 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
     }
 
     private void sendCommandToBlazegraph(String namespace, BaseCmd command) {
-        BlazegraphEndpointConfig endpointConfig = getEndpointConfig();
+        BlazegraphEndpointConfig endpointConfig = readEndpointConfig();
         String serviceUrl = endpointConfig.getServiceUrl();
 
         try (AutoCloseHttpClient httpClient = (AutoCloseHttpClient) HttpClientConfigurator.getInstance()
@@ -100,6 +106,11 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
                     throw ex;
             }
         }
+    }
+
+    public void runRules(RemoteStoreClient remoteStoreClient, List<Path> ruleFiles) {
+        SparqlRulesFile sparqlRules = new SparqlRulesFile(ruleFiles);
+        sparqlRules.getRules().forEach(remoteStoreClient::executeUpdate);
     }
 
     private String generateMessage(String namespace, BaseCmd command, String serviceUrl) {
@@ -169,7 +180,7 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
     }
 
     public RemoteStoreClient getRemoteStoreClient(String namespace) {
-        BlazegraphEndpointConfig endpointConfig = getEndpointConfig();
+        BlazegraphEndpointConfig endpointConfig = readEndpointConfig();
         String url = endpointConfig.getUrl(namespace);
         return new RemoteStoreClient(url, url,
                 endpointConfig.getUsername(),
@@ -197,4 +208,9 @@ public class BlazegraphClient extends ClientWithEndpoint<BlazegraphEndpointConfi
         }
     }
 
+    public void cloneDatasets(String targetNamespace, Collection<String> datasetNames, String catalogNamespace) {
+        String catalogServiceURL = readEndpointConfig().getUrl(catalogNamespace);
+        ModifyQuery query = CopyDatasetQuery.getInsertQuery(datasetNames, Rdf.iri(catalogServiceURL));
+        getRemoteStoreClient(targetNamespace).executeUpdate(query.getQueryString());
+    }
 }

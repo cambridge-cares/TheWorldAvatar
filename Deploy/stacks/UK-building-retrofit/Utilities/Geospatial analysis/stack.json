@@ -1,0 +1,4 @@
+{
+    "sparql_endpoint": "http://174.138.27.240:3838/ontop/sparql",
+    "sparql_query_file": "ontop.sparql"
+}

@@ -21,7 +21,7 @@ class DatasetReaderTest {
         List<Dataset> allDatasets = DatasetReader.getAllDatasets(configPath);
 
         List<String> expectedDatasetNames = List.of("explicitlyNamed", "implicitlyNamed", "nonTrivialExternal",
-                "trivialExternal");
+                "trivialExternal", "ontology", "trivialWithOntology", "nonTrivialWithOntology");
         List<String> actualDatasetNames = allDatasets.stream().map(Dataset::getName).collect(Collectors.toList());
 
         Assertions.assertTrue(CollectionUtils.isEqualCollection(expectedDatasetNames, actualDatasetNames));
@@ -33,7 +33,12 @@ class DatasetReaderTest {
                 Arguments.of("implicitlyNamed", List.of("implicitlyNamed")),
                 Arguments.of("trivialExternal", List.of("implicitlyNamed", "trivialExternal")),
                 Arguments.of("nonTrivialExternal",
-                        List.of("implicitlyNamed", "trivialExternal", "explicitlyNamed", "nonTrivialExternal")));
+                        List.of("implicitlyNamed", "trivialExternal", "explicitlyNamed", "nonTrivialExternal")),
+                Arguments.of("trivialWithOntology",
+                        List.of("ontology", "trivialWithOntology")),
+                Arguments.of("nonTrivialWithOntology",
+                        List.of("implicitlyNamed", "trivialExternal", "explicitlyNamed", "nonTrivialExternal",
+                                "ontology", "nonTrivialWithOntology")));
     }
 
     @ParameterizedTest
@@ -49,20 +54,29 @@ class DatasetReaderTest {
 
     private static Stream<Arguments> getArgsForReadInputDatasetTests() {
         return Stream.of(
-                Arguments.of("explicitlyNamed", List.of()),
-                Arguments.of("implicitlyNamed", List.of()),
-                Arguments.of("trivialExternal", List.of("implicitlyNamed")),
-                Arguments.of("nonTrivialExternal", List.of("trivialExternal", "explicitlyNamed")));
+                Arguments.of("explicitlyNamed", List.of(), List.of(), List.of()),
+                Arguments.of("implicitlyNamed", List.of(), List.of(), List.of()),
+                Arguments.of("trivialExternal", List.of("implicitlyNamed"), List.of(), List.of("implicitlyNamed")),
+                Arguments.of("nonTrivialExternal", List.of("trivialExternal", "explicitlyNamed"), List.of(),
+                        List.of("trivialExternal", "explicitlyNamed")),
+                Arguments.of("trivialWithOntology", List.of(), List.of("ontology"), List.of("ontology")),
+                Arguments.of("nonTrivialWithOntology", List.of("nonTrivialExternal"), List.of("ontology"),
+                        List.of("nonTrivialExternal", "ontology")));
     }
 
     @ParameterizedTest
     @MethodSource("getArgsForReadInputDatasetTests")
-    void testReadInputDataset(String selectedDatasetName, List<String> expectedExternalDatasetNames) {
+    void testReadInputDataset(String selectedDatasetName, List<String> expectedExternalDatasetNames,
+            List<String> expectedOntologyDatasetNames, List<String> referencedDatasetNames) {
 
         Dataset dataset = DatasetReader.readDataset(configPath.resolve(selectedDatasetName + ".json"));
 
         Assertions.assertEquals(selectedDatasetName, dataset.getName());
 
         Assertions.assertEquals(expectedExternalDatasetNames, dataset.getExternalDatasetNames());
+
+        Assertions.assertEquals(expectedOntologyDatasetNames, dataset.getOntologyDatasetNames());
+
+        Assertions.assertEquals(referencedDatasetNames, dataset.getReferencedDatasetNames());
     }
 }

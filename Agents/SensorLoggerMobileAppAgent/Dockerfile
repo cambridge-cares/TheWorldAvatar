@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-11-slim as builder
+FROM maven:3.6-openjdk-17-slim as builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 ADD . /root
@@ -25,7 +25,7 @@ WORKDIR /root/sensorloggermobileappagent
 
 # #==================================================================================================
 # Copy the compiled jar from the builder
-COPY --from=builder /root/sensorloggermobileappagent/output/sensorloggermobileappagent##1.1.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/sensorloggermobileappagent/output/SensorLoggerMobileAppAgent##2.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 # Port for Java debugging

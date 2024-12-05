@@ -1,3 +1,5 @@
+@import "material-symbols";
+
 /**
     Light theme detected (or no preference set).
 **/
@@ -9,6 +11,7 @@
         --background-tertiary: #e5e5e5;
 
         --background-inverse-primary: #0d1117;
+        --background-inverse-primary-rgb: 13, 17, 23;
         --background-inverse-secondary: #30363d;
         --background-inverse-tertiary: #434c57;
 
@@ -36,6 +39,7 @@
         --background-tertiary: #434c57;
 
         --background-inverse-primary: #f9f9f9;
+        --background-inverse-primary-rgb: 249, 249, 249;
         --background-inverse-secondary: #efefef;
         --background-inverse-tertiary: #e5e5e5;
 
@@ -123,6 +127,15 @@ img {
     flex-grow: 0;
     pointer-events: all;
     background-color: white;
+}
+
+.formContainer {
+    display: flex;
+    align-self: center;
+    flex-direction: column;
+
+    width: 90%;
+    height: 75vh;
 }
 
 .partner-button {

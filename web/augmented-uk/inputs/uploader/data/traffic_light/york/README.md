@@ -1,0 +1,1 @@
+Add York traffic signal data in CSV form here from https://www.data.gov.uk/dataset/aebc5c81-a3d2-432d-a02f-86fc1230f68e/traffic-signals.

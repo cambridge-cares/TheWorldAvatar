@@ -40,17 +40,17 @@ class IsochroneGeneratorTest {
             doReturn(true).doReturn(true).doReturn(false).when(resultSetMock).next();
             doReturn("POI1", "POI2").when(resultSetMock).getString("poi_type");
 
-            IsochroneGenerator isochroneGenerator = new IsochroneGenerator();
+                IsochroneGenerator isochroneGenerator = new IsochroneGenerator("poi_nearest_node", "routing_ways");
 
-            List<String> poiTypes = isochroneGenerator.getPoiTypes(remoteRDBStoreClientMock);
-
-            // Verify that the getPoiTypes method returned the expected list of poiTypes
-            assertEquals(Arrays.asList("POI1", "POI2"), poiTypes);
-
-        } catch (Exception e) {
-            fail("Exception occurred: " + e.getMessage());
-        }
-
+                List<String> poiTypes = isochroneGenerator.getPoiTypes(remoteRDBStoreClientMock, true);
+                
+                // Verify that the getPoiTypes method returned the expected list of poiTypes
+                assertEquals(Arrays.asList("POI1", "POI2"), poiTypes);
+            
+            } catch (Exception e) {
+                fail("Exception occurred: " + e.getMessage());
+            }
+        
     }
 
 }
