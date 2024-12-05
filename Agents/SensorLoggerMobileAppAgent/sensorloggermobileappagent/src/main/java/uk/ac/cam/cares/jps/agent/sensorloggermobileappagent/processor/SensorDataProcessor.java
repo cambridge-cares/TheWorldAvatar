@@ -33,7 +33,7 @@ public abstract class SensorDataProcessor {
 
     public abstract List<Class<?>> getDataClass();
 
-    public abstract Map<String, String> getDataIRIMap();
+    public abstract List<String> getDataIRIs();
 
     abstract void clearData();
 

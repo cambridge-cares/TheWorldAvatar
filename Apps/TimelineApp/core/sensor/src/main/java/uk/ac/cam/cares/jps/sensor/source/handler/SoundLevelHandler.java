@@ -22,7 +22,7 @@ import org.json.JSONObject;
  * with sensor handling mechanisms.
  */
 public class SoundLevelHandler extends AbstractSensorHandler {
-    private static final int SAMPLE_RATE = 22050; // reduced from 44100 for better thread management
+    private static final int SAMPLE_RATE = 160000; // reduced from 44100 for better thread management
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
@@ -41,7 +41,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     public SoundLevelHandler(Context context, SensorManager sensorManager) {
         super(sensorManager, Sensor.TYPE_ALL);
         this.context = context;
-        this.sensorName = "Microphone";
+        this.sensorName = "microphone";
     }
 
     /**
@@ -71,6 +71,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
      */
     @Override
     public synchronized void start(Integer integer) {
+        super.start(integer);
         initAudioRecord();
 
         if (audioRecord == null || audioRecord.getState() != AudioRecord.STATE_INITIALIZED) {
@@ -81,6 +82,7 @@ public class SoundLevelHandler extends AbstractSensorHandler {
         try {
             audioRecord.startRecording();
         } catch (IllegalStateException e) {
+            LOGGER.error("Failed to start recording.", e);
             e.printStackTrace();
             return;
         }
@@ -112,7 +114,12 @@ public class SoundLevelHandler extends AbstractSensorHandler {
                 if (audioRecord == null || audioRecord.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
                     break;
                 }
-                readResult = audioRecord.read(buffer, 0, buffer.length);
+                try {
+                    readResult = audioRecord.read(buffer, 0, buffer.length);
+                } catch (Exception e) {
+                    LOGGER.error("Error reading audio data.", e);
+                    break;
+                }
             }
 
             if (readResult > 0) {
@@ -156,13 +163,14 @@ public class SoundLevelHandler extends AbstractSensorHandler {
             values.put("dBFS", dBFS);
 
             dataPoint.put("name", "microphone");
-            dataPoint.put("time", System.currentTimeMillis() * 1000000);
+            dataPoint.put("time", System.currentTimeMillis());
             dataPoint.put("values", values);
 
             synchronized (sensorDataLock) {
                 sensorData.put(dataPoint);
             }
         } catch (JSONException e) {
+            LOGGER.error("JSON exception in logDBFS.", e);
             e.printStackTrace();
         }
     }
@@ -214,4 +222,11 @@ public class SoundLevelHandler extends AbstractSensorHandler {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Not needed for AudioRecord
     }
+    @Override
+    public Boolean isRunning() {
+        synchronized (audioRecordLock) {
+            return audioRecord != null && audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING;
+        }
+    }
+
 }

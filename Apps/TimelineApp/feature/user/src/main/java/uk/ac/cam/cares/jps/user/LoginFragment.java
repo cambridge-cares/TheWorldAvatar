@@ -111,7 +111,7 @@ public class LoginFragment extends Fragment {
         try {
             PackageInfo packageInfo = requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), 0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                binding.versionTv.setText("" + packageInfo.getLongVersionCode());
+                binding.versionTv.setText(packageInfo.versionName);
             }
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
