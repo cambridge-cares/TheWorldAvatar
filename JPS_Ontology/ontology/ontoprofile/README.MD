@@ -99,19 +99,20 @@ Figure 1: TBox representation for an organisation's profile
 flowchart LR
     %% Styling
     classDef literal fill:none
-    classDef node text-wrap:pretty
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm: FormalOrganization]]
-    Organisation -. cmns-dsg:hasName .-> OrganizationName[["<h4>fibo-fnd-org-org: OrganizationName</h4><p style='font-size:0.75rem;'>fibo-be-le-lei:hasTransliteratedName &quot;string&quot;</p>"]]:::literal
+    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm:FormalOrganization]]
+    Organisation -. cmns-dsg:hasName .-> OrganizationName[["<h4>fibo-fnd-org-org:OrganizationName</h4><p style='font-size:0.75rem;'>fibo-be-le-lei:hasTransliteratedName &quot;string&quot;</p>"]]:::literal
 
-    Organisation -. fibo-fnd-pty-pty: hasMailingAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
+    Organisation -. fibo-fnd-pty-pty:hasMailingAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
-    ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country[[lcc-cr: Country]]
-    ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr: StreetAddress]]
+    ConventionalStreetAddress -. fibo-fnd-plc-loc:hasCountry .-> Country[[lcc-cr:Country]]
+    ConventionalStreetAddress -. fibo-fnd-plc-adr:hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr:StreetAddress]]
 
-    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
-    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr:hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr:PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr:hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr:StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
 ```
 
 ### 2.1.2 Person
@@ -131,11 +132,12 @@ Figure 2: TBox representation for a person's profile
 flowchart LR
     %% Styling
     classDef literal fill:none
-    classDef node text-wrap:pretty
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
     cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
-    Person -. cmns-dsg:hasName .-> PersonName[["<h4>fibo-fnd-aap-ppl: PersonName</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot; <br> fibo-fnd-aap-ppl:hasFullLegalName &quot;string&quot; <br> fibo-fnd-aap-ppl:hasSurname &quot;string&quot;</p>"]]:::literal
+    Person -. cmns-dsg:hasName .-> PersonName[["<h4>fibo-fnd-aap-ppl:PersonName</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot; <br> fibo-fnd-aap-ppl:hasFullLegalName &quot;string&quot; <br> fibo-fnd-aap-ppl:hasSurname &quot;string&quot;</p>"]]:::literal
 
     Person -. ontoprofile:hasInitials .-> Initials[["<h4>ontoprofile:Initials</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"]]:::literal
 
@@ -156,18 +158,19 @@ Figure 3: TBox representation for an employment situation
 flowchart LR
     %% Styling
     classDef literal fill:none
-    classDef node text-wrap:pretty
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    Employment[[fibo-fnd-org-fm: Employment]] -. fibo-fnd-org-fm: hasEmployingParty .-> Employer[[fibo-fnd-org-fm: Employer]]
-    Employment -. fibo-fnd-org-fm: hasEmployedParty .-> Employee[[fibo-fnd-org-fm: Employee]]
+    Employment[[fibo-fnd-org-fm:Employment]] -. fibo-fnd-org-fm:hasEmployingParty .-> Employer[[fibo-fnd-org-fm:Employer]]
+    Employment -. fibo-fnd-org-fm:hasEmployedParty .-> Employee[[fibo-fnd-org-fm:Employee]]
     Employment -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
     DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
     DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
-    Employee -. fibo-fnd-org-fm: isEmployeeOf .-> Employer
+    Employee -. fibo-fnd-org-fm:isEmployeeOf .-> Employer
     Employee -. ontoprofile:hasStatus .-> ontoprofile:EmployeeStatus
     Employer -. cmns-rlcmp:isPlayedBy .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
     Employee -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
@@ -195,7 +198,8 @@ Figure 4: TBox representation of driver's employment
 flowchart TD
     %% Styling
     classDef literal fill:none
-    classDef node text-wrap:pretty
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
     Situation[[cmns-pts:Situation]] -. cmns-pts:hasSubjectRole .-> Driver[[ontoprofile:EmployeeDriver]]
@@ -211,8 +215,8 @@ flowchart TD
     VDriver --> cmns-rlcmp:FunctionalRole
     VDriver -. fibo-fnd-rel-rel:controls .-> Vehicle[["<h4>vc:Vehicle</h4><p style='font-size:0.75rem;'>vc:vehicleIdentificationNumber &quot;string&quot;</p>"]]:::literal
     Vehicle -. vc:owner .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
-    Employee -. fibo-fnd-org-fm: isEmployeeOf .-> Employer
-    Employer[[fibo-fnd-org-fm: Employer]] -. cmns-rlcmp:isPlayedBy .-> Org
+    Employee -. fibo-fnd-org-fm:isEmployeeOf .-> Employer
+    Employer[[fibo-fnd-org-fm:Employer]] -. cmns-rlcmp:isPlayedBy .-> Org
 ```
 
 ### 2.2.2 Facility usage
@@ -225,7 +229,8 @@ Figure 5: TBox representation for facility usage
 flowchart LR
     %% Styling
     classDef literal fill:none
-    classDef node text-wrap:pretty
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
     Org[[fibo-fnd-org-fm:FormalOrganization]] -. fibo-fnd-rel-rel:controls .-> Facility
@@ -233,11 +238,11 @@ flowchart LR
 
     Building[[bot:Building]] -. ontobim:hasFacility .-> Facility[[ontobim:Facility]]
     Building --> geo:Feature
-    Building -. fibo-fnd-pty-adr: hasAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
+    Building -. fibo-fnd-pty-adr:hasAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
-    ConventionalStreetAddress -. fibo-fnd-plc-loc: hasCountry .-> Country[[lcc-cr: Country]]
-    ConventionalStreetAddress -. fibo-fnd-plc-adr: hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr: StreetAddress]]
+    ConventionalStreetAddress -. fibo-fnd-plc-loc:hasCountry .-> Country[[lcc-cr:Country]]
+    ConventionalStreetAddress -. fibo-fnd-plc-adr:hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr:StreetAddress]]
 
-    StreetAddress -. fibo-fnd-plc-adr: hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr: PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
-    StreetAddress -. fibo-fnd-plc-adr: hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr: StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr:hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr:PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr:hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr:StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
 ```
