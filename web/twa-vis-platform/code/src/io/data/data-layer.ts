@@ -56,6 +56,9 @@ export abstract class DataLayer {
     */
     public isGroupExpanded: boolean;
 
+    // Indicates if live updates are required for this layer
+    public isLive?: boolean = false;
+
     /**
      * Initialise a new DataLayer instance.
      * 
@@ -78,6 +81,22 @@ export abstract class DataLayer {
         if (this.definition["grouping"]) {
             this.grouping = this.definition["grouping"] as string;
         }
+
+        if ('live' in this.definition) {
+            if (typeof this.definition["live"] === 'boolean') {
+                this.isLive = this.definition["live"];
+            } else if (typeof this.definition["live"] === 'string') {
+                // Parse string to boolean if necessary (e.g., "true" or "false")
+                this.isLive = this.definition["live"].toLowerCase() === 'true';
+            } else {
+                // Fallback if "live" exists but is not a valid boolean or string
+                this.isLive = false;
+            }
+        } else {
+            // Handle missing "live" property by assigning a default value
+            this.isLive = false;  // Default value when "live" is not present
+        }
+
         // Inject clickable state if indicated
         const clickableState: boolean = (this.definition[Interactions.CLICKABLE] ?? true) as boolean;
         const clickableProperty: MapboxClickableProperty = { style: [clickableState] };

@@ -64,6 +64,7 @@ export function addLayer(map: Map, layer: DataLayer, currentStyle: ImageryOption
     delete options["name"];
     delete options["order"];
     delete options["grouping"];
+    delete options["live"];
 
     // Add attributions if missing
     if (!options["metadata"]) {

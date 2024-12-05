@@ -3,6 +3,12 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.14.0
+
+### Features
+
+- Added optional specification to a mapbox layer to have it refresh periodically
+
 ## 5.13.0
 
 ### Features
