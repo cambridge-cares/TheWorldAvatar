@@ -21,6 +21,34 @@ The namespace for the ontology is:
 
 ## Legend
 
+> Ontology Diagram
+
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class.
+
+```mermaid
+flowchart TD
+    %% Styling
+    classDef literal fill:none
+
+    %% Diagram
+    clazz[Class]
+    instance[[Instance]]
+    clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
+```
+
+For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Default lines are relations that involve at least one class, whereas dotted lines are relations between instances of one or more classes.
+
+```mermaid
+flowchart LR
+    subclass[SubClass] --> superclass[SuperClass]
+    instance[[Instance]] -.-> clazz[Class]
+    domainClazz[Class] -- relation --> rangeClazz[Class]
+    domainInst[[Instance]] -- relation --> rangeClazz[Class]
+    domainInst -. relation .-> rangeInst[[Instance]]
+```
+
+> Namespace Prefix
+
 | Prefix            | Namespace                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------ |
 | bot               | `https://w3id.org/bot#`                                                                          |
@@ -63,79 +91,73 @@ The service agreement will first define the duration, parties involved, requeste
 Figure 1: TBox representation for a Service Agreement following the FIBO ontology
 
 ```mermaid
-    erDiagram
-    "fibo-fnd-pas-pas:ServiceAgreement" {
-        rdfs-label agreement_no_string
-    }
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
-    "fibo-fnd-pas-pas:Service" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
-    "fibo-fnd-pas-pas:Service" {
-        rdfs-label label_string
-        rdfs-comments remarks_string
-    }
+flowchart TD
+    %% Styling
+    classDef literal fill:none
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
-    "fibo-fnd-pas-pas:Service" ||--|{ "fibo-fnd-plc-fac:Capability" : "fibo-fnd-rel-rel:provides"
-    "fibo-fnd-plc-fac:Capability" ||--|{ "ontobim:Facility" : "fibo-fnd-rel-rel:involves"
-    "fibo-fnd-org-fm:FormalOrganization" ||--o{ "ontobim:Facility" : "fibo-fnd-rel-rel:controls"
+    %% Contents
+    Agreement[["<h4>fibo-fnd-pas-pas:ServiceAgreement</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"]]:::literal -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
+    EndDate -.-> Date
 
-    "bot:Building" ||--|| "fibo-fnd-plc-loc:PhysicalLocation" : "ontoservice:hasServiceLocation"
-    "fibo-fnd-plc-loc:PhysicalLocation" ||--|{ "geo:Feature" : "rdfs:subClassOf"
-    "geo:Feature" ||--|{ "geo:Geometry" : "geo:hasGeometry"
-    "geo:Geometry" {
-        geo-asWKT wktLiteral
-    }
+    Agreement -. fibo-fnd-rel-rel:governs .-> Service[["<h4>fibo-fnd-pas-pas:Service</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;<br>rdfs:comments &quot;remarks string&quot;</p>"]]:::literal
+    Service -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:ExplicitTimePeriod]]
+    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
+    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
+    StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
+    EndTime -.-> Time
 
-    "bot:Building" ||--o{ "ontobim:Facility" : "ontobim:hasFacility "
-    "bot:Building" ||--o{ "fibo-fnd-plc-adr:ConventionalStreetAddress" : "fibo-fnd-plc-adr:hasAddress"
-    "fibo-fnd-plc-adr:ConventionalStreetAddress" ||--|| "lcc-cr:Country" : "fibo-fnd-plc-loc:hasCountry"
-    "fibo-fnd-plc-adr:ConventionalStreetAddress" ||--o{ "fibo-fnd-plc-adr:StreetAddress" : "fibo-fnd-plc-adr:hasStreetAddress"
-    "fibo-fnd-plc-adr:ConventionalStreetAddress" {
-        fibo-fnd-plc-loc-hasCityName string
-        fibo-fnd-plc-adr-hasPostalCode string
-    }
-    "fibo-fnd-plc-adr:StreetAddress" ||--o{ "fibo-fnd-plc-adr:PrimaryAddressNumber" : "fibo-fnd-plc-adr:hasPrimaryAddressNumber"
-    "fibo-fnd-plc-adr:StreetAddress" ||--o{ "fibo-fnd-plc-adr:StreetName" : "fibo-fnd-plc-adr:hasStreetName"
+    Agreement -. fibo-fnd-agr-ctr:hasContractParty .-> ServiceProvider[[fibo-fnd-pas-pas:ServiceProvider]]
+    ServiceProvider -. cmns-rlcmp:isPlayedBy .-> ProviderOrg[[FormalOrganization]]
+    ProviderOrg -.-> Org
+    ServiceProvider -. fibo-fnd-rel-rel:provides .-> Service
+    Agreement -. fibo-fnd-arr-rep:isRequestedBy .-> Client[[fibo-fnd-pas-pas:Client]]
+    Client -. cmns-rlcmp:isPlayedBy .-> ClientOrg[[FormalOrganization]]
+    ClientOrg -.-> Org[[fibo-fnd-org-fm:FormalOrganization]]
 
-    "fibo-fnd-plc-adr:PrimaryAddressNumber" {
-        fibo-fnd-rel-rel-hasTag block_number_string
-    }
-    "fibo-fnd-plc-adr:StreetName" {
-        fibo-fnd-rel-rel-hasTag string
-    }
+    Service -. fibo-fnd-rel-rel:provides .-> Capability[[fibo-fnd-plc-fac:Capability]]
+    Capability -. fibo-fnd-rel-rel:involves .-> Facility[[ontobim:Facility]]
+    Org -. fibo-fnd-rel-rel:controls .-> Facility
 
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
-    "cmns-dt:DatePeriod" ||--o{ "cmns-dt:Date" : "cmns-dt:hasStartDate"
-    "cmns-dt:DatePeriod" ||--o{ "cmns-dt:Date" : "cmns-dt:hasEndDate"
-    "cmns-dt:Date" {
-        cmns-dt-hasDateValue xsd-date
-    }
+    Building[[bot:Building]] -. ontobim:hasFacility .-> Facility
+    Building -. ontoservice:hasServiceLocation .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
+    Location --> Feature[geo:Feature]
+    Feature -. geo:hasGeometry .-> Geom[["<h4>cmns-dt:geo:Geometry</h4><p style='font-size:0.75rem;'>geo:asWKT &quot;geo:wktLiteral&quot;</p>"]]:::literal
 
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:Client" : "fibo-fnd-arr-rep:isRequestedBy"
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:ServiceProvider" : "fibo-fnd-agr-ctr:hasContractParty"
+    Building -. fibo-fnd-plc-adr:hasAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-pas-pas:Service"  : "fibo-fnd-rel-rel:provides"
-    "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+    ConventionalStreetAddress -. fibo-fnd-plc-loc:hasCountry .-> Country[[lcc-cr:Country]]
+    ConventionalStreetAddress -. fibo-fnd-plc-adr:hasStreetAddress .-> StreetAddress[[fibo-fnd-plc-adr:StreetAddress]]
+
+    StreetAddress -. fibo-fnd-plc-adr:hasPrimaryAddressNumber .-> PrimaryAddressNumber[["<h4>fibo-fnd-plc-adr:PrimaryAddressNumber</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
+    StreetAddress -. fibo-fnd-plc-adr:hasStreetName .-> StreetName[["<h4>fibo-fnd-plc-adr:StreetName</h4><p style='font-size:0.75rem;'>fibo-fnd-rel-rel:hasTag &quot;string&quot;</p>"]]:::literal
 ```
 
 Figure 2: TBox representation for the client's point of contact (contact service) for the service following the FIBO ontology
 
 ```mermaid
-    erDiagram
-    "fibo-fnd-pas-pas:ServiceAgreement" {
-        rdfs-label agreement_no_string
-    }
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--|{ "fibo-fnd-pas-pas:Service" : "fibo-fnd-rel-rel:governs"
+%%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
+flowchart LR
+    %% Styling
+    classDef literal fill:none
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
-    "fibo-fnd-pas-pas:ServiceAgreement" ||--o{ "fibo-fnd-pas-pas:Client" : "fibo-fnd-arr-rep:isRequestedBy"
-    "fibo-fnd-org-fm:Employer" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:Client" ||--o{ "fibo-fnd-org-fm:FormalOrganization"  : "cmns-rlcmp:isPlayedBy"
+    %% Contents
+    Agreement[["<h4>fibo-fnd-pas-pas:ServiceAgreement</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"]]:::literal -. fibo-fnd-rel-rel:governs .-> Service[[fibo-fnd-pas-pas:Service]]
+    Agreement -. fibo-fnd-arr-rep:isRequestedBy .-> Client[[fibo-fnd-pas-pas:Client]]
+    Employer[[fibo-fnd-org-fm:Employer]] -. cmns-rlcmp:isPlayedBy .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
+    Client -. cmns-rlcmp:isPlayedBy .-> Org
 
-    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-org-fm:Employer" : "fibo-fnd-org-fm:isEmployeeOf"
-    "fibo-fnd-org-fm:Employee" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "fibo-fnd-aap-ppl:Person"  : "cmns-rlcmp:isPlayedBy"
-    "fibo-fnd-pas-pas:ServiceProvider" ||--o{ "ontoservice:ContactService"  : "fibo-fnd-rel-rel:provides"
-    "ontoservice:ContactService" ||--|{ "fibo-fnd-pas-pas:Service" : "ontoservice:servesAsContactFor"
+    Employee[[fibo-fnd-org-fm:Employee]] -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
+    Employee -. fibo-fnd-org-fm:isEmployeeOf .-> Employer
+    ServiceProvider[[fibo-fnd-pas-pas:ServiceProvider]] -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
+    ServiceProvider -. fibo-fnd-rel-rel:provides .-> ContactService[[ontoservice:ContactService]]
+    ContactService -. ontoservice:servesAsContactFor .-> Service
 ```
 
 The billing charges are described at the service agreement level, which comprise of two types of billing - base charge and variable rate:
@@ -177,33 +199,41 @@ A generic lifecycle, comprising of stages and their events, will be represented 
 Figure 4: TBox representation of the service contract lifecycle
 
 ```mermaid
-    erDiagram
-    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-arr-lif:hasStage"
-    "ontoservice:CreationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
-    "ontoservice:ServiceExecutionStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
-    "ontoservice:ExpirationStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "rdfs:subClassOf"
-    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:CreationStage" : "cmns-dt:succeeds"
-    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ServiceExecutionStage" : "cmns-dt:succeeds"
+flowchart LR
+    %% Styling
+    classDef literal fill:none
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
-    "ontoservice:CreationStage" ||--o{ "ontoservice:ContractCreation" : "cmns-col:comprises"
-    "ontoservice:CreationStage" ||--o{ "ontoservice:ContractApproval" : "cmns-col:comprises"
-    "ontoservice:ContractApproval" ||--o{ "ontoservice:ContractCreation" : "cmns-dt:succeeds"
-    "ontoservice:ContractCreation" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
-    "ontoservice:ContractApproval" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    %% Contents
+    Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle] -- fibo-fnd-arr-lif:hasStage --> Stage[fibo-fbc-pas-fpas:ContractLifecycleStage]
+    Stage -- cmns-col:comprises --> Event[fibo-fbc-pas-fpas:ContractLifecycleEvent]
 
-    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-col:comprises"
-    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:MissedServiceEvent" : "cmns-col:comprises"
-    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:TerminatedServiceEvent" : "cmns-col:comprises"
-    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
-    "ontoservice:MissedServiceEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
-    "ontoservice:TerminatedServiceEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    CreationStage[ontoservice:CreationStage] --> Stage
+    ServiceExecutionStage[ontoservice:ServiceExecutionStage] --> Stage
+    ExpirationStage[ontoservice:ExpirationStage] --> Stage
+    ServiceExecutionStage -- cmns-dt:succeeds --> CreationStage
+    ExpirationStage -- cmns-dt:succeeds --> ServiceExecutionStage
 
-    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractDischarge" : "cmns-col:comprises"
-    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractRescission" : "cmns-col:comprises"
-    "ontoservice:ExpirationStage" ||--o{ "ontoservice:ContractTermination" : "cmns-col:comprises"
-    "ontoservice:ContractDischarge" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
-    "ontoservice:ContractRescission" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
-    "ontoservice:ContractTermination" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
+    CreationStage -- cmns-col:comprises --> ContractCreation[ontoservice:ContractCreation]
+    CreationStage -- cmns-col:comprises --> ContractApproval[ontoservice:ContractApproval]
+    ContractApproval -- cmns-dt:succeeds --> ContractCreation
+    ContractCreation --> Event
+    ContractApproval --> Event
+
+    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> MissedServiceEvent[ontoservice:MissedServiceEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> TerminatedServiceEvent[ontoservice:TerminatedServiceEvent]
+    ServiceDeliveryEvent --> Event
+    MissedServiceEvent --> Event
+    TerminatedServiceEvent --> Event
+
+    ExpirationStage -- cmns-col:comprises --> ContractDischarge[ontoservice:ContractDischarge]
+    ExpirationStage -- cmns-col:comprises --> ContractRescission[ontoservice:ContractRescission]
+    ExpirationStage -- cmns-col:comprises --> ContractTermination[ontoservice:ContractTermination]
+    ContractDischarge --> Event
+    ContractRescission --> Event
+    ContractTermination --> Event
 ```
 
 In the creation stage, the service agreement will need to be created before it is approved, as represented by the `ContractCreation` and `ContractApproval` events.
@@ -234,28 +264,33 @@ Events in the creation and expiration stage are expected to occur once and we re
 Figure 5: TBox representation of the service agreement's occurrences within a service contract lifecycle
 
 ```mermaid
-    erDiagram
-    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" }|--|| "fibo-fnd-pas-pas:ServiceAgreement" : "fibo-fnd-arr-lif:hasLifecycle"
-    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycle" : "fibo-fnd-rel-rel:exemplifies"
-    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" : "fibo-fnd-arr-lif:hasStage"
-    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-rel-rel:exemplifies"
-    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-col:comprises"
+%%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
+flowchart TD
+    %% Styling
+    classDef literal fill:none
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
-    "fibo-fbc-pas-fpas:ContractLifecycle" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleStage" : "fibo-fnd-arr-lif:hasStage"
+    %% Contents
+    Agreement[[fibo-fnd-pas-pas:ServiceAgreement]]:::literal -. fibo-fnd-arr-lif:hasLifecycle .-> LifecycleOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleOccurrence]]
+    LifecycleOccurrence -. fibo-fnd-arr-lif:hasStage .-> StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]]
+    StageOccurrence -. cmns-col:comprises .-> EventOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
 
-    "fibo-fbc-pas-fpas:ContractLifecycleStage" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "cmns-col:comprises"
-    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    LifecycleOccurrence -- fibo-fnd-rel-rel:exemplifies --> Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle]
+    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> Stage[fibo-fbc-pas-fpas:ContractLifecycleStage]
+    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[fibo-fbc-pas-fpas:ContractLifecycleEvent]
 
-    "fibo-fbc-pas-fpas:ContractLifecycleOccurrence" ||--|{ "fibo-fnd-dt-oc:Occurrence" : "rdfs:subClassOf"
-    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "fibo-fnd-dt-oc:Occurrence" : "rdfs:subClassOf"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "fibo-fnd-dt-oc:Occurrence" : "rdfs:subClassOf"
+    Lifecycle -- fibo-fnd-arr-lif:hasStage --> Stage
+    Stage -- cmns-col:comprises --> Event
 
-    "fibo-fnd-dt-oc:Occurrence" ||--|{ " cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
-
-    "fibo-fnd-dt-oc:Occurrence" {
-        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
-        rdfs-comment remark-string
-    }
+    LifecycleOccurrence --> Occurrence["<h4>fibo-fnd-dt-oc:Occurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
+    StageOccurrence --> Occurrence
+    EventOccurrence --> Occurrence
+    Occurrence -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
+    EndDate -.-> Date
 ```
 
 ### 2.2.2 Service Execution Stage
@@ -269,55 +304,46 @@ In representing the upcoming service delivery occurrences, a regular schedule is
 Figure 6: TBox representation of a regular schedule
 
 ```mermaid
-    erDiagram
-    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "ontoservice:ServiceExecutionStage" : "fibo-fnd-rel-rel:exemplifies"
-    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|{ "cmns-dt:DatePeriod" : "cmns-pts:holdsDuring"
-    "cmns-dt:DatePeriod" ||--o{ "inst:EndDate" : "cmns-dt:hasEndDate"
-    "cmns-dt:DatePeriod" ||--o{ "inst:StartDate" : "cmns-dt:hasStartDate"
-    "inst:EndDate" ||--o{ "cmns-dt:Date" : "rdfs:subClassOf"
-    "inst:StartDate" ||--o{ "cmns-dt:Date" : "rdfs:subClassOf"
+%%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
+flowchart LR
+    %% Styling
+    classDef literal fill:none
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
-    "cmns-dt:Date" {
-        cmns-dt-hasDateValue xsd-date
-    }
+    %% Contents
+    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -. cmns-col:comprises .-> EventOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
+    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[ontoservice:ServiceExecutionStage]
+    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[ontoservice:ServiceDeliveryEvent]
+    ServiceExecutionStage -. cmns-col:comprises .-> Event
+    StageOccurrence -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
+    EndDate -.-> Date
 
-    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-col:comprises"
-    "ontoservice:ServiceDeliveryEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
+    StageOccurrence -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[["<h4>fibo-fnd-dt-fd:RegularSchedule</h4><p style='font-size:0.75rem;'>fibo-fnd-dt-fd:hasCount &quot;xsd:integer&quot;</p>"]]:::literal
+    Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> EventOccurrence
 
-    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
-    "fibo-fnd-dt-fd:RegularSchedule" {
-        fibo-fnd-dt-fd-hasCount integer
-    }
+    Schedule -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:ExplicitTimePeriod]]
+    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
+    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
+    StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
+    EndTime -.-> Time
 
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "inst:StartDate" : "cmns-dt:hasStartDate"
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "cmns-dt:ExplicitTimePeriod" : "cmns-dt:hasTimePeriod"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasStart"
-    "cmns-dt:ExplicitTimePeriod" ||--o{ "cmns-dt:TimeOfDay" : "cmns-dt:hasEndTime"
-    "cmns-dt:TimeOfDay" {
-        cmns-dt_hasTimeValue xsd_time_string
-    }
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-fd:ExplicitRecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
-    "fibo-fnd-dt-fd:ExplicitRecurrenceInterval"{
-        cmns-dt_hasDurationValue ISO8601_duration
-    }
+    Schedule -. cmns-dt:hasStartDate .-> StartDate
+    Schedule -. fibo-fnd-dt-fd:hasRecurrenceInterval .-> Recurrence[["<h4>fibo-fnd-dt-fd:ExplicitRecurrenceInterval</h4><p style='font-size:0.75rem;'>cmns-dt:hasDurationValue &quot;ISO8601_duration&quot;</p>"]]:::literal
+    Schedule -. fibo-fnd-dt-fd:hasRecurrenceInterval .-> Recurrence[[fibo-fnd-dt-bd:BusinessRecurrenceInterval]]
 
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fnd-dt-bd:BusinessRecurrenceInterval" : "fibo-fnd-dt-fd:hasRecurrenceInterval"
-
-    "fibo-fnd-dt-bd:DayOfWeek" ||--o{ "fibo-fnd-dt-bd:BusinessRecurrenceInterval" : "rdfs:subClassOf"
-    "fibo-fnd-dt-bd:DayOfWeek" {
-        NamedIndividual fibo-fnd-dt-fd-Monday
-        NamedIndividual fibo-fnd-dt-fd-Tuesday
-        NamedIndividual fibo-fnd-dt-fd-Wednesday
-        NamedIndividual fibo-fnd-dt-fd-Thursday
-        NamedIndividual fibo-fnd-dt-fd-Friday
-        NamedIndividual fibo-fnd-dt-fd-Saturday
-        NamedIndividual fibo-fnd-dt-fd-Sunday
-    }
-    "fibo-fnd-dt-bd:DayOfMonth" ||--o{ "fibo-fnd-dt-bd:BusinessRecurrenceInterval" : "rdfs:subClassOf"
-    "fibo-fnd-dt-bd:DayOfMonth" {
-        fibo-fnd-dt-fd-hasOrdinalNumber integer
-    }
+    DayOfMonth["<h4>fibo-fnd-dt-bd:DayOfMonth</h4><p style='font-size:0.75rem;'>fibo-fnd-dt-fd:hasOrdinalNumber &quot;integer&quot;</p>"]:::literal --> Recurrence
+    DayOfWeek[fibo-fnd-dt-bd:DayOfWeek] --> Recurrence
+    Monday[[fibo-fnd-dt-fd:Monday]] -.-> DayOfWeek
+    Tuesday[[fibo-fnd-dt-fd:Tuesday]] -.-> DayOfWeek
+    Wednesday[[fibo-fnd-dt-fd:Wednesday]] -.-> DayOfWeek
+    Thursday[[fibo-fnd-dt-fd:Thursday]] -.-> DayOfWeek
+    Friday[[fibo-fnd-dt-fd:Friday]] -.-> DayOfWeek
+    Saturday[[fibo-fnd-dt-fd:Saturday]] -.-> DayOfWeek
+    Sunday[[fibo-fnd-dt-fd:Sunday]] -.-> DayOfWeek
 ```
 
 #### Service Delivery Event
@@ -327,26 +353,25 @@ Each service delivery occurrence can be instantiated with the `ContractLifecycle
 Figure 7: TBox representation of the service agreement's service execution lifecycle stage
 
 ```mermaid
-    erDiagram
-    "ontoservice:ServiceExecutionStage" }|--|| "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" : "fibo-fnd-rel-rel:exemplifies"
-    "fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence" ||--|| "fibo-fnd-dt-fd:RegularSchedule" : "fibo-fnd-dt-fd:hasSchedule"
-    "fibo-fnd-dt-fd:RegularSchedule" ||--o{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "fibo-fnd-dt-oc:hasOccurrence"
+flowchart TD
+    %% Styling
+    classDef literal fill:none
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
-    "ontoservice:ServiceExecutionStage" ||--o{ "ontoservice:ServiceDeliveryEvent" : "cmns-col:comprises"
-    "ontoservice:ServiceDeliveryEvent" ||--|| "fibo-fbc-pas-fpas:ContractLifecycleEvent" : "rdf:type"
-    "fibo-fbc-pas-fpas:ContractLifecycleEvent" {
-        rdfs-label name-string
-        rdfs-comment description-string
-    }
+    %% Contents
+    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -. cmns-col:comprises .-> EventOccurrence[["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
+    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
+    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
+    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent
 
-    "fibo-fbc-pas-fpas:ContractLifecycleEvent" ||--|{ "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" : "cmns-cls:classifies"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "fibo-fnd-plc-loc:PhysicalLocation" : "fibo-fnd-plc-loc:isLocatedAt"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|| "vc:Vehicle" : "ontoservice:hasAssignedTransport"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:hasTotalPrice"
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" {
-        fibo-fnd-dt-oc-hasEventDate xsd-dateTime
-        rdfs-comment remark-string
-    }
+    StageOccurrence -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[[fibo-fnd-dt-fd:RegularSchedule]]
+    Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> EventOccurrence
+    ServiceDeliveryEvent -.-> Event["<h4>fibo-fbc-pas-fpas:ContractLifecycleEvent</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;<br>rdfs:comment &quot;string&quot;</p>"]:::literal
+
+    EventOccurrence -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
+    EventOccurrence -. ontoservice:hasAssignedTransport .-> Vehicle[[vc:Vehicle]]
+    EventOccurrence -. ontoservice:hasTotalPrice .-> TotalPrice[[ontoservice:TotalPrice]]
 ```
 
 ## 2.3 Reporting
