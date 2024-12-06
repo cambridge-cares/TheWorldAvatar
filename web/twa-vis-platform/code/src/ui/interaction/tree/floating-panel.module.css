@@ -1,0 +1,126 @@
+.floatingPanelContainer {
+    width: 400px;
+    height: calc(100% - 40px);
+    min-width: 100px;
+    min-height: 100px;
+
+    position: relative;
+    top: 20px;
+    left: 20px;
+
+    display: flex;
+    flex-direction: column;
+    pointer-events: all;
+}
+
+@media (max-width: 430px) {
+    .floatingPanelContainer {
+        width: 90vw;
+        top: unset;
+        left: unset;
+        margin: auto;
+    }
+}
+
+.floatingPanelHead {
+    height: 5vh;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-tertiary);
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.35);
+
+    display: flex;
+    flex-direction: row;
+}
+
+.floatingPanelControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5vh;
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-tertiary);
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.35);
+}
+
+.headButton {
+    flex-grow: 1;
+    background-color: inherit;
+    border: none;
+    color: var(--text-color-primary) !important;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.5s ease;
+}
+
+.expandButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-color-primary) !important;
+    background-color: var(--background-tertiary);
+    border: 0;
+    border-left: 1px solid var(--border-tertiary);
+    transition: background-color 0.5s ease;
+}
+
+.expandButton:hover {
+    background-color: var(--background-secondary);
+    box-shadow: 1px rgba(0, 0, 0, 0.35);
+}
+
+.headButton span {
+    font-size: var(--icon-size);
+}
+
+.headButton.active {
+    background-color: var(--background-tertiary);
+}
+
+.headButton:hover {
+    background-color: var(--background-tertiary);
+}
+
+.floatingPanelBody {
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    background-color: var(--background-tertiary);
+    border: 1px solid var(--border-secondary);
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.35);
+    height: fit-content;
+    max-height: 60vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden {
+    display: none;
+}
+
+.treeHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 0.25rem;
+    border-style: solid;
+    border-color: var(--border-tertiary);
+    border-width: 0px 0px 0.12rem 0px;
+    transition: background-color 0.3s ease;
+}
+
+.treeHeader:hover {
+    background-color: var(--background-secondary);
+}
+
+.treeHeaderName {
+    width: 100%;
+    font-size: var(--font-size-primary-text);
+    padding: 0.5rem;
+    position: relative;
+    left: 0;
+}
