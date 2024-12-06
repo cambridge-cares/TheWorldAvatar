@@ -54,6 +54,7 @@ flowchart LR
 | bot               | `https://w3id.org/bot#`                                                                          |
 | cmns-cls          | `https://www.omg.org/spec/Commons/Classifiers/`                                                  |
 | cmns-col          | `https://www.omg.org/spec/Commons/Collections/`                                                  |
+| cmns-dsg          | `https://www.omg.org/spec/Commons/Designators/`                                                  |
 | cmns-dt           | `https://www.omg.org/spec/Commons/DatesAndTimes/`                                                |
 | cmns-pts          | `https://www.omg.org/spec/Commons/PartiesAndSituations/`                                         |
 | cmns-qtu          | `https://www.omg.org/spec/Commons/QuantitiesAndUnits/`                                           |
@@ -271,7 +272,7 @@ Occurrences serve to represent the lifecycle of each service agreement in a sepa
 - `LifecycleStage comprises LifecycleEvent` and `LifecycleStageOccurrence comprises LifecycleEventOccurrence`
 - `ServiceExecutionStage succeeds CreationStage` and `ServiceExecutionStageOccurrence succeeds CreationStageOccurrence`
 
-Events in the creation and expiration stage are expected to occur once and we recommend to generate one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required. If the service is terminated or faced an incident, it is recommended to instantiate a new occurrence for the corresponding event with the required time stamp and reason for its occurrence (`rdfs:comment`).
+Events in the creation and expiration stage are expected to occur once and we recommend to generate one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required. If the service is terminated or faced an incident, it is recommended to instantiate a new occurrence for the corresponding event with the required time stamp and reason for its occurrence (`rdfs:comment`). Moreover, `EventStatus` can be used to describe the status of specific event occurrences, namely, whether the event is pending action, in progress, or completed.
 
 Figure 5: TBox representation of the service agreement's occurrences within a service contract lifecycle
 
@@ -303,6 +304,8 @@ flowchart TD
     DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
+
+    EventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> EventOccurrence
 ```
 
 ### 2.2.2 Service Execution Stage
@@ -362,6 +365,8 @@ flowchart LR
 
 The typical sequence of events for a successful service delivery is depicted in the figure below. Each event's occurrence can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date, time, and location (if required). The process begins with the `OrderReceivedEvent`, which kickstarts the workflow. The next event is the `ServiceDispatchEvent`, where users can assign resources, personnel, and locations to specific orders. Personnel can be assigned using the `fibo-fnd-rel-rel:designates` relation and `fibo-fnd-org-fm:Employee` subclasses, while resources can be assigned using the `fibo-fnd-rel-rel:involves` relation. For example, a driver can be designated for the delivery, and their assigned transport and other details can be tracked as described in [`OntoProfile`](https://www.theworldavatar.com/kg/ontoprofile/). Following this, the `ServiceDeliveryEvent` occurs when the services are executed. Users can supplement information on any exchange of assets or equipment using the `fibo-fnd-rel-rel:exchanges` relation, and the total cost of the delivery can be recorded via the `ontoservice:hasTotalPrice` relation. Once the service is delivered, users can log any relevant information with the subsequent `CalculationEvent`. Note that multiple calculation events may be present depending on the service. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements.
 
+It is recommended that the `EventStatus` concept is only used to describe the status of each event occurrence for both a `ServiceDispatchEvent` and `ServiceDeliveryEvent`. A dispatch event may have either pending or completed statuses, whereas a delivery event may be in the pending, in progress, or completed states.
+
 Figure 7: TBox representation of a successful service delivery lifecycle
 
 ```mermaid
@@ -386,11 +391,13 @@ flowchart TD
     DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent
     DispatchOccurrence -.-> EventOccurrence
     DispatchOccurrence -- cmns-dt:succeeds --> OrderReceivedOccurrence
+    DispatchEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[["<h4>DeliveryOccurrence</h4><p style='font-size:0.75rem;'>ontoservice:hasScheduledTime &quot;xsd:time&quot;</p>"]]:::literal
     DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent
     DeliveryOccurrence -.-> EventOccurrence
     DeliveryOccurrence -- cmns-dt:succeeds --> DispatchOccurrence
+    DeliveryEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DeliveryOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
     CalculationEvent -- cmns-cls:classifies --> Calculation

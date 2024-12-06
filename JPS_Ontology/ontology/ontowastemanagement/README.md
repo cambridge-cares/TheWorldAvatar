@@ -286,6 +286,7 @@ flowchart TD
     DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent
     DispatchOccurrence -.-> EventOccurrence
 
+    DispatchEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
     DispatchOccurrence -. fibo-fnd-rel-rel:designates .-> Driver[[ontoprofile:EmployeeDriver]]
     DispatchOccurrence -. fibo-fnd-rel-rel:involves .-> Bin[[ontowm:Bin]]
     DispatchOccurrence -. fibo-fnd-rel-rel:involves .-> Facility[[ontowm:WasteDisposalFacility]]
@@ -315,6 +316,7 @@ flowchart TD
     DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent
     DispatchOccurrence -.-> EventOccurrence["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
     EventOccurrence -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
+    DispatchEventStatus[[ontoservice:CompletedStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[["<h4>DeliveryOccurrence</h4><p style='font-size:0.75rem;'>ontoservice:hasScheduledTime &quot;xsd:time&quot;</p>"]]:::literal
     DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent
@@ -323,6 +325,7 @@ flowchart TD
     DeliveryOccurrence -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
     DeliveryOccurrence -. fibo-fnd-rel-rel:exchanges .-> Bin[[ontowm:Bin]]
     DeliveryOccurrence -. ontoservice:hasTotalPrice .-> TotalPrice[[ontoservice:TotalPrice]]
+    DeliveryEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DeliveryOccurrence
 
     StageOccurrence  -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[["<h4>fibo-fnd-dt-fd:RegularSchedule</h4><p style='font-size:0.75rem;'>fibo-fnd-dt-fd:hasCount &quot;xsd:integer&quot;</p>"]]:::literal
     Schedule -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:ExplicitTimePeriod]]

@@ -94,3 +94,21 @@ os:ContractRescission a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
 os:ContractTermination a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
   rdfs:label "Contract Termination";
   rdfs:comment "An event ending the contract before all contractual obligations have been performed. Typically the contract may have been concluded earlier with the agreement of all parties involved.".
+
+os:EventStatus owl:oneOf (
+  os:PendingStatus
+  os:InProgressStatus
+  os:CompletedStatus
+) .
+
+os:PendingStatus a os:EventStatus ;
+  rdfs:label "Pending";
+  rdfs:comment "Indicates that the event is pending some action or trigger.".
+
+os:InProgressStatus a os:EventStatus ;
+  rdfs:label "In Progress";
+  rdfs:comment "Signifies that the activities related to the event are actively carried out.".
+
+os:CompletedStatus a os:EventStatus ;
+  rdfs:label "Completed";
+  rdfs:comment "Marks that all action and tasks has been executed for the event.".

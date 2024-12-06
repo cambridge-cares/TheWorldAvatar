@@ -321,6 +321,17 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoservice/EventStatus -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/EventStatus">
+        <rdfs:comment>A classifier that indicates the current state of an event during a contract lifecycle</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Event status</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/ExcessVariableRate -->
 
 
