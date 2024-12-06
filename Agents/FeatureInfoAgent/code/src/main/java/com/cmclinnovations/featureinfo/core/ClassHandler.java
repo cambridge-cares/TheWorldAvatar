@@ -24,6 +24,7 @@ import com.cmclinnovations.featureinfo.config.StackEndpointType;
 import com.cmclinnovations.featureinfo.objects.Request;
 import com.cmclinnovations.featureinfo.utils.Utils;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -74,34 +75,21 @@ public class ClassHandler {
      * 
      * @return List of configuration entries with a matching class (may be empty).
      * 
-     * @throws IllegalStateException        if class determination returns no
-     *                                      matches.
-     * @throws InternalServerErrorException if class determination query cannot be
-     *                                      executed.
+     * @throws IllegalStateException if class determination returns no
+     *                               matches.
      */
     public List<ConfigEntry> determineClassMatches(Request request)
-            throws IllegalStateException, InternalServerErrorException {
+            throws IllegalStateException {
         // Get the list of class IRIs from the KG
-        List<String> classIRIs = null;
-        try {
-            classIRIs = runClassQuery(request);
-            if (classIRIs == null || classIRIs.isEmpty()) {
-                throw new IllegalStateException(
-                        "Class determination query has failed to return any results, cannot continue!");
-            }
-        } catch (Exception exception) {
-            LOGGER.error("Running class determination query has thrown an exception!", exception);
-            throw new InternalServerErrorException(
-                    "Class determination query has thrown an exception, cannot continue!", exception);
+        List<String> classIRIs = runClassQuery(request);
+        if (classIRIs == null || classIRIs.isEmpty()) {
+            throw new IllegalStateException(
+                    "Class determination query has failed to return any results, cannot continue!");
         }
 
-        final List<String> classIRIsFinal = classIRIs;
-
         // Find matches, in order returned from KG
-        List<ConfigEntry> matches = new ArrayList<>();
-        configStore.getConfigEntries().stream().filter(c -> classIRIsFinal.contains(c.getClassIRI())).forEach(c -> {
-            matches.add(c);
-        });
+        List<ConfigEntry> matches = configStore.getConfigEntries().stream()
+                .filter(c -> classIRIs.contains(c.getClassIRI())).toList();
 
         if (matches.isEmpty()) {
             throw new IllegalStateException(
@@ -118,10 +106,8 @@ public class ClassHandler {
      * @param enforcedEndpoint optional enforced Blazegraph URL.
      * 
      * @return List of class IRIs.
-     * 
-     * @throws Exception if KG query fails due to connection issues.
      */
-    private List<String> runClassQuery(Request request) throws Exception {
+    private List<String> runClassQuery(Request request) {
         // Read the class determination SPARQL query
         loadQuery();
 
@@ -136,14 +122,19 @@ public class ClassHandler {
         List<String> endpoints = Utils.getBlazegraphURLs(configStore, request.getEndpoint());
         JSONArray jsonResult = null;
 
-        if (endpoints.size() == 1) {
-            LOGGER.debug("Running non-federated class determination query.");
-            kgClient.setQueryEndpoint(endpoints.get(0));
-            jsonResult = kgClient.executeQuery(queryString);
-
-        } else {
-            LOGGER.debug("Running federated class determination query.");
-            jsonResult = kgClient.executeFederatedQuery(endpoints, queryString);
+        try {
+            if (endpoints.size() == 1) {
+                LOGGER.debug("Running non-federated class determination query.");
+                kgClient.setQueryEndpoint(endpoints.get(0));
+                jsonResult = kgClient.executeQuery(queryString);
+            } else {
+                LOGGER.debug("Running federated class determination query.");
+                jsonResult = kgClient.executeFederatedQuery(endpoints, queryString);
+            }
+        } catch (JPSRuntimeException exception) {
+            LOGGER.error("Running class determination query has thrown an exception!", exception);
+            throw new InternalServerErrorException(
+                    "Class determination query has thrown an exception, cannot continue!", exception);
         }
 
         // Parse and return class IRIs
