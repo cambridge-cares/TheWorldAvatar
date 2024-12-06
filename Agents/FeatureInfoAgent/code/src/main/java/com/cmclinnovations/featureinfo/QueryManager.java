@@ -120,13 +120,13 @@ public class QueryManager {
         }
 
         // Get meta data
-        JSONObject metadata = getMeta(request, classMatches, response);
+        JSONObject metadata = getMeta(request, classMatches);
 
         // Get time data
-        JSONArray timedata = getTime(request, classMatches, response);
+        JSONArray timedata = getTime(request, classMatches);
 
         // Get trajectory data
-        JSONObject trajectoryData = getTrajectory(request, classMatches, response);
+        JSONObject trajectoryData = getTrajectory(request, classMatches);
 
         // Combine into a single JSON structure
         JSONObject result = new JSONObject();
@@ -150,7 +150,6 @@ public class QueryManager {
      * configuration entries match said classes.
      * 
      * @param iri      feature IRI.
-     * @param response HTTP response to write to.
      * 
      * @return Set of matching configuration entries.
      * 
@@ -180,14 +179,13 @@ public class QueryManager {
      * 
      * @param iri          feature IRI.
      * @param classMatches discovered configuration entries will class matches.
-     * @param response     HTTP response to write to.
      * 
      * @return formatted meta data.
      */
-    private JSONObject getMeta(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
+    private JSONObject getMeta(Request request, List<ConfigEntry> classMatches) {
         MetaHandler metaHandler = new MetaHandler(request.getIri(), request.getEndpoint(), this.configStore);
         metaHandler.setClient(this.kgClient);
-        return metaHandler.getData(classMatches, response);
+        return metaHandler.getData(classMatches);
     }
 
     /**
@@ -197,17 +195,16 @@ public class QueryManager {
      * 
      * @param iri          feature IRI.
      * @param classMatches discovered configuration entries will class matches.
-     * @param response     HTTP response to write to.
      * 
      * @return formatted time series data.
      */
-    private JSONArray getTime(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
+    private JSONArray getTime(Request request, List<ConfigEntry> classMatches) {
         TimeHandler timeHandler = new TimeHandler(request.getIri(), request.getEndpoint(), this.configStore);
         timeHandler.setClients(this.kgClient, this.tsClient, null);
-        return timeHandler.getData(classMatches, response);
+        return timeHandler.getData(classMatches);
     }
 
-    private JSONObject getTrajectory(Request request, List<ConfigEntry> classMatches, HttpServletResponse response) {
+    private JSONObject getTrajectory(Request request, List<ConfigEntry> classMatches) {
         TrajectoryHandler trajectoryHandler = new TrajectoryHandler(request.getIri(), request.getEndpoint(),
                 this.configStore, request.getLowerBound(), request.getUpperBound());
         trajectoryHandler.setClients(kgClient);
