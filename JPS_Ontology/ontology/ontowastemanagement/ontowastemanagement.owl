@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontowastemanagement="https://www.theworldavatar.com/kg/ontowastemanagement/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/">
-        <dc:date>14 November 2024</dc:date>
+        <dc:date>06 December 2024</dc:date>
         <rdfs:comment>OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -55,19 +55,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedBin -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedBin">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-        <rdfs:comment>A relationship assigning the bin to a service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has assigned bin</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasBinType -->
 
 
@@ -90,19 +77,6 @@
         <rdfs:comment>A relationship describing the disposal charge of a waste disposal service.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
         <rdfs:label>has disposal charge</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontowastemanagement/hasReplacementBin -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/hasReplacementBin">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-        <rdfs:comment>A relationship denoting the replacement bin for a service that will be delivered to the site. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/"/>
-        <rdfs:label>has replacement bin</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -194,21 +168,6 @@
 
 
     <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Truck"/>
-    
-
-
-    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence -->
-
-
-    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/hasAssignedBin"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontowastemanagement/Bin"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
     
 
 

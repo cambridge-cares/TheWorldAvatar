@@ -16,7 +16,7 @@ os:CreationStage cmns-col:comprises os:ContractCreation ;
 
 os:ServiceExecutionStage cmns-dt:succeeds os:CreationStage ;
   cmns-col:comprises os:ServiceDeliveryEvent ;
-  cmns-col:comprises os:MissedServiceEvent ;
+  cmns-col:comprises os:IncidentReport ;
   cmns-col:comprises os:TerminatedServiceEvent .
 
 os:ExpirationStage cmns-dt:succeeds os:ServiceExecutionStage ;
@@ -43,15 +43,25 @@ os:ExpirationStage a fibo-fbc-pas-fpas:ContractLifecycleStage ;
   rdfs:comment "The phase in the lifecycle of a contract where the contract has ended.".
 
 fibo-fbc-pas-fpas:ContractLifecycleEvent owl:oneOf (
+  os:OrderReceivedEvent
+  os:ServiceDispatchEvent
   os:ServiceDeliveryEvent
   os:TerminatedServiceEvent
-  os:MissedServiceEvent
+  os:IncidentReportEvent
   os:ContractCreation
   os:ContractApproval
   os:ContractDischarge
   os:ContractRescission
   os:ContractTermination
 ) .
+
+os:OrderReceivedEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Order Received Event";
+  rdfs:comment "This event occurs when a new order is received and acknowledged by the system. It marks the beginning of the service execution stage.".
+  
+os:ServiceDispatchEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Service Dispatch Event";
+  rdfs:comment "This event represents the assignment of service personnel, resources, and/or locations to perform the requested service on a specific day.".
 
 os:ServiceDeliveryEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
   rdfs:label "Service Delivery Event";
@@ -61,9 +71,9 @@ os:TerminatedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
   rdfs:label "Terminated Service Event";
   rdfs:comment "This event represents a requested service that has been terminated either by the service provider or the client.".
 
-os:MissedServiceEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
-  rdfs:label "Missed Service Event";
-  rdfs:comment "This event represents a requested service that fails to be delivered to the client".
+os:IncidentReportEvent a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
+  rdfs:label "Incident Report Event";
+  rdfs:comment "This event involves the formal reporting of an incident during a specific service delivery, documenting the specifics and any immediate actions taken. Incidents may include accidents and incomplete service delivery.".
 
 os:ContractCreation a fibo-fbc-pas-fpas:ContractLifecycleEvent ;
   rdfs:label "Contract Creation";

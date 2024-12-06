@@ -56,6 +56,7 @@ flowchart LR
 | cmns-col          | `https://www.omg.org/spec/Commons/Collections/`                                                  |
 | cmns-dt           | `https://www.omg.org/spec/Commons/DatesAndTimes/`                                                |
 | cmns-pts          | `https://www.omg.org/spec/Commons/PartiesAndSituations/`                                         |
+| cmns-qtu          | `https://www.omg.org/spec/Commons/QuantitiesAndUnits/`                                           |
 | cmns-rlcmp        | `https://www.omg.org/spec/Commons/RolesAndCompositions/`                                         |
 | fibo-fbc-pas-fpas | `https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices` |
 | fibo-fnd-agr-ctr  | `https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/`                            |
@@ -221,11 +222,20 @@ flowchart LR
     ContractCreation --> Event
     ContractApproval --> Event
 
+    ServiceExecutionStage -- cmns-col:comprises --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
     ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> MissedServiceEvent[ontoservice:MissedServiceEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> IncidentReportEvent[ontoservice:IncidentReportEvent]
     ServiceExecutionStage -- cmns-col:comprises --> TerminatedServiceEvent[ontoservice:TerminatedServiceEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> CalculationEvent[fibo-fnd-dt-oc:CalculationEvent]
+    ServiceDispatchEvent -- cmns-dt:succeeds --> OrderReceivedEvent
+    ServiceDeliveryEvent -- cmns-dt:succeeds --> ServiceDispatchEvent
+    CalculationEvent -- cmns-dt:succeeds --> ServiceDeliveryEvent
+    IncidentReportEvent -- cmns-dt:succeeds --> ServiceDeliveryEvent
+    OrderReceivedEvent --> Event
+    ServiceDispatchEvent --> Event
     ServiceDeliveryEvent --> Event
-    MissedServiceEvent --> Event
+    IncidentReportEvent --> Event
     TerminatedServiceEvent --> Event
 
     ExpirationStage -- cmns-col:comprises --> ContractDischarge[ontoservice:ContractDischarge]
@@ -238,11 +248,13 @@ flowchart LR
 
 In the creation stage, the service agreement will need to be created before it is approved, as represented by the `ContractCreation` and `ContractApproval` events.
 
-During the service execution stage, services can result in three kinds of outcomes:
+During the service execution stage, the sequence of events should occur in the following manner during a successful delivery. It should be noted that the event may be completed with either a `CalculationEvent`, `IncidentReportEvent`, or `TerminatedServiceEvent`. The `Terminated Service Event` represents the termination of an upcoming service either by the service provider or the client, which may occur at any time after the first event.
 
-1. `Service Delivery Event`: Delivery of the requested service
-2. `Terminated Service Event`: A requested service that has been terminated either by the service provider or the client
-3. `Missed Service Event`: A requested service that fails to be delivered to the client
+1. `Order Received Event`: When a new service order is received and acknowledged by the system after the approval
+2. `Service Dispatch Event`: Assignment of service personnel, resources, and/or location(s) to perform the requested service
+3. `Service Delivery Event`: Delivery of the requested service
+4. `Calculation Event`: Records a summary of the service trip, tailored to the specific domain; multiple calculation events can be instantiated if multiple calculations/quantities are reported
+   - `Incident Report Event`: An alternate possible event in which an incident occurred during the service delivery, resulting in the failure to complete
 
 During the expiration stage, the service agreement can end in four situations:
 
@@ -259,7 +271,7 @@ Occurrences serve to represent the lifecycle of each service agreement in a sepa
 - `LifecycleStage comprises LifecycleEvent` and `LifecycleStageOccurrence comprises LifecycleEventOccurrence`
 - `ServiceExecutionStage succeeds CreationStage` and `ServiceExecutionStageOccurrence succeeds CreationStageOccurrence`
 
-Events in the creation and expiration stage are expected to occur once and we recommend to generate one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required. If the service is terminated or missed, it is recommended to instantiate a new occurrence for the corresponding event with the required time stamp and reason for its occurrence (`rdfs:comment`).
+Events in the creation and expiration stage are expected to occur once and we recommend to generate one instance of `ContractLifecycleEventOccurrence` with a specific date time and remarks if required. If the service is terminated or faced an incident, it is recommended to instantiate a new occurrence for the corresponding event with the required time stamp and reason for its occurrence (`rdfs:comment`).
 
 Figure 5: TBox representation of the service agreement's occurrences within a service contract lifecycle
 
@@ -346,11 +358,11 @@ flowchart LR
     Sunday[[fibo-fnd-dt-fd:Sunday]] -.-> DayOfWeek
 ```
 
-#### Service Delivery Event
+#### Successful Service Delivery
 
-Each service delivery occurrence can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date time and location. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements. Additionally, the occurrence of each service can be assigned a transport and/or a monetary charge if required.
+The typical sequence of events for a successful service delivery is depicted in the figure below. Each event's occurrence can be instantiated with the `ContractLifecycleEventOccurrence` concept, which must be assigned a specific date, time, and location (if required). The process begins with the `OrderReceivedEvent`, which kickstarts the workflow. The next event is the `ServiceDispatchEvent`, where users can assign resources, personnel, and locations to specific orders. Personnel can be assigned using the `fibo-fnd-rel-rel:designates` relation and `fibo-fnd-org-fm:Employee` subclasses, while resources can be assigned using the `fibo-fnd-rel-rel:involves` relation. For example, a driver can be designated for the delivery, and their assigned transport and other details can be tracked as described in [`OntoProfile`](https://www.theworldavatar.com/kg/ontoprofile/). Following this, the `ServiceDeliveryEvent` occurs when the services are executed. Users can supplement information on any exchange of assets or equipment using the `fibo-fnd-rel-rel:exchanges` relation, and the total cost of the delivery can be recorded via the `ontoservice:hasTotalPrice` relation. Once the service is delivered, users can log any relevant information with the subsequent `CalculationEvent`. Note that multiple calculation events may be present depending on the service. These occurrences will serve as a record to be analysed for quality, efficiency, and compliance with service agreements.
 
-Figure 7: TBox representation of the service agreement's service execution lifecycle stage
+Figure 7: TBox representation of a successful service delivery lifecycle
 
 ```mermaid
 flowchart TD
@@ -360,18 +372,60 @@ flowchart TD
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -. cmns-col:comprises .-> EventOccurrence[["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
-    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
-    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent
+    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
+    ServiceExecutionStage -- cmns-col:comprises --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
+    ServiceExecutionStage -- cmns-col:comprises --> CalculationEvent[fibo-fnd-dt-oc:CalculationEvent]
+
+    StageOccurrence -. cmns-col:comprises .-> OrderReceivedOccurrence[[OrderReceivedOccurrence]]
+    OrderReceivedOccurrence -- fibo-fnd-rel-rel:exemplifies --> OrderReceivedEvent
+    OrderReceivedOccurrence -.-> EventOccurrence["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
+
+    StageOccurrence -. cmns-col:comprises .-> DispatchOccurrence[[ServiceDispatchOccurrence]]
+    DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent
+    DispatchOccurrence -.-> EventOccurrence
+    DispatchOccurrence -- cmns-dt:succeeds --> OrderReceivedOccurrence
+
+    StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[[DeliveryOccurrence]]
+    DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent
+    DeliveryOccurrence -.-> EventOccurrence
+    DeliveryOccurrence -- cmns-dt:succeeds --> DispatchOccurrence
+
+    StageOccurrence -. cmns-col:comprises .-> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
+    CalculationEvent -- cmns-cls:classifies --> Calculation
+    Calculation -- cmns-dt:succeeds --> DeliveryOccurrence
 
     StageOccurrence -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[[fibo-fnd-dt-fd:RegularSchedule]]
-    Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> EventOccurrence
-    ServiceDeliveryEvent -.-> Event["<h4>fibo-fbc-pas-fpas:ContractLifecycleEvent</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;<br>rdfs:comment &quot;string&quot;</p>"]:::literal
-
+    Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> DeliveryOccurrence
+    DispatchOccurrence -. fibo-fnd-rel-rel:designates .-> Driver[[ontoprofile:EmployeeDriver]]
+    DispatchOccurrence -. fibo-fnd-rel-rel:involves .-> AssignableThing[[No restrictions: Thing]]
+    DeliveryOccurrence -. fibo-fnd-rel-rel:exchanges .->  ExchangeableThing[[No restrictions: Thing]]
+    DeliveryOccurrence -. ontoservice:hasTotalPrice .-> TotalPrice[[ontoservice:TotalPrice]]
     EventOccurrence -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
-    EventOccurrence -. ontoservice:hasAssignedTransport .-> Vehicle[[vc:Vehicle]]
-    EventOccurrence -. ontoservice:hasTotalPrice .-> TotalPrice[[ontoservice:TotalPrice]]
+```
+
+#### Calculation
+
+Once the service is completed, it is expected that the user will log certain values, which serves as inputs for some form of calculation such as collection weight or distance travelled. The calculation have an associated expression, that may ingest any constant or variable values. Outputs are represented via the `cmns-qtu:hasQuantityValue`.
+
+Figure 8: TBox representation of a calculation during the service lifecycle
+
+```mermaid
+flowchart TD
+    %% Styling
+    classDef literal fill:none
+    classDef node overflow-wrap:break-word,text-wrap:pretty
+    linkStyle default overflow-wrap:break-word,text-wrap:pretty;
+
+    %% Contents
+    CalculationEvent[fibo-fnd-dt-oc:CalculationEvent] -- cmns-cls:classifies --> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
+
+    Calculation -. cmns-qtu:hasQuantityValue .-> OutputValue[[cmns-qtu:ScalarQuantityValue]]
+    Calculation -. cmns-qtu:hasExpression .-> Expression[[cmns-qtu:Expression]]
+    Expression -. cmns-qtu:hasArgument .-> InputValue[[cmns-qtu:ScalarQuantityValue]]
+    cmns-qtu:Constant --> InputValue
+    cmns-qtu:Variable --> InputValue
 ```
 
 ## 2.3 Reporting
@@ -386,7 +440,7 @@ $$
   \end{align*}
 $$
 
-Figure 8: ABox representation of the provenance structure for the total service charge
+Figure 9: ABox representation of the provenance structure for the total service charge
 
 ```mermaid
     erDiagram

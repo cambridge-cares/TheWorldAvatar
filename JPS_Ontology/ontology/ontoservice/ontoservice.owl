@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoservice="https://www.theworldavatar.com/kg/ontoservice/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoservice/">
-        <dc:date>04 December 2024</dc:date>
+        <dc:date>06 December 2024</dc:date>
         <rdfs:comment>OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -71,19 +71,6 @@
         <rdfs:comment>A relationship describing the service metric that the variable rate is based on.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>depends on</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoservice/hasAssignedTransport -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasAssignedTransport">
-        <rdfs:domain rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEventOccurrence"/>
-        <rdfs:range rdf:resource="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
-        <rdfs:comment>A relationship assigning a transport vehicle to an occurrence of a service event.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
-        <rdfs:label>has assigned transport</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -245,13 +232,6 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-    
-
-
-    <!-- https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle -->
-
-
-    <owl:Class rdf:about="https://spec.edmcouncil.org/auto/ontology/VC/VehicleCore/Vehicle"/>
     
 
 
