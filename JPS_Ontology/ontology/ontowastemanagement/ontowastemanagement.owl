@@ -11,7 +11,7 @@
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontowastemanagement/">
         <dc:date>06 December 2024</dc:date>
         <rdfs:comment>OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.</rdfs:comment>
-        <owl:versionInfo>1.1</owl:versionInfo>
+        <owl:versionInfo>1.2</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     

@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoWasteManagement,TBox,https://www.theworldavatar.com/kg/ontowastemanagement/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoWasteManagement,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoWasteManagement,TBox,1.2,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoWasteManagement,TBox,"OntoWasteManagement is designed to represent and support the day-to-day waste management operations, ranging from handling collection requests and billing reports, meeting reporting requirements, to fleet and bin management.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoWasteManagement,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 WasteService,Class,https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/Service,IS-A,,,,"A service provided by an entity (such as a municipality or private company) that involves the collection, transportation, and disposal or recycling of waste materials and equipment from residential, commercial, or industrial sources.",https://www.theworldavatar.com/kg/ontowastemanagement/,Waste service

@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoProfile,TBox,https://www.theworldavatar.com/kg/ontoprofile/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoProfile,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoProfile,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoProfile,TBox,"OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoProfile,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 VehicleDriver,Class,https://www.omg.org/spec/Commons/RolesAndCompositions/FunctionalRole,IS-A,,,,"A person who is expected to be assigned to a vehicle, which they will drive.",https://www.theworldavatar.com/kg/ontoprofile/,Vehicle Driver

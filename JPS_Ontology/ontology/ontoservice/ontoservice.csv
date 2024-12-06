@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoService,TBox,https://www.theworldavatar.com/kg/ontoservice/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoService,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoService,TBox,1.2,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoService,TBox,"OntoService is designed to represent the terms, conditions, and obligations associated with service delivery as well as the execution details.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoService,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 ServicePaymentObligation,Class,https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/PaymentsAndSchedules/PaymentObligation,IS-A,,,,Legally enforceable duty and payment terms for the associated service stated in a service agreement.,https://www.theworldavatar.com/kg/ontoservice/,Service payment obligation
