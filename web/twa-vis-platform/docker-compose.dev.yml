@@ -18,6 +18,10 @@ services:
       PROTECTED_PAGES: / ## pages that a user must be logged in to see
       ROLE_PROTECTED_PAGES: /add/* ## pages that require a user to have a given REALM or CLIENT role
       ROLE: protected ## the role required for the above list
+      REACT_APP_USE_GEOSERVER_PROXY: false
+      REACT_APP_SERVER_URL: http://localhost:3000 # only applicable for REACT_APP_USE_GEOSERVER_PROXY = true
+      MAPBOX_USERNAME: 
+      MAPBOX_API_KEY:
 
       REDIS_HOST: host.docker.internal
     secrets:

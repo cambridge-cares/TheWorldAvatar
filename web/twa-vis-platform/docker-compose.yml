@@ -4,7 +4,7 @@
 services:
   # Empty visualisation image for deployment.
   base:
-    image: ghcr.io/cambridge-cares/twa-vf:5.11.1
+    image: ghcr.io/cambridge-cares/twa-vf:5.13.0
     container_name: "twa-vf"
     restart: "no"
     environment:
@@ -12,6 +12,8 @@ services:
       PROTECTED_PAGES: /page,/otherpage ## pages that a user must be logged in to see
       ROLE_PROTECTED_PAGES: /protected/page/ ## pages that require a user to have a given REALM or CLIENT role
       ROLE: twa-test:protected ## the role required for the above list
+      REACT_APP_USE_GEOSERVER_PROXY: false
+      REACT_APP_SERVER_URL: http://localhost:3000 # only applicable for REACT_APP_USE_GEOSERVER_PROXY = true
 
       REDIS_HOST: host.docker.internal
 

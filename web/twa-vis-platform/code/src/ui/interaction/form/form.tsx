@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { FieldValues, useForm, UseFormReturn } from 'react-hook-form';
 import { usePathname } from 'next/navigation';
@@ -23,7 +23,8 @@ interface FormComponentProps {
   formType: string;
   agentApi: string;
   setResponse: React.Dispatch<React.SetStateAction<HttpResponse>>;
-  onSubmittingChange: (_isSubmitting: boolean) => void;
+  primaryInstance?: string;
+  isPrimaryEntity?: boolean;
 }
 
 /**
@@ -34,7 +35,8 @@ interface FormComponentProps {
  * @param {string} formType The type of submission. Valid inputs include add and update.
  * @param {string} agentApi The target agent endpoint for any registry related functionalities.
  * @param {React.Dispatch<React.SetStateAction<HttpResponse>>} setResponse A dispatch function for setting the response after submission.
- * @param onSubmittingChange A function to handle the changes needed when submission should occur.
+ * @param {string} primaryInstance An optional instance for the primary entity.
+ * @param {boolean} isPrimaryEntity An optional indicator if the form is targeting a primary entity.
  */
 export function FormComponent(props: Readonly<FormComponentProps>) {
   const id: string = getAfterDelimiter(usePathname(), "/");
@@ -66,10 +68,6 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         if (field[TYPE_KEY].includes(PROPERTY_GROUP_TYPE)) {
           const fieldset: PropertyGroup = field as PropertyGroup;
           const properties: PropertyShape[] = fieldset.property.map(fieldProp => {
-            // For any schedule related information, it should follow groupless properties
-            if (fieldset.label[VALUE_KEY].includes("schedule")) {
-              return initFormField(fieldProp, initialState, fieldProp.name[VALUE_KEY]);
-            }
             // For property shapes with no node kind property
             // Add node shapes and their corresponding field name to the map to facilite parent dependencies links
             if (!fieldProp.nodeKind) {
@@ -123,6 +121,12 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         "end date": startDate, // End date must correspond to start date
         [dayOfWeek]: true, // Ensure the corresponding day of week is true
       }
+      // For alternate day service
+    } else if (formData[FORM_STATES.RECURRENCE] == -1) {
+      formData = {
+        ...formData,
+        recurrence: "P2D",
+      }
       // For regular service
     } else if (formData[FORM_STATES.RECURRENCE]) {
       formData = {
@@ -134,6 +138,13 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
     switch (props.formType.toLowerCase()) {
       case Paths.REGISTRY_ADD: {
         pendingResponse = await addEntity(props.agentApi, formData, props.entityType);
+        // For registry's primary entity, a draft lifecycle must also be generated
+        if (props.isPrimaryEntity && pendingResponse.success) {
+          pendingResponse = await addEntity(props.agentApi, {
+            contract: pendingResponse.iri,
+            ...formData
+          }, "contracts/draft");
+        }
         break;
       }
       case Paths.REGISTRY_DELETE: {
@@ -141,7 +152,19 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         break;
       }
       case Paths.REGISTRY_EDIT: {
-        pendingResponse = await updateEntity(props.agentApi, formData, props.entityType);
+        if (props.isPrimaryEntity) {
+          const reqBody: string = JSON.stringify({
+            ...formData,
+            contract: props.primaryInstance,
+          });
+          pendingResponse = await updateEntity(`${props.agentApi}/contracts/draft`, reqBody);
+        } else {
+          const reqBody: string = JSON.stringify({
+            ...formData,
+            entity: props.entityType,
+          });
+          pendingResponse = await updateEntity(`${props.agentApi}/${props.entityType}/${formData.id}`, reqBody);
+        }
         break;
       }
       case SEARCH_FORM_TYPE: {
@@ -187,10 +210,6 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
     props.setResponse(pendingResponse);
   });
 
-  useEffect(() => {
-    props.onSubmittingChange(form.formState?.isSubmitting);
-  }, [form.formState?.isSubmitting]);
-
   return (
     <form ref={props.formRef} onSubmit={onSubmit}>
       {form.formState.isLoading ?
@@ -198,16 +217,6 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
         formTemplate.property.map((field, index) => {
           if (field[TYPE_KEY].includes(PROPERTY_GROUP_TYPE)) {
             const fieldset: PropertyGroup = field as PropertyGroup;
-            if (fieldset.label[VALUE_KEY].includes("schedule")) {
-              return <FormSchedule
-                key={fieldset[ID_KEY] + index}
-                group={fieldset}
-                form={form}
-                options={{
-                  disabled: disableAllInputs,
-                }}
-              />
-            }
             return <FormSection
               key={fieldset[ID_KEY] + index}
               entityType={props.entityType}
@@ -226,7 +235,18 @@ export function FormComponent(props: Readonly<FormComponentProps>) {
             }
             const disableId: boolean = props.formType === Paths.REGISTRY_EDIT && fieldProp.name[VALUE_KEY] === FORM_STATES.ID ? true : disableAllInputs;
             if (fieldProp.class) {
-              if (fieldProp.class[ID_KEY] === "https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Location") {
+              if (fieldProp.class[ID_KEY] === "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule") {
+                return <FormSchedule
+                  key={fieldProp.name[VALUE_KEY] + index}
+                  fieldId={fieldProp.name[VALUE_KEY]}
+                  agentApi={props.agentApi}
+                  form={form}
+                  options={{
+                    disabled: disableAllInputs,
+                  }}
+                />
+              }
+              if (fieldProp.class[ID_KEY] === "https://spec.edmcouncil.org/fibo/ontology/FND/Places/Locations/PhysicalLocation") {
                 return <FormGeocoder
                   key={fieldProp.name[VALUE_KEY] + index}
                   agentApi={props.agentApi}

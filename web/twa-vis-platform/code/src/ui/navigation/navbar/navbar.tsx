@@ -32,16 +32,19 @@ export default function Navbar(props: Readonly<NavbarProps>) {
   if (navbarState?.toggled != null && !navbarState.toggled) {
     return null;
   }
-
+  // Backwards compatibility for navbar logo
+  if (props.settings.branding.navbarLogo) {
+    props.settings.branding.navbar = props.settings?.branding?.navbarLogo;
+  }
   return (
     <div id="navbar" className={styles.navbar}>
       {/* Render navbar logo if set */}
-      {props.settings?.branding?.navbarLogo?.length > 0 &&
-          // Handle the case where navbarLogo is a list
+      {props.settings?.branding?.navbar?.length > 0 &&
+        // Handle the case where navbar is a list
         <div className={styles["logo-ribbon"]}>
           {
-            Array.isArray(props.settings?.branding?.navbarLogo) ? (
-              props.settings?.branding?.navbarLogo.map(logo => (
+            Array.isArray(props.settings?.branding?.navbar) ? (
+              props.settings?.branding?.navbar.map(logo => (
                 <Link key={logo} href={Routes.HOME}>
                   <IconComponent
                     icon={logo}
@@ -50,10 +53,10 @@ export default function Navbar(props: Readonly<NavbarProps>) {
                 </Link>
               ))
             ) : (
-              // Handle the case where navbarLogo is a string
+              // Handle the case where navbar is a string
               <Link href={Routes.HOME}>
                 <IconComponent
-                  icon={props.settings?.branding?.navbarLogo}
+                  icon={props.settings?.branding?.navbar}
                   classes={styles["logo"]}
                 />
               </Link>
@@ -98,14 +101,7 @@ export default function Navbar(props: Readonly<NavbarProps>) {
             name="REGISTRY"
             tooltip="Open registry."
             icon="contract"
-            url={`${process.env.ASSET_PREFIX}/view/${props.settings?.resources?.registry?.data}`} />
-        }
-        {props.settings?.modules?.scheduler &&
-          <NavbarComponent
-            name="SCHEDULER"
-            tooltip="Open scheduler"
-            icon="calendar_month"
-            url={`${process.env.ASSET_PREFIX}/view/${props.settings?.resources?.scheduler?.data}`} />
+            url={`${Routes.REGISTRY_PENDING}/${props.settings?.resources?.registry?.data}`} />
         }
       </div>
     </div>

@@ -3,9 +3,31 @@
 
 [//]: # (Note that version headers need to start with "## " characters to be picked up by some automated scripts)
 
+## 5.14.0
+
+### Features
+
+- Added optional specification to a mapbox layer to have it refresh periodically
+
+## 5.13.0
+
+### Features
+
+- Added use of lifecycle in registry 
+- Removal of scheduler configuration, which is part of the new lifecycle
+- General enhancements to forms in the registry
+
+### Bug Fixes
+
+- Fixed mapbox token not being read in development environment
+
+## 5.12.0
+
+- Add ability to include JWT token in header for MapBox source requests.
+
 ## 5.11.1
 
-## Bug Fixes
+### Bug Fixes
 
 - Fixed links to optional pages behind nginx
 
@@ -18,7 +40,7 @@
 - Update several packages, including a breaking version change of mapbox gl-js
 - Update node to last LTS of v22, with a view to move to v23 when webpack dependencies can be resolved
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix tooltip on ribbon remaining engaged on dropdown menu
 - Change default from 3D maps to 2D maps

@@ -84,22 +84,6 @@ In general, property groups are intended to group related fields into a fieldset
  }
 ```
 
-There is also a special Schedule UI section, providing users the ability to choose a schedule (day of week, interval). This can be invoked with a `Property Group` fieldset that must include `schedule` in its `label` key () `"label": { "@value": "any schedule" }`. Note that any other fields/keys are ignored in this case.
-
-```json
-{
-  "@id": "scheduleiri",
-  "@type": "http://www.w3.org/ns/shacl#PropertyGroup",
-  "label": { "@value": "schedule" },
-  "comment": {
-    "@value": "A property group that requires a schedule UI. Label must include schedule in the name"
-  },
-  "property": [
-    property shapes...
-  ]
-}
-```
-
 ## 2. Property Shapes
 
 With that said, the properties `PropertyShape` themselves must comply with [SHACL](https://www.w3.org/TR/shacl/) restrictions. All fields/shapes must contain a `@type`, `name`, and `description` at the minimum. The following sections highlights how the associated `SHACL` property is used in generating the form.
@@ -119,6 +103,7 @@ The following are applicable for all form types:
 
 - `qualifiedValueShape`: An optional property that must be included with `class` to enable dependencies between two fields. For instance, an employee must always be linked to a specific employer. This property must contain an array of the associated node shape instances in the format `{"@id": "node shape"}`. Note that one property may have as many node shapes as possible using the `sh:and` property in the original `SHACL` format.
 - `nodeKind`: An optional property that must be included with `class` and `qualifiedValueShape` to denote if the property is a dependent property, that is dependent on a separate (independent) field with the same node shape. If `nodeKind` is not added, we assume that the property is an independent field that other dependent fields will require.
+- `https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/RegularSchedule`: Targeting this value in class will invoke a special Schedule UI section, providing users the ability to choose a schedule (day of week, interval). Note that any other shapes/fields/keys associated with this schedule class and property are ignored in this case.
 
 In the search form, users can also search within a selected time period using the following `Time Series` property to invoke a special form section UI. However, the corresponding `GeoServer` layer must contain a `time` column using the UNIX Epoch timestamp format in its SQL view.
 

@@ -8,9 +8,9 @@ import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 import FormContainerComponent from 'ui/interaction/form/form-container';
 
 interface AddFormPageProps {
-  params: {
+  params: Promise<{
     type: string
-  }
+  }>
 }
 
 /**
@@ -29,13 +29,16 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * Displays the form page for adding an entity.
  */
-export default function AddFormPage(props: Readonly<AddFormPageProps>) {
+export default async function AddFormPage(props: Readonly<AddFormPageProps>) {
+  const resolvedParams = await props.params;
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   return (
     <div className="formContainer">
       <FormContainerComponent
-        entityType={props.params?.type}
+        entityType={resolvedParams?.type}
         formType={Paths.REGISTRY_ADD}
-        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
+        agentApi={uiSettings?.resources?.registry?.url}
+        isPrimaryEntity={uiSettings?.resources?.registry?.data === resolvedParams?.type}
       />
     </div>
   );
