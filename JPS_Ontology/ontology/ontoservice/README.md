@@ -387,7 +387,7 @@ flowchart TD
     DispatchOccurrence -.-> EventOccurrence
     DispatchOccurrence -- cmns-dt:succeeds --> OrderReceivedOccurrence
 
-    StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[[DeliveryOccurrence]]
+    StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[["<h4>DeliveryOccurrence</h4><p style='font-size:0.75rem;'>ontoservice:hasScheduledTime &quot;xsd:time&quot;</p>"]]:::literal
     DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent
     DeliveryOccurrence -.-> EventOccurrence
     DeliveryOccurrence -- cmns-dt:succeeds --> DispatchOccurrence

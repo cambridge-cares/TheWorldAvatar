@@ -62,6 +62,13 @@
     
 
 
+    <!-- https://www.omg.org/spec/Commons/DatesAndTimes/hasTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.omg.org/spec/Commons/DatesAndTimes/hasTime"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoservice/dependsOn -->
 
 
@@ -125,6 +132,19 @@
         <rdfs:comment>A relationship defining the quantity of a service metric.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>has quantity</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/hasScheduledTime -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoservice/hasScheduledTime">
+        <rdfs:subPropertyOf rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/hasTime"/>
+        <rdfs:range rdf:resource="https://www.omg.org/spec/Commons/DatesAndTimes/TemporalEntity"/>
+        <rdfs:comment>specifies a scheduled time that can be associated with any element</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>has scheduled time</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -260,6 +280,13 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
+    
+
+
+    <!-- https://www.omg.org/spec/Commons/DatesAndTimes/TemporalEntity -->
+
+
+    <owl:Class rdf:about="https://www.omg.org/spec/Commons/DatesAndTimes/TemporalEntity"/>
     
 
 
