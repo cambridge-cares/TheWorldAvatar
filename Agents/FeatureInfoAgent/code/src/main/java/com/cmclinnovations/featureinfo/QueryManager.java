@@ -3,9 +3,6 @@ package com.cmclinnovations.featureinfo;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
