@@ -201,4 +201,8 @@ public class ContainerService extends AbstractService {
         // configuration block
     }
 
+    public String getDNSIPAddress(){
+        return dockerClient.getDNSIPAddress();
+    }
+
 }

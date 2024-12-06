@@ -32,10 +32,12 @@ public final class NginxService extends ContainerService implements ReverseProxy
     public static final String TYPE = "nginx";
 
     private static final String TEMPLATE_TYPE = "Nginx config";
-    private static final String NGINX_CONFIGS_DIR = "nginx/configs/";
-    private static final String SERVER_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_server.conf";
-    private static final String LOCATIONS_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_locations.conf";
-    private static final String UPSTREAM_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_upstream.conf";
+    private static final String NGINX_CONF_TEMPLATE_DIR = "nginx/configs/";
+    private static final String SERVER_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_server.conf";
+    private static final String LOCATIONS_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_locations.conf";
+    private static final String UPSTREAM_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_upstream.conf";
+
+    private static final String NGINX_CONF_DIR = "/etc/nginx/conf.d/";
 
     private static final String CMD = "nginx";
 
@@ -45,11 +47,16 @@ public final class NginxService extends ContainerService implements ReverseProxy
         super(stackName, config);
 
         updateExternalPort(config);
+    }
 
+    protected void doPreStartUpConfiguration() {
         try (InputStream inStream = new BufferedInputStream(
                 NginxService.class.getResourceAsStream(SERVER_CONF_TEMPLATE))) {
             NginxConfigParser parser = new NginxConfigParser(inStream);
             NgxConfig defaultConfigTemplate = parser.parse();
+            NgxParam resolverParam = defaultConfigTemplate.findParam("resolver");
+            resolverParam.addValue(getDNSIPAddress());
+            resolverParam.addValue("valid=5s");
             sender.addConfig(defaultConfigTemplate, "default.conf");
         } catch (ParseException | IOException ex) {
             throw new InvalidTemplateException(TEMPLATE_TYPE, SERVER_CONF_TEMPLATE, ex);
@@ -94,7 +101,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
                     for (Entry<String, String> upstream : upstreams.entrySet()) {
                         addUpstream(upstreamConfigOut, upstream);
                     }
-                    sender.addConfig(upstreamConfigOut, service.getName() + "_upstream.conf");
+                    sender.addConfig(upstreamConfigOut, "upstreams/" + service.getName() + ".conf");
 
                     sender.sendConfigs();
                 } catch (ParseException | IOException ex) {
@@ -112,7 +119,9 @@ public final class NginxService extends ContainerService implements ReverseProxy
             NgxConfig upstreamConfigTemplate = parser.parse();
             NgxBlock upstreamBlock = upstreamConfigTemplate.findBlock("upstream");
             upstreamBlock.addValue(upstream.getKey());
-            upstreamBlock.findParam("server").addValue(upstream.getValue());
+            NgxParam serverParam = upstreamBlock.findParam("server");
+            serverParam.addValue(upstream.getValue());
+            serverParam.addValue("resolve");
             upstreamConfigOut.addEntry(upstreamBlock);
         }
     }
@@ -173,7 +182,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
         }
 
         public void sendConfigs() {
-            sendFiles(files, "/etc/nginx/conf.d");
+            sendFiles(files, NGINX_CONF_DIR);
             executeCommand(CMD, "-s", "reload");
             files.clear();
         }
