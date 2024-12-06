@@ -32,10 +32,12 @@ public final class NginxService extends ContainerService implements ReverseProxy
     public static final String TYPE = "nginx";
 
     private static final String TEMPLATE_TYPE = "Nginx config";
-    private static final String NGINX_CONFIGS_DIR = "nginx/configs/";
-    private static final String SERVER_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_server.conf";
-    private static final String LOCATIONS_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_locations.conf";
-    private static final String UPSTREAM_CONF_TEMPLATE = NGINX_CONFIGS_DIR + "default_upstream.conf";
+    private static final String NGINX_CONF_TEMPLATE_DIR = "nginx/configs/";
+    private static final String SERVER_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_server.conf";
+    private static final String LOCATIONS_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_locations.conf";
+    private static final String UPSTREAM_CONF_TEMPLATE = NGINX_CONF_TEMPLATE_DIR + "default_upstream.conf";
+
+    private static final String NGINX_CONF_DIR = "/etc/nginx/conf.d/";
 
     private static final String CMD = "nginx";
 
@@ -180,7 +182,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
         }
 
         public void sendConfigs() {
-            sendFiles(files, "/etc/nginx/conf.d");
+            sendFiles(files, NGINX_CONF_DIR);
             executeCommand(CMD, "-s", "reload");
             files.clear();
         }
