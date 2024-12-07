@@ -177,6 +177,23 @@ class AssemblyModel(BaseClass):
     hasGBUConnectingPoint: HasGBUConnectingPoint[GBUConnectingPoint]
     hasPoreRing: Optional[HasPoreRing[PoreRing]] = None
 
+    def visualise(self):
+        rows = []
+        for gbu in self.hasGenericBuildingUnit:
+            gbu: GenericBuildingUnit
+            for gcc in gbu.hasGBUCoordinateCenter:
+                gcc: GBUCoordinateCenter
+                rows.append([gbu.gbu_type, gcc.instance_iri, str(gcc.rdfs_comment), gcc.coordinates.x, gcc.coordinates.y, gcc.coordinates.z])
+                for cp in gcc.hasGBUConnectingPoint:
+                    cp: GBUConnectingPoint
+                    rows.append(['ConnectingPoint', cp.instance_iri, str(cp.rdfs_comment), cp.coordinates.x, cp.coordinates.y, cp.coordinates.z])
+        df = pd.DataFrame(rows, columns=['Label', 'IRI', 'Position', 'X', 'Y', 'Z'])
+
+        fig = px.scatter_3d(df, x='X', y='Y', z='Z', color='Label', hover_data=['IRI', 'Position'])
+        fig.update_traces(marker=dict(size=2))
+
+        return fig
+
     @staticmethod
     def process_geometry_json(am_json, gbu_type_1_label, gbu_type_2_label):
         """
