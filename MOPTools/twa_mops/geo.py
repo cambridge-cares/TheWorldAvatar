@@ -362,31 +362,42 @@ class Plane(BaseModel):
         return cls(point = point, normal = normal.get_unit_vector())
 
     @classmethod
-    def from_two_vectors(cls, vector1: Vector, vector2: Vector, point_on_plane: Point = Point(x=0, y=0, z=0)):
+    def from_two_vectors(cls, vector1: Vector, vector2: Vector, point_on_plane: Point = Point(x=0, y=0, z=0), positive_ref_point: Point = None):
         normal_vector = vector1.get_cross_product(vector2)
         norm = normal_vector / np.linalg.norm(normal_vector)
-        return cls(point=point_on_plane, normal=Vector.from_array(norm))
+        temp_plane = cls(point=point_on_plane, normal=Vector.from_array(norm))
+        # check if the reference point is on the positive side of the plane
+        if positive_ref_point is None or temp_plane.is_point_on_positive_side(positive_ref_point):
+            return temp_plane
+        return cls(point=point_on_plane, normal=Vector.from_array(-norm))
 
     @classmethod
-    def from_three_points(cls, pt1: Point, pt2: Point, pt3: Point):
+    def from_three_points(cls, pt1: Point, pt2: Point, pt3: Point, positive_ref_point: Point = None):
         v1 = Vector(x = pt2.x - pt1.x, y = pt2.y - pt1.y, z = pt2.z - pt1.z)
         v2 = Vector(x = pt3.x - pt1.x, y = pt3.y - pt1.y, z = pt3.z - pt1.z)
-        return cls.from_two_vectors(v1, v2, pt1)
+        return cls.from_two_vectors(v1, v2, pt1, positive_ref_point)
 
     @classmethod
-    def fit_from_points(cls, points: List[Point]):
+    def fit_from_points(cls, points: List[Point], positive_ref_point: Point = None):
         n = len(points)
         if n < 3:
             raise ValueError(f'At least 3 points are required to fit a plane. Provided points: {points}')
         elif n == 3:
-            return cls.from_three_points(pt1=points[0], pt2=points[1], pt3=points[2])
+            return cls.from_three_points(pt1=points[0], pt2=points[1], pt3=points[2], positive_ref_point=positive_ref_point)
         else:
             A = np.array([[pt.x, pt.y, pt.z] for pt in points])
             centroid = np.mean(A, axis=0)
             A -= centroid
             _, _, V = np.linalg.svd(A)
             normal = V[-1]
-            return cls(point=Point.from_array(centroid), normal=Vector.from_array(normal))
+            temp_plane = cls(point=Point.from_array(centroid), normal=Vector.from_array(normal))
+            # check if the reference point is on the positive side of the plane
+            if positive_ref_point is None or temp_plane.is_point_on_positive_side(positive_ref_point):
+                return temp_plane
+            return cls(point=Point.from_array(centroid), normal=Vector.from_array(-normal))
+
+    def is_point_on_positive_side(self, other: Point):
+        return np.dot(other.as_array - self.point.as_array, self.normal.as_array) > 0
 
     def normal_vector_from_point_to_plane(self, other: Point) -> Vector:
         w = Vector.from_two_points(start=other, end=self.point)

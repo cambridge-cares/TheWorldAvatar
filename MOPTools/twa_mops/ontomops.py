@@ -490,8 +490,8 @@ class GBUCoordinateCenter(CoordinatePoint):
             else:
                 v = line.normal_vector_from_point_to_line(self.coordinates)
         else:
-            plane = Plane.fit_from_points([bs for bs in connecting_points])
-            v = plane.normal_vector_from_point_to_plane(self.coordinates)
+            plane = Plane.fit_from_points([bs for bs in connecting_points], Point(x=0, y=0, z=0))
+            v = plane.normal
         return v
 
     @property
