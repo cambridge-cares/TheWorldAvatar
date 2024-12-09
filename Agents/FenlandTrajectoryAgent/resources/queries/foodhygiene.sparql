@@ -1,16 +1,16 @@
 PREFIX fh: <http://www.theworldavatar.com/ontology/OntoFHRS/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT ?feature ?name ?type ?postcode ?ratingValue ?ratingDate ?latitude ?longitude
+SELECT ?id ?businessName ?businessType ?ratingTime ?ratingValue ?longitude ?latitude
 WHERE {
-  ?feature fh:isPartOfDomain <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> ;
-           fh:hasBusinessName ?name ;
-           fh:hasBusinessType ?type ;
-           fh:hasPostcode ?postcode ;
-           fh:hasRatingValue ?ratingValue ;
-           fh:hasRatingDate ?ratingDate .
-  ?location fh:isPartOfDomain <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> ;
-            fh:hasLongitude ?longitude ;
-            fh:hasLatitude ?latitude .
+  # Match entities that are part of the Food Hygiene Rating domain
+  ?id fh:isPartOfDomain <http://www.theworldavatar.com/ontology/OntoFHRS/FoodHygieneRating> ;
+      fh:hasBusinessName ?businessName ;
+      fh:hasBusinessType ?businessType ;
+      fh:hasRatingDate ?ratingTime ;
+      fh:hasRatingValue ?ratingValue .
+
+  # Match geolocation details linked to the business
+  ?geo fh:isPartOf ?id ;
+       fh:hasLongitude ?longitude ;
+       fh:hasLatitude ?latitude .
 }
