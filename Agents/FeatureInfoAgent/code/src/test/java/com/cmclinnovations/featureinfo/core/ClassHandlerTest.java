@@ -127,7 +127,7 @@ public class ClassHandlerTest {
         );
 
         Assertions.assertEquals(
-            4,
+            3,
             matchingEntries.size(),
             "Did not return the expected number of class matches!"
         );
