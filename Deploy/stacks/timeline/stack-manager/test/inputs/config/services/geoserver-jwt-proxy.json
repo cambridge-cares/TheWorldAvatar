@@ -5,9 +5,9 @@
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/geoserver-jwt-proxy:1.0",
                 "Env": [
-                    "VIEWPARAM_NAME=device_id",
-                    "KEYCLOAK_SERVER=http://host.docker.internal:8080",
-                    "KEYCLOAK_REALM=twa-test"
+                    "VIEWPARAM_NAME=user_id",
+                    "KEYCLOAK_SERVER=http://timeline-test-keycloak:8080/keycloak",
+                    "KEYCLOAK_REALM=timeline"
                 ],
                 "Configs": [
                     {

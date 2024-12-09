@@ -7,8 +7,7 @@
             "visualisation",
             "feature-info-agent",
             "geoserver-jwt-proxy",
-            "vis-backend-agent",
-            "visualisation"
+            "keycloak-test"
         ],
         "excludes": [
             "citydbimpexp",
@@ -17,8 +16,6 @@
     },
     "volumes": {
         "vis-files": "visualisation",
-        "fia-queries": "fia",
-        "vis": "vis",
-        "vis-backend-agent": "vis-backend-agent"
+        "fia-queries": "fia"
     }
 }

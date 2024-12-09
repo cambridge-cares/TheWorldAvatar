@@ -1,42 +1,42 @@
 {
-    "ServiceSpec": {
-        "Name": "trajectoryqueryagent",
-        "TaskTemplate": {
-            "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:4.0.0",
-                "Env": [
-                    "KEYCLOAK_SERVER=http://timeline-test-keycloak:8080/keycloak",
-                    "KEYCLOAK_REALM=timeline"
-                ],
-                "Configs": [
-                    {
-                        "ConfigName": "blazegraph"
-                    },
-                    {
-                        "ConfigName": "postgis"
-                    },
-                    {
-                        "ConfigName": "geoserver"
-                    },
-                    {
-                        "ConfigName": "user-agent-rest"
-                    }
-                ],
-                "Secrets": [
-                    {
-                        "SecretName": "postgis_password"
-                    },
-                    {
-                        "SecretName": "geoserver_password"
-                    }
-                ]
-            }
-        }
-    },
-    "endpoints": {
-        "rest": {
-            "url": "http://localhost:8080/trajectoryqueryagent/",
-            "externalPath": "/trajectoryqueryagent/"
-        }
+  "ServiceSpec": {
+    "Name": "trajectoryqueryagent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/trajectoryqueryagent:4.0.0-dev-add-session-id-SNAPSHOT",
+        "Env": [
+            "KEYCLOAK_SERVER=http://timeline-test-keycloak:8080/keycloak",
+            "KEYCLOAK_REALM=timeline"
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "postgis"
+          },
+          {
+            "ConfigName": "geoserver"
+          },
+          {
+            "ConfigName": "user-agent-rest"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+        ]
+      }
     }
+  },
+  "endpoints": {
+    "rest": {
+      "url": "http://localhost:8080/trajectoryqueryagent/",
+      "externalPath": "/trajectoryqueryagent/"
+    }
+  }
 }
