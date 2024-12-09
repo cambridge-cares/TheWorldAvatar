@@ -11,6 +11,8 @@ fi
 FOLDER_PATH=$1
 BRANCH_COUNT=0
 
+git fetch --prune
+
 IFS=" " read -r -a mainBranches <<<"$(git branch -r | grep -v '\->' | grep '/main')"
 echo "Main branch =" "${mainBranches[@]}"
 
