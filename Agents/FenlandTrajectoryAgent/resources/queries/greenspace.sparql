@@ -1,0 +1,11 @@
+PREFIX gs: <https://www.theworldavatar.com/kg/ontogreenspace/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?feature ?id ?function ?geometry ?transformedGeometry
+WHERE {
+  ?feature gs:isPartOfDomain <https://www.theworldavatar.com/kg/ontogreenspace/Greenspace> ;
+           gs:hasFunction ?function ;
+           gs:hasGeometry ?geometry ;
+           gs:hasTransformedGeometry ?transformedGeometry .
+}
