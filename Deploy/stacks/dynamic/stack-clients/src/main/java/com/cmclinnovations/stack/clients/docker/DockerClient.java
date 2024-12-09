@@ -669,4 +669,8 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         }
     }
 
+    public String getDNSIPAddress() {
+       return "127.0.0.11";
+    }
+
 }

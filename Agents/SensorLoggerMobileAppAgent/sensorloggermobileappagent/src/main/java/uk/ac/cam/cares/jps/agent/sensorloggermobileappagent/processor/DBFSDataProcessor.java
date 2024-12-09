@@ -65,14 +65,12 @@ public class DBFSDataProcessor extends SensorDataProcessor {
 
     @Override
     public List<Class<?>> getDataClass() {
-        return Collections.nCopies(getDataIRIMap().size(), Double.class);
+        return Collections.nCopies(getDataIRIs().size(), Double.class);
     }
 
     @Override
-    public Map<String, String> getDataIRIMap() {
-        Map<String, String> iriHashMap = new HashMap<>();
-        iriHashMap.put("dbfs", dbfsIRI);
-        return iriHashMap;
+    public List<String> getDataIRIs() {
+        return List.of(dbfsIRI);
     }
 
     @Override

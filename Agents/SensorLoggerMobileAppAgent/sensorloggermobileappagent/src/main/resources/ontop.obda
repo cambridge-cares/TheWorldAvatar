@@ -9,7 +9,9 @@ om:              http://www.ontology-of-units-of-measure.org/resource/om-2/
 mappingId   gps_device
 target      sensorloggerapp:smartphone_{device_id} <https://saref.etsi.org/core/consistsOf> sensorloggerapp:gpsdevice_{device_id} ;
                 a ontodevice:Smartphone ;
-                ontodevice:hasDeviceID {device_id} .
+                ontodevice:hasDeviceID {device_id} ;
+                ontodevice:hasSessionID sensorloggerapp:sessionID_{device_id} .
+            sensorloggerapp:sessionID_{device_id} a ontodevice:SessionID .
             sensorloggerapp:gpsdevice_{device_id} a ontodevice:{sensor_class} ;
                 ontodevice:hasGeoLocation sensorloggerapp:point_{device_id} ;
                 ontodevice:measures sensorloggerapp:altitude_{device_id} ;

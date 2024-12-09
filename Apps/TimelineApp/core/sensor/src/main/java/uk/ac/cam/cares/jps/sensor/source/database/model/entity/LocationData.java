@@ -13,8 +13,6 @@ import org.json.JSONObject;
  */
 @Entity(tableName = "location")
 public class LocationData extends SensorData {
-    @PrimaryKey
-    public long time;
 
     public double latitude;
 
@@ -33,6 +31,7 @@ public class LocationData extends SensorData {
     public Float speedAccuracy;
 
     public Float verticalAccuracy;
+    public int uploaded;
 
     /**
      * Constructs a LocationData object with the specified attributes.
@@ -59,6 +58,8 @@ public class LocationData extends SensorData {
         this.bearingAccuracy = bearingAccuracy;
         this.speedAccuracy = speedAccuracy;
         this.verticalAccuracy = verticalAccuracy;
+        this.uploaded = 0;
+
     }
 
     /**
@@ -70,7 +71,7 @@ public class LocationData extends SensorData {
      */
     public LocationData(JSONObject jo) {
         try {
-            this.time = jo.getLong("time");
+            this.time = jo.getLong("time")* 1_000_000L;
 
             JSONObject values = jo.getJSONObject("values");
 
@@ -87,6 +88,10 @@ public class LocationData extends SensorData {
                     (float) values.getDouble("speedAccuracy") : -1;
             this.verticalAccuracy = values.has("verticalAccuracy") && !values.isNull("verticalAccuracy") ?
                     (float) values.getDouble("verticalAccuracy") : -1;
+
+            if (jo.has("uploaded")) {
+                this.uploaded = jo.getInt("uploaded");
+            }
 
         } catch (JSONException e) {
             throw new RuntimeException(e);

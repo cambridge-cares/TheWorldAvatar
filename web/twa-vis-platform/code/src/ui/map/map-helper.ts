@@ -12,49 +12,49 @@ import { DataStore } from 'io/data/data-store';
 import { Map } from 'mapbox-gl';
 import { CameraPosition, CameraSettings, ImageryOption, ImagerySettings, MapSettings } from 'types/settings';
 import { addIcons } from './mapbox/mapbox-icon-loader';
-import { addAllLayers } from './mapbox/mapbox-layer-utils';
-import { addAllSources } from './mapbox/mapbox-source-utils';
+import { addAllLayers, addLayer } from './mapbox/mapbox-layer-utils';
+import { addAllSources, addSource } from './mapbox/mapbox-source-utils';
 
 // Default imagery options if users do not include them in the "map-settings.json" file
 const DEFAULT_IMAGERY_OPTIONS: ImagerySettings = {
-  "default": "Light",
-  "options": [
-    {
-      "name": "Light",
-      "url": "mapbox://styles/mapbox/light-v11?optimize=true"
-    },
-    {
-      "name": "Dark",
-      "url": "mapbox://styles/mapbox/dark-v11?optimize=true"
-    },
-    {
-      "name": "Outdoors",
-      "url": "mapbox://styles/mapbox/outdoors-v12?optimize=true"
-    },
-    {
-      "name": "Satellite",
-      "url": "mapbox://styles/mapbox/satellite-streets-v12?optimize=true"
-    },
-    {
-      "name": "3D (Day)",
-      "url": "mapbox://styles/mapbox/standard",
-      "time": "dawn"
-    },
-    {
-      "name": "3D (Night)",
-      "url": "mapbox://styles/mapbox/standard",
-      "time": "dusk"
-    }
-  ]
+    "default": "Light",
+    "options": [
+        {
+            "name": "Light",
+            "url": "mapbox://styles/mapbox/light-v11?optimize=true"
+        },
+        {
+            "name": "Dark",
+            "url": "mapbox://styles/mapbox/dark-v11?optimize=true"
+        },
+        {
+            "name": "Outdoors",
+            "url": "mapbox://styles/mapbox/outdoors-v12?optimize=true"
+        },
+        {
+            "name": "Satellite",
+            "url": "mapbox://styles/mapbox/satellite-streets-v12?optimize=true"
+        },
+        {
+            "name": "3D (Day)",
+            "url": "mapbox://styles/mapbox/standard",
+            "time": "dawn"
+        },
+        {
+            "name": "3D (Night)",
+            "url": "mapbox://styles/mapbox/standard",
+            "time": "dusk"
+        }
+    ]
 }
 
 // Layer names adopted by Mapbox that will be hidden or shown when toggling place names in our visualisation
 const PLACENAME_LAYERS: string[] = [
-  "road-number-shield", "road-label", "road-label-simple", "road-intersection", "waterway-label",
-  "natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label",
-  "settlement-subdivision-label", "settlement-minor-label", "settlement-major-label", "settlement-label",
-  "state-label", "country-label", "road-oneway-arrow-blue", "road-oneway-arrow-white", "transit-label",
-  "path-pedestrian-label", "golf-hole-label", "gate-label", "natural-line-label"
+    "road-number-shield", "road-label", "road-label-simple", "road-intersection", "waterway-label",
+    "natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label",
+    "settlement-subdivision-label", "settlement-minor-label", "settlement-major-label", "settlement-label",
+    "state-label", "country-label", "road-oneway-arrow-blue", "road-oneway-arrow-white", "transit-label",
+    "path-pedestrian-label", "golf-hole-label", "gate-label", "natural-line-label"
 ]
 
 /**
@@ -65,12 +65,12 @@ const PLACENAME_LAYERS: string[] = [
  * @param {DataStore} data The data of interest to add to the map.
  */
 export async function addData(map: Map, mapSettings: MapSettings, data: DataStore): Promise<void> {
-  // Parse data configuration and load icons
-  await addIcons(map, mapSettings.icons)
-  resetMap(map);
-  addAllSources(map, data);
-  addAllLayers(map, data, mapSettings.imagery);
-
+    // Parse data configuration and load icons
+    await addIcons(map, mapSettings.icons)
+    resetMap(map);
+    addAllSources(map, data);
+    addAllLayers(map, data, mapSettings.imagery);
+    refreshLiveData(map, data, mapSettings.imagery);
 }
 
 /**
@@ -79,30 +79,30 @@ export async function addData(map: Map, mapSettings: MapSettings, data: DataStor
  * @param {Map} map The current Mapbox map instance.
  */
 function resetMap(map: Map): void {
-  const layers: mapboxgl.LayerSpecification[] = map.getStyle().layers;
-  const sources: Set<string> = new Set();
+    const layers: mapboxgl.LayerSpecification[] = map.getStyle().layers;
+    const sources: Set<string> = new Set();
 
-  layers.map(layer => {
-    const layerId: string = layer.id;
-    const sourceId: string = layer.source;
-    // Conditional check to protect background and default styles
-    if (layer.type != "background" && sourceId != "composite") {
-      // Remove the layer
-      if (map.getLayer(layerId)) {
-        map.removeLayer(layerId);
-      }
+    layers.map(layer => {
+        const layerId: string = layer.id;
+        const sourceId: string = layer.source;
+        // Conditional check to protect background and default styles
+        if (layer.type != "background" && sourceId != "composite") {
+            // Remove the layer
+            if (map.getLayer(layerId)) {
+                map.removeLayer(layerId);
+            }
 
-      // Add the source to the set if any exists
-      if (map.getSource(sourceId)) {
-        sources.add(sourceId);
-      }
-    }
-  });
+            // Add the source to the set if any exists
+            if (map.getSource(sourceId)) {
+                sources.add(sourceId);
+            }
+        }
+    });
 
-  // Remove sources independently from layers to prevent errors when multiple layers uses the same source
-  sources.forEach(source => {
-    map.removeSource(source);
-  });
+    // Remove sources independently from layers to prevent errors when multiple layers uses the same source
+    sources.forEach(source => {
+        map.removeSource(source);
+    });
 }
 
 /**
@@ -113,8 +113,8 @@ function resetMap(map: Map): void {
  * @returns Default CameraPosition object.
  */
 export function getDefaultCameraPosition(cameraSettings: CameraSettings): CameraPosition {
-  const defaultName = cameraSettings.default;
-  return getCameraPosition(defaultName, cameraSettings);
+    const defaultName = cameraSettings.default;
+    return getCameraPosition(defaultName, cameraSettings);
 }
 
 /**
@@ -125,8 +125,8 @@ export function getDefaultCameraPosition(cameraSettings: CameraSettings): Camera
  * @returns Corresponding CameraPosition (or null).
  */
 export function getCameraPosition(name: string, cameraSettings: CameraSettings): CameraPosition {
-  const positions = cameraSettings.positions;
-  return positions.find(item => item["name"] === name);
+    const positions = cameraSettings.positions;
+    return positions.find(item => item["name"] === name);
 }
 
 /**
@@ -136,7 +136,7 @@ export function getCameraPosition(name: string, cameraSettings: CameraSettings):
  * @returns A list of the names for all camera positions.
  */
 export function getCameraPositions(cameraSettings: CameraSettings): string[] {
-  return cameraSettings.positions.map((position: CameraPosition) => position.name);
+    return cameraSettings.positions.map((position: CameraPosition) => position.name);
 }
 
 /**
@@ -147,21 +147,21 @@ export function getCameraPositions(cameraSettings: CameraSettings): string[] {
  * @returns Default ImageryOption object.
  */
 export function getDefaultImageryOption(imagerySettings: ImagerySettings): ImageryOption {
-  // If users do not specify imagery settings, use the defaults
-  if (!imagerySettings) {
-    imagerySettings = DEFAULT_IMAGERY_OPTIONS;
-  }
-
-  if (typeof window !== "undefined" && imagerySettings.default.toLowerCase() == "auto") {
-    // Auto detect browser theme
-    if (window?.matchMedia && window?.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return getImageryOption("Dark", imagerySettings);
-    } else {
-      return getImageryOption("Light", imagerySettings);
+    // If users do not specify imagery settings, use the defaults
+    if (!imagerySettings) {
+        imagerySettings = DEFAULT_IMAGERY_OPTIONS;
     }
-  } else {
-    return getImageryOption(imagerySettings.default, imagerySettings);
-  }
+
+    if (typeof window !== "undefined" && imagerySettings.default.toLowerCase() == "auto") {
+        // Auto detect browser theme
+        if (window?.matchMedia && window?.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return getImageryOption("Dark", imagerySettings);
+        } else {
+            return getImageryOption("Light", imagerySettings);
+        }
+    } else {
+        return getImageryOption(imagerySettings.default, imagerySettings);
+    }
 }
 
 /**
@@ -172,12 +172,12 @@ export function getDefaultImageryOption(imagerySettings: ImagerySettings): Image
  * @returns Corresponding ImageryOption (or null).
  */
 function getImageryOption(name: string, imagerySettings: ImagerySettings): ImageryOption {
-  if (imagerySettings == null) {
-    imagerySettings = DEFAULT_IMAGERY_OPTIONS;
-  }
+    if (imagerySettings == null) {
+        imagerySettings = DEFAULT_IMAGERY_OPTIONS;
+    }
 
-  const options = imagerySettings.options;
-  return options.find(item => item["name"] === name);
+    const options = imagerySettings.options;
+    return options.find(item => item["name"] === name);
 }
 
 /**
@@ -187,7 +187,7 @@ function getImageryOption(name: string, imagerySettings: ImagerySettings): Image
  * @returns A list of the names for all available imagery options.
  */
 export function getImageryOptions(imagery: ImagerySettings): string[] {
-  return imagery.options.map((option: ImageryOption) => option.name);
+    return imagery.options.map((option: ImageryOption) => option.name);
 }
 
 /**
@@ -197,18 +197,18 @@ export function getImageryOptions(imagery: ImagerySettings): string[] {
  * @returns ImageryOption for current selection.
  */
 export function getCurrentImageryOption(imagerySettings: ImagerySettings): ImageryOption {
-  const reduxState = reduxStore.getState();
-  const items = reduxState.ribbonComponents.items;
-  if (items == null || items.length == 0) {
-    return getDefaultImageryOption(imagerySettings);
-  } else {
-    const match = items.find(option => option.id === "map-style");
-    if (match == null) {
-      return getDefaultImageryOption(imagerySettings);
+    const reduxState = reduxStore.getState();
+    const items = reduxState.ribbonComponents.items;
+    if (items == null || items.length == 0) {
+        return getDefaultImageryOption(imagerySettings);
     } else {
-      return getImageryOption(match.selection, imagerySettings);
+        const match = items.find(option => option.id === "map-style");
+        if (match == null) {
+            return getDefaultImageryOption(imagerySettings);
+        } else {
+            return getImageryOption(match.selection, imagerySettings);
+        }
     }
-  }
 }
 
 /**
@@ -217,21 +217,21 @@ export function getCurrentImageryOption(imagerySettings: ImagerySettings): Image
  * @param {Map} map The current Mapbox map instance.
  */
 export function setImagery(imagerySettings: ImagerySettings, map: Map): void {
-  const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
+    const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
-  // Update map
-  map.setStyle(imageryOption.url);
-  map.setProjection({
-    name: 'mercator'
-  });
+    // Update map
+    map.setStyle(imageryOption.url);
+    map.setProjection({
+        name: 'mercator'
+    });
 
-  map.on('style.load', () => {
-    if (imageryOption.time != null) {
-      (map as Map).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
-    }
-    // Ensure placenames match previous state
-    togglePlacenames(imagerySettings, map);
-  });
+    map.on('style.load', () => {
+        if (imageryOption.time != null) {
+            (map as Map).setConfigProperty('basemap', 'lightPreset', imageryOption.time);
+        }
+        // Ensure placenames match previous state
+        togglePlacenames(imagerySettings, map);
+    });
 }
 
 /**
@@ -241,38 +241,38 @@ export function setImagery(imagerySettings: ImagerySettings, map: Map): void {
  * @param {Map} map The current Mapbox map instance.
  */
 export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): void {
-  const reduxState = reduxStore.getState();
-  const items = reduxState.ribbonComponents.items;
-  let shouldHide = true;
-  if (items != null && items.length > 0) {
-    shouldHide = items.find(option => option.id === "placenames")?.selection;
-  }
-  const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
+    const reduxState = reduxStore.getState();
+    const items = reduxState.ribbonComponents.items;
+    let shouldHide = true;
+    if (items != null && items.length > 0) {
+        shouldHide = items.find(option => option.id === "placenames")?.selection;
+    }
+    const imageryOption: ImageryOption = getCurrentImageryOption(imagerySettings);
 
-  if (imageryOption.time != null) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as Map).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as Map).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as Map).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (map as Map).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
-  } else {
-    // The above only works when using the "Standard" style from Mapbox v3, if using any
-    // other style (such as "Light", or "Dark"), then it will fail. In which case we do it
-    // the old fashioned way by toggling individual layers.
-    const layers = map.getStyle().layers;
-    layers.forEach(layer => {
-      if (PLACENAME_LAYERS.includes(layer["id"])) {
-        map.setLayoutProperty(
-          layer["id"],
-          "visibility",
-          (shouldHide ? "none" : "visible")
-        );
-      }
-    });
-  }
+    if (imageryOption.time != null) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (map as Map).setConfigProperty('basemap', 'showPlaceLabels', !shouldHide);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (map as Map).setConfigProperty('basemap', 'showRoadLabels', !shouldHide);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (map as Map).setConfigProperty('basemap', 'showPointOfInterestLabels', !shouldHide);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (map as Map).setConfigProperty('basemap', 'showTransitLabels', !shouldHide);
+    } else {
+        // The above only works when using the "Standard" style from Mapbox v3, if using any
+        // other style (such as "Light", or "Dark"), then it will fail. In which case we do it
+        // the old fashioned way by toggling individual layers.
+        const layers = map.getStyle().layers;
+        layers.forEach(layer => {
+            if (PLACENAME_LAYERS.includes(layer["id"])) {
+                map.setLayoutProperty(
+                    layer["id"],
+                    "visibility",
+                    (shouldHide ? "none" : "visible")
+                );
+            }
+        });
+    }
 }
 
 /**
@@ -282,21 +282,21 @@ export function togglePlacenames(imagerySettings: ImagerySettings, map: Map): vo
  * @param {Map} map The current Mapbox map instance.
  */
 export function set3DTerrain(state: boolean, map: Map): void {
-  if (state) {
-    map.addSource('mapbox-3d-terrain', {
-      type: 'raster-dem',
-      url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-      tileSize: 512,
-      maxzoom: 14
-    });
-    map.setTerrain({
-      source: 'mapbox-3d-terrain',
-      exaggeration: 1.5
-    });
-  } else {
-    map.setTerrain(null);
-    map.removeSource('mapbox-3d-terrain');
-  }
+    if (state) {
+        map.addSource('mapbox-3d-terrain', {
+            type: 'raster-dem',
+            url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+            tileSize: 512,
+            maxzoom: 14
+        });
+        map.setTerrain({
+            source: 'mapbox-3d-terrain',
+            exaggeration: 1.5
+        });
+    } else {
+        map.setTerrain(null);
+        map.removeSource('mapbox-3d-terrain');
+    }
 }
 
 /**
@@ -306,21 +306,21 @@ export function set3DTerrain(state: boolean, map: Map): void {
  * @param {Map} map The current Mapbox map instance.
  */
 export function resetCamera(cameraSettings: CameraSettings, map: Map): void {
-  const reduxState = reduxStore.getState();
-  const items = reduxState.ribbonComponents.items;
-  let position: CameraPosition;
-  if (items.length == 0) {
-    position = getDefaultCameraPosition(cameraSettings);
-  } else {
-    const positionName = items.find(position => position.id === "reset")?.selection;
-    position = getCameraPosition(positionName, cameraSettings);
-  }
+    const reduxState = reduxStore.getState();
+    const items = reduxState.ribbonComponents.items;
+    let position: CameraPosition;
+    if (items.length == 0) {
+        position = getDefaultCameraPosition(cameraSettings);
+    } else {
+        const positionName = items.find(position => position.id === "reset")?.selection;
+        position = getCameraPosition(positionName, cameraSettings);
+    }
 
-  // Move the map
-  map.flyTo({
-    ...position,
-    essential: true
-  });
+    // Move the map
+    map.flyTo({
+        ...position,
+        essential: true
+    });
 }
 
 /**
@@ -329,23 +329,42 @@ export function resetCamera(cameraSettings: CameraSettings, map: Map): void {
  * @param {Map} map The current Mapbox map instance.
  */
 export function locateUser(map: Map): void {
-  navigator.geolocation.getCurrentPosition(
-    (geolocation) => {
-      const long = geolocation["coords"]["longitude"];
-      const lat = geolocation["coords"]["latitude"];
+    navigator.geolocation.getCurrentPosition(
+        (geolocation) => {
+            const long = geolocation["coords"]["longitude"];
+            const lat = geolocation["coords"]["latitude"];
 
-      // Move the map
-      map.flyTo({
-        center: [long, lat],
-        zoom: 12,
-        essential: true
-      });
-    },
-    () => {
-      toast.warning("Cannot read user's location without browser authorisation.", {
-      })
+            // Move the map
+            map.flyTo({
+                center: [long, lat],
+                zoom: 12,
+                essential: true
+            });
+        },
+        () => {
+            toast.warning("Cannot read user's location without browser authorisation.", {
+            })
 
-    }
-  );
+        }
+    );
 }
 
+function refreshLiveData(map: Map, data: DataStore, imagerySettings: ImagerySettings): void {
+    const refreshInterval = 30000;
+    setInterval(() => {
+        data?.getLayerList().forEach((layer) => {
+            if (layer.isLive) {
+                console.log("refreshing " + layer.id);
+                const source = map.getSource(layer.source.id);
+                const mapboxLayer = map.getLayer(layer.id);
+                if (source && mapboxLayer) {
+                    map.removeLayer(layer.id);
+                    map.removeSource(source.id);
+
+                    addSource(map, layer.source);
+                    addLayer(map, layer, getCurrentImageryOption(imagerySettings));
+                }
+            }
+        });
+    }, refreshInterval);
+}

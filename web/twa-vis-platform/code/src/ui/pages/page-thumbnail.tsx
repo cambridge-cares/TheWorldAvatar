@@ -28,6 +28,7 @@ interface PageThumbnailTemplateProps {
   icon: string;
   redirectUrl: string;
 }
+const ASSET_PREFIX = process.env.ASSET_PREFIX ?? "";
 
 /**
  * A thumbnail that is constructed from the markdown page input. 
@@ -37,7 +38,7 @@ interface PageThumbnailTemplateProps {
  */
 export function MarkdownPageThumbnail({ page }: Readonly<MarkdownPageThumbnailProps>) {
   const thumbnail = page.thumbnail ?? Assets.INFO;
-  const url = `./${page.slug}`;
+  const url = `${ASSET_PREFIX}/${page.slug}`;
 
   return (
     <PageThumbnailTemplate

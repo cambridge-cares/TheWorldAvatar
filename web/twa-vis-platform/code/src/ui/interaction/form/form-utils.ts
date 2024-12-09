@@ -6,6 +6,8 @@ import { PropertyShape, VALUE_KEY, ONTOLOGY_CONCEPT_ROOT, OntologyConcept, Ontol
 export const FORM_STATES: Record<string, string> = {
   ID: "id",
   FORM_TYPE: "formType",
+  CONTRACT: "contract",
+  REMARKS: "remarks",
   RECURRENCE: "recurrence",
   MON: "monday",
   TUES: "tuesday",
@@ -14,6 +16,7 @@ export const FORM_STATES: Record<string, string> = {
   FRI: "friday",
   SAT: "saturday",
   SUN: "sunday",
+  DATE: "date",
   START_DATE: "start date",
   END_DATE: "end date",
   START_TIME_PERIOD: "search period from",
@@ -22,6 +25,12 @@ export const FORM_STATES: Record<string, string> = {
   TIME_SLOT_END: "time slot end",
   LATITUDE: "latitude",
   LONGITUDE: "longitude",
+};
+
+export const ENTITY_STATUS: Record<string, string> = {
+  ACTIVE: "Active",
+  ARCHIVED: "Archived",
+  PENDING: "Pending",
 };
 
 /**
@@ -67,6 +76,9 @@ export function getDefaultVal(field: string, defaultValue: string, formType: str
     }
     if (defaultValue === "P1D") {
       return 0;
+    }
+    if (defaultValue === "P2D") {
+      return -1;
     }
     // Retrieve and parse the recurrent digit based on default value
     const match: RegExpMatchArray = /P(\d+)D/.exec(defaultValue);
@@ -246,9 +258,9 @@ function sortChildrenConcepts(mappings: OntologyConceptMappings, priority: Ontol
     // Ensure that this is not the root
     if (parentKey != ONTOLOGY_CONCEPT_ROOT) {
       // Attempt to find the match concept
-      const matchedConcept: OntologyConcept = mappings[parentKey].find(concept => concept.type?.value == priority?.label?.value);
+      const matchedConcept: OntologyConcept = mappings[parentKey].find(concept => concept.type?.value == priority?.type?.value);
       // Filter out the matching concept if it is present, and sort the children out
-      const sortedChildren: OntologyConcept[] = mappings[parentKey].filter(concept => concept.type?.value != priority?.label?.value)
+      const sortedChildren: OntologyConcept[] = mappings[parentKey].filter(concept => concept.type?.value != priority?.type?.value)
         .sort((a, b) => a.label.value.localeCompare(b.label.value));
       // Append the matching concept to the start if it is present
       if (matchedConcept) { sortedChildren.unshift(matchedConcept); }
