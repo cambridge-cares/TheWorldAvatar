@@ -37,7 +37,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     # Connection details
-    host = "174.138.27.240"
+    host = "localhost"
     port = 5432
     user = "postgres"
     password = "1111"
