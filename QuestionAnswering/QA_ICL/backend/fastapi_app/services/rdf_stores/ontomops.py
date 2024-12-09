@@ -17,7 +17,7 @@ class OntomopsRDFStore(Cls2NodeGetter, RDFStore):
             "mops:AssemblyModel": self.get_AMs,
             "mops:GenericBuildingUnit": self.get_GBUs,
             "mops:GenericBuildingUnitType": self.get_GBUTypes,
-            "om:measure": self.get_Measures,
+            "om:Measure": self.get_Measures,
         }
 
     def get_MOPs(
