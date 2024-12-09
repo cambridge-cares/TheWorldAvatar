@@ -142,6 +142,8 @@ public class ConfigReader {
             // Build
             return builder.build(id, clazz, metaFile, timeFile, timeReference, timeLimit, timeUnit, timeDatabase);
         } else if (jsonEntry.has("trajectory")) { // special trajectory case
+            // TODO: in futrue, it would be best to do tragectory calculations all in a
+            // single sparql query. This requires the time series being kg accessible.
             String id = jsonEntry.getString("id");
             String clazz = jsonEntry.getString("class");
 
