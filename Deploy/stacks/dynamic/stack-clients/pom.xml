@@ -7,7 +7,7 @@
 
     <groupId>com.cmclinnovations</groupId>
     <artifactId>stack-clients</artifactId>
-    <version>1.39.0</version>
+    <version>1.39.1-dev-custom-restart-policies-for-podman-SNAPSHOT</version>
 
     <name>Stack Clients</name>
     <url>https://theworldavatar.io</url>
