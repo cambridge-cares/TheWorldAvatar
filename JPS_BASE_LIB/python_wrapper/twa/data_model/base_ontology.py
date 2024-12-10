@@ -928,16 +928,27 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         for iri, props in node_dct.items():
             # TODO optimise the time complexity of the following code when the number of instances is large
             # check if the rdf:type of the instance matches the calling class or any of its subclasses
-            try:
-                target_clz_rdf_type = list(props[RDF.type.toPython()])[0]
-            except Exception as e:
+            target_clz_rdf_types = set(props.get(RDF.type.toPython(), [])) # NOTE this supports instance instantiated with multiple rdf:type
+            if not target_clz_rdf_types:
                 raise ValueError(f"The instance {iri} has no rdf:type, retrieved outgoing links and attributes: {props}.")
-            if target_clz_rdf_type != cls.rdf_type and target_clz_rdf_type not in cls.construct_subclass_dictionary().keys():
+            cls_subclasses = set(cls.construct_subclass_dictionary().keys())
+            cls_subclasses.add(cls.rdf_type)
+            intersection = target_clz_rdf_types & cls_subclasses
+            if intersection:
+                # NOTE instead of using the first element of the intersection
+                # we find the deepest subclass as target_clz_rdf_type
+                # so that the created object could inherite all the properties of its parent classes
+                # which prevents the loss of information
+                target_clz_rdf_type = next(iter(intersection))
+                for c in list(intersection):
+                    if issubclass(cls.retrieve_subclass(c), cls.retrieve_subclass(target_clz_rdf_type)):
+                        target_clz_rdf_type = c
+            else:
                 # if there's any error, remove the iri from the loading status
                 # otherwise it will block any further pulling of the same object
                 KnowledgeGraph._remove_iri_from_loading(iri)
                 raise ValueError(
-                    f"""The instance {iri} is of type {props[RDF.type.toPython()]},
+                    f"""The instance {iri} is of type {target_clz_rdf_types},
                     it doesn't match the rdf:type of class {cls.__name__} ({cls.rdf_type}),
                     nor any of its subclasses ({cls.construct_subclass_dictionary()}),
                     therefore it cannot be instantiated.""")

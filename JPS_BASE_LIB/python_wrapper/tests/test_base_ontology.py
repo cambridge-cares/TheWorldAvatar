@@ -972,3 +972,55 @@ def test_cls_rdfs_comment_label():
         assert (URIRef(TestRdfsCommentLabel.rdf_type), URIRef(RDFS.label), Literal(label)) in g
         assert (URIRef(TestRdfsCommentLabelDataProperty.predicate_iri), URIRef(RDFS.label), Literal(label)) in g
         assert (URIRef(TestRdfsCommentLabelObjectProperty.predicate_iri), URIRef(RDFS.label), Literal(label)) in g
+
+
+def test_instances_with_multiple_rdf_type(initialise_sparql_client):
+    a1, a2, a3, b, c, d = init()
+    # create data property and classes for this test
+    Data_Property_E_Sub = DatatypeProperty.create_from_base('Data_Property_E_Sub', ExampleOntology, 0, 1)
+    class E_Sub(E):
+        # this class is used to test the case that the object is pulled from the KG with the correct level of subclass
+        # i.e. if the object is instance of E but pulled using class D, it should NOT be pulled as E_Sub even E_Sub is a subclass of E
+        data_property_e_sub: Data_Property_E_Sub[str]
+
+    # create an object e and e_sub and push it to the KG
+    INFO_NOT_LOST_FOR_E_SUB = 'this is to test information not lost for e_sub'
+    e = E(object_property_d_a=[a1], object_property_d_c=[c])
+    e_sub = E_Sub(object_property_d_a=[a1], object_property_d_c=[c], data_property_e_sub=INFO_NOT_LOST_FOR_E_SUB)
+    sparql_client = initialise_sparql_client
+    e.push_to_kg(sparql_client, -1)
+    e_sub.push_to_kg(sparql_client, -1)
+
+    # now also insert the triples for additional rdf:type of e and e_sub due to subclassing
+    sparql_client.perform_update(f'insert data {{ <{e.instance_iri}> <{RDF.type.toPython()}> <{D.rdf_type}> }}')
+    sparql_client.perform_update(f'insert data {{ <{e_sub.instance_iri}> <{RDF.type.toPython()}> <{D.rdf_type}> }}')
+    sparql_client.perform_update(f'insert data {{ <{e_sub.instance_iri}> <{RDF.type.toPython()}> <{E.rdf_type}> }}')
+
+    # after clearing the ontology object lookup, the object should be pulled from the KG again as a fresh object
+    KnowledgeGraph.clear_object_lookup()
+
+    # test 1: pull the object e using D class but it should return as E object
+    e_pulled = D.pull_from_kg([e.instance_iri], sparql_client, -1)[0]
+    # the id of the object should be different, meaning it's a different object
+    assert id(e) != id(e_pulled)
+    # the pulled object should also be instance of E, but not D
+    assert type(e_pulled) is E
+    assert type(e_pulled) is not D
+    assert type(e_pulled) is not E_Sub
+
+    # test 2: pull the object e using E_Sub class which should raise error
+    with pytest.raises(ValueError) as e_info:
+        E_Sub.pull_from_kg([e.instance_iri], sparql_client, -1)
+    assert e_info.match(f"""The instance {e.instance_iri} is of type {set([E.rdf_type, D.rdf_type])}""")
+    assert e_info.match(f"""it doesn't match the rdf:type of class {E_Sub.__name__} \({E_Sub.rdf_type}\)""")
+
+    # test 3: pull the object e_sub using D class which should return as E_Sub object
+    e_sub_pulled = D.pull_from_kg([e_sub.instance_iri], sparql_client, -1)[0]
+    # the id of the object should be different, meaning it's a different object
+    assert id(e_sub) != id(e_sub_pulled)
+    # the pulled object should also be instance of E_Sub, but not D
+    assert type(e_sub_pulled) is E_Sub
+    assert type(e_sub_pulled) is not D
+    assert type(e_sub_pulled) is not E
+    # the information should be preserved
+    assert e_sub_pulled.data_property_e_sub == {INFO_NOT_LOST_FOR_E_SUB}
