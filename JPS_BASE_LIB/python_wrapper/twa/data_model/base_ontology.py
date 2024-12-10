@@ -367,8 +367,11 @@ class BaseOntology(BaseModel):
         g.add((URIRef(cls.namespace_iri), RDF.type, OWL.Ontology))
         g.add((URIRef(cls.namespace_iri), DC.date, Literal(datetime.now().isoformat())))
         if bool(cls.rdfs_comment):
-            for comment in cls.rdfs_comment:
-                g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(comment)))
+            if isinstance(cls.rdfs_comment, str):
+                g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(cls.rdfs_comment)))
+            elif isinstance(cls.rdfs_comment, set):
+                for comment in cls.rdfs_comment:
+                    g.add((URIRef(cls.namespace_iri), RDFS.comment, Literal(comment)))
         if bool(cls.owl_versionInfo):
             g.add((URIRef(cls.namespace_iri), OWL.versionInfo, Literal(cls.owl_versionInfo)))
         # handle all classes
