@@ -37,15 +37,13 @@ flowchart TD
     clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
 ```
 
-For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Default lines are relations that involve at least one class, whereas dotted lines are relations between instances of one or more classes.
+For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Relations between instances of one or more classes are indicated as dotted lines.
 
 ```mermaid
 flowchart LR
     subclass[SubClass] --> superclass[SuperClass]
     instance[[Instance]] -.-> clazz[Class]
-    domainClazz[Class] -- relation --> rangeClazz[Class]
-    domainInst[[Instance]] -- relation --> rangeClazz[Class]
-    domainInst -. relation .-> rangeInst[[Instance]]
+    domainInst[[Instance]] -. relation .-> rangeInst[[Instance]]
 ```
 
 > Namespace Prefix
@@ -172,7 +170,7 @@ flowchart LR
     EndDate -.-> Date
 
     Employee -. fibo-fnd-org-fm:isEmployeeOf .-> Employer
-    Employee -. ontoprofile:hasStatus .-> ontoprofile:EmployeeStatus
+    Employee -. ontoprofile:hasStatus .-> EmployeeStatus[[ontoprofile:EmployeeStatus]]
     Employer -. cmns-rlcmp:isPlayedBy .-> Org[[fibo-fnd-org-fm:FormalOrganization]]
     Employee -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
     Org -. cmns-col:hasMember .-> Person

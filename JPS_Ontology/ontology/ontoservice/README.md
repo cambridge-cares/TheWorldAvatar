@@ -37,15 +37,13 @@ flowchart TD
     clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
 ```
 
-For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Default lines are relations that involve at least one class, whereas dotted lines are relations between instances of one or more classes.
+For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Relations between instances of one or more classes are indicated as dotted lines.
 
 ```mermaid
 flowchart LR
     subclass[SubClass] --> superclass[SuperClass]
     instance[[Instance]] -.-> clazz[Class]
-    domainClazz[Class] -- relation --> rangeClazz[Class]
-    domainInst[[Instance]] -- relation --> rangeClazz[Class]
-    domainInst -. relation .-> rangeInst[[Instance]]
+    domainInst[[Instance]] -. relation .-> rangeInst[[Instance]]
 ```
 
 > Namespace Prefix
@@ -185,40 +183,40 @@ flowchart LR
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle] -- fibo-fnd-arr-lif:hasStage --> Stage[ontoservice:ServiceAgreementLifecycleStage]
-    Stage -- cmns-col:comprises --> Event[ontoservice:ServiceAgreementLifecycleEvent]
+    Lifecycle[[fibo-fbc-pas-fpas:ContractLifecycle]] -. fibo-fnd-arr-lif:hasStage .-> Stage[[ontoservice:ServiceAgreementLifecycleStage]]
+    Stage -. cmns-col:comprises .-> Event[[ontoservice:ServiceAgreementLifecycleEvent]]
 
-    CreationStage[ontoservice:CreationStage] --> Stage
-    ServiceExecutionStage[ontoservice:ServiceExecutionStage] --> Stage
-    ExpirationStage[ontoservice:ExpirationStage] --> Stage
-    ServiceExecutionStage -- cmns-dt:succeeds --> CreationStage
-    ExpirationStage -- cmns-dt:succeeds --> ServiceExecutionStage
+    CreationStage[[ontoservice:CreationStage]] --> Stage
+    ServiceExecutionStage[[ontoservice:ServiceExecutionStage]] --> Stage
+    ExpirationStage[[ontoservice:ExpirationStage]] --> Stage
+    ServiceExecutionStage -. cmns-dt:succeeds .-> CreationStage
+    ExpirationStage -. cmns-dt:succeeds .-> ServiceExecutionStage
 
-    CreationStage -- cmns-col:comprises --> ContractCreation[ontoservice:ContractCreation]
-    CreationStage -- cmns-col:comprises --> ContractApproval[ontoservice:ContractApproval]
-    ContractApproval -- cmns-dt:succeeds --> ContractCreation
+    CreationStage -. cmns-col:comprises .-> ContractCreation[[ontoservice:ContractCreation]]
+    CreationStage -. cmns-col:comprises .-> ContractApproval[[ontoservice:ContractApproval]]
+    ContractApproval -. cmns-dt:succeeds .-> ContractCreation
     ContractCreation --> Event
     ContractApproval --> Event
 
-    ServiceExecutionStage -- cmns-col:comprises --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> IncidentReportEvent[ontoservice:IncidentReportEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> TerminatedServiceEvent[ontoservice:TerminatedServiceEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> CalculationEvent[fibo-fnd-dt-oc:CalculationEvent]
-    ServiceDispatchEvent -- cmns-dt:succeeds --> OrderReceivedEvent
-    ServiceDeliveryEvent -- cmns-dt:succeeds --> ServiceDispatchEvent
-    CalculationEvent -- cmns-dt:succeeds --> ServiceDeliveryEvent
-    IncidentReportEvent -- cmns-dt:succeeds --> ServiceDeliveryEvent
+    ServiceExecutionStage -. cmns-col:comprises .-> OrderReceivedEvent[[ontoservice:OrderReceivedEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDispatchEvent[[ontoservice:ServiceDispatchEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> IncidentReportEvent[[ontoservice:IncidentReportEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> TerminatedServiceEvent[[ontoservice:TerminatedServiceEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]]
+    ServiceDispatchEvent -. cmns-dt:succeeds .-> OrderReceivedEvent
+    ServiceDeliveryEvent -. cmns-dt:succeeds .-> ServiceDispatchEvent
+    CalculationEvent -. cmns-dt:succeeds .-> ServiceDeliveryEvent
+    IncidentReportEvent -. cmns-dt:succeeds .-> ServiceDeliveryEvent
     OrderReceivedEvent --> Event
     ServiceDispatchEvent --> Event
     ServiceDeliveryEvent --> Event
     IncidentReportEvent --> Event
     TerminatedServiceEvent --> Event
 
-    ExpirationStage -- cmns-col:comprises --> ContractDischarge[ontoservice:ContractDischarge]
-    ExpirationStage -- cmns-col:comprises --> ContractRescission[ontoservice:ContractRescission]
-    ExpirationStage -- cmns-col:comprises --> ContractTermination[ontoservice:ContractTermination]
+    ExpirationStage -. cmns-col:comprises .-> ContractDischarge[[ontoservice:ContractDischarge]]
+    ExpirationStage -. cmns-col:comprises .-> ContractRescission[[ontoservice:ContractRescission]]
+    ExpirationStage -. cmns-col:comprises .-> ContractTermination[[ontoservice:ContractTermination]]
     ContractDischarge --> Event
     ContractRescission --> Event
     ContractTermination --> Event
@@ -266,12 +264,12 @@ flowchart TD
     LifecycleOccurrence -. fibo-fnd-arr-lif:hasStage .-> StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]]
     StageOccurrence -. cmns-col:comprises .-> EventOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
 
-    LifecycleOccurrence -- fibo-fnd-rel-rel:exemplifies --> Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle]
-    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> Stage[ontoservice:ServiceAgreementLifecycleStage]
-    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[ontoservice:ServiceAgreementLifecycleEvent]
+    LifecycleOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Lifecycle[[fibo-fbc-pas-fpas:ContractLifecycle]]
+    StageOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Stage[[ontoservice:ServiceAgreementLifecycleStage]]
+    EventOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Event[[ontoservice:ServiceAgreementLifecycleEvent]]
 
-    Lifecycle -- fibo-fnd-arr-lif:hasStage --> Stage
-    Stage -- cmns-col:comprises --> Event
+    Lifecycle -. fibo-fnd-arr-lif:hasStage .-> Stage
+    Stage -. cmns-col:comprises .-> Event
 
     LifecycleOccurrence --> Occurrence["<h4>fibo-fnd-dt-oc:Occurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
     StageOccurrence --> Occurrence
@@ -305,8 +303,8 @@ flowchart LR
 
     %% Contents
     StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -. cmns-col:comprises .-> EventOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
-    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[ontoservice:ServiceExecutionStage]
-    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[ontoservice:ServiceDeliveryEvent]
+    StageOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
+    EventOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Event[[ontoservice:ServiceDeliveryEvent]]
     ServiceExecutionStage -. cmns-col:comprises .-> Event
     StageOccurrence -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
     DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
@@ -354,27 +352,27 @@ flowchart TD
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
+    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -. fibo-fnd-rel-rel:exemplifies .-> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
 
     StageOccurrence -. cmns-col:comprises .-> OrderReceivedOccurrence[[OrderReceivedOccurrence]]
-    OrderReceivedOccurrence -- fibo-fnd-rel-rel:exemplifies --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
+    OrderReceivedOccurrence -. fibo-fnd-rel-rel:exemplifies .-> OrderReceivedEvent[[ontoservice:OrderReceivedEvent]]
     OrderReceivedOccurrence -.-> EventOccurrence["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
 
     StageOccurrence -. cmns-col:comprises .-> DispatchOccurrence[[ServiceDispatchOccurrence]]
-    DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
+    DispatchOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceDispatchEvent[[ontoservice:ServiceDispatchEvent]]
     DispatchOccurrence -.-> EventOccurrence
-    DispatchOccurrence -- cmns-dt:succeeds --> OrderReceivedOccurrence
+    DispatchOccurrence -. cmns-dt:succeeds .-> OrderReceivedOccurrence
     DispatchEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[["<h4>DeliveryOccurrence</h4><p style='font-size:0.75rem;'>ontoservice:hasScheduledTime &quot;xsd:time&quot;</p>"]]:::literal
-    DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
+    DeliveryOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
     DeliveryOccurrence -.-> EventOccurrence
-    DeliveryOccurrence -- cmns-dt:succeeds --> DispatchOccurrence
+    DeliveryOccurrence -. cmns-dt:succeeds .-> DispatchOccurrence
     DeliveryEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DeliveryOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
-    CalculationEvent[fibo-fnd-dt-oc:CalculationEvent] -- cmns-cls:classifies --> Calculation
-    Calculation -- cmns-dt:succeeds --> DeliveryOccurrence
+    CalculationEvent[fibo-fnd-dt-oc:CalculationEvent] -. cmns-cls:classifies .-> Calculation
+    Calculation -. cmns-dt:succeeds .-> DeliveryOccurrence
 
     StageOccurrence -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[[fibo-fnd-dt-fd:RegularSchedule]]
     Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> DeliveryOccurrence
@@ -398,13 +396,15 @@ flowchart TD
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    CalculationEvent[fibo-fnd-dt-oc:CalculationEvent] -- cmns-cls:classifies --> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
+    CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]] -- cmns-cls:classifies --> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
 
-    Calculation -. cmns-qtu:hasQuantityValue .-> OutputValue[[cmns-qtu:ScalarQuantityValue]]
+    Calculation -. cmns-qtu:hasQuantityValue .-> OutputValue[[Output]]
     Calculation -. cmns-qtu:hasExpression .-> Expression[[cmns-qtu:Expression]]
-    Expression -. cmns-qtu:hasArgument .-> InputValue[[cmns-qtu:ScalarQuantityValue]]
-    cmns-qtu:Constant --> InputValue
-    cmns-qtu:Variable --> InputValue
+    Expression -. cmns-qtu:hasArgument .-> Constant[[cmns-qtu:Constant]]
+    Expression -. cmns-qtu:hasArgument .-> Variable[[cmns-qtu:Variable]]
+    OutputValue --> Input[cmns-qtu:ScalarQuantityValue]
+    Constant --> Input
+    Variable --> Input
 ```
 
 ## 2.3 Reporting
@@ -421,7 +421,7 @@ flowchart LR
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    Report[[fibo-fnd-arr-rep:Report]] -. fibo-fnd-arr-rep:hasReportDate .-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
+    Report[[fibo-fnd-arr-rep:Report]] -. fibo-fnd-arr-rep:hasReportDate .-> Date[["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]]:::literal
     Report -. fibo-fnd-rel-rel:isProvidedBy .-> ReportingParty[[fibo-fnd-arr-rep:ReportingParty]]
     Report -. cmns-doc:isAbout .-> Agreement[[fibo-fnd-pas-pas:ServiceAgreement]]
     Report -. fibo-fnd-arr-rep:isReportedTo .-> Client
@@ -434,7 +434,7 @@ flowchart LR
     Agreement -. fibo-fnd-arr-lif:hasLifecycle .-> LifecycleOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleOccurrence]]
     LifecycleOccurrence -. fibo-fnd-arr-lif:hasStage .-> StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]]
     StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
-    DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
+    DeliveryOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
     StageOccurrence -. cmns-col:comprises .-> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
     Calculation -. cmns-qtu:hasQuantityValue .-> OutputValue[[cmns-qtu:ScalarQuantityValue]]
     CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]] -- cmns-cls:classifies --> Calculation
@@ -461,7 +461,7 @@ flowchart LR
     Agreement[[fibo-fnd-pas-pas:ServiceAgreement]] -. fibo-fnd-rel-rel:confers .-> PaymentObligation[[fibo-fnd-pas-psch:PaymentObligation]]
     PaymentObligation -. fibo-fnd-rel-rel:mandates .-> PricingModel[[fibo-fbc-fi-ip:PricingModel]]
 
-    DeliveryOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]] -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
+    DeliveryOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]] -. fibo-fnd-rel-rel:exemplifies .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
     Record[[cmns-doc:Record]] -. cmns-doc:isAbout .-> DeliveryOccurrence
     Record -. cmns-doc:records .-> ServiceFee[[fibo-fnd-acc-cur:CalculatedPrice]]
 
@@ -476,14 +476,14 @@ flowchart LR
     UnitPrice -.-> MonetaryPrice
     VariableFee -. cmns-qtu:hasLowerBound .-> MinQuantityValue[[cmns-qtu:ScalarQuantityValue]]
     VariableFee -. cmns-qtu:hasUpperBound .-> MaxQuantityValue[[cmns-qtu:ScalarQuantityValue]]
-    VariableFee -. cmns-qtu:hasMeasurementUnit .-> pricepertonne[ontoservice:pricePerTonne]
+    VariableFee -. cmns-qtu:hasMeasurementUnit .-> pricepertonne[[ontoservice:pricePerTonne]]
 
     CalculationExpression -. cmns-qtu:hasArgument .-> FlatFee
     CalculationExpression -. cmns-qtu:hasArgument .-> Output[[cmns-qtu:ScalarQuantityValue]]
     CalculationExpression -. cmns-qtu:hasArgument .-> VariableFee
 
     Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal -. cmns-qtu:hasQuantityValue .-> Output
-    CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]] -- cmns-cls:classifies --> Calculation
+    CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]] -. cmns-cls:classifies .-> Calculation
 ```
 
 The representation of the pricing model is intended to be highly flexible to accommadate different types of pricing models such as:
@@ -507,14 +507,14 @@ flowchart LR
     FixedTripVariableWeightPricingModel[[Fixed Trip Variable Weight Pricing Model]] -. cmns-qtu:hasArgument .-> FixedTripFee[[Fixed Trip Fee]]
     FixedTripVariableWeightPricingModel -. cmns-qtu:hasArgument .-> VariableWeightFee[[Variable Weight Fee]]
 
-    VariableExcessWeightPricingModel[[Variable Excess Weight Pricing Model]] -. cmns-qtu:hasArgument .-> CappedBaseFee[[Fixed Fee up to weight cap]]
-    VariableExcessWeightPricingModel -. cmns-qtu:hasArgument .-> VariableWeightBaseFee[[Variable base fee of 0 up to weight cap]]
-    VariableWeightBaseFee -. cmns-qtu:hasLowerBound .-> ZeroQuantity[[0]]
-    VariableWeightBaseFee -. cmns-qtu:hasUpperBound .-> WeightCap[[Weight cap]]
+    VariableExcessWeightPricingModel[[Variable Excess Weight Pricing Model]] -. cmns-qtu:hasArgument .-> CappedBaseFee[[Fixed Fee Up To Weight Cap]]
+    VariableExcessWeightPricingModel -. cmns-qtu:hasArgument .-> VariableWeightBaseFee[["<h4>Variable Base Fee Before Weight Cap</h4><p style='font-size:0.75rem;'>fibo-fnd-acc-cur:hasAmount &quot;0&quot;</p>"]]:::literal
+    VariableWeightBaseFee -. cmns-qtu:hasLowerBound .-> ZeroQuantity[["<h4>Zero Quantity Value</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;0&quot;</p>"]]:::literal
+    VariableWeightBaseFee -. cmns-qtu:hasUpperBound .-> WeightCap[["<h4>Weight Cap Value</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;weight cap&quot;</p>"]]:::literal
     VariableExcessWeightPricingModel -. cmns-qtu:hasArgument .-> VariableExcessWeightFee[[Variable Excess Weight Fee]]
     VariableExcessWeightFee -. cmns-qtu:hasLowerBound .-> WeightCap
 
-    ScalarQuantityValue["<h4>cmns-qtu:ScalarQuantityValue</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;xsd:decimal&quot;</p>"]:::literal -. cmns-qtu:hasMeasurementUnit .-> tonne[ontoservice:tonne]
+    ScalarQuantityValue["<h4>cmns-qtu:ScalarQuantityValue</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;xsd:decimal&quot;</p>"]:::literal -. cmns-qtu:hasMeasurementUnit .-> tonne[[ontoservice:tonne]]
     ZeroQuantity -.-> ScalarQuantityValue
     WeightCap -.-> ScalarQuantityValue
 

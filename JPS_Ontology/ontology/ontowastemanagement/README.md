@@ -38,13 +38,12 @@ flowchart TD
     clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
 ```
 
-For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Default lines are relations that involve at least one class, whereas dotted lines are relations between instances of one or more classes.
+For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Relations between instances of one or more classes are indicated as dotted lines. Default lines indicate that the range of the relations must target a class ie the object of the triple must be a class.
 
 ```mermaid
 flowchart LR
     subclass[SubClass] --> superclass[SuperClass]
     instance[[Instance]] -.-> clazz[Class]
-    domainClazz[Class] -- relation --> rangeClazz[Class]
     domainInst[[Instance]] -- relation --> rangeClazz[Class]
     domainInst -. relation .-> rangeInst[[Instance]]
 ```
@@ -239,28 +238,28 @@ flowchart LR
     LifecycleOccurrence -. fibo-fnd-arr-lif:hasStage .-> StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]]
     StageOccurrence -. cmns-col:comprises .-> EventOccurrence[["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
 
-    LifecycleOccurrence -- fibo-fnd-rel-rel:exemplifies --> Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle]
-    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> Stage[ontoservice:ServiceAgreementLifecycleStage]
-    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[fibo-fbc-pas-fpas:ContractLifecycleEvent]
-    Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle] -- fibo-fnd-arr-lif:hasStage --> Stage
-    Stage -- cmns-col:comprises --> Event
+    LifecycleOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Lifecycle[[fibo-fbc-pas-fpas:ContractLifecycle]]
+    StageOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Stage[[ontoservice:ServiceAgreementLifecycleStage]]
+    EventOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Event[[fibo-fbc-pas-fpas:ContractLifecycleEvent]]
+    Lifecycle -. fibo-fnd-arr-lif:hasStage .-> Stage
+    Stage -. cmns-col:comprises .-> Event
 
-    CreationStage[ontoservice:CreationStage] --> Stage
-    ServiceExecutionStage[ontoservice:ServiceExecutionStage] --> Stage
-    ExpirationStage[ontoservice:ExpirationStage] --> Stage
-    ServiceExecutionStage -- cmns-dt:succeeds --> CreationStage
-    ExpirationStage -- cmns-dt:succeeds --> ServiceExecutionStage
+    CreationStage[[ontoservice:CreationStage]] --> Stage
+    ServiceExecutionStage[[ontoservice:ServiceExecutionStage]] --> Stage
+    ExpirationStage[[ontoservice:ExpirationStage]] --> Stage
+    ServiceExecutionStage -. cmns-dt:succeeds .-> CreationStage
+    ExpirationStage -. cmns-dt:succeeds .-> ServiceExecutionStage
 
-    ServiceExecutionStage -- cmns-col:comprises --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> IncidentReportEvent[ontoservice:IncidentReportEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> TerminatedServiceEvent[ontoservice:TerminatedServiceEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> CalculationEvent[fibo-fnd-dt-oc:CalculationEvent]
-    ServiceDispatchEvent -- cmns-dt:succeeds --> OrderReceivedEvent
-    ServiceDeliveryEvent -- cmns-dt:succeeds --> ServiceDispatchEvent
-    CalculationEvent -- cmns-dt:succeeds --> ServiceDeliveryEvent
-    IncidentReportEvent -- cmns-dt:succeeds --> ServiceDeliveryEvent
+    ServiceExecutionStage -. cmns-col:comprises .-> OrderReceivedEvent[[ontoservice:OrderReceivedEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDispatchEvent[[ontoservice:ServiceDispatchEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> IncidentReportEvent[[ontoservice:IncidentReportEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> TerminatedServiceEvent[[ontoservice:TerminatedServiceEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]]
+    ServiceDispatchEvent -. cmns-dt:succeeds .-> OrderReceivedEvent
+    ServiceDeliveryEvent -. cmns-dt:succeeds .-> ServiceDispatchEvent
+    CalculationEvent -. cmns-dt:succeeds .-> ServiceDeliveryEvent
+    IncidentReportEvent -. cmns-dt:succeeds .-> ServiceDeliveryEvent
     OrderReceivedEvent --> Event
     ServiceDispatchEvent --> Event
     ServiceDeliveryEvent --> Event
@@ -268,7 +267,7 @@ flowchart LR
     TerminatedServiceEvent --> Event
 ```
 
-When the service agreement is initially drafted, upcoming scheduled service events are represented within a regular schedule. For more information on regular schedules, please refer to [the corresponding section in the OntoService](../ontoservice/README.md#regular-schedule) ontology. Users can dispatch drivers and resources such as the bin(s) and waste disposal site during the `ServiceDispatchEvent` phase. For each successful delivery occurrence of the requested service, a `ContractLifecycleEventOccurrence` instance is linked to both the schedule and `ServiceDeliveryEvent` instances. This occurrence usually represents the collection and/or exchange of bins from the service site that occurs within a time period. A bSin that was collected/exchanged during a bin exchange service can be represented using the `fibo-fnd-rel-rel:exchanges` relation.
+When the service agreement is initially drafted, upcoming scheduled service events are represented within a regular schedule. For more information on regular schedules, please refer to [the corresponding section in the OntoService](../ontoservice/README.md#regular-schedule) ontology. Users can dispatch drivers and resources such as the bin(s) and waste disposal site during the `ServiceDispatchEvent` phase. For each successful delivery occurrence of the requested service, a `ContractLifecycleEventOccurrence` instance is linked to both the schedule and `ServiceDeliveryEvent` instances. This occurrence usually represents the collection and/or exchange of bins from the service site that occurs within a time period. A bin that was collected/exchanged during a bin exchange service can be represented using the `fibo-fnd-rel-rel:exchanges` relation.
 
 Figure 5: TBox representation of a service dispatch event occurrence for waste services
 
@@ -281,16 +280,16 @@ flowchart TD
 
     %% Contents
     StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
-    ServiceExecutionStage -- cmns-col:comprises --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> CalculationEvent[fibo-fnd-dt-oc:CalculationEvent]
-    ServiceDispatchEvent -- cmns-dt:succeeds --> OrderReceivedEvent
-    ServiceDeliveryEvent -- cmns-dt:succeeds --> ServiceDispatchEvent
-    CalculationEvent -- cmns-dt:succeeds --> ServiceDeliveryEvent
+    ServiceExecutionStage -. cmns-col:comprises .-> OrderReceivedEvent[[ontoservice:OrderReceivedEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDispatchEvent[[ontoservice:ServiceDispatchEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]]
+    ServiceDispatchEvent -. cmns-dt:succeeds .-> OrderReceivedEvent
+    ServiceDeliveryEvent -. cmns-dt:succeeds .-> ServiceDispatchEvent
+    CalculationEvent -. cmns-dt:succeeds .-> ServiceDeliveryEvent
 
     StageOccurrence -. cmns-col:comprises .-> DispatchOccurrence[[ServiceDispatchOccurrence]]
-    DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent
+    DispatchOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceDispatchEvent
     DispatchOccurrence -.-> EventOccurrence
 
     DispatchEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
@@ -300,9 +299,9 @@ flowchart TD
     Facility -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
 
     StageOccurrence -. cmns-col:comprises .-> OrderReceivedOccurrence[[OrderReceivedOccurrence]]
-    OrderReceivedOccurrence -- fibo-fnd-rel-rel:exemplifies --> OrderReceivedEvent
+    OrderReceivedOccurrence -. fibo-fnd-rel-rel:exemplifies .-> OrderReceivedEvent
     OrderReceivedOccurrence -.-> EventOccurrence["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
-    DispatchOccurrence -- cmns-dt:succeeds --> OrderReceivedOccurrence
+    DispatchOccurrence -. cmns-dt:succeeds .-> OrderReceivedOccurrence
 ```
 
 Figure 6: TBox representation of a service delivery event occurrence for waste services
@@ -315,20 +314,20 @@ flowchart TD
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
+    StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -. fibo-fnd-rel-rel:exemplifies .-> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDispatchEvent[[ontoservice:ServiceDispatchEvent]]
+    ServiceExecutionStage -. cmns-col:comprises .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
 
     StageOccurrence -. cmns-col:comprises .-> DispatchOccurrence[[ServiceDispatchOccurrence]]
-    DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent
+    DispatchOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceDispatchEvent
     DispatchOccurrence -.-> EventOccurrence["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
     EventOccurrence -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
     DispatchEventStatus[[ontoservice:CompletedStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[["<h4>DeliveryOccurrence</h4><p style='font-size:0.75rem;'>ontoservice:hasScheduledTime &quot;xsd:time&quot;</p>"]]:::literal
-    DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent
+    DeliveryOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceDeliveryEvent
     DeliveryOccurrence -.-> EventOccurrence
-    DeliveryOccurrence -- cmns-dt:succeeds --> DispatchOccurrence
+    DeliveryOccurrence -. cmns-dt:succeeds .-> DispatchOccurrence
     DeliveryOccurrence -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
     DeliveryOccurrence -. fibo-fnd-rel-rel:exchanges .-> Bin[[ontowm:Bin]]
     DeliveryOccurrence -. ontoservice:hasTotalPrice .-> TotalPrice[[ontoservice:TotalPrice]]
@@ -359,12 +358,12 @@ flowchart TD
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    CalculationEvent[fibo-fnd-dt-oc:CalculationEvent] -- cmns-dt:succeeds --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
-    Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal -- cmns-dt:succeeds --> EventOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
-    ServiceExecutionStage[ontoservice:ServiceExecutionStage] -- cmns-col:comprises --> ServiceDeliveryEvent
-    ServiceExecutionStage -- cmns-col:comprises --> CalculationEvent
-    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent
-    CalculationEvent -- cmns-cls:classifies --> Calculation
+    CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]] -. cmns-dt:succeeds .-> ServiceDeliveryEvent[[ontoservice:ServiceDeliveryEvent]]
+    Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal -. cmns-dt:succeeds .-> EventOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
+    ServiceExecutionStage[[ontoservice:ServiceExecutionStage]] -. cmns-col:comprises .-> ServiceDeliveryEvent
+    ServiceExecutionStage -. cmns-col:comprises .-> CalculationEvent
+    EventOccurrence -. fibo-fnd-rel-rel:exemplifies .-> ServiceDeliveryEvent
+    CalculationEvent -. cmns-cls:classifies .-> Calculation
 
     ontowm:WasteDisposalFacility -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
     Calculation -. fibo-fnd-plc-loc:isLocatedAt .-> Location
@@ -376,10 +375,10 @@ flowchart TD
     Expression -. fibo-fnd-utl-alx:hasSubtrahend .-> UnladenWeight[[ontowm:UnladenWeight]]
 
     NetWasteWeight --> ScalarQuantityValue["<h4>cmns-qtu:ScalarQuantityValue</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;xsd:decimal&quot;</p>"]:::literal
-    GrossWeight --> ScalarQuantityValue["<h4>cmns-qtu:ScalarQuantityValue</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;xsd:decimal&quot;</p>"]:::literal
-    UnladenWeight --> ScalarQuantityValue["<h4>cmns-qtu:ScalarQuantityValue</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;xsd:decimal&quot;</p>"]:::literal
+    GrossWeight --> ScalarQuantityValue
+    UnladenWeight --> ScalarQuantityValue
 
-    NetWasteWeight -. cmns-qtu:hasMeasurementUnit .-> tonne[ontoservice:tonne]
+    NetWasteWeight -. cmns-qtu:hasMeasurementUnit .-> tonne[[ontoservice:tonne]]
     GrossWeight -. cmns-qtu:hasMeasurementUnit .-> tonne
     UnladenWeight -. cmns-qtu:hasMeasurementUnit .-> tonne
 ```
@@ -450,10 +449,11 @@ flowchart LR
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    Feature[geo:Feature] -. geo:hasGeometry .-> Geometry["<h4>geo:Geometry</h4><p style='font-size:0.75rem;'>geo:asWKT &quot;geo:wktLiteral&quot;</p>"]:::literal
-    Geometry -. time:hasTime .-> TemporalEntity[time:TemporalEntity]
-    time:Instant --> TemporalEntity
-    time:Interval --> TemporalEntity
+    Feature[[geo:Feature]] -. geo:hasGeometry .-> Geometry[["<h4>geo:Geometry</h4><p style='font-size:0.75rem;'>geo:asWKT &quot;geo:wktLiteral&quot;</p>"]]:::literal
+    Geometry -. time:hasTime .-> Instant[[time:Instant]]
+    Geometry -. time:hasTime .-> Interval[[time:Interval]]
+    Instant --> TemporalEntity[time:TemporalEntity]
+    Interval --> TemporalEntity
 ```
 
 ### 2.3.1 Truck
@@ -502,7 +502,7 @@ flowchart LR
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    Bin[["<h4>ontowm:Bin</h4><p style='font-size:0.75rem;'>ontowm:hasBinNumber &quot;string&quot;</p>"]]:::literal --> Feature[geo:Feature]
+    Bin[["<h4>ontowm:Bin</h4><p style='font-size:0.75rem;'>ontowm:hasBinNumber &quot;string&quot;</p>"]]:::literal --> Feature[[geo:Feature]]
     Bin -. ontowm:hasStatus .-> BinStatus[[ontowm:BinStatus]]
 ```
 
