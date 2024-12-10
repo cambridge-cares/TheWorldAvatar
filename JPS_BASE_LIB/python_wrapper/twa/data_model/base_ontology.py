@@ -810,8 +810,13 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
         if self.__class__.object_lookup is None:
             self.__class__.object_lookup = {}
         if self.instance_iri in self.__class__.object_lookup:
-            raise ValueError(
-                f"An object with the same IRI {self.instance_iri} has already been registered.")
+            if type(self.__class__.object_lookup[self.instance_iri]) == type(self):
+                # TODO and not self.__class__.rdfs_isDefinedBy.is_dev_mode()?
+                raise ValueError(
+                    f"An object with the same IRI {self.instance_iri} has already been instantiated and registered with the same type {type(self)}.")
+            else:
+                warnings.warn(f"An object with the same IRI {self.instance_iri} has already been instantiated and registered with type {type(self.__class__.object_lookup[self.instance_iri])}. Replacing its regiatration now with type {type(self)}.")
+                del self.__class__.object_lookup[self.instance_iri]
         self.__class__.object_lookup[self.instance_iri] = self
 
     @classmethod
@@ -938,14 +943,36 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             cls_subclasses.add(cls.rdf_type)
             intersection = target_clz_rdf_types & cls_subclasses
             if intersection:
-                # NOTE instead of using the first element of the intersection
-                # we find the deepest subclass as target_clz_rdf_type
-                # so that the created object could inherite all the properties of its parent classes
-                # which prevents the loss of information
-                target_clz_rdf_type = next(iter(intersection))
-                for c in list(intersection):
-                    if issubclass(cls.retrieve_subclass(c), cls.retrieve_subclass(target_clz_rdf_type)):
-                        target_clz_rdf_type = c
+                if len(intersection) == 1:
+                    target_clz_rdf_type = next(iter(intersection))
+                else:
+                    # NOTE instead of using the first element of the intersection
+                    # we find the deepest subclass as target_clz_rdf_type
+                    # so that the created object could inherite all the properties of its parent classes
+                    # which prevents the loss of information
+                    parent_classes = set()
+                    for c in list(intersection):
+                        if c in parent_classes:
+                            # skip if it's already a parent class
+                            continue
+                        for other in list(intersection):
+                            if other != c and issubclass(cls.retrieve_subclass(c), cls.retrieve_subclass(other)):
+                                parent_classes.add(other)
+                    deepest_subclasses = intersection - parent_classes
+                    if len(deepest_subclasses) > 1:
+                        # TODO [future] add support for allowing users to specify the target class
+                        KnowledgeGraph._remove_iri_from_loading(iri)
+                        raise ValueError(
+                            f"""The instance {iri} is of type {target_clz_rdf_types}.
+                            Amongst the pulling class {cls.__name__} ({cls.rdf_type})
+                            and its subclasses ({cls.construct_subclass_dictionary()}),
+                            there exist classes that are not in the same branch of the inheritance tree,
+                            including {deepest_subclasses},
+                            therefore it cannot be instantiated by pulling with class {cls.__name__}.
+                            Please consider pulling the instance directly with one of the class in {deepest_subclasses}
+                            Alternatively, please check the inheritance tree is correctly defined in Python.""")
+                    else:
+                        target_clz_rdf_type = next(iter(deepest_subclasses))
             else:
                 # if there's any error, remove the iri from the loading status
                 # otherwise it will block any further pulling of the same object
@@ -995,7 +1022,7 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
             if RDFS.comment.toPython() in props:
                 rdfs_properties_dict['rdfs_comment'] = set(list(props[RDFS.comment.toPython()]))
             # instantiate the object
-            if inst is not None:
+            if inst is not None and type(inst) is target_clz:
                 for op_iri, op_dct in ops.items():
                     if flag_pull:
                         # below lines pull those object properties that are NOT connected in the remote KG,
