@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoprofile="https://www.theworldavatar.com/kg/ontoprofile/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoprofile/">
-        <dc:date>06 December 2024</dc:date>
+        <dc:date>10 December 2024</dc:date>
         <rdfs:comment>OntoProfile is designed to represent the profiles of organizations and people, inclusive of their names, roles, and responsibilities.</rdfs:comment>
         <owl:versionInfo>1.1</owl:versionInfo>
         <gitCommitHash>c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -148,14 +148,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployeeDriver -->
+    <!-- https://www.theworldavatar.com/kg/ontoprofile/EmployedDriver -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/EmployeeDriver">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoprofile/EmployedDriver">
         <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/Employee"/>
         <rdfs:comment>A person who is employed to drive a vehicle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoprofile/"/>
-        <rdfs:label>Employee Driver</rdfs:label>
+        <rdfs:label>Employed Driver</rdfs:label>
     </owl:Class>
     
 

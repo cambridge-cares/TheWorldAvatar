@@ -121,7 +121,7 @@ flowchart LR
 The profile of a person generally includes their name and may include their contact information. A person may also play the following roles represented under the `cmns-pts:PartyRole` concept:
 
 1. `fibo-fnd-org-fm:Employee` - A person in the service of another under any contract of hire
-2. `ontoprofile:EmployeeDriver`- An employee who is specifically employed to drive a vehicle
+2. `ontoprofile:EmployedDriver`- An employee who is specifically employed to drive a vehicle
 3. `ontoprofile:OperationManager`- An employee who is specifically employed to manage and supervise the operational conditions of a service
 4. `ontoprofile:OperationScheduler`- An employee who is specifically employed to manage the operational schedule of a service
 5. `ontoprofile:SalesAdmin`- An employee who is specifically employed to communicate with clients about the company's products and/or services
@@ -203,7 +203,7 @@ flowchart TD
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    Situation[[cmns-pts:Situation]] -. cmns-pts:hasSubjectRole .-> Driver[[ontoprofile:EmployeeDriver]]
+    Situation[[cmns-pts:Situation]] -. cmns-pts:hasSubjectRole .-> Driver[[ontoprofile:EmployedDriver]]
     Situation -. cmns-pts:hasObjectRole .-> VDriver[[ontoprofile:VehicleDriver]]
     Situation -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
     DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]

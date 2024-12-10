@@ -294,7 +294,7 @@ flowchart TD
     DispatchOccurrence -.-> EventOccurrence
 
     DispatchEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
-    DispatchOccurrence -. fibo-fnd-rel-rel:designates .-> Driver[[ontoprofile:EmployeeDriver]]
+    DispatchOccurrence -. fibo-fnd-rel-rel:designates .-> Driver[[ontoprofile:EmployedDriver]]
     DispatchOccurrence -. fibo-fnd-rel-rel:involves .-> Bin[[ontowm:Bin]]
     DispatchOccurrence -. fibo-fnd-rel-rel:involves .-> Facility[[ontowm:WasteDisposalFacility]]
     Facility -. fibo-fnd-plc-loc:isLocatedAt .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
