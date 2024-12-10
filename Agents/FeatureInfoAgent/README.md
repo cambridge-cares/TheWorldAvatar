@@ -29,27 +29,37 @@ In addition to the above restrictions, the FIA uses a hardcoded SPARQL query to 
 
 If the query fails to return any results, then the FIA will not function; developers may need to update their triples/mapping until at least one of the queries does return something.
 
-```
-prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+``` SPARQL
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ser: <https://theworldavatar.io/kg/service#>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
 
-SELECT DISTINCT ?class WHERE {
-    VALUES ?all_endpoints {
-        [ENDPOINTS-ALL]
-    }    
-    VALUES ?kg_endpoints {
-        [ENDPOINTS-BLAZEGRAPH]
+SELECT DISTINCT ?class
+WHERE {
+    {
+        SELECT DISTINCT ?all_endpoints
+        WHERE {
+            {
+                VALUES ?all_endpoints { [ENDPOINTS-ALL] }
+            }
+            UNION
+            {
+                VALUES ?serviceType { ser:Ontop }
+                ?service a ?serviceType ;
+                   dcat:endpointURL ?all_endpoints .
+            }
+        }
     }
-            
+    VALUES ?kg_endpoints { [ENDPOINTS-BLAZEGRAPH] }
     SERVICE ?all_endpoints {
-        [IRI] a ?type.
-    } 
+        [IRI] a ?type .
+    }
     SERVICE ?kg_endpoints {
         ?type rdfs:subClassOf* ?class .
     }
-            
     FILTER (!isBlank(?class))
-} 
+}
 ```
 
 ## Definitions
