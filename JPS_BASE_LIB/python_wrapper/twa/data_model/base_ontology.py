@@ -1391,6 +1391,8 @@ class BaseClass(BaseModel, validate_assignment=True, validate_default=True):
                 recursive_depth = max(recursive_depth - 1, 0) if recursive_depth > -1 else max(recursive_depth - 1, -1)
 
                 p_cache = self._latest_cache.get(f, set())
+                if p_cache is None:
+                    p_cache = set() # allows set operations
                 p_now = getattr(self, f)
                 if p_now is None:
                     p_now = set() # allows set operations
