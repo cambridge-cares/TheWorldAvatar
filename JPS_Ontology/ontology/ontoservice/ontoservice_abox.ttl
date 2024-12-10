@@ -4,6 +4,9 @@
 @prefix rdfs:               <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix cmns-col:           <https://www.omg.org/spec/Commons/Collections/> .
 @prefix cmns-dt:            <https://www.omg.org/spec/Commons/DatesAndTimes/> .
+@prefix cmns-dsg:   <https://www.omg.org/spec/Commons/Designators/> .
+@prefix cmns-qtu:   <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
+@prefix cmns-txt:   <https://www.omg.org/spec/Commons/TextDatatype/> .
 @prefix fibo-fnd-arr-lif:   <https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Lifecycles/> .
 @prefix fibo-fbc-pas-fpas:  <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/> .
 
@@ -112,3 +115,17 @@ os:InProgressStatus a os:EventStatus ;
 os:CompletedStatus a os:EventStatus ;
   rdfs:label "Completed";
   rdfs:comment "Marks that all action and tasks has been executed for the event.".
+
+os:pricePerTonne a cmns-qtu:MeasurementUnit ;
+  cmns-dsg:hasName os:pricePerTonneName;
+  rdfs:comment "The monetary price per tonne".
+
+os:pricePerTonneName a cmns-qtu:QuantityName ;
+  cmns-txt:hasTextValue "$/tonne" .
+  
+os:tonne a cmns-qtu:MeasurementUnit ;
+  cmns-dsg:hasName os:tonneName;
+  rdfs:comment "The tonne is a unit of mass defined as 1000 kilogram.".
+
+os:tonneName a cmns-qtu:QuantityName ;
+  cmns-txt:hasTextValue "tonne" .

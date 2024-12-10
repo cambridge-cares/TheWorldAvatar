@@ -2,16 +2,6 @@
 @prefix owm: <https://www.theworldavatar.com/kg/ontowastemanagement/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix cmns-dsg:   <https://www.omg.org/spec/Commons/Designators/> .
-@prefix cmns-qtu:   <https://www.omg.org/spec/Commons/QuantitiesAndUnits/> .
-@prefix cmns-txt:   <https://www.omg.org/spec/Commons/TextDatatype/> .
-
-owm:tonne a cmns-qtu:MeasurementUnit ;
-  cmns-dsg:hasName owm:tonneName;
-  rdfs:comment "The tonne is a unit of mass defined as 1000 kilogram.".
-
-owm:tonneName a cmns-qtu:QuantityName ;
-  cmns-txt:hasTextValue "tonne" .
 
 owm:BinStatus owl:oneOf (
     owm:Filled

@@ -18,7 +18,6 @@ The namespace for the ontology is:
   - [2.3 Assets](#23-assets)
     - [2.3.1 Truck](#231-truck)
     - [2.3.2 Bin](#232-bin)
-  - [2.4 Reporting](#25-reporting)
 
 # 2. Data model
 
@@ -55,12 +54,15 @@ flowchart LR
 | Prefix            | Namespace                                                                                         |
 | ----------------- | ------------------------------------------------------------------------------------------------- |
 | cmns-col          | `https://www.omg.org/spec/Commons/Collections/`                                                   |
+| cmns-cxtdsg       | `https://www.omg.org/spec/Commons/ContextualDesignators/`                                         |
 | cmns-dt           | `https://www.omg.org/spec/Commons/DatesAndTimes/`                                                 |
 | cmns-dsg          | `https://www.omg.org/spec/Commons/Designators/`                                                   |
 | cmns-pts          | `https://www.omg.org/spec/Commons/PartiesAndSituations/`                                          |
 | cmns-qtu          | `https://www.omg.org/spec/Commons/QuantitiesAndUnits/`                                            |
 | cmns-rlcmp        | `https://www.omg.org/spec/Commons/RolesAndCompositions/`                                          |
+| fibo-fbc-fi-ip    | `https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing`            |
 | fibo-fbc-pas-fpas | `https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/` |
+| fibo-fnd-acc-cur  | `https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/`                        |
 | fibo-fnd-agr-ctr  | `https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/`                             |
 | fibo-fnd-arr-rep  | `https://spec.edmcouncil.org/fibo/ontology/FND/Arrangements/Reporting/`                           |
 | fibo-fnd-aap-ppl  | `https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/`                           |
@@ -76,6 +78,7 @@ flowchart LR
 | fibo-fnd-rel-rel  | `https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/`                              |
 | fibo-fnd-org-fm   | `https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/FormalOrganizations/`                |
 | fibo-fnd-utl-alx  | `https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/Analytics/`                              |
+| fibo-loan-ln-ln   | `https://spec.edmcouncil.org/fibo/ontology/LOAN/LoansGeneral/Loans/`                              |
 | lcc-cr            | `https://www.omg.org/spec/LCC/Countries/CountryRepresentation/`                                   |
 | om                | `http://www.ontology-of-units-of-measure.org/resource/om-2/`                                      |
 | sf                | `http://www.opengis.net/ont/sf#`                                                                  |
@@ -91,7 +94,7 @@ flowchart LR
 
 ## 2.1. Service agreement
 
-The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept to specify the agreed upon service requirements and terms. The general usage of this concept can be found as part of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology, including its duration, involved parties, payment obligations, and commitments, as well as the organisation profiles in the [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/) ontology. This ontology specifically demonstrates the extension of `OntoService` and `OntoProfile` to the waste operation industry.
+The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept to specify the agreed upon service requirements and terms. The general usage of this concept can be found as part of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology, including its duration, involved parties, payment obligations, and commitments, as well as the organisation profiles in the [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/) ontology. Please refer to [OntoService](https://www.theworldavatar.com/kg/ontoservice#23-reporting) for any reporting or billing matters. This ontology specifically demonstrates the extension of `OntoService` and `OntoProfile` to the waste operation industry.
 
 Figure 1: TBox representation for a Service Agreement in the waste management sector following the FIBO ontology
 
@@ -115,6 +118,10 @@ flowchart TD
     TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
     StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
     EndTime -.-> Time
+
+    Agreement -. fibo-fnd-rel-rel:confers .-> PaymentObligation[[fibo-fnd-pas-psch:PaymentObligation]]
+    PaymentObligation -. cmns-cxtdsg:appliesTo .-> Service
+    PaymentObligation -. fibo-fnd-rel-rel:mandates .-> PricingModel[[fibo-fbc-fi-ip:PricingModel]]
 
     Agreement -. fibo-fnd-agr-ctr:hasContractParty .-> ServiceProvider[[fibo-fnd-pas-pas:ServiceProvider]]
     ServiceProvider -. cmns-rlcmp:isPlayedBy .-> ProviderOrg[[FormalOrganization]]
@@ -198,7 +205,7 @@ flowchart TD
     WasteCollectionService -- ontowm:hasWasteType --> WasteClazz["<h4>ontowm:Waste</h4><p style='font-size:0.75rem;'>ontowm:isRecyclable &quot;boolean&quot;</p>"]
 
     ServiceProvider[[fibo-fnd-pas-pas:ServiceProvider]] -. fibo-fnd-rel-rel:provides .-> WasteDisposalService[[ontowm:WasteDisposalService]]
-    WasteDisposalService -. ontowm:hasDisposalCharge .-> VariableCharge[[ontoservice:VariableCharge]]
+    WasteDisposalService -. fibo-loan-ln-ln:hasCost .-> MonetaryPrice["<h4>fibo-fnd-acc-cur:MonetaryPrice</h4><p style='font-size:0.75rem;'>fibo-fnd-acc-cur:hasAmount &quot;xsd:decimal&quot;</p>"]:::literal
     WasteDisposalService -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:ExplicitTimePeriod]]
     TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
     TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
@@ -339,7 +346,7 @@ flowchart TD
     Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> DeliveryOccurrence
 ```
 
-The amount of waste collected is also recorded through the use of the `CalculationEvent`. Do note that a `ServiceDeliveryEvent` must first occur before the `CalculationEvent`. An occurrence for the`CalculationEvent` event represents the calculation of the amount of waste disposed of at a specific waste disposal facility at a specific time. It consists of the deduction of the truck's unladen weight from the gross weight to get the net waste weight. If necessary, the type of waste can be retrieved from the service associated with this lifecycle. Note that the measurement unit of `tonne` is available in the `abox` file.
+The amount of waste collected is also recorded through the use of the `CalculationEvent`. Do note that a `ServiceDeliveryEvent` must first occur before the `CalculationEvent`. An occurrence for the`CalculationEvent` event represents the calculation of the amount of waste disposed of at a specific waste disposal facility at a specific time. It consists of the deduction of the truck's unladen weight from the gross weight to get the net waste weight. If necessary, the type of waste can be retrieved from the service associated with this lifecycle. Note that the measurement unit of `tonne` is available in [OntoService's `abox` file](../ontoservice/ontoservice_abox.ttl).
 
 Figure 7: TBox representation of an occurrence of the calculation of the amount of waste disposed
 
@@ -372,7 +379,7 @@ flowchart TD
     GrossWeight --> ScalarQuantityValue["<h4>cmns-qtu:ScalarQuantityValue</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;xsd:decimal&quot;</p>"]:::literal
     UnladenWeight --> ScalarQuantityValue["<h4>cmns-qtu:ScalarQuantityValue</h4><p style='font-size:0.75rem;'>cmns-qtu:hasNumericValue &quot;xsd:decimal&quot;</p>"]:::literal
 
-    NetWasteWeight -. cmns-qtu:hasMeasurementUnit .-> tonne[owm:tonne]
+    NetWasteWeight -. cmns-qtu:hasMeasurementUnit .-> tonne[ontoservice:tonne]
     GrossWeight -. cmns-qtu:hasMeasurementUnit .-> tonne
     UnladenWeight -. cmns-qtu:hasMeasurementUnit .-> tonne
 ```
@@ -506,62 +513,3 @@ Bin statuses are also represented as enums in the corresponding ABox. The availa
 - Available
 - Unavailable
 - Decomissioned
-
-## 2.4 Reporting
-
-This section focuses on reporting matters such as billing, specifically as an the extension of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology to the waste operation industry. The derived information framework is used in representing how the total price of a waste collection service is calculated and represented in the knowledge graph. The computation of the total price is as follows:
-
-$$
-  \begin{align*}
-    Total Price & = Gross Price + Tax \\
-    Gross Price & = Base Charge + Variable Charge + Excess Variable Charge \\
-    Excess Variable Charge & = (Net Waste Weight - Service Tonnage Cap) \\
-    Net Waste Weight & = Gross Truck Weight - Unladen Truck Weight
-  \end{align*}
-$$
-
-Figure 12: ABox representation of the computation of the total price charged for each occurrence of a waste service
-
-```mermaid
-    erDiagram
-    "fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence" ||--|{ "ontoservice:TotalPrice" : "ontoservice:charges"
-    "ontoservice:TotalPrice" ||--|| "inst:TotalPriceDerivation" : "ontoderivation:belongsTo"
-    "inst:TotalPriceDerivation" ||--|{ "ontoservice:GrossPrice" : "ontoderivation:isDerivedFrom"
-    "inst:TotalPriceDerivation" ||--|{ "ontoservice:Tax" : "ontoderivation:isDerivedFrom"
-    "inst:TotalPriceDerivation" {
-        rdf-type ontoderivation-Derivation
-    }
-
-    "ontoservice:TotalPrice" ||--o{ "om:AmountOfMoney" : "rdfs:subClassOf"
-    "ontoservice:GrossPrice" ||--o{ "om:AmountOfMoney" : "rdfs:subClassOf"
-    "ontoservice:Tax" ||--o{ "om:Percentage" : "rdfs:subClassOf"
-    "ontoservice:Tax" {
-        rdfs-label tax_policy_string
-    }
-
-    "ontoservice:GrossPrice" ||--|| "inst:GrossPriceDerivation" : "ontoderivation:belongsTo"
-    "inst:GrossPriceDerivation" ||--|{ "ontoservice:BaseCharge" : "ontoderivation:isDerivedFrom"
-    "inst:GrossPriceDerivation" ||--|{ "ontoservice:VariableCharge" : "ontoderivation:isDerivedFrom"
-    "inst:GrossPriceDerivation" {
-        rdf-type ontoderivation-Derivation
-    }
-
-    "ontowm:VariableCharge" ||--o{ "om:AmountOfMoney" : "rdfs:subClassOf"
-
-    "ontoservice:VariableCharge" ||--|| "inst:VariableChargeDerivation" : "ontoderivation:belongsTo"
-    "inst:VariableChargeDerivation" ||--|{ "ontoservice:VariableRate" : "ontoderivation:isDerivedFrom"
-    "inst:VariableChargeDerivation" ||--|{ "ontoservice:ServiceTonnage" : "ontoderivation:isDerivedFrom"
-    "ontoservice:VariableRate" ||--o{ "ontoservice:ServiceTonnage"  : "ontoservice:dependsOn"
-    "inst:VariableChargeDerivation" {
-        rdf-type ontoderivation-Derivation
-    }
-
-    "ontoservice:VariableCharge" ||--|| "inst:ExcessVariableChargeDerivation" : "ontoderivation:belongsTo"
-    "inst:ExcessVariableChargeDerivation" ||--|{ "ontoservice:VariableRate" : "ontoderivation:isDerivedFrom"
-    "inst:ExcessVariableChargeDerivation" ||--|{ "ontoservice:ServiceMetricCap" : "ontoderivation:isDerivedFrom"
-    "inst:ExcessVariableChargeDerivation" ||--|{ "ontowm:NetWasteWeight" : "ontoderivation:isDerivedFrom"
-    "ontoservice:VariableRate" ||--o{ "ontoservice:ServiceTonnage"  : "ontoservice:dependsOn"
-    "inst:VariableChargeDerivation" {
-        rdf-type ontoderivation-Derivation
-    }
-```
