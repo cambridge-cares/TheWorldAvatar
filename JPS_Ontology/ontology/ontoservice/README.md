@@ -24,7 +24,14 @@ The namespace for the ontology is:
 
 > Ontology Diagram
 
-The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class.
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
+
+```mermaid
+flowchart TD
+    instance[[Instance Label]]
+    clazz[prefix:Class]
+    clazzLiteral["<h4>prefix:Class</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]:::literal
+```
 
 ```mermaid
 flowchart TD
@@ -32,18 +39,64 @@ flowchart TD
     classDef literal fill:none
 
     %% Diagram
-    clazz[Class]
-    instance[[Instance]]
-    clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
+    subgraph equivalent instance with data property representation
+    direction LR
+    instanceDataProperty[["<h4>Class of instance with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
+    instDataProperty[[Instance of Class Label]] -. rdf:type .-> instClazzLiteral["<h4>prefix:Class</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]:::literal
+    end
+
+    subgraph equivalent instance representation
+    direction LR
+    instClass[[prefix:Class]]
+    instClassInst[[Instance of Class Label]] -. rdf:type .-> parentClass[prefix:Class]
+    end
 ```
 
-For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Relations between instances of one or more classes are indicated as dotted lines.
+Relations between instances of one or more classes are indicated as dotted lines.
 
 ```mermaid
 flowchart LR
-    subclass[SubClass] --> superclass[SuperClass]
-    instance[[Instance]] -.-> clazz[Class]
-    domainInst[[Instance]] -. relation .-> rangeInst[[Instance]]
+    Inst[[Instance]] -. relation .-> rangeInst[[Instance]]
+```
+
+Relations linked to a class will also be applied to their instances.
+
+```mermaid
+flowchart LR
+    subgraph equivalent relations for object properties
+    instance[[multiple class instance]] -.->  clazz[prefix:Class]
+    clazz -. relations .-> objInst[[Object Instance]]
+
+    multiinstance[[multiple class instance]] -.->  clazz2[prefix:Class]
+    multiinstance -. relations .-> objInst2[[Object Instance]]
+    end
+```
+
+Unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for solid and dotted lines respectively.
+
+```mermaid
+flowchart TB
+    subgraph equivalent rdftype
+    direction LR
+    instance[[Instance]] -.-> clazz[prefix:Class]
+    instance2[[Instance]] -. rdf:type .-> clazz2[prefix:Class]
+    end
+
+    subgraph equivalent subclassof for classes
+    direction LR
+    subclass[prefix:SubClass] --> superclass[prefix:SuperClass]
+    subclass2[prefix:SubClass] -. rdfs:subClassOf .-> superclass2[prefix:SuperClass]
+    end
+```
+
+```mermaid
+flowchart LR
+    subgraph equivalent subclassof for instances
+    direction LR
+    instanceSubClass[[prefix:SubClass]] ---> superclass1[prefix:SuperClass]
+    inst[[Instance]] -.-> subClazz[prefix:SubClass]
+    subClazz --> superclass2[prefix:SuperClass]
+    end
 ```
 
 > Namespace Prefix
@@ -104,15 +157,15 @@ flowchart TD
 
     %% Contents
     Agreement[["<h4>fibo-fnd-pas-pas:ServiceAgreement</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"]]:::literal -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
-    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
-    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Start Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[End Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
     Agreement -. fibo-fnd-rel-rel:governs .-> Service[["<h4>fibo-fnd-pas-pas:Service</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;<br>rdfs:comments &quot;remarks string&quot;</p>"]]:::literal
     Service -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:ExplicitTimePeriod]]
-    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
-    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
+    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Start Time]]
+    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[End Time]]
     StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
     EndTime -.-> Time
 
@@ -126,15 +179,16 @@ flowchart TD
     ServiceProvider -. fibo-fnd-rel-rel:provides .-> Service
     Agreement -. fibo-fnd-arr-rep:isRequestedBy .-> Client[[fibo-fnd-pas-pas:Client]]
     Client -. cmns-rlcmp:isPlayedBy .-> ClientOrg[[FormalOrganization]]
-    ClientOrg -.-> Org[[fibo-fnd-org-fm:FormalOrganization]]
+    ClientOrg -.-> Org[fibo-fnd-org-fm:FormalOrganization]
 
     Service -. fibo-fnd-rel-rel:provides .-> Capability[[fibo-fnd-plc-fac:Capability]]
     Capability -. fibo-fnd-rel-rel:involves .-> Facility[[ontobim:Facility]]
     Org -. fibo-fnd-rel-rel:controls .-> Facility
 
     Building[[bot:Building]] -. ontobim:hasFacility .-> Facility
-    Building -. ontoservice:hasServiceLocation .-> Location[[fibo-fnd-plc-loc:PhysicalLocation]]
+    Building -. ontoservice:hasServiceLocation .-> Location[Service Site]
     Location --> Feature[geo:Feature]
+    Location --> PhysicalLocation[fibo-fnd-plc-loc:PhysicalLocation]
     Feature -. geo:hasGeometry .-> Geom[["<h4>cmns-dt:geo:Geometry</h4><p style='font-size:0.75rem;'>geo:asWKT &quot;geo:wktLiteral&quot;</p>"]]:::literal
 
     Building -. fibo-fnd-plc-adr:hasAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
@@ -275,8 +329,8 @@ flowchart TD
     StageOccurrence --> Occurrence
     EventOccurrence --> Occurrence
     Occurrence -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
-    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
-    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Start Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[End Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
@@ -307,8 +361,8 @@ flowchart LR
     EventOccurrence -. fibo-fnd-rel-rel:exemplifies .-> Event[[ontoservice:ServiceDeliveryEvent]]
     ServiceExecutionStage -. cmns-col:comprises .-> Event
     StageOccurrence -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
-    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
-    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Service Start Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Service End Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
@@ -316,8 +370,8 @@ flowchart LR
     Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> EventOccurrence
 
     Schedule -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:ExplicitTimePeriod]]
-    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
-    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
+    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Start Time]]
+    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[End Time]]
     StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
     EndTime -.-> Time
 
@@ -371,7 +425,7 @@ flowchart TD
     DeliveryEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DeliveryOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
-    CalculationEvent[fibo-fnd-dt-oc:CalculationEvent] -. cmns-cls:classifies .-> Calculation
+    CalculationEvent[[fibo-fnd-dt-oc:CalculationEvent]] -. cmns-cls:classifies .-> Calculation
     Calculation -. cmns-dt:succeeds .-> DeliveryOccurrence
 
     StageOccurrence -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[[fibo-fnd-dt-fd:RegularSchedule]]

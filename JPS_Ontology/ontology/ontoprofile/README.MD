@@ -24,7 +24,14 @@ The namespace for the ontology is:
 
 > Ontology Diagram
 
-The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class.
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
+
+```mermaid
+flowchart TD
+    instance[[Instance Label]]
+    clazz[prefix:Class]
+    clazzLiteral["<h4>prefix:Class</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]:::literal
+```
 
 ```mermaid
 flowchart TD
@@ -32,18 +39,51 @@ flowchart TD
     classDef literal fill:none
 
     %% Diagram
-    clazz[Class]
-    instance[[Instance]]
-    clazzLiteral["<h4>Class</h4><p style='font-size:0.75rem;'>dataproperty &quot;literal type&quot;</p>"]:::literal
+    subgraph equivalent instance with data property representation
+    direction LR
+    instanceDataProperty[["<h4>Class of instance with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
+    instDataProperty[[Instance of Class Label]] -. rdf:type .-> instClazzLiteral["<h4>prefix:Class</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]:::literal
+    end
+
+    subgraph equivalent instance representation
+    direction LR
+    instClass[[prefix:Class]]
+    instClassInst[[Instance of Class Label]] -. rdf:type .-> parentClass[prefix:Class]
+    end
 ```
 
-For relations, unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for default and dotted lines respectively. Relations between instances of one or more classes are indicated as dotted lines.
+Relations between instances of one or more classes are indicated as dotted lines.
 
 ```mermaid
 flowchart LR
-    subclass[SubClass] --> superclass[SuperClass]
-    instance[[Instance]] -.-> clazz[Class]
-    domainInst[[Instance]] -. relation .-> rangeInst[[Instance]]
+    Inst[[Instance]] -. relation .-> rangeInst[[Instance]]
+```
+
+Unlabelled arrows references `rdfs:subClassOf` and `rdf:type` for solid and dotted lines respectively.
+
+```mermaid
+flowchart TB
+    subgraph equivalent rdftype
+    direction LR
+    instance[[Instance]] -.-> clazz[prefix:Class]
+    instance2[[Instance]] -. rdf:type .-> clazz2[prefix:Class]
+    end
+
+    subgraph equivalent subclassof for classes
+    direction LR
+    subclass[prefix:SubClass] --> superclass[prefix:SuperClass]
+    subclass2[prefix:SubClass] -. rdfs:subClassOf .-> superclass2[prefix:SuperClass]
+    end
+```
+
+```mermaid
+flowchart LR
+    subgraph equivalent subclassof for instances
+    direction LR
+    instanceSubClass[[prefix:SubClass]] ---> superclass1[prefix:SuperClass]
+    inst[[Instance]] -.-> subClazz[prefix:SubClass]
+    subClazz --> superclass2[prefix:SuperClass]
+    end
 ```
 
 > Namespace Prefix
@@ -102,7 +142,7 @@ flowchart LR
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm:FormalOrganization]]
+    PartyRole[[cmns-pts:PartyRole]] -. cmns-rlcmp:isPlayedBy .-> Organisation[[fibo-fnd-org-fm:FormalOrganization]]
     Organisation -. cmns-dsg:hasName .-> OrganizationName[["<h4>fibo-fnd-org-org:OrganizationName</h4><p style='font-size:0.75rem;'>fibo-be-le-lei:hasTransliteratedName &quot;string&quot;</p>"]]:::literal
 
     Organisation -. fibo-fnd-pty-pty:hasMailingAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
@@ -135,7 +175,7 @@ flowchart LR
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    cmns-pts:PartyRole -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
+    PartyRole[[cmns-pts:PartyRole]] -. cmns-rlcmp:isPlayedBy .-> Person[[fibo-fnd-aap-ppl:Person]]
     Person -. cmns-dsg:hasName .-> PersonName[["<h4>fibo-fnd-aap-ppl:PersonName</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot; <br> fibo-fnd-aap-ppl:hasFullLegalName &quot;string&quot; <br> fibo-fnd-aap-ppl:hasSurname &quot;string&quot;</p>"]]:::literal
 
     Person -. ontoprofile:hasInitials .-> Initials[["<h4>ontoprofile:Initials</h4><p style='font-size:0.75rem;'>rdfs:label &quot;string&quot;</p>"]]:::literal
@@ -204,8 +244,8 @@ flowchart TD
     Situation[[cmns-pts:Situation]] -. cmns-pts:hasSubjectRole .-> Driver[[ontoprofile:EmployedDriver]]
     Situation -. cmns-pts:hasObjectRole .-> VDriver[[ontoprofile:VehicleDriver]]
     Situation -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
-    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
-    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Start Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[End Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
@@ -235,8 +275,7 @@ flowchart LR
     Org[[fibo-fnd-org-fm:FormalOrganization]] -. fibo-fnd-rel-rel:controls .-> Facility
     Employee[[fibo-fnd-org-fm:Employee]] -. ontoprofile:worksAt .-> Facility
 
-    Building[[bot:Building]] -. ontobim:hasFacility .-> Facility[[ontobim:Facility]]
-    Building --> geo:Feature
+    Building[[bot:Building]]-. ontobim:hasFacility .-> Facility[[ontobim:Facility]]
     Building -. fibo-fnd-pty-adr:hasAddress .-> ConventionalStreetAddress[["<h4>fibo-fnd-plc-adr:ConventionalStreetAddress</h4><p style='font-size:0.75rem;'>fibo-fnd-plc-loc:hasCityName &quot;string&quot;<br>fibo-fnd-plc-adr:hasPostalCode &quot;string&quot;</p>"]]:::literal
 
     ConventionalStreetAddress -. fibo-fnd-plc-loc:hasCountry .-> Country[[lcc-cr:Country]]
