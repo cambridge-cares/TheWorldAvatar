@@ -35,4 +35,4 @@
    git push -u origin main
    ```
 
-9) Delete any branches that not relevant.
+9) Delete any branches that are not relevant.
