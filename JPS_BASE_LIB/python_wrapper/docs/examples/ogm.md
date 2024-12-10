@@ -350,6 +350,26 @@ another_object_of_one_concept = OneConcept.pull_from_kg(
 
 > NOTE the developer should be aware of the `recursive_depth` that one is using to pull the triples from the knowledge graph.
 
+#### NOTE when pulling instances with multiple `rdf:type` definitions
+
+For instances defined with multiple `rdf:type`, this pulling function instantiates the Python object using the deepest subclass found in the intersection of the subclasses of the calling class and those specified by `rdf:type`. If multiple deepest subclasses coexist (e.g., when subclasses from different branches of the inheritance tree are identified), the code raises an error. To prevent this, you can pull the object directly using the desired subclass.
+
+For a concrete example using the class hierarchy below, assume an instance is defined with `rdf:type` of both class `C` and `E`. Pulling this instance using `A.pull_from_kg()` will result in an error because both `C` and `E` are identified as potential classes for instantiation, but they belong to different branches of the inheritance tree. A workaround is to pull the instance explicitly using either class `C` or `E`. Alternatively, if a class `F` exist as subclass of both `C` and `E`, pulling the instance with `A.pull_from_kg()` would succeed, as class `F` would be identified as the new "deepest" subclass.
+
+```mermaid
+classDiagram
+    class A
+    class B
+    class C
+    class D
+    class E
+
+    A <|-- B
+    B <|-- C
+    A <|-- D
+    D <|-- E
+```
+
 ### Update existing objects in triple store
 
 To make changes to the local objects and update it in the triple store:
