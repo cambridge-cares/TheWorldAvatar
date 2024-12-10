@@ -94,7 +94,7 @@ flowchart LR
 
 ## 2.1. Service agreement
 
-The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept to specify the agreed upon service requirements and terms. The general usage of this concept can be found as part of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology, including its duration, involved parties, payment obligations, and commitments, as well as the organisation profiles in the [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/) ontology. Please refer to [OntoService](https://www.theworldavatar.com/kg/ontoservice#23-reporting) for any reporting or billing matters. This ontology specifically demonstrates the extension of `OntoService` and `OntoProfile` to the waste operation industry.
+The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept to specify the agreed upon service requirements and terms. The general usage of this concept can be found as part of the [OntoService](https://www.theworldavatar.com/kg/ontoservice/) ontology, including its duration, involved parties, payment obligations, and commitments, as well as the organisation profiles in the [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/) ontology. Please refer to [OntoService](../ontoservice#23-reporting) for any reporting or billing matters. This ontology specifically demonstrates the extension of `OntoService` and `OntoProfile` to the waste operation industry.
 
 Figure 1: TBox representation for a Service Agreement in the waste management sector following the FIBO ontology
 

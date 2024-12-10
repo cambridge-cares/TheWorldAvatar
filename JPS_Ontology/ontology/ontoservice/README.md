@@ -355,29 +355,25 @@ flowchart TD
 
     %% Contents
     StageOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleStageOccurrence]] -- fibo-fnd-rel-rel:exemplifies --> ServiceExecutionStage[[ontoservice:ServiceExecutionStage]]
-    ServiceExecutionStage -- cmns-col:comprises --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
-    ServiceExecutionStage -- cmns-col:comprises --> CalculationEvent[fibo-fnd-dt-oc:CalculationEvent]
 
     StageOccurrence -. cmns-col:comprises .-> OrderReceivedOccurrence[[OrderReceivedOccurrence]]
-    OrderReceivedOccurrence -- fibo-fnd-rel-rel:exemplifies --> OrderReceivedEvent
+    OrderReceivedOccurrence -- fibo-fnd-rel-rel:exemplifies --> OrderReceivedEvent[ontoservice:OrderReceivedEvent]
     OrderReceivedOccurrence -.-> EventOccurrence["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]:::literal
 
     StageOccurrence -. cmns-col:comprises .-> DispatchOccurrence[[ServiceDispatchOccurrence]]
-    DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent
+    DispatchOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDispatchEvent[ontoservice:ServiceDispatchEvent]
     DispatchOccurrence -.-> EventOccurrence
     DispatchOccurrence -- cmns-dt:succeeds --> OrderReceivedOccurrence
     DispatchEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DispatchOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> DeliveryOccurrence[["<h4>DeliveryOccurrence</h4><p style='font-size:0.75rem;'>ontoservice:hasScheduledTime &quot;xsd:time&quot;</p>"]]:::literal
-    DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent
+    DeliveryOccurrence -- fibo-fnd-rel-rel:exemplifies --> ServiceDeliveryEvent[ontoservice:ServiceDeliveryEvent]
     DeliveryOccurrence -.-> EventOccurrence
     DeliveryOccurrence -- cmns-dt:succeeds --> DispatchOccurrence
     DeliveryEventStatus[[ontoservice:EventStatus]] -. cmns-dsg:describes .-> DeliveryOccurrence
 
     StageOccurrence -. cmns-col:comprises .-> Calculation[["<h4>fibo-fnd-dt-oc:Calculation</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
-    CalculationEvent -- cmns-cls:classifies --> Calculation
+    CalculationEvent[fibo-fnd-dt-oc:CalculationEvent] -- cmns-cls:classifies --> Calculation
     Calculation -- cmns-dt:succeeds --> DeliveryOccurrence
 
     StageOccurrence -. fibo-fnd-dt-fd:hasSchedule .-> Schedule[[fibo-fnd-dt-fd:RegularSchedule]]
@@ -499,7 +495,7 @@ The representation of the pricing model is intended to be highly flexible to acc
 Figure 10: TBox representation of potential pricing models
 
 ```mermaid
-flowchart TD
+flowchart LR
     %% Styling
     classDef literal fill:none
     classDef node overflow-wrap:break-word,text-wrap:pretty
