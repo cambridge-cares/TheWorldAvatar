@@ -121,6 +121,20 @@
     
 
 
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
+    
+
+
+    <!-- https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage -->
+
+
+    <owl:Class rdf:about="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
+    
+
+
     <!-- https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/UnitPrice -->
 
 
@@ -175,6 +189,30 @@
         <rdfs:comment>A classifier that indicates the current state of an event during a contract lifecycle</rdfs:comment>
         <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
         <rdfs:label>Event status</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleEvent -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleEvent">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleEvent"/>
+        <rdfs:comment>A kind of event that occurs during one or more stages of the lifecycle of an agreement that governs a service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Service agreement lifecycle event</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleStage -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoservice/ServiceAgreementLifecycleStage">
+        <rdfs:subClassOf rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/ContractLifecycleStage"/>
+        <rdfs:comment>A phase in the lifecycle for an agreement governing some service.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:resource="https://www.theworldavatar.com/kg/ontoservice/"/>
+        <rdfs:label>Service agreement lifecycle stage</rdfs:label>
     </owl:Class>
     
 

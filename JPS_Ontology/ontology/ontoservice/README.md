@@ -185,8 +185,8 @@ flowchart LR
     linkStyle default overflow-wrap:break-word,text-wrap:pretty;
 
     %% Contents
-    Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle] -- fibo-fnd-arr-lif:hasStage --> Stage[fibo-fbc-pas-fpas:ContractLifecycleStage]
-    Stage -- cmns-col:comprises --> Event[fibo-fbc-pas-fpas:ContractLifecycleEvent]
+    Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle] -- fibo-fnd-arr-lif:hasStage --> Stage[ontoservice:ServiceAgreementLifecycleStage]
+    Stage -- cmns-col:comprises --> Event[ontoservice:ServiceAgreementLifecycleEvent]
 
     CreationStage[ontoservice:CreationStage] --> Stage
     ServiceExecutionStage[ontoservice:ServiceExecutionStage] --> Stage
@@ -267,8 +267,8 @@ flowchart TD
     StageOccurrence -. cmns-col:comprises .-> EventOccurrence[[fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence]]
 
     LifecycleOccurrence -- fibo-fnd-rel-rel:exemplifies --> Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle]
-    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> Stage[fibo-fbc-pas-fpas:ContractLifecycleStage]
-    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[fibo-fbc-pas-fpas:ContractLifecycleEvent]
+    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> Stage[ontoservice:ServiceAgreementLifecycleStage]
+    EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[ontoservice:ServiceAgreementLifecycleEvent]
 
     Lifecycle -- fibo-fnd-arr-lif:hasStage --> Stage
     Stage -- cmns-col:comprises --> Event

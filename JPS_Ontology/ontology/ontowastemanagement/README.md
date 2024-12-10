@@ -240,7 +240,7 @@ flowchart LR
     StageOccurrence -. cmns-col:comprises .-> EventOccurrence[["<h4>fibo-fbc-pas-fpas:ContractLifecycleEventOccurrence</h4><p style='font-size:0.75rem;'>rdfs:comment &quot;string&quot;<br>fibo-fnd-dt-oc:hasEventDate &quot;xsd:dateTime&quot;</p>"]]:::literal
 
     LifecycleOccurrence -- fibo-fnd-rel-rel:exemplifies --> Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle]
-    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> Stage[fibo-fbc-pas-fpas:ContractLifecycleStage]
+    StageOccurrence -- fibo-fnd-rel-rel:exemplifies --> Stage[ontoservice:ServiceAgreementLifecycleStage]
     EventOccurrence -- fibo-fnd-rel-rel:exemplifies --> Event[fibo-fbc-pas-fpas:ContractLifecycleEvent]
     Lifecycle[fibo-fbc-pas-fpas:ContractLifecycle] -- fibo-fnd-arr-lif:hasStage --> Stage
     Stage -- cmns-col:comprises --> Event
