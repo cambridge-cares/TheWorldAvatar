@@ -18,6 +18,7 @@ docker compose up -d
 Example input files can be found in the [`examples`](./examples) directory.
 To submit a job via curl or a web browser use https://kg.cmclinnovations.com/mods-agent/request (remote on KG server) or http://localhost:58085/request (local), with a "`query`" parameter with a value (URL-encoded if working through a browser) similar to these input files.
 For example click [here](https://kg.cmclinnovations.com/mods-agent/request?query=%7B%22SimulationType%22%3A%22MOOonly%22%2C%22Algorithms%22%3A%5B%7B%22name%22%3A%22algorithm1%22%2C%22type%22%3A%22GenSurrogateAlg%22%2C%22surrogateToLoad%22%3A%22example-surrogate%22%7D%2C%7B%22name%22%3A%22algorithm2%22%2C%22type%22%3A%22MOO%22%2C%22maxNumberOfResults%22%3A10%2C%22variables%22%3A%5B%7B%22name%22%3A%22var1%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var2%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var3%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var4%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Maximise%22%2C%22minimum%22%3A0.5%2C%22weight%22%3A0.5%7D%2C%7B%22name%22%3A%22var5%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Minimise%22%2C%22maximum%22%3A1.5%2C%22weight%22%3A0.1%7D%2C%7B%22name%22%3A%22var6%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Maximise%22%2C%22minimum%22%3A2.5%2C%22weight%22%3A0.7%7D%5D%7D%5D%7D) to run a the job specified in the [multi-objective optimisation with pregenerated surrogate example](./examples/MOOonly.json).
+A python script `run_example.py` has been included as a template to submit a job with provided example files.
 
 Some `SimulationType`s will be returned the results of the simulation immediately in a JSON object.
 - Multi-Criteria Decision Making (`MCDM`)
@@ -28,6 +29,7 @@ Others will return only return a the "jobID" and the "SimulationType" in a JSON 
 - Surrogate Generation and Multi-Objective Optimisation (`MOO`)
 - Multi-Objective Optimisation with a pregenerated saved surrogate (`MOOonly`)
 - Evaluation of a pregenerated saved surrogate (`Evaluate`)
+- Deep Kernel Learning Surrogate Generation (`DKL`)
 The JSON object returned by this query (URL-encoded if working through a browser) can then be passed as the "`query`" parameter to this URL https://kg.cmclinnovations.com/mods-agent/output/request (remote on KG server) or http://localhost:58085/output/request (local) to retrieve the results when the simulation is complete.
 
 The MoDS Simple Agent supports the loading and saving of surrogates generated.

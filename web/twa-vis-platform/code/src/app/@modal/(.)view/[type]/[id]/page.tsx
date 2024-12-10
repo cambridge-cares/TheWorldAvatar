@@ -9,9 +9,10 @@ import FormContainerComponent from 'ui/interaction/form/form-container';
 import { DefaultPageThumbnailProps } from 'ui/pages/page-thumbnail';
 
 interface InterceptViewFormPageProps {
-  params: {
-    type: string
-  }
+  params: Promise<{
+    id: string,
+    type: string,
+  }>
 }
 
 /**
@@ -30,13 +31,16 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * Displays the intercepted route for viewing a specific entity through a modal.
  */
-export default function InterceptViewFormPage(props: Readonly<InterceptViewFormPageProps>) {
+export default async function InterceptViewFormPage(props: Readonly<InterceptViewFormPageProps>) {
+  const resolvedParams = await props.params;
+  const uiSettings: UISettings = JSON.parse(SettingsStore.getDefaultSettings());
   return (
     <FormModal>
       <FormContainerComponent
-        entityType={props.params?.type}
+        entityType={resolvedParams?.type}
         formType={Paths.REGISTRY}
-        agentApi={JSON.parse(SettingsStore.getDefaultSettings()).resources?.registry?.url}
+        agentApi={uiSettings?.resources?.registry?.url}
+        isPrimaryEntity={uiSettings?.resources?.registry?.data === resolvedParams?.type}
       />
     </FormModal>
   );

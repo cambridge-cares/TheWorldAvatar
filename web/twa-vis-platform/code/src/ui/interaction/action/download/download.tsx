@@ -1,11 +1,9 @@
 "use client";
 
-import styles from './download.module.css';
-
 import React from 'react';
 
 import { sendGetRequest } from 'utils/server-actions';
-import { Icon } from '@mui/material';
+import ActionButton from '../action';
 
 interface DownloadButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   agentApi: string;
@@ -36,9 +34,11 @@ export function DownloadButton({ agentApi, ...rest }: Readonly<DownloadButtonPro
   };
 
   return (
-    <button className={`${rest.className} ${styles["button-container"]}`} onClick={handleCsvDownload}>
-      <Icon className={`material-symbols-outlined ${styles["icon"]}`}>download</Icon>
-      <p className={styles["text"]}>export data</p>
-    </button>
+    <ActionButton
+      icon="download"
+      className={`${rest.className}`}
+      title="export data"
+      onClick={handleCsvDownload}
+    />
   );
 }
