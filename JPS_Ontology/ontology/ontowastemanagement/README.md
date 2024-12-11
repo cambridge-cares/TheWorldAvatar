@@ -25,7 +25,7 @@ The namespace for the ontology is:
 
 > Ontology Diagram
 
-The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Instance with labels will also be link to their respective class eg `prefix:Class` to clarify the instance. Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
 
 ```mermaid
 flowchart TD
@@ -42,7 +42,7 @@ flowchart TD
     %% Diagram
     subgraph equivalent instance with data property representation
     direction LR
-    instanceDataProperty[["<h4>Class of instance with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
+    instanceDataProperty[["<h4>prefix:Class with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
     instDataProperty[[Instance of Class Label]] -. rdf:type .-> instClazzLiteral["<h4>prefix:Class</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]:::literal
     end
 
@@ -66,11 +66,11 @@ Relations linked to a class will also be applied to their instances.
 ```mermaid
 flowchart LR
     subgraph equivalent relations for object properties
-    instance[[multiple class instance]] -.->  clazz[prefix:Class]
-    clazz -. relations .-> objInst[[Object Instance]]
-
     multiinstance[[multiple class instance]] -.->  clazz2[prefix:Class]
     multiinstance -. relations .-> objInst2[[Object Instance]]
+
+    instance[[multiple class instance]] -.->  clazz[prefix:Class]
+    clazz -. relations .-> objInst[[Object Instance]]
     end
 ```
 
@@ -176,19 +176,20 @@ flowchart TD
     PaymentObligation -. fibo-fnd-rel-rel:mandates .-> PricingModel[[fibo-fbc-fi-ip:PricingModel]]
 
     Agreement -. fibo-fnd-agr-ctr:hasContractParty .-> ServiceProvider[[fibo-fnd-pas-pas:ServiceProvider]]
-    ServiceProvider -. cmns-rlcmp:isPlayedBy .-> ProviderOrg[[FormalOrganization]]
+    ServiceProvider -. cmns-rlcmp:isPlayedBy .-> ProviderOrg[[Service Provider Organization]]
     ProviderOrg -.-> Org
     ServiceProvider -. fibo-fnd-rel-rel:provides .-> Service
     Agreement -. fibo-fnd-arr-rep:isRequestedBy .-> Client[[fibo-fnd-pas-pas:Client]]
-    Client -. cmns-rlcmp:isPlayedBy .-> ClientOrg[[FormalOrganization]]
+    Client -. cmns-rlcmp:isPlayedBy .-> ClientOrg[[Client Organization]]
     ClientOrg -.-> Org[fibo-fnd-org-fm:FormalOrganization]
 
     Service -. fibo-fnd-rel-rel:provides .-> Capability[[fibo-fnd-plc-fac:Capability]]
     Capability -. fibo-fnd-rel-rel:involves .-> Facility[[ontobim:Facility]]
     Org -. fibo-fnd-rel-rel:controls .-> Facility
 
+    Facility -. ontoservice:hasServiceLocation .-> Location[Service Location]
     Building[[bot:Building]] -. ontobim:hasFacility .-> Facility
-    Building -. ontoservice:hasServiceLocation .-> Location[Service Site]
+    Building -. ontoservice:hasServiceLocation .-> Location
     Location --> Feature[geo:Feature]
     Location --> PhysicalLocation[fibo-fnd-plc-loc:PhysicalLocation]
     Feature -. geo:hasGeometry .-> Geom[["<h4>cmns-dt:geo:Geometry</h4><p style='font-size:0.75rem;'>geo:asWKT &quot;geo:wktLiteral&quot;</p>"]]:::literal
@@ -231,11 +232,11 @@ flowchart LR
 
 The services available in the waste operation industry are as follows:
 
-1. **Bin delivery service**: Delivery of an empty bin to site. Must be assigned to an OTC truck
-2. **Bin exchange service** `WasteCollectionService`: Delivery of an empty bin to site while towing away the existing full bin. Must be assigned to an OTC truck
-3. **Tow away service** `WasteCollectionService`: Collects the bin containing waste from the service site and dispose the waste at the disposal site without returning the bin afterwards to the service site. Must be assigned to an OTC truck
-4. **Touch and go service** `WasteCollectionService`: Brings an empty bin to collect and dispose of the waste on the service site without returning the bin afterwards. Must be assigned to an OTC truck
-5. **Dump and return service** `WasteCollectionService`: An empty truck will collect the bin containing waste from the service site, and dispose the waste at the disposal site before returning the newly emptied bin afterwards. Must be assigned to an OTC truck
+1. **Bin delivery service**: Delivery of an empty bin to site. Must be assigned to a hooklift truck
+2. **Bin exchange service** `WasteCollectionService`: Delivery of an empty bin to site while towing away the existing full bin. Must be assigned to a hooklift truck
+3. **Tow away service** `WasteCollectionService`: Collects the bin containing waste from the service site and dispose the waste at the disposal site without returning the bin afterwards to the service site. Must be assigned to a hooklift truck
+4. **Touch and go service** `WasteCollectionService`: Brings an empty bin to collect and dispose of the waste on the service site without returning the bin afterwards. Must be assigned to a hooklift truck
+5. **Dump and return service** `WasteCollectionService`: An empty truck will collect the bin containing waste from the service site, and dispose the waste at the disposal site before returning the newly emptied bin afterwards. Must be assigned to a hooklift truck
 
 When setting up the agreement, the (sub)classes of the bin and waste categories can be assigned through their corresponding relationships with the service. Notably, waste categories can only be assigned to waste collection services, where waste is collected and disposed. The `isRecyclable` property is assignable to the waste if the service collects recyclable waste. The disposal of waste must occur at specific waste disposal facilities, which will be represented with their locations, operating hours, providers, and waste categories.
 
@@ -394,7 +395,7 @@ flowchart TD
     StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
     EndTime -.-> Time
 
-    Schedule -. cmns-dt:hasStartDate .-> StartDate["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
+    Schedule -. cmns-dt:hasStartDate .-> StartDate[["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]]:::literal
     Schedule -. fibo-fnd-dt-fd:hasRecurrenceInterval .-> Recurrence[[fibo-fnd-dt-fd:RecurrenceInterval]]:::literal
     Schedule -. fibo-fnd-dt-oc:hasOccurrence .-> DeliveryOccurrence
 ```

@@ -24,7 +24,7 @@ The namespace for the ontology is:
 
 > Ontology Diagram
 
-The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Instance with labels will also be link to their respective class eg `prefix:Class` to clarify the instance. Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
 
 ```mermaid
 flowchart TD
@@ -41,7 +41,7 @@ flowchart TD
     %% Diagram
     subgraph equivalent instance with data property representation
     direction LR
-    instanceDataProperty[["<h4>Class of instance with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
+    instanceDataProperty[["<h4>prefix:Class with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
     instDataProperty[[Instance of Class Label]] -. rdf:type .-> instClazzLiteral["<h4>prefix:Class</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]:::literal
     end
 
@@ -64,11 +64,12 @@ Relations linked to a class will also be applied to their instances.
 ```mermaid
 flowchart LR
     subgraph equivalent relations for object properties
-    instance[[multiple class instance]] -.->  clazz[prefix:Class]
-    clazz -. relations .-> objInst[[Object Instance]]
-
+    direction LR
     multiinstance[[multiple class instance]] -.->  clazz2[prefix:Class]
     multiinstance -. relations .-> objInst2[[Object Instance]]
+
+    instance[[multiple class instance]] -.->  clazz[prefix:Class]
+    clazz -. relations .-> objInst[[Object Instance]]
     end
 ```
 
@@ -144,7 +145,7 @@ flowchart LR
 
 The basis of this ontology revolves around the `fibo-fnd-pas-pas:ServiceAgreement` concept. The agreement specifies the requirements and terms of the service requested by clients.
 
-The service agreement will first define the duration, parties involved, requested service, and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)). Additional service details and remarks can also be attached to the `Service` concept when required. The available pricing models is described further in the [billing section](#231-billing).
+The service agreement will define the duration, parties involved, requested service, and service location. The representation of the service location enables the association of facility with a specific geolocation for service delivery within the building or facility site as well as the contact person in charge at the location for the required service (See [OntoProfile](https://www.theworldavatar.com/kg/ontoprofile/)). Additional service details and remarks can also be attached to the `Service` concept when required. The available pricing models is described further in the [billing section](#231-billing).
 
 Figure 1: TBox representation for a Service Agreement following the FIBO ontology
 
@@ -174,19 +175,20 @@ flowchart TD
     PaymentObligation -. fibo-fnd-rel-rel:mandates .-> PricingModel[[fibo-fbc-fi-ip:PricingModel]]
 
     Agreement -. fibo-fnd-agr-ctr:hasContractParty .-> ServiceProvider[[fibo-fnd-pas-pas:ServiceProvider]]
-    ServiceProvider -. cmns-rlcmp:isPlayedBy .-> ProviderOrg[[FormalOrganization]]
+    ServiceProvider -. cmns-rlcmp:isPlayedBy .-> ProviderOrg[[Service Provider Organization]]
     ProviderOrg -.-> Org
     ServiceProvider -. fibo-fnd-rel-rel:provides .-> Service
     Agreement -. fibo-fnd-arr-rep:isRequestedBy .-> Client[[fibo-fnd-pas-pas:Client]]
-    Client -. cmns-rlcmp:isPlayedBy .-> ClientOrg[[FormalOrganization]]
+    Client -. cmns-rlcmp:isPlayedBy .-> ClientOrg[[Client Organization]]
     ClientOrg -.-> Org[fibo-fnd-org-fm:FormalOrganization]
 
     Service -. fibo-fnd-rel-rel:provides .-> Capability[[fibo-fnd-plc-fac:Capability]]
     Capability -. fibo-fnd-rel-rel:involves .-> Facility[[ontobim:Facility]]
     Org -. fibo-fnd-rel-rel:controls .-> Facility
 
+    Facility -. ontoservice:hasServiceLocation .-> Location[Service Location]
     Building[[bot:Building]] -. ontobim:hasFacility .-> Facility
-    Building -. ontoservice:hasServiceLocation .-> Location[Service Site]
+    Building -. ontoservice:hasServiceLocation .-> Location
     Location --> Feature[geo:Feature]
     Location --> PhysicalLocation[fibo-fnd-plc-loc:PhysicalLocation]
     Feature -. geo:hasGeometry .-> Geom[["<h4>cmns-dt:geo:Geometry</h4><p style='font-size:0.75rem;'>geo:asWKT &quot;geo:wktLiteral&quot;</p>"]]:::literal

@@ -24,7 +24,7 @@ The namespace for the ontology is:
 
 > Ontology Diagram
 
-The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
+The representation of a class and instance is denoted by the node's shape. This means that an instance of the `Person` class will share the same label as the `Person` class itself, and they can only be distinguished by their shape. Literals are represented within the node of the class or instances. The label of instance nodes represent either a label for the purpose of explaining the diagram or the class it is `rdf:type` of (it is a class label if a prefix is available). Instance with labels will also be link to their respective class eg `prefix:Class` to clarify the instance. Multiple instance nodes for the same class in one diagram describes distinct instances of the class that is typically linked by different relations and instances.
 
 ```mermaid
 flowchart TD
@@ -41,7 +41,7 @@ flowchart TD
     %% Diagram
     subgraph equivalent instance with data property representation
     direction LR
-    instanceDataProperty[["<h4>Class of instance with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
+    instanceDataProperty[["<h4>prefix:Class with data property</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]]:::literal
     instDataProperty[[Instance of Class Label]] -. rdf:type .-> instClazzLiteral["<h4>prefix:Class</h4><p style='font-size:0.75rem;'>data property &quot;literal type&quot;</p>"]:::literal
     end
 
@@ -204,8 +204,8 @@ flowchart LR
     Employment[[fibo-fnd-org-fm:Employment]] -. fibo-fnd-org-fm:hasEmployingParty .-> Employer[[fibo-fnd-org-fm:Employer]]
     Employment -. fibo-fnd-org-fm:hasEmployedParty .-> Employee[[fibo-fnd-org-fm:Employee]]
     Employment -. cmns-pts:holdsDuring .-> DatePeriod[[cmns-dt:DatePeriod]]
-    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Date]]
-    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[Date]]
+    DatePeriod -. cmns-dt:hasStartDate .-> StartDate[[Start Date]]
+    DatePeriod -. cmns-dt:hasEndDate .-> EndDate[[End Date]]
     StartDate -.-> Date["<h4>cmns-dt:Date</h4><p style='font-size:0.75rem;'>cmns-dt:hasDateValue &quot;xsd:date&quot;</p>"]:::literal
     EndDate -.-> Date
 
@@ -216,8 +216,8 @@ flowchart LR
     Org -. cmns-col:hasMember .-> Person
 
     Employee -. cmns-dt:hasTimePeriod .-> TimePeriod[[cmns-dt:TimePeriod]]
-    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Time]]
-    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[Time]]
+    TimePeriod -. cmns-dt:hasStart .-> StartTime[[Start Time]]
+    TimePeriod -. cmns-dt:hasEndTime .-> EndTime[[End Time]]
     StartTime -.-> Time["<h4>cmns-dt:TimeOfDay</h4><p style='font-size:0.75rem;'>cmns-dt:hasTimeValue &quot;xsd:time&quot;</p>"]:::literal
     EndTime -.-> Time
 ```
@@ -229,7 +229,7 @@ Note that the employee status are represented as enums in the corresponding ABox
 
 > Driver's employment
 
-When a person is employed by an organisation as a driver, they may be assigned to a truck through the representation of a functional role for a period stipulated in the situation.
+When a person is employed by an organisation as a driver, they may be assigned to a vehicle through the representation of a functional role for a period stipulated in the situation.
 
 Figure 4: TBox representation of driver's employment
 
